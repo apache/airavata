@@ -162,25 +162,7 @@ class Iface:
     """
     pass
 
-  def getAllUserProjects(self, gatewayId, userName):
-    """
-      * Get all Project by user
-      *
-      * @param gatewayId
-      *    The identifier for the requested gateway.
-      *
-      * @param userName
-      *    The Project Object described in the workspace_model
-      * @deprecated Instead use getAllUserProjectsWithPagination
-    *
-
-    Parameters:
-     - gatewayId
-     - userName
-    """
-    pass
-
-  def getAllUserProjectsWithPagination(self, authzToken, gatewayId, userName, limit, offset):
+  def getUserProjects(self, authzToken, gatewayId, userName, limit, offset):
     """
       * Get all Project by user with pagination. Results will be ordered based
       * on creation time DESC
@@ -204,26 +186,7 @@ class Iface:
     """
     pass
 
-  def searchProjectsByProjectName(self, gatewayId, userName, projectName):
-    """
-    Get all Project for user by project name
-
-    @param gatewayId
-       The identifier for the requested gateway.
-    @param userName
-       The identifier of the user
-    @param projectName
-       The name of the project on which the results to be fetched
-    @deprecated Instead use searchProjectsByProjectNameWithPagination
-
-    Parameters:
-     - gatewayId
-     - userName
-     - projectName
-    """
-    pass
-
-  def searchProjectsByProjectNameWithPagination(self, authzToken, gatewayId, userName, projectName, limit, offset):
+  def searchProjectsByProjectName(self, authzToken, gatewayId, userName, projectName, limit, offset):
     """
     Get all Project for user by project name with pagination.Results will be ordered based
     on creation time DESC
@@ -249,25 +212,7 @@ class Iface:
     """
     pass
 
-  def searchProjectsByProjectDesc(self, gatewayId, userName, description):
-    """
-    Get all Project for user by project description
-    @param gatewayId
-       The identifier for the requested gateway.
-    @param userName
-       The identifier of the user
-    @param description
-       The description to be matched
-    @deprecated Instead use searchProjectsByProjectDescWithPagination
-
-    Parameters:
-     - gatewayId
-     - userName
-     - description
-    """
-    pass
-
-  def searchProjectsByProjectDescWithPagination(self, authzToken, gatewayId, userName, description, limit, offset):
+  def searchProjectsByProjectDesc(self, authzToken, gatewayId, userName, description, limit, offset):
     """
     Search and get all Projects for user by project description with pagination. Results
     will be ordered based on creation time DESC
@@ -293,28 +238,7 @@ class Iface:
     """
     pass
 
-  def searchExperimentsByName(self, gatewayId, userName, expName):
-    """
-    Search Experiments by experiment name
-
-    @param gatewayId
-          Identifier of the requested gateway
-    @param useNname
-          Username of the requested user
-    @param expName
-          Experiment name to be matched
-    @deprecated
-          Instead use searchExperimentsByNameWithPagination
-
-
-    Parameters:
-     - gatewayId
-     - userName
-     - expName
-    """
-    pass
-
-  def searchExperimentsByNameWithPagination(self, authzToken, gatewayId, userName, expName, limit, offset):
+  def searchExperimentsByName(self, authzToken, gatewayId, userName, expName, limit, offset):
     """
     Search Experiments by experiment name with pagination. Results will be sorted
     based on creation time DESC
@@ -340,27 +264,7 @@ class Iface:
     """
     pass
 
-  def searchExperimentsByDesc(self, gatewayId, userName, description):
-    """
-    Search Experiments by experiment name
-
-    @param gatewayId
-          Identifier of the requested gateway
-    @param userName
-          Username of the requested user
-    @param description
-          Experiment description to be matched
-    @deprecated
-          Instead use searchExperimentsByDescWithPagination
-
-    Parameters:
-     - gatewayId
-     - userName
-     - description
-    """
-    pass
-
-  def searchExperimentsByDescWithPagination(self, authzToken, gatewayId, userName, description, limit, offset):
+  def searchExperimentsByDesc(self, authzToken, gatewayId, userName, description, limit, offset):
     """
     Search Experiments by experiment name with pagination. Results will be sorted
     based on creation time DESC
@@ -386,27 +290,7 @@ class Iface:
     """
     pass
 
-  def searchExperimentsByApplication(self, gatewayId, userName, applicationId):
-    """
-    Search Experiments by application id
-
-    @param gatewayId
-          Identifier of the requested gateway
-    @param userName
-          Username of the requested user
-    @param applicationId
-          Application id to be matched
-    @deprecated
-          Instead use searchExperimentsByApplicationWithPagination
-
-    Parameters:
-     - gatewayId
-     - userName
-     - applicationId
-    """
-    pass
-
-  def searchExperimentsByApplicationWithPagination(self, authzToken, gatewayId, userName, applicationId, limit, offset):
+  def searchExperimentsByApplication(self, authzToken, gatewayId, userName, applicationId, limit, offset):
     """
     Search Experiments by application id with pagination. Results will be sorted
     based on creation time DESC
@@ -432,27 +316,7 @@ class Iface:
     """
     pass
 
-  def searchExperimentsByStatus(self, gatewayId, userName, experimentState):
-    """
-    Search Experiments by experiment status
-
-    @param gatewayId
-          Identifier of the requested gateway
-    @param userName
-          Username of the requested user
-    @param experimentState
-          Experiement state to be matched
-    @deprecated
-          Instead use searchExperimentsByStatusWithPagination
-
-    Parameters:
-     - gatewayId
-     - userName
-     - experimentState
-    """
-    pass
-
-  def searchExperimentsByStatusWithPagination(self, authzToken, gatewayId, userName, experimentState, limit, offset):
+  def searchExperimentsByStatus(self, authzToken, gatewayId, userName, experimentState, limit, offset):
     """
     Search Experiments by experiment status with pagination. Results will be sorted
     based on creation time DESC
@@ -478,30 +342,7 @@ class Iface:
     """
     pass
 
-  def searchExperimentsByCreationTime(self, gatewayId, userName, fromTime, toTime):
-    """
-    Search Experiments by experiment creation time
-
-    @param gatewayId
-          Identifier of the requested gateway
-    @param userName
-          Username of the requested user
-    @param fromTime
-          Start time of the experiments creation time
-    @param toTime
-          End time of the  experiement creation time
-    @deprecated
-          Instead use searchExperimentsByCreationTimeWithPagination
-
-    Parameters:
-     - gatewayId
-     - userName
-     - fromTime
-     - toTime
-    """
-    pass
-
-  def searchExperimentsByCreationTimeWithPagination(self, authzToken, gatewayId, userName, fromTime, toTime, limit, offset):
+  def searchExperimentsByCreationTime(self, authzToken, gatewayId, userName, fromTime, toTime, limit, offset):
     """
     Search Experiments by experiment creation time with pagination. Results will be sorted
     based on creation time DESC
@@ -575,23 +416,9 @@ class Iface:
     """
     pass
 
-  def getAllExperimentsInProject(self, projectId):
+  def getExperimentsInProject(self, authzToken, projectId, limit, offset):
     """
-    Get all Experiments within a Project
-
-    @param projectId
-          Identifier of the project
-    @deprecated
-          Instead use  getAllExperimentsInProjectWithPagination
-
-    Parameters:
-     - projectId
-    """
-    pass
-
-  def getAllExperimentsInProjectWithPagination(self, authzToken, projectId, limit, offset):
-    """
-    Get all Experiments within project with pagination. Results will be sorted
+    Get Experiments within project with pagination. Results will be sorted
     based on creation time DESC
 
     @param projectId
@@ -609,26 +436,9 @@ class Iface:
     """
     pass
 
-  def getAllUserExperiments(self, gatewayId, userName):
+  def getUserExperiments(self, authzToken, gatewayId, userName, limit, offset):
     """
-    Get all Experiments by user
-
-    @param gatewayId
-          Identifier of the requesting gateway
-    @param userName
-          Username of the requested user
-    @deprecated
-          Instead use getAllUserExperimentsWithPagination
-
-    Parameters:
-     - gatewayId
-     - userName
-    """
-    pass
-
-  def getAllUserExperimentsWithPagination(self, authzToken, gatewayId, userName, limit, offset):
-    """
-    Get all Experiments by user pagination. Results will be sorted
+    Get experiments by user with pagination. Results will be sorted
     based on creation time DESC
 
     @param gatewayId
@@ -2879,56 +2689,7 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "deleteProject failed: unknown result");
 
-  def getAllUserProjects(self, gatewayId, userName):
-    """
-      * Get all Project by user
-      *
-      * @param gatewayId
-      *    The identifier for the requested gateway.
-      *
-      * @param userName
-      *    The Project Object described in the workspace_model
-      * @deprecated Instead use getAllUserProjectsWithPagination
-    *
-
-    Parameters:
-     - gatewayId
-     - userName
-    """
-    self.send_getAllUserProjects(gatewayId, userName)
-    return self.recv_getAllUserProjects()
-
-  def send_getAllUserProjects(self, gatewayId, userName):
-    self._oprot.writeMessageBegin('getAllUserProjects', TMessageType.CALL, self._seqid)
-    args = getAllUserProjects_args()
-    args.gatewayId = gatewayId
-    args.userName = userName
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_getAllUserProjects(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = getAllUserProjects_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.ire is not None:
-      raise result.ire
-    if result.ace is not None:
-      raise result.ace
-    if result.ase is not None:
-      raise result.ase
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllUserProjects failed: unknown result");
-
-  def getAllUserProjectsWithPagination(self, authzToken, gatewayId, userName, limit, offset):
+  def getUserProjects(self, authzToken, gatewayId, userName, limit, offset):
     """
       * Get all Project by user with pagination. Results will be ordered based
       * on creation time DESC
@@ -2950,12 +2711,12 @@ class Client(Iface):
      - limit
      - offset
     """
-    self.send_getAllUserProjectsWithPagination(authzToken, gatewayId, userName, limit, offset)
-    return self.recv_getAllUserProjectsWithPagination()
+    self.send_getUserProjects(authzToken, gatewayId, userName, limit, offset)
+    return self.recv_getUserProjects()
 
-  def send_getAllUserProjectsWithPagination(self, authzToken, gatewayId, userName, limit, offset):
-    self._oprot.writeMessageBegin('getAllUserProjectsWithPagination', TMessageType.CALL, self._seqid)
-    args = getAllUserProjectsWithPagination_args()
+  def send_getUserProjects(self, authzToken, gatewayId, userName, limit, offset):
+    self._oprot.writeMessageBegin('getUserProjects', TMessageType.CALL, self._seqid)
+    args = getUserProjects_args()
     args.authzToken = authzToken
     args.gatewayId = gatewayId
     args.userName = userName
@@ -2965,7 +2726,7 @@ class Client(Iface):
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_getAllUserProjectsWithPagination(self):
+  def recv_getUserProjects(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -2973,7 +2734,7 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = getAllUserProjectsWithPagination_result()
+    result = getUserProjects_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
@@ -2986,60 +2747,9 @@ class Client(Iface):
       raise result.ase
     if result.ae is not None:
       raise result.ae
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllUserProjectsWithPagination failed: unknown result");
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getUserProjects failed: unknown result");
 
-  def searchProjectsByProjectName(self, gatewayId, userName, projectName):
-    """
-    Get all Project for user by project name
-
-    @param gatewayId
-       The identifier for the requested gateway.
-    @param userName
-       The identifier of the user
-    @param projectName
-       The name of the project on which the results to be fetched
-    @deprecated Instead use searchProjectsByProjectNameWithPagination
-
-    Parameters:
-     - gatewayId
-     - userName
-     - projectName
-    """
-    self.send_searchProjectsByProjectName(gatewayId, userName, projectName)
-    return self.recv_searchProjectsByProjectName()
-
-  def send_searchProjectsByProjectName(self, gatewayId, userName, projectName):
-    self._oprot.writeMessageBegin('searchProjectsByProjectName', TMessageType.CALL, self._seqid)
-    args = searchProjectsByProjectName_args()
-    args.gatewayId = gatewayId
-    args.userName = userName
-    args.projectName = projectName
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_searchProjectsByProjectName(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = searchProjectsByProjectName_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.ire is not None:
-      raise result.ire
-    if result.ace is not None:
-      raise result.ace
-    if result.ase is not None:
-      raise result.ase
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchProjectsByProjectName failed: unknown result");
-
-  def searchProjectsByProjectNameWithPagination(self, authzToken, gatewayId, userName, projectName, limit, offset):
+  def searchProjectsByProjectName(self, authzToken, gatewayId, userName, projectName, limit, offset):
     """
     Get all Project for user by project name with pagination.Results will be ordered based
     on creation time DESC
@@ -3063,12 +2773,12 @@ class Client(Iface):
      - limit
      - offset
     """
-    self.send_searchProjectsByProjectNameWithPagination(authzToken, gatewayId, userName, projectName, limit, offset)
-    return self.recv_searchProjectsByProjectNameWithPagination()
+    self.send_searchProjectsByProjectName(authzToken, gatewayId, userName, projectName, limit, offset)
+    return self.recv_searchProjectsByProjectName()
 
-  def send_searchProjectsByProjectNameWithPagination(self, authzToken, gatewayId, userName, projectName, limit, offset):
-    self._oprot.writeMessageBegin('searchProjectsByProjectNameWithPagination', TMessageType.CALL, self._seqid)
-    args = searchProjectsByProjectNameWithPagination_args()
+  def send_searchProjectsByProjectName(self, authzToken, gatewayId, userName, projectName, limit, offset):
+    self._oprot.writeMessageBegin('searchProjectsByProjectName', TMessageType.CALL, self._seqid)
+    args = searchProjectsByProjectName_args()
     args.authzToken = authzToken
     args.gatewayId = gatewayId
     args.userName = userName
@@ -3079,7 +2789,7 @@ class Client(Iface):
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_searchProjectsByProjectNameWithPagination(self):
+  def recv_searchProjectsByProjectName(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -3087,7 +2797,7 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = searchProjectsByProjectNameWithPagination_result()
+    result = searchProjectsByProjectName_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
@@ -3100,59 +2810,9 @@ class Client(Iface):
       raise result.ase
     if result.ae is not None:
       raise result.ae
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchProjectsByProjectNameWithPagination failed: unknown result");
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchProjectsByProjectName failed: unknown result");
 
-  def searchProjectsByProjectDesc(self, gatewayId, userName, description):
-    """
-    Get all Project for user by project description
-    @param gatewayId
-       The identifier for the requested gateway.
-    @param userName
-       The identifier of the user
-    @param description
-       The description to be matched
-    @deprecated Instead use searchProjectsByProjectDescWithPagination
-
-    Parameters:
-     - gatewayId
-     - userName
-     - description
-    """
-    self.send_searchProjectsByProjectDesc(gatewayId, userName, description)
-    return self.recv_searchProjectsByProjectDesc()
-
-  def send_searchProjectsByProjectDesc(self, gatewayId, userName, description):
-    self._oprot.writeMessageBegin('searchProjectsByProjectDesc', TMessageType.CALL, self._seqid)
-    args = searchProjectsByProjectDesc_args()
-    args.gatewayId = gatewayId
-    args.userName = userName
-    args.description = description
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_searchProjectsByProjectDesc(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = searchProjectsByProjectDesc_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.ire is not None:
-      raise result.ire
-    if result.ace is not None:
-      raise result.ace
-    if result.ase is not None:
-      raise result.ase
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchProjectsByProjectDesc failed: unknown result");
-
-  def searchProjectsByProjectDescWithPagination(self, authzToken, gatewayId, userName, description, limit, offset):
+  def searchProjectsByProjectDesc(self, authzToken, gatewayId, userName, description, limit, offset):
     """
     Search and get all Projects for user by project description with pagination. Results
     will be ordered based on creation time DESC
@@ -3176,12 +2836,12 @@ class Client(Iface):
      - limit
      - offset
     """
-    self.send_searchProjectsByProjectDescWithPagination(authzToken, gatewayId, userName, description, limit, offset)
-    return self.recv_searchProjectsByProjectDescWithPagination()
+    self.send_searchProjectsByProjectDesc(authzToken, gatewayId, userName, description, limit, offset)
+    return self.recv_searchProjectsByProjectDesc()
 
-  def send_searchProjectsByProjectDescWithPagination(self, authzToken, gatewayId, userName, description, limit, offset):
-    self._oprot.writeMessageBegin('searchProjectsByProjectDescWithPagination', TMessageType.CALL, self._seqid)
-    args = searchProjectsByProjectDescWithPagination_args()
+  def send_searchProjectsByProjectDesc(self, authzToken, gatewayId, userName, description, limit, offset):
+    self._oprot.writeMessageBegin('searchProjectsByProjectDesc', TMessageType.CALL, self._seqid)
+    args = searchProjectsByProjectDesc_args()
     args.authzToken = authzToken
     args.gatewayId = gatewayId
     args.userName = userName
@@ -3192,7 +2852,7 @@ class Client(Iface):
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_searchProjectsByProjectDescWithPagination(self):
+  def recv_searchProjectsByProjectDesc(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -3200,7 +2860,7 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = searchProjectsByProjectDescWithPagination_result()
+    result = searchProjectsByProjectDesc_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
@@ -3213,36 +2873,44 @@ class Client(Iface):
       raise result.ase
     if result.ae is not None:
       raise result.ae
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchProjectsByProjectDescWithPagination failed: unknown result");
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchProjectsByProjectDesc failed: unknown result");
 
-  def searchExperimentsByName(self, gatewayId, userName, expName):
+  def searchExperimentsByName(self, authzToken, gatewayId, userName, expName, limit, offset):
     """
-    Search Experiments by experiment name
+    Search Experiments by experiment name with pagination. Results will be sorted
+    based on creation time DESC
 
     @param gatewayId
           Identifier of the requested gateway
-    @param useNname
+    @param userName
           Username of the requested user
     @param expName
           Experiment name to be matched
-    @deprecated
-          Instead use searchExperimentsByNameWithPagination
-
+    @param limit
+          Amount of results to be fetched
+    @param offset
+          The starting point of the results to be fetched
 
     Parameters:
+     - authzToken
      - gatewayId
      - userName
      - expName
+     - limit
+     - offset
     """
-    self.send_searchExperimentsByName(gatewayId, userName, expName)
+    self.send_searchExperimentsByName(authzToken, gatewayId, userName, expName, limit, offset)
     return self.recv_searchExperimentsByName()
 
-  def send_searchExperimentsByName(self, gatewayId, userName, expName):
+  def send_searchExperimentsByName(self, authzToken, gatewayId, userName, expName, limit, offset):
     self._oprot.writeMessageBegin('searchExperimentsByName', TMessageType.CALL, self._seqid)
     args = searchExperimentsByName_args()
+    args.authzToken = authzToken
     args.gatewayId = gatewayId
     args.userName = userName
     args.expName = expName
+    args.limit = limit
+    args.offset = offset
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -3266,9 +2934,11 @@ class Client(Iface):
       raise result.ace
     if result.ase is not None:
       raise result.ase
+    if result.ae is not None:
+      raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "searchExperimentsByName failed: unknown result");
 
-  def searchExperimentsByNameWithPagination(self, authzToken, gatewayId, userName, expName, limit, offset):
+  def searchExperimentsByDesc(self, authzToken, gatewayId, userName, description, limit, offset):
     """
     Search Experiments by experiment name with pagination. Results will be sorted
     based on creation time DESC
@@ -3277,8 +2947,8 @@ class Client(Iface):
           Identifier of the requested gateway
     @param userName
           Username of the requested user
-    @param expName
-          Experiment name to be matched
+    @param description
+          Experiment description to be matched
     @param limit
           Amount of results to be fetched
     @param offset
@@ -3288,76 +2958,22 @@ class Client(Iface):
      - authzToken
      - gatewayId
      - userName
-     - expName
+     - description
      - limit
      - offset
     """
-    self.send_searchExperimentsByNameWithPagination(authzToken, gatewayId, userName, expName, limit, offset)
-    return self.recv_searchExperimentsByNameWithPagination()
+    self.send_searchExperimentsByDesc(authzToken, gatewayId, userName, description, limit, offset)
+    return self.recv_searchExperimentsByDesc()
 
-  def send_searchExperimentsByNameWithPagination(self, authzToken, gatewayId, userName, expName, limit, offset):
-    self._oprot.writeMessageBegin('searchExperimentsByNameWithPagination', TMessageType.CALL, self._seqid)
-    args = searchExperimentsByNameWithPagination_args()
+  def send_searchExperimentsByDesc(self, authzToken, gatewayId, userName, description, limit, offset):
+    self._oprot.writeMessageBegin('searchExperimentsByDesc', TMessageType.CALL, self._seqid)
+    args = searchExperimentsByDesc_args()
     args.authzToken = authzToken
     args.gatewayId = gatewayId
     args.userName = userName
-    args.expName = expName
+    args.description = description
     args.limit = limit
     args.offset = offset
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_searchExperimentsByNameWithPagination(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = searchExperimentsByNameWithPagination_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.ire is not None:
-      raise result.ire
-    if result.ace is not None:
-      raise result.ace
-    if result.ase is not None:
-      raise result.ase
-    if result.ae is not None:
-      raise result.ae
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchExperimentsByNameWithPagination failed: unknown result");
-
-  def searchExperimentsByDesc(self, gatewayId, userName, description):
-    """
-    Search Experiments by experiment name
-
-    @param gatewayId
-          Identifier of the requested gateway
-    @param userName
-          Username of the requested user
-    @param description
-          Experiment description to be matched
-    @deprecated
-          Instead use searchExperimentsByDescWithPagination
-
-    Parameters:
-     - gatewayId
-     - userName
-     - description
-    """
-    self.send_searchExperimentsByDesc(gatewayId, userName, description)
-    return self.recv_searchExperimentsByDesc()
-
-  def send_searchExperimentsByDesc(self, gatewayId, userName, description):
-    self._oprot.writeMessageBegin('searchExperimentsByDesc', TMessageType.CALL, self._seqid)
-    args = searchExperimentsByDesc_args()
-    args.gatewayId = gatewayId
-    args.userName = userName
-    args.description = description
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -3381,124 +2997,11 @@ class Client(Iface):
       raise result.ace
     if result.ase is not None:
       raise result.ase
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchExperimentsByDesc failed: unknown result");
-
-  def searchExperimentsByDescWithPagination(self, authzToken, gatewayId, userName, description, limit, offset):
-    """
-    Search Experiments by experiment name with pagination. Results will be sorted
-    based on creation time DESC
-
-    @param gatewayId
-          Identifier of the requested gateway
-    @param userName
-          Username of the requested user
-    @param description
-          Experiment description to be matched
-    @param limit
-          Amount of results to be fetched
-    @param offset
-          The starting point of the results to be fetched
-
-    Parameters:
-     - authzToken
-     - gatewayId
-     - userName
-     - description
-     - limit
-     - offset
-    """
-    self.send_searchExperimentsByDescWithPagination(authzToken, gatewayId, userName, description, limit, offset)
-    return self.recv_searchExperimentsByDescWithPagination()
-
-  def send_searchExperimentsByDescWithPagination(self, authzToken, gatewayId, userName, description, limit, offset):
-    self._oprot.writeMessageBegin('searchExperimentsByDescWithPagination', TMessageType.CALL, self._seqid)
-    args = searchExperimentsByDescWithPagination_args()
-    args.authzToken = authzToken
-    args.gatewayId = gatewayId
-    args.userName = userName
-    args.description = description
-    args.limit = limit
-    args.offset = offset
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_searchExperimentsByDescWithPagination(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = searchExperimentsByDescWithPagination_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.ire is not None:
-      raise result.ire
-    if result.ace is not None:
-      raise result.ace
-    if result.ase is not None:
-      raise result.ase
     if result.ae is not None:
       raise result.ae
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchExperimentsByDescWithPagination failed: unknown result");
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchExperimentsByDesc failed: unknown result");
 
-  def searchExperimentsByApplication(self, gatewayId, userName, applicationId):
-    """
-    Search Experiments by application id
-
-    @param gatewayId
-          Identifier of the requested gateway
-    @param userName
-          Username of the requested user
-    @param applicationId
-          Application id to be matched
-    @deprecated
-          Instead use searchExperimentsByApplicationWithPagination
-
-    Parameters:
-     - gatewayId
-     - userName
-     - applicationId
-    """
-    self.send_searchExperimentsByApplication(gatewayId, userName, applicationId)
-    return self.recv_searchExperimentsByApplication()
-
-  def send_searchExperimentsByApplication(self, gatewayId, userName, applicationId):
-    self._oprot.writeMessageBegin('searchExperimentsByApplication', TMessageType.CALL, self._seqid)
-    args = searchExperimentsByApplication_args()
-    args.gatewayId = gatewayId
-    args.userName = userName
-    args.applicationId = applicationId
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_searchExperimentsByApplication(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = searchExperimentsByApplication_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.ire is not None:
-      raise result.ire
-    if result.ace is not None:
-      raise result.ace
-    if result.ase is not None:
-      raise result.ase
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchExperimentsByApplication failed: unknown result");
-
-  def searchExperimentsByApplicationWithPagination(self, authzToken, gatewayId, userName, applicationId, limit, offset):
+  def searchExperimentsByApplication(self, authzToken, gatewayId, userName, applicationId, limit, offset):
     """
     Search Experiments by application id with pagination. Results will be sorted
     based on creation time DESC
@@ -3522,12 +3025,12 @@ class Client(Iface):
      - limit
      - offset
     """
-    self.send_searchExperimentsByApplicationWithPagination(authzToken, gatewayId, userName, applicationId, limit, offset)
-    return self.recv_searchExperimentsByApplicationWithPagination()
+    self.send_searchExperimentsByApplication(authzToken, gatewayId, userName, applicationId, limit, offset)
+    return self.recv_searchExperimentsByApplication()
 
-  def send_searchExperimentsByApplicationWithPagination(self, authzToken, gatewayId, userName, applicationId, limit, offset):
-    self._oprot.writeMessageBegin('searchExperimentsByApplicationWithPagination', TMessageType.CALL, self._seqid)
-    args = searchExperimentsByApplicationWithPagination_args()
+  def send_searchExperimentsByApplication(self, authzToken, gatewayId, userName, applicationId, limit, offset):
+    self._oprot.writeMessageBegin('searchExperimentsByApplication', TMessageType.CALL, self._seqid)
+    args = searchExperimentsByApplication_args()
     args.authzToken = authzToken
     args.gatewayId = gatewayId
     args.userName = userName
@@ -3538,7 +3041,7 @@ class Client(Iface):
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_searchExperimentsByApplicationWithPagination(self):
+  def recv_searchExperimentsByApplication(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -3546,7 +3049,7 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = searchExperimentsByApplicationWithPagination_result()
+    result = searchExperimentsByApplication_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
@@ -3559,61 +3062,9 @@ class Client(Iface):
       raise result.ase
     if result.ae is not None:
       raise result.ae
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchExperimentsByApplicationWithPagination failed: unknown result");
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchExperimentsByApplication failed: unknown result");
 
-  def searchExperimentsByStatus(self, gatewayId, userName, experimentState):
-    """
-    Search Experiments by experiment status
-
-    @param gatewayId
-          Identifier of the requested gateway
-    @param userName
-          Username of the requested user
-    @param experimentState
-          Experiement state to be matched
-    @deprecated
-          Instead use searchExperimentsByStatusWithPagination
-
-    Parameters:
-     - gatewayId
-     - userName
-     - experimentState
-    """
-    self.send_searchExperimentsByStatus(gatewayId, userName, experimentState)
-    return self.recv_searchExperimentsByStatus()
-
-  def send_searchExperimentsByStatus(self, gatewayId, userName, experimentState):
-    self._oprot.writeMessageBegin('searchExperimentsByStatus', TMessageType.CALL, self._seqid)
-    args = searchExperimentsByStatus_args()
-    args.gatewayId = gatewayId
-    args.userName = userName
-    args.experimentState = experimentState
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_searchExperimentsByStatus(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = searchExperimentsByStatus_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.ire is not None:
-      raise result.ire
-    if result.ace is not None:
-      raise result.ace
-    if result.ase is not None:
-      raise result.ase
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchExperimentsByStatus failed: unknown result");
-
-  def searchExperimentsByStatusWithPagination(self, authzToken, gatewayId, userName, experimentState, limit, offset):
+  def searchExperimentsByStatus(self, authzToken, gatewayId, userName, experimentState, limit, offset):
     """
     Search Experiments by experiment status with pagination. Results will be sorted
     based on creation time DESC
@@ -3637,12 +3088,12 @@ class Client(Iface):
      - limit
      - offset
     """
-    self.send_searchExperimentsByStatusWithPagination(authzToken, gatewayId, userName, experimentState, limit, offset)
-    return self.recv_searchExperimentsByStatusWithPagination()
+    self.send_searchExperimentsByStatus(authzToken, gatewayId, userName, experimentState, limit, offset)
+    return self.recv_searchExperimentsByStatus()
 
-  def send_searchExperimentsByStatusWithPagination(self, authzToken, gatewayId, userName, experimentState, limit, offset):
-    self._oprot.writeMessageBegin('searchExperimentsByStatusWithPagination', TMessageType.CALL, self._seqid)
-    args = searchExperimentsByStatusWithPagination_args()
+  def send_searchExperimentsByStatus(self, authzToken, gatewayId, userName, experimentState, limit, offset):
+    self._oprot.writeMessageBegin('searchExperimentsByStatus', TMessageType.CALL, self._seqid)
+    args = searchExperimentsByStatus_args()
     args.authzToken = authzToken
     args.gatewayId = gatewayId
     args.userName = userName
@@ -3653,7 +3104,7 @@ class Client(Iface):
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_searchExperimentsByStatusWithPagination(self):
+  def recv_searchExperimentsByStatus(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -3661,7 +3112,7 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = searchExperimentsByStatusWithPagination_result()
+    result = searchExperimentsByStatus_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
@@ -3674,65 +3125,9 @@ class Client(Iface):
       raise result.ase
     if result.ae is not None:
       raise result.ae
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchExperimentsByStatusWithPagination failed: unknown result");
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchExperimentsByStatus failed: unknown result");
 
-  def searchExperimentsByCreationTime(self, gatewayId, userName, fromTime, toTime):
-    """
-    Search Experiments by experiment creation time
-
-    @param gatewayId
-          Identifier of the requested gateway
-    @param userName
-          Username of the requested user
-    @param fromTime
-          Start time of the experiments creation time
-    @param toTime
-          End time of the  experiement creation time
-    @deprecated
-          Instead use searchExperimentsByCreationTimeWithPagination
-
-    Parameters:
-     - gatewayId
-     - userName
-     - fromTime
-     - toTime
-    """
-    self.send_searchExperimentsByCreationTime(gatewayId, userName, fromTime, toTime)
-    return self.recv_searchExperimentsByCreationTime()
-
-  def send_searchExperimentsByCreationTime(self, gatewayId, userName, fromTime, toTime):
-    self._oprot.writeMessageBegin('searchExperimentsByCreationTime', TMessageType.CALL, self._seqid)
-    args = searchExperimentsByCreationTime_args()
-    args.gatewayId = gatewayId
-    args.userName = userName
-    args.fromTime = fromTime
-    args.toTime = toTime
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_searchExperimentsByCreationTime(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = searchExperimentsByCreationTime_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.ire is not None:
-      raise result.ire
-    if result.ace is not None:
-      raise result.ace
-    if result.ase is not None:
-      raise result.ase
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchExperimentsByCreationTime failed: unknown result");
-
-  def searchExperimentsByCreationTimeWithPagination(self, authzToken, gatewayId, userName, fromTime, toTime, limit, offset):
+  def searchExperimentsByCreationTime(self, authzToken, gatewayId, userName, fromTime, toTime, limit, offset):
     """
     Search Experiments by experiment creation time with pagination. Results will be sorted
     based on creation time DESC
@@ -3759,12 +3154,12 @@ class Client(Iface):
      - limit
      - offset
     """
-    self.send_searchExperimentsByCreationTimeWithPagination(authzToken, gatewayId, userName, fromTime, toTime, limit, offset)
-    return self.recv_searchExperimentsByCreationTimeWithPagination()
+    self.send_searchExperimentsByCreationTime(authzToken, gatewayId, userName, fromTime, toTime, limit, offset)
+    return self.recv_searchExperimentsByCreationTime()
 
-  def send_searchExperimentsByCreationTimeWithPagination(self, authzToken, gatewayId, userName, fromTime, toTime, limit, offset):
-    self._oprot.writeMessageBegin('searchExperimentsByCreationTimeWithPagination', TMessageType.CALL, self._seqid)
-    args = searchExperimentsByCreationTimeWithPagination_args()
+  def send_searchExperimentsByCreationTime(self, authzToken, gatewayId, userName, fromTime, toTime, limit, offset):
+    self._oprot.writeMessageBegin('searchExperimentsByCreationTime', TMessageType.CALL, self._seqid)
+    args = searchExperimentsByCreationTime_args()
     args.authzToken = authzToken
     args.gatewayId = gatewayId
     args.userName = userName
@@ -3776,7 +3171,7 @@ class Client(Iface):
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_searchExperimentsByCreationTimeWithPagination(self):
+  def recv_searchExperimentsByCreationTime(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -3784,7 +3179,7 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = searchExperimentsByCreationTimeWithPagination_result()
+    result = searchExperimentsByCreationTime_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
@@ -3797,7 +3192,7 @@ class Client(Iface):
       raise result.ase
     if result.ae is not None:
       raise result.ae
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchExperimentsByCreationTimeWithPagination failed: unknown result");
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchExperimentsByCreationTime failed: unknown result");
 
   def searchExperiments(self, authzToken, gatewayId, userName, filters, limit, offset):
     """
@@ -3916,55 +3311,9 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getExperimentStatistics failed: unknown result");
 
-  def getAllExperimentsInProject(self, projectId):
+  def getExperimentsInProject(self, authzToken, projectId, limit, offset):
     """
-    Get all Experiments within a Project
-
-    @param projectId
-          Identifier of the project
-    @deprecated
-          Instead use  getAllExperimentsInProjectWithPagination
-
-    Parameters:
-     - projectId
-    """
-    self.send_getAllExperimentsInProject(projectId)
-    return self.recv_getAllExperimentsInProject()
-
-  def send_getAllExperimentsInProject(self, projectId):
-    self._oprot.writeMessageBegin('getAllExperimentsInProject', TMessageType.CALL, self._seqid)
-    args = getAllExperimentsInProject_args()
-    args.projectId = projectId
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_getAllExperimentsInProject(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = getAllExperimentsInProject_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.ire is not None:
-      raise result.ire
-    if result.ace is not None:
-      raise result.ace
-    if result.ase is not None:
-      raise result.ase
-    if result.pnfe is not None:
-      raise result.pnfe
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllExperimentsInProject failed: unknown result");
-
-  def getAllExperimentsInProjectWithPagination(self, authzToken, projectId, limit, offset):
-    """
-    Get all Experiments within project with pagination. Results will be sorted
+    Get Experiments within project with pagination. Results will be sorted
     based on creation time DESC
 
     @param projectId
@@ -3980,12 +3329,12 @@ class Client(Iface):
      - limit
      - offset
     """
-    self.send_getAllExperimentsInProjectWithPagination(authzToken, projectId, limit, offset)
-    return self.recv_getAllExperimentsInProjectWithPagination()
+    self.send_getExperimentsInProject(authzToken, projectId, limit, offset)
+    return self.recv_getExperimentsInProject()
 
-  def send_getAllExperimentsInProjectWithPagination(self, authzToken, projectId, limit, offset):
-    self._oprot.writeMessageBegin('getAllExperimentsInProjectWithPagination', TMessageType.CALL, self._seqid)
-    args = getAllExperimentsInProjectWithPagination_args()
+  def send_getExperimentsInProject(self, authzToken, projectId, limit, offset):
+    self._oprot.writeMessageBegin('getExperimentsInProject', TMessageType.CALL, self._seqid)
+    args = getExperimentsInProject_args()
     args.authzToken = authzToken
     args.projectId = projectId
     args.limit = limit
@@ -3994,7 +3343,7 @@ class Client(Iface):
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_getAllExperimentsInProjectWithPagination(self):
+  def recv_getExperimentsInProject(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -4002,7 +3351,7 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = getAllExperimentsInProjectWithPagination_result()
+    result = getExperimentsInProject_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
@@ -4017,59 +3366,11 @@ class Client(Iface):
       raise result.pnfe
     if result.ae is not None:
       raise result.ae
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllExperimentsInProjectWithPagination failed: unknown result");
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getExperimentsInProject failed: unknown result");
 
-  def getAllUserExperiments(self, gatewayId, userName):
+  def getUserExperiments(self, authzToken, gatewayId, userName, limit, offset):
     """
-    Get all Experiments by user
-
-    @param gatewayId
-          Identifier of the requesting gateway
-    @param userName
-          Username of the requested user
-    @deprecated
-          Instead use getAllUserExperimentsWithPagination
-
-    Parameters:
-     - gatewayId
-     - userName
-    """
-    self.send_getAllUserExperiments(gatewayId, userName)
-    return self.recv_getAllUserExperiments()
-
-  def send_getAllUserExperiments(self, gatewayId, userName):
-    self._oprot.writeMessageBegin('getAllUserExperiments', TMessageType.CALL, self._seqid)
-    args = getAllUserExperiments_args()
-    args.gatewayId = gatewayId
-    args.userName = userName
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_getAllUserExperiments(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = getAllUserExperiments_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.ire is not None:
-      raise result.ire
-    if result.ace is not None:
-      raise result.ace
-    if result.ase is not None:
-      raise result.ase
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllUserExperiments failed: unknown result");
-
-  def getAllUserExperimentsWithPagination(self, authzToken, gatewayId, userName, limit, offset):
-    """
-    Get all Experiments by user pagination. Results will be sorted
+    Get experiments by user with pagination. Results will be sorted
     based on creation time DESC
 
     @param gatewayId
@@ -4088,12 +3389,12 @@ class Client(Iface):
      - limit
      - offset
     """
-    self.send_getAllUserExperimentsWithPagination(authzToken, gatewayId, userName, limit, offset)
-    return self.recv_getAllUserExperimentsWithPagination()
+    self.send_getUserExperiments(authzToken, gatewayId, userName, limit, offset)
+    return self.recv_getUserExperiments()
 
-  def send_getAllUserExperimentsWithPagination(self, authzToken, gatewayId, userName, limit, offset):
-    self._oprot.writeMessageBegin('getAllUserExperimentsWithPagination', TMessageType.CALL, self._seqid)
-    args = getAllUserExperimentsWithPagination_args()
+  def send_getUserExperiments(self, authzToken, gatewayId, userName, limit, offset):
+    self._oprot.writeMessageBegin('getUserExperiments', TMessageType.CALL, self._seqid)
+    args = getUserExperiments_args()
     args.authzToken = authzToken
     args.gatewayId = gatewayId
     args.userName = userName
@@ -4103,7 +3404,7 @@ class Client(Iface):
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_getAllUserExperimentsWithPagination(self):
+  def recv_getUserExperiments(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -4111,7 +3412,7 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = getAllUserExperimentsWithPagination_result()
+    result = getUserExperiments_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
@@ -4124,7 +3425,7 @@ class Client(Iface):
       raise result.ase
     if result.ae is not None:
       raise result.ae
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllUserExperimentsWithPagination failed: unknown result");
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getUserExperiments failed: unknown result");
 
   def createExperiment(self, authzToken, gatewayId, experiment):
     """
@@ -8816,28 +8117,18 @@ class Processor(Iface, TProcessor):
     self._processMap["updateProject"] = Processor.process_updateProject
     self._processMap["getProject"] = Processor.process_getProject
     self._processMap["deleteProject"] = Processor.process_deleteProject
-    self._processMap["getAllUserProjects"] = Processor.process_getAllUserProjects
-    self._processMap["getAllUserProjectsWithPagination"] = Processor.process_getAllUserProjectsWithPagination
+    self._processMap["getUserProjects"] = Processor.process_getUserProjects
     self._processMap["searchProjectsByProjectName"] = Processor.process_searchProjectsByProjectName
-    self._processMap["searchProjectsByProjectNameWithPagination"] = Processor.process_searchProjectsByProjectNameWithPagination
     self._processMap["searchProjectsByProjectDesc"] = Processor.process_searchProjectsByProjectDesc
-    self._processMap["searchProjectsByProjectDescWithPagination"] = Processor.process_searchProjectsByProjectDescWithPagination
     self._processMap["searchExperimentsByName"] = Processor.process_searchExperimentsByName
-    self._processMap["searchExperimentsByNameWithPagination"] = Processor.process_searchExperimentsByNameWithPagination
     self._processMap["searchExperimentsByDesc"] = Processor.process_searchExperimentsByDesc
-    self._processMap["searchExperimentsByDescWithPagination"] = Processor.process_searchExperimentsByDescWithPagination
     self._processMap["searchExperimentsByApplication"] = Processor.process_searchExperimentsByApplication
-    self._processMap["searchExperimentsByApplicationWithPagination"] = Processor.process_searchExperimentsByApplicationWithPagination
     self._processMap["searchExperimentsByStatus"] = Processor.process_searchExperimentsByStatus
-    self._processMap["searchExperimentsByStatusWithPagination"] = Processor.process_searchExperimentsByStatusWithPagination
     self._processMap["searchExperimentsByCreationTime"] = Processor.process_searchExperimentsByCreationTime
-    self._processMap["searchExperimentsByCreationTimeWithPagination"] = Processor.process_searchExperimentsByCreationTimeWithPagination
     self._processMap["searchExperiments"] = Processor.process_searchExperiments
     self._processMap["getExperimentStatistics"] = Processor.process_getExperimentStatistics
-    self._processMap["getAllExperimentsInProject"] = Processor.process_getAllExperimentsInProject
-    self._processMap["getAllExperimentsInProjectWithPagination"] = Processor.process_getAllExperimentsInProjectWithPagination
-    self._processMap["getAllUserExperiments"] = Processor.process_getAllUserExperiments
-    self._processMap["getAllUserExperimentsWithPagination"] = Processor.process_getAllUserExperimentsWithPagination
+    self._processMap["getExperimentsInProject"] = Processor.process_getExperimentsInProject
+    self._processMap["getUserExperiments"] = Processor.process_getUserExperiments
     self._processMap["createExperiment"] = Processor.process_createExperiment
     self._processMap["getExperiment"] = Processor.process_getExperiment
     self._processMap["updateExperiment"] = Processor.process_updateExperiment
@@ -9225,31 +8516,13 @@ class Processor(Iface, TProcessor):
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_getAllUserProjects(self, seqid, iprot, oprot):
-    args = getAllUserProjects_args()
+  def process_getUserProjects(self, seqid, iprot, oprot):
+    args = getUserProjects_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = getAllUserProjects_result()
+    result = getUserProjects_result()
     try:
-      result.success = self._handler.getAllUserProjects(args.gatewayId, args.userName)
-    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
-      result.ire = ire
-    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
-      result.ace = ace
-    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
-      result.ase = ase
-    oprot.writeMessageBegin("getAllUserProjects", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_getAllUserProjectsWithPagination(self, seqid, iprot, oprot):
-    args = getAllUserProjectsWithPagination_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = getAllUserProjectsWithPagination_result()
-    try:
-      result.success = self._handler.getAllUserProjectsWithPagination(args.authzToken, args.gatewayId, args.userName, args.limit, args.offset)
+      result.success = self._handler.getUserProjects(args.authzToken, args.gatewayId, args.userName, args.limit, args.offset)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -9258,7 +8531,7 @@ class Processor(Iface, TProcessor):
       result.ase = ase
     except apache.airavata.api.error.ttypes.AuthorizationException, ae:
       result.ae = ae
-    oprot.writeMessageBegin("getAllUserProjectsWithPagination", TMessageType.REPLY, seqid)
+    oprot.writeMessageBegin("getUserProjects", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -9269,25 +8542,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = searchProjectsByProjectName_result()
     try:
-      result.success = self._handler.searchProjectsByProjectName(args.gatewayId, args.userName, args.projectName)
-    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
-      result.ire = ire
-    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
-      result.ace = ace
-    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
-      result.ase = ase
-    oprot.writeMessageBegin("searchProjectsByProjectName", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_searchProjectsByProjectNameWithPagination(self, seqid, iprot, oprot):
-    args = searchProjectsByProjectNameWithPagination_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = searchProjectsByProjectNameWithPagination_result()
-    try:
-      result.success = self._handler.searchProjectsByProjectNameWithPagination(args.authzToken, args.gatewayId, args.userName, args.projectName, args.limit, args.offset)
+      result.success = self._handler.searchProjectsByProjectName(args.authzToken, args.gatewayId, args.userName, args.projectName, args.limit, args.offset)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -9296,7 +8551,7 @@ class Processor(Iface, TProcessor):
       result.ase = ase
     except apache.airavata.api.error.ttypes.AuthorizationException, ae:
       result.ae = ae
-    oprot.writeMessageBegin("searchProjectsByProjectNameWithPagination", TMessageType.REPLY, seqid)
+    oprot.writeMessageBegin("searchProjectsByProjectName", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -9307,25 +8562,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = searchProjectsByProjectDesc_result()
     try:
-      result.success = self._handler.searchProjectsByProjectDesc(args.gatewayId, args.userName, args.description)
-    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
-      result.ire = ire
-    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
-      result.ace = ace
-    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
-      result.ase = ase
-    oprot.writeMessageBegin("searchProjectsByProjectDesc", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_searchProjectsByProjectDescWithPagination(self, seqid, iprot, oprot):
-    args = searchProjectsByProjectDescWithPagination_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = searchProjectsByProjectDescWithPagination_result()
-    try:
-      result.success = self._handler.searchProjectsByProjectDescWithPagination(args.authzToken, args.gatewayId, args.userName, args.description, args.limit, args.offset)
+      result.success = self._handler.searchProjectsByProjectDesc(args.authzToken, args.gatewayId, args.userName, args.description, args.limit, args.offset)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -9334,7 +8571,7 @@ class Processor(Iface, TProcessor):
       result.ase = ase
     except apache.airavata.api.error.ttypes.AuthorizationException, ae:
       result.ae = ae
-    oprot.writeMessageBegin("searchProjectsByProjectDescWithPagination", TMessageType.REPLY, seqid)
+    oprot.writeMessageBegin("searchProjectsByProjectDesc", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -9345,25 +8582,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = searchExperimentsByName_result()
     try:
-      result.success = self._handler.searchExperimentsByName(args.gatewayId, args.userName, args.expName)
-    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
-      result.ire = ire
-    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
-      result.ace = ace
-    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
-      result.ase = ase
-    oprot.writeMessageBegin("searchExperimentsByName", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_searchExperimentsByNameWithPagination(self, seqid, iprot, oprot):
-    args = searchExperimentsByNameWithPagination_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = searchExperimentsByNameWithPagination_result()
-    try:
-      result.success = self._handler.searchExperimentsByNameWithPagination(args.authzToken, args.gatewayId, args.userName, args.expName, args.limit, args.offset)
+      result.success = self._handler.searchExperimentsByName(args.authzToken, args.gatewayId, args.userName, args.expName, args.limit, args.offset)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -9372,7 +8591,7 @@ class Processor(Iface, TProcessor):
       result.ase = ase
     except apache.airavata.api.error.ttypes.AuthorizationException, ae:
       result.ae = ae
-    oprot.writeMessageBegin("searchExperimentsByNameWithPagination", TMessageType.REPLY, seqid)
+    oprot.writeMessageBegin("searchExperimentsByName", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -9383,25 +8602,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = searchExperimentsByDesc_result()
     try:
-      result.success = self._handler.searchExperimentsByDesc(args.gatewayId, args.userName, args.description)
-    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
-      result.ire = ire
-    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
-      result.ace = ace
-    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
-      result.ase = ase
-    oprot.writeMessageBegin("searchExperimentsByDesc", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_searchExperimentsByDescWithPagination(self, seqid, iprot, oprot):
-    args = searchExperimentsByDescWithPagination_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = searchExperimentsByDescWithPagination_result()
-    try:
-      result.success = self._handler.searchExperimentsByDescWithPagination(args.authzToken, args.gatewayId, args.userName, args.description, args.limit, args.offset)
+      result.success = self._handler.searchExperimentsByDesc(args.authzToken, args.gatewayId, args.userName, args.description, args.limit, args.offset)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -9410,7 +8611,7 @@ class Processor(Iface, TProcessor):
       result.ase = ase
     except apache.airavata.api.error.ttypes.AuthorizationException, ae:
       result.ae = ae
-    oprot.writeMessageBegin("searchExperimentsByDescWithPagination", TMessageType.REPLY, seqid)
+    oprot.writeMessageBegin("searchExperimentsByDesc", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -9421,25 +8622,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = searchExperimentsByApplication_result()
     try:
-      result.success = self._handler.searchExperimentsByApplication(args.gatewayId, args.userName, args.applicationId)
-    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
-      result.ire = ire
-    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
-      result.ace = ace
-    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
-      result.ase = ase
-    oprot.writeMessageBegin("searchExperimentsByApplication", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_searchExperimentsByApplicationWithPagination(self, seqid, iprot, oprot):
-    args = searchExperimentsByApplicationWithPagination_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = searchExperimentsByApplicationWithPagination_result()
-    try:
-      result.success = self._handler.searchExperimentsByApplicationWithPagination(args.authzToken, args.gatewayId, args.userName, args.applicationId, args.limit, args.offset)
+      result.success = self._handler.searchExperimentsByApplication(args.authzToken, args.gatewayId, args.userName, args.applicationId, args.limit, args.offset)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -9448,7 +8631,7 @@ class Processor(Iface, TProcessor):
       result.ase = ase
     except apache.airavata.api.error.ttypes.AuthorizationException, ae:
       result.ae = ae
-    oprot.writeMessageBegin("searchExperimentsByApplicationWithPagination", TMessageType.REPLY, seqid)
+    oprot.writeMessageBegin("searchExperimentsByApplication", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -9459,25 +8642,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = searchExperimentsByStatus_result()
     try:
-      result.success = self._handler.searchExperimentsByStatus(args.gatewayId, args.userName, args.experimentState)
-    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
-      result.ire = ire
-    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
-      result.ace = ace
-    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
-      result.ase = ase
-    oprot.writeMessageBegin("searchExperimentsByStatus", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_searchExperimentsByStatusWithPagination(self, seqid, iprot, oprot):
-    args = searchExperimentsByStatusWithPagination_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = searchExperimentsByStatusWithPagination_result()
-    try:
-      result.success = self._handler.searchExperimentsByStatusWithPagination(args.authzToken, args.gatewayId, args.userName, args.experimentState, args.limit, args.offset)
+      result.success = self._handler.searchExperimentsByStatus(args.authzToken, args.gatewayId, args.userName, args.experimentState, args.limit, args.offset)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -9486,7 +8651,7 @@ class Processor(Iface, TProcessor):
       result.ase = ase
     except apache.airavata.api.error.ttypes.AuthorizationException, ae:
       result.ae = ae
-    oprot.writeMessageBegin("searchExperimentsByStatusWithPagination", TMessageType.REPLY, seqid)
+    oprot.writeMessageBegin("searchExperimentsByStatus", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -9497,25 +8662,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = searchExperimentsByCreationTime_result()
     try:
-      result.success = self._handler.searchExperimentsByCreationTime(args.gatewayId, args.userName, args.fromTime, args.toTime)
-    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
-      result.ire = ire
-    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
-      result.ace = ace
-    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
-      result.ase = ase
-    oprot.writeMessageBegin("searchExperimentsByCreationTime", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_searchExperimentsByCreationTimeWithPagination(self, seqid, iprot, oprot):
-    args = searchExperimentsByCreationTimeWithPagination_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = searchExperimentsByCreationTimeWithPagination_result()
-    try:
-      result.success = self._handler.searchExperimentsByCreationTimeWithPagination(args.authzToken, args.gatewayId, args.userName, args.fromTime, args.toTime, args.limit, args.offset)
+      result.success = self._handler.searchExperimentsByCreationTime(args.authzToken, args.gatewayId, args.userName, args.fromTime, args.toTime, args.limit, args.offset)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -9524,7 +8671,7 @@ class Processor(Iface, TProcessor):
       result.ase = ase
     except apache.airavata.api.error.ttypes.AuthorizationException, ae:
       result.ae = ae
-    oprot.writeMessageBegin("searchExperimentsByCreationTimeWithPagination", TMessageType.REPLY, seqid)
+    oprot.writeMessageBegin("searchExperimentsByCreationTime", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -9569,33 +8716,13 @@ class Processor(Iface, TProcessor):
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_getAllExperimentsInProject(self, seqid, iprot, oprot):
-    args = getAllExperimentsInProject_args()
+  def process_getExperimentsInProject(self, seqid, iprot, oprot):
+    args = getExperimentsInProject_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = getAllExperimentsInProject_result()
+    result = getExperimentsInProject_result()
     try:
-      result.success = self._handler.getAllExperimentsInProject(args.projectId)
-    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
-      result.ire = ire
-    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
-      result.ace = ace
-    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
-      result.ase = ase
-    except apache.airavata.api.error.ttypes.ProjectNotFoundException, pnfe:
-      result.pnfe = pnfe
-    oprot.writeMessageBegin("getAllExperimentsInProject", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_getAllExperimentsInProjectWithPagination(self, seqid, iprot, oprot):
-    args = getAllExperimentsInProjectWithPagination_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = getAllExperimentsInProjectWithPagination_result()
-    try:
-      result.success = self._handler.getAllExperimentsInProjectWithPagination(args.authzToken, args.projectId, args.limit, args.offset)
+      result.success = self._handler.getExperimentsInProject(args.authzToken, args.projectId, args.limit, args.offset)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -9606,36 +8733,18 @@ class Processor(Iface, TProcessor):
       result.pnfe = pnfe
     except apache.airavata.api.error.ttypes.AuthorizationException, ae:
       result.ae = ae
-    oprot.writeMessageBegin("getAllExperimentsInProjectWithPagination", TMessageType.REPLY, seqid)
+    oprot.writeMessageBegin("getExperimentsInProject", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_getAllUserExperiments(self, seqid, iprot, oprot):
-    args = getAllUserExperiments_args()
+  def process_getUserExperiments(self, seqid, iprot, oprot):
+    args = getUserExperiments_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = getAllUserExperiments_result()
+    result = getUserExperiments_result()
     try:
-      result.success = self._handler.getAllUserExperiments(args.gatewayId, args.userName)
-    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
-      result.ire = ire
-    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
-      result.ace = ace
-    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
-      result.ase = ase
-    oprot.writeMessageBegin("getAllUserExperiments", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_getAllUserExperimentsWithPagination(self, seqid, iprot, oprot):
-    args = getAllUserExperimentsWithPagination_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = getAllUserExperimentsWithPagination_result()
-    try:
-      result.success = self._handler.getAllUserExperimentsWithPagination(args.authzToken, args.gatewayId, args.userName, args.limit, args.offset)
+      result.success = self._handler.getUserExperiments(args.authzToken, args.gatewayId, args.userName, args.limit, args.offset)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -9644,7 +8753,7 @@ class Processor(Iface, TProcessor):
       result.ase = ase
     except apache.airavata.api.error.ttypes.AuthorizationException, ae:
       result.ae = ae
-    oprot.writeMessageBegin("getAllUserExperimentsWithPagination", TMessageType.REPLY, seqid)
+    oprot.writeMessageBegin("getUserExperiments", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -14307,204 +13416,7 @@ class deleteProject_result:
   def __ne__(self, other):
     return not (self == other)
 
-class getAllUserProjects_args:
-  """
-  Attributes:
-   - gatewayId
-   - userName
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'gatewayId', None, None, ), # 1
-    (2, TType.STRING, 'userName', None, None, ), # 2
-  )
-
-  def __init__(self, gatewayId=None, userName=None,):
-    self.gatewayId = gatewayId
-    self.userName = userName
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.gatewayId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.userName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getAllUserProjects_args')
-    if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 1)
-      oprot.writeString(self.gatewayId)
-      oprot.writeFieldEnd()
-    if self.userName is not None:
-      oprot.writeFieldBegin('userName', TType.STRING, 2)
-      oprot.writeString(self.userName)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.gatewayId is None:
-      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
-    if self.userName is None:
-      raise TProtocol.TProtocolException(message='Required field userName is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.gatewayId)
-    value = (value * 31) ^ hash(self.userName)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getAllUserProjects_result:
-  """
-  Attributes:
-   - success
-   - ire
-   - ace
-   - ase
-  """
-
-  thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.ttypes.Project, apache.airavata.model.workspace.ttypes.Project.thrift_spec)), None, ), # 0
-    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
-    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
-  )
-
-  def __init__(self, success=None, ire=None, ace=None, ase=None,):
-    self.success = success
-    self.ire = ire
-    self.ace = ace
-    self.ase = ase
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.LIST:
-          self.success = []
-          (_etype19, _size16) = iprot.readListBegin()
-          for _i20 in xrange(_size16):
-            _elem21 = apache.airavata.model.workspace.ttypes.Project()
-            _elem21.read(iprot)
-            self.success.append(_elem21)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
-          self.ire.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
-          self.ace.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRUCT:
-          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
-          self.ase.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getAllUserProjects_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.LIST, 0)
-      oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter22 in self.success:
-        iter22.write(oprot)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
-    if self.ire is not None:
-      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-      self.ire.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ace is not None:
-      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
-      self.ace.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ase is not None:
-      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
-      self.ase.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.ire)
-    value = (value * 31) ^ hash(self.ace)
-    value = (value * 31) ^ hash(self.ase)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getAllUserProjectsWithPagination_args:
+class getUserProjects_args:
   """
   Attributes:
    - authzToken
@@ -14574,7 +13486,7 @@ class getAllUserProjectsWithPagination_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('getAllUserProjectsWithPagination_args')
+    oprot.writeStructBegin('getUserProjects_args')
     if self.authzToken is not None:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
@@ -14632,7 +13544,7 @@ class getAllUserProjectsWithPagination_args:
   def __ne__(self, other):
     return not (self == other)
 
-class getAllUserProjectsWithPagination_result:
+class getUserProjects_result:
   """
   Attributes:
    - success
@@ -14669,11 +13581,11 @@ class getAllUserProjectsWithPagination_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype26, _size23) = iprot.readListBegin()
-          for _i27 in xrange(_size23):
-            _elem28 = apache.airavata.model.workspace.ttypes.Project()
-            _elem28.read(iprot)
-            self.success.append(_elem28)
+          (_etype19, _size16) = iprot.readListBegin()
+          for _i20 in xrange(_size16):
+            _elem21 = apache.airavata.model.workspace.ttypes.Project()
+            _elem21.read(iprot)
+            self.success.append(_elem21)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -14710,12 +13622,12 @@ class getAllUserProjectsWithPagination_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('getAllUserProjectsWithPagination_result')
+    oprot.writeStructBegin('getUserProjects_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter29 in self.success:
-        iter29.write(oprot)
+      for iter22 in self.success:
+        iter22.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -14762,218 +13674,6 @@ class getAllUserProjectsWithPagination_result:
     return not (self == other)
 
 class searchProjectsByProjectName_args:
-  """
-  Attributes:
-   - gatewayId
-   - userName
-   - projectName
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'gatewayId', None, None, ), # 1
-    (2, TType.STRING, 'userName', None, None, ), # 2
-    (3, TType.STRING, 'projectName', None, None, ), # 3
-  )
-
-  def __init__(self, gatewayId=None, userName=None, projectName=None,):
-    self.gatewayId = gatewayId
-    self.userName = userName
-    self.projectName = projectName
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.gatewayId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.userName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.projectName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('searchProjectsByProjectName_args')
-    if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 1)
-      oprot.writeString(self.gatewayId)
-      oprot.writeFieldEnd()
-    if self.userName is not None:
-      oprot.writeFieldBegin('userName', TType.STRING, 2)
-      oprot.writeString(self.userName)
-      oprot.writeFieldEnd()
-    if self.projectName is not None:
-      oprot.writeFieldBegin('projectName', TType.STRING, 3)
-      oprot.writeString(self.projectName)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.gatewayId is None:
-      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
-    if self.userName is None:
-      raise TProtocol.TProtocolException(message='Required field userName is unset!')
-    if self.projectName is None:
-      raise TProtocol.TProtocolException(message='Required field projectName is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.gatewayId)
-    value = (value * 31) ^ hash(self.userName)
-    value = (value * 31) ^ hash(self.projectName)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class searchProjectsByProjectName_result:
-  """
-  Attributes:
-   - success
-   - ire
-   - ace
-   - ase
-  """
-
-  thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.ttypes.Project, apache.airavata.model.workspace.ttypes.Project.thrift_spec)), None, ), # 0
-    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
-    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
-  )
-
-  def __init__(self, success=None, ire=None, ace=None, ase=None,):
-    self.success = success
-    self.ire = ire
-    self.ace = ace
-    self.ase = ase
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.LIST:
-          self.success = []
-          (_etype33, _size30) = iprot.readListBegin()
-          for _i34 in xrange(_size30):
-            _elem35 = apache.airavata.model.workspace.ttypes.Project()
-            _elem35.read(iprot)
-            self.success.append(_elem35)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
-          self.ire.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
-          self.ace.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRUCT:
-          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
-          self.ase.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('searchProjectsByProjectName_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.LIST, 0)
-      oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter36 in self.success:
-        iter36.write(oprot)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
-    if self.ire is not None:
-      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-      self.ire.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ace is not None:
-      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
-      self.ace.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ase is not None:
-      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
-      self.ase.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.ire)
-    value = (value * 31) ^ hash(self.ace)
-    value = (value * 31) ^ hash(self.ase)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class searchProjectsByProjectNameWithPagination_args:
   """
   Attributes:
    - authzToken
@@ -15051,7 +13751,7 @@ class searchProjectsByProjectNameWithPagination_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('searchProjectsByProjectNameWithPagination_args')
+    oprot.writeStructBegin('searchProjectsByProjectName_args')
     if self.authzToken is not None:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
@@ -15116,7 +13816,7 @@ class searchProjectsByProjectNameWithPagination_args:
   def __ne__(self, other):
     return not (self == other)
 
-class searchProjectsByProjectNameWithPagination_result:
+class searchProjectsByProjectName_result:
   """
   Attributes:
    - success
@@ -15153,11 +13853,11 @@ class searchProjectsByProjectNameWithPagination_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype40, _size37) = iprot.readListBegin()
-          for _i41 in xrange(_size37):
-            _elem42 = apache.airavata.model.workspace.ttypes.Project()
-            _elem42.read(iprot)
-            self.success.append(_elem42)
+          (_etype26, _size23) = iprot.readListBegin()
+          for _i27 in xrange(_size23):
+            _elem28 = apache.airavata.model.workspace.ttypes.Project()
+            _elem28.read(iprot)
+            self.success.append(_elem28)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -15194,12 +13894,12 @@ class searchProjectsByProjectNameWithPagination_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('searchProjectsByProjectNameWithPagination_result')
+    oprot.writeStructBegin('searchProjectsByProjectName_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter43 in self.success:
-        iter43.write(oprot)
+      for iter29 in self.success:
+        iter29.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -15246,218 +13946,6 @@ class searchProjectsByProjectNameWithPagination_result:
     return not (self == other)
 
 class searchProjectsByProjectDesc_args:
-  """
-  Attributes:
-   - gatewayId
-   - userName
-   - description
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'gatewayId', None, None, ), # 1
-    (2, TType.STRING, 'userName', None, None, ), # 2
-    (3, TType.STRING, 'description', None, None, ), # 3
-  )
-
-  def __init__(self, gatewayId=None, userName=None, description=None,):
-    self.gatewayId = gatewayId
-    self.userName = userName
-    self.description = description
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.gatewayId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.userName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.description = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('searchProjectsByProjectDesc_args')
-    if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 1)
-      oprot.writeString(self.gatewayId)
-      oprot.writeFieldEnd()
-    if self.userName is not None:
-      oprot.writeFieldBegin('userName', TType.STRING, 2)
-      oprot.writeString(self.userName)
-      oprot.writeFieldEnd()
-    if self.description is not None:
-      oprot.writeFieldBegin('description', TType.STRING, 3)
-      oprot.writeString(self.description)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.gatewayId is None:
-      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
-    if self.userName is None:
-      raise TProtocol.TProtocolException(message='Required field userName is unset!')
-    if self.description is None:
-      raise TProtocol.TProtocolException(message='Required field description is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.gatewayId)
-    value = (value * 31) ^ hash(self.userName)
-    value = (value * 31) ^ hash(self.description)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class searchProjectsByProjectDesc_result:
-  """
-  Attributes:
-   - success
-   - ire
-   - ace
-   - ase
-  """
-
-  thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.ttypes.Project, apache.airavata.model.workspace.ttypes.Project.thrift_spec)), None, ), # 0
-    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
-    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
-  )
-
-  def __init__(self, success=None, ire=None, ace=None, ase=None,):
-    self.success = success
-    self.ire = ire
-    self.ace = ace
-    self.ase = ase
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.LIST:
-          self.success = []
-          (_etype47, _size44) = iprot.readListBegin()
-          for _i48 in xrange(_size44):
-            _elem49 = apache.airavata.model.workspace.ttypes.Project()
-            _elem49.read(iprot)
-            self.success.append(_elem49)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
-          self.ire.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
-          self.ace.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRUCT:
-          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
-          self.ase.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('searchProjectsByProjectDesc_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.LIST, 0)
-      oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter50 in self.success:
-        iter50.write(oprot)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
-    if self.ire is not None:
-      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-      self.ire.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ace is not None:
-      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
-      self.ace.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ase is not None:
-      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
-      self.ase.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.ire)
-    value = (value * 31) ^ hash(self.ace)
-    value = (value * 31) ^ hash(self.ase)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class searchProjectsByProjectDescWithPagination_args:
   """
   Attributes:
    - authzToken
@@ -15535,7 +14023,7 @@ class searchProjectsByProjectDescWithPagination_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('searchProjectsByProjectDescWithPagination_args')
+    oprot.writeStructBegin('searchProjectsByProjectDesc_args')
     if self.authzToken is not None:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
@@ -15600,7 +14088,7 @@ class searchProjectsByProjectDescWithPagination_args:
   def __ne__(self, other):
     return not (self == other)
 
-class searchProjectsByProjectDescWithPagination_result:
+class searchProjectsByProjectDesc_result:
   """
   Attributes:
    - success
@@ -15637,11 +14125,11 @@ class searchProjectsByProjectDescWithPagination_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype54, _size51) = iprot.readListBegin()
-          for _i55 in xrange(_size51):
-            _elem56 = apache.airavata.model.workspace.ttypes.Project()
-            _elem56.read(iprot)
-            self.success.append(_elem56)
+          (_etype33, _size30) = iprot.readListBegin()
+          for _i34 in xrange(_size30):
+            _elem35 = apache.airavata.model.workspace.ttypes.Project()
+            _elem35.read(iprot)
+            self.success.append(_elem35)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -15678,12 +14166,12 @@ class searchProjectsByProjectDescWithPagination_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('searchProjectsByProjectDescWithPagination_result')
+    oprot.writeStructBegin('searchProjectsByProjectDesc_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter57 in self.success:
-        iter57.write(oprot)
+      for iter36 in self.success:
+        iter36.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -15730,218 +14218,6 @@ class searchProjectsByProjectDescWithPagination_result:
     return not (self == other)
 
 class searchExperimentsByName_args:
-  """
-  Attributes:
-   - gatewayId
-   - userName
-   - expName
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'gatewayId', None, None, ), # 1
-    (2, TType.STRING, 'userName', None, None, ), # 2
-    (3, TType.STRING, 'expName', None, None, ), # 3
-  )
-
-  def __init__(self, gatewayId=None, userName=None, expName=None,):
-    self.gatewayId = gatewayId
-    self.userName = userName
-    self.expName = expName
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.gatewayId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.userName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.expName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('searchExperimentsByName_args')
-    if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 1)
-      oprot.writeString(self.gatewayId)
-      oprot.writeFieldEnd()
-    if self.userName is not None:
-      oprot.writeFieldBegin('userName', TType.STRING, 2)
-      oprot.writeString(self.userName)
-      oprot.writeFieldEnd()
-    if self.expName is not None:
-      oprot.writeFieldBegin('expName', TType.STRING, 3)
-      oprot.writeString(self.expName)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.gatewayId is None:
-      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
-    if self.userName is None:
-      raise TProtocol.TProtocolException(message='Required field userName is unset!')
-    if self.expName is None:
-      raise TProtocol.TProtocolException(message='Required field expName is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.gatewayId)
-    value = (value * 31) ^ hash(self.userName)
-    value = (value * 31) ^ hash(self.expName)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class searchExperimentsByName_result:
-  """
-  Attributes:
-   - success
-   - ire
-   - ace
-   - ase
-  """
-
-  thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentSummaryModel, apache.airavata.model.experiment.ttypes.ExperimentSummaryModel.thrift_spec)), None, ), # 0
-    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
-    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
-  )
-
-  def __init__(self, success=None, ire=None, ace=None, ase=None,):
-    self.success = success
-    self.ire = ire
-    self.ace = ace
-    self.ase = ase
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.LIST:
-          self.success = []
-          (_etype61, _size58) = iprot.readListBegin()
-          for _i62 in xrange(_size58):
-            _elem63 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
-            _elem63.read(iprot)
-            self.success.append(_elem63)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
-          self.ire.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
-          self.ace.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRUCT:
-          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
-          self.ase.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('searchExperimentsByName_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.LIST, 0)
-      oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter64 in self.success:
-        iter64.write(oprot)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
-    if self.ire is not None:
-      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-      self.ire.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ace is not None:
-      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
-      self.ace.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ase is not None:
-      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
-      self.ase.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.ire)
-    value = (value * 31) ^ hash(self.ace)
-    value = (value * 31) ^ hash(self.ase)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class searchExperimentsByNameWithPagination_args:
   """
   Attributes:
    - authzToken
@@ -16019,7 +14295,7 @@ class searchExperimentsByNameWithPagination_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('searchExperimentsByNameWithPagination_args')
+    oprot.writeStructBegin('searchExperimentsByName_args')
     if self.authzToken is not None:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
@@ -16084,7 +14360,7 @@ class searchExperimentsByNameWithPagination_args:
   def __ne__(self, other):
     return not (self == other)
 
-class searchExperimentsByNameWithPagination_result:
+class searchExperimentsByName_result:
   """
   Attributes:
    - success
@@ -16121,11 +14397,11 @@ class searchExperimentsByNameWithPagination_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype68, _size65) = iprot.readListBegin()
-          for _i69 in xrange(_size65):
-            _elem70 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
-            _elem70.read(iprot)
-            self.success.append(_elem70)
+          (_etype40, _size37) = iprot.readListBegin()
+          for _i41 in xrange(_size37):
+            _elem42 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
+            _elem42.read(iprot)
+            self.success.append(_elem42)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -16162,12 +14438,12 @@ class searchExperimentsByNameWithPagination_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('searchExperimentsByNameWithPagination_result')
+    oprot.writeStructBegin('searchExperimentsByName_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter71 in self.success:
-        iter71.write(oprot)
+      for iter43 in self.success:
+        iter43.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -16214,218 +14490,6 @@ class searchExperimentsByNameWithPagination_result:
     return not (self == other)
 
 class searchExperimentsByDesc_args:
-  """
-  Attributes:
-   - gatewayId
-   - userName
-   - description
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'gatewayId', None, None, ), # 1
-    (2, TType.STRING, 'userName', None, None, ), # 2
-    (3, TType.STRING, 'description', None, None, ), # 3
-  )
-
-  def __init__(self, gatewayId=None, userName=None, description=None,):
-    self.gatewayId = gatewayId
-    self.userName = userName
-    self.description = description
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.gatewayId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.userName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.description = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('searchExperimentsByDesc_args')
-    if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 1)
-      oprot.writeString(self.gatewayId)
-      oprot.writeFieldEnd()
-    if self.userName is not None:
-      oprot.writeFieldBegin('userName', TType.STRING, 2)
-      oprot.writeString(self.userName)
-      oprot.writeFieldEnd()
-    if self.description is not None:
-      oprot.writeFieldBegin('description', TType.STRING, 3)
-      oprot.writeString(self.description)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.gatewayId is None:
-      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
-    if self.userName is None:
-      raise TProtocol.TProtocolException(message='Required field userName is unset!')
-    if self.description is None:
-      raise TProtocol.TProtocolException(message='Required field description is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.gatewayId)
-    value = (value * 31) ^ hash(self.userName)
-    value = (value * 31) ^ hash(self.description)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class searchExperimentsByDesc_result:
-  """
-  Attributes:
-   - success
-   - ire
-   - ace
-   - ase
-  """
-
-  thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentSummaryModel, apache.airavata.model.experiment.ttypes.ExperimentSummaryModel.thrift_spec)), None, ), # 0
-    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
-    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
-  )
-
-  def __init__(self, success=None, ire=None, ace=None, ase=None,):
-    self.success = success
-    self.ire = ire
-    self.ace = ace
-    self.ase = ase
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.LIST:
-          self.success = []
-          (_etype75, _size72) = iprot.readListBegin()
-          for _i76 in xrange(_size72):
-            _elem77 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
-            _elem77.read(iprot)
-            self.success.append(_elem77)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
-          self.ire.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
-          self.ace.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRUCT:
-          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
-          self.ase.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('searchExperimentsByDesc_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.LIST, 0)
-      oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter78 in self.success:
-        iter78.write(oprot)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
-    if self.ire is not None:
-      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-      self.ire.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ace is not None:
-      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
-      self.ace.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ase is not None:
-      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
-      self.ase.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.ire)
-    value = (value * 31) ^ hash(self.ace)
-    value = (value * 31) ^ hash(self.ase)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class searchExperimentsByDescWithPagination_args:
   """
   Attributes:
    - authzToken
@@ -16503,7 +14567,7 @@ class searchExperimentsByDescWithPagination_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('searchExperimentsByDescWithPagination_args')
+    oprot.writeStructBegin('searchExperimentsByDesc_args')
     if self.authzToken is not None:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
@@ -16568,7 +14632,7 @@ class searchExperimentsByDescWithPagination_args:
   def __ne__(self, other):
     return not (self == other)
 
-class searchExperimentsByDescWithPagination_result:
+class searchExperimentsByDesc_result:
   """
   Attributes:
    - success
@@ -16605,11 +14669,11 @@ class searchExperimentsByDescWithPagination_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype82, _size79) = iprot.readListBegin()
-          for _i83 in xrange(_size79):
-            _elem84 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
-            _elem84.read(iprot)
-            self.success.append(_elem84)
+          (_etype47, _size44) = iprot.readListBegin()
+          for _i48 in xrange(_size44):
+            _elem49 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
+            _elem49.read(iprot)
+            self.success.append(_elem49)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -16646,12 +14710,12 @@ class searchExperimentsByDescWithPagination_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('searchExperimentsByDescWithPagination_result')
+    oprot.writeStructBegin('searchExperimentsByDesc_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter85 in self.success:
-        iter85.write(oprot)
+      for iter50 in self.success:
+        iter50.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -16698,218 +14762,6 @@ class searchExperimentsByDescWithPagination_result:
     return not (self == other)
 
 class searchExperimentsByApplication_args:
-  """
-  Attributes:
-   - gatewayId
-   - userName
-   - applicationId
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'gatewayId', None, None, ), # 1
-    (2, TType.STRING, 'userName', None, None, ), # 2
-    (3, TType.STRING, 'applicationId', None, None, ), # 3
-  )
-
-  def __init__(self, gatewayId=None, userName=None, applicationId=None,):
-    self.gatewayId = gatewayId
-    self.userName = userName
-    self.applicationId = applicationId
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.gatewayId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.userName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.applicationId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('searchExperimentsByApplication_args')
-    if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 1)
-      oprot.writeString(self.gatewayId)
-      oprot.writeFieldEnd()
-    if self.userName is not None:
-      oprot.writeFieldBegin('userName', TType.STRING, 2)
-      oprot.writeString(self.userName)
-      oprot.writeFieldEnd()
-    if self.applicationId is not None:
-      oprot.writeFieldBegin('applicationId', TType.STRING, 3)
-      oprot.writeString(self.applicationId)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.gatewayId is None:
-      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
-    if self.userName is None:
-      raise TProtocol.TProtocolException(message='Required field userName is unset!')
-    if self.applicationId is None:
-      raise TProtocol.TProtocolException(message='Required field applicationId is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.gatewayId)
-    value = (value * 31) ^ hash(self.userName)
-    value = (value * 31) ^ hash(self.applicationId)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class searchExperimentsByApplication_result:
-  """
-  Attributes:
-   - success
-   - ire
-   - ace
-   - ase
-  """
-
-  thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentSummaryModel, apache.airavata.model.experiment.ttypes.ExperimentSummaryModel.thrift_spec)), None, ), # 0
-    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
-    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
-  )
-
-  def __init__(self, success=None, ire=None, ace=None, ase=None,):
-    self.success = success
-    self.ire = ire
-    self.ace = ace
-    self.ase = ase
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.LIST:
-          self.success = []
-          (_etype89, _size86) = iprot.readListBegin()
-          for _i90 in xrange(_size86):
-            _elem91 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
-            _elem91.read(iprot)
-            self.success.append(_elem91)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
-          self.ire.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
-          self.ace.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRUCT:
-          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
-          self.ase.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('searchExperimentsByApplication_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.LIST, 0)
-      oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter92 in self.success:
-        iter92.write(oprot)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
-    if self.ire is not None:
-      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-      self.ire.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ace is not None:
-      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
-      self.ace.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ase is not None:
-      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
-      self.ase.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.ire)
-    value = (value * 31) ^ hash(self.ace)
-    value = (value * 31) ^ hash(self.ase)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class searchExperimentsByApplicationWithPagination_args:
   """
   Attributes:
    - authzToken
@@ -16987,7 +14839,7 @@ class searchExperimentsByApplicationWithPagination_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('searchExperimentsByApplicationWithPagination_args')
+    oprot.writeStructBegin('searchExperimentsByApplication_args')
     if self.authzToken is not None:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
@@ -17052,7 +14904,7 @@ class searchExperimentsByApplicationWithPagination_args:
   def __ne__(self, other):
     return not (self == other)
 
-class searchExperimentsByApplicationWithPagination_result:
+class searchExperimentsByApplication_result:
   """
   Attributes:
    - success
@@ -17089,11 +14941,11 @@ class searchExperimentsByApplicationWithPagination_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype96, _size93) = iprot.readListBegin()
-          for _i97 in xrange(_size93):
-            _elem98 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
-            _elem98.read(iprot)
-            self.success.append(_elem98)
+          (_etype54, _size51) = iprot.readListBegin()
+          for _i55 in xrange(_size51):
+            _elem56 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
+            _elem56.read(iprot)
+            self.success.append(_elem56)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -17130,12 +14982,12 @@ class searchExperimentsByApplicationWithPagination_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('searchExperimentsByApplicationWithPagination_result')
+    oprot.writeStructBegin('searchExperimentsByApplication_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter99 in self.success:
-        iter99.write(oprot)
+      for iter57 in self.success:
+        iter57.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -17182,218 +15034,6 @@ class searchExperimentsByApplicationWithPagination_result:
     return not (self == other)
 
 class searchExperimentsByStatus_args:
-  """
-  Attributes:
-   - gatewayId
-   - userName
-   - experimentState
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'gatewayId', None, None, ), # 1
-    (2, TType.STRING, 'userName', None, None, ), # 2
-    (3, TType.I32, 'experimentState', None, None, ), # 3
-  )
-
-  def __init__(self, gatewayId=None, userName=None, experimentState=None,):
-    self.gatewayId = gatewayId
-    self.userName = userName
-    self.experimentState = experimentState
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.gatewayId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.userName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.I32:
-          self.experimentState = iprot.readI32();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('searchExperimentsByStatus_args')
-    if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 1)
-      oprot.writeString(self.gatewayId)
-      oprot.writeFieldEnd()
-    if self.userName is not None:
-      oprot.writeFieldBegin('userName', TType.STRING, 2)
-      oprot.writeString(self.userName)
-      oprot.writeFieldEnd()
-    if self.experimentState is not None:
-      oprot.writeFieldBegin('experimentState', TType.I32, 3)
-      oprot.writeI32(self.experimentState)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.gatewayId is None:
-      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
-    if self.userName is None:
-      raise TProtocol.TProtocolException(message='Required field userName is unset!')
-    if self.experimentState is None:
-      raise TProtocol.TProtocolException(message='Required field experimentState is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.gatewayId)
-    value = (value * 31) ^ hash(self.userName)
-    value = (value * 31) ^ hash(self.experimentState)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class searchExperimentsByStatus_result:
-  """
-  Attributes:
-   - success
-   - ire
-   - ace
-   - ase
-  """
-
-  thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentSummaryModel, apache.airavata.model.experiment.ttypes.ExperimentSummaryModel.thrift_spec)), None, ), # 0
-    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
-    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
-  )
-
-  def __init__(self, success=None, ire=None, ace=None, ase=None,):
-    self.success = success
-    self.ire = ire
-    self.ace = ace
-    self.ase = ase
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.LIST:
-          self.success = []
-          (_etype103, _size100) = iprot.readListBegin()
-          for _i104 in xrange(_size100):
-            _elem105 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
-            _elem105.read(iprot)
-            self.success.append(_elem105)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
-          self.ire.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
-          self.ace.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRUCT:
-          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
-          self.ase.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('searchExperimentsByStatus_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.LIST, 0)
-      oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter106 in self.success:
-        iter106.write(oprot)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
-    if self.ire is not None:
-      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-      self.ire.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ace is not None:
-      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
-      self.ace.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ase is not None:
-      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
-      self.ase.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.ire)
-    value = (value * 31) ^ hash(self.ace)
-    value = (value * 31) ^ hash(self.ase)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class searchExperimentsByStatusWithPagination_args:
   """
   Attributes:
    - authzToken
@@ -17471,7 +15111,7 @@ class searchExperimentsByStatusWithPagination_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('searchExperimentsByStatusWithPagination_args')
+    oprot.writeStructBegin('searchExperimentsByStatus_args')
     if self.authzToken is not None:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
@@ -17536,7 +15176,7 @@ class searchExperimentsByStatusWithPagination_args:
   def __ne__(self, other):
     return not (self == other)
 
-class searchExperimentsByStatusWithPagination_result:
+class searchExperimentsByStatus_result:
   """
   Attributes:
    - success
@@ -17573,11 +15213,11 @@ class searchExperimentsByStatusWithPagination_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype110, _size107) = iprot.readListBegin()
-          for _i111 in xrange(_size107):
-            _elem112 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
-            _elem112.read(iprot)
-            self.success.append(_elem112)
+          (_etype61, _size58) = iprot.readListBegin()
+          for _i62 in xrange(_size58):
+            _elem63 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
+            _elem63.read(iprot)
+            self.success.append(_elem63)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -17614,12 +15254,12 @@ class searchExperimentsByStatusWithPagination_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('searchExperimentsByStatusWithPagination_result')
+    oprot.writeStructBegin('searchExperimentsByStatus_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter113 in self.success:
-        iter113.write(oprot)
+      for iter64 in self.success:
+        iter64.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -17666,233 +15306,6 @@ class searchExperimentsByStatusWithPagination_result:
     return not (self == other)
 
 class searchExperimentsByCreationTime_args:
-  """
-  Attributes:
-   - gatewayId
-   - userName
-   - fromTime
-   - toTime
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'gatewayId', None, None, ), # 1
-    (2, TType.STRING, 'userName', None, None, ), # 2
-    (3, TType.I64, 'fromTime', None, None, ), # 3
-    (4, TType.I64, 'toTime', None, None, ), # 4
-  )
-
-  def __init__(self, gatewayId=None, userName=None, fromTime=None, toTime=None,):
-    self.gatewayId = gatewayId
-    self.userName = userName
-    self.fromTime = fromTime
-    self.toTime = toTime
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.gatewayId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.userName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.I64:
-          self.fromTime = iprot.readI64();
-        else:
-          iprot.skip(ftype)
-      elif fid == 4:
-        if ftype == TType.I64:
-          self.toTime = iprot.readI64();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('searchExperimentsByCreationTime_args')
-    if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 1)
-      oprot.writeString(self.gatewayId)
-      oprot.writeFieldEnd()
-    if self.userName is not None:
-      oprot.writeFieldBegin('userName', TType.STRING, 2)
-      oprot.writeString(self.userName)
-      oprot.writeFieldEnd()
-    if self.fromTime is not None:
-      oprot.writeFieldBegin('fromTime', TType.I64, 3)
-      oprot.writeI64(self.fromTime)
-      oprot.writeFieldEnd()
-    if self.toTime is not None:
-      oprot.writeFieldBegin('toTime', TType.I64, 4)
-      oprot.writeI64(self.toTime)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.gatewayId is None:
-      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
-    if self.userName is None:
-      raise TProtocol.TProtocolException(message='Required field userName is unset!')
-    if self.fromTime is None:
-      raise TProtocol.TProtocolException(message='Required field fromTime is unset!')
-    if self.toTime is None:
-      raise TProtocol.TProtocolException(message='Required field toTime is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.gatewayId)
-    value = (value * 31) ^ hash(self.userName)
-    value = (value * 31) ^ hash(self.fromTime)
-    value = (value * 31) ^ hash(self.toTime)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class searchExperimentsByCreationTime_result:
-  """
-  Attributes:
-   - success
-   - ire
-   - ace
-   - ase
-  """
-
-  thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentSummaryModel, apache.airavata.model.experiment.ttypes.ExperimentSummaryModel.thrift_spec)), None, ), # 0
-    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
-    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
-  )
-
-  def __init__(self, success=None, ire=None, ace=None, ase=None,):
-    self.success = success
-    self.ire = ire
-    self.ace = ace
-    self.ase = ase
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.LIST:
-          self.success = []
-          (_etype117, _size114) = iprot.readListBegin()
-          for _i118 in xrange(_size114):
-            _elem119 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
-            _elem119.read(iprot)
-            self.success.append(_elem119)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
-          self.ire.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
-          self.ace.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRUCT:
-          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
-          self.ase.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('searchExperimentsByCreationTime_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.LIST, 0)
-      oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter120 in self.success:
-        iter120.write(oprot)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
-    if self.ire is not None:
-      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-      self.ire.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ace is not None:
-      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
-      self.ace.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ase is not None:
-      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
-      self.ase.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.ire)
-    value = (value * 31) ^ hash(self.ace)
-    value = (value * 31) ^ hash(self.ase)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class searchExperimentsByCreationTimeWithPagination_args:
   """
   Attributes:
    - authzToken
@@ -17978,7 +15391,7 @@ class searchExperimentsByCreationTimeWithPagination_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('searchExperimentsByCreationTimeWithPagination_args')
+    oprot.writeStructBegin('searchExperimentsByCreationTime_args')
     if self.authzToken is not None:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
@@ -18050,7 +15463,7 @@ class searchExperimentsByCreationTimeWithPagination_args:
   def __ne__(self, other):
     return not (self == other)
 
-class searchExperimentsByCreationTimeWithPagination_result:
+class searchExperimentsByCreationTime_result:
   """
   Attributes:
    - success
@@ -18087,11 +15500,11 @@ class searchExperimentsByCreationTimeWithPagination_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype124, _size121) = iprot.readListBegin()
-          for _i125 in xrange(_size121):
-            _elem126 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
-            _elem126.read(iprot)
-            self.success.append(_elem126)
+          (_etype68, _size65) = iprot.readListBegin()
+          for _i69 in xrange(_size65):
+            _elem70 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
+            _elem70.read(iprot)
+            self.success.append(_elem70)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -18128,12 +15541,12 @@ class searchExperimentsByCreationTimeWithPagination_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('searchExperimentsByCreationTimeWithPagination_result')
+    oprot.writeStructBegin('searchExperimentsByCreationTime_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter127 in self.success:
-        iter127.write(oprot)
+      for iter71 in self.success:
+        iter71.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -18236,11 +15649,11 @@ class searchExperiments_args:
       elif fid == 4:
         if ftype == TType.MAP:
           self.filters = {}
-          (_ktype129, _vtype130, _size128 ) = iprot.readMapBegin()
-          for _i132 in xrange(_size128):
-            _key133 = iprot.readI32();
-            _val134 = iprot.readString();
-            self.filters[_key133] = _val134
+          (_ktype73, _vtype74, _size72 ) = iprot.readMapBegin()
+          for _i76 in xrange(_size72):
+            _key77 = iprot.readI32();
+            _val78 = iprot.readString();
+            self.filters[_key77] = _val78
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -18279,9 +15692,9 @@ class searchExperiments_args:
     if self.filters is not None:
       oprot.writeFieldBegin('filters', TType.MAP, 4)
       oprot.writeMapBegin(TType.I32, TType.STRING, len(self.filters))
-      for kiter135,viter136 in self.filters.items():
-        oprot.writeI32(kiter135)
-        oprot.writeString(viter136)
+      for kiter79,viter80 in self.filters.items():
+        oprot.writeI32(kiter79)
+        oprot.writeString(viter80)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.limit is not None:
@@ -18367,11 +15780,11 @@ class searchExperiments_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype140, _size137) = iprot.readListBegin()
-          for _i141 in xrange(_size137):
-            _elem142 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
-            _elem142.read(iprot)
-            self.success.append(_elem142)
+          (_etype84, _size81) = iprot.readListBegin()
+          for _i85 in xrange(_size81):
+            _elem86 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
+            _elem86.read(iprot)
+            self.success.append(_elem86)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -18412,8 +15825,8 @@ class searchExperiments_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter143 in self.success:
-        iter143.write(oprot)
+      for iter87 in self.success:
+        iter87.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -18693,203 +16106,7 @@ class getExperimentStatistics_result:
   def __ne__(self, other):
     return not (self == other)
 
-class getAllExperimentsInProject_args:
-  """
-  Attributes:
-   - projectId
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'projectId', None, None, ), # 1
-  )
-
-  def __init__(self, projectId=None,):
-    self.projectId = projectId
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.projectId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getAllExperimentsInProject_args')
-    if self.projectId is not None:
-      oprot.writeFieldBegin('projectId', TType.STRING, 1)
-      oprot.writeString(self.projectId)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.projectId is None:
-      raise TProtocol.TProtocolException(message='Required field projectId is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.projectId)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getAllExperimentsInProject_result:
-  """
-  Attributes:
-   - success
-   - ire
-   - ace
-   - ase
-   - pnfe
-  """
-
-  thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentModel, apache.airavata.model.experiment.ttypes.ExperimentModel.thrift_spec)), None, ), # 0
-    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
-    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
-    (4, TType.STRUCT, 'pnfe', (apache.airavata.api.error.ttypes.ProjectNotFoundException, apache.airavata.api.error.ttypes.ProjectNotFoundException.thrift_spec), None, ), # 4
-  )
-
-  def __init__(self, success=None, ire=None, ace=None, ase=None, pnfe=None,):
-    self.success = success
-    self.ire = ire
-    self.ace = ace
-    self.ase = ase
-    self.pnfe = pnfe
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.LIST:
-          self.success = []
-          (_etype147, _size144) = iprot.readListBegin()
-          for _i148 in xrange(_size144):
-            _elem149 = apache.airavata.model.experiment.ttypes.ExperimentModel()
-            _elem149.read(iprot)
-            self.success.append(_elem149)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
-          self.ire.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
-          self.ace.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRUCT:
-          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
-          self.ase.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 4:
-        if ftype == TType.STRUCT:
-          self.pnfe = apache.airavata.api.error.ttypes.ProjectNotFoundException()
-          self.pnfe.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getAllExperimentsInProject_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.LIST, 0)
-      oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter150 in self.success:
-        iter150.write(oprot)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
-    if self.ire is not None:
-      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-      self.ire.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ace is not None:
-      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
-      self.ace.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ase is not None:
-      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
-      self.ase.write(oprot)
-      oprot.writeFieldEnd()
-    if self.pnfe is not None:
-      oprot.writeFieldBegin('pnfe', TType.STRUCT, 4)
-      self.pnfe.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.ire)
-    value = (value * 31) ^ hash(self.ace)
-    value = (value * 31) ^ hash(self.ase)
-    value = (value * 31) ^ hash(self.pnfe)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getAllExperimentsInProjectWithPagination_args:
+class getExperimentsInProject_args:
   """
   Attributes:
    - authzToken
@@ -18951,7 +16168,7 @@ class getAllExperimentsInProjectWithPagination_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('getAllExperimentsInProjectWithPagination_args')
+    oprot.writeStructBegin('getExperimentsInProject_args')
     if self.authzToken is not None:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
@@ -19002,7 +16219,7 @@ class getAllExperimentsInProjectWithPagination_args:
   def __ne__(self, other):
     return not (self == other)
 
-class getAllExperimentsInProjectWithPagination_result:
+class getExperimentsInProject_result:
   """
   Attributes:
    - success
@@ -19042,11 +16259,11 @@ class getAllExperimentsInProjectWithPagination_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype154, _size151) = iprot.readListBegin()
-          for _i155 in xrange(_size151):
-            _elem156 = apache.airavata.model.experiment.ttypes.ExperimentModel()
-            _elem156.read(iprot)
-            self.success.append(_elem156)
+          (_etype91, _size88) = iprot.readListBegin()
+          for _i92 in xrange(_size88):
+            _elem93 = apache.airavata.model.experiment.ttypes.ExperimentModel()
+            _elem93.read(iprot)
+            self.success.append(_elem93)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -19089,12 +16306,12 @@ class getAllExperimentsInProjectWithPagination_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('getAllExperimentsInProjectWithPagination_result')
+    oprot.writeStructBegin('getExperimentsInProject_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter157 in self.success:
-        iter157.write(oprot)
+      for iter94 in self.success:
+        iter94.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -19145,204 +16362,7 @@ class getAllExperimentsInProjectWithPagination_result:
   def __ne__(self, other):
     return not (self == other)
 
-class getAllUserExperiments_args:
-  """
-  Attributes:
-   - gatewayId
-   - userName
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'gatewayId', None, None, ), # 1
-    (2, TType.STRING, 'userName', None, None, ), # 2
-  )
-
-  def __init__(self, gatewayId=None, userName=None,):
-    self.gatewayId = gatewayId
-    self.userName = userName
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.gatewayId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.userName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getAllUserExperiments_args')
-    if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 1)
-      oprot.writeString(self.gatewayId)
-      oprot.writeFieldEnd()
-    if self.userName is not None:
-      oprot.writeFieldBegin('userName', TType.STRING, 2)
-      oprot.writeString(self.userName)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.gatewayId is None:
-      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
-    if self.userName is None:
-      raise TProtocol.TProtocolException(message='Required field userName is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.gatewayId)
-    value = (value * 31) ^ hash(self.userName)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getAllUserExperiments_result:
-  """
-  Attributes:
-   - success
-   - ire
-   - ace
-   - ase
-  """
-
-  thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentModel, apache.airavata.model.experiment.ttypes.ExperimentModel.thrift_spec)), None, ), # 0
-    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
-    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
-  )
-
-  def __init__(self, success=None, ire=None, ace=None, ase=None,):
-    self.success = success
-    self.ire = ire
-    self.ace = ace
-    self.ase = ase
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.LIST:
-          self.success = []
-          (_etype161, _size158) = iprot.readListBegin()
-          for _i162 in xrange(_size158):
-            _elem163 = apache.airavata.model.experiment.ttypes.ExperimentModel()
-            _elem163.read(iprot)
-            self.success.append(_elem163)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
-          self.ire.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
-          self.ace.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRUCT:
-          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
-          self.ase.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getAllUserExperiments_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.LIST, 0)
-      oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter164 in self.success:
-        iter164.write(oprot)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
-    if self.ire is not None:
-      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-      self.ire.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ace is not None:
-      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
-      self.ace.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ase is not None:
-      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
-      self.ase.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.ire)
-    value = (value * 31) ^ hash(self.ace)
-    value = (value * 31) ^ hash(self.ase)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getAllUserExperimentsWithPagination_args:
+class getUserExperiments_args:
   """
   Attributes:
    - authzToken
@@ -19412,7 +16432,7 @@ class getAllUserExperimentsWithPagination_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('getAllUserExperimentsWithPagination_args')
+    oprot.writeStructBegin('getUserExperiments_args')
     if self.authzToken is not None:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
@@ -19470,7 +16490,7 @@ class getAllUserExperimentsWithPagination_args:
   def __ne__(self, other):
     return not (self == other)
 
-class getAllUserExperimentsWithPagination_result:
+class getUserExperiments_result:
   """
   Attributes:
    - success
@@ -19507,11 +16527,11 @@ class getAllUserExperimentsWithPagination_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype168, _size165) = iprot.readListBegin()
-          for _i169 in xrange(_size165):
-            _elem170 = apache.airavata.model.experiment.ttypes.ExperimentModel()
-            _elem170.read(iprot)
-            self.success.append(_elem170)
+          (_etype98, _size95) = iprot.readListBegin()
+          for _i99 in xrange(_size95):
+            _elem100 = apache.airavata.model.experiment.ttypes.ExperimentModel()
+            _elem100.read(iprot)
+            self.success.append(_elem100)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -19548,12 +16568,12 @@ class getAllUserExperimentsWithPagination_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('getAllUserExperimentsWithPagination_result')
+    oprot.writeStructBegin('getUserExperiments_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter171 in self.success:
-        iter171.write(oprot)
+      for iter101 in self.success:
+        iter101.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -21365,11 +18385,11 @@ class getExperimentOutputs_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype175, _size172) = iprot.readListBegin()
-          for _i176 in xrange(_size172):
-            _elem177 = apache.airavata.model.application.io.ttypes.OutputDataObjectType()
-            _elem177.read(iprot)
-            self.success.append(_elem177)
+          (_etype105, _size102) = iprot.readListBegin()
+          for _i106 in xrange(_size102):
+            _elem107 = apache.airavata.model.application.io.ttypes.OutputDataObjectType()
+            _elem107.read(iprot)
+            self.success.append(_elem107)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -21416,8 +18436,8 @@ class getExperimentOutputs_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter178 in self.success:
-        iter178.write(oprot)
+      for iter108 in self.success:
+        iter108.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -21591,11 +18611,11 @@ class getIntermediateOutputs_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype182, _size179) = iprot.readListBegin()
-          for _i183 in xrange(_size179):
-            _elem184 = apache.airavata.model.application.io.ttypes.OutputDataObjectType()
-            _elem184.read(iprot)
-            self.success.append(_elem184)
+          (_etype112, _size109) = iprot.readListBegin()
+          for _i113 in xrange(_size109):
+            _elem114 = apache.airavata.model.application.io.ttypes.OutputDataObjectType()
+            _elem114.read(iprot)
+            self.success.append(_elem114)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -21642,8 +18662,8 @@ class getIntermediateOutputs_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter185 in self.success:
-        iter185.write(oprot)
+      for iter115 in self.success:
+        iter115.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -21817,12 +18837,12 @@ class getJobStatuses_result:
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype187, _vtype188, _size186 ) = iprot.readMapBegin()
-          for _i190 in xrange(_size186):
-            _key191 = iprot.readString();
-            _val192 = apache.airavata.model.status.ttypes.JobStatus()
-            _val192.read(iprot)
-            self.success[_key191] = _val192
+          (_ktype117, _vtype118, _size116 ) = iprot.readMapBegin()
+          for _i120 in xrange(_size116):
+            _key121 = iprot.readString();
+            _val122 = apache.airavata.model.status.ttypes.JobStatus()
+            _val122.read(iprot)
+            self.success[_key121] = _val122
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -21869,9 +18889,9 @@ class getJobStatuses_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.success))
-      for kiter193,viter194 in self.success.items():
-        oprot.writeString(kiter193)
-        viter194.write(oprot)
+      for kiter123,viter124 in self.success.items():
+        oprot.writeString(kiter123)
+        viter124.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -22045,11 +19065,11 @@ class getJobDetails_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype198, _size195) = iprot.readListBegin()
-          for _i199 in xrange(_size195):
-            _elem200 = apache.airavata.model.job.ttypes.JobModel()
-            _elem200.read(iprot)
-            self.success.append(_elem200)
+          (_etype128, _size125) = iprot.readListBegin()
+          for _i129 in xrange(_size125):
+            _elem130 = apache.airavata.model.job.ttypes.JobModel()
+            _elem130.read(iprot)
+            self.success.append(_elem130)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -22096,8 +19116,8 @@ class getJobDetails_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter201 in self.success:
-        iter201.write(oprot)
+      for iter131 in self.success:
+        iter131.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -23354,11 +20374,11 @@ class getAllAppModules_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype205, _size202) = iprot.readListBegin()
-          for _i206 in xrange(_size202):
-            _elem207 = apache.airavata.model.appcatalog.appdeployment.ttypes.ApplicationModule()
-            _elem207.read(iprot)
-            self.success.append(_elem207)
+          (_etype135, _size132) = iprot.readListBegin()
+          for _i136 in xrange(_size132):
+            _elem137 = apache.airavata.model.appcatalog.appdeployment.ttypes.ApplicationModule()
+            _elem137.read(iprot)
+            self.success.append(_elem137)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -23399,8 +20419,8 @@ class getAllAppModules_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter208 in self.success:
-        iter208.write(oprot)
+      for iter138 in self.success:
+        iter138.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -24614,11 +21634,11 @@ class getAllApplicationDeployments_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype212, _size209) = iprot.readListBegin()
-          for _i213 in xrange(_size209):
-            _elem214 = apache.airavata.model.appcatalog.appdeployment.ttypes.ApplicationDeploymentDescription()
-            _elem214.read(iprot)
-            self.success.append(_elem214)
+          (_etype142, _size139) = iprot.readListBegin()
+          for _i143 in xrange(_size139):
+            _elem144 = apache.airavata.model.appcatalog.appdeployment.ttypes.ApplicationDeploymentDescription()
+            _elem144.read(iprot)
+            self.success.append(_elem144)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -24659,8 +21679,8 @@ class getAllApplicationDeployments_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter215 in self.success:
-        iter215.write(oprot)
+      for iter145 in self.success:
+        iter145.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -24826,10 +21846,10 @@ class getAppModuleDeployedResources_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype219, _size216) = iprot.readListBegin()
-          for _i220 in xrange(_size216):
-            _elem221 = iprot.readString();
-            self.success.append(_elem221)
+          (_etype149, _size146) = iprot.readListBegin()
+          for _i150 in xrange(_size146):
+            _elem151 = iprot.readString();
+            self.success.append(_elem151)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -24870,8 +21890,8 @@ class getAppModuleDeployedResources_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRING, len(self.success))
-      for iter222 in self.success:
-        oprot.writeString(iter222)
+      for iter152 in self.success:
+        oprot.writeString(iter152)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -25882,11 +22902,11 @@ class getAllApplicationInterfaceNames_result:
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype224, _vtype225, _size223 ) = iprot.readMapBegin()
-          for _i227 in xrange(_size223):
-            _key228 = iprot.readString();
-            _val229 = iprot.readString();
-            self.success[_key228] = _val229
+          (_ktype154, _vtype155, _size153 ) = iprot.readMapBegin()
+          for _i157 in xrange(_size153):
+            _key158 = iprot.readString();
+            _val159 = iprot.readString();
+            self.success[_key158] = _val159
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -25927,9 +22947,9 @@ class getAllApplicationInterfaceNames_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-      for kiter230,viter231 in self.success.items():
-        oprot.writeString(kiter230)
-        oprot.writeString(viter231)
+      for kiter160,viter161 in self.success.items():
+        oprot.writeString(kiter160)
+        oprot.writeString(viter161)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -26095,11 +23115,11 @@ class getAllApplicationInterfaces_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype235, _size232) = iprot.readListBegin()
-          for _i236 in xrange(_size232):
-            _elem237 = apache.airavata.model.appcatalog.appinterface.ttypes.ApplicationInterfaceDescription()
-            _elem237.read(iprot)
-            self.success.append(_elem237)
+          (_etype165, _size162) = iprot.readListBegin()
+          for _i166 in xrange(_size162):
+            _elem167 = apache.airavata.model.appcatalog.appinterface.ttypes.ApplicationInterfaceDescription()
+            _elem167.read(iprot)
+            self.success.append(_elem167)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -26140,8 +23160,8 @@ class getAllApplicationInterfaces_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter238 in self.success:
-        iter238.write(oprot)
+      for iter168 in self.success:
+        iter168.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -26307,11 +23327,11 @@ class getApplicationInputs_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype242, _size239) = iprot.readListBegin()
-          for _i243 in xrange(_size239):
-            _elem244 = apache.airavata.model.application.io.ttypes.InputDataObjectType()
-            _elem244.read(iprot)
-            self.success.append(_elem244)
+          (_etype172, _size169) = iprot.readListBegin()
+          for _i173 in xrange(_size169):
+            _elem174 = apache.airavata.model.application.io.ttypes.InputDataObjectType()
+            _elem174.read(iprot)
+            self.success.append(_elem174)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -26352,8 +23372,8 @@ class getApplicationInputs_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter245 in self.success:
-        iter245.write(oprot)
+      for iter175 in self.success:
+        iter175.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -26519,11 +23539,11 @@ class getApplicationOutputs_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype249, _size246) = iprot.readListBegin()
-          for _i250 in xrange(_size246):
-            _elem251 = apache.airavata.model.application.io.ttypes.OutputDataObjectType()
-            _elem251.read(iprot)
-            self.success.append(_elem251)
+          (_etype179, _size176) = iprot.readListBegin()
+          for _i180 in xrange(_size176):
+            _elem181 = apache.airavata.model.application.io.ttypes.OutputDataObjectType()
+            _elem181.read(iprot)
+            self.success.append(_elem181)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -26564,8 +23584,8 @@ class getApplicationOutputs_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter252 in self.success:
-        iter252.write(oprot)
+      for iter182 in self.success:
+        iter182.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -26731,11 +23751,11 @@ class getAvailableAppInterfaceComputeResources_result:
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype254, _vtype255, _size253 ) = iprot.readMapBegin()
-          for _i257 in xrange(_size253):
-            _key258 = iprot.readString();
-            _val259 = iprot.readString();
-            self.success[_key258] = _val259
+          (_ktype184, _vtype185, _size183 ) = iprot.readMapBegin()
+          for _i187 in xrange(_size183):
+            _key188 = iprot.readString();
+            _val189 = iprot.readString();
+            self.success[_key188] = _val189
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -26776,9 +23796,9 @@ class getAvailableAppInterfaceComputeResources_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-      for kiter260,viter261 in self.success.items():
-        oprot.writeString(kiter260)
-        oprot.writeString(viter261)
+      for kiter190,viter191 in self.success.items():
+        oprot.writeString(kiter190)
+        oprot.writeString(viter191)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -27337,11 +24357,11 @@ class getAllComputeResourceNames_result:
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype263, _vtype264, _size262 ) = iprot.readMapBegin()
-          for _i266 in xrange(_size262):
-            _key267 = iprot.readString();
-            _val268 = iprot.readString();
-            self.success[_key267] = _val268
+          (_ktype193, _vtype194, _size192 ) = iprot.readMapBegin()
+          for _i196 in xrange(_size192):
+            _key197 = iprot.readString();
+            _val198 = iprot.readString();
+            self.success[_key197] = _val198
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -27382,9 +24402,9 @@ class getAllComputeResourceNames_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-      for kiter269,viter270 in self.success.items():
-        oprot.writeString(kiter269)
-        oprot.writeString(viter270)
+      for kiter199,viter200 in self.success.items():
+        oprot.writeString(kiter199)
+        oprot.writeString(viter200)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -33579,11 +30599,11 @@ class changeJobSubmissionPriorities_args:
       elif fid == 2:
         if ftype == TType.MAP:
           self.jobSubmissionPriorityMap = {}
-          (_ktype272, _vtype273, _size271 ) = iprot.readMapBegin()
-          for _i275 in xrange(_size271):
-            _key276 = iprot.readString();
-            _val277 = iprot.readI32();
-            self.jobSubmissionPriorityMap[_key276] = _val277
+          (_ktype202, _vtype203, _size201 ) = iprot.readMapBegin()
+          for _i205 in xrange(_size201):
+            _key206 = iprot.readString();
+            _val207 = iprot.readI32();
+            self.jobSubmissionPriorityMap[_key206] = _val207
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -33604,9 +30624,9 @@ class changeJobSubmissionPriorities_args:
     if self.jobSubmissionPriorityMap is not None:
       oprot.writeFieldBegin('jobSubmissionPriorityMap', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.I32, len(self.jobSubmissionPriorityMap))
-      for kiter278,viter279 in self.jobSubmissionPriorityMap.items():
-        oprot.writeString(kiter278)
-        oprot.writeI32(viter279)
+      for kiter208,viter209 in self.jobSubmissionPriorityMap.items():
+        oprot.writeString(kiter208)
+        oprot.writeI32(viter209)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -33792,11 +30812,11 @@ class changeDataMovementPriorities_args:
       elif fid == 2:
         if ftype == TType.MAP:
           self.dataMovementPriorityMap = {}
-          (_ktype281, _vtype282, _size280 ) = iprot.readMapBegin()
-          for _i284 in xrange(_size280):
-            _key285 = iprot.readString();
-            _val286 = iprot.readI32();
-            self.dataMovementPriorityMap[_key285] = _val286
+          (_ktype211, _vtype212, _size210 ) = iprot.readMapBegin()
+          for _i214 in xrange(_size210):
+            _key215 = iprot.readString();
+            _val216 = iprot.readI32();
+            self.dataMovementPriorityMap[_key215] = _val216
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -33817,9 +30837,9 @@ class changeDataMovementPriorities_args:
     if self.dataMovementPriorityMap is not None:
       oprot.writeFieldBegin('dataMovementPriorityMap', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.I32, len(self.dataMovementPriorityMap))
-      for kiter287,viter288 in self.dataMovementPriorityMap.items():
-        oprot.writeString(kiter287)
-        oprot.writeI32(viter288)
+      for kiter217,viter218 in self.dataMovementPriorityMap.items():
+        oprot.writeString(kiter217)
+        oprot.writeI32(viter218)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -36857,11 +33877,11 @@ class getAllGatewayComputeResourcePreferences_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype292, _size289) = iprot.readListBegin()
-          for _i293 in xrange(_size289):
-            _elem294 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.ComputeResourcePreference()
-            _elem294.read(iprot)
-            self.success.append(_elem294)
+          (_etype222, _size219) = iprot.readListBegin()
+          for _i223 in xrange(_size219):
+            _elem224 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.ComputeResourcePreference()
+            _elem224.read(iprot)
+            self.success.append(_elem224)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -36902,8 +33922,8 @@ class getAllGatewayComputeResourcePreferences_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter295 in self.success:
-        iter295.write(oprot)
+      for iter225 in self.success:
+        iter225.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -37054,11 +34074,11 @@ class getAllGatewayComputeResources_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype299, _size296) = iprot.readListBegin()
-          for _i300 in xrange(_size296):
-            _elem301 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.GatewayResourceProfile()
-            _elem301.read(iprot)
-            self.success.append(_elem301)
+          (_etype229, _size226) = iprot.readListBegin()
+          for _i230 in xrange(_size226):
+            _elem231 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.GatewayResourceProfile()
+            _elem231.read(iprot)
+            self.success.append(_elem231)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -37099,8 +34119,8 @@ class getAllGatewayComputeResources_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter302 in self.success:
-        iter302.write(oprot)
+      for iter232 in self.success:
+        iter232.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -37718,10 +34738,10 @@ class getAllWorkflows_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype306, _size303) = iprot.readListBegin()
-          for _i307 in xrange(_size303):
-            _elem308 = iprot.readString();
-            self.success.append(_elem308)
+          (_etype236, _size233) = iprot.readListBegin()
+          for _i237 in xrange(_size233):
+            _elem238 = iprot.readString();
+            self.success.append(_elem238)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -37762,8 +34782,8 @@ class getAllWorkflows_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRING, len(self.success))
-      for iter309 in self.success:
-        oprot.writeString(iter309)
+      for iter239 in self.success:
+        oprot.writeString(iter239)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:

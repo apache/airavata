@@ -107,22 +107,6 @@ class AiravataIf {
   virtual bool deleteProject(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId) = 0;
 
   /**
-   *   * Get all Project by user
-   *   *
-   *   * @param gatewayId
-   *   *    The identifier for the requested gateway.
-   *   *
-   *   * @param userName
-   *   *    The Project Object described in the workspace_model
-   *   * @deprecated Instead use getAllUserProjectsWithPagination
-   * *
-   * 
-   * @param gatewayId
-   * @param userName
-   */
-  virtual void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName) = 0;
-
-  /**
    *   * Get all Project by user with pagination. Results will be ordered based
    *   * on creation time DESC
    *   *
@@ -142,24 +126,7 @@ class AiravataIf {
    * @param limit
    * @param offset
    */
-  virtual void getAllUserProjectsWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) = 0;
-
-  /**
-   * Get all Project for user by project name
-   * 
-   * @param gatewayId
-   *    The identifier for the requested gateway.
-   * @param userName
-   *    The identifier of the user
-   * @param projectName
-   *    The name of the project on which the results to be fetched
-   * @deprecated Instead use searchProjectsByProjectNameWithPagination
-   * 
-   * @param gatewayId
-   * @param userName
-   * @param projectName
-   */
-  virtual void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& projectName) = 0;
+  virtual void getUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * Get all Project for user by project name with pagination.Results will be ordered based
@@ -183,23 +150,7 @@ class AiravataIf {
    * @param limit
    * @param offset
    */
-  virtual void searchProjectsByProjectNameWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset) = 0;
-
-  /**
-   * Get all Project for user by project description
-   * @param gatewayId
-   *    The identifier for the requested gateway.
-   * @param userName
-   *    The identifier of the user
-   * @param description
-   *    The description to be matched
-   * @deprecated Instead use searchProjectsByProjectDescWithPagination
-   * 
-   * @param gatewayId
-   * @param userName
-   * @param description
-   */
-  virtual void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) = 0;
+  virtual void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * Search and get all Projects for user by project description with pagination. Results
@@ -223,26 +174,7 @@ class AiravataIf {
    * @param limit
    * @param offset
    */
-  virtual void searchProjectsByProjectDescWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) = 0;
-
-  /**
-   * Search Experiments by experiment name
-   * 
-   * @param gatewayId
-   *       Identifier of the requested gateway
-   * @param useNname
-   *       Username of the requested user
-   * @param expName
-   *       Experiment name to be matched
-   * @deprecated
-   *       Instead use searchExperimentsByNameWithPagination
-   * 
-   * 
-   * @param gatewayId
-   * @param userName
-   * @param expName
-   */
-  virtual void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName) = 0;
+  virtual void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * Search Experiments by experiment name with pagination. Results will be sorted
@@ -266,25 +198,7 @@ class AiravataIf {
    * @param limit
    * @param offset
    */
-  virtual void searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset) = 0;
-
-  /**
-   * Search Experiments by experiment name
-   * 
-   * @param gatewayId
-   *       Identifier of the requested gateway
-   * @param userName
-   *       Username of the requested user
-   * @param description
-   *       Experiment description to be matched
-   * @deprecated
-   *       Instead use searchExperimentsByDescWithPagination
-   * 
-   * @param gatewayId
-   * @param userName
-   * @param description
-   */
-  virtual void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) = 0;
+  virtual void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * Search Experiments by experiment name with pagination. Results will be sorted
@@ -308,25 +222,7 @@ class AiravataIf {
    * @param limit
    * @param offset
    */
-  virtual void searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) = 0;
-
-  /**
-   * Search Experiments by application id
-   * 
-   * @param gatewayId
-   *       Identifier of the requested gateway
-   * @param userName
-   *       Username of the requested user
-   * @param applicationId
-   *       Application id to be matched
-   * @deprecated
-   *       Instead use searchExperimentsByApplicationWithPagination
-   * 
-   * @param gatewayId
-   * @param userName
-   * @param applicationId
-   */
-  virtual void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId) = 0;
+  virtual void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * Search Experiments by application id with pagination. Results will be sorted
@@ -350,25 +246,7 @@ class AiravataIf {
    * @param limit
    * @param offset
    */
-  virtual void searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset) = 0;
-
-  /**
-   * Search Experiments by experiment status
-   * 
-   * @param gatewayId
-   *       Identifier of the requested gateway
-   * @param userName
-   *       Username of the requested user
-   * @param experimentState
-   *       Experiement state to be matched
-   * @deprecated
-   *       Instead use searchExperimentsByStatusWithPagination
-   * 
-   * @param gatewayId
-   * @param userName
-   * @param experimentState
-   */
-  virtual void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState) = 0;
+  virtual void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * Search Experiments by experiment status with pagination. Results will be sorted
@@ -392,28 +270,7 @@ class AiravataIf {
    * @param limit
    * @param offset
    */
-  virtual void searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset) = 0;
-
-  /**
-   * Search Experiments by experiment creation time
-   * 
-   * @param gatewayId
-   *       Identifier of the requested gateway
-   * @param userName
-   *       Username of the requested user
-   * @param fromTime
-   *       Start time of the experiments creation time
-   * @param toTime
-   *       End time of the  experiement creation time
-   * @deprecated
-   *       Instead use searchExperimentsByCreationTimeWithPagination
-   * 
-   * @param gatewayId
-   * @param userName
-   * @param fromTime
-   * @param toTime
-   */
-  virtual void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime) = 0;
+  virtual void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * Search Experiments by experiment creation time with pagination. Results will be sorted
@@ -440,7 +297,7 @@ class AiravataIf {
    * @param limit
    * @param offset
    */
-  virtual void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset) = 0;
+  virtual void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * Search Experiments by using multiple filter criteria with pagination. Results will be sorted
@@ -484,19 +341,7 @@ class AiravataIf {
   virtual void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime) = 0;
 
   /**
-   * Get all Experiments within a Project
-   * 
-   * @param projectId
-   *       Identifier of the project
-   * @deprecated
-   *       Instead use  getAllExperimentsInProjectWithPagination
-   * 
-   * @param projectId
-   */
-  virtual void getAllExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& projectId) = 0;
-
-  /**
-   * Get all Experiments within project with pagination. Results will be sorted
+   * Get Experiments within project with pagination. Results will be sorted
    * based on creation time DESC
    * 
    * @param projectId
@@ -511,25 +356,10 @@ class AiravataIf {
    * @param limit
    * @param offset
    */
-  virtual void getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset) = 0;
+  virtual void getExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset) = 0;
 
   /**
-   * Get all Experiments by user
-   * 
-   * @param gatewayId
-   *       Identifier of the requesting gateway
-   * @param userName
-   *       Username of the requested user
-   * @deprecated
-   *       Instead use getAllUserExperimentsWithPagination
-   * 
-   * @param gatewayId
-   * @param userName
-   */
-  virtual void getAllUserExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& gatewayId, const std::string& userName) = 0;
-
-  /**
-   * Get all Experiments by user pagination. Results will be sorted
+   * Get experiments by user with pagination. Results will be sorted
    * based on creation time DESC
    * 
    * @param gatewayId
@@ -547,7 +377,7 @@ class AiravataIf {
    * @param limit
    * @param offset
    */
-  virtual void getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) = 0;
+  virtual void getUserExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * Create an experiment for the specified user belonging to the gateway. The gateway identity is not explicitly passed
@@ -1931,52 +1761,28 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */) {
+  void getUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void getAllUserProjectsWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const int32_t /* limit */, const int32_t /* offset */) {
+  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* projectName */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* projectName */) {
+  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* description */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void searchProjectsByProjectNameWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* projectName */, const int32_t /* limit */, const int32_t /* offset */) {
+  void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* expName */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* description */) {
+  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* description */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void searchProjectsByProjectDescWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* description */, const int32_t /* limit */, const int32_t /* offset */) {
+  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* applicationId */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* expName */) {
+  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const  ::apache::airavata::model::status::ExperimentState::type /* experimentState */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* expName */, const int32_t /* limit */, const int32_t /* offset */) {
-    return;
-  }
-  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* description */) {
-    return;
-  }
-  void searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* description */, const int32_t /* limit */, const int32_t /* offset */) {
-    return;
-  }
-  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* applicationId */) {
-    return;
-  }
-  void searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* applicationId */, const int32_t /* limit */, const int32_t /* offset */) {
-    return;
-  }
-  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const  ::apache::airavata::model::status::ExperimentState::type /* experimentState */) {
-    return;
-  }
-  void searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const  ::apache::airavata::model::status::ExperimentState::type /* experimentState */, const int32_t /* limit */, const int32_t /* offset */) {
-    return;
-  }
-  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const int64_t /* fromTime */, const int64_t /* toTime */) {
-    return;
-  }
-  void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const int64_t /* fromTime */, const int64_t /* toTime */, const int32_t /* limit */, const int32_t /* offset */) {
+  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const int64_t /* fromTime */, const int64_t /* toTime */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
   void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & /* filters */, const int32_t /* limit */, const int32_t /* offset */) {
@@ -1985,16 +1791,10 @@ class AiravataNull : virtual public AiravataIf {
   void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const int64_t /* fromTime */, const int64_t /* toTime */) {
     return;
   }
-  void getAllExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & /* _return */, const std::string& /* projectId */) {
+  void getExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* projectId */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* projectId */, const int32_t /* limit */, const int32_t /* offset */) {
-    return;
-  }
-  void getAllUserExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */) {
-    return;
-  }
-  void getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const int32_t /* limit */, const int32_t /* offset */) {
+  void getUserExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
   void createExperiment(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const  ::apache::airavata::model::experiment::ExperimentModel& /* experiment */) {
@@ -4411,162 +4211,18 @@ class Airavata_deleteProject_presult {
 };
 
 
-class Airavata_getAllUserProjects_args {
- public:
-
-  static const char* ascii_fingerprint; // = "07A9615F837F7D0A952B595DD3020972";
-  static const uint8_t binary_fingerprint[16]; // = {0x07,0xA9,0x61,0x5F,0x83,0x7F,0x7D,0x0A,0x95,0x2B,0x59,0x5D,0xD3,0x02,0x09,0x72};
-
-  Airavata_getAllUserProjects_args(const Airavata_getAllUserProjects_args&);
-  Airavata_getAllUserProjects_args& operator=(const Airavata_getAllUserProjects_args&);
-  Airavata_getAllUserProjects_args() : gatewayId(), userName() {
-  }
-
-  virtual ~Airavata_getAllUserProjects_args() throw();
-  std::string gatewayId;
-  std::string userName;
-
-  void __set_gatewayId(const std::string& val);
-
-  void __set_userName(const std::string& val);
-
-  bool operator == (const Airavata_getAllUserProjects_args & rhs) const
-  {
-    if (!(gatewayId == rhs.gatewayId))
-      return false;
-    if (!(userName == rhs.userName))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_getAllUserProjects_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_getAllUserProjects_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllUserProjects_args& obj);
-};
-
-
-class Airavata_getAllUserProjects_pargs {
- public:
-
-  static const char* ascii_fingerprint; // = "07A9615F837F7D0A952B595DD3020972";
-  static const uint8_t binary_fingerprint[16]; // = {0x07,0xA9,0x61,0x5F,0x83,0x7F,0x7D,0x0A,0x95,0x2B,0x59,0x5D,0xD3,0x02,0x09,0x72};
-
-
-  virtual ~Airavata_getAllUserProjects_pargs() throw();
-  const std::string* gatewayId;
-  const std::string* userName;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllUserProjects_pargs& obj);
-};
-
-typedef struct _Airavata_getAllUserProjects_result__isset {
-  _Airavata_getAllUserProjects_result__isset() : success(false), ire(false), ace(false), ase(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_getAllUserProjects_result__isset;
-
-class Airavata_getAllUserProjects_result {
- public:
-
-  static const char* ascii_fingerprint; // = "DE4B6CD097BA21C87B066F507A85DD2B";
-  static const uint8_t binary_fingerprint[16]; // = {0xDE,0x4B,0x6C,0xD0,0x97,0xBA,0x21,0xC8,0x7B,0x06,0x6F,0x50,0x7A,0x85,0xDD,0x2B};
-
-  Airavata_getAllUserProjects_result(const Airavata_getAllUserProjects_result&);
-  Airavata_getAllUserProjects_result& operator=(const Airavata_getAllUserProjects_result&);
-  Airavata_getAllUserProjects_result() {
-  }
-
-  virtual ~Airavata_getAllUserProjects_result() throw();
-  std::vector< ::apache::airavata::model::workspace::Project>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_getAllUserProjects_result__isset __isset;
-
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::Project> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  bool operator == (const Airavata_getAllUserProjects_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_getAllUserProjects_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_getAllUserProjects_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllUserProjects_result& obj);
-};
-
-typedef struct _Airavata_getAllUserProjects_presult__isset {
-  _Airavata_getAllUserProjects_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_getAllUserProjects_presult__isset;
-
-class Airavata_getAllUserProjects_presult {
- public:
-
-  static const char* ascii_fingerprint; // = "DE4B6CD097BA21C87B066F507A85DD2B";
-  static const uint8_t binary_fingerprint[16]; // = {0xDE,0x4B,0x6C,0xD0,0x97,0xBA,0x21,0xC8,0x7B,0x06,0x6F,0x50,0x7A,0x85,0xDD,0x2B};
-
-
-  virtual ~Airavata_getAllUserProjects_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::Project> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_getAllUserProjects_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllUserProjects_presult& obj);
-};
-
-
-class Airavata_getAllUserProjectsWithPagination_args {
+class Airavata_getUserProjects_args {
  public:
 
   static const char* ascii_fingerprint; // = "B0F1ED866602D6465A1E8B7B65B9DBBA";
   static const uint8_t binary_fingerprint[16]; // = {0xB0,0xF1,0xED,0x86,0x66,0x02,0xD6,0x46,0x5A,0x1E,0x8B,0x7B,0x65,0xB9,0xDB,0xBA};
 
-  Airavata_getAllUserProjectsWithPagination_args(const Airavata_getAllUserProjectsWithPagination_args&);
-  Airavata_getAllUserProjectsWithPagination_args& operator=(const Airavata_getAllUserProjectsWithPagination_args&);
-  Airavata_getAllUserProjectsWithPagination_args() : gatewayId(), userName(), limit(0), offset(0) {
+  Airavata_getUserProjects_args(const Airavata_getUserProjects_args&);
+  Airavata_getUserProjects_args& operator=(const Airavata_getUserProjects_args&);
+  Airavata_getUserProjects_args() : gatewayId(), userName(), limit(0), offset(0) {
   }
 
-  virtual ~Airavata_getAllUserProjectsWithPagination_args() throw();
+  virtual ~Airavata_getUserProjects_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string gatewayId;
   std::string userName;
@@ -4583,7 +4239,7 @@ class Airavata_getAllUserProjectsWithPagination_args {
 
   void __set_offset(const int32_t val);
 
-  bool operator == (const Airavata_getAllUserProjectsWithPagination_args & rhs) const
+  bool operator == (const Airavata_getUserProjects_args & rhs) const
   {
     if (!(authzToken == rhs.authzToken))
       return false;
@@ -4597,27 +4253,27 @@ class Airavata_getAllUserProjectsWithPagination_args {
       return false;
     return true;
   }
-  bool operator != (const Airavata_getAllUserProjectsWithPagination_args &rhs) const {
+  bool operator != (const Airavata_getUserProjects_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Airavata_getAllUserProjectsWithPagination_args & ) const;
+  bool operator < (const Airavata_getUserProjects_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllUserProjectsWithPagination_args& obj);
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getUserProjects_args& obj);
 };
 
 
-class Airavata_getAllUserProjectsWithPagination_pargs {
+class Airavata_getUserProjects_pargs {
  public:
 
   static const char* ascii_fingerprint; // = "B0F1ED866602D6465A1E8B7B65B9DBBA";
   static const uint8_t binary_fingerprint[16]; // = {0xB0,0xF1,0xED,0x86,0x66,0x02,0xD6,0x46,0x5A,0x1E,0x8B,0x7B,0x65,0xB9,0xDB,0xBA};
 
 
-  virtual ~Airavata_getAllUserProjectsWithPagination_pargs() throw();
+  virtual ~Airavata_getUserProjects_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* gatewayId;
   const std::string* userName;
@@ -4626,37 +4282,37 @@ class Airavata_getAllUserProjectsWithPagination_pargs {
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllUserProjectsWithPagination_pargs& obj);
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getUserProjects_pargs& obj);
 };
 
-typedef struct _Airavata_getAllUserProjectsWithPagination_result__isset {
-  _Airavata_getAllUserProjectsWithPagination_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+typedef struct _Airavata_getUserProjects_result__isset {
+  _Airavata_getUserProjects_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
   bool ae :1;
-} _Airavata_getAllUserProjectsWithPagination_result__isset;
+} _Airavata_getUserProjects_result__isset;
 
-class Airavata_getAllUserProjectsWithPagination_result {
+class Airavata_getUserProjects_result {
  public:
 
   static const char* ascii_fingerprint; // = "9FDEFB6B8A9E4977A43B7C4722664EC3";
   static const uint8_t binary_fingerprint[16]; // = {0x9F,0xDE,0xFB,0x6B,0x8A,0x9E,0x49,0x77,0xA4,0x3B,0x7C,0x47,0x22,0x66,0x4E,0xC3};
 
-  Airavata_getAllUserProjectsWithPagination_result(const Airavata_getAllUserProjectsWithPagination_result&);
-  Airavata_getAllUserProjectsWithPagination_result& operator=(const Airavata_getAllUserProjectsWithPagination_result&);
-  Airavata_getAllUserProjectsWithPagination_result() {
+  Airavata_getUserProjects_result(const Airavata_getUserProjects_result&);
+  Airavata_getUserProjects_result& operator=(const Airavata_getUserProjects_result&);
+  Airavata_getUserProjects_result() {
   }
 
-  virtual ~Airavata_getAllUserProjectsWithPagination_result() throw();
+  virtual ~Airavata_getUserProjects_result() throw();
   std::vector< ::apache::airavata::model::workspace::Project>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
    ::apache::airavata::api::error::AuthorizationException ae;
 
-  _Airavata_getAllUserProjectsWithPagination_result__isset __isset;
+  _Airavata_getUserProjects_result__isset __isset;
 
   void __set_success(const std::vector< ::apache::airavata::model::workspace::Project> & val);
 
@@ -4668,7 +4324,7 @@ class Airavata_getAllUserProjectsWithPagination_result {
 
   void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
 
-  bool operator == (const Airavata_getAllUserProjectsWithPagination_result & rhs) const
+  bool operator == (const Airavata_getUserProjects_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
@@ -4682,64 +4338,69 @@ class Airavata_getAllUserProjectsWithPagination_result {
       return false;
     return true;
   }
-  bool operator != (const Airavata_getAllUserProjectsWithPagination_result &rhs) const {
+  bool operator != (const Airavata_getUserProjects_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Airavata_getAllUserProjectsWithPagination_result & ) const;
+  bool operator < (const Airavata_getUserProjects_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllUserProjectsWithPagination_result& obj);
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getUserProjects_result& obj);
 };
 
-typedef struct _Airavata_getAllUserProjectsWithPagination_presult__isset {
-  _Airavata_getAllUserProjectsWithPagination_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+typedef struct _Airavata_getUserProjects_presult__isset {
+  _Airavata_getUserProjects_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
   bool ae :1;
-} _Airavata_getAllUserProjectsWithPagination_presult__isset;
+} _Airavata_getUserProjects_presult__isset;
 
-class Airavata_getAllUserProjectsWithPagination_presult {
+class Airavata_getUserProjects_presult {
  public:
 
   static const char* ascii_fingerprint; // = "9FDEFB6B8A9E4977A43B7C4722664EC3";
   static const uint8_t binary_fingerprint[16]; // = {0x9F,0xDE,0xFB,0x6B,0x8A,0x9E,0x49,0x77,0xA4,0x3B,0x7C,0x47,0x22,0x66,0x4E,0xC3};
 
 
-  virtual ~Airavata_getAllUserProjectsWithPagination_presult() throw();
+  virtual ~Airavata_getUserProjects_presult() throw();
   std::vector< ::apache::airavata::model::workspace::Project> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
    ::apache::airavata::api::error::AuthorizationException ae;
 
-  _Airavata_getAllUserProjectsWithPagination_presult__isset __isset;
+  _Airavata_getUserProjects_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllUserProjectsWithPagination_presult& obj);
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getUserProjects_presult& obj);
 };
 
 
 class Airavata_searchProjectsByProjectName_args {
  public:
 
-  static const char* ascii_fingerprint; // = "AB879940BD15B6B25691265F7384B271";
-  static const uint8_t binary_fingerprint[16]; // = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
+  static const char* ascii_fingerprint; // = "97BE39385D449F49A0D934F09B2EF404";
+  static const uint8_t binary_fingerprint[16]; // = {0x97,0xBE,0x39,0x38,0x5D,0x44,0x9F,0x49,0xA0,0xD9,0x34,0xF0,0x9B,0x2E,0xF4,0x04};
 
   Airavata_searchProjectsByProjectName_args(const Airavata_searchProjectsByProjectName_args&);
   Airavata_searchProjectsByProjectName_args& operator=(const Airavata_searchProjectsByProjectName_args&);
-  Airavata_searchProjectsByProjectName_args() : gatewayId(), userName(), projectName() {
+  Airavata_searchProjectsByProjectName_args() : gatewayId(), userName(), projectName(), limit(0), offset(0) {
   }
 
   virtual ~Airavata_searchProjectsByProjectName_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
   std::string gatewayId;
   std::string userName;
   std::string projectName;
+  int32_t limit;
+  int32_t offset;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
   void __set_gatewayId(const std::string& val);
 
@@ -4747,13 +4408,23 @@ class Airavata_searchProjectsByProjectName_args {
 
   void __set_projectName(const std::string& val);
 
+  void __set_limit(const int32_t val);
+
+  void __set_offset(const int32_t val);
+
   bool operator == (const Airavata_searchProjectsByProjectName_args & rhs) const
   {
+    if (!(authzToken == rhs.authzToken))
+      return false;
     if (!(gatewayId == rhs.gatewayId))
       return false;
     if (!(userName == rhs.userName))
       return false;
     if (!(projectName == rhs.projectName))
+      return false;
+    if (!(limit == rhs.limit))
+      return false;
+    if (!(offset == rhs.offset))
       return false;
     return true;
   }
@@ -4773,14 +4444,17 @@ class Airavata_searchProjectsByProjectName_args {
 class Airavata_searchProjectsByProjectName_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "AB879940BD15B6B25691265F7384B271";
-  static const uint8_t binary_fingerprint[16]; // = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
+  static const char* ascii_fingerprint; // = "97BE39385D449F49A0D934F09B2EF404";
+  static const uint8_t binary_fingerprint[16]; // = {0x97,0xBE,0x39,0x38,0x5D,0x44,0x9F,0x49,0xA0,0xD9,0x34,0xF0,0x9B,0x2E,0xF4,0x04};
 
 
   virtual ~Airavata_searchProjectsByProjectName_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* gatewayId;
   const std::string* userName;
   const std::string* projectName;
+  const int32_t* limit;
+  const int32_t* offset;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -4788,18 +4462,19 @@ class Airavata_searchProjectsByProjectName_pargs {
 };
 
 typedef struct _Airavata_searchProjectsByProjectName_result__isset {
-  _Airavata_searchProjectsByProjectName_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_searchProjectsByProjectName_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_searchProjectsByProjectName_result__isset;
 
 class Airavata_searchProjectsByProjectName_result {
  public:
 
-  static const char* ascii_fingerprint; // = "DE4B6CD097BA21C87B066F507A85DD2B";
-  static const uint8_t binary_fingerprint[16]; // = {0xDE,0x4B,0x6C,0xD0,0x97,0xBA,0x21,0xC8,0x7B,0x06,0x6F,0x50,0x7A,0x85,0xDD,0x2B};
+  static const char* ascii_fingerprint; // = "9FDEFB6B8A9E4977A43B7C4722664EC3";
+  static const uint8_t binary_fingerprint[16]; // = {0x9F,0xDE,0xFB,0x6B,0x8A,0x9E,0x49,0x77,0xA4,0x3B,0x7C,0x47,0x22,0x66,0x4E,0xC3};
 
   Airavata_searchProjectsByProjectName_result(const Airavata_searchProjectsByProjectName_result&);
   Airavata_searchProjectsByProjectName_result& operator=(const Airavata_searchProjectsByProjectName_result&);
@@ -4811,6 +4486,7 @@ class Airavata_searchProjectsByProjectName_result {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_searchProjectsByProjectName_result__isset __isset;
 
@@ -4822,6 +4498,8 @@ class Airavata_searchProjectsByProjectName_result {
 
   void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
 
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
   bool operator == (const Airavata_searchProjectsByProjectName_result & rhs) const
   {
     if (!(success == rhs.success))
@@ -4831,6 +4509,8 @@ class Airavata_searchProjectsByProjectName_result {
     if (!(ace == rhs.ace))
       return false;
     if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
       return false;
     return true;
   }
@@ -4847,18 +4527,19 @@ class Airavata_searchProjectsByProjectName_result {
 };
 
 typedef struct _Airavata_searchProjectsByProjectName_presult__isset {
-  _Airavata_searchProjectsByProjectName_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_searchProjectsByProjectName_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_searchProjectsByProjectName_presult__isset;
 
 class Airavata_searchProjectsByProjectName_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "DE4B6CD097BA21C87B066F507A85DD2B";
-  static const uint8_t binary_fingerprint[16]; // = {0xDE,0x4B,0x6C,0xD0,0x97,0xBA,0x21,0xC8,0x7B,0x06,0x6F,0x50,0x7A,0x85,0xDD,0x2B};
+  static const char* ascii_fingerprint; // = "9FDEFB6B8A9E4977A43B7C4722664EC3";
+  static const uint8_t binary_fingerprint[16]; // = {0x9F,0xDE,0xFB,0x6B,0x8A,0x9E,0x49,0x77,0xA4,0x3B,0x7C,0x47,0x22,0x66,0x4E,0xC3};
 
 
   virtual ~Airavata_searchProjectsByProjectName_presult() throw();
@@ -4866,6 +4547,7 @@ class Airavata_searchProjectsByProjectName_presult {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_searchProjectsByProjectName_presult__isset __isset;
 
@@ -4875,22 +4557,22 @@ class Airavata_searchProjectsByProjectName_presult {
 };
 
 
-class Airavata_searchProjectsByProjectNameWithPagination_args {
+class Airavata_searchProjectsByProjectDesc_args {
  public:
 
   static const char* ascii_fingerprint; // = "97BE39385D449F49A0D934F09B2EF404";
   static const uint8_t binary_fingerprint[16]; // = {0x97,0xBE,0x39,0x38,0x5D,0x44,0x9F,0x49,0xA0,0xD9,0x34,0xF0,0x9B,0x2E,0xF4,0x04};
 
-  Airavata_searchProjectsByProjectNameWithPagination_args(const Airavata_searchProjectsByProjectNameWithPagination_args&);
-  Airavata_searchProjectsByProjectNameWithPagination_args& operator=(const Airavata_searchProjectsByProjectNameWithPagination_args&);
-  Airavata_searchProjectsByProjectNameWithPagination_args() : gatewayId(), userName(), projectName(), limit(0), offset(0) {
+  Airavata_searchProjectsByProjectDesc_args(const Airavata_searchProjectsByProjectDesc_args&);
+  Airavata_searchProjectsByProjectDesc_args& operator=(const Airavata_searchProjectsByProjectDesc_args&);
+  Airavata_searchProjectsByProjectDesc_args() : gatewayId(), userName(), description(), limit(0), offset(0) {
   }
 
-  virtual ~Airavata_searchProjectsByProjectNameWithPagination_args() throw();
+  virtual ~Airavata_searchProjectsByProjectDesc_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string gatewayId;
   std::string userName;
-  std::string projectName;
+  std::string description;
   int32_t limit;
   int32_t offset;
 
@@ -4900,13 +4582,13 @@ class Airavata_searchProjectsByProjectNameWithPagination_args {
 
   void __set_userName(const std::string& val);
 
-  void __set_projectName(const std::string& val);
+  void __set_description(const std::string& val);
 
   void __set_limit(const int32_t val);
 
   void __set_offset(const int32_t val);
 
-  bool operator == (const Airavata_searchProjectsByProjectNameWithPagination_args & rhs) const
+  bool operator == (const Airavata_searchProjectsByProjectDesc_args & rhs) const
   {
     if (!(authzToken == rhs.authzToken))
       return false;
@@ -4914,172 +4596,11 @@ class Airavata_searchProjectsByProjectNameWithPagination_args {
       return false;
     if (!(userName == rhs.userName))
       return false;
-    if (!(projectName == rhs.projectName))
+    if (!(description == rhs.description))
       return false;
     if (!(limit == rhs.limit))
       return false;
     if (!(offset == rhs.offset))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchProjectsByProjectNameWithPagination_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchProjectsByProjectNameWithPagination_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchProjectsByProjectNameWithPagination_args& obj);
-};
-
-
-class Airavata_searchProjectsByProjectNameWithPagination_pargs {
- public:
-
-  static const char* ascii_fingerprint; // = "97BE39385D449F49A0D934F09B2EF404";
-  static const uint8_t binary_fingerprint[16]; // = {0x97,0xBE,0x39,0x38,0x5D,0x44,0x9F,0x49,0xA0,0xD9,0x34,0xF0,0x9B,0x2E,0xF4,0x04};
-
-
-  virtual ~Airavata_searchProjectsByProjectNameWithPagination_pargs() throw();
-  const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* gatewayId;
-  const std::string* userName;
-  const std::string* projectName;
-  const int32_t* limit;
-  const int32_t* offset;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchProjectsByProjectNameWithPagination_pargs& obj);
-};
-
-typedef struct _Airavata_searchProjectsByProjectNameWithPagination_result__isset {
-  _Airavata_searchProjectsByProjectNameWithPagination_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchProjectsByProjectNameWithPagination_result__isset;
-
-class Airavata_searchProjectsByProjectNameWithPagination_result {
- public:
-
-  static const char* ascii_fingerprint; // = "9FDEFB6B8A9E4977A43B7C4722664EC3";
-  static const uint8_t binary_fingerprint[16]; // = {0x9F,0xDE,0xFB,0x6B,0x8A,0x9E,0x49,0x77,0xA4,0x3B,0x7C,0x47,0x22,0x66,0x4E,0xC3};
-
-  Airavata_searchProjectsByProjectNameWithPagination_result(const Airavata_searchProjectsByProjectNameWithPagination_result&);
-  Airavata_searchProjectsByProjectNameWithPagination_result& operator=(const Airavata_searchProjectsByProjectNameWithPagination_result&);
-  Airavata_searchProjectsByProjectNameWithPagination_result() {
-  }
-
-  virtual ~Airavata_searchProjectsByProjectNameWithPagination_result() throw();
-  std::vector< ::apache::airavata::model::workspace::Project>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchProjectsByProjectNameWithPagination_result__isset __isset;
-
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::Project> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
-
-  bool operator == (const Airavata_searchProjectsByProjectNameWithPagination_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    if (!(ae == rhs.ae))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchProjectsByProjectNameWithPagination_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchProjectsByProjectNameWithPagination_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchProjectsByProjectNameWithPagination_result& obj);
-};
-
-typedef struct _Airavata_searchProjectsByProjectNameWithPagination_presult__isset {
-  _Airavata_searchProjectsByProjectNameWithPagination_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchProjectsByProjectNameWithPagination_presult__isset;
-
-class Airavata_searchProjectsByProjectNameWithPagination_presult {
- public:
-
-  static const char* ascii_fingerprint; // = "9FDEFB6B8A9E4977A43B7C4722664EC3";
-  static const uint8_t binary_fingerprint[16]; // = {0x9F,0xDE,0xFB,0x6B,0x8A,0x9E,0x49,0x77,0xA4,0x3B,0x7C,0x47,0x22,0x66,0x4E,0xC3};
-
-
-  virtual ~Airavata_searchProjectsByProjectNameWithPagination_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::Project> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchProjectsByProjectNameWithPagination_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchProjectsByProjectNameWithPagination_presult& obj);
-};
-
-
-class Airavata_searchProjectsByProjectDesc_args {
- public:
-
-  static const char* ascii_fingerprint; // = "AB879940BD15B6B25691265F7384B271";
-  static const uint8_t binary_fingerprint[16]; // = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
-
-  Airavata_searchProjectsByProjectDesc_args(const Airavata_searchProjectsByProjectDesc_args&);
-  Airavata_searchProjectsByProjectDesc_args& operator=(const Airavata_searchProjectsByProjectDesc_args&);
-  Airavata_searchProjectsByProjectDesc_args() : gatewayId(), userName(), description() {
-  }
-
-  virtual ~Airavata_searchProjectsByProjectDesc_args() throw();
-  std::string gatewayId;
-  std::string userName;
-  std::string description;
-
-  void __set_gatewayId(const std::string& val);
-
-  void __set_userName(const std::string& val);
-
-  void __set_description(const std::string& val);
-
-  bool operator == (const Airavata_searchProjectsByProjectDesc_args & rhs) const
-  {
-    if (!(gatewayId == rhs.gatewayId))
-      return false;
-    if (!(userName == rhs.userName))
-      return false;
-    if (!(description == rhs.description))
       return false;
     return true;
   }
@@ -5099,14 +4620,17 @@ class Airavata_searchProjectsByProjectDesc_args {
 class Airavata_searchProjectsByProjectDesc_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "AB879940BD15B6B25691265F7384B271";
-  static const uint8_t binary_fingerprint[16]; // = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
+  static const char* ascii_fingerprint; // = "97BE39385D449F49A0D934F09B2EF404";
+  static const uint8_t binary_fingerprint[16]; // = {0x97,0xBE,0x39,0x38,0x5D,0x44,0x9F,0x49,0xA0,0xD9,0x34,0xF0,0x9B,0x2E,0xF4,0x04};
 
 
   virtual ~Airavata_searchProjectsByProjectDesc_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* gatewayId;
   const std::string* userName;
   const std::string* description;
+  const int32_t* limit;
+  const int32_t* offset;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -5114,18 +4638,19 @@ class Airavata_searchProjectsByProjectDesc_pargs {
 };
 
 typedef struct _Airavata_searchProjectsByProjectDesc_result__isset {
-  _Airavata_searchProjectsByProjectDesc_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_searchProjectsByProjectDesc_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_searchProjectsByProjectDesc_result__isset;
 
 class Airavata_searchProjectsByProjectDesc_result {
  public:
 
-  static const char* ascii_fingerprint; // = "DE4B6CD097BA21C87B066F507A85DD2B";
-  static const uint8_t binary_fingerprint[16]; // = {0xDE,0x4B,0x6C,0xD0,0x97,0xBA,0x21,0xC8,0x7B,0x06,0x6F,0x50,0x7A,0x85,0xDD,0x2B};
+  static const char* ascii_fingerprint; // = "9FDEFB6B8A9E4977A43B7C4722664EC3";
+  static const uint8_t binary_fingerprint[16]; // = {0x9F,0xDE,0xFB,0x6B,0x8A,0x9E,0x49,0x77,0xA4,0x3B,0x7C,0x47,0x22,0x66,0x4E,0xC3};
 
   Airavata_searchProjectsByProjectDesc_result(const Airavata_searchProjectsByProjectDesc_result&);
   Airavata_searchProjectsByProjectDesc_result& operator=(const Airavata_searchProjectsByProjectDesc_result&);
@@ -5137,6 +4662,7 @@ class Airavata_searchProjectsByProjectDesc_result {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_searchProjectsByProjectDesc_result__isset __isset;
 
@@ -5148,6 +4674,8 @@ class Airavata_searchProjectsByProjectDesc_result {
 
   void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
 
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
   bool operator == (const Airavata_searchProjectsByProjectDesc_result & rhs) const
   {
     if (!(success == rhs.success))
@@ -5157,6 +4685,8 @@ class Airavata_searchProjectsByProjectDesc_result {
     if (!(ace == rhs.ace))
       return false;
     if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
       return false;
     return true;
   }
@@ -5173,18 +4703,19 @@ class Airavata_searchProjectsByProjectDesc_result {
 };
 
 typedef struct _Airavata_searchProjectsByProjectDesc_presult__isset {
-  _Airavata_searchProjectsByProjectDesc_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_searchProjectsByProjectDesc_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_searchProjectsByProjectDesc_presult__isset;
 
 class Airavata_searchProjectsByProjectDesc_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "DE4B6CD097BA21C87B066F507A85DD2B";
-  static const uint8_t binary_fingerprint[16]; // = {0xDE,0x4B,0x6C,0xD0,0x97,0xBA,0x21,0xC8,0x7B,0x06,0x6F,0x50,0x7A,0x85,0xDD,0x2B};
+  static const char* ascii_fingerprint; // = "9FDEFB6B8A9E4977A43B7C4722664EC3";
+  static const uint8_t binary_fingerprint[16]; // = {0x9F,0xDE,0xFB,0x6B,0x8A,0x9E,0x49,0x77,0xA4,0x3B,0x7C,0x47,0x22,0x66,0x4E,0xC3};
 
 
   virtual ~Airavata_searchProjectsByProjectDesc_presult() throw();
@@ -5192,6 +4723,7 @@ class Airavata_searchProjectsByProjectDesc_presult {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_searchProjectsByProjectDesc_presult__isset __isset;
 
@@ -5201,22 +4733,22 @@ class Airavata_searchProjectsByProjectDesc_presult {
 };
 
 
-class Airavata_searchProjectsByProjectDescWithPagination_args {
+class Airavata_searchExperimentsByName_args {
  public:
 
   static const char* ascii_fingerprint; // = "97BE39385D449F49A0D934F09B2EF404";
   static const uint8_t binary_fingerprint[16]; // = {0x97,0xBE,0x39,0x38,0x5D,0x44,0x9F,0x49,0xA0,0xD9,0x34,0xF0,0x9B,0x2E,0xF4,0x04};
 
-  Airavata_searchProjectsByProjectDescWithPagination_args(const Airavata_searchProjectsByProjectDescWithPagination_args&);
-  Airavata_searchProjectsByProjectDescWithPagination_args& operator=(const Airavata_searchProjectsByProjectDescWithPagination_args&);
-  Airavata_searchProjectsByProjectDescWithPagination_args() : gatewayId(), userName(), description(), limit(0), offset(0) {
+  Airavata_searchExperimentsByName_args(const Airavata_searchExperimentsByName_args&);
+  Airavata_searchExperimentsByName_args& operator=(const Airavata_searchExperimentsByName_args&);
+  Airavata_searchExperimentsByName_args() : gatewayId(), userName(), expName(), limit(0), offset(0) {
   }
 
-  virtual ~Airavata_searchProjectsByProjectDescWithPagination_args() throw();
+  virtual ~Airavata_searchExperimentsByName_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string gatewayId;
   std::string userName;
-  std::string description;
+  std::string expName;
   int32_t limit;
   int32_t offset;
 
@@ -5226,13 +4758,13 @@ class Airavata_searchProjectsByProjectDescWithPagination_args {
 
   void __set_userName(const std::string& val);
 
-  void __set_description(const std::string& val);
+  void __set_expName(const std::string& val);
 
   void __set_limit(const int32_t val);
 
   void __set_offset(const int32_t val);
 
-  bool operator == (const Airavata_searchProjectsByProjectDescWithPagination_args & rhs) const
+  bool operator == (const Airavata_searchExperimentsByName_args & rhs) const
   {
     if (!(authzToken == rhs.authzToken))
       return false;
@@ -5240,172 +4772,11 @@ class Airavata_searchProjectsByProjectDescWithPagination_args {
       return false;
     if (!(userName == rhs.userName))
       return false;
-    if (!(description == rhs.description))
+    if (!(expName == rhs.expName))
       return false;
     if (!(limit == rhs.limit))
       return false;
     if (!(offset == rhs.offset))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchProjectsByProjectDescWithPagination_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchProjectsByProjectDescWithPagination_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchProjectsByProjectDescWithPagination_args& obj);
-};
-
-
-class Airavata_searchProjectsByProjectDescWithPagination_pargs {
- public:
-
-  static const char* ascii_fingerprint; // = "97BE39385D449F49A0D934F09B2EF404";
-  static const uint8_t binary_fingerprint[16]; // = {0x97,0xBE,0x39,0x38,0x5D,0x44,0x9F,0x49,0xA0,0xD9,0x34,0xF0,0x9B,0x2E,0xF4,0x04};
-
-
-  virtual ~Airavata_searchProjectsByProjectDescWithPagination_pargs() throw();
-  const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* gatewayId;
-  const std::string* userName;
-  const std::string* description;
-  const int32_t* limit;
-  const int32_t* offset;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchProjectsByProjectDescWithPagination_pargs& obj);
-};
-
-typedef struct _Airavata_searchProjectsByProjectDescWithPagination_result__isset {
-  _Airavata_searchProjectsByProjectDescWithPagination_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchProjectsByProjectDescWithPagination_result__isset;
-
-class Airavata_searchProjectsByProjectDescWithPagination_result {
- public:
-
-  static const char* ascii_fingerprint; // = "9FDEFB6B8A9E4977A43B7C4722664EC3";
-  static const uint8_t binary_fingerprint[16]; // = {0x9F,0xDE,0xFB,0x6B,0x8A,0x9E,0x49,0x77,0xA4,0x3B,0x7C,0x47,0x22,0x66,0x4E,0xC3};
-
-  Airavata_searchProjectsByProjectDescWithPagination_result(const Airavata_searchProjectsByProjectDescWithPagination_result&);
-  Airavata_searchProjectsByProjectDescWithPagination_result& operator=(const Airavata_searchProjectsByProjectDescWithPagination_result&);
-  Airavata_searchProjectsByProjectDescWithPagination_result() {
-  }
-
-  virtual ~Airavata_searchProjectsByProjectDescWithPagination_result() throw();
-  std::vector< ::apache::airavata::model::workspace::Project>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchProjectsByProjectDescWithPagination_result__isset __isset;
-
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::Project> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
-
-  bool operator == (const Airavata_searchProjectsByProjectDescWithPagination_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    if (!(ae == rhs.ae))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchProjectsByProjectDescWithPagination_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchProjectsByProjectDescWithPagination_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchProjectsByProjectDescWithPagination_result& obj);
-};
-
-typedef struct _Airavata_searchProjectsByProjectDescWithPagination_presult__isset {
-  _Airavata_searchProjectsByProjectDescWithPagination_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchProjectsByProjectDescWithPagination_presult__isset;
-
-class Airavata_searchProjectsByProjectDescWithPagination_presult {
- public:
-
-  static const char* ascii_fingerprint; // = "9FDEFB6B8A9E4977A43B7C4722664EC3";
-  static const uint8_t binary_fingerprint[16]; // = {0x9F,0xDE,0xFB,0x6B,0x8A,0x9E,0x49,0x77,0xA4,0x3B,0x7C,0x47,0x22,0x66,0x4E,0xC3};
-
-
-  virtual ~Airavata_searchProjectsByProjectDescWithPagination_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::Project> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchProjectsByProjectDescWithPagination_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchProjectsByProjectDescWithPagination_presult& obj);
-};
-
-
-class Airavata_searchExperimentsByName_args {
- public:
-
-  static const char* ascii_fingerprint; // = "AB879940BD15B6B25691265F7384B271";
-  static const uint8_t binary_fingerprint[16]; // = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
-
-  Airavata_searchExperimentsByName_args(const Airavata_searchExperimentsByName_args&);
-  Airavata_searchExperimentsByName_args& operator=(const Airavata_searchExperimentsByName_args&);
-  Airavata_searchExperimentsByName_args() : gatewayId(), userName(), expName() {
-  }
-
-  virtual ~Airavata_searchExperimentsByName_args() throw();
-  std::string gatewayId;
-  std::string userName;
-  std::string expName;
-
-  void __set_gatewayId(const std::string& val);
-
-  void __set_userName(const std::string& val);
-
-  void __set_expName(const std::string& val);
-
-  bool operator == (const Airavata_searchExperimentsByName_args & rhs) const
-  {
-    if (!(gatewayId == rhs.gatewayId))
-      return false;
-    if (!(userName == rhs.userName))
-      return false;
-    if (!(expName == rhs.expName))
       return false;
     return true;
   }
@@ -5425,14 +4796,17 @@ class Airavata_searchExperimentsByName_args {
 class Airavata_searchExperimentsByName_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "AB879940BD15B6B25691265F7384B271";
-  static const uint8_t binary_fingerprint[16]; // = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
+  static const char* ascii_fingerprint; // = "97BE39385D449F49A0D934F09B2EF404";
+  static const uint8_t binary_fingerprint[16]; // = {0x97,0xBE,0x39,0x38,0x5D,0x44,0x9F,0x49,0xA0,0xD9,0x34,0xF0,0x9B,0x2E,0xF4,0x04};
 
 
   virtual ~Airavata_searchExperimentsByName_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* gatewayId;
   const std::string* userName;
   const std::string* expName;
+  const int32_t* limit;
+  const int32_t* offset;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -5440,18 +4814,19 @@ class Airavata_searchExperimentsByName_pargs {
 };
 
 typedef struct _Airavata_searchExperimentsByName_result__isset {
-  _Airavata_searchExperimentsByName_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_searchExperimentsByName_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_searchExperimentsByName_result__isset;
 
 class Airavata_searchExperimentsByName_result {
  public:
 
-  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
-  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
+  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
+  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
 
   Airavata_searchExperimentsByName_result(const Airavata_searchExperimentsByName_result&);
   Airavata_searchExperimentsByName_result& operator=(const Airavata_searchExperimentsByName_result&);
@@ -5463,6 +4838,7 @@ class Airavata_searchExperimentsByName_result {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_searchExperimentsByName_result__isset __isset;
 
@@ -5474,6 +4850,8 @@ class Airavata_searchExperimentsByName_result {
 
   void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
 
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
   bool operator == (const Airavata_searchExperimentsByName_result & rhs) const
   {
     if (!(success == rhs.success))
@@ -5483,6 +4861,8 @@ class Airavata_searchExperimentsByName_result {
     if (!(ace == rhs.ace))
       return false;
     if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
       return false;
     return true;
   }
@@ -5499,18 +4879,19 @@ class Airavata_searchExperimentsByName_result {
 };
 
 typedef struct _Airavata_searchExperimentsByName_presult__isset {
-  _Airavata_searchExperimentsByName_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_searchExperimentsByName_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_searchExperimentsByName_presult__isset;
 
 class Airavata_searchExperimentsByName_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
-  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
+  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
+  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
 
 
   virtual ~Airavata_searchExperimentsByName_presult() throw();
@@ -5518,6 +4899,7 @@ class Airavata_searchExperimentsByName_presult {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_searchExperimentsByName_presult__isset __isset;
 
@@ -5527,22 +4909,22 @@ class Airavata_searchExperimentsByName_presult {
 };
 
 
-class Airavata_searchExperimentsByNameWithPagination_args {
+class Airavata_searchExperimentsByDesc_args {
  public:
 
   static const char* ascii_fingerprint; // = "97BE39385D449F49A0D934F09B2EF404";
   static const uint8_t binary_fingerprint[16]; // = {0x97,0xBE,0x39,0x38,0x5D,0x44,0x9F,0x49,0xA0,0xD9,0x34,0xF0,0x9B,0x2E,0xF4,0x04};
 
-  Airavata_searchExperimentsByNameWithPagination_args(const Airavata_searchExperimentsByNameWithPagination_args&);
-  Airavata_searchExperimentsByNameWithPagination_args& operator=(const Airavata_searchExperimentsByNameWithPagination_args&);
-  Airavata_searchExperimentsByNameWithPagination_args() : gatewayId(), userName(), expName(), limit(0), offset(0) {
+  Airavata_searchExperimentsByDesc_args(const Airavata_searchExperimentsByDesc_args&);
+  Airavata_searchExperimentsByDesc_args& operator=(const Airavata_searchExperimentsByDesc_args&);
+  Airavata_searchExperimentsByDesc_args() : gatewayId(), userName(), description(), limit(0), offset(0) {
   }
 
-  virtual ~Airavata_searchExperimentsByNameWithPagination_args() throw();
+  virtual ~Airavata_searchExperimentsByDesc_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string gatewayId;
   std::string userName;
-  std::string expName;
+  std::string description;
   int32_t limit;
   int32_t offset;
 
@@ -5552,13 +4934,13 @@ class Airavata_searchExperimentsByNameWithPagination_args {
 
   void __set_userName(const std::string& val);
 
-  void __set_expName(const std::string& val);
+  void __set_description(const std::string& val);
 
   void __set_limit(const int32_t val);
 
   void __set_offset(const int32_t val);
 
-  bool operator == (const Airavata_searchExperimentsByNameWithPagination_args & rhs) const
+  bool operator == (const Airavata_searchExperimentsByDesc_args & rhs) const
   {
     if (!(authzToken == rhs.authzToken))
       return false;
@@ -5566,172 +4948,11 @@ class Airavata_searchExperimentsByNameWithPagination_args {
       return false;
     if (!(userName == rhs.userName))
       return false;
-    if (!(expName == rhs.expName))
+    if (!(description == rhs.description))
       return false;
     if (!(limit == rhs.limit))
       return false;
     if (!(offset == rhs.offset))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByNameWithPagination_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByNameWithPagination_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByNameWithPagination_args& obj);
-};
-
-
-class Airavata_searchExperimentsByNameWithPagination_pargs {
- public:
-
-  static const char* ascii_fingerprint; // = "97BE39385D449F49A0D934F09B2EF404";
-  static const uint8_t binary_fingerprint[16]; // = {0x97,0xBE,0x39,0x38,0x5D,0x44,0x9F,0x49,0xA0,0xD9,0x34,0xF0,0x9B,0x2E,0xF4,0x04};
-
-
-  virtual ~Airavata_searchExperimentsByNameWithPagination_pargs() throw();
-  const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* gatewayId;
-  const std::string* userName;
-  const std::string* expName;
-  const int32_t* limit;
-  const int32_t* offset;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByNameWithPagination_pargs& obj);
-};
-
-typedef struct _Airavata_searchExperimentsByNameWithPagination_result__isset {
-  _Airavata_searchExperimentsByNameWithPagination_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByNameWithPagination_result__isset;
-
-class Airavata_searchExperimentsByNameWithPagination_result {
- public:
-
-  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
-  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
-
-  Airavata_searchExperimentsByNameWithPagination_result(const Airavata_searchExperimentsByNameWithPagination_result&);
-  Airavata_searchExperimentsByNameWithPagination_result& operator=(const Airavata_searchExperimentsByNameWithPagination_result&);
-  Airavata_searchExperimentsByNameWithPagination_result() {
-  }
-
-  virtual ~Airavata_searchExperimentsByNameWithPagination_result() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByNameWithPagination_result__isset __isset;
-
-  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
-
-  bool operator == (const Airavata_searchExperimentsByNameWithPagination_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    if (!(ae == rhs.ae))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByNameWithPagination_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByNameWithPagination_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByNameWithPagination_result& obj);
-};
-
-typedef struct _Airavata_searchExperimentsByNameWithPagination_presult__isset {
-  _Airavata_searchExperimentsByNameWithPagination_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByNameWithPagination_presult__isset;
-
-class Airavata_searchExperimentsByNameWithPagination_presult {
- public:
-
-  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
-  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
-
-
-  virtual ~Airavata_searchExperimentsByNameWithPagination_presult() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByNameWithPagination_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByNameWithPagination_presult& obj);
-};
-
-
-class Airavata_searchExperimentsByDesc_args {
- public:
-
-  static const char* ascii_fingerprint; // = "AB879940BD15B6B25691265F7384B271";
-  static const uint8_t binary_fingerprint[16]; // = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
-
-  Airavata_searchExperimentsByDesc_args(const Airavata_searchExperimentsByDesc_args&);
-  Airavata_searchExperimentsByDesc_args& operator=(const Airavata_searchExperimentsByDesc_args&);
-  Airavata_searchExperimentsByDesc_args() : gatewayId(), userName(), description() {
-  }
-
-  virtual ~Airavata_searchExperimentsByDesc_args() throw();
-  std::string gatewayId;
-  std::string userName;
-  std::string description;
-
-  void __set_gatewayId(const std::string& val);
-
-  void __set_userName(const std::string& val);
-
-  void __set_description(const std::string& val);
-
-  bool operator == (const Airavata_searchExperimentsByDesc_args & rhs) const
-  {
-    if (!(gatewayId == rhs.gatewayId))
-      return false;
-    if (!(userName == rhs.userName))
-      return false;
-    if (!(description == rhs.description))
       return false;
     return true;
   }
@@ -5751,14 +4972,17 @@ class Airavata_searchExperimentsByDesc_args {
 class Airavata_searchExperimentsByDesc_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "AB879940BD15B6B25691265F7384B271";
-  static const uint8_t binary_fingerprint[16]; // = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
+  static const char* ascii_fingerprint; // = "97BE39385D449F49A0D934F09B2EF404";
+  static const uint8_t binary_fingerprint[16]; // = {0x97,0xBE,0x39,0x38,0x5D,0x44,0x9F,0x49,0xA0,0xD9,0x34,0xF0,0x9B,0x2E,0xF4,0x04};
 
 
   virtual ~Airavata_searchExperimentsByDesc_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* gatewayId;
   const std::string* userName;
   const std::string* description;
+  const int32_t* limit;
+  const int32_t* offset;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -5766,18 +4990,19 @@ class Airavata_searchExperimentsByDesc_pargs {
 };
 
 typedef struct _Airavata_searchExperimentsByDesc_result__isset {
-  _Airavata_searchExperimentsByDesc_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_searchExperimentsByDesc_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_searchExperimentsByDesc_result__isset;
 
 class Airavata_searchExperimentsByDesc_result {
  public:
 
-  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
-  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
+  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
+  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
 
   Airavata_searchExperimentsByDesc_result(const Airavata_searchExperimentsByDesc_result&);
   Airavata_searchExperimentsByDesc_result& operator=(const Airavata_searchExperimentsByDesc_result&);
@@ -5789,6 +5014,7 @@ class Airavata_searchExperimentsByDesc_result {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_searchExperimentsByDesc_result__isset __isset;
 
@@ -5800,6 +5026,8 @@ class Airavata_searchExperimentsByDesc_result {
 
   void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
 
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
   bool operator == (const Airavata_searchExperimentsByDesc_result & rhs) const
   {
     if (!(success == rhs.success))
@@ -5809,6 +5037,8 @@ class Airavata_searchExperimentsByDesc_result {
     if (!(ace == rhs.ace))
       return false;
     if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
       return false;
     return true;
   }
@@ -5825,18 +5055,19 @@ class Airavata_searchExperimentsByDesc_result {
 };
 
 typedef struct _Airavata_searchExperimentsByDesc_presult__isset {
-  _Airavata_searchExperimentsByDesc_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_searchExperimentsByDesc_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_searchExperimentsByDesc_presult__isset;
 
 class Airavata_searchExperimentsByDesc_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
-  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
+  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
+  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
 
 
   virtual ~Airavata_searchExperimentsByDesc_presult() throw();
@@ -5844,6 +5075,7 @@ class Airavata_searchExperimentsByDesc_presult {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_searchExperimentsByDesc_presult__isset __isset;
 
@@ -5853,22 +5085,22 @@ class Airavata_searchExperimentsByDesc_presult {
 };
 
 
-class Airavata_searchExperimentsByDescWithPagination_args {
+class Airavata_searchExperimentsByApplication_args {
  public:
 
   static const char* ascii_fingerprint; // = "97BE39385D449F49A0D934F09B2EF404";
   static const uint8_t binary_fingerprint[16]; // = {0x97,0xBE,0x39,0x38,0x5D,0x44,0x9F,0x49,0xA0,0xD9,0x34,0xF0,0x9B,0x2E,0xF4,0x04};
 
-  Airavata_searchExperimentsByDescWithPagination_args(const Airavata_searchExperimentsByDescWithPagination_args&);
-  Airavata_searchExperimentsByDescWithPagination_args& operator=(const Airavata_searchExperimentsByDescWithPagination_args&);
-  Airavata_searchExperimentsByDescWithPagination_args() : gatewayId(), userName(), description(), limit(0), offset(0) {
+  Airavata_searchExperimentsByApplication_args(const Airavata_searchExperimentsByApplication_args&);
+  Airavata_searchExperimentsByApplication_args& operator=(const Airavata_searchExperimentsByApplication_args&);
+  Airavata_searchExperimentsByApplication_args() : gatewayId(), userName(), applicationId(), limit(0), offset(0) {
   }
 
-  virtual ~Airavata_searchExperimentsByDescWithPagination_args() throw();
+  virtual ~Airavata_searchExperimentsByApplication_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string gatewayId;
   std::string userName;
-  std::string description;
+  std::string applicationId;
   int32_t limit;
   int32_t offset;
 
@@ -5878,13 +5110,13 @@ class Airavata_searchExperimentsByDescWithPagination_args {
 
   void __set_userName(const std::string& val);
 
-  void __set_description(const std::string& val);
+  void __set_applicationId(const std::string& val);
 
   void __set_limit(const int32_t val);
 
   void __set_offset(const int32_t val);
 
-  bool operator == (const Airavata_searchExperimentsByDescWithPagination_args & rhs) const
+  bool operator == (const Airavata_searchExperimentsByApplication_args & rhs) const
   {
     if (!(authzToken == rhs.authzToken))
       return false;
@@ -5892,172 +5124,11 @@ class Airavata_searchExperimentsByDescWithPagination_args {
       return false;
     if (!(userName == rhs.userName))
       return false;
-    if (!(description == rhs.description))
+    if (!(applicationId == rhs.applicationId))
       return false;
     if (!(limit == rhs.limit))
       return false;
     if (!(offset == rhs.offset))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByDescWithPagination_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByDescWithPagination_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByDescWithPagination_args& obj);
-};
-
-
-class Airavata_searchExperimentsByDescWithPagination_pargs {
- public:
-
-  static const char* ascii_fingerprint; // = "97BE39385D449F49A0D934F09B2EF404";
-  static const uint8_t binary_fingerprint[16]; // = {0x97,0xBE,0x39,0x38,0x5D,0x44,0x9F,0x49,0xA0,0xD9,0x34,0xF0,0x9B,0x2E,0xF4,0x04};
-
-
-  virtual ~Airavata_searchExperimentsByDescWithPagination_pargs() throw();
-  const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* gatewayId;
-  const std::string* userName;
-  const std::string* description;
-  const int32_t* limit;
-  const int32_t* offset;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByDescWithPagination_pargs& obj);
-};
-
-typedef struct _Airavata_searchExperimentsByDescWithPagination_result__isset {
-  _Airavata_searchExperimentsByDescWithPagination_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByDescWithPagination_result__isset;
-
-class Airavata_searchExperimentsByDescWithPagination_result {
- public:
-
-  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
-  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
-
-  Airavata_searchExperimentsByDescWithPagination_result(const Airavata_searchExperimentsByDescWithPagination_result&);
-  Airavata_searchExperimentsByDescWithPagination_result& operator=(const Airavata_searchExperimentsByDescWithPagination_result&);
-  Airavata_searchExperimentsByDescWithPagination_result() {
-  }
-
-  virtual ~Airavata_searchExperimentsByDescWithPagination_result() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByDescWithPagination_result__isset __isset;
-
-  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
-
-  bool operator == (const Airavata_searchExperimentsByDescWithPagination_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    if (!(ae == rhs.ae))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByDescWithPagination_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByDescWithPagination_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByDescWithPagination_result& obj);
-};
-
-typedef struct _Airavata_searchExperimentsByDescWithPagination_presult__isset {
-  _Airavata_searchExperimentsByDescWithPagination_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByDescWithPagination_presult__isset;
-
-class Airavata_searchExperimentsByDescWithPagination_presult {
- public:
-
-  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
-  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
-
-
-  virtual ~Airavata_searchExperimentsByDescWithPagination_presult() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByDescWithPagination_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByDescWithPagination_presult& obj);
-};
-
-
-class Airavata_searchExperimentsByApplication_args {
- public:
-
-  static const char* ascii_fingerprint; // = "AB879940BD15B6B25691265F7384B271";
-  static const uint8_t binary_fingerprint[16]; // = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
-
-  Airavata_searchExperimentsByApplication_args(const Airavata_searchExperimentsByApplication_args&);
-  Airavata_searchExperimentsByApplication_args& operator=(const Airavata_searchExperimentsByApplication_args&);
-  Airavata_searchExperimentsByApplication_args() : gatewayId(), userName(), applicationId() {
-  }
-
-  virtual ~Airavata_searchExperimentsByApplication_args() throw();
-  std::string gatewayId;
-  std::string userName;
-  std::string applicationId;
-
-  void __set_gatewayId(const std::string& val);
-
-  void __set_userName(const std::string& val);
-
-  void __set_applicationId(const std::string& val);
-
-  bool operator == (const Airavata_searchExperimentsByApplication_args & rhs) const
-  {
-    if (!(gatewayId == rhs.gatewayId))
-      return false;
-    if (!(userName == rhs.userName))
-      return false;
-    if (!(applicationId == rhs.applicationId))
       return false;
     return true;
   }
@@ -6077,14 +5148,17 @@ class Airavata_searchExperimentsByApplication_args {
 class Airavata_searchExperimentsByApplication_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "AB879940BD15B6B25691265F7384B271";
-  static const uint8_t binary_fingerprint[16]; // = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
+  static const char* ascii_fingerprint; // = "97BE39385D449F49A0D934F09B2EF404";
+  static const uint8_t binary_fingerprint[16]; // = {0x97,0xBE,0x39,0x38,0x5D,0x44,0x9F,0x49,0xA0,0xD9,0x34,0xF0,0x9B,0x2E,0xF4,0x04};
 
 
   virtual ~Airavata_searchExperimentsByApplication_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* gatewayId;
   const std::string* userName;
   const std::string* applicationId;
+  const int32_t* limit;
+  const int32_t* offset;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -6092,18 +5166,19 @@ class Airavata_searchExperimentsByApplication_pargs {
 };
 
 typedef struct _Airavata_searchExperimentsByApplication_result__isset {
-  _Airavata_searchExperimentsByApplication_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_searchExperimentsByApplication_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_searchExperimentsByApplication_result__isset;
 
 class Airavata_searchExperimentsByApplication_result {
  public:
 
-  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
-  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
+  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
+  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
 
   Airavata_searchExperimentsByApplication_result(const Airavata_searchExperimentsByApplication_result&);
   Airavata_searchExperimentsByApplication_result& operator=(const Airavata_searchExperimentsByApplication_result&);
@@ -6115,6 +5190,7 @@ class Airavata_searchExperimentsByApplication_result {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_searchExperimentsByApplication_result__isset __isset;
 
@@ -6126,6 +5202,8 @@ class Airavata_searchExperimentsByApplication_result {
 
   void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
 
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
   bool operator == (const Airavata_searchExperimentsByApplication_result & rhs) const
   {
     if (!(success == rhs.success))
@@ -6135,6 +5213,8 @@ class Airavata_searchExperimentsByApplication_result {
     if (!(ace == rhs.ace))
       return false;
     if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
       return false;
     return true;
   }
@@ -6151,18 +5231,19 @@ class Airavata_searchExperimentsByApplication_result {
 };
 
 typedef struct _Airavata_searchExperimentsByApplication_presult__isset {
-  _Airavata_searchExperimentsByApplication_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_searchExperimentsByApplication_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_searchExperimentsByApplication_presult__isset;
 
 class Airavata_searchExperimentsByApplication_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
-  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
+  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
+  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
 
 
   virtual ~Airavata_searchExperimentsByApplication_presult() throw();
@@ -6170,6 +5251,7 @@ class Airavata_searchExperimentsByApplication_presult {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_searchExperimentsByApplication_presult__isset __isset;
 
@@ -6179,22 +5261,22 @@ class Airavata_searchExperimentsByApplication_presult {
 };
 
 
-class Airavata_searchExperimentsByApplicationWithPagination_args {
+class Airavata_searchExperimentsByStatus_args {
  public:
 
-  static const char* ascii_fingerprint; // = "97BE39385D449F49A0D934F09B2EF404";
-  static const uint8_t binary_fingerprint[16]; // = {0x97,0xBE,0x39,0x38,0x5D,0x44,0x9F,0x49,0xA0,0xD9,0x34,0xF0,0x9B,0x2E,0xF4,0x04};
+  static const char* ascii_fingerprint; // = "A902C1FCF3C2BF735A7E5A4A6FF9AE3D";
+  static const uint8_t binary_fingerprint[16]; // = {0xA9,0x02,0xC1,0xFC,0xF3,0xC2,0xBF,0x73,0x5A,0x7E,0x5A,0x4A,0x6F,0xF9,0xAE,0x3D};
 
-  Airavata_searchExperimentsByApplicationWithPagination_args(const Airavata_searchExperimentsByApplicationWithPagination_args&);
-  Airavata_searchExperimentsByApplicationWithPagination_args& operator=(const Airavata_searchExperimentsByApplicationWithPagination_args&);
-  Airavata_searchExperimentsByApplicationWithPagination_args() : gatewayId(), userName(), applicationId(), limit(0), offset(0) {
+  Airavata_searchExperimentsByStatus_args(const Airavata_searchExperimentsByStatus_args&);
+  Airavata_searchExperimentsByStatus_args& operator=(const Airavata_searchExperimentsByStatus_args&);
+  Airavata_searchExperimentsByStatus_args() : gatewayId(), userName(), experimentState(( ::apache::airavata::model::status::ExperimentState::type)0), limit(0), offset(0) {
   }
 
-  virtual ~Airavata_searchExperimentsByApplicationWithPagination_args() throw();
+  virtual ~Airavata_searchExperimentsByStatus_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string gatewayId;
   std::string userName;
-  std::string applicationId;
+   ::apache::airavata::model::status::ExperimentState::type experimentState;
   int32_t limit;
   int32_t offset;
 
@@ -6204,13 +5286,13 @@ class Airavata_searchExperimentsByApplicationWithPagination_args {
 
   void __set_userName(const std::string& val);
 
-  void __set_applicationId(const std::string& val);
+  void __set_experimentState(const  ::apache::airavata::model::status::ExperimentState::type val);
 
   void __set_limit(const int32_t val);
 
   void __set_offset(const int32_t val);
 
-  bool operator == (const Airavata_searchExperimentsByApplicationWithPagination_args & rhs) const
+  bool operator == (const Airavata_searchExperimentsByStatus_args & rhs) const
   {
     if (!(authzToken == rhs.authzToken))
       return false;
@@ -6218,172 +5300,11 @@ class Airavata_searchExperimentsByApplicationWithPagination_args {
       return false;
     if (!(userName == rhs.userName))
       return false;
-    if (!(applicationId == rhs.applicationId))
+    if (!(experimentState == rhs.experimentState))
       return false;
     if (!(limit == rhs.limit))
       return false;
     if (!(offset == rhs.offset))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByApplicationWithPagination_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByApplicationWithPagination_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByApplicationWithPagination_args& obj);
-};
-
-
-class Airavata_searchExperimentsByApplicationWithPagination_pargs {
- public:
-
-  static const char* ascii_fingerprint; // = "97BE39385D449F49A0D934F09B2EF404";
-  static const uint8_t binary_fingerprint[16]; // = {0x97,0xBE,0x39,0x38,0x5D,0x44,0x9F,0x49,0xA0,0xD9,0x34,0xF0,0x9B,0x2E,0xF4,0x04};
-
-
-  virtual ~Airavata_searchExperimentsByApplicationWithPagination_pargs() throw();
-  const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* gatewayId;
-  const std::string* userName;
-  const std::string* applicationId;
-  const int32_t* limit;
-  const int32_t* offset;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByApplicationWithPagination_pargs& obj);
-};
-
-typedef struct _Airavata_searchExperimentsByApplicationWithPagination_result__isset {
-  _Airavata_searchExperimentsByApplicationWithPagination_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByApplicationWithPagination_result__isset;
-
-class Airavata_searchExperimentsByApplicationWithPagination_result {
- public:
-
-  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
-  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
-
-  Airavata_searchExperimentsByApplicationWithPagination_result(const Airavata_searchExperimentsByApplicationWithPagination_result&);
-  Airavata_searchExperimentsByApplicationWithPagination_result& operator=(const Airavata_searchExperimentsByApplicationWithPagination_result&);
-  Airavata_searchExperimentsByApplicationWithPagination_result() {
-  }
-
-  virtual ~Airavata_searchExperimentsByApplicationWithPagination_result() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByApplicationWithPagination_result__isset __isset;
-
-  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
-
-  bool operator == (const Airavata_searchExperimentsByApplicationWithPagination_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    if (!(ae == rhs.ae))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByApplicationWithPagination_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByApplicationWithPagination_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByApplicationWithPagination_result& obj);
-};
-
-typedef struct _Airavata_searchExperimentsByApplicationWithPagination_presult__isset {
-  _Airavata_searchExperimentsByApplicationWithPagination_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByApplicationWithPagination_presult__isset;
-
-class Airavata_searchExperimentsByApplicationWithPagination_presult {
- public:
-
-  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
-  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
-
-
-  virtual ~Airavata_searchExperimentsByApplicationWithPagination_presult() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByApplicationWithPagination_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByApplicationWithPagination_presult& obj);
-};
-
-
-class Airavata_searchExperimentsByStatus_args {
- public:
-
-  static const char* ascii_fingerprint; // = "4F8ABE747D9A2DF14F7E84DDBE60D55C";
-  static const uint8_t binary_fingerprint[16]; // = {0x4F,0x8A,0xBE,0x74,0x7D,0x9A,0x2D,0xF1,0x4F,0x7E,0x84,0xDD,0xBE,0x60,0xD5,0x5C};
-
-  Airavata_searchExperimentsByStatus_args(const Airavata_searchExperimentsByStatus_args&);
-  Airavata_searchExperimentsByStatus_args& operator=(const Airavata_searchExperimentsByStatus_args&);
-  Airavata_searchExperimentsByStatus_args() : gatewayId(), userName(), experimentState(( ::apache::airavata::model::status::ExperimentState::type)0) {
-  }
-
-  virtual ~Airavata_searchExperimentsByStatus_args() throw();
-  std::string gatewayId;
-  std::string userName;
-   ::apache::airavata::model::status::ExperimentState::type experimentState;
-
-  void __set_gatewayId(const std::string& val);
-
-  void __set_userName(const std::string& val);
-
-  void __set_experimentState(const  ::apache::airavata::model::status::ExperimentState::type val);
-
-  bool operator == (const Airavata_searchExperimentsByStatus_args & rhs) const
-  {
-    if (!(gatewayId == rhs.gatewayId))
-      return false;
-    if (!(userName == rhs.userName))
-      return false;
-    if (!(experimentState == rhs.experimentState))
       return false;
     return true;
   }
@@ -6403,14 +5324,17 @@ class Airavata_searchExperimentsByStatus_args {
 class Airavata_searchExperimentsByStatus_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "4F8ABE747D9A2DF14F7E84DDBE60D55C";
-  static const uint8_t binary_fingerprint[16]; // = {0x4F,0x8A,0xBE,0x74,0x7D,0x9A,0x2D,0xF1,0x4F,0x7E,0x84,0xDD,0xBE,0x60,0xD5,0x5C};
+  static const char* ascii_fingerprint; // = "A902C1FCF3C2BF735A7E5A4A6FF9AE3D";
+  static const uint8_t binary_fingerprint[16]; // = {0xA9,0x02,0xC1,0xFC,0xF3,0xC2,0xBF,0x73,0x5A,0x7E,0x5A,0x4A,0x6F,0xF9,0xAE,0x3D};
 
 
   virtual ~Airavata_searchExperimentsByStatus_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* gatewayId;
   const std::string* userName;
   const  ::apache::airavata::model::status::ExperimentState::type* experimentState;
+  const int32_t* limit;
+  const int32_t* offset;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -6418,18 +5342,19 @@ class Airavata_searchExperimentsByStatus_pargs {
 };
 
 typedef struct _Airavata_searchExperimentsByStatus_result__isset {
-  _Airavata_searchExperimentsByStatus_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_searchExperimentsByStatus_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_searchExperimentsByStatus_result__isset;
 
 class Airavata_searchExperimentsByStatus_result {
  public:
 
-  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
-  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
+  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
+  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
 
   Airavata_searchExperimentsByStatus_result(const Airavata_searchExperimentsByStatus_result&);
   Airavata_searchExperimentsByStatus_result& operator=(const Airavata_searchExperimentsByStatus_result&);
@@ -6441,6 +5366,7 @@ class Airavata_searchExperimentsByStatus_result {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_searchExperimentsByStatus_result__isset __isset;
 
@@ -6452,6 +5378,8 @@ class Airavata_searchExperimentsByStatus_result {
 
   void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
 
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
   bool operator == (const Airavata_searchExperimentsByStatus_result & rhs) const
   {
     if (!(success == rhs.success))
@@ -6461,6 +5389,8 @@ class Airavata_searchExperimentsByStatus_result {
     if (!(ace == rhs.ace))
       return false;
     if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
       return false;
     return true;
   }
@@ -6477,18 +5407,19 @@ class Airavata_searchExperimentsByStatus_result {
 };
 
 typedef struct _Airavata_searchExperimentsByStatus_presult__isset {
-  _Airavata_searchExperimentsByStatus_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_searchExperimentsByStatus_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_searchExperimentsByStatus_presult__isset;
 
 class Airavata_searchExperimentsByStatus_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
-  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
+  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
+  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
 
 
   virtual ~Airavata_searchExperimentsByStatus_presult() throw();
@@ -6496,6 +5427,7 @@ class Airavata_searchExperimentsByStatus_presult {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_searchExperimentsByStatus_presult__isset __isset;
 
@@ -6505,22 +5437,23 @@ class Airavata_searchExperimentsByStatus_presult {
 };
 
 
-class Airavata_searchExperimentsByStatusWithPagination_args {
+class Airavata_searchExperimentsByCreationTime_args {
  public:
 
-  static const char* ascii_fingerprint; // = "A902C1FCF3C2BF735A7E5A4A6FF9AE3D";
-  static const uint8_t binary_fingerprint[16]; // = {0xA9,0x02,0xC1,0xFC,0xF3,0xC2,0xBF,0x73,0x5A,0x7E,0x5A,0x4A,0x6F,0xF9,0xAE,0x3D};
+  static const char* ascii_fingerprint; // = "25238CAB6E3C1A0B8B40128B1FD9F510";
+  static const uint8_t binary_fingerprint[16]; // = {0x25,0x23,0x8C,0xAB,0x6E,0x3C,0x1A,0x0B,0x8B,0x40,0x12,0x8B,0x1F,0xD9,0xF5,0x10};
 
-  Airavata_searchExperimentsByStatusWithPagination_args(const Airavata_searchExperimentsByStatusWithPagination_args&);
-  Airavata_searchExperimentsByStatusWithPagination_args& operator=(const Airavata_searchExperimentsByStatusWithPagination_args&);
-  Airavata_searchExperimentsByStatusWithPagination_args() : gatewayId(), userName(), experimentState(( ::apache::airavata::model::status::ExperimentState::type)0), limit(0), offset(0) {
+  Airavata_searchExperimentsByCreationTime_args(const Airavata_searchExperimentsByCreationTime_args&);
+  Airavata_searchExperimentsByCreationTime_args& operator=(const Airavata_searchExperimentsByCreationTime_args&);
+  Airavata_searchExperimentsByCreationTime_args() : gatewayId(), userName(), fromTime(0), toTime(0), limit(0), offset(0) {
   }
 
-  virtual ~Airavata_searchExperimentsByStatusWithPagination_args() throw();
+  virtual ~Airavata_searchExperimentsByCreationTime_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string gatewayId;
   std::string userName;
-   ::apache::airavata::model::status::ExperimentState::type experimentState;
+  int64_t fromTime;
+  int64_t toTime;
   int32_t limit;
   int32_t offset;
 
@@ -6530,13 +5463,15 @@ class Airavata_searchExperimentsByStatusWithPagination_args {
 
   void __set_userName(const std::string& val);
 
-  void __set_experimentState(const  ::apache::airavata::model::status::ExperimentState::type val);
+  void __set_fromTime(const int64_t val);
+
+  void __set_toTime(const int64_t val);
 
   void __set_limit(const int32_t val);
 
   void __set_offset(const int32_t val);
 
-  bool operator == (const Airavata_searchExperimentsByStatusWithPagination_args & rhs) const
+  bool operator == (const Airavata_searchExperimentsByCreationTime_args & rhs) const
   {
     if (!(authzToken == rhs.authzToken))
       return false;
@@ -6544,177 +5479,13 @@ class Airavata_searchExperimentsByStatusWithPagination_args {
       return false;
     if (!(userName == rhs.userName))
       return false;
-    if (!(experimentState == rhs.experimentState))
+    if (!(fromTime == rhs.fromTime))
+      return false;
+    if (!(toTime == rhs.toTime))
       return false;
     if (!(limit == rhs.limit))
       return false;
     if (!(offset == rhs.offset))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByStatusWithPagination_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByStatusWithPagination_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByStatusWithPagination_args& obj);
-};
-
-
-class Airavata_searchExperimentsByStatusWithPagination_pargs {
- public:
-
-  static const char* ascii_fingerprint; // = "A902C1FCF3C2BF735A7E5A4A6FF9AE3D";
-  static const uint8_t binary_fingerprint[16]; // = {0xA9,0x02,0xC1,0xFC,0xF3,0xC2,0xBF,0x73,0x5A,0x7E,0x5A,0x4A,0x6F,0xF9,0xAE,0x3D};
-
-
-  virtual ~Airavata_searchExperimentsByStatusWithPagination_pargs() throw();
-  const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* gatewayId;
-  const std::string* userName;
-  const  ::apache::airavata::model::status::ExperimentState::type* experimentState;
-  const int32_t* limit;
-  const int32_t* offset;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByStatusWithPagination_pargs& obj);
-};
-
-typedef struct _Airavata_searchExperimentsByStatusWithPagination_result__isset {
-  _Airavata_searchExperimentsByStatusWithPagination_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByStatusWithPagination_result__isset;
-
-class Airavata_searchExperimentsByStatusWithPagination_result {
- public:
-
-  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
-  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
-
-  Airavata_searchExperimentsByStatusWithPagination_result(const Airavata_searchExperimentsByStatusWithPagination_result&);
-  Airavata_searchExperimentsByStatusWithPagination_result& operator=(const Airavata_searchExperimentsByStatusWithPagination_result&);
-  Airavata_searchExperimentsByStatusWithPagination_result() {
-  }
-
-  virtual ~Airavata_searchExperimentsByStatusWithPagination_result() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByStatusWithPagination_result__isset __isset;
-
-  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
-
-  bool operator == (const Airavata_searchExperimentsByStatusWithPagination_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    if (!(ae == rhs.ae))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByStatusWithPagination_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByStatusWithPagination_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByStatusWithPagination_result& obj);
-};
-
-typedef struct _Airavata_searchExperimentsByStatusWithPagination_presult__isset {
-  _Airavata_searchExperimentsByStatusWithPagination_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByStatusWithPagination_presult__isset;
-
-class Airavata_searchExperimentsByStatusWithPagination_presult {
- public:
-
-  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
-  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
-
-
-  virtual ~Airavata_searchExperimentsByStatusWithPagination_presult() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByStatusWithPagination_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByStatusWithPagination_presult& obj);
-};
-
-
-class Airavata_searchExperimentsByCreationTime_args {
- public:
-
-  static const char* ascii_fingerprint; // = "50272E49E7C02012722B8F62131C940B";
-  static const uint8_t binary_fingerprint[16]; // = {0x50,0x27,0x2E,0x49,0xE7,0xC0,0x20,0x12,0x72,0x2B,0x8F,0x62,0x13,0x1C,0x94,0x0B};
-
-  Airavata_searchExperimentsByCreationTime_args(const Airavata_searchExperimentsByCreationTime_args&);
-  Airavata_searchExperimentsByCreationTime_args& operator=(const Airavata_searchExperimentsByCreationTime_args&);
-  Airavata_searchExperimentsByCreationTime_args() : gatewayId(), userName(), fromTime(0), toTime(0) {
-  }
-
-  virtual ~Airavata_searchExperimentsByCreationTime_args() throw();
-  std::string gatewayId;
-  std::string userName;
-  int64_t fromTime;
-  int64_t toTime;
-
-  void __set_gatewayId(const std::string& val);
-
-  void __set_userName(const std::string& val);
-
-  void __set_fromTime(const int64_t val);
-
-  void __set_toTime(const int64_t val);
-
-  bool operator == (const Airavata_searchExperimentsByCreationTime_args & rhs) const
-  {
-    if (!(gatewayId == rhs.gatewayId))
-      return false;
-    if (!(userName == rhs.userName))
-      return false;
-    if (!(fromTime == rhs.fromTime))
-      return false;
-    if (!(toTime == rhs.toTime))
       return false;
     return true;
   }
@@ -6734,15 +5505,18 @@ class Airavata_searchExperimentsByCreationTime_args {
 class Airavata_searchExperimentsByCreationTime_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "50272E49E7C02012722B8F62131C940B";
-  static const uint8_t binary_fingerprint[16]; // = {0x50,0x27,0x2E,0x49,0xE7,0xC0,0x20,0x12,0x72,0x2B,0x8F,0x62,0x13,0x1C,0x94,0x0B};
+  static const char* ascii_fingerprint; // = "25238CAB6E3C1A0B8B40128B1FD9F510";
+  static const uint8_t binary_fingerprint[16]; // = {0x25,0x23,0x8C,0xAB,0x6E,0x3C,0x1A,0x0B,0x8B,0x40,0x12,0x8B,0x1F,0xD9,0xF5,0x10};
 
 
   virtual ~Airavata_searchExperimentsByCreationTime_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* gatewayId;
   const std::string* userName;
   const int64_t* fromTime;
   const int64_t* toTime;
+  const int32_t* limit;
+  const int32_t* offset;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -6750,18 +5524,19 @@ class Airavata_searchExperimentsByCreationTime_pargs {
 };
 
 typedef struct _Airavata_searchExperimentsByCreationTime_result__isset {
-  _Airavata_searchExperimentsByCreationTime_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_searchExperimentsByCreationTime_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_searchExperimentsByCreationTime_result__isset;
 
 class Airavata_searchExperimentsByCreationTime_result {
  public:
 
-  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
-  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
+  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
+  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
 
   Airavata_searchExperimentsByCreationTime_result(const Airavata_searchExperimentsByCreationTime_result&);
   Airavata_searchExperimentsByCreationTime_result& operator=(const Airavata_searchExperimentsByCreationTime_result&);
@@ -6773,6 +5548,7 @@ class Airavata_searchExperimentsByCreationTime_result {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_searchExperimentsByCreationTime_result__isset __isset;
 
@@ -6784,6 +5560,8 @@ class Airavata_searchExperimentsByCreationTime_result {
 
   void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
 
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
   bool operator == (const Airavata_searchExperimentsByCreationTime_result & rhs) const
   {
     if (!(success == rhs.success))
@@ -6793,6 +5571,8 @@ class Airavata_searchExperimentsByCreationTime_result {
     if (!(ace == rhs.ace))
       return false;
     if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
       return false;
     return true;
   }
@@ -6809,18 +5589,19 @@ class Airavata_searchExperimentsByCreationTime_result {
 };
 
 typedef struct _Airavata_searchExperimentsByCreationTime_presult__isset {
-  _Airavata_searchExperimentsByCreationTime_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_searchExperimentsByCreationTime_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_searchExperimentsByCreationTime_presult__isset;
 
 class Airavata_searchExperimentsByCreationTime_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
-  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
+  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
+  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
 
 
   virtual ~Airavata_searchExperimentsByCreationTime_presult() throw();
@@ -6828,194 +5609,13 @@ class Airavata_searchExperimentsByCreationTime_presult {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_searchExperimentsByCreationTime_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
   friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByCreationTime_presult& obj);
-};
-
-
-class Airavata_searchExperimentsByCreationTimeWithPagination_args {
- public:
-
-  static const char* ascii_fingerprint; // = "25238CAB6E3C1A0B8B40128B1FD9F510";
-  static const uint8_t binary_fingerprint[16]; // = {0x25,0x23,0x8C,0xAB,0x6E,0x3C,0x1A,0x0B,0x8B,0x40,0x12,0x8B,0x1F,0xD9,0xF5,0x10};
-
-  Airavata_searchExperimentsByCreationTimeWithPagination_args(const Airavata_searchExperimentsByCreationTimeWithPagination_args&);
-  Airavata_searchExperimentsByCreationTimeWithPagination_args& operator=(const Airavata_searchExperimentsByCreationTimeWithPagination_args&);
-  Airavata_searchExperimentsByCreationTimeWithPagination_args() : gatewayId(), userName(), fromTime(0), toTime(0), limit(0), offset(0) {
-  }
-
-  virtual ~Airavata_searchExperimentsByCreationTimeWithPagination_args() throw();
-   ::apache::airavata::model::security::AuthzToken authzToken;
-  std::string gatewayId;
-  std::string userName;
-  int64_t fromTime;
-  int64_t toTime;
-  int32_t limit;
-  int32_t offset;
-
-  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
-
-  void __set_gatewayId(const std::string& val);
-
-  void __set_userName(const std::string& val);
-
-  void __set_fromTime(const int64_t val);
-
-  void __set_toTime(const int64_t val);
-
-  void __set_limit(const int32_t val);
-
-  void __set_offset(const int32_t val);
-
-  bool operator == (const Airavata_searchExperimentsByCreationTimeWithPagination_args & rhs) const
-  {
-    if (!(authzToken == rhs.authzToken))
-      return false;
-    if (!(gatewayId == rhs.gatewayId))
-      return false;
-    if (!(userName == rhs.userName))
-      return false;
-    if (!(fromTime == rhs.fromTime))
-      return false;
-    if (!(toTime == rhs.toTime))
-      return false;
-    if (!(limit == rhs.limit))
-      return false;
-    if (!(offset == rhs.offset))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByCreationTimeWithPagination_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByCreationTimeWithPagination_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByCreationTimeWithPagination_args& obj);
-};
-
-
-class Airavata_searchExperimentsByCreationTimeWithPagination_pargs {
- public:
-
-  static const char* ascii_fingerprint; // = "25238CAB6E3C1A0B8B40128B1FD9F510";
-  static const uint8_t binary_fingerprint[16]; // = {0x25,0x23,0x8C,0xAB,0x6E,0x3C,0x1A,0x0B,0x8B,0x40,0x12,0x8B,0x1F,0xD9,0xF5,0x10};
-
-
-  virtual ~Airavata_searchExperimentsByCreationTimeWithPagination_pargs() throw();
-  const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* gatewayId;
-  const std::string* userName;
-  const int64_t* fromTime;
-  const int64_t* toTime;
-  const int32_t* limit;
-  const int32_t* offset;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByCreationTimeWithPagination_pargs& obj);
-};
-
-typedef struct _Airavata_searchExperimentsByCreationTimeWithPagination_result__isset {
-  _Airavata_searchExperimentsByCreationTimeWithPagination_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByCreationTimeWithPagination_result__isset;
-
-class Airavata_searchExperimentsByCreationTimeWithPagination_result {
- public:
-
-  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
-  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
-
-  Airavata_searchExperimentsByCreationTimeWithPagination_result(const Airavata_searchExperimentsByCreationTimeWithPagination_result&);
-  Airavata_searchExperimentsByCreationTimeWithPagination_result& operator=(const Airavata_searchExperimentsByCreationTimeWithPagination_result&);
-  Airavata_searchExperimentsByCreationTimeWithPagination_result() {
-  }
-
-  virtual ~Airavata_searchExperimentsByCreationTimeWithPagination_result() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByCreationTimeWithPagination_result__isset __isset;
-
-  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
-
-  bool operator == (const Airavata_searchExperimentsByCreationTimeWithPagination_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    if (!(ae == rhs.ae))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByCreationTimeWithPagination_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByCreationTimeWithPagination_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByCreationTimeWithPagination_result& obj);
-};
-
-typedef struct _Airavata_searchExperimentsByCreationTimeWithPagination_presult__isset {
-  _Airavata_searchExperimentsByCreationTimeWithPagination_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByCreationTimeWithPagination_presult__isset;
-
-class Airavata_searchExperimentsByCreationTimeWithPagination_presult {
- public:
-
-  static const char* ascii_fingerprint; // = "6490BEC830E2A72869B2F4E224CB0E50";
-  static const uint8_t binary_fingerprint[16]; // = {0x64,0x90,0xBE,0xC8,0x30,0xE2,0xA7,0x28,0x69,0xB2,0xF4,0xE2,0x24,0xCB,0x0E,0x50};
-
-
-  virtual ~Airavata_searchExperimentsByCreationTimeWithPagination_presult() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByCreationTimeWithPagination_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_searchExperimentsByCreationTimeWithPagination_presult& obj);
 };
 
 typedef struct _Airavata_searchExperiments_args__isset {
@@ -7365,164 +5965,18 @@ class Airavata_getExperimentStatistics_presult {
 };
 
 
-class Airavata_getAllExperimentsInProject_args {
- public:
-
-  static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
-  static const uint8_t binary_fingerprint[16]; // = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
-
-  Airavata_getAllExperimentsInProject_args(const Airavata_getAllExperimentsInProject_args&);
-  Airavata_getAllExperimentsInProject_args& operator=(const Airavata_getAllExperimentsInProject_args&);
-  Airavata_getAllExperimentsInProject_args() : projectId() {
-  }
-
-  virtual ~Airavata_getAllExperimentsInProject_args() throw();
-  std::string projectId;
-
-  void __set_projectId(const std::string& val);
-
-  bool operator == (const Airavata_getAllExperimentsInProject_args & rhs) const
-  {
-    if (!(projectId == rhs.projectId))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_getAllExperimentsInProject_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_getAllExperimentsInProject_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllExperimentsInProject_args& obj);
-};
-
-
-class Airavata_getAllExperimentsInProject_pargs {
- public:
-
-  static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
-  static const uint8_t binary_fingerprint[16]; // = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
-
-
-  virtual ~Airavata_getAllExperimentsInProject_pargs() throw();
-  const std::string* projectId;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllExperimentsInProject_pargs& obj);
-};
-
-typedef struct _Airavata_getAllExperimentsInProject_result__isset {
-  _Airavata_getAllExperimentsInProject_result__isset() : success(false), ire(false), ace(false), ase(false), pnfe(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool pnfe :1;
-} _Airavata_getAllExperimentsInProject_result__isset;
-
-class Airavata_getAllExperimentsInProject_result {
- public:
-
-  static const char* ascii_fingerprint; // = "6B4769CBA7068AF3BD2B200CE0A4C648";
-  static const uint8_t binary_fingerprint[16]; // = {0x6B,0x47,0x69,0xCB,0xA7,0x06,0x8A,0xF3,0xBD,0x2B,0x20,0x0C,0xE0,0xA4,0xC6,0x48};
-
-  Airavata_getAllExperimentsInProject_result(const Airavata_getAllExperimentsInProject_result&);
-  Airavata_getAllExperimentsInProject_result& operator=(const Airavata_getAllExperimentsInProject_result&);
-  Airavata_getAllExperimentsInProject_result() {
-  }
-
-  virtual ~Airavata_getAllExperimentsInProject_result() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentModel>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::ProjectNotFoundException pnfe;
-
-  _Airavata_getAllExperimentsInProject_result__isset __isset;
-
-  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentModel> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  void __set_pnfe(const  ::apache::airavata::api::error::ProjectNotFoundException& val);
-
-  bool operator == (const Airavata_getAllExperimentsInProject_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    if (!(pnfe == rhs.pnfe))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_getAllExperimentsInProject_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_getAllExperimentsInProject_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllExperimentsInProject_result& obj);
-};
-
-typedef struct _Airavata_getAllExperimentsInProject_presult__isset {
-  _Airavata_getAllExperimentsInProject_presult__isset() : success(false), ire(false), ace(false), ase(false), pnfe(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool pnfe :1;
-} _Airavata_getAllExperimentsInProject_presult__isset;
-
-class Airavata_getAllExperimentsInProject_presult {
- public:
-
-  static const char* ascii_fingerprint; // = "6B4769CBA7068AF3BD2B200CE0A4C648";
-  static const uint8_t binary_fingerprint[16]; // = {0x6B,0x47,0x69,0xCB,0xA7,0x06,0x8A,0xF3,0xBD,0x2B,0x20,0x0C,0xE0,0xA4,0xC6,0x48};
-
-
-  virtual ~Airavata_getAllExperimentsInProject_presult() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentModel> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::ProjectNotFoundException pnfe;
-
-  _Airavata_getAllExperimentsInProject_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllExperimentsInProject_presult& obj);
-};
-
-
-class Airavata_getAllExperimentsInProjectWithPagination_args {
+class Airavata_getExperimentsInProject_args {
  public:
 
   static const char* ascii_fingerprint; // = "B1122ABC64D90B0DBC9C064E7B94145D";
   static const uint8_t binary_fingerprint[16]; // = {0xB1,0x12,0x2A,0xBC,0x64,0xD9,0x0B,0x0D,0xBC,0x9C,0x06,0x4E,0x7B,0x94,0x14,0x5D};
 
-  Airavata_getAllExperimentsInProjectWithPagination_args(const Airavata_getAllExperimentsInProjectWithPagination_args&);
-  Airavata_getAllExperimentsInProjectWithPagination_args& operator=(const Airavata_getAllExperimentsInProjectWithPagination_args&);
-  Airavata_getAllExperimentsInProjectWithPagination_args() : projectId(), limit(0), offset(0) {
+  Airavata_getExperimentsInProject_args(const Airavata_getExperimentsInProject_args&);
+  Airavata_getExperimentsInProject_args& operator=(const Airavata_getExperimentsInProject_args&);
+  Airavata_getExperimentsInProject_args() : projectId(), limit(0), offset(0) {
   }
 
-  virtual ~Airavata_getAllExperimentsInProjectWithPagination_args() throw();
+  virtual ~Airavata_getExperimentsInProject_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string projectId;
   int32_t limit;
@@ -7536,7 +5990,7 @@ class Airavata_getAllExperimentsInProjectWithPagination_args {
 
   void __set_offset(const int32_t val);
 
-  bool operator == (const Airavata_getAllExperimentsInProjectWithPagination_args & rhs) const
+  bool operator == (const Airavata_getExperimentsInProject_args & rhs) const
   {
     if (!(authzToken == rhs.authzToken))
       return false;
@@ -7548,27 +6002,27 @@ class Airavata_getAllExperimentsInProjectWithPagination_args {
       return false;
     return true;
   }
-  bool operator != (const Airavata_getAllExperimentsInProjectWithPagination_args &rhs) const {
+  bool operator != (const Airavata_getExperimentsInProject_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Airavata_getAllExperimentsInProjectWithPagination_args & ) const;
+  bool operator < (const Airavata_getExperimentsInProject_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllExperimentsInProjectWithPagination_args& obj);
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getExperimentsInProject_args& obj);
 };
 
 
-class Airavata_getAllExperimentsInProjectWithPagination_pargs {
+class Airavata_getExperimentsInProject_pargs {
  public:
 
   static const char* ascii_fingerprint; // = "B1122ABC64D90B0DBC9C064E7B94145D";
   static const uint8_t binary_fingerprint[16]; // = {0xB1,0x12,0x2A,0xBC,0x64,0xD9,0x0B,0x0D,0xBC,0x9C,0x06,0x4E,0x7B,0x94,0x14,0x5D};
 
 
-  virtual ~Airavata_getAllExperimentsInProjectWithPagination_pargs() throw();
+  virtual ~Airavata_getExperimentsInProject_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* projectId;
   const int32_t* limit;
@@ -7576,31 +6030,31 @@ class Airavata_getAllExperimentsInProjectWithPagination_pargs {
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllExperimentsInProjectWithPagination_pargs& obj);
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getExperimentsInProject_pargs& obj);
 };
 
-typedef struct _Airavata_getAllExperimentsInProjectWithPagination_result__isset {
-  _Airavata_getAllExperimentsInProjectWithPagination_result__isset() : success(false), ire(false), ace(false), ase(false), pnfe(false), ae(false) {}
+typedef struct _Airavata_getExperimentsInProject_result__isset {
+  _Airavata_getExperimentsInProject_result__isset() : success(false), ire(false), ace(false), ase(false), pnfe(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
   bool pnfe :1;
   bool ae :1;
-} _Airavata_getAllExperimentsInProjectWithPagination_result__isset;
+} _Airavata_getExperimentsInProject_result__isset;
 
-class Airavata_getAllExperimentsInProjectWithPagination_result {
+class Airavata_getExperimentsInProject_result {
  public:
 
   static const char* ascii_fingerprint; // = "3B04FE1F15E6945947A3FD5096FB91AF";
   static const uint8_t binary_fingerprint[16]; // = {0x3B,0x04,0xFE,0x1F,0x15,0xE6,0x94,0x59,0x47,0xA3,0xFD,0x50,0x96,0xFB,0x91,0xAF};
 
-  Airavata_getAllExperimentsInProjectWithPagination_result(const Airavata_getAllExperimentsInProjectWithPagination_result&);
-  Airavata_getAllExperimentsInProjectWithPagination_result& operator=(const Airavata_getAllExperimentsInProjectWithPagination_result&);
-  Airavata_getAllExperimentsInProjectWithPagination_result() {
+  Airavata_getExperimentsInProject_result(const Airavata_getExperimentsInProject_result&);
+  Airavata_getExperimentsInProject_result& operator=(const Airavata_getExperimentsInProject_result&);
+  Airavata_getExperimentsInProject_result() {
   }
 
-  virtual ~Airavata_getAllExperimentsInProjectWithPagination_result() throw();
+  virtual ~Airavata_getExperimentsInProject_result() throw();
   std::vector< ::apache::airavata::model::experiment::ExperimentModel>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
@@ -7608,7 +6062,7 @@ class Airavata_getAllExperimentsInProjectWithPagination_result {
    ::apache::airavata::api::error::ProjectNotFoundException pnfe;
    ::apache::airavata::api::error::AuthorizationException ae;
 
-  _Airavata_getAllExperimentsInProjectWithPagination_result__isset __isset;
+  _Airavata_getExperimentsInProject_result__isset __isset;
 
   void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentModel> & val);
 
@@ -7622,7 +6076,7 @@ class Airavata_getAllExperimentsInProjectWithPagination_result {
 
   void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
 
-  bool operator == (const Airavata_getAllExperimentsInProjectWithPagination_result & rhs) const
+  bool operator == (const Airavata_getExperimentsInProject_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
@@ -7638,36 +6092,36 @@ class Airavata_getAllExperimentsInProjectWithPagination_result {
       return false;
     return true;
   }
-  bool operator != (const Airavata_getAllExperimentsInProjectWithPagination_result &rhs) const {
+  bool operator != (const Airavata_getExperimentsInProject_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Airavata_getAllExperimentsInProjectWithPagination_result & ) const;
+  bool operator < (const Airavata_getExperimentsInProject_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllExperimentsInProjectWithPagination_result& obj);
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getExperimentsInProject_result& obj);
 };
 
-typedef struct _Airavata_getAllExperimentsInProjectWithPagination_presult__isset {
-  _Airavata_getAllExperimentsInProjectWithPagination_presult__isset() : success(false), ire(false), ace(false), ase(false), pnfe(false), ae(false) {}
+typedef struct _Airavata_getExperimentsInProject_presult__isset {
+  _Airavata_getExperimentsInProject_presult__isset() : success(false), ire(false), ace(false), ase(false), pnfe(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
   bool pnfe :1;
   bool ae :1;
-} _Airavata_getAllExperimentsInProjectWithPagination_presult__isset;
+} _Airavata_getExperimentsInProject_presult__isset;
 
-class Airavata_getAllExperimentsInProjectWithPagination_presult {
+class Airavata_getExperimentsInProject_presult {
  public:
 
   static const char* ascii_fingerprint; // = "3B04FE1F15E6945947A3FD5096FB91AF";
   static const uint8_t binary_fingerprint[16]; // = {0x3B,0x04,0xFE,0x1F,0x15,0xE6,0x94,0x59,0x47,0xA3,0xFD,0x50,0x96,0xFB,0x91,0xAF};
 
 
-  virtual ~Airavata_getAllExperimentsInProjectWithPagination_presult() throw();
+  virtual ~Airavata_getExperimentsInProject_presult() throw();
   std::vector< ::apache::airavata::model::experiment::ExperimentModel> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
@@ -7675,170 +6129,26 @@ class Airavata_getAllExperimentsInProjectWithPagination_presult {
    ::apache::airavata::api::error::ProjectNotFoundException pnfe;
    ::apache::airavata::api::error::AuthorizationException ae;
 
-  _Airavata_getAllExperimentsInProjectWithPagination_presult__isset __isset;
+  _Airavata_getExperimentsInProject_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllExperimentsInProjectWithPagination_presult& obj);
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getExperimentsInProject_presult& obj);
 };
 
 
-class Airavata_getAllUserExperiments_args {
- public:
-
-  static const char* ascii_fingerprint; // = "07A9615F837F7D0A952B595DD3020972";
-  static const uint8_t binary_fingerprint[16]; // = {0x07,0xA9,0x61,0x5F,0x83,0x7F,0x7D,0x0A,0x95,0x2B,0x59,0x5D,0xD3,0x02,0x09,0x72};
-
-  Airavata_getAllUserExperiments_args(const Airavata_getAllUserExperiments_args&);
-  Airavata_getAllUserExperiments_args& operator=(const Airavata_getAllUserExperiments_args&);
-  Airavata_getAllUserExperiments_args() : gatewayId(), userName() {
-  }
-
-  virtual ~Airavata_getAllUserExperiments_args() throw();
-  std::string gatewayId;
-  std::string userName;
-
-  void __set_gatewayId(const std::string& val);
-
-  void __set_userName(const std::string& val);
-
-  bool operator == (const Airavata_getAllUserExperiments_args & rhs) const
-  {
-    if (!(gatewayId == rhs.gatewayId))
-      return false;
-    if (!(userName == rhs.userName))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_getAllUserExperiments_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_getAllUserExperiments_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllUserExperiments_args& obj);
-};
-
-
-class Airavata_getAllUserExperiments_pargs {
- public:
-
-  static const char* ascii_fingerprint; // = "07A9615F837F7D0A952B595DD3020972";
-  static const uint8_t binary_fingerprint[16]; // = {0x07,0xA9,0x61,0x5F,0x83,0x7F,0x7D,0x0A,0x95,0x2B,0x59,0x5D,0xD3,0x02,0x09,0x72};
-
-
-  virtual ~Airavata_getAllUserExperiments_pargs() throw();
-  const std::string* gatewayId;
-  const std::string* userName;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllUserExperiments_pargs& obj);
-};
-
-typedef struct _Airavata_getAllUserExperiments_result__isset {
-  _Airavata_getAllUserExperiments_result__isset() : success(false), ire(false), ace(false), ase(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_getAllUserExperiments_result__isset;
-
-class Airavata_getAllUserExperiments_result {
- public:
-
-  static const char* ascii_fingerprint; // = "7F8F5E54F1D3996A9D4B47B330B0655D";
-  static const uint8_t binary_fingerprint[16]; // = {0x7F,0x8F,0x5E,0x54,0xF1,0xD3,0x99,0x6A,0x9D,0x4B,0x47,0xB3,0x30,0xB0,0x65,0x5D};
-
-  Airavata_getAllUserExperiments_result(const Airavata_getAllUserExperiments_result&);
-  Airavata_getAllUserExperiments_result& operator=(const Airavata_getAllUserExperiments_result&);
-  Airavata_getAllUserExperiments_result() {
-  }
-
-  virtual ~Airavata_getAllUserExperiments_result() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentModel>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_getAllUserExperiments_result__isset __isset;
-
-  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentModel> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  bool operator == (const Airavata_getAllUserExperiments_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_getAllUserExperiments_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_getAllUserExperiments_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllUserExperiments_result& obj);
-};
-
-typedef struct _Airavata_getAllUserExperiments_presult__isset {
-  _Airavata_getAllUserExperiments_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_getAllUserExperiments_presult__isset;
-
-class Airavata_getAllUserExperiments_presult {
- public:
-
-  static const char* ascii_fingerprint; // = "7F8F5E54F1D3996A9D4B47B330B0655D";
-  static const uint8_t binary_fingerprint[16]; // = {0x7F,0x8F,0x5E,0x54,0xF1,0xD3,0x99,0x6A,0x9D,0x4B,0x47,0xB3,0x30,0xB0,0x65,0x5D};
-
-
-  virtual ~Airavata_getAllUserExperiments_presult() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentModel> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_getAllUserExperiments_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllUserExperiments_presult& obj);
-};
-
-
-class Airavata_getAllUserExperimentsWithPagination_args {
+class Airavata_getUserExperiments_args {
  public:
 
   static const char* ascii_fingerprint; // = "B0F1ED866602D6465A1E8B7B65B9DBBA";
   static const uint8_t binary_fingerprint[16]; // = {0xB0,0xF1,0xED,0x86,0x66,0x02,0xD6,0x46,0x5A,0x1E,0x8B,0x7B,0x65,0xB9,0xDB,0xBA};
 
-  Airavata_getAllUserExperimentsWithPagination_args(const Airavata_getAllUserExperimentsWithPagination_args&);
-  Airavata_getAllUserExperimentsWithPagination_args& operator=(const Airavata_getAllUserExperimentsWithPagination_args&);
-  Airavata_getAllUserExperimentsWithPagination_args() : gatewayId(), userName(), limit(0), offset(0) {
+  Airavata_getUserExperiments_args(const Airavata_getUserExperiments_args&);
+  Airavata_getUserExperiments_args& operator=(const Airavata_getUserExperiments_args&);
+  Airavata_getUserExperiments_args() : gatewayId(), userName(), limit(0), offset(0) {
   }
 
-  virtual ~Airavata_getAllUserExperimentsWithPagination_args() throw();
+  virtual ~Airavata_getUserExperiments_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string gatewayId;
   std::string userName;
@@ -7855,7 +6165,7 @@ class Airavata_getAllUserExperimentsWithPagination_args {
 
   void __set_offset(const int32_t val);
 
-  bool operator == (const Airavata_getAllUserExperimentsWithPagination_args & rhs) const
+  bool operator == (const Airavata_getUserExperiments_args & rhs) const
   {
     if (!(authzToken == rhs.authzToken))
       return false;
@@ -7869,27 +6179,27 @@ class Airavata_getAllUserExperimentsWithPagination_args {
       return false;
     return true;
   }
-  bool operator != (const Airavata_getAllUserExperimentsWithPagination_args &rhs) const {
+  bool operator != (const Airavata_getUserExperiments_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Airavata_getAllUserExperimentsWithPagination_args & ) const;
+  bool operator < (const Airavata_getUserExperiments_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllUserExperimentsWithPagination_args& obj);
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getUserExperiments_args& obj);
 };
 
 
-class Airavata_getAllUserExperimentsWithPagination_pargs {
+class Airavata_getUserExperiments_pargs {
  public:
 
   static const char* ascii_fingerprint; // = "B0F1ED866602D6465A1E8B7B65B9DBBA";
   static const uint8_t binary_fingerprint[16]; // = {0xB0,0xF1,0xED,0x86,0x66,0x02,0xD6,0x46,0x5A,0x1E,0x8B,0x7B,0x65,0xB9,0xDB,0xBA};
 
 
-  virtual ~Airavata_getAllUserExperimentsWithPagination_pargs() throw();
+  virtual ~Airavata_getUserExperiments_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* gatewayId;
   const std::string* userName;
@@ -7898,37 +6208,37 @@ class Airavata_getAllUserExperimentsWithPagination_pargs {
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllUserExperimentsWithPagination_pargs& obj);
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getUserExperiments_pargs& obj);
 };
 
-typedef struct _Airavata_getAllUserExperimentsWithPagination_result__isset {
-  _Airavata_getAllUserExperimentsWithPagination_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+typedef struct _Airavata_getUserExperiments_result__isset {
+  _Airavata_getUserExperiments_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
   bool ae :1;
-} _Airavata_getAllUserExperimentsWithPagination_result__isset;
+} _Airavata_getUserExperiments_result__isset;
 
-class Airavata_getAllUserExperimentsWithPagination_result {
+class Airavata_getUserExperiments_result {
  public:
 
   static const char* ascii_fingerprint; // = "6B4769CBA7068AF3BD2B200CE0A4C648";
   static const uint8_t binary_fingerprint[16]; // = {0x6B,0x47,0x69,0xCB,0xA7,0x06,0x8A,0xF3,0xBD,0x2B,0x20,0x0C,0xE0,0xA4,0xC6,0x48};
 
-  Airavata_getAllUserExperimentsWithPagination_result(const Airavata_getAllUserExperimentsWithPagination_result&);
-  Airavata_getAllUserExperimentsWithPagination_result& operator=(const Airavata_getAllUserExperimentsWithPagination_result&);
-  Airavata_getAllUserExperimentsWithPagination_result() {
+  Airavata_getUserExperiments_result(const Airavata_getUserExperiments_result&);
+  Airavata_getUserExperiments_result& operator=(const Airavata_getUserExperiments_result&);
+  Airavata_getUserExperiments_result() {
   }
 
-  virtual ~Airavata_getAllUserExperimentsWithPagination_result() throw();
+  virtual ~Airavata_getUserExperiments_result() throw();
   std::vector< ::apache::airavata::model::experiment::ExperimentModel>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
    ::apache::airavata::api::error::AuthorizationException ae;
 
-  _Airavata_getAllUserExperimentsWithPagination_result__isset __isset;
+  _Airavata_getUserExperiments_result__isset __isset;
 
   void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentModel> & val);
 
@@ -7940,7 +6250,7 @@ class Airavata_getAllUserExperimentsWithPagination_result {
 
   void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
 
-  bool operator == (const Airavata_getAllUserExperimentsWithPagination_result & rhs) const
+  bool operator == (const Airavata_getUserExperiments_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
@@ -7954,46 +6264,46 @@ class Airavata_getAllUserExperimentsWithPagination_result {
       return false;
     return true;
   }
-  bool operator != (const Airavata_getAllUserExperimentsWithPagination_result &rhs) const {
+  bool operator != (const Airavata_getUserExperiments_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Airavata_getAllUserExperimentsWithPagination_result & ) const;
+  bool operator < (const Airavata_getUserExperiments_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllUserExperimentsWithPagination_result& obj);
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getUserExperiments_result& obj);
 };
 
-typedef struct _Airavata_getAllUserExperimentsWithPagination_presult__isset {
-  _Airavata_getAllUserExperimentsWithPagination_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+typedef struct _Airavata_getUserExperiments_presult__isset {
+  _Airavata_getUserExperiments_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
   bool ae :1;
-} _Airavata_getAllUserExperimentsWithPagination_presult__isset;
+} _Airavata_getUserExperiments_presult__isset;
 
-class Airavata_getAllUserExperimentsWithPagination_presult {
+class Airavata_getUserExperiments_presult {
  public:
 
   static const char* ascii_fingerprint; // = "6B4769CBA7068AF3BD2B200CE0A4C648";
   static const uint8_t binary_fingerprint[16]; // = {0x6B,0x47,0x69,0xCB,0xA7,0x06,0x8A,0xF3,0xBD,0x2B,0x20,0x0C,0xE0,0xA4,0xC6,0x48};
 
 
-  virtual ~Airavata_getAllUserExperimentsWithPagination_presult() throw();
+  virtual ~Airavata_getUserExperiments_presult() throw();
   std::vector< ::apache::airavata::model::experiment::ExperimentModel> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
    ::apache::airavata::api::error::AuthorizationException ae;
 
-  _Airavata_getAllUserExperimentsWithPagination_presult__isset __isset;
+  _Airavata_getUserExperiments_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllUserExperimentsWithPagination_presult& obj);
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getUserExperiments_presult& obj);
 };
 
 
@@ -22199,72 +20509,42 @@ class AiravataClient : virtual public AiravataIf {
   bool deleteProject(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId);
   void send_deleteProject(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId);
   bool recv_deleteProject();
-  void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName);
-  void send_getAllUserProjects(const std::string& gatewayId, const std::string& userName);
-  void recv_getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return);
-  void getAllUserProjectsWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset);
-  void send_getAllUserProjectsWithPagination(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset);
-  void recv_getAllUserProjectsWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return);
-  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& projectName);
-  void send_searchProjectsByProjectName(const std::string& gatewayId, const std::string& userName, const std::string& projectName);
+  void getUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset);
+  void send_getUserProjects(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset);
+  void recv_getUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return);
+  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset);
+  void send_searchProjectsByProjectName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset);
   void recv_searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return);
-  void searchProjectsByProjectNameWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset);
-  void send_searchProjectsByProjectNameWithPagination(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset);
-  void recv_searchProjectsByProjectNameWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return);
-  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description);
-  void send_searchProjectsByProjectDesc(const std::string& gatewayId, const std::string& userName, const std::string& description);
+  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
+  void send_searchProjectsByProjectDesc(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
   void recv_searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return);
-  void searchProjectsByProjectDescWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
-  void send_searchProjectsByProjectDescWithPagination(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
-  void recv_searchProjectsByProjectDescWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return);
-  void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName);
-  void send_searchExperimentsByName(const std::string& gatewayId, const std::string& userName, const std::string& expName);
+  void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset);
+  void send_searchExperimentsByName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset);
   void recv_searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
-  void searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset);
-  void send_searchExperimentsByNameWithPagination(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
-  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description);
-  void send_searchExperimentsByDesc(const std::string& gatewayId, const std::string& userName, const std::string& description);
+  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
+  void send_searchExperimentsByDesc(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
   void recv_searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
-  void searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
-  void send_searchExperimentsByDescWithPagination(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
-  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId);
-  void send_searchExperimentsByApplication(const std::string& gatewayId, const std::string& userName, const std::string& applicationId);
+  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset);
+  void send_searchExperimentsByApplication(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset);
   void recv_searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
-  void searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset);
-  void send_searchExperimentsByApplicationWithPagination(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
-  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState);
-  void send_searchExperimentsByStatus(const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState);
+  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset);
+  void send_searchExperimentsByStatus(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset);
   void recv_searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
-  void searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset);
-  void send_searchExperimentsByStatusWithPagination(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
-  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime);
-  void send_searchExperimentsByCreationTime(const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime);
+  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset);
+  void send_searchExperimentsByCreationTime(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset);
   void recv_searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
-  void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset);
-  void send_searchExperimentsByCreationTimeWithPagination(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
   void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
   void send_searchExperiments(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
   void recv_searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
   void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime);
   void send_getExperimentStatistics(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime);
   void recv_getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return);
-  void getAllExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& projectId);
-  void send_getAllExperimentsInProject(const std::string& projectId);
-  void recv_getAllExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return);
-  void getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset);
-  void send_getAllExperimentsInProjectWithPagination(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset);
-  void recv_getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return);
-  void getAllUserExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& gatewayId, const std::string& userName);
-  void send_getAllUserExperiments(const std::string& gatewayId, const std::string& userName);
-  void recv_getAllUserExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return);
-  void getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset);
-  void send_getAllUserExperimentsWithPagination(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset);
-  void recv_getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return);
+  void getExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset);
+  void send_getExperimentsInProject(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset);
+  void recv_getExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return);
+  void getUserExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset);
+  void send_getUserExperiments(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset);
+  void recv_getUserExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return);
   void createExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment);
   void send_createExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment);
   void recv_createExperiment(std::string& _return);
@@ -22567,28 +20847,18 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_updateProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_getAllUserProjects(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_getAllUserProjectsWithPagination(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getUserProjects(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_searchProjectsByProjectName(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_searchProjectsByProjectNameWithPagination(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_searchProjectsByProjectDesc(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_searchProjectsByProjectDescWithPagination(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_searchExperimentsByName(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_searchExperimentsByNameWithPagination(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_searchExperimentsByDesc(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_searchExperimentsByDescWithPagination(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_searchExperimentsByApplication(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_searchExperimentsByApplicationWithPagination(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_searchExperimentsByStatus(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_searchExperimentsByStatusWithPagination(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_searchExperimentsByCreationTime(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_searchExperimentsByCreationTimeWithPagination(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_searchExperiments(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getExperimentStatistics(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_getAllExperimentsInProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_getAllExperimentsInProjectWithPagination(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_getAllUserExperiments(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_getAllUserExperimentsWithPagination(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getExperimentsInProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getUserExperiments(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_createExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -22697,28 +20967,18 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["updateProject"] = &AiravataProcessor::process_updateProject;
     processMap_["getProject"] = &AiravataProcessor::process_getProject;
     processMap_["deleteProject"] = &AiravataProcessor::process_deleteProject;
-    processMap_["getAllUserProjects"] = &AiravataProcessor::process_getAllUserProjects;
-    processMap_["getAllUserProjectsWithPagination"] = &AiravataProcessor::process_getAllUserProjectsWithPagination;
+    processMap_["getUserProjects"] = &AiravataProcessor::process_getUserProjects;
     processMap_["searchProjectsByProjectName"] = &AiravataProcessor::process_searchProjectsByProjectName;
-    processMap_["searchProjectsByProjectNameWithPagination"] = &AiravataProcessor::process_searchProjectsByProjectNameWithPagination;
     processMap_["searchProjectsByProjectDesc"] = &AiravataProcessor::process_searchProjectsByProjectDesc;
-    processMap_["searchProjectsByProjectDescWithPagination"] = &AiravataProcessor::process_searchProjectsByProjectDescWithPagination;
     processMap_["searchExperimentsByName"] = &AiravataProcessor::process_searchExperimentsByName;
-    processMap_["searchExperimentsByNameWithPagination"] = &AiravataProcessor::process_searchExperimentsByNameWithPagination;
     processMap_["searchExperimentsByDesc"] = &AiravataProcessor::process_searchExperimentsByDesc;
-    processMap_["searchExperimentsByDescWithPagination"] = &AiravataProcessor::process_searchExperimentsByDescWithPagination;
     processMap_["searchExperimentsByApplication"] = &AiravataProcessor::process_searchExperimentsByApplication;
-    processMap_["searchExperimentsByApplicationWithPagination"] = &AiravataProcessor::process_searchExperimentsByApplicationWithPagination;
     processMap_["searchExperimentsByStatus"] = &AiravataProcessor::process_searchExperimentsByStatus;
-    processMap_["searchExperimentsByStatusWithPagination"] = &AiravataProcessor::process_searchExperimentsByStatusWithPagination;
     processMap_["searchExperimentsByCreationTime"] = &AiravataProcessor::process_searchExperimentsByCreationTime;
-    processMap_["searchExperimentsByCreationTimeWithPagination"] = &AiravataProcessor::process_searchExperimentsByCreationTimeWithPagination;
     processMap_["searchExperiments"] = &AiravataProcessor::process_searchExperiments;
     processMap_["getExperimentStatistics"] = &AiravataProcessor::process_getExperimentStatistics;
-    processMap_["getAllExperimentsInProject"] = &AiravataProcessor::process_getAllExperimentsInProject;
-    processMap_["getAllExperimentsInProjectWithPagination"] = &AiravataProcessor::process_getAllExperimentsInProjectWithPagination;
-    processMap_["getAllUserExperiments"] = &AiravataProcessor::process_getAllUserExperiments;
-    processMap_["getAllUserExperimentsWithPagination"] = &AiravataProcessor::process_getAllUserExperimentsWithPagination;
+    processMap_["getExperimentsInProject"] = &AiravataProcessor::process_getExperimentsInProject;
+    processMap_["getUserExperiments"] = &AiravataProcessor::process_getUserExperiments;
     processMap_["createExperiment"] = &AiravataProcessor::process_createExperiment;
     processMap_["getExperiment"] = &AiravataProcessor::process_getExperiment;
     processMap_["updateExperiment"] = &AiravataProcessor::process_updateExperiment;
@@ -22973,163 +21233,83 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->deleteProject(authzToken, projectId);
   }
 
-  void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName) {
+  void getUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllUserProjects(_return, gatewayId, userName);
+      ifaces_[i]->getUserProjects(_return, authzToken, gatewayId, userName, limit, offset);
     }
-    ifaces_[i]->getAllUserProjects(_return, gatewayId, userName);
+    ifaces_[i]->getUserProjects(_return, authzToken, gatewayId, userName, limit, offset);
     return;
   }
 
-  void getAllUserProjectsWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) {
+  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllUserProjectsWithPagination(_return, authzToken, gatewayId, userName, limit, offset);
+      ifaces_[i]->searchProjectsByProjectName(_return, authzToken, gatewayId, userName, projectName, limit, offset);
     }
-    ifaces_[i]->getAllUserProjectsWithPagination(_return, authzToken, gatewayId, userName, limit, offset);
+    ifaces_[i]->searchProjectsByProjectName(_return, authzToken, gatewayId, userName, projectName, limit, offset);
     return;
   }
 
-  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& projectName) {
+  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchProjectsByProjectName(_return, gatewayId, userName, projectName);
+      ifaces_[i]->searchProjectsByProjectDesc(_return, authzToken, gatewayId, userName, description, limit, offset);
     }
-    ifaces_[i]->searchProjectsByProjectName(_return, gatewayId, userName, projectName);
+    ifaces_[i]->searchProjectsByProjectDesc(_return, authzToken, gatewayId, userName, description, limit, offset);
     return;
   }
 
-  void searchProjectsByProjectNameWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset) {
+  void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchProjectsByProjectNameWithPagination(_return, authzToken, gatewayId, userName, projectName, limit, offset);
+      ifaces_[i]->searchExperimentsByName(_return, authzToken, gatewayId, userName, expName, limit, offset);
     }
-    ifaces_[i]->searchProjectsByProjectNameWithPagination(_return, authzToken, gatewayId, userName, projectName, limit, offset);
+    ifaces_[i]->searchExperimentsByName(_return, authzToken, gatewayId, userName, expName, limit, offset);
     return;
   }
 
-  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) {
+  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchProjectsByProjectDesc(_return, gatewayId, userName, description);
+      ifaces_[i]->searchExperimentsByDesc(_return, authzToken, gatewayId, userName, description, limit, offset);
     }
-    ifaces_[i]->searchProjectsByProjectDesc(_return, gatewayId, userName, description);
+    ifaces_[i]->searchExperimentsByDesc(_return, authzToken, gatewayId, userName, description, limit, offset);
     return;
   }
 
-  void searchProjectsByProjectDescWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
+  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchProjectsByProjectDescWithPagination(_return, authzToken, gatewayId, userName, description, limit, offset);
+      ifaces_[i]->searchExperimentsByApplication(_return, authzToken, gatewayId, userName, applicationId, limit, offset);
     }
-    ifaces_[i]->searchProjectsByProjectDescWithPagination(_return, authzToken, gatewayId, userName, description, limit, offset);
+    ifaces_[i]->searchExperimentsByApplication(_return, authzToken, gatewayId, userName, applicationId, limit, offset);
     return;
   }
 
-  void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName) {
+  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByName(_return, gatewayId, userName, expName);
+      ifaces_[i]->searchExperimentsByStatus(_return, authzToken, gatewayId, userName, experimentState, limit, offset);
     }
-    ifaces_[i]->searchExperimentsByName(_return, gatewayId, userName, expName);
+    ifaces_[i]->searchExperimentsByStatus(_return, authzToken, gatewayId, userName, experimentState, limit, offset);
     return;
   }
 
-  void searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset) {
+  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByNameWithPagination(_return, authzToken, gatewayId, userName, expName, limit, offset);
+      ifaces_[i]->searchExperimentsByCreationTime(_return, authzToken, gatewayId, userName, fromTime, toTime, limit, offset);
     }
-    ifaces_[i]->searchExperimentsByNameWithPagination(_return, authzToken, gatewayId, userName, expName, limit, offset);
-    return;
-  }
-
-  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByDesc(_return, gatewayId, userName, description);
-    }
-    ifaces_[i]->searchExperimentsByDesc(_return, gatewayId, userName, description);
-    return;
-  }
-
-  void searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByDescWithPagination(_return, authzToken, gatewayId, userName, description, limit, offset);
-    }
-    ifaces_[i]->searchExperimentsByDescWithPagination(_return, authzToken, gatewayId, userName, description, limit, offset);
-    return;
-  }
-
-  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByApplication(_return, gatewayId, userName, applicationId);
-    }
-    ifaces_[i]->searchExperimentsByApplication(_return, gatewayId, userName, applicationId);
-    return;
-  }
-
-  void searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByApplicationWithPagination(_return, authzToken, gatewayId, userName, applicationId, limit, offset);
-    }
-    ifaces_[i]->searchExperimentsByApplicationWithPagination(_return, authzToken, gatewayId, userName, applicationId, limit, offset);
-    return;
-  }
-
-  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByStatus(_return, gatewayId, userName, experimentState);
-    }
-    ifaces_[i]->searchExperimentsByStatus(_return, gatewayId, userName, experimentState);
-    return;
-  }
-
-  void searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByStatusWithPagination(_return, authzToken, gatewayId, userName, experimentState, limit, offset);
-    }
-    ifaces_[i]->searchExperimentsByStatusWithPagination(_return, authzToken, gatewayId, userName, experimentState, limit, offset);
-    return;
-  }
-
-  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByCreationTime(_return, gatewayId, userName, fromTime, toTime);
-    }
-    ifaces_[i]->searchExperimentsByCreationTime(_return, gatewayId, userName, fromTime, toTime);
-    return;
-  }
-
-  void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByCreationTimeWithPagination(_return, authzToken, gatewayId, userName, fromTime, toTime, limit, offset);
-    }
-    ifaces_[i]->searchExperimentsByCreationTimeWithPagination(_return, authzToken, gatewayId, userName, fromTime, toTime, limit, offset);
+    ifaces_[i]->searchExperimentsByCreationTime(_return, authzToken, gatewayId, userName, fromTime, toTime, limit, offset);
     return;
   }
 
@@ -23153,43 +21333,23 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getAllExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& projectId) {
+  void getExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllExperimentsInProject(_return, projectId);
+      ifaces_[i]->getExperimentsInProject(_return, authzToken, projectId, limit, offset);
     }
-    ifaces_[i]->getAllExperimentsInProject(_return, projectId);
+    ifaces_[i]->getExperimentsInProject(_return, authzToken, projectId, limit, offset);
     return;
   }
 
-  void getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset) {
+  void getUserExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllExperimentsInProjectWithPagination(_return, authzToken, projectId, limit, offset);
+      ifaces_[i]->getUserExperiments(_return, authzToken, gatewayId, userName, limit, offset);
     }
-    ifaces_[i]->getAllExperimentsInProjectWithPagination(_return, authzToken, projectId, limit, offset);
-    return;
-  }
-
-  void getAllUserExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& gatewayId, const std::string& userName) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllUserExperiments(_return, gatewayId, userName);
-    }
-    ifaces_[i]->getAllUserExperiments(_return, gatewayId, userName);
-    return;
-  }
-
-  void getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllUserExperimentsWithPagination(_return, authzToken, gatewayId, userName, limit, offset);
-    }
-    ifaces_[i]->getAllUserExperimentsWithPagination(_return, authzToken, gatewayId, userName, limit, offset);
+    ifaces_[i]->getUserExperiments(_return, authzToken, gatewayId, userName, limit, offset);
     return;
   }
 
