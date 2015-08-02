@@ -47,11 +47,11 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	/**
 	 * This will copy the localFile to remoteFile location in configured cluster
 	 *
-	 * @param remoteFile      remote file location, this can be a directory too
-	 * @param localFile local file path of the file which needs to copy to remote location
+	 * @param localFile  local file path of the file which needs to copy to remote location
+	 * @param remoteFile remote file location, this can be a directory too
 	 * @throws SSHApiException throws exception during error
 	 */
-	public void scpTo(String remoteFile, String localFile) throws SSHApiException;
+	public void scpTo(String localFile, String remoteFile) throws SSHApiException;
 
 	/**
 	 * This will copy a remote file in path rFile to local file lFile

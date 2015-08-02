@@ -13260,8 +13260,8 @@ class Airavata_getAvailableAppInterfaceComputeResources_presult {
 class Airavata_registerComputeResource_args {
  public:
 
-  static const char* ascii_fingerprint; // = "C72A09735248A09777AD2324A02E3CCE";
-  static const uint8_t binary_fingerprint[16]; // = {0xC7,0x2A,0x09,0x73,0x52,0x48,0xA0,0x97,0x77,0xAD,0x23,0x24,0xA0,0x2E,0x3C,0xCE};
+  static const char* ascii_fingerprint; // = "A0B8CF62A1878BA384B2619B9C93A4D0";
+  static const uint8_t binary_fingerprint[16]; // = {0xA0,0xB8,0xCF,0x62,0xA1,0x87,0x8B,0xA3,0x84,0xB2,0x61,0x9B,0x9C,0x93,0xA4,0xD0};
 
   Airavata_registerComputeResource_args(const Airavata_registerComputeResource_args&);
   Airavata_registerComputeResource_args& operator=(const Airavata_registerComputeResource_args&);
@@ -13300,8 +13300,8 @@ class Airavata_registerComputeResource_args {
 class Airavata_registerComputeResource_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "C72A09735248A09777AD2324A02E3CCE";
-  static const uint8_t binary_fingerprint[16]; // = {0xC7,0x2A,0x09,0x73,0x52,0x48,0xA0,0x97,0x77,0xAD,0x23,0x24,0xA0,0x2E,0x3C,0xCE};
+  static const char* ascii_fingerprint; // = "A0B8CF62A1878BA384B2619B9C93A4D0";
+  static const uint8_t binary_fingerprint[16]; // = {0xA0,0xB8,0xCF,0x62,0xA1,0x87,0x8B,0xA3,0x84,0xB2,0x61,0x9B,0x9C,0x93,0xA4,0xD0};
 
 
   virtual ~Airavata_registerComputeResource_pargs() throw();
@@ -13477,8 +13477,8 @@ typedef struct _Airavata_getComputeResource_result__isset {
 class Airavata_getComputeResource_result {
  public:
 
-  static const char* ascii_fingerprint; // = "CFB1C53E8FB09D7DE70FD4D2EB1666BB";
-  static const uint8_t binary_fingerprint[16]; // = {0xCF,0xB1,0xC5,0x3E,0x8F,0xB0,0x9D,0x7D,0xE7,0x0F,0xD4,0xD2,0xEB,0x16,0x66,0xBB};
+  static const char* ascii_fingerprint; // = "7905BE169CBADD24201811EE1339957F";
+  static const uint8_t binary_fingerprint[16]; // = {0x79,0x05,0xBE,0x16,0x9C,0xBA,0xDD,0x24,0x20,0x18,0x11,0xEE,0x13,0x39,0x95,0x7F};
 
   Airavata_getComputeResource_result(const Airavata_getComputeResource_result&);
   Airavata_getComputeResource_result& operator=(const Airavata_getComputeResource_result&);
@@ -13542,8 +13542,8 @@ typedef struct _Airavata_getComputeResource_presult__isset {
 class Airavata_getComputeResource_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "CFB1C53E8FB09D7DE70FD4D2EB1666BB";
-  static const uint8_t binary_fingerprint[16]; // = {0xCF,0xB1,0xC5,0x3E,0x8F,0xB0,0x9D,0x7D,0xE7,0x0F,0xD4,0xD2,0xEB,0x16,0x66,0xBB};
+  static const char* ascii_fingerprint; // = "7905BE169CBADD24201811EE1339957F";
+  static const uint8_t binary_fingerprint[16]; // = {0x79,0x05,0xBE,0x16,0x9C,0xBA,0xDD,0x24,0x20,0x18,0x11,0xEE,0x13,0x39,0x95,0x7F};
 
 
   virtual ~Airavata_getComputeResource_presult() throw();
@@ -13710,8 +13710,8 @@ class Airavata_getAllComputeResourceNames_presult {
 class Airavata_updateComputeResource_args {
  public:
 
-  static const char* ascii_fingerprint; // = "1DE6CEEF441398B41030AC7847117ED4";
-  static const uint8_t binary_fingerprint[16]; // = {0x1D,0xE6,0xCE,0xEF,0x44,0x13,0x98,0xB4,0x10,0x30,0xAC,0x78,0x47,0x11,0x7E,0xD4};
+  static const char* ascii_fingerprint; // = "3BA03B80825B9C928838194635F8BBB1";
+  static const uint8_t binary_fingerprint[16]; // = {0x3B,0xA0,0x3B,0x80,0x82,0x5B,0x9C,0x92,0x88,0x38,0x19,0x46,0x35,0xF8,0xBB,0xB1};
 
   Airavata_updateComputeResource_args(const Airavata_updateComputeResource_args&);
   Airavata_updateComputeResource_args& operator=(const Airavata_updateComputeResource_args&);
@@ -13755,8 +13755,8 @@ class Airavata_updateComputeResource_args {
 class Airavata_updateComputeResource_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "1DE6CEEF441398B41030AC7847117ED4";
-  static const uint8_t binary_fingerprint[16]; // = {0x1D,0xE6,0xCE,0xEF,0x44,0x13,0x98,0xB4,0x10,0x30,0xAC,0x78,0x47,0x11,0x7E,0xD4};
+  static const char* ascii_fingerprint; // = "3BA03B80825B9C928838194635F8BBB1";
+  static const uint8_t binary_fingerprint[16]; // = {0x3B,0xA0,0x3B,0x80,0x82,0x5B,0x9C,0x92,0x88,0x38,0x19,0x46,0x35,0xF8,0xBB,0xB1};
 
 
   virtual ~Airavata_updateComputeResource_pargs() throw();

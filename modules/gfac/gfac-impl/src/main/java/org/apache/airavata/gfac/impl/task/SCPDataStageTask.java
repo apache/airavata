@@ -26,6 +26,7 @@ import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.model.commons.ErrorModel;
+import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
@@ -60,10 +61,17 @@ public class SCPDataStageTask implements Task {
 				URI sourceURI = new URI(subTaskModel.getSource());
 				URI destinationURI = new URI(subTaskModel.getDestination());
 
-				if (sourceURI.getScheme().equalsIgnoreCase("file")) {  //  Airavata --> RemoteCluster
+				ProcessState processState = taskContext.getParentProcessContext().getProcessState();
+				if (processState == ProcessState.INPUT_DATA_STAGING) {
+					/**
+					 * copy local file to compute resource.
+					 */
 					taskContext.getParentProcessContext().getRemoteCluster().scpTo(sourceURI.getPath(), destinationURI
 							.getPath());
-				} else { // RemoteCluster --> Airavata
+				} else if (processState == ProcessState.OUTPUT_DATA_STAGING) {
+					/**
+					 * copy remote file from compute resource.
+					 */
 					taskContext.getParentProcessContext().getRemoteCluster().scpFrom(sourceURI.getPath(), destinationURI
 							.getPath());
 				}

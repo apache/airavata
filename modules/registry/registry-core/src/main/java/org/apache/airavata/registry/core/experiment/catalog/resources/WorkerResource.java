@@ -594,7 +594,7 @@ public class WorkerResource extends AbstractExpCatResource {
         EntityManager em = null;
         try {
             String query = "SELECT e FROM ExperimentSummary e " +
-                    "WHERE e.expId=s.expId AND ";
+                    "WHERE ";
             if (filters.get(ExperimentStatusConstants.STATE) != null) {
                 String experimentState = ExperimentState.valueOf(filters.get(ExperimentStatusConstants.STATE)).toString();
                 query += "e.state='" + experimentState + "' AND ";

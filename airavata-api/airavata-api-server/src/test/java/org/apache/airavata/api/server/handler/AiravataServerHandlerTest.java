@@ -24,21 +24,21 @@ import junit.framework.Assert;
 import org.apache.airavata.api.server.handler.utils.AppCatInit;
 import org.apache.airavata.api.server.handler.utils.ExpCatInit;
 import org.apache.airavata.api.server.util.RegistryInitUtil;
-import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.UUID;
@@ -47,10 +47,11 @@ import java.util.UUID;
  * Test methods for Airavata Service Handler
  */
 public class AiravataServerHandlerTest {
-    private final static Logger logger = LoggerFactory.getLogger(AiravataServerHandlerTest.class);
+//    private final static Logger logger = LoggerFactory.getLogger(AiravataServerHandlerTest.class);
 
     private static AiravataServerHandler airavataServerHandler;
     private static String gatewayId = "php_reference_gateway";
+    private static  String computeResouceId = null;
 
     @BeforeClass
     public static void setupBeforeClass() throws Exception{
@@ -62,7 +63,14 @@ public class AiravataServerHandlerTest {
 
         Gateway gateway = new Gateway();
         gateway.setGatewayId(gatewayId);
-        airavataServerHandler.addGateway(gateway);
+        airavataServerHandler.addGateway(new AuthzToken(""), gateway);
+
+        ComputeResourceDescription computeResourceDescription = new ComputeResourceDescription();
+        computeResourceDescription.setHostName("test.compute.resource");
+        computeResourceDescription.setResourceDescription("test compute resource");
+        computeResourceDescription.setEnabled(true);
+        computeResouceId = airavataServerHandler.registerComputeResource(new AuthzToken(""),
+                computeResourceDescription);
     }
 
     @AfterClass
@@ -83,7 +91,7 @@ public class AiravataServerHandlerTest {
             project.setOwner("TestUser"+TAG);
             project.setName("TestProject"+TAG);
             project.setDescription("This is a test project"+TAG);
-            String projectId1 = airavataServerHandler.createProject(gatewayId, project);
+            String projectId1 = airavataServerHandler.createProject(new AuthzToken(""), gatewayId, project);
             Assert.assertNotNull(projectId1);
 
             //testing the update of a project
@@ -92,10 +100,10 @@ public class AiravataServerHandlerTest {
             updatedProject.setOwner("TestUser"+TAG);
             updatedProject.setName("UpdatedTestProject"+TAG);
             updatedProject.setDescription("This is an updated test project"+TAG);
-            airavataServerHandler.updateProject(projectId1, updatedProject);
+            airavataServerHandler.updateProject(new AuthzToken(""), projectId1, updatedProject);
 
             //testing project retrieval
-            Project retrievedProject = airavataServerHandler.getProject(projectId1);
+            Project retrievedProject = airavataServerHandler.getProject(new AuthzToken(""), projectId1);
             Assert.assertEquals(updatedProject.getProjectID(), retrievedProject.getProjectID());
             Assert.assertEquals(updatedProject.getOwner(), retrievedProject.getOwner());
             Assert.assertEquals(updatedProject.getName(), retrievedProject.getName());
@@ -109,28 +117,28 @@ public class AiravataServerHandlerTest {
             project.setOwner("TestUser"+TAG);
             project.setName("Project Terrible"+TAG);
             project.setDescription("This is a test project_2"+TAG);
-            String projectId2 = airavataServerHandler.createProject(gatewayId, project);
+            String projectId2 = airavataServerHandler.createProject(new AuthzToken(""), gatewayId, project);
             Assert.assertNotNull(projectId2);
 
             project = new Project();
             project.setOwner("TestUser"+TAG);
             project.setName("Project Funny"+TAG);
             project.setDescription("This is a test project_3"+TAG);
-            String projectId3 = airavataServerHandler.createProject(gatewayId, project);
+            String projectId3 = airavataServerHandler.createProject(new AuthzToken(""), gatewayId, project);
             Assert.assertNotNull(projectId3);
 
             project = new Project();
             project.setOwner("TestUser"+TAG);
             project.setName("Project Stupid"+TAG);
             project.setDescription("This is a test project_4"+TAG);
-            String projectId4 = airavataServerHandler.createProject(gatewayId, project);
+            String projectId4 = airavataServerHandler.createProject(new AuthzToken(""), gatewayId, project);
             Assert.assertNotNull(projectId4);
 
             project = new Project();
             project.setOwner("TestUser"+TAG);
             project.setName("Project Boring"+TAG);
             project.setDescription("This is a test project_5"+TAG);
-            String projectId5 = airavataServerHandler.createProject(gatewayId, project);
+            String projectId5 = airavataServerHandler.createProject(new AuthzToken(""), gatewayId, project);
             Assert.assertNotNull(projectId5);
 
             //search project by project name
@@ -138,7 +146,7 @@ public class AiravataServerHandlerTest {
                     "TestUser"+TAG, "Terrible"+TAG);
             Assert.assertTrue(list.size()==1);
             //with pagination
-            list = airavataServerHandler.searchProjectsByProjectNameWithPagination(gatewayId,
+            list = airavataServerHandler.searchProjectsByProjectNameWithPagination(new AuthzToken(""), gatewayId,
                     "TestUser" + TAG, "Project", 2, 1);
             Assert.assertTrue(list.size()==2);
 
@@ -147,7 +155,7 @@ public class AiravataServerHandlerTest {
                     "test project_2"+TAG);
             Assert.assertTrue(list.size()==1);
             //with pagination
-            list = airavataServerHandler.searchProjectsByProjectDescWithPagination(gatewayId,
+            list = airavataServerHandler.searchProjectsByProjectDescWithPagination(new AuthzToken(""), gatewayId,
                     "TestUser" + TAG, "test", 2, 1);
             Assert.assertTrue(list.size()==2);
 
@@ -155,7 +163,7 @@ public class AiravataServerHandlerTest {
             list = airavataServerHandler.getAllUserProjects(gatewayId, "TestUser"+TAG);
             Assert.assertTrue(list.size()==5);
             //with pagination
-            list = airavataServerHandler.getAllUserProjectsWithPagination(gatewayId, "TestUser" + TAG, 2, 2);
+            list = airavataServerHandler.getAllUserProjectsWithPagination(new AuthzToken(""), gatewayId, "TestUser" + TAG, 2, 2);
             Assert.assertTrue(list.size()==2);
             Project project1 = list.get(0);
             Project project2 = list.get(1);
@@ -181,16 +189,17 @@ public class AiravataServerHandlerTest {
             project.setOwner("TestUser"+TAG);
             project.setName("TestProject"+TAG);
             project.setDescription("This is a test project"+TAG);
-            String projectId1 = airavataServerHandler.createProject(gatewayId,project);
+            String projectId1 = airavataServerHandler.createProject(new AuthzToken(""), gatewayId,project);
             Assert.assertNotNull(projectId1);
 
             //creating sample echo experiment. assumes echo application is already defined
             InputDataObjectType inputDataObjectType = new InputDataObjectType();
             inputDataObjectType.setName("Input_to_Echo");
             inputDataObjectType.setValue("Hello World");
+            inputDataObjectType.setType(DataType.STRING);
 
             ComputationalResourceSchedulingModel scheduling = new ComputationalResourceSchedulingModel();
-            scheduling.setResourceHostId(UUID.randomUUID().toString());
+            scheduling.setResourceHostId(computeResouceId);
             scheduling.setTotalCPUCount(1);
             scheduling.setNodeCount(1);
             scheduling.setWallTimeLimit(15);
@@ -203,6 +212,7 @@ public class AiravataServerHandlerTest {
 
             ExperimentModel experiment = new ExperimentModel();
             experiment.setProjectId(projectId1);
+            experiment.setGatewayId(gatewayId);
             experiment.setUserName("TestUser" + TAG);
             experiment.setExperimentName("TestExperiment" + TAG);
             experiment.setDescription("experiment");
@@ -210,11 +220,11 @@ public class AiravataServerHandlerTest {
             experiment.setUserConfigurationData(userConfigurationData);
             experiment.addToExperimentInputs(inputDataObjectType);
 
-            String experimentId1 = airavataServerHandler.createExperiment(gatewayId, experiment);
+            String experimentId1 = airavataServerHandler.createExperiment(new AuthzToken(""), gatewayId, experiment);
             Assert.assertNotNull(experimentId1);
 
             //retrieving the stored experiment
-            ExperimentModel retrievedExperiment = airavataServerHandler.getExperiment(experimentId1);
+            ExperimentModel retrievedExperiment = airavataServerHandler.getExperiment(new AuthzToken(""), experimentId1);
             Assert.assertNotNull(retrievedExperiment);
             Assert.assertEquals(retrievedExperiment.getProjectId(), experiment.getProjectId());
             Assert.assertEquals(retrievedExperiment.getDescription(), experiment.getDescription());
@@ -228,12 +238,14 @@ public class AiravataServerHandlerTest {
             OutputDataObjectType outputDataObjectType = new OutputDataObjectType();
             outputDataObjectType.setName("Output_to_Echo");
             outputDataObjectType.setValue("Hello World");
+            outputDataObjectType.setType(DataType.STRING);
             experiment.addToExperimentOutputs(outputDataObjectType);
-            airavataServerHandler.updateExperiment(experimentId1, experiment);
+            airavataServerHandler.updateExperiment(new AuthzToken(""), experimentId1, experiment);
 
             //creating more experiments
             experiment = new ExperimentModel();
             experiment.setProjectId(projectId1);
+            experiment.setGatewayId(gatewayId);
             experiment.setUserName("TestUser" + TAG);
             experiment.setExperimentName("TestExperiment2" + TAG);
             experiment.setDescription("experiment");
@@ -241,11 +253,12 @@ public class AiravataServerHandlerTest {
             experiment.setUserConfigurationData(userConfigurationData);
             experiment.addToExperimentInputs(inputDataObjectType);
 
-            String experimentId2 = airavataServerHandler.createExperiment(gatewayId, experiment);
+            String experimentId2 = airavataServerHandler.createExperiment(new AuthzToken(""), gatewayId, experiment);
             Assert.assertNotNull(experimentId2);
 
             experiment = new ExperimentModel();
             experiment.setProjectId(projectId1);
+            experiment.setGatewayId(gatewayId);
             experiment.setUserName("TestUser" + TAG);
             experiment.setExperimentName("TestExperiment3" + TAG);
             experiment.setDescription("experiment");
@@ -253,7 +266,7 @@ public class AiravataServerHandlerTest {
             experiment.setUserConfigurationData(userConfigurationData);
             experiment.addToExperimentInputs(inputDataObjectType);
 
-            String experimentId3 = airavataServerHandler.createExperiment(gatewayId, experiment);
+            String experimentId3 = airavataServerHandler.createExperiment(new AuthzToken(""), gatewayId, experiment);
             Assert.assertNotNull(experimentId3);
 
             //searching experiments by name
@@ -261,7 +274,7 @@ public class AiravataServerHandlerTest {
                     "TestUser" + TAG, "Experiment2");
             Assert.assertTrue(results.size()==1);
             //with pagination
-            results = airavataServerHandler.searchExperimentsByNameWithPagination(gatewayId,
+            results = airavataServerHandler.searchExperimentsByNameWithPagination(new AuthzToken(""), gatewayId,
                     "TestUser" + TAG, "Experi", 2, 0);
             Assert.assertTrue(results.size()==2);
 
@@ -271,7 +284,7 @@ public class AiravataServerHandlerTest {
                     gatewayId, "TestUser" + TAG, time-10000, time+1000);
             Assert.assertTrue(results.size()==3);
             //with pagination
-            results = airavataServerHandler.searchExperimentsByCreationTimeWithPagination(
+            results = airavataServerHandler.searchExperimentsByCreationTimeWithPagination(new AuthzToken(""),
                     gatewayId, "TestUser" + TAG, time-10000, time+1000, 2, 1);
             Assert.assertTrue(results.size()==2);
 
@@ -281,7 +294,7 @@ public class AiravataServerHandlerTest {
                     gatewayId, "TestUser" + TAG, experimentState);
             Assert.assertTrue(results.size() == 3);
             //with pagination
-            results = airavataServerHandler.searchExperimentsByStatusWithPagination(
+            results = airavataServerHandler.searchExperimentsByStatusWithPagination(new AuthzToken(""),
                     gatewayId, "TestUser" + TAG, experimentState, 2, 0);
             Assert.assertTrue(results.size()==2);
 
@@ -290,7 +303,7 @@ public class AiravataServerHandlerTest {
                     gatewayId, "TestUser" + TAG, "Ech");
             Assert.assertTrue(results.size() == 3);
             //with pagination
-            results = airavataServerHandler.searchExperimentsByApplicationWithPagination(
+            results = airavataServerHandler.searchExperimentsByApplicationWithPagination(new AuthzToken(""),
                     gatewayId, "TestUser" + TAG, "Ech", 2, 0);
             Assert.assertTrue(results.size()==2);
 
@@ -299,7 +312,7 @@ public class AiravataServerHandlerTest {
                     gatewayId, "TestUser" + TAG, "exp");
             Assert.assertTrue(results.size() == 3);
             //with pagination
-            results = airavataServerHandler.searchExperimentsByDescWithPagination(
+            results = airavataServerHandler.searchExperimentsByDescWithPagination(new AuthzToken(""),
                     gatewayId, "TestUser" + TAG, "exp", 2, 0);
             Assert.assertTrue(results.size()==2);
 
@@ -308,14 +321,14 @@ public class AiravataServerHandlerTest {
             List<ExperimentModel> list = airavataServerHandler.getAllExperimentsInProject(projectId1);
             Assert.assertTrue(list.size()==3);
             //with pagination
-            list = airavataServerHandler.getAllExperimentsInProjectWithPagination(projectId1, 2, 1);
+            list = airavataServerHandler.getAllExperimentsInProjectWithPagination(new AuthzToken(""), projectId1, 2, 1);
             Assert.assertTrue(list.size()==2);
 
             //getting all user experiments
             list = airavataServerHandler.getAllUserExperiments(gatewayId, "TestUser" + TAG);
             Assert.assertTrue(list.size() == 3);
             //with pagination
-            list = airavataServerHandler.getAllUserExperimentsWithPagination(
+            list = airavataServerHandler.getAllUserExperimentsWithPagination(new AuthzToken(""),
                     gatewayId, "TestUser" + TAG, 2, 0);
             //testing time ordering
             Assert.assertTrue(list.size()==2);

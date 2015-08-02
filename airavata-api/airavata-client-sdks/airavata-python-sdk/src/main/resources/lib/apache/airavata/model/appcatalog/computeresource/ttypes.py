@@ -1855,6 +1855,7 @@ class ComputeResourceDescription:
    - hostAliases
    - ipAddresses
    - resourceDescription
+   - enabled
    - batchQueues
    - fileSystems
    - jobSubmissionInterfaces
@@ -1869,19 +1870,21 @@ class ComputeResourceDescription:
     (3, TType.LIST, 'hostAliases', (TType.STRING,None), None, ), # 3
     (4, TType.LIST, 'ipAddresses', (TType.STRING,None), None, ), # 4
     (5, TType.STRING, 'resourceDescription', None, None, ), # 5
-    (6, TType.LIST, 'batchQueues', (TType.STRUCT,(BatchQueue, BatchQueue.thrift_spec)), None, ), # 6
-    (7, TType.MAP, 'fileSystems', (TType.I32,None,TType.STRING,None), None, ), # 7
-    (8, TType.LIST, 'jobSubmissionInterfaces', (TType.STRUCT,(JobSubmissionInterface, JobSubmissionInterface.thrift_spec)), None, ), # 8
-    (9, TType.LIST, 'dataMovementInterfaces', (TType.STRUCT,(DataMovementInterface, DataMovementInterface.thrift_spec)), None, ), # 9
-    (10, TType.I32, 'maxMemoryPerNode', None, None, ), # 10
+    (6, TType.BOOL, 'enabled', None, None, ), # 6
+    (7, TType.LIST, 'batchQueues', (TType.STRUCT,(BatchQueue, BatchQueue.thrift_spec)), None, ), # 7
+    (8, TType.MAP, 'fileSystems', (TType.I32,None,TType.STRING,None), None, ), # 8
+    (9, TType.LIST, 'jobSubmissionInterfaces', (TType.STRUCT,(JobSubmissionInterface, JobSubmissionInterface.thrift_spec)), None, ), # 9
+    (10, TType.LIST, 'dataMovementInterfaces', (TType.STRUCT,(DataMovementInterface, DataMovementInterface.thrift_spec)), None, ), # 10
+    (11, TType.I32, 'maxMemoryPerNode', None, None, ), # 11
   )
 
-  def __init__(self, computeResourceId=thrift_spec[1][4], hostName=None, hostAliases=None, ipAddresses=None, resourceDescription=None, batchQueues=None, fileSystems=None, jobSubmissionInterfaces=None, dataMovementInterfaces=None, maxMemoryPerNode=None,):
+  def __init__(self, computeResourceId=thrift_spec[1][4], hostName=None, hostAliases=None, ipAddresses=None, resourceDescription=None, enabled=None, batchQueues=None, fileSystems=None, jobSubmissionInterfaces=None, dataMovementInterfaces=None, maxMemoryPerNode=None,):
     self.computeResourceId = computeResourceId
     self.hostName = hostName
     self.hostAliases = hostAliases
     self.ipAddresses = ipAddresses
     self.resourceDescription = resourceDescription
+    self.enabled = enabled
     self.batchQueues = batchQueues
     self.fileSystems = fileSystems
     self.jobSubmissionInterfaces = jobSubmissionInterfaces
@@ -1933,6 +1936,11 @@ class ComputeResourceDescription:
         else:
           iprot.skip(ftype)
       elif fid == 6:
+        if ftype == TType.BOOL:
+          self.enabled = iprot.readBool();
+        else:
+          iprot.skip(ftype)
+      elif fid == 7:
         if ftype == TType.LIST:
           self.batchQueues = []
           (_etype38, _size35) = iprot.readListBegin()
@@ -1943,7 +1951,7 @@ class ComputeResourceDescription:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 7:
+      elif fid == 8:
         if ftype == TType.MAP:
           self.fileSystems = {}
           (_ktype42, _vtype43, _size41 ) = iprot.readMapBegin()
@@ -1954,7 +1962,7 @@ class ComputeResourceDescription:
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 8:
+      elif fid == 9:
         if ftype == TType.LIST:
           self.jobSubmissionInterfaces = []
           (_etype51, _size48) = iprot.readListBegin()
@@ -1965,7 +1973,7 @@ class ComputeResourceDescription:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 9:
+      elif fid == 10:
         if ftype == TType.LIST:
           self.dataMovementInterfaces = []
           (_etype57, _size54) = iprot.readListBegin()
@@ -1976,7 +1984,7 @@ class ComputeResourceDescription:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 10:
+      elif fid == 11:
         if ftype == TType.I32:
           self.maxMemoryPerNode = iprot.readI32();
         else:
@@ -2017,15 +2025,19 @@ class ComputeResourceDescription:
       oprot.writeFieldBegin('resourceDescription', TType.STRING, 5)
       oprot.writeString(self.resourceDescription)
       oprot.writeFieldEnd()
+    if self.enabled is not None:
+      oprot.writeFieldBegin('enabled', TType.BOOL, 6)
+      oprot.writeBool(self.enabled)
+      oprot.writeFieldEnd()
     if self.batchQueues is not None:
-      oprot.writeFieldBegin('batchQueues', TType.LIST, 6)
+      oprot.writeFieldBegin('batchQueues', TType.LIST, 7)
       oprot.writeListBegin(TType.STRUCT, len(self.batchQueues))
       for iter62 in self.batchQueues:
         iter62.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.fileSystems is not None:
-      oprot.writeFieldBegin('fileSystems', TType.MAP, 7)
+      oprot.writeFieldBegin('fileSystems', TType.MAP, 8)
       oprot.writeMapBegin(TType.I32, TType.STRING, len(self.fileSystems))
       for kiter63,viter64 in self.fileSystems.items():
         oprot.writeI32(kiter63)
@@ -2033,21 +2045,21 @@ class ComputeResourceDescription:
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.jobSubmissionInterfaces is not None:
-      oprot.writeFieldBegin('jobSubmissionInterfaces', TType.LIST, 8)
+      oprot.writeFieldBegin('jobSubmissionInterfaces', TType.LIST, 9)
       oprot.writeListBegin(TType.STRUCT, len(self.jobSubmissionInterfaces))
       for iter65 in self.jobSubmissionInterfaces:
         iter65.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.dataMovementInterfaces is not None:
-      oprot.writeFieldBegin('dataMovementInterfaces', TType.LIST, 9)
+      oprot.writeFieldBegin('dataMovementInterfaces', TType.LIST, 10)
       oprot.writeListBegin(TType.STRUCT, len(self.dataMovementInterfaces))
       for iter66 in self.dataMovementInterfaces:
         iter66.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.maxMemoryPerNode is not None:
-      oprot.writeFieldBegin('maxMemoryPerNode', TType.I32, 10)
+      oprot.writeFieldBegin('maxMemoryPerNode', TType.I32, 11)
       oprot.writeI32(self.maxMemoryPerNode)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -2068,6 +2080,7 @@ class ComputeResourceDescription:
     value = (value * 31) ^ hash(self.hostAliases)
     value = (value * 31) ^ hash(self.ipAddresses)
     value = (value * 31) ^ hash(self.resourceDescription)
+    value = (value * 31) ^ hash(self.enabled)
     value = (value * 31) ^ hash(self.batchQueues)
     value = (value * 31) ^ hash(self.fileSystems)
     value = (value * 31) ^ hash(self.jobSubmissionInterfaces)

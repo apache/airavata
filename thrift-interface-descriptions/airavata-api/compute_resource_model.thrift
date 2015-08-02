@@ -438,9 +438,10 @@ struct ComputeResourceDescription {
     3: optional list<string> hostAliases,
     4: optional list<string> ipAddresses,
     5: optional string resourceDescription,
-    6: optional list<BatchQueue> batchQueues,
-    7: optional map<FileSystems, string> fileSystems,
-    8: optional list<JobSubmissionInterface> jobSubmissionInterfaces,
-    9: optional list<DataMovementInterface> dataMovementInterfaces,
-    10: optional i32 maxMemoryPerNode
+    6: optional bool enabled,
+    7: optional list<BatchQueue> batchQueues,
+    8: optional map<FileSystems, string> fileSystems,
+    9: optional list<JobSubmissionInterface> jobSubmissionInterfaces,
+    10: optional list<DataMovementInterface> dataMovementInterfaces,
+    11: optional i32 maxMemoryPerNode
 }

@@ -21,17 +21,20 @@
 jobSubmitters:
   - submissionProtocol: SSH
     taskClass: org.apache.airavata.gfac.impl.task.SSHJobSubmissionTask
-    properties:
-     - password: pwd123
-       passPhrase: test
-       privateKey: key
-       publicKey: pubk
- # - submissionProtocol: GSISSH
- #   taskClass: org.apache.airavata.task.adapters.GSISSHJobSubmissionTask
+#   properties:
+#     - userName: airavata
+#       passPhrase: airavata
+#       privateKeyPath: /path/to/the/privatekey
+#       publicKeyPath: /path/to/the/publickey
+#       hostName: remote.client.hostName
 
   - submissionProtocol: LOCAL
     taskClass: org.apache.airavata.gfac.impl.task.LocalJobSubmissionTask
 
+# Following job subbmitters are not yet implemented.
+
+ # - submissionProtocol: GSISSH
+ #   taskClass: org.apache.airavata.task.adapters.GSISSHJobSubmissionTask
 commonTasks:
    - type: SETUP
      taskClass: org.apache.airavata.task.common.SetupTask
@@ -43,14 +46,22 @@ fileTransferTasks:
   - transferProtocol: SCP
     taskClass: org.apache.airavata.gfac.impl.task.SCPDataStageTask
 
-#  - transferProtocol: SCP
-#    taskClass: org.apache.airavata.gfac.impl.task.SCPInputDataStageTask
-#    properties:
-#     - password: pwd123
-#       passPhrase: test
-#       privateKey: key
-#       publicKey: pubkey
+# If your client doen't run the same instance where airavata server is running then you need to comment above
+# SCPDataStageTask and uncomment AdvancedSCPDataStageTask. To work with AdvancedSCPDataStageTask, you either need to
+# provide ssh keys or password.
 
+#  - transferProtocol: SCP
+#    taskClass: org.apache.airavata.gfac.impl.task.AdvancedSCPDataStageTask
+#    properties:
+#     - userName: airavata
+#       passPhrase: airavata
+#       privateKeyPath: /path/to/the/privatekey
+#       publicKeyPath: /path/to/the/publickey
+#       hostName: remote.client.hostName
+#       inputPath: /path/to/data/dir
+##      password: password
+
+# Following transfer tasks are not yet implemented.
   #- transferProtocol: SFTP
   #  taskClass: org.apache.airavata.task.adapters.SFTPFileTransferTask
 

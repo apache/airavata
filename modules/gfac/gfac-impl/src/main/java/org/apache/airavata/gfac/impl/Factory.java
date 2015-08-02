@@ -21,6 +21,10 @@
 package org.apache.airavata.gfac.impl;
 
 import com.google.common.eventbus.EventBus;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.UserInfo;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.LocalEventPublisher;
@@ -103,6 +107,7 @@ public abstract class Factory {
 	private static Map<ResourceJobManagerType, ResourceConfig> resources = new HashMap<>();
 	private static Map<MonitorMode, JobMonitor> jobMonitorServices = new HashMap<>();
 	private static RabbitMQProcessLaunchConsumer processLaunchConsumer;
+	private static Map<String, Session> sessionMap = new HashMap<>();
 
 	public static GFacEngine getGFacEngine() throws GFacException {
 		if (engine == null) {
@@ -299,4 +304,77 @@ public abstract class Factory {
 		return jobMonitor;
 	}
 
+	public static Session getSSHSession(AuthenticationInfo authenticationInfo, ServerInfo serverInfo) throws AiravataException {
+		SSHKeyAuthentication authentication = null;
+		String key = serverInfo.getUserName() + "_" + serverInfo.getHost() + "_" + serverInfo.getPort();
+		if (sessionMap.get(key) == null) {
+			try {
+				if (authenticationInfo instanceof SSHKeyAuthentication) {
+					authentication = (SSHKeyAuthentication) authenticationInfo;
+				} else {
+					throw new AiravataException("Support ssh key authentication only");
+				}
+				JSch jSch = new JSch();
+				jSch.addIdentity(authentication.getPrivateKeyFilePath(), authentication.getPublicKeyFilePath(),
+						authentication.getPassphrase().getBytes());
+				Session session = jSch.getSession(serverInfo.getUserName(), serverInfo.getHost(),
+						serverInfo.getPort());
+				session.setUserInfo(new DefaultUserInfo(serverInfo.getUserName(), null, authentication.getPassphrase()));
+				if (authentication.getStrictHostKeyChecking().equals("yes")) {
+					jSch.setKnownHosts(authentication.getKnownHostsFilePath());
+				} else {
+					session.setConfig("StrictHostKeyChecking","no");
+				}
+				session.connect(); // 0 connection timeout
+				sessionMap.put(key, session);
+			} catch (JSchException e) {
+				throw new AiravataException("JSch initialization error ", e);
+			}
+		}
+		return sessionMap.get(key);
+
+	}
+
+	private static class DefaultUserInfo implements UserInfo {
+
+		private String userName;
+		private String password;
+		private String passphrase;
+
+		public DefaultUserInfo(String userName, String password, String passphrase) {
+			this.userName = userName;
+			this.password = password;
+			this.passphrase = passphrase;
+		}
+
+		@Override
+		public String getPassphrase() {
+			return null;
+		}
+
+		@Override
+		public String getPassword() {
+			return null;
+		}
+
+		@Override
+		public boolean promptPassword(String s) {
+			return false;
+		}
+
+		@Override
+		public boolean promptPassphrase(String s) {
+			return false;
+		}
+
+		@Override
+		public boolean promptYesNo(String s) {
+			return false;
+		}
+
+		@Override
+		public void showMessage(String s) {
+
+		}
+	}
 }
