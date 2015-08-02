@@ -2050,6 +2050,7 @@ uint32_t Airavata_generateAndRegisterSSHKeys_args::read(::apache::thrift::protoc
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_authzToken = false;
   bool isset_gatewayId = false;
   bool isset_userName = false;
 
@@ -2062,6 +2063,14 @@ uint32_t Airavata_generateAndRegisterSSHKeys_args::read(::apache::thrift::protoc
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->authzToken.read(iprot);
+          isset_authzToken = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->gatewayId);
           isset_gatewayId = true;
@@ -2069,7 +2078,7 @@ uint32_t Airavata_generateAndRegisterSSHKeys_args::read(::apache::thrift::protoc
           xfer += iprot->skip(ftype);
         }
         break;
-      case 2:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->userName);
           isset_userName = true;
@@ -2086,6 +2095,8 @@ uint32_t Airavata_generateAndRegisterSSHKeys_args::read(::apache::thrift::protoc
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_authzToken)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_gatewayId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_userName)
@@ -2098,11 +2109,15 @@ uint32_t Airavata_generateAndRegisterSSHKeys_args::write(::apache::thrift::proto
   oprot->incrementRecursionDepth();
   xfer += oprot->writeStructBegin("Airavata_generateAndRegisterSSHKeys_args");
 
-  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->authzToken.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->gatewayId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString(this->userName);
   xfer += oprot->writeFieldEnd();
 
@@ -2122,11 +2137,15 @@ uint32_t Airavata_generateAndRegisterSSHKeys_pargs::write(::apache::thrift::prot
   oprot->incrementRecursionDepth();
   xfer += oprot->writeStructBegin("Airavata_generateAndRegisterSSHKeys_pargs");
 
-  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += (*(this->authzToken)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->gatewayId)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString((*(this->userName)));
   xfer += oprot->writeFieldEnd();
 
@@ -2318,6 +2337,7 @@ uint32_t Airavata_getSSHPubKey_args::read(::apache::thrift::protocol::TProtocol*
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_authzToken = false;
   bool isset_airavataCredStoreToken = false;
 
   while (true)
@@ -2329,6 +2349,14 @@ uint32_t Airavata_getSSHPubKey_args::read(::apache::thrift::protocol::TProtocol*
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->authzToken.read(iprot);
+          isset_authzToken = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->airavataCredStoreToken);
           isset_airavataCredStoreToken = true;
@@ -2345,6 +2373,8 @@ uint32_t Airavata_getSSHPubKey_args::read(::apache::thrift::protocol::TProtocol*
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_authzToken)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_airavataCredStoreToken)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -2355,7 +2385,11 @@ uint32_t Airavata_getSSHPubKey_args::write(::apache::thrift::protocol::TProtocol
   oprot->incrementRecursionDepth();
   xfer += oprot->writeStructBegin("Airavata_getSSHPubKey_args");
 
-  xfer += oprot->writeFieldBegin("airavataCredStoreToken", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->authzToken.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("airavataCredStoreToken", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->airavataCredStoreToken);
   xfer += oprot->writeFieldEnd();
 
@@ -2375,7 +2409,11 @@ uint32_t Airavata_getSSHPubKey_pargs::write(::apache::thrift::protocol::TProtoco
   oprot->incrementRecursionDepth();
   xfer += oprot->writeStructBegin("Airavata_getSSHPubKey_pargs");
 
-  xfer += oprot->writeFieldBegin("airavataCredStoreToken", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += (*(this->authzToken)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("airavataCredStoreToken", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->airavataCredStoreToken)));
   xfer += oprot->writeFieldEnd();
 
@@ -2567,6 +2605,7 @@ uint32_t Airavata_getAllUserSSHPubKeys_args::read(::apache::thrift::protocol::TP
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_authzToken = false;
   bool isset_userName = false;
 
   while (true)
@@ -2578,6 +2617,14 @@ uint32_t Airavata_getAllUserSSHPubKeys_args::read(::apache::thrift::protocol::TP
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->authzToken.read(iprot);
+          isset_authzToken = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->userName);
           isset_userName = true;
@@ -2594,6 +2641,8 @@ uint32_t Airavata_getAllUserSSHPubKeys_args::read(::apache::thrift::protocol::TP
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_authzToken)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_userName)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -2604,7 +2653,11 @@ uint32_t Airavata_getAllUserSSHPubKeys_args::write(::apache::thrift::protocol::T
   oprot->incrementRecursionDepth();
   xfer += oprot->writeStructBegin("Airavata_getAllUserSSHPubKeys_args");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->authzToken.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->userName);
   xfer += oprot->writeFieldEnd();
 
@@ -2624,7 +2677,11 @@ uint32_t Airavata_getAllUserSSHPubKeys_pargs::write(::apache::thrift::protocol::
   oprot->incrementRecursionDepth();
   xfer += oprot->writeStructBegin("Airavata_getAllUserSSHPubKeys_pargs");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += (*(this->authzToken)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->userName)));
   xfer += oprot->writeFieldEnd();
 
@@ -36970,18 +37027,19 @@ bool AiravataClient::recv_isGatewayExist()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "isGatewayExist failed: unknown result");
 }
 
-void AiravataClient::generateAndRegisterSSHKeys(std::string& _return, const std::string& gatewayId, const std::string& userName)
+void AiravataClient::generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName)
 {
-  send_generateAndRegisterSSHKeys(gatewayId, userName);
+  send_generateAndRegisterSSHKeys(authzToken, gatewayId, userName);
   recv_generateAndRegisterSSHKeys(_return);
 }
 
-void AiravataClient::send_generateAndRegisterSSHKeys(const std::string& gatewayId, const std::string& userName)
+void AiravataClient::send_generateAndRegisterSSHKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("generateAndRegisterSSHKeys", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_generateAndRegisterSSHKeys_pargs args;
+  args.authzToken = &authzToken;
   args.gatewayId = &gatewayId;
   args.userName = &userName;
   args.write(oprot_);
@@ -37038,18 +37096,19 @@ void AiravataClient::recv_generateAndRegisterSSHKeys(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "generateAndRegisterSSHKeys failed: unknown result");
 }
 
-void AiravataClient::getSSHPubKey(std::string& _return, const std::string& airavataCredStoreToken)
+void AiravataClient::getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken)
 {
-  send_getSSHPubKey(airavataCredStoreToken);
+  send_getSSHPubKey(authzToken, airavataCredStoreToken);
   recv_getSSHPubKey(_return);
 }
 
-void AiravataClient::send_getSSHPubKey(const std::string& airavataCredStoreToken)
+void AiravataClient::send_getSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("getSSHPubKey", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_getSSHPubKey_pargs args;
+  args.authzToken = &authzToken;
   args.airavataCredStoreToken = &airavataCredStoreToken;
   args.write(oprot_);
 
@@ -37105,18 +37164,19 @@ void AiravataClient::recv_getSSHPubKey(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getSSHPubKey failed: unknown result");
 }
 
-void AiravataClient::getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const std::string& userName)
+void AiravataClient::getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName)
 {
-  send_getAllUserSSHPubKeys(userName);
+  send_getAllUserSSHPubKeys(authzToken, userName);
   recv_getAllUserSSHPubKeys(_return);
 }
 
-void AiravataClient::send_getAllUserSSHPubKeys(const std::string& userName)
+void AiravataClient::send_getAllUserSSHPubKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("getAllUserSSHPubKeys", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_getAllUserSSHPubKeys_pargs args;
+  args.authzToken = &authzToken;
   args.userName = &userName;
   args.write(oprot_);
 
@@ -45355,7 +45415,7 @@ void AiravataProcessor::process_generateAndRegisterSSHKeys(int32_t seqid, ::apac
 
   Airavata_generateAndRegisterSSHKeys_result result;
   try {
-    iface_->generateAndRegisterSSHKeys(result.success, args.gatewayId, args.userName);
+    iface_->generateAndRegisterSSHKeys(result.success, args.authzToken, args.gatewayId, args.userName);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -45418,7 +45478,7 @@ void AiravataProcessor::process_getSSHPubKey(int32_t seqid, ::apache::thrift::pr
 
   Airavata_getSSHPubKey_result result;
   try {
-    iface_->getSSHPubKey(result.success, args.airavataCredStoreToken);
+    iface_->getSSHPubKey(result.success, args.authzToken, args.airavataCredStoreToken);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -45481,7 +45541,7 @@ void AiravataProcessor::process_getAllUserSSHPubKeys(int32_t seqid, ::apache::th
 
   Airavata_getAllUserSSHPubKeys_result result;
   try {
-    iface_->getAllUserSSHPubKeys(result.success, args.userName);
+    iface_->getAllUserSSHPubKeys(result.success, args.authzToken, args.userName);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;

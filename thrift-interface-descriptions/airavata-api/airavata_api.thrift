@@ -135,17 +135,21 @@ service Airavata {
    *
    **/
 
-   string generateAndRegisterSSHKeys (1: required string gatewayId, 2: required string userName)
+   string generateAndRegisterSSHKeys (1: required security_model.AuthzToken authzToken,
+                    2: required string gatewayId,
+                    3: required string userName)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
 
-   string getSSHPubKey (1: required string airavataCredStoreToken)
+   string getSSHPubKey (1: required security_model.AuthzToken authzToken,
+                    2: required string airavataCredStoreToken)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
 
-   map<string, string> getAllUserSSHPubKeys (1: required string userName)
+   map<string, string> getAllUserSSHPubKeys (1: required security_model.AuthzToken authzToken,
+                    2: required string userName)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)

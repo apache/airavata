@@ -244,17 +244,20 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public String generateAndRegisterSSHKeys(String gatewayId, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public String generateAndRegisterSSHKeys(AuthzToken authzToken, String gatewayId, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return null;
     }
 
     @Override
-    public String getSSHPubKey(String airavataCredStoreToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public String getSSHPubKey(AuthzToken authzToken, String airavataCredStoreToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return null;
     }
 
     @Override
-    public Map<String, String> getAllUserSSHPubKeys(String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public Map<String, String> getAllUserSSHPubKeys(AuthzToken authzToken, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return null;
     }
 
