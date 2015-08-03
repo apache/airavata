@@ -540,7 +540,6 @@
 				<module>modules/commons</module>
                 <module>modules/messaging</module>
 				<module>modules/gfac</module>
-				<module>modules/workflow-model</module>
 				<module>modules/registry</module>
 				<module>modules/app-catalog</module>
 				<module>modules/security</module>
@@ -551,92 +550,12 @@
 				<module>modules/test-suite</module>
 				<module>modules/distribution</module>
 				<!--<module>modules/integration-tests</module>-->
-				<module>modules/workflow</module>
-				<module>modules/xbaya-gui</module>
+				<!--<module>modules/workflow-model</module>-->
+				<!--<module>modules/workflow</module>-->
+				<!--<module>modules/xbaya-gui</module>-->
 			</modules>
 		</profile>
-		<profile>
-			<id>gridTests</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-remote-resources-plugin</artifactId>
-						<executions>
-							<execution>
-								<goals>
-									<goal>process</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<artifactId>maven-resources-plugin</artifactId>
-						<version>2.5</version>
-						<executions>
-							<execution>
-								<id>copy-resources</id>
-								<phase>validate</phase>
-								<goals>
-									<goal>copy-resources</goal>
-								</goals>
-								<configuration>
-									<outputDirectory>${basedir}/target/classes/META-INF</outputDirectory>
-									<resources>
-										<resource>
-											<directory>${basedir}/src/main/assembly/dist</directory>
-											<filtering>true</filtering>
-										</resource>
-									</resources>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-compiler-plugin</artifactId>
-						<version>3.1</version>
-						<configuration>
-							<source>1.8</source>
-							<target>1.8</target>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<version>${surefire.version}</version>
-						<configuration>
-							<failIfNoTests>false</failIfNoTests>
-							<skipTests>${skipTests}</skipTests>
-							<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
-							<excludes>
-								<exclude>**/IT.java</exclude>
-							</excludes>
-							<includes>
-								<include>**/*TestWithMyProxyAuth.java</include>
-								<include>**/*TestWithSSHAuth.java</include>
-							</includes>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-			<modules>
-				<module>modules/configuration</module>
-				<module>airavata-api</module>
-				<module>modules/commons</module>
-				<module>modules/gfac</module>
-				<module>modules/workflow-model</module>
-				<module>modules/registry</module>
-				<module>modules/security</module>
-				<module>modules/credential-store</module>
-				<module>modules/orchestrator</module>
-				<module>tools</module>
-				<module>modules/server</module>
-				<module>modules/distribution</module>
-				<module>modules/test-suite</module>
-				<module>modules/integration-tests</module>
-			</modules>
-		</profile>
+
 		<profile>
 			<id>pedantic</id>
 			<build>
