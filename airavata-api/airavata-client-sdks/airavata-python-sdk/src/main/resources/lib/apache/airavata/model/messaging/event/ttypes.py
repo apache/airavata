@@ -932,6 +932,7 @@ class ProcessSubmitEvent:
   Attributes:
    - processId
    - gatewayId
+   - experimentId
    - tokenId
   """
 
@@ -939,12 +940,14 @@ class ProcessSubmitEvent:
     None, # 0
     (1, TType.STRING, 'processId', None, None, ), # 1
     (2, TType.STRING, 'gatewayId', None, None, ), # 2
-    (3, TType.STRING, 'tokenId', None, None, ), # 3
+    (3, TType.STRING, 'experimentId', None, None, ), # 3
+    (4, TType.STRING, 'tokenId', None, None, ), # 4
   )
 
-  def __init__(self, processId=None, gatewayId=None, tokenId=None,):
+  def __init__(self, processId=None, gatewayId=None, experimentId=None, tokenId=None,):
     self.processId = processId
     self.gatewayId = gatewayId
+    self.experimentId = experimentId
     self.tokenId = tokenId
 
   def read(self, iprot):
@@ -968,6 +971,11 @@ class ProcessSubmitEvent:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
+          self.experimentId = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRING:
           self.tokenId = iprot.readString();
         else:
           iprot.skip(ftype)
@@ -989,8 +997,12 @@ class ProcessSubmitEvent:
       oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
       oprot.writeString(self.gatewayId)
       oprot.writeFieldEnd()
+    if self.experimentId is not None:
+      oprot.writeFieldBegin('experimentId', TType.STRING, 3)
+      oprot.writeString(self.experimentId)
+      oprot.writeFieldEnd()
     if self.tokenId is not None:
-      oprot.writeFieldBegin('tokenId', TType.STRING, 3)
+      oprot.writeFieldBegin('tokenId', TType.STRING, 4)
       oprot.writeString(self.tokenId)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -1001,6 +1013,8 @@ class ProcessSubmitEvent:
       raise TProtocol.TProtocolException(message='Required field processId is unset!')
     if self.gatewayId is None:
       raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
+    if self.experimentId is None:
+      raise TProtocol.TProtocolException(message='Required field experimentId is unset!')
     if self.tokenId is None:
       raise TProtocol.TProtocolException(message='Required field tokenId is unset!')
     return
@@ -1010,6 +1024,7 @@ class ProcessSubmitEvent:
     value = 17
     value = (value * 31) ^ hash(self.processId)
     value = (value * 31) ^ hash(self.gatewayId)
+    value = (value * 31) ^ hash(self.experimentId)
     value = (value * 31) ^ hash(self.tokenId)
     return value
 

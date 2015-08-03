@@ -90,9 +90,11 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
             if (gatewayId == null || gatewayId.isEmpty()) {
                 gatewayId = ServerSettings.getDefaultUserGateway();
             }
-            ProcessSubmitEvent processSubmitEvent = new ProcessSubmitEvent(processId, gatewayId, tokenId);
-            MessageContext messageContext = new MessageContext(processSubmitEvent, MessageType.LAUNCHPROCESS, "LAUNCH.TASK-" + UUID.randomUUID().toString(), gatewayId);
-            messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+	        ProcessSubmitEvent processSubmitEvent = new ProcessSubmitEvent(processId, gatewayId, experimentId,
+			        tokenId);
+	        MessageContext messageContext = new MessageContext(processSubmitEvent, MessageType.LAUNCHPROCESS, "LAUNCH" +
+			        ".TASK-" + UUID.randomUUID().toString(), gatewayId);
+	        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             publisher.publish(messageContext);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

@@ -111,7 +111,8 @@ struct JobIdentifier {
 struct ProcessSubmitEvent{
     1: required string processId,
     2: required string gatewayId,
-    3: required string tokenId
+    3: required string experimentId,
+    4: required string tokenId
 }
 
 struct ProcessTerminateEvent{

@@ -45,7 +45,8 @@ import java.util.List;
 import java.util.Map;
 
 public class RabbitMQStatusConsumer implements Consumer {
-    private static Logger log = LoggerFactory.getLogger(RabbitMQStatusConsumer.class);
+	public static final String EXCHANGE_TYPE = "topic";
+	private static Logger log = LoggerFactory.getLogger(RabbitMQStatusConsumer.class);
 
     private String exchangeName;
     private String url;
@@ -88,7 +89,7 @@ public class RabbitMQStatusConsumer implements Consumer {
 
             channel = connection.createChannel();
             channel.basicQos(prefetchCount);
-            channel.exchangeDeclare(exchangeName, "topic", false);
+            channel.exchangeDeclare(exchangeName, EXCHANGE_TYPE, false);
 
         } catch (Exception e) {
             String msg = "could not open channel for exchange " + exchangeName;
@@ -162,13 +163,13 @@ public class RabbitMQStatusConsumer implements Consumer {
                             event = experimentStatusChangeEvent;
                             gatewayId = experimentStatusChangeEvent.getGatewayId();
                         } else if (message.getMessageType().equals(MessageType.PROCESS)) {
-                           /* WorkflowNodeStatusChangeEvent wfnStatusChangeEvent = new WorkflowNodeStatusChangeEvent();
-                            ThriftUtils.createThriftFromBytes(message.getEvent(), wfnStatusChangeEvent);
-                            log.debug(" Message Received with message id '" + message.getMessageId()
-                                    + "' and with message type '" + message.getMessageType() + "'  with status " +
-                                    wfnStatusChangeEvent.getState());
-                            event = wfnStatusChangeEvent;
-                            gatewayId = wfnStatusChangeEvent.getWorkflowNodeIdentity().getGatewayId();*/
+	                        ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent();
+	                        ThriftUtils.createThriftFromBytes(message.getEvent(), processStatusChangeEvent);
+	                        log.debug("Message Recieved with message id :" + message.getMessageId() + " and with " +
+			                        "message type " + message.getMessageType() + " with status " +
+			                        processStatusChangeEvent.getState());
+	                        event = processStatusChangeEvent;
+	                        gatewayId = processStatusChangeEvent.getProcessIdentity().getGatewayId();
                         } else if (message.getMessageType().equals(MessageType.TASK)) {
                             TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent();
                             ThriftUtils.createThriftFromBytes(message.getEvent(), taskStatusChangeEvent);
