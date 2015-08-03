@@ -60,7 +60,7 @@ namespace js ApacheAiravataAPI
  *              in a change to major/minor version numbers.
  *
 */
-const string AIRAVATA_API_VERSION = "0.15.0"
+const string AIRAVATA_API_VERSION = "0.16.0"
 
 service Airavata {
 
@@ -135,17 +135,21 @@ service Airavata {
    *
    **/
 
-   string generateAndRegisterSSHKeys (1: required string gatewayId, 2: required string userName)
+   string generateAndRegisterSSHKeys (1: required security_model.AuthzToken authzToken,
+                    2: required string gatewayId,
+                    3: required string userName)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
 
-   string getSSHPubKey (1: required string airavataCredStoreToken)
+   string getSSHPubKey (1: required security_model.AuthzToken authzToken,
+                    2: required string airavataCredStoreToken)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
 
-   map<string, string> getAllUserSSHPubKeys (1: required string userName)
+   map<string, string> getAllUserSSHPubKeys (1: required security_model.AuthzToken authzToken,
+                    2: required string userName)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
@@ -201,22 +205,6 @@ service Airavata {
                   5: airavata_errors.AuthorizationException ae)
 
  /**
-   * Get all Project by user
-   *
-   * @param gatewayId
-   *    The identifier for the requested gateway.
-   *
-   * @param userName
-   *    The Project Object described in the workspace_model
-   * @deprecated Instead use getAllUserProjectsWithPagination
- **/
-  list<workspace_model.Project> getAllUserProjects (1: required string gatewayId,
-                                                    2: required string userName)
-        throws (1: airavata_errors.InvalidRequestException ire,
-                2: airavata_errors.AiravataClientException ace,
-                3: airavata_errors.AiravataSystemException ase)
-
- /**
    * Get all Project by user with pagination. Results will be ordered based
    * on creation time DESC
    *
@@ -229,7 +217,7 @@ service Airavata {
    * @param offset
    *    The starting point of the results to be fetched
  **/
-  list<workspace_model.Project> getAllUserProjectsWithPagination (1: required security_model.AuthzToken authzToken,
+  list<workspace_model.Project> getUserProjects(1: required security_model.AuthzToken authzToken,
                                                    2: required string gatewayId,
                                                    3: required string userName,
                                                    4: required i32 limit,
@@ -238,24 +226,6 @@ service Airavata {
                 2: airavata_errors.AiravataClientException ace,
                 3: airavata_errors.AiravataSystemException ase,
                 4: airavata_errors.AuthorizationException ae)
-
-  /**
-   * Get all Project for user by project name
-   *
-   * @param gatewayId
-   *    The identifier for the requested gateway.
-   * @param userName
-   *    The identifier of the user
-   * @param projectName
-   *    The name of the project on which the results to be fetched
-   * @deprecated Instead use searchProjectsByProjectNameWithPagination
-   */
-  list<workspace_model.Project> searchProjectsByProjectName (1: required string gatewayId,
-                        2: required string userName,
-                        3: required string projectName)
-          throws (1: airavata_errors.InvalidRequestException ire,
-                  2: airavata_errors.AiravataClientException ace,
-                  3: airavata_errors.AiravataSystemException ase)
 
   /**
    * Get all Project for user by project name with pagination.Results will be ordered based
@@ -272,7 +242,7 @@ service Airavata {
    * @param offset
    *    The starting point of the results to be fetched
   */
-  list<workspace_model.Project> searchProjectsByProjectNameWithPagination (1: required security_model.AuthzToken authzToken,
+  list<workspace_model.Project> searchProjectsByProjectName (1: required security_model.AuthzToken authzToken,
                         2: required string gatewayId,
                         3: required string userName,
                         4: required string projectName,
@@ -282,22 +252,6 @@ service Airavata {
                   2: airavata_errors.AiravataClientException ace,
                   3: airavata_errors.AiravataSystemException ase,
                   4: airavata_errors.AuthorizationException ae)
-
-  /**
-    * Get all Project for user by project description
-    * @param gatewayId
-    *    The identifier for the requested gateway.
-    * @param userName
-    *    The identifier of the user
-    * @param description
-    *    The description to be matched
-    * @deprecated Instead use searchProjectsByProjectDescWithPagination
-  */
-  list<workspace_model.Project> searchProjectsByProjectDesc (1: required string gatewayId,
-                        2: required string userName, 3: required string description)
-            throws (1: airavata_errors.InvalidRequestException ire,
-                    2: airavata_errors.AiravataClientException ace,
-                    3: airavata_errors.AiravataSystemException ase)
 
   /**
     * Search and get all Projects for user by project description with pagination. Results
@@ -314,7 +268,7 @@ service Airavata {
     * @param offset
     *    The starting point of the results to be fetched
    */
-  list<workspace_model.Project> searchProjectsByProjectDescWithPagination (1: required security_model.AuthzToken authzToken,
+  list<workspace_model.Project> searchProjectsByProjectDesc(1: required security_model.AuthzToken authzToken,
                         2: required string gatewayId,
                         3: required string userName,
                         4: required string description,
@@ -324,26 +278,6 @@ service Airavata {
                     2: airavata_errors.AiravataClientException ace,
                     3: airavata_errors.AiravataSystemException ase,
                     4: airavata_errors.AuthorizationException ae)
-
-
-  /**
-    * Search Experiments by experiment name
-    *
-    * @param gatewayId
-    *       Identifier of the requested gateway
-    * @param useNname
-    *       Username of the requested user
-    * @param expName
-    *       Experiment name to be matched
-    * @deprecated
-    *       Instead use searchExperimentsByNameWithPagination
-    *
-    */
-  list<experiment_model.ExperimentSummaryModel> searchExperimentsByName (1: required string gatewayId,
-                          2: required string userName, 3: required string expName)
-            throws (1: airavata_errors.InvalidRequestException ire,
-                    2: airavata_errors.AiravataClientException ace,
-                    3: airavata_errors.AiravataSystemException ase)
 
   /**
     * Search Experiments by experiment name with pagination. Results will be sorted
@@ -360,7 +294,7 @@ service Airavata {
     * @param offset
     *       The starting point of the results to be fetched
     */
-  list<experiment_model.ExperimentSummaryModel> searchExperimentsByNameWithPagination (1: required security_model.AuthzToken authzToken,
+  list<experiment_model.ExperimentSummaryModel> searchExperimentsByName(1: required security_model.AuthzToken authzToken,
                           2: required string gatewayId,
                           3: required string userName,
                           4: required string expName,
@@ -372,24 +306,6 @@ service Airavata {
                     4: airavata_errors.AuthorizationException ae)
 
   /**
-    * Search Experiments by experiment name
-    *
-    * @param gatewayId
-    *       Identifier of the requested gateway
-    * @param userName
-    *       Username of the requested user
-    * @param description
-    *       Experiment description to be matched
-    * @deprecated
-    *       Instead use searchExperimentsByDescWithPagination
-  */
-  list<experiment_model.ExperimentSummaryModel> searchExperimentsByDesc (1: required string gatewayId,
-                            2: required string userName, 3: required string description)
-              throws (1: airavata_errors.InvalidRequestException ire,
-                      2: airavata_errors.AiravataClientException ace,
-                      3: airavata_errors.AiravataSystemException ase)
-
-  /**
     * Search Experiments by experiment name with pagination. Results will be sorted
     * based on creation time DESC
     *
@@ -404,7 +320,7 @@ service Airavata {
     * @param offset
     *       The starting point of the results to be fetched
     */
-  list<experiment_model.ExperimentSummaryModel> searchExperimentsByDescWithPagination (1: required security_model.AuthzToken authzToken,
+  list<experiment_model.ExperimentSummaryModel> searchExperimentsByDesc(1: required security_model.AuthzToken authzToken,
                             2: required string gatewayId,
                             3: required string userName,
                             4: required string description,
@@ -415,24 +331,6 @@ service Airavata {
                       3: airavata_errors.AiravataSystemException ase,
                       4: airavata_errors.AuthorizationException ae)
 
-
-  /**
-   * Search Experiments by application id
-   *
-   * @param gatewayId
-   *       Identifier of the requested gateway
-   * @param userName
-   *       Username of the requested user
-   * @param applicationId
-   *       Application id to be matched
-   * @deprecated
-   *       Instead use searchExperimentsByApplicationWithPagination
-   */
-  list<experiment_model.ExperimentSummaryModel> searchExperimentsByApplication (1: required string gatewayId,
-                             2: required string userName, 3: required string applicationId)
-              throws (1: airavata_errors.InvalidRequestException ire,
-                      2: airavata_errors.AiravataClientException ace,
-                      3: airavata_errors.AiravataSystemException ase)
   /**
    * Search Experiments by application id with pagination. Results will be sorted
    * based on creation time DESC
@@ -448,7 +346,7 @@ service Airavata {
    * @param offset
    *       The starting point of the results to be fetched
    */
-  list<experiment_model.ExperimentSummaryModel> searchExperimentsByApplicationWithPagination (1: required security_model.AuthzToken authzToken,
+  list<experiment_model.ExperimentSummaryModel> searchExperimentsByApplication(1: required security_model.AuthzToken authzToken,
                              2: required string gatewayId,
                              3: required string userName,
                              4: required string applicationId,
@@ -458,23 +356,6 @@ service Airavata {
                       2: airavata_errors.AiravataClientException ace,
                       3: airavata_errors.AiravataSystemException ase,
                       4: airavata_errors.AuthorizationException ae)
-   /**
-    * Search Experiments by experiment status
-    *
-    * @param gatewayId
-    *       Identifier of the requested gateway
-    * @param userName
-    *       Username of the requested user
-    * @param experimentState
-    *       Experiement state to be matched
-    * @deprecated
-    *       Instead use searchExperimentsByStatusWithPagination
-    */
-    list<experiment_model.ExperimentSummaryModel> searchExperimentsByStatus (1: required string gatewayId,
-                            2: required string userName, 3: required status_models.ExperimentState experimentState)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                        2: airavata_errors.AiravataClientException ace,
-                        3: airavata_errors.AiravataSystemException ase)
 
   /**
    * Search Experiments by experiment status with pagination. Results will be sorted
@@ -491,7 +372,7 @@ service Airavata {
    * @param offset
    *       The starting point of the results to be fetched
    */
-    list<experiment_model.ExperimentSummaryModel> searchExperimentsByStatusWithPagination (1: required security_model.AuthzToken authzToken,
+    list<experiment_model.ExperimentSummaryModel> searchExperimentsByStatus(1: required security_model.AuthzToken authzToken,
                             2: required string gatewayId,
                             3: required string userName,
                             4: required status_models.ExperimentState experimentState,
@@ -501,26 +382,6 @@ service Airavata {
                         2: airavata_errors.AiravataClientException ace,
                         3: airavata_errors.AiravataSystemException ase,
                         4: airavata_errors.AuthorizationException ae)
-
-  /**
-   * Search Experiments by experiment creation time
-   *
-   * @param gatewayId
-   *       Identifier of the requested gateway
-   * @param userName
-   *       Username of the requested user
-   * @param fromTime
-   *       Start time of the experiments creation time
-   * @param toTime
-   *       End time of the  experiement creation time
-   * @deprecated
-   *       Instead use searchExperimentsByCreationTimeWithPagination
-   */
-    list<experiment_model.ExperimentSummaryModel> searchExperimentsByCreationTime (1: required string gatewayId,
-                            2: required string userName, 3: required i64 fromTime, 4: required i64 toTime)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                        2: airavata_errors.AiravataClientException ace,
-                        3: airavata_errors.AiravataSystemException ase)
 
   /**
    * Search Experiments by experiment creation time with pagination. Results will be sorted
@@ -539,7 +400,7 @@ service Airavata {
    * @param offset
    *       The starting point of the results to be fetched
    */
-    list<experiment_model.ExperimentSummaryModel> searchExperimentsByCreationTimeWithPagination (1: required security_model.AuthzToken authzToken,
+    list<experiment_model.ExperimentSummaryModel> searchExperimentsByCreationTime(1: required security_model.AuthzToken authzToken,
                             2: required string gatewayId,
                             3: required string userName,
                             4: required i64 fromTime,
@@ -595,22 +456,9 @@ service Airavata {
                         3: airavata_errors.AiravataSystemException ase,
                         4: airavata_errors.AuthorizationException ae)
 
-   /**
-    * Get all Experiments within a Project
-    *
-    * @param projectId
-    *       Identifier of the project
-    * @deprecated
-    *       Instead use  getAllExperimentsInProjectWithPagination
-    */
-  list<experiment_model.ExperimentModel> getAllExperimentsInProject(1: required string projectId)
-          throws (1: airavata_errors.InvalidRequestException ire,
-                  2: airavata_errors.AiravataClientException ace,
-                  3: airavata_errors.AiravataSystemException ase,
-                  4: airavata_errors.ProjectNotFoundException pnfe)
 
   /**
-   * Get all Experiments within project with pagination. Results will be sorted
+   * Get Experiments within project with pagination. Results will be sorted
    * based on creation time DESC
    *
    * @param projectId
@@ -620,7 +468,7 @@ service Airavata {
    * @param offset
    *       The starting point of the results to be fetched
    */
-  list<experiment_model.ExperimentModel> getAllExperimentsInProjectWithPagination(1: required security_model.AuthzToken authzToken,
+  list<experiment_model.ExperimentModel> getExperimentsInProject(1: required security_model.AuthzToken authzToken,
                   2: required string projectId,
                   3: required i32 limit,
                   4: required i32 offset)
@@ -630,25 +478,8 @@ service Airavata {
                   4: airavata_errors.ProjectNotFoundException pnfe,
                   5: airavata_errors.AuthorizationException ae)
 
-
   /**
-   * Get all Experiments by user
-   *
-   * @param gatewayId
-   *       Identifier of the requesting gateway
-   * @param userName
-   *       Username of the requested user
-   * @deprecated
-   *       Instead use getAllUserExperimentsWithPagination
-   */
-  list<experiment_model.ExperimentModel> getAllUserExperiments(1: required string gatewayId,
-                        2: required string userName)
-            throws (1: airavata_errors.InvalidRequestException ire,
-                    2: airavata_errors.AiravataClientException ace,
-                    3: airavata_errors.AiravataSystemException ase)
-
-  /**
-   * Get all Experiments by user pagination. Results will be sorted
+   * Get experiments by user with pagination. Results will be sorted
    * based on creation time DESC
    *
    * @param gatewayId
@@ -660,7 +491,7 @@ service Airavata {
    * @param offset
    *       The starting point of the results to be fetched
    */
-  list<experiment_model.ExperimentModel> getAllUserExperimentsWithPagination(1: required security_model.AuthzToken authzToken,
+  list<experiment_model.ExperimentModel> getUserExperiments(1: required security_model.AuthzToken authzToken,
                         2: required string gatewayId,
                         3: required string userName,
                         4: required i32 limit,

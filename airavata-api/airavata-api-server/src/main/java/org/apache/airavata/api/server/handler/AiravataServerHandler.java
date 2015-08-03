@@ -244,17 +244,20 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public String generateAndRegisterSSHKeys(String gatewayId, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public String generateAndRegisterSSHKeys(AuthzToken authzToken, String gatewayId, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return null;
     }
 
     @Override
-    public String getSSHPubKey(String airavataCredStoreToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public String getSSHPubKey(AuthzToken authzToken, String airavataCredStoreToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return null;
     }
 
     @Override
-    public Map<String, String> getAllUserSSHPubKeys(String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public Map<String, String> getAllUserSSHPubKeys(AuthzToken authzToken, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return null;
     }
 
@@ -357,21 +360,6 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    /**
-     * Get all Project by user
-     *
-     * @param gatewayId
-     *    The identifier for the requested gateway.
-     * @param userName
-     *    The identifier of the user
-     * @deprecated  Instead use getAllUserProjectsWithPagination method
-     */
-    @Deprecated
-    @Override
-    public List<Project> getAllUserProjects(String gatewayId, String userName) throws InvalidRequestException,
-            AiravataClientException, AiravataSystemException, TException {
-        return getAllUserProjectsWithPagination(new AuthzToken(""), gatewayId, userName, -1, -1);
-    }
 
     /**
      * Get all Project by user with pagination. Results will be ordered based
@@ -388,7 +376,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      **/
     @Override
     @SecurityCheck
-    public List<Project> getAllUserProjectsWithPagination(AuthzToken authzToken, String gatewayId, String userName,
+    public List<Project> getUserProjects(AuthzToken authzToken, String gatewayId, String userName,
                                                           int limit, int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!validateString(userName)){
@@ -433,24 +421,6 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
-     * Get all Project for user by project name
-     *
-     * @param gatewayId
-     *    The identifier for the requested gateway.
-     * @param userName
-     *    The identifier of the user
-     * @param projectName
-     *    The name of the project on which the results to be fetched
-     * @deprecated Instead use searchProjectsByProjectNameWithPagination
-     */
-    @Deprecated
-    @Override
-    public List<Project> searchProjectsByProjectName(String gatewayId, String userName, String projectName)
-            throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return searchProjectsByProjectNameWithPagination(new AuthzToken(""), gatewayId, userName, projectName, -1, -1);
-    }
-
-    /**
      * Get all Project for user by project name with pagination. Results will be ordered based
      * on creation time DESC
      *
@@ -467,7 +437,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public List<Project> searchProjectsByProjectNameWithPagination(AuthzToken authzToken, String gatewayId, String userName,
+    public List<Project> searchProjectsByProjectName(AuthzToken authzToken, String gatewayId, String userName,
                                                                    String projectName, int limit, int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!validateString(userName)){
@@ -511,25 +481,6 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
-     * Get all Project for user by project description
-     * @param gatewayId
-     *    The identifier for the requested gateway.
-     * @param userName
-     *    The identifier of the user
-     * @param description
-     *    The description to be matched
-     * @deprecated Instead use searchProjectsByProjectDescWithPagination
-     */
-    @Deprecated
-    @Override
-    public List<Project> searchProjectsByProjectDesc(String gatewayId, String userName, String description) throws InvalidRequestException,
-                                                                                                 AiravataClientException,
-                                                                                                 AiravataSystemException,
-                                                                                                 TException {
-        return searchProjectsByProjectDescWithPagination(new AuthzToken(""), gatewayId, userName, description, -1, -1);
-    }
-
-    /**
      * Search and get all Projects for user by project description with pagination. Results
      * will be ordered based on creation time DESC
      *
@@ -546,7 +497,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public List<Project> searchProjectsByProjectDescWithPagination(AuthzToken authzToken, String gatewayId, String userName,
+    public List<Project> searchProjectsByProjectDesc(AuthzToken authzToken, String gatewayId, String userName,
                                                                    String description, int limit, int offset) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!validateString(userName)){
@@ -590,26 +541,6 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
-     * Search Experiments by experiment name
-     *
-     * @param gatewayId
-     *       Identifier of the requested gateway
-     * @param userName
-     *       Username of the requested user
-     * @param expName
-     *       Experiment name to be matched
-     * @deprecated
-     *       Instead use searchExperimentsByNameWithPagination
-     *
-     */
-    @Deprecated
-    @Override
-    public List<ExperimentSummaryModel> searchExperimentsByName(String gatewayId, String userName, String expName)
-            throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return searchExperimentsByNameWithPagination(new AuthzToken(""), gatewayId, userName, expName, -1, -1);
-    }
-
-    /**
      * Search Experiments by experiment name with pagination. Results will be sorted
      * based on creation time DESC
      *
@@ -626,7 +557,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public List<ExperimentSummaryModel> searchExperimentsByNameWithPagination(AuthzToken authzToken, String gatewayId, String userName,
+    public List<ExperimentSummaryModel> searchExperimentsByName(AuthzToken authzToken, String gatewayId, String userName,
                                                                               String expName, int limit, int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!validateString(userName)){
@@ -670,25 +601,6 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
-     * Search Experiments by experiment name
-     *
-     * @param gatewayId
-     *       Identifier of the requested gateway
-     * @param userName
-     *       Username of the requested user
-     * @param description
-     *       Experiment description to be matched
-     * @deprecated
-     *       Instead use searchExperimentsByDescWithPagination
-     */
-    @Deprecated
-    @Override
-    public List<ExperimentSummaryModel> searchExperimentsByDesc(String gatewayId, String userName, String description)
-            throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return searchExperimentsByDescWithPagination(new AuthzToken(""), gatewayId, userName, description, -1, -1);
-    }
-
-    /**
      * Search Experiments by experiment name with pagination. Results will be sorted
      * based on creation time DESC
      *
@@ -705,7 +617,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public List<ExperimentSummaryModel> searchExperimentsByDescWithPagination(AuthzToken authzToken, String gatewayId, String userName,
+    public List<ExperimentSummaryModel> searchExperimentsByDesc(AuthzToken authzToken, String gatewayId, String userName,
                                                                               String description, int limit, int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!validateString(userName)){
@@ -749,25 +661,6 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
-     * Search Experiments by application id
-     *
-     * @param gatewayId
-     *       Identifier of the requested gateway
-     * @param userName
-     *       Username of the requested user
-     * @param applicationId
-     *       Application id to be matched
-     * @deprecated
-     *       Instead use searchExperimentsByApplication
-     */
-    @Deprecated
-    @Override
-    public List<ExperimentSummaryModel> searchExperimentsByApplication(String gatewayId, String userName, String applicationId)
-            throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return searchExperimentsByApplicationWithPagination(new AuthzToken(""), gatewayId, userName, applicationId, -1, -1);
-    }
-
-    /**
      * Search Experiments by application id with pagination. Results will be sorted
      * based on creation time DESC
      *
@@ -784,7 +677,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public List<ExperimentSummaryModel> searchExperimentsByApplicationWithPagination(AuthzToken authzToken, String gatewayId,
+    public List<ExperimentSummaryModel> searchExperimentsByApplication(AuthzToken authzToken, String gatewayId,
                                                                                      String userName, String applicationId,
                                                                                      int limit, int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
@@ -829,24 +722,6 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
-     * Search Experiments by experiment status
-     *
-     * @param gatewayId
-     *       Identifier of the requested gateway
-     * @param userName
-     *       Username of the requested user
-     * @param experimentState
-     *       Experiment state to be matched
-     * @deprecated
-     *       Instead use searchExperimentsByStatusWithPagination
-     */
-    @Deprecated
-    @Override
-    public List<ExperimentSummaryModel> searchExperimentsByStatus(String gatewayId, String userName, ExperimentState experimentState) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return searchExperimentsByStatusWithPagination(new AuthzToken(""), gatewayId, userName, experimentState, -1, -1);
-    }
-
-    /**
      * Search Experiments by experiment status with pagination. Results will be sorted
      * based on creation time DESC
      *
@@ -863,7 +738,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public List<ExperimentSummaryModel> searchExperimentsByStatusWithPagination(AuthzToken authzToken, String gatewayId,
+    public List<ExperimentSummaryModel> searchExperimentsByStatus(AuthzToken authzToken, String gatewayId,
                                                                                 String userName, ExperimentState experimentState,
                                                                                 int limit, int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
@@ -908,26 +783,6 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
-     * Search Experiments by experiment creation time
-     *
-     * @param gatewayId
-     *       Identifier of the requested gateway
-     * @param userName
-     *       Username of the requested user
-     * @param fromTime
-     *       Start time of the experiments creation time
-     * @param toTime
-     *       End time of the  experiement creation time
-     * @deprecated
-     *       Instead use searchExperimentsByCreationTime
-     */
-    @Deprecated
-    @Override
-    public List<ExperimentSummaryModel> searchExperimentsByCreationTime(String gatewayId, String userName, long fromTime, long toTime) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return searchExperimentsByCreationTimeWithPagination(new AuthzToken(""), gatewayId, userName, fromTime, toTime, -1, -1);
-    }
-
-    /**
      * Search Experiments by experiment creation time with pagination. Results will be sorted
      * based on creation time DESC
      *
@@ -946,7 +801,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public List<ExperimentSummaryModel> searchExperimentsByCreationTimeWithPagination(AuthzToken authzToken, String gatewayId,
+    public List<ExperimentSummaryModel> searchExperimentsByCreationTime(AuthzToken authzToken, String gatewayId,
                                                                                       String userName, long fromTime,
                                                                                       long toTime, int limit, int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
@@ -1105,25 +960,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
-     * Get all Experiments within a Project
-     *
-     * @param projectId
-     *       Identifier of the project
-     * @deprecated
-     *       Instead use getAllExperimentsInProjectWithPagination
-     */
-    @Deprecated
-    @Override
-    public List<ExperimentModel> getAllExperimentsInProject(String projectId) throws InvalidRequestException,
-                                                                                AiravataClientException,
-                                                                                AiravataSystemException,
-                                                                                ProjectNotFoundException,
-                                                                                TException {
-        return getAllExperimentsInProjectWithPagination(new AuthzToken(""), projectId, -1, -1);
-    }
-
-    /**
-     * Get all Experiments within project with pagination. Results will be sorted
+     * Get Experiments within project with pagination. Results will be sorted
      * based on creation time DESC
      *
      * @param projectId
@@ -1135,7 +972,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public List<ExperimentModel> getAllExperimentsInProjectWithPagination(AuthzToken authzToken, String projectId, int limit, int offset)
+    public List<ExperimentModel> getExperimentsInProject(AuthzToken authzToken, String projectId, int limit, int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, ProjectNotFoundException,
             AuthorizationException, TException {
         if (!validateString(projectId)){
@@ -1173,23 +1010,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
-     * Get all Experiments by user
-     *
-     * @param gatewayId
-     *       Identifier of the requesting gateway
-     * @param userName
-     *       Username of the requested user
-     * @deprecated
-     *       Instead use getAllUserExperimentsWithPagination
-     */
-    @Deprecated
-    @Override
-    public List<ExperimentModel> getAllUserExperiments(String gatewayId, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return getAllUserExperimentsWithPagination(new AuthzToken(""), gatewayId, userName, -1, -1);
-    }
-
-    /**
-     * Get all Experiments by user pagination. Results will be sorted
+     * Get Experiments by user pagination. Results will be sorted
      * based on creation time DESC
      *
      * @param gatewayId
@@ -1203,7 +1024,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public List<ExperimentModel> getAllUserExperimentsWithPagination(AuthzToken authzToken, String gatewayId, String userName, int limit,
+    public List<ExperimentModel> getUserExperiments(AuthzToken authzToken, String gatewayId, String userName, int limit,
                                                                      int offset) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!validateString(userName)){
