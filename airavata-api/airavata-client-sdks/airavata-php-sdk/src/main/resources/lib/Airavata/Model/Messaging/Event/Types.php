@@ -1159,6 +1159,10 @@ class ProcessSubmitEvent {
   /**
    * @var string
    */
+  public $experimentId = null;
+  /**
+   * @var string
+   */
   public $tokenId = null;
 
   public function __construct($vals=null) {
@@ -1173,6 +1177,10 @@ class ProcessSubmitEvent {
           'type' => TType::STRING,
           ),
         3 => array(
+          'var' => 'experimentId',
+          'type' => TType::STRING,
+          ),
+        4 => array(
           'var' => 'tokenId',
           'type' => TType::STRING,
           ),
@@ -1184,6 +1192,9 @@ class ProcessSubmitEvent {
       }
       if (isset($vals['gatewayId'])) {
         $this->gatewayId = $vals['gatewayId'];
+      }
+      if (isset($vals['experimentId'])) {
+        $this->experimentId = $vals['experimentId'];
       }
       if (isset($vals['tokenId'])) {
         $this->tokenId = $vals['tokenId'];
@@ -1226,6 +1237,13 @@ class ProcessSubmitEvent {
           break;
         case 3:
           if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->experimentId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->tokenId);
           } else {
             $xfer += $input->skip($ftype);
@@ -1254,8 +1272,13 @@ class ProcessSubmitEvent {
       $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->experimentId !== null) {
+      $xfer += $output->writeFieldBegin('experimentId', TType::STRING, 3);
+      $xfer += $output->writeString($this->experimentId);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->tokenId !== null) {
-      $xfer += $output->writeFieldBegin('tokenId', TType::STRING, 3);
+      $xfer += $output->writeFieldBegin('tokenId', TType::STRING, 4);
       $xfer += $output->writeString($this->tokenId);
       $xfer += $output->writeFieldEnd();
     }

@@ -23,6 +23,7 @@ package org.apache.airavata.gfac.server;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.AiravataStartupException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
@@ -38,6 +39,7 @@ import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.impl.RabbitMQProcessLaunchConsumer;
+import org.apache.airavata.messaging.core.impl.RabbitMQStatusPublisher;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
@@ -91,8 +93,11 @@ public class GfacServerHandler implements GfacService.Iface {
     }
 
     private void initAMQPClient() throws AiravataException {
+	    // init process consumer
         rabbitMQProcessLaunchConsumer = Factory.getProcessLaunchConsumer();
         rabbitMQProcessLaunchConsumer.listen(new ProcessLaunchMessageHandler());
+	    // init status publisher
+	    statusPublisher = new RabbitMQStatusPublisher();
     }
 
     private void startCuratorClient() throws ApplicationSettingsException {
@@ -217,7 +222,9 @@ public class GfacServerHandler implements GfacService.Iface {
                     ProcessStatus status = new ProcessStatus();
                     status.setState(ProcessState.EXECUTING);
                     status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-                    Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
+                    Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.PROCESS_STATUS, status, event
+		                    .getProcessId());
+	                publishProcessStatus(event, status);
                     try {
 	                    GFacUtils.createProcessZKNode(curatorClient, gfacServerName, event.getProcessId(), message
 					                    .getDeliveryTag(),
@@ -231,6 +238,8 @@ public class GfacServerHandler implements GfacService.Iface {
                     log.error(e.getMessage(), e); //nobody is listening so nothing to throw
                 } catch (RegistryException e) {
                     log.error("Error while updating experiment status", e);
+                } catch (AiravataException e) {
+	                log.error("Error while publishing process status", e);
                 }
             } else if (message.getType().equals(MessageType.TERMINATEPROCESS)) {
                 ProcessTerminateEvent event = new ProcessTerminateEvent();
@@ -258,4 +267,15 @@ public class GfacServerHandler implements GfacService.Iface {
             }
         }
     }
+
+	private void publishProcessStatus(ProcessSubmitEvent event, ProcessStatus status) throws AiravataException {
+		ProcessIdentifier identifier = new ProcessIdentifier(event.getProcessId(),
+				event.getExperimentId(),
+				event.getGatewayId());
+		ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent(status.getState(), identifier);
+		MessageContext msgCtx = new MessageContext(processStatusChangeEvent, MessageType.PROCESS,
+				AiravataUtils.getId(MessageType.PROCESS.name()), event.getGatewayId());
+		msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+		statusPublisher.publish(msgCtx);
+	}
 }

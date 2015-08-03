@@ -57,7 +57,8 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
 
   private static final org.apache.thrift.protocol.TField PROCESS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("processId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField TOKEN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("tokenId", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentId", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField TOKEN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("tokenId", org.apache.thrift.protocol.TType.STRING, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -67,13 +68,15 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
 
   private String processId; // required
   private String gatewayId; // required
+  private String experimentId; // required
   private String tokenId; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     PROCESS_ID((short)1, "processId"),
     GATEWAY_ID((short)2, "gatewayId"),
-    TOKEN_ID((short)3, "tokenId");
+    EXPERIMENT_ID((short)3, "experimentId"),
+    TOKEN_ID((short)4, "tokenId");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -92,7 +95,9 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
           return PROCESS_ID;
         case 2: // GATEWAY_ID
           return GATEWAY_ID;
-        case 3: // TOKEN_ID
+        case 3: // EXPERIMENT_ID
+          return EXPERIMENT_ID;
+        case 4: // TOKEN_ID
           return TOKEN_ID;
         default:
           return null;
@@ -141,6 +146,8 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.EXPERIMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("experimentId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.TOKEN_ID, new org.apache.thrift.meta_data.FieldMetaData("tokenId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -153,11 +160,13 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
   public ProcessSubmitEvent(
     String processId,
     String gatewayId,
+    String experimentId,
     String tokenId)
   {
     this();
     this.processId = processId;
     this.gatewayId = gatewayId;
+    this.experimentId = experimentId;
     this.tokenId = tokenId;
   }
 
@@ -170,6 +179,9 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
     }
     if (other.isSetGatewayId()) {
       this.gatewayId = other.gatewayId;
+    }
+    if (other.isSetExperimentId()) {
+      this.experimentId = other.experimentId;
     }
     if (other.isSetTokenId()) {
       this.tokenId = other.tokenId;
@@ -184,6 +196,7 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
   public void clear() {
     this.processId = null;
     this.gatewayId = null;
+    this.experimentId = null;
     this.tokenId = null;
   }
 
@@ -233,6 +246,29 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
     }
   }
 
+  public String getExperimentId() {
+    return this.experimentId;
+  }
+
+  public void setExperimentId(String experimentId) {
+    this.experimentId = experimentId;
+  }
+
+  public void unsetExperimentId() {
+    this.experimentId = null;
+  }
+
+  /** Returns true if field experimentId is set (has been assigned a value) and false otherwise */
+  public boolean isSetExperimentId() {
+    return this.experimentId != null;
+  }
+
+  public void setExperimentIdIsSet(boolean value) {
+    if (!value) {
+      this.experimentId = null;
+    }
+  }
+
   public String getTokenId() {
     return this.tokenId;
   }
@@ -274,6 +310,14 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
       }
       break;
 
+    case EXPERIMENT_ID:
+      if (value == null) {
+        unsetExperimentId();
+      } else {
+        setExperimentId((String)value);
+      }
+      break;
+
     case TOKEN_ID:
       if (value == null) {
         unsetTokenId();
@@ -293,6 +337,9 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
     case GATEWAY_ID:
       return getGatewayId();
 
+    case EXPERIMENT_ID:
+      return getExperimentId();
+
     case TOKEN_ID:
       return getTokenId();
 
@@ -311,6 +358,8 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
       return isSetProcessId();
     case GATEWAY_ID:
       return isSetGatewayId();
+    case EXPERIMENT_ID:
+      return isSetExperimentId();
     case TOKEN_ID:
       return isSetTokenId();
     }
@@ -348,6 +397,15 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
         return false;
     }
 
+    boolean this_present_experimentId = true && this.isSetExperimentId();
+    boolean that_present_experimentId = true && that.isSetExperimentId();
+    if (this_present_experimentId || that_present_experimentId) {
+      if (!(this_present_experimentId && that_present_experimentId))
+        return false;
+      if (!this.experimentId.equals(that.experimentId))
+        return false;
+    }
+
     boolean this_present_tokenId = true && this.isSetTokenId();
     boolean that_present_tokenId = true && that.isSetTokenId();
     if (this_present_tokenId || that_present_tokenId) {
@@ -373,6 +431,11 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
     list.add(present_gatewayId);
     if (present_gatewayId)
       list.add(gatewayId);
+
+    boolean present_experimentId = true && (isSetExperimentId());
+    list.add(present_experimentId);
+    if (present_experimentId)
+      list.add(experimentId);
 
     boolean present_tokenId = true && (isSetTokenId());
     list.add(present_tokenId);
@@ -406,6 +469,16 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
     }
     if (isSetGatewayId()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetExperimentId()).compareTo(other.isSetExperimentId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetExperimentId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.experimentId, other.experimentId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -456,6 +529,14 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
     }
     first = false;
     if (!first) sb.append(", ");
+    sb.append("experimentId:");
+    if (this.experimentId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.experimentId);
+    }
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("tokenId:");
     if (this.tokenId == null) {
       sb.append("null");
@@ -475,6 +556,10 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
 
     if (!isSetGatewayId()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' is unset! Struct:" + toString());
+    }
+
+    if (!isSetExperimentId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'experimentId' is unset! Struct:" + toString());
     }
 
     if (!isSetTokenId()) {
@@ -534,7 +619,15 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // TOKEN_ID
+          case 3: // EXPERIMENT_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.experimentId = iprot.readString();
+              struct.setExperimentIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // TOKEN_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.tokenId = iprot.readString();
               struct.setTokenIdIsSet(true);
@@ -565,6 +658,11 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
         oprot.writeString(struct.gatewayId);
         oprot.writeFieldEnd();
       }
+      if (struct.experimentId != null) {
+        oprot.writeFieldBegin(EXPERIMENT_ID_FIELD_DESC);
+        oprot.writeString(struct.experimentId);
+        oprot.writeFieldEnd();
+      }
       if (struct.tokenId != null) {
         oprot.writeFieldBegin(TOKEN_ID_FIELD_DESC);
         oprot.writeString(struct.tokenId);
@@ -589,6 +687,7 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.processId);
       oprot.writeString(struct.gatewayId);
+      oprot.writeString(struct.experimentId);
       oprot.writeString(struct.tokenId);
     }
 
@@ -599,6 +698,8 @@ public class ProcessSubmitEvent implements org.apache.thrift.TBase<ProcessSubmit
       struct.setProcessIdIsSet(true);
       struct.gatewayId = iprot.readString();
       struct.setGatewayIdIsSet(true);
+      struct.experimentId = iprot.readString();
+      struct.setExperimentIdIsSet(true);
       struct.tokenId = iprot.readString();
       struct.setTokenIdIsSet(true);
     }
