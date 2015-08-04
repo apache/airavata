@@ -234,24 +234,21 @@ public class GFacUtils {
         return buf.toString();
     }
 
-	public static void saveJobStatus(TaskContext taskContext,
-                                     JobModel jobModel, JobState state) throws GFacException {
+	public static void saveJobStatus(ProcessContext processContext, JobModel jobModel) throws GFacException {
 		try {
             // first we save job jobModel to the registry for sa and then save the job status.
-            ProcessContext processContext = taskContext.getParentProcessContext();
+			JobStatus jobStatus = jobModel.getJobStatus();
             ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-            JobStatus status = new JobStatus();
-            status.setJobState(state);
-            jobModel.setJobStatus(status);
-            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            CompositeIdentifier ids = new CompositeIdentifier(taskContext.getTaskId(), jobModel.getJobId());
-			experimentCatalog.add(ExpCatChildDataType.JOB_STATUS, status, ids);
-            JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), taskContext.getTaskModel().getTaskId(),
+            jobModel.setJobStatus(jobStatus);
+            jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            CompositeIdentifier ids = new CompositeIdentifier(jobModel.getTaskId(), jobModel.getJobId());
+			experimentCatalog.add(ExpCatChildDataType.JOB_STATUS, jobStatus, ids);
+            JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), jobModel.getTaskId(),
                     processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
                     processContext.getGatewayId());
-            JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent(state, identifier);
+            JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent(jobStatus.getJobState(), identifier);
 			MessageContext msgCtx = new MessageContext(jobStatusChangeEvent, MessageType.JOB, AiravataUtils.getId
-					(MessageType.JOB.name()), taskContext.getParentProcessContext().getGatewayId());
+					(MessageType.JOB.name()), processContext.getGatewayId());
 			msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
 			processContext.getStatusPublisher().publish(msgCtx);
         } catch (Exception e) {

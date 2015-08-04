@@ -24,6 +24,7 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacThreadPoolExecutor;
+import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.config.ResourceConfig;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.monitor.EmailParser;
@@ -35,7 +36,9 @@ import org.apache.airavata.gfac.monitor.email.parser.PBSEmailParser;
 import org.apache.airavata.gfac.monitor.email.parser.SLURMEmailParser;
 import org.apache.airavata.gfac.monitor.email.parser.UGEEmailParser;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.model.status.JobStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -258,6 +261,8 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
         JobState resultState = jobStatusResult.getState();
 	    // TODO : update job state on process context
         boolean runOutflowTasks = false;
+	    JobStatus jobStatus = new JobStatus();
+	    JobModel jobModel = processContext.getJobModel();
         String jobDetails = "JobName : " + jobStatusResult.getJobName() + ", JobId : " + jobStatusResult.getJobId();
         // TODO - Handle all other valid JobStates
         if (resultState == JobState.COMPLETE) {
@@ -269,19 +274,33 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
             log.info("[EJM]: Job Queued email received, " + jobDetails);
         }else if (resultState == JobState.ACTIVE) {
             // nothing special thing to do, update the status change to rabbit mq at the end of this method.
+	        jobStatus.setJobState(JobState.QUEUED);
+	        jobStatus.setReason("Queued email received");
             log.info("[EJM]: Job Active email received, " + jobDetails);
         }else if (resultState == JobState.FAILED) {
             jobMonitorMap.remove(jobStatusResult.getJobId());
             runOutflowTasks = true;
+	        jobStatus.setJobState(JobState.FAILED);
+	        jobStatus.setReason("Failed email received");
             log.info("[EJM]: Job failed email received , removed job from job monitoring. " + jobDetails);
         }else if (resultState == JobState.CANCELED) {
             jobMonitorMap.remove(jobStatusResult.getJobId());
             runOutflowTasks = false; // Do we need to run out handlers in canceled case?
+	        jobStatus.setJobState(JobState.CANCELED);
+	        jobStatus.setReason("Canceled email received");
             log.info("[EJM]: Job canceled mail received, removed job from job monitoring. " + jobDetails);
-
         }
-        log.info("[EJM]: Publishing status changes to amqp. " + jobDetails);
-        publishJobStatusChange(processContext);
+	    if (jobStatus.getJobState() != null) {
+		    try {
+			    jobModel.setJobStatus(jobStatus);
+			    log.info("[EJM]: Publishing status changes to amqp. " + jobDetails);
+			    GFacUtils.saveJobStatus(processContext, jobModel);
+		    } catch (GFacException e) {
+			    log.error("expId: {}, processId: {}, taskId: {}, jobId: {} :- Error while save and publishing Job " +
+					    "status {}", processContext.getExperimentId(), processContext.getProcessId(), jobModel
+					    .getTaskId(), jobModel.getJobId(), jobStatus.getJobState());
+		    }
+	    }
 
         if (runOutflowTasks) {
             log.info("[EJM]: Calling Out Handler chain of " + jobDetails);
@@ -291,10 +310,6 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 		        log.info("[EJM]: Error while running output tasks", e);
 	        }
         }
-    }
-
-    private void publishJobStatusChange(ProcessContext processContext) {
-	    // TODO : implement this
     }
 
     private void writeEnvelopeOnError(Message m) throws MessagingException {
