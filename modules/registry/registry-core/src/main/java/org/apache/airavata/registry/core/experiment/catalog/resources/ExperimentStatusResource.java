@@ -126,7 +126,8 @@ public class ExperimentStatusResource extends AbstractExpCatResource {
             experimentStatus.setExperimentId(experimentId);
             experimentStatus.setState(state);
             experimentStatus.setReason(reason);
-            em.persist(experimentStatus);
+	        experimentStatus.setTimeOfStateChange(timeOfStateChange);
+	        em.persist(experimentStatus);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {

@@ -505,10 +505,21 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 					ExperimentStatus status = new ExperimentStatus();
 					ProcessIdentifier processIdentity = processStatusChangeEvent.getProcessIdentity();
 					switch (processStatusChangeEvent.getState()) {
-						case PRE_PROCESSING:
+//						case CREATED:
+//						case VALIDATED:
+//						case PRE_PROCESSING:
+//							break;
+						case CONFIGURING_WORKSPACE:
 							status.setState(ExperimentState.EXECUTING);
 							status.setReason("process  started");
 							break;
+//						case INPUT_DATA_STAGING:
+//						case EXECUTING:
+//						case MONITORING:
+//						case OUTPUT_DATA_STAGING:
+//						case POST_PROCESSING:
+//						case CANCELLING:
+//							break;
 						case COMPLETED:
 							status.setState(ExperimentState.COMPLETED);
 							status.setReason("process  completed");
@@ -526,8 +537,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 							return;
 					}
 					if (status.getState() != null) {
+						status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 						OrchestratorUtils.updageExperimentStatus(processIdentity.getExperimentId(), status);
-						log.info("expId : " + processIdentity.getExperimentId() + " :- Experiment status updated to ", status.getState());
+						log.info("expId : " + processIdentity.getExperimentId() + " :- Experiment status updated to " +
+								status.getState());
 					}
 				} catch (TException e) {
 					log.error("Message Id : " + message.getMessageId() + ", Message type : " + message.getType() +
