@@ -21,6 +21,7 @@
 
 package org.apache.airavata.gfac.core.context;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.messaging.core.Publisher;
@@ -35,6 +36,7 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePrefer
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.cpi.AppCatalog;
@@ -272,6 +274,11 @@ public class ProcessContext {
 	}
 
 	public JobModel getJobModel() {
+		if (jobModel == null) {
+			jobModel = new JobModel();
+			jobModel.setWorkingDir(getWorkingDir());
+			jobModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
+		}
 		return jobModel;
 	}
 

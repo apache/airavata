@@ -23,6 +23,7 @@ package org.apache.airavata.api.server.handler;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
+import org.apache.airavata.api.airavata_apiConstants;
 import org.apache.airavata.api.server.security.SecurityCheck;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -95,7 +96,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String getAPIVersion(AuthzToken authzToken) throws InvalidRequestException, AiravataClientException,
             AiravataSystemException, AuthorizationException, TException {
 
-        return airavataAPIConstants.AIRAVATA_API_VERSION;
+        return airavata_apiConstants.AIRAVATA_API_VERSION;
     }
 
     @Override
