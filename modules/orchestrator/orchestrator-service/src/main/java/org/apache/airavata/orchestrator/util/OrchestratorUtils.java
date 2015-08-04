@@ -33,8 +33,6 @@ public class OrchestratorUtils {
 	private static final Logger log = LoggerFactory.getLogger(OrchestratorUtils.class);
 
 	public static void updageExperimentStatus(String experimentId, ExperimentStatus status) {
-		status.setState(ExperimentState.FAILED);
-		status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 		try {
 			RegistryFactory.getDefaultExpCatalog().update(ExperimentCatalogModelType.EXPERIMENT_STATUS, status,
 					experimentId);
