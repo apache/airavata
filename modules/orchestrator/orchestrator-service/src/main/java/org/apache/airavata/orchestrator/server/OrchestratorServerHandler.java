@@ -25,12 +25,16 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.MessageHandler;
+import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
+import org.apache.airavata.messaging.core.impl.RabbitMQStatusConsumer;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
@@ -40,6 +44,8 @@ import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.messaging.event.ProcessIdentifier;
+import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
@@ -48,14 +54,17 @@ import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.orchestrator.cpi.orchestrator_cpi_serviceConstants;
 import org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor;
+import org.apache.airavata.orchestrator.util.OrchestratorUtils;
 import org.apache.airavata.registry.core.app.catalog.resources.AppCatAbstractResource;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
 import org.apache.airavata.registry.cpi.*;
+import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -70,6 +79,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	private String airavataUserName;
 	private String gatewayName;
 	private Publisher publisher;
+	private RabbitMQStatusConsumer statusConsumer;
 
     /**
 	 * Query orchestrator server to fetch the CPI version
@@ -92,20 +102,18 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			// the required properties
 			orchestrator = new SimpleOrchestratorImpl();
 			experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            appCatalog = RegistryFactory.getAppCatalog();
+			appCatalog = RegistryFactory.getAppCatalog();
 			orchestrator.initialize();
 			orchestrator.getOrchestratorContext().setPublisher(this.publisher);
-        } catch (OrchestratorException e) {
-            log.error(e.getMessage(), e);
-            throw new OrchestratorException("Error while initializing orchestrator service", e);
-		} catch (RegistryException e) {
-            log.error(e.getMessage(), e);
-            throw new OrchestratorException("Error while initializing orchestrator service", e);
-		} catch (AppCatalogException e) {
-            log.error(e.getMessage(), e);
-            throw new OrchestratorException("Error while initializing orchestrator service", e);
-        }
-    }
+			String brokerUrl = ServerSettings.getSetting(MessagingConstants.RABBITMQ_BROKER_URL);
+			String exchangeName = ServerSettings.getSetting(MessagingConstants.RABBITMQ_STATUS_EXCHANGE_NAME);
+			statusConsumer = new RabbitMQStatusConsumer(brokerUrl, exchangeName);
+			statusConsumer.listen(new ProcessStatusHandler());
+		} catch (OrchestratorException | RegistryException | AppCatalogException | AiravataException e) {
+			log.error(e.getMessage(), e);
+			throw new OrchestratorException("Error while initializing orchestrator service", e);
+		}
+	}
 
     /**
 	 * * After creating the experiment Data user have the * experimentID as the
@@ -457,19 +465,91 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 }
 
             } catch (Exception e) {
-                ExperimentStatus status = new ExperimentStatus();
-                status.setState(ExperimentState.FAILED);
-                status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                try {
-                    experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT_STATUS, status, experimentId);
-                } catch (RegistryException e1) {
-                    log.error(experimentId, "Error while updating experiment status to " + status.toString(), e);
-                    throw new TException(e);
-                }
-                log.error(experimentId, "Error while updating task status, hence updated experiment status to " + status.toString(), e);
-                throw new TException(e);
+	            ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
+	            status.setReason("Error while updating task status");
+	            OrchestratorUtils.updageExperimentStatus(experimentId, status);
+	            log.error(experimentId, "Error while updating task status, hence updated experiment status to " +
+			            ExperimentState.FAILED, e);
+	            throw new TException(e);
             }
             return true;
         }
+
     }
+
+	private class ProcessStatusHandler implements MessageHandler {
+
+		@Override
+		public Map<String, Object> getProperties() {
+			Map<String, Object> props = new HashMap<>();
+			List<String> routingKeys = new ArrayList<>();
+//			routingKeys.add("*"); // listen for gateway level messages
+//			routingKeys.add("*.*"); // listen for gateway/experiment level messages
+			routingKeys.add("*.*.*"); // listern for gateway/experiment/process level messages
+			props.put(MessagingConstants.RABBIT_ROUTING_KEY, routingKeys);
+			return props;
+		}
+
+		/**
+		 * This method only handle MessageType.PROCESS type messages.
+		 * @param message
+		 */
+		@Override
+		public void onMessage(MessageContext message) {
+			if (message.getType().equals(MessageType.PROCESS)) {
+				try {
+					ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent();
+					TBase event = message.getEvent();
+					byte[] bytes = ThriftUtils.serializeThriftObject(event);
+					ThriftUtils.createThriftFromBytes(bytes, processStatusChangeEvent);
+					ExperimentStatus status = new ExperimentStatus();
+					ProcessIdentifier processIdentity = processStatusChangeEvent.getProcessIdentity();
+					switch (processStatusChangeEvent.getState()) {
+//						case CREATED:
+//						case VALIDATED:
+//						case PRE_PROCESSING:
+//							break;
+						case CONFIGURING_WORKSPACE:
+							status.setState(ExperimentState.EXECUTING);
+							status.setReason("process  started");
+							break;
+//						case INPUT_DATA_STAGING:
+//						case EXECUTING:
+//						case MONITORING:
+//						case OUTPUT_DATA_STAGING:
+//						case POST_PROCESSING:
+//						case CANCELLING:
+//							break;
+						case COMPLETED:
+							status.setState(ExperimentState.COMPLETED);
+							status.setReason("process  completed");
+							break;
+						case FAILED:
+							status.setState(ExperimentState.FAILED);
+							status.setReason("process  failed");
+							break;
+						case CANCELED:
+							status.setState(ExperimentState.CANCELED);
+							status.setReason("process  cancelled");
+							break;
+						default:
+							// ignore other status changes, thoes will not affect for experiment status changes
+							return;
+					}
+					if (status.getState() != null) {
+						status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+						OrchestratorUtils.updageExperimentStatus(processIdentity.getExperimentId(), status);
+						log.info("expId : " + processIdentity.getExperimentId() + " :- Experiment status updated to " +
+								status.getState());
+					}
+				} catch (TException e) {
+					log.error("Message Id : " + message.getMessageId() + ", Message type : " + message.getType() +
+							"Error" + " while prcessing process status change event");
+				}
+			} else {
+				System.out.println("Message Recieved with message id " + message.getMessageId() + " and with message " +
+						"type " + message.getType().name());
+			}
+		}
+	}
 }
