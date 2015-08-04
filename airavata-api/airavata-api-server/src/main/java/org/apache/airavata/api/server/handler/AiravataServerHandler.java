@@ -22,7 +22,6 @@
 package org.apache.airavata.api.server.handler;
 
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.airavataAPIConstants;
 import org.apache.airavata.api.airavata_apiConstants;
 import org.apache.airavata.api.server.security.SecurityCheck;
 import org.apache.airavata.common.exception.AiravataException;
