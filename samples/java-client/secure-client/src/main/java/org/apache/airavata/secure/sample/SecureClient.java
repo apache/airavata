@@ -21,6 +21,7 @@
 package org.apache.airavata.secure.sample;
 
 import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.model.security.AuthzToken;
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.oauth.stub.dto.OAuthConsumerAppDTO;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -185,7 +187,8 @@ public class SecureClient {
             System.out.println("");
             System.out.println("Enter the number corresponding to the method to be invoked: ");
             System.out.println("1. getAPIVersion");
-            System.out.println("2. addGateway");
+            System.out.println("2. getAllAppModules");
+            System.out.println("3. addGateway");
             String methodNumberString = scanner.next();
             int methodNumber = Integer.valueOf(methodNumberString.trim());
 
@@ -202,8 +205,19 @@ public class SecureClient {
                 System.out.println("");
                 System.out.println("Airavata API version: " + version);
                 System.out.println("");
-
             } else if (methodNumber == 2) {
+                System.out.println("");
+                System.out.println("Enter the gateway id: ");
+                String gatewayId = scanner.next().trim();
+
+                List<ApplicationModule> appModules= client.getAllAppModules(authzToken, gatewayId);
+                System.out.println("Output of getAllAppModuels: ");
+                for (ApplicationModule appModule : appModules) {
+                    System.out.println(appModule.getAppModuleName());
+                }
+                System.out.println("");
+                System.out.println("");
+            } else if (methodNumber == 3) {
                 System.out.println("");
                 System.out.println("Enter the gateway id: ");
                 String gatewayId = scanner.next().trim();
