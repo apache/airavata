@@ -2,6 +2,159 @@ Apache Airavata Release Notes
 
 See http://issues.apache.org/jira/browse/AIRAVATA-* (where * is the number of the issue below)
 
+
+Apache Airavata Version 0.15 Released on 2015-07-15
+===================================================
+Below you will find the detail list of JIRA tasks/issues resolutions incorporated in 0.15.
+
+** Story
+    * [AIRAVATA-955] - Improvements to GSI-SSH library
+    * [AIRAVATA-1053] - Update Integration-test module
+    * [AIRAVATA-1476] - Integrate Unicore-BES provider with master Airavata
+    * [AIRAVATA-1544] - Improve InputDataType and OutputDataType models to support more usecases
+    * [AIRAVATA-1602] - Multi-tenant support for airavata registry
+
+** Epic
+    * [AIRAVATA-766] - Functional tests for GFAC handlers and provider
+    * [AIRAVATA-1442] - Implement airavata internal messaging system
+    * [AIRAVATA-1559] - To have credential store thrift cpi where clients can talk
+
+** Improvement
+    * [AIRAVATA-467] - Allow user to set parameter options like -p <value> -m <value> to run jobs with GFAC
+    * [AIRAVATA-1354] - Job monitor for Stampede unknow status
+    * [AIRAVATA-1398] - Retry incase GSISSH IN/Out handler not able find the data to transfer
+    * [AIRAVATA-1401] - User trying to exists a page without saving the record, should be prompted with a confirmation.
+    * [AIRAVATA-1441] - Replacing zookeeper usages with Apache curator library
+    * [AIRAVATA-1461] - update log4j properties to daily role the logs.
+    * [AIRAVATA-1550] - Change the way we create input and output directories
+    * [AIRAVATA-1556] - Retire ws-messenger
+    * [AIRAVATA-1557] - Retire workflow-tracking schema
+    * [AIRAVATA-1563] - Add notification emails to experiment and task details data models
+    * [AIRAVATA-1584] - Adding Unicore functions to Airavata API
+    * [AIRAVATA-1589] - Integrate new workflow interpreter design with Orchestrator
+    * [AIRAVATA-1594] - Save workflow inputs and outputs in app catalog.
+    * [AIRAVATA-1638] - Adding user-dn and other unicore related parameters to user configuration
+    * [AIRAVATA-1662] - Remove rabbitMq enabled property from airavata-server properties
+    * [AIRAVATA-1663] - Remove getting servers list from airavata-server.sh
+    * [AIRAVATA-1672] - Store entire exception in registry from GFac
+    * [AIRAVATA-1674] - SSH authentication issue when submitting to trestles
+    * [AIRAVATA-1682] - Validate experiment with app catalog
+    * [AIRAVATA-1687] - Add gatewayExecutionId to Experiment model and WorkingDir to job details
+    * [AIRAVATA-1759] - Add support for search query and wild char file search
+    * [AIRAVATA-1763] - When a gateway user initially logs in to PGA have a default project ready
+    * [AIRAVATA-1766] - Hide the buttons we currently disable in Experiment Summary page
+    * [AIRAVATA-1775] - In Experiment Statistic add new place holder to show running experiments as well. Also change the existing categorization as below
+    * [AIRAVATA-1776] - n PGA--> Admin Dashboard when a Page is selected it should be highlighted in the lefthand side menu
+    * [AIRAVATA-1777] - In Experiment Summary (For normal user and admin user) change the heading 'Update Time' to ' Last Modified Time'
+    * [AIRAVATA-1778] - Display Job ID and Job name for the gateway admin user in Experiment Summary
+    * [AIRAVATA-1779] - Same message displayed twice to the user when there are no projects in Creat Experiment Page
+    * [AIRAVATA-1794] - Cleanup 0.15 distribution
+
+** New Feature
+    * [AIRAVATA-1350] - API method to get Job details like PBS script, Working Directory etc.
+    * [AIRAVATA-1553] - Enable job scheduler emails in Airavata
+
+
+** Task
+    * [AIRAVATA-961] - Update API to support Experiment Cancel/Stop, Pause, Resume
+    * [AIRAVATA-1146] - Seperate out the Derby Server Startup from the Airavata API Server Startup
+    * [AIRAVATA-1568] - Integrate XBAYA with Airavata Workflow Engine/ Workflow Interpreter
+    * [AIRAVATA-1592] - Plug RabbitMQ base monitoring implementation to new Workflow design.
+    * [AIRAVATA-1593] - Run complex math workflow sample with new Workflow Interpreter
+    * [AIRAVATA-1618] - Proper Exception handling in new workflow module.
+
+** Sub-task
+    * [AIRAVATA-433] - Providing Airavata API method to cancel a running job
+    * [AIRAVATA-956] - Add proper documentation on wiki how to use GSISSH library
+    * [AIRAVATA-1226] - airavataAPI does not have delete methods for project
+    * [AIRAVATA-1443] - Design thrift base event listeners
+    * [AIRAVATA-1445] - Define message format
+    * [AIRAVATA-1545] - Add application argument to the GFac Local provider build command
+    * [AIRAVATA-1546] - Preserve the input argument order
+    * [AIRAVATA-1552] - Use Task object and user defined output name to get outputs
+    * [AIRAVATA-1560] - Define credential store cpi
+    * [AIRAVATA-1561] - Secured thrift server with SSL
+    * [AIRAVATA-1569] - Implementing queue based submission for single instance
+    * [AIRAVATA-1571] - Implement new workflow data model
+    * [AIRAVATA-1577] - Do a performance test to check the broker
+    * [AIRAVATA-1590] - Invoke new workflow interpreter from Orchestrator
+    * [AIRAVATA-1591] - Implement producer consumer mechanism with RabbitMQ
+    * [AIRAVATA-1604] - Gateway notion for experiment catalog
+    * [AIRAVATA-1605] - Gateway notion for app-catalog
+    * [AIRAVATA-1606] - Gateway notion for credential store
+    * [AIRAVATA-1607] - Pass gateway id or token id for all the airavata API methods
+    * [AIRAVATA-1608] - Change Registry CPI and Appcatalog CPI to get gateway id
+    * [AIRAVATA-1612] - Enable to plug different parser implementation
+    * [AIRAVATA-1616] - Add Credential Store Methods to Airavata API
+    * [AIRAVATA-1621] - Generate Credential Store Stubs and Integrate with GFac
+    * [AIRAVATA-1623] - Testing multi-tenancy with dev.test-drive
+    * [AIRAVATA-1626] - Refactoring registry code
+    * [AIRAVATA-1664] - Email Based Job Monitoring
+    * [AIRAVATA-1665] - Enable Email based monitoring in Multiple GFac instances environment.
+    * [AIRAVATA-1666] - Email monitoring at Compute Resource level
+    * [AIRAVATA-1667] - Add registry resources and models to save and retrieve email job notification property
+    * [AIRAVATA-1670] - Handle PBS and SLURM wall-time exceed and user delete job notification emails
+    * [AIRAVATA-1678] - Remove non-functional operations in XBaya GUI
+    * [AIRAVATA-1680] - Remove rabbitmq message publish script from PBS and SLURM xslt
+    * [AIRAVATA-1683] - Configure sender email with email monitor property
+    * [AIRAVATA-1684] - Improve Email Monitor search term to increase performance
+    * [AIRAVATA-1686] - Get email monitoring property from properties file
+    * [AIRAVATA-1697] - Create a stand alone API Server Distribution
+
+** Bug
+    * [AIRAVATA-714] - Provenance data for Service in For-Each
+    * [AIRAVATA-733] - Lack of information on Xbaya dashboard when wrong GSI credentials are setup at airavata-server.properties
+    * [AIRAVATA-789] - SSL handshake problem incase of Hadoop and BES providers
+    * [AIRAVATA-932] - GSISSH provider error handling
+    * [AIRAVATA-1087] - Renaming tools and adding tools in to package naming
+    * [AIRAVATA-1240] - minor fixups of logging statements
+    * [AIRAVATA-1362] - Terminate /cancel Experiment
+    * [AIRAVATA-1417] - Remote command execution can hang
+    * [AIRAVATA-1432] - Experiment state problems with slow SSH connections
+    * [AIRAVATA-1456] - SSH session not closed for input/output handers
+    * [AIRAVATA-1458] - RabbitMQ: java: not found on Lonestar job sometime
+    * [AIRAVATA-1460] - HPCPullMonitor  - Error retrieving the job status
+    * [AIRAVATA-1465] - Myproxy username was not read right from the credential store and set to PBSCluster
+    * [AIRAVATA-1522] - Compute Resource Queue Description does not appear after saving
+    * [AIRAVATA-1535] - In edit mode when more GRID FTP end points are added and updated they do not get saved
+    * [AIRAVATA-1540] - XBaya GUI froze when an experiment is launched. Killed the XBaya process but didn't work
+    * [AIRAVATA-1554] - Getting the credential using token for different gateway name does not work.
+    * [AIRAVATA-1555] - Credential store does not work with oa4mp version 1.1.3
+    * [AIRAVATA-1562] - Node and CPU count on Stampede is coming in reverse order
+    * [AIRAVATA-1565] - Monitoring connection issue on Trestles
+    * [AIRAVATA-1566] - Experiments failing due to required outputs missing from jobs
+    * [AIRAVATA-1586] - Cannot debug Airavata code as the Zookeeper goes to a Inconsistent state
+    * [AIRAVATA-1651] - Zookeeper connection lost error; Experiment failed
+    * [AIRAVATA-1676] - Echo output is not visible in PGA in STDOUT
+    * [AIRAVATA-1709] - When Project Summary Page in PGA is refreshed the page crashes
+    * [AIRAVATA-1714] - When GFAC is stopped and started when experiments are launched through API server at the end RabbitMQ consumer gets disconnected
+    * [AIRAVATA-1717] - New line is not coming in application post command job script
+    * [AIRAVATA-1737] - 0.15 build throws connection refused while running in a separate docker
+    * [AIRAVATA-1740] - Added queue to a compute resource is not displayed; not getting added
+    * [AIRAVATA-1750] - Application module list is empty in Create Application Interface Page
+    * [AIRAVATA-1751] - Cannot create experiments !!!
+    * [AIRAVATA-1752] - In Create Experiment Please have 30 minutes wall time as default
+    * [AIRAVATA-1753] - Admin dashboard resource page should be able to switch off and switch on resources
+    * [AIRAVATA-1754] - Set Total core count in create experiment to 16
+    * [AIRAVATA-1756] - In Experiment Search please remove statuses SUSPENDED and UNKNOWN
+    * [AIRAVATA-1761] - In Edit Experiment page maximum queue values for node count, cpu count and wall time are not populated in the field heading
+    * [AIRAVATA-1762] - After user account creation direct the user to user login page
+    * [AIRAVATA-1764] - In PGA gateway user password recovery does not work
+    * [AIRAVATA-1767] - profile Page in PGA is crashed; Error page displays
+    * [AIRAVATA-1768] - When creating PGA user account using Safari can enter invalid email and proceed
+    * [AIRAVATA-1770] - For Failed Gaussian job cant view gaussian.out; pages crashes
+    * [AIRAVATA-1771] - Experiment Summary in Dashboard--> Experiment does not display Creation Time and Update Time
+    * [AIRAVATA-1773] - When experiment is cloned the output of the previous gets updated with the latest cloned experiments output
+    * [AIRAVATA-1774] - Move Compute Resource and App Catalog Menus to Admin Dashboard
+    * [AIRAVATA-1780] - When clicked on Edit icon for a selected Compute Resource Page crashes
+    * [AIRAVATA-1781] - In 'Update The Priority Order' Pop-up screen complete protocol name is not displayed
+    * [AIRAVATA-1782] - In datamovement protocol adding page remove field 'Select Monitoring Mode'
+    * [AIRAVATA-1784] - Sort Application list in Create Experiment in alphabetical order
+    * [AIRAVATA-1785] - Have a default queue pre selected for each resource in Create Experiment
+    * [AIRAVATA-1786] - In Experiment summary when user clicks Cancel please prompt with a confirmation window
+    * [AIRAVATA-1788] - Sometimes when experiments are cloned it get cloned but does not open the Edit Cloned Experiment Page
+    * [AIRAVATA-1789] - Remove confirmation pop up message window when clicked Save & Launch in Create Experiment
+
 Apache Airavata Version 0.14 Released on 2014-12-20
 ===================================================
 Below you will find the detail list of JIRA tasks/issues resolutions incorporated in 0.14.
