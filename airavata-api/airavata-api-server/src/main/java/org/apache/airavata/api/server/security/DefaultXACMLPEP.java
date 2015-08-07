@@ -47,7 +47,8 @@ import java.rmi.RemoteException;
 import java.util.Map;
 
 /**
- * This enforces XACML based fine grained authorization on the API calls.
+ * This enforces XACML based fine grained authorization on the API calls, by authorizing the API calls
+ * through default PDP which is WSO2 Identity Server.
  */
 public class DefaultXACMLPEP {
 
