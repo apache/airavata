@@ -50,6 +50,8 @@ public final class Constants {
     public static final String DENY = "Deny";
     public static final String PERMIT = "Permit";
 
+    public static final String AUTHORIZATION_POLICY_NAME = "authorization.policy";
+
     //Names of the attributes that could be passed in the AuthzToken's claims map.
     public static final String USER_NAME = "userName";
     public static final String EMAIL = "email";

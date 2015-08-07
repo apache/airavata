@@ -269,7 +269,7 @@ public class ServerSettings extends ApplicationSettings {
         return Boolean.valueOf(getSetting(Constants.IS_API_SECURED));
     }
 
-    public static String getRemoteOauthServerUrl() throws ApplicationSettingsException {
+    public static String getRemoteAuthzServerUrl() throws ApplicationSettingsException {
         return getSetting(Constants.REMOTE_OAUTH_SERVER_URL);
     }
 
@@ -279,6 +279,10 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String getAdminPassword() throws ApplicationSettingsException {
         return getSetting(Constants.ADMIN_PASSWORD);
+    }
+
+    public static String getAuthorizationPoliyName() throws ApplicationSettingsException{
+        return getSetting(Constants.AUTHORIZATION_POLICY_NAME);
     }
 
     public static String getZookeeperConnection() throws ApplicationSettingsException {
