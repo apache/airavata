@@ -41,7 +41,7 @@ public class CreateLaunchBES {
 
     private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
-    private static final String DEFAULT_GATEWAY = "php_reference_gateway";
+    private static final String DEFAULT_GATEWAY = "default";
     private static Airavata.Client airavataClient;
 
     private static String echoAppId = "Echo_5dd52cd4-f9a0-459f-9baf-f8e715e44548";

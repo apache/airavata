@@ -53,7 +53,7 @@ import java.util.*;
 public class DocumentCreatorNew {
     private final static Logger log = LoggerFactory.getLogger(DocumentCreatorNew.class);
 
-    private static final String DEFAULT_GATEWAY = "php_reference_gateway";
+    private static final String DEFAULT_GATEWAY = "default";
     private AppCatalog appcatalog = null;
     private String trestleshpcHostAddress = "trestles.sdsc.edu";
     private String lonestarHostAddress = "lonestar.tacc.utexas.edu";

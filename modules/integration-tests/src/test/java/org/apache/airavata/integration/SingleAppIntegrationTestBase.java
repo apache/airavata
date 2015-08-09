@@ -39,7 +39,7 @@ import org.junit.Assert;
 public class SingleAppIntegrationTestBase extends AbstractIntegrationTest {
 
     protected String createExperiment(Experiment experiment) throws AiravataSystemException, InvalidRequestException, TException, ApplicationSettingsException {
-        return getClient().createExperiment("php_reference_gateway", experiment);
+        return getClient().createExperiment("default", experiment);
     }
 
     protected void launchExperiment(String expId) throws ExperimentNotFoundException, AiravataSystemException, InvalidRequestException, TException {

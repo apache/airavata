@@ -46,7 +46,7 @@ public class AiravataServerHandlerTest {
     private final static Logger logger = LoggerFactory.getLogger(AiravataServerHandlerTest.class);
 
     private static AiravataServerHandler airavataServerHandler;
-    private static String gatewayId = "php_reference_gateway";
+    private static String gatewayId = "default";
     private static  String computeResouceId = null;
 
     @BeforeClass
