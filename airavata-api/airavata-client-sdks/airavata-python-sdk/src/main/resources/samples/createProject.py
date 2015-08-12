@@ -32,39 +32,44 @@ from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 
-try:
-    # Read Airavata Client properties
-    airavataConfig = ConfigParser.RawConfigParser()
-    airavataConfig.read('../conf/airavata-client.properties')
+def main():
+    try:
+        # Read Airavata Client properties
+        airavataConfig = ConfigParser.RawConfigParser()
+        airavataConfig.read('../conf/airavata-client.properties')
 
-    # Create a socket to the Airavata Server
-    transport = TSocket.TSocket(airavataConfig.get('AiravataServer', 'host'), airavataConfig.get('AiravataServer', 'port'))
+        host = airavataConfig.get('AiravataServer', 'host')
+        port = airavataConfig.getint('AiravataServer', 'port')
+        gateway_id = airavataConfig.get('GatewayProperties', 'gateway_id')
 
-    # Use Buffered Protocol to speedup over raw sockets
-    transport = TTransport.TBufferedTransport(transport)
+        # Create a socket to the Airavata Server
+        transport = TSocket.TSocket(host, port)
 
-    # Airavata currently uses Binary Protocol
-    protocol = TBinaryProtocol.TBinaryProtocol(transport)
+        # Use Buffered Protocol to speedup over raw sockets
+        transport = TTransport.TBufferedTransport(transport)
 
-    # Create a Airavata client to use the protocol encoder
-    airavataClient = Airavata.Client(protocol)
+        # Airavata currently uses Binary Protocol
+        protocol = TBinaryProtocol.TBinaryProtocol(transport)
 
-    # Connect to Airavata Server
-    transport.open()
+        # Create a Airavata client to use the protocol encoder
+        airavataClient = Airavata.Client(protocol)
 
-    #Create Project
-    project = Project()
-    project.owner = "smarru"
-    project.name = "CLI-Test"
-    project.description = "Test project to illustrate Python Client"
+        # Connect to Airavata Server
+        transport.open()
 
-    print 'Created Project with Id:', airavataClient.createProject("sdsc", project)
+        #Create Project
+        project = Project()
+        project.owner = "smarru"
+        project.name = "CLI-Test"
+        project.description = "Test project to illustrate Python Client"
 
-    print 'Airavata Server Version is:', airavataClient.getAPIVersion()
+        print 'Created Project with Id:', airavataClient.createProject(gateway_id, project)
 
-    # Close Connection to Airavata Server
-    transport.close()
+        # Close Connection to Airavata Server
+        transport.close()
 
-except Thrift.TException, tx:
-    print '%s' % (tx.message)
+    except Thrift.TException, tx:
+        print '%s' % (tx.message)
 
+if __name__ == "__main__":
+    main()

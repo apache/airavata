@@ -22,6 +22,7 @@
 import sys, ConfigParser
 
 sys.path.append('../lib')
+sys.path.append('../')
 
 from apache.airavata.api import Airavata
 from apache.airavata.api.ttypes import *
@@ -31,31 +32,37 @@ from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 
-try:
-    # Read Airavata Client properties
-    airavataConfig = ConfigParser.RawConfigParser()
-    airavataConfig.read('../conf/airavata-client.properties')
+def main():
+    try:
+        # Read Airavata Client properties
+        airavataConfig = ConfigParser.RawConfigParser()
+        airavataConfig.read('../conf/airavata-client.properties')
 
-    # Create a socket to the Airavata Server
-    transport = TSocket.TSocket(airavataConfig.get('AiravataServer', 'host'), airavataConfig.get('AiravataServer', 'port'))
+        host = airavataConfig.get('AiravataServer', 'host')
+        port = airavataConfig.getint('AiravataServer', 'port')
 
-    # Use Buffered Protocol to speedup over raw sockets
-    transport = TTransport.TBufferedTransport(transport)
+        # Create a socket to the Airavata Server
+        transport = TSocket.TSocket(host, port)
 
-    # Airavata currently uses Binary Protocol
-    protocol = TBinaryProtocol.TBinaryProtocol(transport)
+        # Use Buffered Protocol to speedup over raw sockets
+        transport = TTransport.TBufferedTransport(transport)
 
-    # Create a Airavata client to use the protocol encoder
-    airavataClient = Airavata.Client(protocol)
+        # Airavata currently uses Binary Protocol
+        protocol = TBinaryProtocol.TBinaryProtocol(transport)
 
-    # Connect to Airavata Server
-    transport.open()
+        # Create a Airavata client to use the protocol encoder
+        airavataClient = Airavata.Client(protocol)
 
-    print 'Airavata Server Version is:', airavataClient.getAPIVersion()
+        # Connect to Airavata Server
+        transport.open()
 
-    # Close Connection to Airavata Server
-    transport.close()
+        print 'Airavata Server Version is: {}'.format(airavataClient.getAPIVersion())
 
-except Thrift.TException, tx:
-    print '%s' % (tx.message)
+        # Close Connection to Airavata Server
+        transport.close()
 
+    except Thrift.TException, tx:
+        print '%s' % (tx.message)
+
+if __name__ == "__main__":
+    main()

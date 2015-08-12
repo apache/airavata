@@ -23,7 +23,9 @@ package org.apache.airavata.api.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.util.Random;
 
 import org.apache.airavata.api.Airavata;
@@ -40,6 +42,7 @@ import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
+import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
@@ -68,15 +71,27 @@ public class AiravataAPIServer implements IServer{
             AppCatalogInitUtil.initializeDB();
             final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_PORT,"8930"));
             final String serverHost = ServerSettings.getSetting(Constants.API_SERVER_HOST, null);
-            
+
 			TServerTransport serverTransport;
-			
-			if(serverHost == null){
-				serverTransport = new TServerSocket(serverPort);
-			}else{
-				InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
-				serverTransport = new TServerSocket(inetSocketAddress);
-			}
+
+            if(ServerSettings.isAPIServerTLSEnabled()) {
+                logger.info("Starting API Server with TLS Security..");
+
+                String keystore = ServerSettings.getApiServerKeystore();
+                String keystorePWD = ServerSettings.getApiServerKeystorePasswd();
+                TSSLTransportFactory.TSSLTransportParameters tlsParams =
+                        new TSSLTransportFactory.TSSLTransportParameters();
+                tlsParams.setKeyStore(keystore, keystorePWD);
+                serverTransport = TSSLTransportFactory.getServerSocket(serverPort, 10000,
+                        InetAddress.getByName(serverHost), tlsParams);
+            } else {
+                if(serverHost == null){
+                    serverTransport = new TServerSocket(serverPort);
+                }else{
+                    InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
+                    serverTransport = new TServerSocket(inetSocketAddress);
+                }
+            }
 			
             TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
             options.minWorkerThreads = Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_MIN_THREADS, "50"));
@@ -111,6 +126,10 @@ public class AiravataAPIServer implements IServer{
             setStatus(ServerStatus.FAILED);
             RegistryInitUtil.stopDerbyInServerMode();
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+        } catch (ApplicationSettingsException e) {
+            logger.error("Error fetching properties", e);
+        } catch (UnknownHostException e) {
+            logger.error("API Server Host error", e);
         }
     }
     public static void main(String[] args) {
