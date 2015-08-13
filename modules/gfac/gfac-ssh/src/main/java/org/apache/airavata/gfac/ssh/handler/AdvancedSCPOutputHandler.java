@@ -140,8 +140,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     + File.separator;
                 pbsCluster.makeDirectory(outputPath);
             }
-            pbsCluster.scpTo(outputPath, standardError);
-            pbsCluster.scpTo(outputPath, standardOutput);
+            boolean stdoutPresent = false , stderrorPresent = false;
             List<OutputDataObjectType> outputArray = new ArrayList<OutputDataObjectType>();
             Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
             Set<String> keys = output.keySet();
@@ -169,6 +168,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     dataObjectType.setSearchQuery(outputDataObjectType.getSearchQuery());
                     outputArray.add(dataObjectType);
                 }else if (outputDataObjectType.getType() == DataType.STDOUT) {
+                    stdoutPresent = true;
                     pbsCluster.scpTo(outputPath, standardOutput);
                     String fileName = standardOutput.substring(standardOutput.lastIndexOf(File.separatorChar)+1, standardOutput.length());
                     OutputDataObjectType dataObjectType = new OutputDataObjectType();
@@ -181,6 +181,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     dataObjectType.setSearchQuery(outputDataObjectType.getSearchQuery());
                     outputArray.add(dataObjectType);
                 }else if (outputDataObjectType.getType() == DataType.STDERR) {
+                    stderrorPresent = true;
                     pbsCluster.scpTo(outputPath, standardError);
                     String fileName = standardError.substring(standardError.lastIndexOf(File.separatorChar)+1, standardError.length());
                     OutputDataObjectType dataObjectType = new OutputDataObjectType();
@@ -194,7 +195,13 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     outputArray.add(dataObjectType);
                 }
              }
-           registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
+            if (!stdoutPresent) {
+                log.warn("Didn't copy Standard output to client as it is not defined");
+            }
+            if (!stderrorPresent) {
+                log.warn("Didn't copy Standard error to client as it is not defined");
+            }
+            registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
         } catch (SSHApiException e) {
             try {
                 StringWriter errors = new StringWriter();
