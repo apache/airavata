@@ -107,7 +107,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 					try {
 						session.connect();
 					} catch (JSchException e1) {
-						throw new SSHApiException("JSch Session connection failed");
+						throw new SSHApiException("JSch Session connection failed", e1);
 					}
 				}
 				if (retry == 0) {
@@ -138,7 +138,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 					try {
 						session.connect();
 					} catch (JSchException e1) {
-						throw new SSHApiException("JSch Session connection failed");
+						throw new SSHApiException("JSch Session connection failed", e1);
 					}
 				}
 				if (retry == 0) {
@@ -174,7 +174,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 			log.info("Creating directory: " + serverInfo.getHost() + ":" + directoryPath);
 			SSHUtils.makeDirectory(directoryPath, session);
 		} catch (JSchException | IOException e) {
-			throw new SSHApiException("Failed to create directory " + serverInfo.getHost() + ":" + directoryPath);
+			throw new SSHApiException("Failed to create directory " + serverInfo.getHost() + ":" + directoryPath, e);
 		}
 	}
 
@@ -223,7 +223,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 			log.info("Creating directory: " + serverInfo.getHost() + ":" + directoryPath);
 			return SSHUtils.listDirectory(directoryPath, session);
 		} catch (JSchException | IOException e) {
-			throw new SSHApiException("Failed to list directory " + serverInfo.getHost() + ":" + directoryPath);
+			throw new SSHApiException("Failed to list directory " + serverInfo.getHost() + ":" + directoryPath, e);
 		}
 	}
 
