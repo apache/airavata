@@ -18,9 +18,8 @@
  * under the License.
  *
  */
-package org.apache.airavata.api.server.security;
+package org.apache.airavata.api.server.security.xacml;
 
-import com.sun.corba.se.spi.activation.Server;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.security.AiravataSecurityException;

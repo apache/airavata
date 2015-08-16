@@ -29,13 +29,11 @@ import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.server.handler.AiravataServerHandler;
 import org.apache.airavata.api.server.security.AiravataSecurityManager;
 import org.apache.airavata.api.server.security.SecurityManagerFactory;
-import org.apache.airavata.api.server.security.SecurityModule;
+import org.apache.airavata.api.server.security.interceptor.SecurityModule;
 import org.apache.airavata.api.server.util.AppCatalogInitUtil;
 import org.apache.airavata.api.server.util.Constants;
 import org.apache.airavata.api.server.util.RegistryInitUtil;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.AiravataErrorType;
@@ -148,7 +146,8 @@ public class AiravataAPIServer implements IServer{
                 }.start();
                 logger.info("Airavata API server starter over TLS on Port: " + ServerSettings.getTLSServerPort());
             }
-            //perform any security related initialization at the server startup, according to the security manager being used.
+            /*perform any security related initialization at the server startup, according to the underlying security
+             manager implementation being used.*/
             AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
             securityManager.initializeSecurityInfra();
 

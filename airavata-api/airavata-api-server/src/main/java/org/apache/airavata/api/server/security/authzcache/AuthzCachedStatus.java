@@ -18,19 +18,17 @@
  * under the License.
  *
  */
-package org.apache.airavata.api.server.security;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import com.google.inject.BindingAnnotation;
+package org.apache.airavata.api.server.security.authzcache;
 
 /**
- * This is just the definition of the annotation used to mark the API methods to be intercepted.
+ * This enum defines the status of the authorization cache returned by the authorization cache manager
+ * when an authorization status is checked against an authorization request.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-@BindingAnnotation
-public @interface SecurityCheck {
+public enum AuthzCachedStatus {
+    /*Authorization decision is cached for the given authrization request and the decision authorizes the request.*/
+    AUTHORIZED,
+    /*Authorization decision is cached for the given authorization request and the decision denies authorization.*/
+    NOT_AUTHORIZED,
+    /*Authorization decision is not either cached or the cached entry is invalid such that re-authorization is needed.*/
+    NOT_CACHED
 }
