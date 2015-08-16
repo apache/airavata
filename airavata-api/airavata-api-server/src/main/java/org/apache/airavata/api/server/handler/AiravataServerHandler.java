@@ -23,9 +23,7 @@ package org.apache.airavata.api.server.handler;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
-import org.apache.airavata.api.server.security.AiravataSecurityManager;
-import org.apache.airavata.api.server.security.SecurityCheck;
-import org.apache.airavata.api.server.security.SecurityManagerFactory;
+import org.apache.airavata.api.server.security.interceptor.SecurityCheck;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -105,7 +103,6 @@ import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.cpi.WorkflowCatalog;
 import org.apache.airavata.registry.cpi.utils.Constants;
-import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

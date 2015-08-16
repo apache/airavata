@@ -18,10 +18,13 @@
  * under the License.
  *
  */
-package org.apache.airavata.api.server.security;
+package org.apache.airavata.api.server.security.interceptor;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.apache.airavata.api.server.security.AiravataSecurityManager;
+import org.apache.airavata.api.server.security.IdentityContext;
+import org.apache.airavata.api.server.security.SecurityManagerFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -61,15 +64,11 @@ public class SecurityInterceptor implements MethodInterceptor {
         try {
             boolean isAPISecured = ServerSettings.isAPISecured();
             if (isAPISecured) {
-                //check in the cache
-
-                //if not in the cache, perform authorization with the authorization server
                 AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
                 boolean isAuthz = securityManager.isUserAuthorized(authzToken, metaData);
                 if (!isAuthz) {
                     throw new AuthorizationException("User is not authenticated or authorized.");
                 }
-                //put the successful authorization decision in the cache
             }
         } catch (AiravataSecurityException e) {
             logger.error(e.getMessage(), e);

@@ -18,22 +18,19 @@
  * under the License.
  *
  */
-package org.apache.airavata.api.server.security;
+package org.apache.airavata.api.server.security.interceptor;
 
-import com.google.inject.matcher.Matchers;
-import com.google.inject.AbstractModule;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import com.google.inject.BindingAnnotation;
 
 /**
- * This does the plumbing work of integrating the interceptor with Guice framework for the methods to be
- * intercepted upon their invocation.
+ * This is just the definition of the annotation used to mark the API methods to be intercepted.
  */
-public class SecurityModule extends AbstractModule {
-    public void configure(){
-        System.out.println("Security module reached...");
-        SecurityInterceptor interceptor = new SecurityInterceptor();
-        //requestInjection(interceptor);
-
-        bindInterceptor(Matchers.any(), Matchers.annotatedWith(SecurityCheck.class), interceptor);
-    }
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+@BindingAnnotation
+public @interface SecurityCheck {
 }

@@ -18,12 +18,9 @@
  * under the License.
  *
  */
-package org.apache.airavata.api.server.security;
+package org.apache.airavata.api.server.security.oauth;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.security.AiravataSecurityException;
-import org.apache.airavata.security.util.TrustStoreManager;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.slf4j.Logger;
@@ -34,7 +31,6 @@ import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationRequestDTO_
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationResponseDTO;
 import org.wso2.carbon.utils.CarbonUtils;
 
-import javax.net.ssl.*;
 import java.rmi.RemoteException;
 
 /**

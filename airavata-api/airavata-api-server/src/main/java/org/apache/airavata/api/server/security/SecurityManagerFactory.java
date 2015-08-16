@@ -32,15 +32,12 @@ import org.slf4j.LoggerFactory;
  */
 public class SecurityManagerFactory {
     private final static Logger logger = LoggerFactory.getLogger(SecurityManagerFactory.class);
-    private static Class secManagerImpl = null;
 
     public static AiravataSecurityManager getSecurityManager() throws AiravataSecurityException {
         try {
-            if(secManagerImpl == null){
-                secManagerImpl = Class.forName(ServerSettings.getSecurityManagerClassName());
-            }
+            Class secManagerImpl = Class.forName(ServerSettings.getSecurityManagerClassName());
             AiravataSecurityManager securityManager = (AiravataSecurityManager) secManagerImpl.newInstance();
-            return  securityManager;
+            return securityManager;
         } catch (ClassNotFoundException e) {
             String error = "Security Manager class could not be found.";
             logger.error(e.getMessage(), e);
