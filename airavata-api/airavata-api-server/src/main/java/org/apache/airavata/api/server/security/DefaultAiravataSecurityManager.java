@@ -148,7 +148,7 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
 
                     //cache the authorization decision
                     authzCacheManager.addToAuthzCache(new AuthzCacheIndex(subject, accessToken, action),
-                            new AuthzCacheEntry(decision, expiryTimestamp));
+                            new AuthzCacheEntry(decision, expiryTimestamp, System.currentTimeMillis()));
 
                     return decision;
                 } else {

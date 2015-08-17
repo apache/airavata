@@ -55,7 +55,9 @@ public class AuthzCache extends LinkedHashMap<AuthzCacheIndex, AuthzCacheEntry> 
     @Override
     protected boolean removeEldestEntry(Map.Entry<AuthzCacheIndex, AuthzCacheEntry> eldest) {
         //TODO: following info log is for demonstration purposes. Remove it.
-        logger.info("Authz cache max size exceeded. Removing the old entries.");
+        if (size() > MAX_SIZE) {
+            logger.info("Authz cache max size exceeded. Removing the old entries.");
+        }
         return size() > MAX_SIZE;
     }
 }
