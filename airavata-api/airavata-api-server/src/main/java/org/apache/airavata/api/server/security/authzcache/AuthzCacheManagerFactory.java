@@ -18,43 +18,43 @@
  * under the License.
  *
  */
-package org.apache.airavata.api.server.security;
+package org.apache.airavata.api.server.security.authzcache;
 
+import org.apache.airavata.api.server.security.AiravataSecurityManager;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 /**
- * This initializes an instance of the appropriate security manager according to the
- * configuration.
+ * This initializes the AuthzCacheManager implementation to be used as defined by the configuration.
  */
-public class SecurityManagerFactory {
-    private final static Logger logger = LoggerFactory.getLogger(SecurityManagerFactory.class);
+public class AuthzCacheManagerFactory {
+    private final static Logger logger = LoggerFactory.getLogger(AuthzCacheManagerFactory.class);
 
-    public static AiravataSecurityManager getSecurityManager() throws AiravataSecurityException {
+    public static AuthzCacheManager getAuthzCacheManager() throws AiravataSecurityException {
         try {
-            Class secManagerImpl = Class.forName(ServerSettings.getSecurityManagerClassName());
-            AiravataSecurityManager securityManager = (AiravataSecurityManager) secManagerImpl.newInstance();
-            return securityManager;
+            Class authzCacheManagerImpl = Class.forName(ServerSettings.getAuthzCacheManagerClassName());
+            AuthzCacheManager authzCacheManager  = (AuthzCacheManager) authzCacheManagerImpl.newInstance();
+            return  authzCacheManager;
         } catch (ClassNotFoundException e) {
-            String error = "Security Manager class could not be found.";
+            String error = "Authorization Cache Manager class could not be found.";
             logger.error(e.getMessage(), e);
             throw new AiravataSecurityException(error);
         } catch (ApplicationSettingsException e) {
-            String error = "Error in reading the configuration related to Security Manager class.";
+            String error = "Error in reading the configuration related to Authorization Cache Manager class.";
             logger.error(e.getMessage(), e);
             throw new AiravataSecurityException(error);
         } catch (InstantiationException e) {
-            String error = "Error in instantiating the Security Manager class.";
+            String error = "Error in instantiating the Authorization Cache Manager class.";
             logger.error(e.getMessage(), e);
             throw new AiravataSecurityException(error);
         } catch (IllegalAccessException e) {
-            String error = "Error in instantiating the Security Manager class.";
+            String error = "Error in instantiating the Authorization Cache Manager class.";
             logger.error(e.getMessage(), e);
             throw new AiravataSecurityException(error);
 
         }
     }
+
 }

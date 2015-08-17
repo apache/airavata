@@ -105,6 +105,7 @@
 				<include>gsissh.properties</include>
 				<include>airavata.jks</include>
 				<include>client_truststore.jks</include>
+				<include>airavata-default-xacml-policy.xml</include>
 			</includes>
 		</fileSet>
 
