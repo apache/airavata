@@ -1025,7 +1025,8 @@ public class GFacUtils {
         try {
             GwyResourceProfile gatewayProfile = context.getAppCatalog().getGatewayProfile();
             String resourceHostId = context.getComputeResourceDescription().getComputeResourceId();
-            ComputeResourcePreference preference = gatewayProfile.getComputeResourcePreference(context.getGatewayId(), resourceHostId);
+            ComputeResourcePreference preference = gatewayProfile.getComputeResourcePreference(context.getGatewayId()
+		            , resourceHostId);
             return preference.getPreferredJobSubmissionProtocol();
         } catch (AppCatalogException e) {
             log.error("Error occurred while initializing app catalog", e);
@@ -1084,31 +1085,6 @@ public class GFacUtils {
 
 	public static String getExperimentNodePath(String experimentId) {
 		return GFacConstants.ZOOKEEPER_EXPERIMENT_NODE + File.separator + experimentId;
-	}
-
-	public static void createProcessZKNode(CuratorFramework curatorClient, String gfacServerName, String
-			processId, long deliveryTag, String token) throws Exception {
-		// TODO - To handle multiple processes per experiment, need to create a /experiment/{expId}/{processId} node
-		// create /experiments/{processId} node and set data - serverName, add redelivery listener
-		String zkProcessNodePath = ZKPaths.makePath(GFacConstants.ZOOKEEPER_EXPERIMENT_NODE, processId);
-		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), zkProcessNodePath);
-		curatorClient.setData().withVersion(-1).forPath(zkProcessNodePath, gfacServerName.getBytes());
-		curatorClient.getData().usingWatcher(new RedeliveryRequestWatcher()).forPath(zkProcessNodePath);
-
-		// create /experiments/{processId}/deliveryTag node and set data - deliveryTag
-		String deliveryTagPath = ZKPaths.makePath(zkProcessNodePath, GFacConstants.ZOOKEEPER_DELIVERYTAG_NODE);
-		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), deliveryTagPath);
-		curatorClient.setData().withVersion(-1).forPath(deliveryTagPath, GFacUtils.longToBytes(deliveryTag));
-
-		// create /experiments/{processId}/token node and set data - token
-		String tokenNodePath = ZKPaths.makePath(processId, GFacConstants.ZOOKEEPER_TOKEN_NODE);
-		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), tokenNodePath);
-		curatorClient.setData().withVersion(-1).forPath(tokenNodePath, token.getBytes());
-
-		// create /experiments/{processId}/cancelListener node and set watcher for data changes
-		String cancelListenerNode = ZKPaths.makePath(zkProcessNodePath, GFacConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
-		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), cancelListenerNode);
-		curatorClient.getData().usingWatcher(new CancelRequestWatcher()).forPath(cancelListenerNode);
 	}
 
 	public static long getProcessDeliveryTag(CuratorFramework curatorClient, String processId) throws Exception {

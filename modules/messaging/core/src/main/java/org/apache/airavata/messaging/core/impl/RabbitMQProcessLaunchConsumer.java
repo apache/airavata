@@ -275,7 +275,7 @@ public class RabbitMQProcessLaunchConsumer {
 
     public void sendAck(long deliveryTag){
         try {
-            channel.basicAck(deliveryTag,false); //todo move this logic to monitoring component to ack when the job is done
+            channel.basicAck(deliveryTag,false);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }

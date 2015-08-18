@@ -30,6 +30,7 @@ import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
+import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
 import org.apache.airavata.gfac.cpi.GfacService;
 import org.apache.airavata.gfac.cpi.gfac_cpi_serviceConstants;
 import org.apache.airavata.gfac.impl.Factory;
@@ -211,25 +212,51 @@ public class GfacServerHandler implements GfacService.Iface {
 
         public void onMessage(MessageContext message) {
             log.info(" Message Received with message id '" + message.getMessageId()
-                    + "' and with message type '" + message.getType());
+		            + "' and with message type '" + message.getType());
             if (message.getType().equals(MessageType.LAUNCHPROCESS)) {
+	            ProcessStatus status = new ProcessStatus();
+	            status.setState(ProcessState.EXECUTING);
                 try {
                     ProcessSubmitEvent event = new ProcessSubmitEvent();
                     TBase messageEvent = message.getEvent();
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
+	                if (message.isRedeliver()) {
+		                // check the process is already active in this instance.
+		                if (Factory.getGfacContext().getProcess(event.getProcessId()) != null) {
+			                // update deliver tag
+			                try {
+				                updateDeliveryTag(curatorClient, gfacServerName, event.getProcessId(), message
+						                .getDeliveryTag());
+				                return;
+			                } catch (Exception e) {
+				                log.error("Error while updating delivery tag for redelivery message , messageId : " +
+						                message.getMessageId(), e);
+				                rabbitMQProcessLaunchConsumer.sendAck(message.getDeliveryTag());
+			                }
+		                } else {
+			                // give time to complete handover logic in previous instance.
+			                try {
+				                Thread.sleep(60000);
+			                } catch (InterruptedException e) {
+				                // ignore
+			                }
+			                // read process status from registry
+			                ProcessStatus processStatus = ((ProcessStatus) Factory.getDefaultExpCatalog().get(ExperimentCatalogModelType
+							                .PROCESS_STATUS,
+					                event.getProcessId()));
+			                status.setState(processStatus.getState());
+		                }
+	                }
                     // update process status to executing
-                    ProcessStatus status = new ProcessStatus();
-                    status.setState(ProcessState.EXECUTING);
-                    status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-                    Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.PROCESS_STATUS, status, event
-		                    .getProcessId());
+	                status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+	                Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.PROCESS_STATUS, status, event
+			                .getProcessId());
 	                publishProcessStatus(event, status);
                     try {
-	                    GFacUtils.createProcessZKNode(curatorClient, gfacServerName, event.getProcessId(), message
-					                    .getDeliveryTag(),
-			                    event.getTokenId());
-                        submitProcess(event.getProcessId(), event.getGatewayId(), event.getTokenId());
+	                    createProcessZKNode(curatorClient, gfacServerName, event.getProcessId(), message
+			                    .getDeliveryTag(), event.getTokenId());
+	                    submitProcess(event.getProcessId(), event.getGatewayId(), event.getTokenId());
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         rabbitMQProcessLaunchConsumer.sendAck(message.getDeliveryTag());
@@ -278,4 +305,39 @@ public class GfacServerHandler implements GfacService.Iface {
 		msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
 		statusPublisher.publish(msgCtx);
 	}
+
+	private void createProcessZKNode(CuratorFramework curatorClient, String gfacServerName, String
+			processId, long deliveryTag, String token) throws Exception {
+		// TODO - To handle multiple processes per experiment, need to create a /experiments/{expId}/{processId} node
+		// create /experiments/{processId} node and set data - serverName, add redelivery listener
+		String zkProcessNodePath = ZKPaths.makePath(GFacConstants.ZOOKEEPER_EXPERIMENT_NODE, processId);
+		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), zkProcessNodePath);
+		curatorClient.setData().withVersion(-1).forPath(zkProcessNodePath, gfacServerName.getBytes());
+		curatorClient.getData().usingWatcher(Factory.getRedeliveryReqeustWatcher()).forPath(zkProcessNodePath);
+
+		// create /experiments/{processId}/deliveryTag node and set data - deliveryTag
+		String deliveryTagPath = ZKPaths.makePath(zkProcessNodePath, GFacConstants.ZOOKEEPER_DELIVERYTAG_NODE);
+		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), deliveryTagPath);
+		curatorClient.setData().withVersion(-1).forPath(deliveryTagPath, GFacUtils.longToBytes(deliveryTag));
+
+		// create /experiments/{processId}/token node and set data - token
+		String tokenNodePath = ZKPaths.makePath(processId, GFacConstants.ZOOKEEPER_TOKEN_NODE);
+		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), tokenNodePath);
+		curatorClient.setData().withVersion(-1).forPath(tokenNodePath, token.getBytes());
+
+		// create /experiments/{processId}/cancelListener node and set watcher for data changes
+		String cancelListenerNode = ZKPaths.makePath(zkProcessNodePath, GFacConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), cancelListenerNode);
+		curatorClient.getData().usingWatcher(Factory.getCancelRequestWatcher()).forPath(cancelListenerNode);
+	}
+
+	private void updateDeliveryTag(CuratorFramework curatorClient, String gfacServerName, String processId, long
+			deliveryTag) throws Exception {
+		// create /experiments/{processId} node and set data - serverName, add redelivery listener
+		String zkProcessNodePath = ZKPaths.makePath(GFacConstants.ZOOKEEPER_EXPERIMENT_NODE, processId);
+		// create /experiments/{processId}/deliveryTag node and set data - deliveryTag
+		String deliveryTagPath = ZKPaths.makePath(zkProcessNodePath, GFacConstants.ZOOKEEPER_DELIVERYTAG_NODE);
+		curatorClient.setData().withVersion(-1).forPath(deliveryTagPath, GFacUtils.longToBytes(deliveryTag));
+	}
+
 }
