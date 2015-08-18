@@ -22,7 +22,6 @@
 package org.apache.airavata.gfac.impl;
 
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.gfac.core.GFac;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -38,11 +37,12 @@ import java.text.MessageFormat;
 public class GFacWorker implements Runnable {
 
 	private static final Logger log = LoggerFactory.getLogger(GFacWorker.class);
+	private GFacEngine engine;
 	private ProcessContext processContext;
 	private String processId;
 	private String gatewayId;
 	private String tokenId;
-	private boolean isProcessContextPopulated = false;
+	private boolean runOutflow = false;
 
 
 	/**
@@ -55,7 +55,9 @@ public class GFacWorker implements Runnable {
 		this.processId = processContext.getProcessId();
 		this.gatewayId = processContext.getGatewayId();
 		this.tokenId = processContext.getTokenId();
+		engine = Factory.getGFacEngine();
 		this.processContext = processContext;
+		runOutflow = true;
 	}
 
 	/**
@@ -65,16 +67,17 @@ public class GFacWorker implements Runnable {
 		this.processId = processId;
 		this.gatewayId = gatewayId;
 		this.tokenId = tokenId;
+		engine = Factory.getGFacEngine();
+		this.processContext = engine.populateProcessContext(processId, gatewayId, tokenId);
+		Factory.getGfacContext().addProcess(this.processContext);
 	}
 
 	@Override
 	public void run() {
+		if (processContext.isHandOver()) {
+			return;
+		}
 		try {
-			GFacEngine engine = Factory.getGFacEngine();
-			if (processContext == null) {
-				processContext = engine.populateProcessContext(processId, gatewayId, tokenId);
-				isProcessContextPopulated = true;
-			}
 			ProcessType type = getProcessType(processContext);
 			try {
 				switch (type) {
@@ -84,7 +87,9 @@ public class GFacWorker implements Runnable {
 					case RECOVER:
 						recoverProcess(engine);
 						break;
-					case OUTFLOW:
+//					case RECOVER_MONITORING:
+						// TODO get monitor mode from process and get correct monitor service instead default service.
+					case RUN_OUTFLOW:
 						// run the outflow task
 						engine.runProcessOutflow(processContext);
 						processContext.setProcessStatus(new ProcessStatus(ProcessState.COMPLETED));
@@ -109,7 +114,7 @@ public class GFacWorker implements Runnable {
 					case RECOVER:
 						log.error("Process recover error ", e);
 						break;
-					case OUTFLOW:
+					case RUN_OUTFLOW:
 						log.error("Process outflow execution error", e);
 						break;
 					case RECOVER_OUTFLOW:
@@ -138,6 +143,9 @@ public class GFacWorker implements Runnable {
 	}
 
 	private void exectuteProcess(GFacEngine engine) throws GFacException {
+		if (processContext.isHandOver()) {
+			return;
+		}
 		engine.executeProcess(processContext);
 		if (processContext.getMonitorMode() == null) {
 			engine.runProcessOutflow(processContext);
@@ -182,10 +190,10 @@ public class GFacWorker implements Runnable {
 			case EXECUTING:
 				return ProcessType.RECOVER;
 			case MONITORING:
-				if (isProcessContextPopulated) {
-					return ProcessType.RECOVER; // hand over to monitor task
+				if (runOutflow) {
+					return ProcessType.RUN_OUTFLOW; // execute outflow
 				} else {
-					return ProcessType.OUTFLOW; // execute outflow
+					return ProcessType.RECOVER_MONITORING; // hand over to monitor task
 				}
 			case OUTPUT_DATA_STAGING:
 			case POST_PROCESSING:
@@ -205,7 +213,8 @@ public class GFacWorker implements Runnable {
 	private enum ProcessType {
 		NEW,
 		RECOVER,
-		OUTFLOW,
+		RECOVER_MONITORING,
+		RUN_OUTFLOW,
 		RECOVER_OUTFLOW,
 		COMPLETED
 	}

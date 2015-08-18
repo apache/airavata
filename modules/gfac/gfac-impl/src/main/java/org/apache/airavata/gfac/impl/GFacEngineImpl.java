@@ -121,6 +121,9 @@ public class GFacEngineImpl implements GFacEngine {
 
 	@Override
 	public void executeProcess(ProcessContext processContext) throws GFacException {
+		if (processContext.isHandOver()) {
+			return;
+		}
 		TaskContext taskCtx = null;
 		List<TaskContext> taskChain = new ArrayList<>();
 		processContext.setProcessStatus(new ProcessStatus(ProcessState.CONFIGURING_WORKSPACE));
@@ -138,6 +141,9 @@ public class GFacEngineImpl implements GFacEngine {
 					().name(), taskStatus.getReason());
 			throw new GFacException("Error while environment setup");
 		}
+		if (processContext.isHandOver()) {
+			return;
+		}
 		// execute process inputs
 		processContext.setProcessStatus(new ProcessStatus(ProcessState.INPUT_DATA_STAGING));
 		GFacUtils.saveAndPublishProcessStatus(processContext);
@@ -145,6 +151,9 @@ public class GFacEngineImpl implements GFacEngine {
 		sortByInputOrder(processInputs);
 		if (processInputs != null) {
 			for (InputDataObjectType processInput : processInputs) {
+				if (processContext.isHandOver()) {
+					return;
+				}
 				DataType type = processInput.getType();
 				switch (type) {
 					case STDERR:
@@ -175,17 +184,26 @@ public class GFacEngineImpl implements GFacEngine {
 				}
 			}
 		}
+		if (processContext.isHandOver()) {
+			return;
+		}
 		processContext.setProcessStatus(new ProcessStatus(ProcessState.EXECUTING));
 		GFacUtils.saveAndPublishProcessStatus(processContext);
 		taskCtx = getJobSubmissionTaskContext(processContext);
 		saveTaskModel(taskCtx);
 		GFacUtils.saveAndPublishTaskStatus(taskCtx);
 		JobSubmissionTask jobSubmissionTask = Factory.getJobSubmissionTask(processContext.getJobSubmissionProtocol());
+		if (processContext.isHandOver()) {
+			return;
+		}
 		taskStatus = executeTask(taskCtx, jobSubmissionTask);
 		if (taskStatus.getState() == TaskState.FAILED) {
 			throw new GFacException("Job submission task failed");
 		}
 		processContext.setTaskChain(taskChain);
+		if (processContext.isHandOver()) {
+			return;
+		}
 	}
 
 
@@ -196,11 +214,17 @@ public class GFacEngineImpl implements GFacEngine {
 
 	@Override
 	public void runProcessOutflow(ProcessContext processContext) throws GFacException {
+		if (processContext.isHandOver()) {
+			return;
+		}
 		TaskContext taskCtx = null;
 		processContext.setProcessStatus(new ProcessStatus(ProcessState.OUTPUT_DATA_STAGING));
 		GFacUtils.saveAndPublishProcessStatus(processContext);
 		List<OutputDataObjectType> processOutputs = processContext.getProcessModel().getProcessOutputs();
 		for (OutputDataObjectType processOutput : processOutputs) {
+			if (processContext.isHandOver()) {
+				return;
+			}
 			DataType type = processOutput.getType();
 			switch (type) {
 				case STDERR:
@@ -231,6 +255,9 @@ public class GFacEngineImpl implements GFacEngine {
 					// nothing to do
 					break;
 			}
+		}
+		if (processContext.isHandOver()) {
+			return;
 		}
 		processContext.setProcessStatus(new ProcessStatus(ProcessState.POST_PROCESSING));
 		GFacUtils.saveAndPublishProcessStatus(processContext);

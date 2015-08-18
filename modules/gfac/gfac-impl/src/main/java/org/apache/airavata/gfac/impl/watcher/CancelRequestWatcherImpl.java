@@ -18,10 +18,14 @@
  * under the License.
  *
  */
-package org.apache.airavata.gfac.core.watcher;
+package org.apache.airavata.gfac.impl.watcher;
 
-import org.apache.curator.framework.api.CuratorWatcher;
+import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
+import org.apache.zookeeper.WatchedEvent;
 
-public interface CancelRequestWatcher extends CuratorWatcher {
-
+public class CancelRequestWatcherImpl implements CancelRequestWatcher {
+	@Override
+	public void process(WatchedEvent watchedEvent) throws Exception {
+		// this watcher change data in cancel listener node in the experiment node
+	}
 }

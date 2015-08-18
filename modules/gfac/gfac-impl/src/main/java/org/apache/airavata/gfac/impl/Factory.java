@@ -41,11 +41,14 @@ import org.apache.airavata.gfac.core.config.DataTransferTaskConfig;
 import org.apache.airavata.gfac.core.config.GFacYamlConfigruation;
 import org.apache.airavata.gfac.core.config.JobSubmitterTaskConfig;
 import org.apache.airavata.gfac.core.config.ResourceConfig;
+import org.apache.airavata.gfac.core.context.GFacContext;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.monitor.JobMonitor;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.Task;
+import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
+import org.apache.airavata.gfac.core.watcher.RedeliveryRequestWatcher;
 import org.apache.airavata.gfac.impl.job.LSFJobConfiguration;
 import org.apache.airavata.gfac.impl.job.LSFOutputParser;
 import org.apache.airavata.gfac.impl.job.PBSJobConfiguration;
@@ -54,6 +57,8 @@ import org.apache.airavata.gfac.impl.job.SlurmJobConfiguration;
 import org.apache.airavata.gfac.impl.job.SlurmOutputParser;
 import org.apache.airavata.gfac.impl.job.UGEJobConfiguration;
 import org.apache.airavata.gfac.impl.job.UGEOutputParser;
+import org.apache.airavata.gfac.impl.watcher.CancelRequestWatcherImpl;
+import org.apache.airavata.gfac.impl.watcher.RedeliveryRequestWatcherImpl;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.impl.RabbitMQProcessLaunchConsumer;
@@ -98,6 +103,7 @@ public abstract class Factory {
 	}*/
 
 	private static GFacEngine engine;
+	private static GFacContext gfacContext;
 	private static Publisher statusPublisher;
 	private static CuratorFramework curatorClient;
 	private static EmailBasedMonitor emailBasedMonitor;
@@ -118,6 +124,13 @@ public abstract class Factory {
 			}
 		}
 		return engine;
+	}
+
+	public static GFacContext getGfacContext() {
+		if (gfacContext == null) {
+			gfacContext = GFacContext.getInstance();
+		}
+		return gfacContext;
 	}
 
 	public static ExperimentCatalog getDefaultExpCatalog() throws RegistryException {
@@ -302,6 +315,18 @@ public abstract class Factory {
 			}
 		}
 		return jobMonitor;
+	}
+
+	public static JobMonitor getDefaultMonitorService() throws AiravataException {
+		return getMonitorService(MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR);
+	}
+
+	public static RedeliveryRequestWatcher getRedeliveryReqeustWatcher() {
+		return new RedeliveryRequestWatcherImpl();
+	}
+
+	public static CancelRequestWatcher getCancelRequestWatcher() {
+		return new CancelRequestWatcherImpl();
 	}
 
 	public static Session getSSHSession(AuthenticationInfo authenticationInfo, ServerInfo serverInfo) throws AiravataException {
