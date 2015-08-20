@@ -43,6 +43,10 @@ void JobModel::__set_taskId(const std::string& val) {
   this->taskId = val;
 }
 
+void JobModel::__set_processId(const std::string& val) {
+  this->processId = val;
+}
+
 void JobModel::__set_jobDescription(const std::string& val) {
   this->jobDescription = val;
 }
@@ -72,8 +76,8 @@ void JobModel::__set_workingDir(const std::string& val) {
 __isset.workingDir = true;
 }
 
-const char* JobModel::ascii_fingerprint = "41CA915161D6C0FFEE6B97FACBDE9259";
-const uint8_t JobModel::binary_fingerprint[16] = {0x41,0xCA,0x91,0x51,0x61,0xD6,0xC0,0xFF,0xEE,0x6B,0x97,0xFA,0xCB,0xDE,0x92,0x59};
+const char* JobModel::ascii_fingerprint = "05A24C8A362DCCB6B6A7257CB37E424B";
+const uint8_t JobModel::binary_fingerprint[16] = {0x05,0xA2,0x4C,0x8A,0x36,0x2D,0xCC,0xB6,0xB6,0xA7,0x25,0x7C,0xB3,0x7E,0x42,0x4B};
 
 uint32_t JobModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -88,6 +92,7 @@ uint32_t JobModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   bool isset_jobId = false;
   bool isset_taskId = false;
+  bool isset_processId = false;
   bool isset_jobDescription = false;
 
   while (true)
@@ -116,13 +121,21 @@ uint32_t JobModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->processId);
+          isset_processId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->jobDescription);
           isset_jobDescription = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->creationTime);
           this->__isset.creationTime = true;
@@ -130,7 +143,7 @@ uint32_t JobModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 5:
+      case 6:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->jobStatus.read(iprot);
           this->__isset.jobStatus = true;
@@ -138,7 +151,7 @@ uint32_t JobModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 6:
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->computeResourceConsumed);
           this->__isset.computeResourceConsumed = true;
@@ -146,7 +159,7 @@ uint32_t JobModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 7:
+      case 8:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->jobName);
           this->__isset.jobName = true;
@@ -154,7 +167,7 @@ uint32_t JobModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 8:
+      case 9:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->workingDir);
           this->__isset.workingDir = true;
@@ -175,6 +188,8 @@ uint32_t JobModel::read(::apache::thrift::protocol::TProtocol* iprot) {
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_taskId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_processId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_jobDescription)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -193,32 +208,36 @@ uint32_t JobModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
   xfer += oprot->writeString(this->taskId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("jobDescription", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeFieldBegin("processId", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString(this->processId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("jobDescription", ::apache::thrift::protocol::T_STRING, 4);
   xfer += oprot->writeString(this->jobDescription);
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.creationTime) {
-    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 4);
+    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 5);
     xfer += oprot->writeI64(this->creationTime);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.jobStatus) {
-    xfer += oprot->writeFieldBegin("jobStatus", ::apache::thrift::protocol::T_STRUCT, 5);
+    xfer += oprot->writeFieldBegin("jobStatus", ::apache::thrift::protocol::T_STRUCT, 6);
     xfer += this->jobStatus.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.computeResourceConsumed) {
-    xfer += oprot->writeFieldBegin("computeResourceConsumed", ::apache::thrift::protocol::T_STRING, 6);
+    xfer += oprot->writeFieldBegin("computeResourceConsumed", ::apache::thrift::protocol::T_STRING, 7);
     xfer += oprot->writeString(this->computeResourceConsumed);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.jobName) {
-    xfer += oprot->writeFieldBegin("jobName", ::apache::thrift::protocol::T_STRING, 7);
+    xfer += oprot->writeFieldBegin("jobName", ::apache::thrift::protocol::T_STRING, 8);
     xfer += oprot->writeString(this->jobName);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.workingDir) {
-    xfer += oprot->writeFieldBegin("workingDir", ::apache::thrift::protocol::T_STRING, 8);
+    xfer += oprot->writeFieldBegin("workingDir", ::apache::thrift::protocol::T_STRING, 9);
     xfer += oprot->writeString(this->workingDir);
     xfer += oprot->writeFieldEnd();
   }
@@ -232,6 +251,7 @@ void swap(JobModel &a, JobModel &b) {
   using ::std::swap;
   swap(a.jobId, b.jobId);
   swap(a.taskId, b.taskId);
+  swap(a.processId, b.processId);
   swap(a.jobDescription, b.jobDescription);
   swap(a.creationTime, b.creationTime);
   swap(a.jobStatus, b.jobStatus);
@@ -244,6 +264,7 @@ void swap(JobModel &a, JobModel &b) {
 JobModel::JobModel(const JobModel& other0) {
   jobId = other0.jobId;
   taskId = other0.taskId;
+  processId = other0.processId;
   jobDescription = other0.jobDescription;
   creationTime = other0.creationTime;
   jobStatus = other0.jobStatus;
@@ -255,6 +276,7 @@ JobModel::JobModel(const JobModel& other0) {
 JobModel& JobModel::operator=(const JobModel& other1) {
   jobId = other1.jobId;
   taskId = other1.taskId;
+  processId = other1.processId;
   jobDescription = other1.jobDescription;
   creationTime = other1.creationTime;
   jobStatus = other1.jobStatus;
@@ -269,6 +291,7 @@ std::ostream& operator<<(std::ostream& out, const JobModel& obj) {
   out << "JobModel(";
   out << "jobId=" << to_string(obj.jobId);
   out << ", " << "taskId=" << to_string(obj.taskId);
+  out << ", " << "processId=" << to_string(obj.processId);
   out << ", " << "jobDescription=" << to_string(obj.jobDescription);
   out << ", " << "creationTime="; (obj.__isset.creationTime ? (out << to_string(obj.creationTime)) : (out << "<null>"));
   out << ", " << "jobStatus="; (obj.__isset.jobStatus ? (out << to_string(obj.jobStatus)) : (out << "<null>"));

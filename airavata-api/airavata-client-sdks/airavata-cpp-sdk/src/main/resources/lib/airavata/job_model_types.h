@@ -51,17 +51,18 @@ typedef struct _JobModel__isset {
 class JobModel {
  public:
 
-  static const char* ascii_fingerprint; // = "41CA915161D6C0FFEE6B97FACBDE9259";
-  static const uint8_t binary_fingerprint[16]; // = {0x41,0xCA,0x91,0x51,0x61,0xD6,0xC0,0xFF,0xEE,0x6B,0x97,0xFA,0xCB,0xDE,0x92,0x59};
+  static const char* ascii_fingerprint; // = "05A24C8A362DCCB6B6A7257CB37E424B";
+  static const uint8_t binary_fingerprint[16]; // = {0x05,0xA2,0x4C,0x8A,0x36,0x2D,0xCC,0xB6,0xB6,0xA7,0x25,0x7C,0xB3,0x7E,0x42,0x4B};
 
   JobModel(const JobModel&);
   JobModel& operator=(const JobModel&);
-  JobModel() : jobId(), taskId(), jobDescription(), creationTime(0), computeResourceConsumed(), jobName(), workingDir() {
+  JobModel() : jobId(), taskId(), processId(), jobDescription(), creationTime(0), computeResourceConsumed(), jobName(), workingDir() {
   }
 
   virtual ~JobModel() throw();
   std::string jobId;
   std::string taskId;
+  std::string processId;
   std::string jobDescription;
   int64_t creationTime;
    ::apache::airavata::model::status::JobStatus jobStatus;
@@ -74,6 +75,8 @@ class JobModel {
   void __set_jobId(const std::string& val);
 
   void __set_taskId(const std::string& val);
+
+  void __set_processId(const std::string& val);
 
   void __set_jobDescription(const std::string& val);
 
@@ -92,6 +95,8 @@ class JobModel {
     if (!(jobId == rhs.jobId))
       return false;
     if (!(taskId == rhs.taskId))
+      return false;
+    if (!(processId == rhs.processId))
       return false;
     if (!(jobDescription == rhs.jobDescription))
       return false;
