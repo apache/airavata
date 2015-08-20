@@ -31,6 +31,10 @@ class JobModel {
   /**
    * @var string
    */
+  public $processId = null;
+  /**
+   * @var string
+   */
   public $jobDescription = null;
   /**
    * @var int
@@ -65,27 +69,31 @@ class JobModel {
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'jobDescription',
+          'var' => 'processId',
           'type' => TType::STRING,
           ),
         4 => array(
+          'var' => 'jobDescription',
+          'type' => TType::STRING,
+          ),
+        5 => array(
           'var' => 'creationTime',
           'type' => TType::I64,
           ),
-        5 => array(
+        6 => array(
           'var' => 'jobStatus',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Status\JobStatus',
           ),
-        6 => array(
+        7 => array(
           'var' => 'computeResourceConsumed',
           'type' => TType::STRING,
           ),
-        7 => array(
+        8 => array(
           'var' => 'jobName',
           'type' => TType::STRING,
           ),
-        8 => array(
+        9 => array(
           'var' => 'workingDir',
           'type' => TType::STRING,
           ),
@@ -97,6 +105,9 @@ class JobModel {
       }
       if (isset($vals['taskId'])) {
         $this->taskId = $vals['taskId'];
+      }
+      if (isset($vals['processId'])) {
+        $this->processId = $vals['processId'];
       }
       if (isset($vals['jobDescription'])) {
         $this->jobDescription = $vals['jobDescription'];
@@ -154,19 +165,26 @@ class JobModel {
           break;
         case 3:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->jobDescription);
+            $xfer += $input->readString($this->processId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->jobDescription);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
           if ($ftype == TType::I64) {
             $xfer += $input->readI64($this->creationTime);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 5:
+        case 6:
           if ($ftype == TType::STRUCT) {
             $this->jobStatus = new \Airavata\Model\Status\JobStatus();
             $xfer += $this->jobStatus->read($input);
@@ -174,21 +192,21 @@ class JobModel {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 6:
+        case 7:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->computeResourceConsumed);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 7:
+        case 8:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->jobName);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 8:
+        case 9:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->workingDir);
           } else {
@@ -218,13 +236,18 @@ class JobModel {
       $xfer += $output->writeString($this->taskId);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->processId !== null) {
+      $xfer += $output->writeFieldBegin('processId', TType::STRING, 3);
+      $xfer += $output->writeString($this->processId);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->jobDescription !== null) {
-      $xfer += $output->writeFieldBegin('jobDescription', TType::STRING, 3);
+      $xfer += $output->writeFieldBegin('jobDescription', TType::STRING, 4);
       $xfer += $output->writeString($this->jobDescription);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->creationTime !== null) {
-      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 4);
+      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 5);
       $xfer += $output->writeI64($this->creationTime);
       $xfer += $output->writeFieldEnd();
     }
@@ -232,22 +255,22 @@ class JobModel {
       if (!is_object($this->jobStatus)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('jobStatus', TType::STRUCT, 5);
+      $xfer += $output->writeFieldBegin('jobStatus', TType::STRUCT, 6);
       $xfer += $this->jobStatus->write($output);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->computeResourceConsumed !== null) {
-      $xfer += $output->writeFieldBegin('computeResourceConsumed', TType::STRING, 6);
+      $xfer += $output->writeFieldBegin('computeResourceConsumed', TType::STRING, 7);
       $xfer += $output->writeString($this->computeResourceConsumed);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->jobName !== null) {
-      $xfer += $output->writeFieldBegin('jobName', TType::STRING, 7);
+      $xfer += $output->writeFieldBegin('jobName', TType::STRING, 8);
       $xfer += $output->writeString($this->jobName);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->workingDir !== null) {
-      $xfer += $output->writeFieldBegin('workingDir', TType::STRING, 8);
+      $xfer += $output->writeFieldBegin('workingDir', TType::STRING, 9);
       $xfer += $output->writeString($this->workingDir);
       $xfer += $output->writeFieldEnd();
     }
