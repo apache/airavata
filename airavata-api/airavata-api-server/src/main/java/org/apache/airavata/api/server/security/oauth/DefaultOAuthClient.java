@@ -18,12 +18,9 @@
  * under the License.
  *
  */
-package org.apache.airavata.api.server.security;
+package org.apache.airavata.api.server.security.oauth;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.security.AiravataSecurityException;
-import org.apache.airavata.security.util.TrustStoreManager;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.slf4j.Logger;
@@ -34,7 +31,6 @@ import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationRequestDTO_
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationResponseDTO;
 import org.wso2.carbon.utils.CarbonUtils;
 
-import javax.net.ssl.*;
 import java.rmi.RemoteException;
 
 /**
@@ -58,47 +54,14 @@ public class DefaultOAuthClient {
      */
     public DefaultOAuthClient(String auhorizationServerURL, String username, String password,
                               ConfigurationContext configCtx) throws AiravataSecurityException {
-        String serviceURL = auhorizationServerURL + "OAuth2TokenValidationService";
         try {
+            String serviceURL = auhorizationServerURL + "OAuth2TokenValidationService";
             stub = new OAuth2TokenValidationServiceStub(configCtx, serviceURL);
             CarbonUtils.setBasicAccessSecurityHeaders(username, password, true, stub._getServiceClient());
         } catch (AxisFault e) {
             logger.error(e.getMessage(), e);
             throw new AiravataSecurityException("Error initializing OAuth client.");
         }
-        /*//TODO:Import the WSO2 IS cert into Airavata trust store.
-        try {
-            // Get SSL context
-            SSLContext sc = SSLContext.getInstance("SSL");
-
-            // Create empty HostnameVerifier
-            HostnameVerifier hv = new HostnameVerifier() {
-                public boolean verify(String urlHostName, SSLSession session) {
-                    return true;
-                }
-            };
-            HttpsURLConnection.setDefaultHostnameVerifier(hv);
-
-            // Create a trust manager that does not validate certificate chains
-            TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                    return null;
-                }
-
-                public void checkClientTrusted(java.security.cert.X509Certificate[] certs,
-                                               String authType) {
-                }
-
-                public void checkServerTrusted(java.security.cert.X509Certificate[] certs,
-                                               String authType) {
-                }
-            }};
-
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            SSLContext.setDefault(sc);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
     }
 
     /**
@@ -110,24 +73,22 @@ public class DefaultOAuthClient {
      */
     public OAuth2TokenValidationResponseDTO validateAccessToken(String accessToken)
             throws AiravataSecurityException {
-        OAuth2TokenValidationRequestDTO oauthReq = new OAuth2TokenValidationRequestDTO();
-        OAuth2TokenValidationRequestDTO_OAuth2AccessToken token =
-                new OAuth2TokenValidationRequestDTO_OAuth2AccessToken();
-        token.setIdentifier(accessToken);
-        token.setTokenType(BEARER_TOKEN_TYPE);
-        oauthReq.setAccessToken(token);
+
         try {
-            //initialize SSL context with the trust store.
-            TrustStoreManager trustStoreManager = new TrustStoreManager();
-            trustStoreManager.initializeTrustStoreManager(ServerSettings.getTrustStorePath(), ServerSettings.getTrustStorePassword());
+            OAuth2TokenValidationRequestDTO oauthReq = new OAuth2TokenValidationRequestDTO();
+            OAuth2TokenValidationRequestDTO_OAuth2AccessToken token =
+                    new OAuth2TokenValidationRequestDTO_OAuth2AccessToken();
+            token.setIdentifier(accessToken);
+            token.setTokenType(BEARER_TOKEN_TYPE);
+            oauthReq.setAccessToken(token);
             return stub.validate(oauthReq);
         } catch (RemoteException e) {
             logger.error(e.getMessage(), e);
             throw new AiravataSecurityException("Error in validating the OAuth access token.");
-        } catch (ApplicationSettingsException e) {
+        } /*catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AiravataSecurityException("Error in reading OAuth configuration.");
-        }
+        }*/
     }
 
 }
