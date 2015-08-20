@@ -23,6 +23,21 @@ package org.apache.airavata.api.server.security;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.security.AiravataSecurityException;
 
+import java.util.Map;
+
 public interface AiravataSecurityManager {
-    public boolean isUserAuthenticatedAndAuthorized(AuthzToken authzToken) throws AiravataSecurityException;
+    /**
+     * Implement this method in your SecurityManager to perform necessary initializations at the server startup.
+     * @throws AiravataSecurityException
+     */
+    public void initializeSecurityInfra() throws AiravataSecurityException;
+
+    /**
+     * Implement this method with the user authentication/authorization logic in your SecurityManager.
+     * @param authzToken : this includes OAuth token and user's claims
+     * @param metaData : this includes other meta data needed for security enforcements.
+     * @return
+     * @throws AiravataSecurityException
+     */
+    public boolean isUserAuthorized(AuthzToken authzToken, Map<String, String> metaData) throws AiravataSecurityException;
 }

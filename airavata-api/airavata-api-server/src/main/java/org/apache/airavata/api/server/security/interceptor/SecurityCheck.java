@@ -18,7 +18,7 @@
  * under the License.
  *
  */
-package org.apache.airavata.api.server.security;
+package org.apache.airavata.api.server.security.interceptor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
