@@ -33,12 +33,13 @@ public class Job {
     private final static Logger logger = LoggerFactory.getLogger(Job.class);
     private String jobId;
     private String taskId;
+	private String processId;
     private String jobDescription;
     private Timestamp creationTime;
     private String computeResourceConsumed;
     private String jobName;
     private String workingDir;
-    private Task task;
+	private Process process;
     private Collection<JobStatus> jobStatuses;
 
     @Id
@@ -51,7 +52,17 @@ public class Job {
         this.jobId = jobId;
     }
 
-    @Id
+	@Id
+	@Column(name = "PROCESS_ID")
+	public String getProcessId() {
+		return processId;
+	}
+
+	public void setProcessId(String processId) {
+		this.processId = processId;
+	}
+
+    @Basic
     @Column(name = "TASK_ID")
     public String getTaskId() {
         return taskId;
@@ -143,15 +154,15 @@ public class Job {
 //        return result;
 //    }
 
-    @ManyToOne
-    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID")
-    public Task getTask() {
-        return task;
-    }
+	@OneToOne
+	@JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID")
+	public Process getProcess() {
+		return process;
+	}
 
-    public void setTask(Task taskByTaskId) {
-        this.task = taskByTaskId;
-    }
+	public void setProcess(Process processByProcessId) {
+		this.process = processByProcessId;
+	}
 
     @OneToMany(mappedBy = "job")
     public Collection<JobStatus> getJobStatuses() {

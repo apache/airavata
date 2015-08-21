@@ -76,6 +76,7 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 			    String jobId = remoteCluster.submitBatchJob(jobFile.getPath(), processContext.getWorkingDir());
 			    if (jobId != null && !jobId.isEmpty()) {
 				    jobModel.setJobId(jobId);
+				    GFacUtils.saveJobModel(processContext, jobModel);
 				    jobStatus.setJobState(JobState.SUBMITTED);
 				    jobStatus.setReason("Successfully Submitted to " + taskContext.getParentProcessContext()
 						    .getComputeResourceDescription().getHostName());
@@ -97,6 +98,7 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 						    // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
 						    jobId = verifyJobId;
 						    jobModel.setJobId(jobId);
+						    GFacUtils.saveJobModel(processContext,jobModel);
 						    jobStatus.setJobState(JobState.QUEUED);
 						    jobStatus.setReason("Verification step succeeded");
 						    jobModel.setJobStatus(jobStatus);

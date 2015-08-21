@@ -82,26 +82,31 @@ public class GFacWorker implements Runnable {
 			try {
 				switch (type) {
 					case NEW:
-						exectuteProcess(engine);
+						executeProcess();
 						break;
 					case RECOVER:
-						recoverProcess(engine);
+						recoverProcess();
 						break;
-//					case RECOVER_MONITORING:
+					case RECOVER_MONITORING:
+						monitorProcess();
 						// TODO get monitor mode from process and get correct monitor service instead default service.
+						break;
 					case RUN_OUTFLOW:
 						// run the outflow task
-						engine.runProcessOutflow(processContext);
-						processContext.setProcessStatus(new ProcessStatus(ProcessState.COMPLETED));
-						GFacUtils.saveAndPublishProcessStatus(processContext);
-						sendAck();
+						runProcessOutflow();
 						break;
 					case RECOVER_OUTFLOW:
 						// recover  outflow task;
-						engine.recoverProcessOutflow(processContext);
-						processContext.setProcessStatus(new ProcessStatus(ProcessState.COMPLETED));
-						GFacUtils.saveAndPublishProcessStatus(processContext);
-						sendAck();
+						recoverProcessOutflow();
+						break;
+					case COMPLETED:
+						completeProcess();
+						break;
+					case CANCELED:
+						// TODO - implement cancel scenario
+						break;
+					case FAILED:
+						// TODO - implement failed scenario
 						break;
 					default:
 						throw new GFacException("process Id : " + processId + " Couldn't identify process type");
@@ -114,11 +119,20 @@ public class GFacWorker implements Runnable {
 					case RECOVER:
 						log.error("Process recover error ", e);
 						break;
+					case RECOVER_MONITORING:
+						log.error("Process monitoring recovery error", e);
+						break;
 					case RUN_OUTFLOW:
 						log.error("Process outflow execution error", e);
 						break;
 					case RECOVER_OUTFLOW:
 						log.error("Process outflow recover error", e);
+						break;
+					case COMPLETED:
+						log.error("Process completion error", e);
+						break;
+					case CANCELED: // TODO - implement cancel scenario
+					case FAILED: // TODO - implement failed scenario
 						break;
 				}
 				throw e;
@@ -136,32 +150,50 @@ public class GFacWorker implements Runnable {
 		}
 	}
 
-	private void recoverProcess(GFacEngine engine) throws GFacException {
-		// recover the process
-		//	engine.recoverProcess(processContext);
-		exectuteProcess(engine); // TODO - implement recover process.
+	private void completeProcess() throws GFacException {
+		processContext.setProcessStatus(new ProcessStatus(ProcessState.COMPLETED));
+		GFacUtils.saveAndPublishProcessStatus(processContext);
+		sendAck();
+		Factory.getGfacContext().remoteProcess(processContext.getProcessId());
 	}
 
-	private void exectuteProcess(GFacEngine engine) throws GFacException {
+	private void recoverProcessOutflow() throws GFacException {
+		engine.recoverProcessOutflow(processContext);
+		completeProcess();
+	}
+
+	private void runProcessOutflow() throws GFacException {
+		engine.runProcessOutflow(processContext);
+		completeProcess();
+	}
+
+	private void recoverProcess() throws GFacException {
+		// recover the process
+		//	engine.recoverProcess(processContext);
+		executeProcess(); // TODO - implement recover process.
+	}
+
+	private void executeProcess() throws GFacException {
 		if (processContext.isHandOver()) {
 			return;
 		}
 		engine.executeProcess(processContext);
-		if (processContext.getMonitorMode() == null) {
-			engine.runProcessOutflow(processContext);
-		} else {
-			try {
-				JobMonitor monitorService = Factory.getMonitorService(processContext.getMonitorMode());
-				if (monitorService != null) {
-					monitorService.monitor(processContext.getJobModel().getJobId(), processContext);
-					processContext.setProcessStatus(new ProcessStatus(ProcessState.MONITORING));
-				} else {
-					// we directly invoke outflow
-					engine.runProcessOutflow(processContext);
-				}
-			} catch (AiravataException e) {
-				throw new GFacException("Error while retrieving moniot service", e);
+		monitorProcess();
+	}
+
+	private void monitorProcess() throws GFacException {
+		try {
+			JobMonitor monitorService = Factory.getMonitorService(processContext.getMonitorMode());
+			if (monitorService != null) {
+				monitorService.monitor(processContext.getJobModel().getJobId(), processContext);
+				processContext.setProcessStatus(new ProcessStatus(ProcessState.MONITORING));
+				GFacUtils.saveAndPublishProcessStatus(processContext);
+			} else {
+				// we directly invoke outflow
+				runProcessOutflow();
 			}
+		} catch (AiravataException e) {
+			throw new GFacException("Error while retrieving moniot service", e);
 		}
 	}
 
@@ -199,9 +231,11 @@ public class GFacWorker implements Runnable {
 			case POST_PROCESSING:
 				return ProcessType.RECOVER_OUTFLOW;
 			case COMPLETED:
-			case CANCELED:
-			case FAILED:
 				return ProcessType.COMPLETED;
+			case CANCELED:
+				return ProcessType.CANCELED;
+			case FAILED:
+				return ProcessType.FAILED;
 			//case CANCELLING: // TODO: handle this
 			default:
 				// this will never hit as we have handle all states in cases.
@@ -216,6 +250,8 @@ public class GFacWorker implements Runnable {
 		RECOVER_MONITORING,
 		RUN_OUTFLOW,
 		RECOVER_OUTFLOW,
+		CANCELED,
+		FAILED,
 		COMPLETED
 	}
 }
