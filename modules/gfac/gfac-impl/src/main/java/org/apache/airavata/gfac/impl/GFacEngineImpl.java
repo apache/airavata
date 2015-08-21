@@ -43,6 +43,7 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfil
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
@@ -108,6 +109,14 @@ public class GFacEngineImpl implements GFacEngine {
 			if (inputPath != null) {
 				processContext.setLocalWorkingDir((inputPath.endsWith("/") ? inputPath : inputPath + "/") +
 						processContext.getProcessId());
+			}
+
+			List<Object> jobModels = expCatalog.get(ExperimentCatalogModelType.JOB, "processId", processId);
+			if (jobModels != null && !jobModels.isEmpty()) {
+				if (jobModels.size() > 1) {
+					log.warn("Process has more than one job model, take first one");
+				}
+				processContext.setJobModel(((JobModel) jobModels.get(0)));
 			}
 			return processContext;
 		} catch (AppCatalogException e) {
@@ -267,7 +276,7 @@ public class GFacEngineImpl implements GFacEngine {
 
 	@Override
 	public void recoverProcessOutflow(ProcessContext processContext) throws GFacException {
-
+		runProcessOutflow(processContext); // TODO implement recover steps
 	}
 
 	@Override

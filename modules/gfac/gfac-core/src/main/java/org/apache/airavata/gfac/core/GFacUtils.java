@@ -241,7 +241,7 @@ public class GFacUtils {
             ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
             jobModel.setJobStatus(jobStatus);
             jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            CompositeIdentifier ids = new CompositeIdentifier(jobModel.getTaskId(), jobModel.getJobId());
+            CompositeIdentifier ids = new CompositeIdentifier(jobModel.getProcessId(), jobModel.getJobId());
 			experimentCatalog.add(ExpCatChildDataType.JOB_STATUS, jobStatus, ids);
             JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), jobModel.getTaskId(),
                     processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
@@ -1093,4 +1093,16 @@ public class GFacUtils {
 		byte[] bytes = curatorClient.getData().forPath(deliveryTagPath);
 		return GFacUtils.bytesToLong(bytes);
 	}
+
+	public static void saveJobModel(ProcessContext processContext, JobModel jobModel) throws GFacException {
+		try {
+			ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+			experimentCatalog.add(ExpCatChildDataType.JOB, jobModel, processContext.getProcessId());
+		} catch (RegistryException e) {
+			String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
+					+ " jobId: " + jobModel.getJobId() + " : - Error while saving Job Model";
+			throw new GFacException(msg, e);
+		}
+	}
+
 }

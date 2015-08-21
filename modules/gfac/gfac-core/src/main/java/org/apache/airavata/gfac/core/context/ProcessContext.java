@@ -275,6 +275,7 @@ public class ProcessContext {
 	public JobModel getJobModel() {
 		if (jobModel == null) {
 			jobModel = new JobModel();
+			jobModel.setProcessId(processId);
 			jobModel.setWorkingDir(getWorkingDir());
 			jobModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
 		}

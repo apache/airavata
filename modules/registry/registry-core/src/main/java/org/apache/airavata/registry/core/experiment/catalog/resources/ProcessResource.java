@@ -174,6 +174,10 @@ public class ProcessResource extends AbstractExpCatResource {
                TaskResource taskResource = new TaskResource();
                taskResource.setParentProcessId(processId);
                return taskResource;
+	       case JOB:
+		       JobResource jobResource = new JobResource();
+		       jobResource.setProcessId(processId);
+		       return jobResource;
            default:
                logger.error("Unsupported resource type for process resource.", new IllegalArgumentException());
                throw new IllegalArgumentException("Unsupported resource type for process resource.");
@@ -227,6 +231,13 @@ public class ProcessResource extends AbstractExpCatResource {
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
+	            case JOB:
+		            generator = new QueryGenerator(JOB);
+		            generator.setParameter(JobConstants.JOB_ID, name);
+		            generator.setParameter(JobConstants.PROCESS_ID, processId);
+		            q = generator.deleteQuery(em);
+		            q.executeUpdate();
+		            break;
                 default:
                     logger.error("Unsupported resource type for process detail resource.", new IllegalArgumentException());
                     break;
@@ -312,7 +323,17 @@ public class ProcessResource extends AbstractExpCatResource {
                     em.getTransaction().commit();
                     em.close();
                     return taskResource;
-                default:
+	            case JOB:
+		            generator = new QueryGenerator(JOB);
+		            generator.setParameter(JobConstants.JOB_ID, name);
+		            generator.setParameter(JobConstants.PROCESS_ID, processId);
+		            q = generator.selectQuery(em);
+		            Job job = (Job) q.getSingleResult();
+		            JobResource jobResource = (JobResource) Utils.getResource(ResourceType.JOB, job);
+		            em.getTransaction().commit();
+		            em.close();
+		            return jobResource;
+	            default:
                     em.getTransaction().commit();
                     em.close();
                     logger.error("Unsupported resource type for process resource.", new IllegalArgumentException());
@@ -411,6 +432,20 @@ public class ProcessResource extends AbstractExpCatResource {
                         }
                     }
                     break;
+	            case JOB:
+		            generator = new QueryGenerator(JOB);
+		            generator.setParameter(JobConstants.PROCESS_ID, processId);
+		            q = generator.selectQuery(em);
+		            results = q.getResultList();
+		            if (results.size() != 0) {
+			            for (Object result : results) {
+				            Job job = (Job) result;
+				            JobResource jobResource =
+						            (JobResource) Utils.getResource(ResourceType.JOB, job);
+				            resourceList.add(jobResource);
+			            }
+		            }
+		            break;
                 default:
                     em.getTransaction().commit();
                     em.close();
@@ -562,4 +597,18 @@ public class ProcessResource extends AbstractExpCatResource {
         ExperimentCatResource resource = get(ResourceType.TASK, taskId);
         return (TaskResource)resource;
     }
+
+	public JobResource getJob(String jobId) throws RegistryException {
+		return (JobResource) get(ResourceType.JOB, jobId);
+	}
+
+	public List<JobResource> getJobList() throws RegistryException {
+		List<JobResource> jobResources = new ArrayList();
+		List<ExperimentCatResource> resources = get(ResourceType.JOB);
+		for (ExperimentCatResource resource : resources) {
+			JobResource jobResource = (JobResource) resource;
+			jobResources.add(jobResource);
+		}
+		return jobResources;
+	}
 }
