@@ -274,8 +274,8 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
             log.info("[EJM]: Job Queued email received, " + jobDetails);
         }else if (resultState == JobState.ACTIVE) {
             // nothing special thing to do, update the status change to rabbit mq at the end of this method.
-	        jobStatus.setJobState(JobState.QUEUED);
-	        jobStatus.setReason("Queued email received");
+	        jobStatus.setJobState(JobState.ACTIVE);
+	        jobStatus.setReason("Active email received");
             log.info("[EJM]: Job Active email received, " + jobDetails);
         }else if (resultState == JobState.FAILED) {
             jobMonitorMap.remove(jobStatusResult.getJobId());

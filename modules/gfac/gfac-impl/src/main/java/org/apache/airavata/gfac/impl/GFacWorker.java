@@ -78,68 +78,46 @@ public class GFacWorker implements Runnable {
 			return;
 		}
 		try {
-			ProcessType type = getProcessType(processContext);
-			try {
-				switch (type) {
-					case NEW:
-						executeProcess();
-						break;
-					case RECOVER:
-						recoverProcess();
-						break;
-					case RECOVER_MONITORING:
-						monitorProcess();
-						// TODO get monitor mode from process and get correct monitor service instead default service.
-						break;
-					case RUN_OUTFLOW:
-						// run the outflow task
+			ProcessState processState = processContext.getProcessStatus().getState();
+			switch (processState) {
+				case CREATED:
+				case VALIDATED:
+					executeProcess();
+					break;
+				case PRE_PROCESSING:
+				case CONFIGURING_WORKSPACE:
+				case INPUT_DATA_STAGING:
+				case EXECUTING:
+					recoverProcess();
+					break;
+				case MONITORING:
+					if (runOutflow) {
 						runProcessOutflow();
-						break;
-					case RECOVER_OUTFLOW:
-						// recover  outflow task;
-						recoverProcessOutflow();
-						break;
-					case COMPLETED:
-						completeProcess();
-						break;
-					case CANCELED:
-						// TODO - implement cancel scenario
-						break;
-					case FAILED:
-						// TODO - implement failed scenario
-						break;
-					default:
-						throw new GFacException("process Id : " + processId + " Couldn't identify process type");
-				}
-			} catch (GFacException e) {
-				switch (type) {
-					case NEW:
-						log.error("Process execution error", e);
-						break;
-					case RECOVER:
-						log.error("Process recover error ", e);
-						break;
-					case RECOVER_MONITORING:
-						log.error("Process monitoring recovery error", e);
-						break;
-					case RUN_OUTFLOW:
-						log.error("Process outflow execution error", e);
-						break;
-					case RECOVER_OUTFLOW:
-						log.error("Process outflow recover error", e);
-						break;
-					case COMPLETED:
-						log.error("Process completion error", e);
-						break;
-					case CANCELED: // TODO - implement cancel scenario
-					case FAILED: // TODO - implement failed scenario
-						break;
-				}
-				throw e;
+					} else {
+						monitorProcess();
+					}
+					break;
+				case OUTPUT_DATA_STAGING:
+				case POST_PROCESSING:
+					recoverProcessOutflow();
+					break;
+				case COMPLETED:
+					completeProcess();
+					break;
+				case CANCELED:
+					// TODO - implement cancel scenario
+					break;
+				case FAILED:
+					// TODO - implement failed scenario
+					break;
+				default:
+					throw new GFacException("process Id : " + processId + " Couldn't identify process type");
 			}
 		} catch (GFacException e) {
 			log.error("GFac Worker throws an exception", e);
-			processContext.setProcessStatus(new ProcessStatus(ProcessState.FAILED));
+			ProcessStatus status = new ProcessStatus(ProcessState.FAILED);
+			status.setReason(e.getMessage());
+			processContext.setProcessStatus(status);
 			try {
 				GFacUtils.saveAndPublishProcessStatus(processContext);
 			} catch (GFacException e1) {
@@ -168,9 +146,8 @@ public class GFacWorker implements Runnable {
 	}
 
 	private void recoverProcess() throws GFacException {
-		// recover the process
-		//	engine.recoverProcess(processContext);
-		executeProcess(); // TODO - implement recover process.
+		engine.recoverProcess(processContext);
+		monitorProcess();
 	}
 
 	private void executeProcess() throws GFacException {
@@ -210,48 +187,4 @@ public class GFacWorker implements Runnable {
 		}
 	}
 
-	private ProcessType getProcessType(ProcessContext processContext) {
-		// check the status and return correct type of process.
-		switch (processContext.getProcessState()) {
-			case CREATED:
-			case VALIDATED:
-				return ProcessType.NEW;
-			case PRE_PROCESSING:
-			case CONFIGURING_WORKSPACE:
-			case INPUT_DATA_STAGING:
-			case EXECUTING:
-				return ProcessType.RECOVER;
-			case MONITORING:
-				if (runOutflow) {
-					return ProcessType.RUN_OUTFLOW; // execute outflow
-				} else {
-					return ProcessType.RECOVER_MONITORING; // hand over to monitor task
-				}
-			case OUTPUT_DATA_STAGING:
-			case POST_PROCESSING:
-				return ProcessType.RECOVER_OUTFLOW;
-			case COMPLETED:
-				return ProcessType.COMPLETED;
-			case CANCELED:
-				return ProcessType.CANCELED;
-			case FAILED:
-				return ProcessType.FAILED;
-			//case CANCELLING: // TODO: handle this
-			default:
-				// this will never hit as we have handle all states in cases.
-				return ProcessType.NEW;
-		}
-	}
-
-
-	private enum ProcessType {
-		NEW,
-		RECOVER,
-		RECOVER_MONITORING,
-		RUN_OUTFLOW,
-		RECOVER_OUTFLOW,
-		CANCELED,
-		FAILED,
-		COMPLETED
-	}
 }

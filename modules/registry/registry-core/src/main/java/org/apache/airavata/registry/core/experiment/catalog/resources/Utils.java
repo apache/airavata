@@ -648,6 +648,7 @@ public class Utils {
         JobResource jobResource = new JobResource();
         if (o != null){
             jobResource.setJobId(o.getJobId());
+	        jobResource.setProcessId(o.getProcessId());
             jobResource.setTaskId(o.getTaskId());
             jobResource.setCreationTime(o.getCreationTime());
             jobResource.setJobDescription(o.getJobDescription());
@@ -662,7 +663,9 @@ public class Utils {
         JobStatusResource jobStatusResource = new JobStatusResource();
         if (o != null){
             jobStatusResource.setJobId(o.getJobId());
-            jobStatusResource.setState(o.getState());
+	        jobStatusResource.setStatusId(o.getStatusId());
+	        jobStatusResource.setProcessId(o.getProcessId());
+	        jobStatusResource.setState(o.getState());
             jobStatusResource.setTimeOfStateChange(o.getTimeOfStateChange());
             jobStatusResource.setReason(o.getReason());
         }
