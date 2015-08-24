@@ -35,6 +35,7 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
+import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.resources.*;
 import org.apache.airavata.registry.core.experiment.catalog.utils.ThriftDataModelConversion;
@@ -1175,7 +1176,23 @@ public class ExperimentRegistry {
                 List<JobResource> resources = processResource.getJobList();
                 for (JobResource jobResource : resources) {
                     JobModel jobModel = ThriftDataModelConversion.getJobModel(jobResource);
-                    jobs.add(jobModel);
+	                List<ExperimentCatResource> jobStatuses = jobResource.get(ResourceType.JOB_STATUS);
+	                JobStatusResource latestSR  = null;
+	                for (ExperimentCatResource jobStatuse : jobStatuses) {
+		                JobStatusResource jobSR = (JobStatusResource) jobStatuse;
+		                if (latestSR == null) {
+			                latestSR = jobSR;
+		                } else {
+			                latestSR = (jobSR.getTimeOfStateChange().after(latestSR.getTimeOfStateChange()) ? jobSR :
+					                latestSR);
+		                }
+	                }
+	                if (latestSR != null) {
+		                JobStatus jobStatus = new JobStatus(JobState.valueOf(latestSR.getState()));
+		                jobStatus.setReason(latestSR.getReason());
+		                jobModel.setJobStatus(jobStatus);
+	                }
+	                jobs.add(jobModel);
                 }
                 return jobs;
             } else {
