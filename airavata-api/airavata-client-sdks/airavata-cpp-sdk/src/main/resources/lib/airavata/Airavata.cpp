@@ -2339,6 +2339,7 @@ uint32_t Airavata_getSSHPubKey_args::read(::apache::thrift::protocol::TProtocol*
 
   bool isset_authzToken = false;
   bool isset_airavataCredStoreToken = false;
+  bool isset_gatewayId = false;
 
   while (true)
   {
@@ -2364,6 +2365,14 @@ uint32_t Airavata_getSSHPubKey_args::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -2376,6 +2385,8 @@ uint32_t Airavata_getSSHPubKey_args::read(::apache::thrift::protocol::TProtocol*
   if (!isset_authzToken)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_airavataCredStoreToken)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_gatewayId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -2391,6 +2402,10 @@ uint32_t Airavata_getSSHPubKey_args::write(::apache::thrift::protocol::TProtocol
 
   xfer += oprot->writeFieldBegin("airavataCredStoreToken", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->airavataCredStoreToken);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString(this->gatewayId);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -2415,6 +2430,10 @@ uint32_t Airavata_getSSHPubKey_pargs::write(::apache::thrift::protocol::TProtoco
 
   xfer += oprot->writeFieldBegin("airavataCredStoreToken", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->airavataCredStoreToken)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString((*(this->gatewayId)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -37096,13 +37115,13 @@ void AiravataClient::recv_generateAndRegisterSSHKeys(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "generateAndRegisterSSHKeys failed: unknown result");
 }
 
-void AiravataClient::getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken)
+void AiravataClient::getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId)
 {
-  send_getSSHPubKey(authzToken, airavataCredStoreToken);
+  send_getSSHPubKey(authzToken, airavataCredStoreToken, gatewayId);
   recv_getSSHPubKey(_return);
 }
 
-void AiravataClient::send_getSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken)
+void AiravataClient::send_getSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("getSSHPubKey", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -37110,6 +37129,7 @@ void AiravataClient::send_getSSHPubKey(const  ::apache::airavata::model::securit
   Airavata_getSSHPubKey_pargs args;
   args.authzToken = &authzToken;
   args.airavataCredStoreToken = &airavataCredStoreToken;
+  args.gatewayId = &gatewayId;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -45478,7 +45498,7 @@ void AiravataProcessor::process_getSSHPubKey(int32_t seqid, ::apache::thrift::pr
 
   Airavata_getSSHPubKey_result result;
   try {
-    iface_->getSSHPubKey(result.success, args.authzToken, args.airavataCredStoreToken);
+    iface_->getSSHPubKey(result.success, args.authzToken, args.airavataCredStoreToken, args.gatewayId);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
