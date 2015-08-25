@@ -99,11 +99,12 @@ class Iface:
     """
     pass
 
-  def getSSHPubKey(self, authzToken, airavataCredStoreToken):
+  def getSSHPubKey(self, authzToken, airavataCredStoreToken, gatewayId):
     """
     Parameters:
      - authzToken
      - airavataCredStoreToken
+     - gatewayId
     """
     pass
 
@@ -2432,20 +2433,22 @@ class Client(Iface):
       raise result.ase
     raise TApplicationException(TApplicationException.MISSING_RESULT, "generateAndRegisterSSHKeys failed: unknown result");
 
-  def getSSHPubKey(self, authzToken, airavataCredStoreToken):
+  def getSSHPubKey(self, authzToken, airavataCredStoreToken, gatewayId):
     """
     Parameters:
      - authzToken
      - airavataCredStoreToken
+     - gatewayId
     """
-    self.send_getSSHPubKey(authzToken, airavataCredStoreToken)
+    self.send_getSSHPubKey(authzToken, airavataCredStoreToken, gatewayId)
     return self.recv_getSSHPubKey()
 
-  def send_getSSHPubKey(self, authzToken, airavataCredStoreToken):
+  def send_getSSHPubKey(self, authzToken, airavataCredStoreToken, gatewayId):
     self._oprot.writeMessageBegin('getSSHPubKey', TMessageType.CALL, self._seqid)
     args = getSSHPubKey_args()
     args.authzToken = authzToken
     args.airavataCredStoreToken = airavataCredStoreToken
+    args.gatewayId = gatewayId
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -8409,7 +8412,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = getSSHPubKey_result()
     try:
-      result.success = self._handler.getSSHPubKey(args.authzToken, args.airavataCredStoreToken)
+      result.success = self._handler.getSSHPubKey(args.authzToken, args.airavataCredStoreToken, args.gatewayId)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -12215,17 +12218,20 @@ class getSSHPubKey_args:
   Attributes:
    - authzToken
    - airavataCredStoreToken
+   - gatewayId
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
     (2, TType.STRING, 'airavataCredStoreToken', None, None, ), # 2
+    (3, TType.STRING, 'gatewayId', None, None, ), # 3
   )
 
-  def __init__(self, authzToken=None, airavataCredStoreToken=None,):
+  def __init__(self, authzToken=None, airavataCredStoreToken=None, gatewayId=None,):
     self.authzToken = authzToken
     self.airavataCredStoreToken = airavataCredStoreToken
+    self.gatewayId = gatewayId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -12247,6 +12253,11 @@ class getSSHPubKey_args:
           self.airavataCredStoreToken = iprot.readString();
         else:
           iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.gatewayId = iprot.readString();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -12265,6 +12276,10 @@ class getSSHPubKey_args:
       oprot.writeFieldBegin('airavataCredStoreToken', TType.STRING, 2)
       oprot.writeString(self.airavataCredStoreToken)
       oprot.writeFieldEnd()
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -12273,6 +12288,8 @@ class getSSHPubKey_args:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
     if self.airavataCredStoreToken is None:
       raise TProtocol.TProtocolException(message='Required field airavataCredStoreToken is unset!')
+    if self.gatewayId is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     return
 
 
@@ -12280,6 +12297,7 @@ class getSSHPubKey_args:
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
     value = (value * 31) ^ hash(self.airavataCredStoreToken)
+    value = (value * 31) ^ hash(self.gatewayId)
     return value
 
   def __repr__(self):
