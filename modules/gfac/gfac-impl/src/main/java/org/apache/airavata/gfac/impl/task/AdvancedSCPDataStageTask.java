@@ -23,8 +23,15 @@ package org.apache.airavata.gfac.impl.task;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.credential.store.credential.Credential;
+import org.apache.airavata.credential.store.credential.impl.password.PasswordCredential;
+import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
+import org.apache.airavata.credential.store.store.CredentialReader;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
+import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
@@ -46,6 +53,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -64,29 +73,62 @@ public class AdvancedSCPDataStageTask implements Task{
 
 	@Override
 	public void init(Map<String, String> propertyMap) throws TaskException {
-		password = propertyMap.get("password");
-		passPhrase = propertyMap.get("passPhrase");
-		privateKeyPath = propertyMap.get("privateKeyPath");
-		publicKeyPath = propertyMap.get("publicKeyPath");
-		userName = propertyMap.get("userName");
-		hostName = propertyMap.get("hostName");
 		inputPath = propertyMap.get("inputPath");
+        hostName = propertyMap.get("hostName");
+        userName = propertyMap.get("userName");
 	}
 
 	@Override
 	public TaskStatus execute(TaskContext taskContext) {
-		AuthenticationInfo authenticationInfo = null;
-		if (password != null) {
-			authenticationInfo = getSSHPasswordAuthentication();
-		} else {
-			authenticationInfo = getSSHKeyAuthentication();
-		}
-		TaskStatus status = new TaskStatus(TaskState.COMPLETED);
-		DataStagingTaskModel subTaskModel = null;
-		try {
-			subTaskModel = (DataStagingTaskModel) ThriftUtils.getSubTaskModel
-					(taskContext.getTaskModel());
-		}  catch (TException e) {
+        TaskStatus status = new TaskStatus(TaskState.CREATED);
+        AuthenticationInfo authenticationInfo = null;
+        DataStagingTaskModel subTaskModel = null;
+        try {
+            String tokenId = taskContext.getParentProcessContext().getTokenId();
+            CredentialReader credentialReader = GFacUtils.getCredentialReader();
+            Credential credential = credentialReader.getCredential(taskContext.getParentProcessContext().getGatewayId(), tokenId);
+            if (credential instanceof SSHCredential){
+                SSHCredential sshCredential =  (SSHCredential)credential;
+                byte[] publicKey = sshCredential.getPublicKey();
+                publicKeyPath = writeFileToDisk(publicKey);
+                byte[] privateKey = sshCredential.getPrivateKey();
+                privateKeyPath = writeFileToDisk(privateKey);
+                passPhrase = sshCredential.getPassphrase();
+//                userName = sshCredential.getPortalUserName(); // this might not same as login user name
+                authenticationInfo = getSSHKeyAuthentication();
+            }
+            status = new TaskStatus(TaskState.COMPLETED);
+            subTaskModel = (DataStagingTaskModel) ThriftUtils.getSubTaskModel
+                    (taskContext.getTaskModel());
+            URI sourceURI = new URI(subTaskModel.getSource());
+            URI destinationURI = new URI(subTaskModel.getDestination());
+
+            File tempOutputDir = getLocalDir(taskContext);
+            if (!tempOutputDir.exists()) {
+                if (!tempOutputDir.mkdirs()) {
+                    // failed to create temp output location
+                }
+            }
+
+            String fileName = sourceURI.getPath().substring(sourceURI.getPath().lastIndexOf(File.separator) + 1,
+                    sourceURI.getPath().length());
+            String filePath = tempOutputDir + File.separator + fileName;
+
+            ServerInfo serverInfo = new ServerInfo(userName, hostName, DEFAULT_SSH_PORT);
+            Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
+            ProcessState processState = taskContext.getParentProcessContext().getProcessState();
+            if (processState == ProcessState.INPUT_DATA_STAGING) {
+                inputDataStaging(taskContext, sshSession, sourceURI, destinationURI, filePath);
+                status.setReason("Successfully staged input data");
+            }else if (processState == ProcessState.OUTPUT_DATA_STAGING) {
+                outputDataStaging(taskContext, sshSession, sourceURI, destinationURI, filePath);
+                status.setReason("Successfully staged output data");
+            } else {
+                status.setState(TaskState.FAILED);
+                status.setReason("Invalid task invocation, Support " + ProcessState.INPUT_DATA_STAGING.name() + " and " +
+                        "" + ProcessState.OUTPUT_DATA_STAGING.name() + " process phases. found " + processState.name());
+            }
+        }  catch (TException e) {
 			String msg = "Couldn't create subTask model thrift model";
 			log.error(msg, e);
 			status.setState(TaskState.FAILED);
@@ -96,77 +138,53 @@ public class AdvancedSCPDataStageTask implements Task{
 			errorModel.setUserFriendlyMessage(msg);
 			taskContext.getTaskModel().setTaskError(errorModel);
 			return status;
-		}
-
-		try {
-			URI sourceURI = new URI(subTaskModel.getSource());
-			URI destinationURI = new URI(subTaskModel.getDestination());
-
-			File tempOutputDir = getLocalDir(taskContext);
-			if (!tempOutputDir.exists()) {
-				if (!tempOutputDir.mkdirs()) {
-					// failed to create temp output location
-				}
-			}
-
-			String fileName = sourceURI.getPath().substring(sourceURI.getPath().lastIndexOf(File.separator) + 1,
-					sourceURI.getPath().length());
-			String filePath = tempOutputDir + File.separator + fileName;
-
-			ServerInfo serverInfo = new ServerInfo(userName, hostName, DEFAULT_SSH_PORT);
-			Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
-			ProcessState processState = taskContext.getParentProcessContext().getProcessState();
-			if (processState == ProcessState.INPUT_DATA_STAGING) {
-				inputDataStaging(taskContext, sshSession, sourceURI, destinationURI, filePath);
-				status.setReason("Successfully staged input data");
-			}else if (processState == ProcessState.OUTPUT_DATA_STAGING) {
-				outputDataStaging(taskContext, sshSession, sourceURI, destinationURI, filePath);
-				status.setReason("Successfully staged output data");
-			} else {
-				status.setState(TaskState.FAILED);
-				status.setReason("Invalid task invocation, Support " + ProcessState.INPUT_DATA_STAGING.name() + " and " +
-						"" + ProcessState.OUTPUT_DATA_STAGING.name() + " process phases. found " + processState.name());
-			}
-
-		}catch (URISyntaxException e) {
-			String msg = "Sorce or destination uri is not correct source : " + subTaskModel.getSource() + ", " +
-					"destination : " + subTaskModel.getDestination();
-			log.error(msg, e);
-			status.setState(TaskState.FAILED);
-			status.setReason(msg);
-			ErrorModel errorModel = new ErrorModel();
-			errorModel.setActualErrorMessage(e.getMessage());
-			errorModel.setUserFriendlyMessage(msg);
-			taskContext.getTaskModel().setTaskError(errorModel);
-		} catch (SSHApiException e) {
-			String msg = "Failed to do scp with compute resource";
-			log.error(msg, e);
-			status.setState(TaskState.FAILED);
-			status.setReason(msg);
-			ErrorModel errorModel = new ErrorModel();
-			errorModel.setActualErrorMessage(e.getMessage());
-			errorModel.setUserFriendlyMessage(msg);
-			taskContext.getTaskModel().setTaskError(errorModel);
-		} catch (AiravataException e) {
-			String msg = "Error while creating ssh session with client";
-			log.error(msg, e);
-			status.setState(TaskState.FAILED);
-			status.setReason(msg);
-			ErrorModel errorModel = new ErrorModel();
-			errorModel.setActualErrorMessage(e.getMessage());
-			errorModel.setUserFriendlyMessage(msg);
-			taskContext.getTaskModel().setTaskError(errorModel);
-		} catch (JSchException | IOException e ) {
-			String msg = "Failed to do scp with client";
-			log.error(msg, e);
-			status.setState(TaskState.FAILED);
-			status.setReason(msg);
-			ErrorModel errorModel = new ErrorModel();
-			errorModel.setActualErrorMessage(e.getMessage());
-			errorModel.setUserFriendlyMessage(msg);
-			taskContext.getTaskModel().setTaskError(errorModel);
-		}
-
+		} catch (ApplicationSettingsException | FileNotFoundException | CredentialStoreException | IllegalAccessException | InstantiationException e) {
+            String msg = "Failed while reading credentials";
+            log.error(msg, e);
+            status.setState(TaskState.FAILED);
+            status.setReason(msg);
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setActualErrorMessage(e.getMessage());
+            errorModel.setUserFriendlyMessage(msg);
+            taskContext.getTaskModel().setTaskError(errorModel);
+        } catch (URISyntaxException e) {
+            String msg = "Sorce or destination uri is not correct source : " + subTaskModel.getSource() + ", " +
+                    "destination : " + subTaskModel.getDestination();
+            log.error(msg, e);
+            status.setState(TaskState.FAILED);
+            status.setReason(msg);
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setActualErrorMessage(e.getMessage());
+            errorModel.setUserFriendlyMessage(msg);
+            taskContext.getTaskModel().setTaskError(errorModel);
+        } catch (SSHApiException e) {
+            String msg = "Failed to do scp with compute resource";
+            log.error(msg, e);
+            status.setState(TaskState.FAILED);
+            status.setReason(msg);
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setActualErrorMessage(e.getMessage());
+            errorModel.setUserFriendlyMessage(msg);
+            taskContext.getTaskModel().setTaskError(errorModel);
+        } catch (AiravataException e) {
+            String msg = "Error while creating ssh session with client";
+            log.error(msg, e);
+            status.setState(TaskState.FAILED);
+            status.setReason(msg);
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setActualErrorMessage(e.getMessage());
+            errorModel.setUserFriendlyMessage(msg);
+            taskContext.getTaskModel().setTaskError(errorModel);
+        } catch (JSchException | IOException e ) {
+            String msg = "Failed to do scp with client";
+            log.error(msg, e);
+            status.setState(TaskState.FAILED);
+            status.setReason(msg);
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setActualErrorMessage(e.getMessage());
+            errorModel.setUserFriendlyMessage(msg);
+            taskContext.getTaskModel().setTaskError(errorModel);
+        }
 		return status;
 	}
 
@@ -229,4 +247,18 @@ public class AdvancedSCPDataStageTask implements Task{
 		sshKA.setStrictHostKeyChecking("no");
 		return sshKA;
 	}
+
+    private String writeFileToDisk(byte[] data) {
+        File temp = null;
+        try {
+            temp = File.createTempFile("id_rsa", "");
+            //write it
+            FileOutputStream bw = new FileOutputStream(temp);
+            bw.write(data);
+            bw.close();
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+        return temp.getAbsolutePath();
+    }
 }
