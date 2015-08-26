@@ -651,7 +651,9 @@ public class Utils {
 	        jobResource.setProcessId(o.getProcessId());
             jobResource.setTaskId(o.getTaskId());
             jobResource.setCreationTime(o.getCreationTime());
-            jobResource.setJobDescription(o.getJobDescription());
+            if (o.getJobDescription() != null){
+                jobResource.setJobDescription(new String(o.getJobDescription()));
+            }
             jobResource.setComputeResourceConsumed(o.getComputeResourceConsumed());
             jobResource.setJobName(o.getJobName());
             jobResource.setWorkingDir(o.getWorkingDir());

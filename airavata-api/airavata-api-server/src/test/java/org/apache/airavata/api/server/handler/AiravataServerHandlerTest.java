@@ -52,6 +52,7 @@ public class AiravataServerHandlerTest {
     private static AiravataServerHandler airavataServerHandler;
     private static String gatewayId = "php_reference_gateway";
     private static  String computeResouceId = null;
+    private AuthzToken token = new AuthzToken("empty_token");
 
     @BeforeClass
     public static void setupBeforeClass() throws Exception{
@@ -85,6 +86,7 @@ public class AiravataServerHandlerTest {
     public void testProject(){
         try {
             String TAG = System.currentTimeMillis() + "";
+
 
             //testing the creation of a project
             Project project = new Project();
@@ -138,32 +140,21 @@ public class AiravataServerHandlerTest {
             project.setOwner("TestUser"+TAG);
             project.setName("Project Boring"+TAG);
             project.setDescription("This is a test project_5"+TAG);
-            String projectId5 = airavataServerHandler.createProject(new AuthzToken(""), gatewayId, project);
+            String projectId5 = airavataServerHandler.createProject(token, gatewayId, project);
             Assert.assertNotNull(projectId5);
 
             //search project by project name
-            List<Project> list = airavataServerHandler.searchProjectsByProjectName(gatewayId,
-                    "TestUser"+TAG, "Terrible"+TAG);
+            List<Project> list = airavataServerHandler.searchProjectsByProjectName(token, gatewayId,
+                    "TestUser"+TAG, "Terrible"+TAG, 2, 0);
             Assert.assertTrue(list.size()==1);
-            //with pagination
-            list = airavataServerHandler.searchProjectsByProjectNameWithPagination(new AuthzToken(""), gatewayId,
-                    "TestUser" + TAG, "Project", 2, 1);
-            Assert.assertTrue(list.size()==2);
 
             //search project by project description
-            list = airavataServerHandler.searchProjectsByProjectDesc(gatewayId, "TestUser"+TAG,
-                    "test project_2"+TAG);
-            Assert.assertTrue(list.size()==1);
-            //with pagination
-            list = airavataServerHandler.searchProjectsByProjectDescWithPagination(new AuthzToken(""), gatewayId,
+            list = airavataServerHandler.searchProjectsByProjectDesc(token, gatewayId,
                     "TestUser" + TAG, "test", 2, 1);
             Assert.assertTrue(list.size()==2);
 
             //get all projects of user
-            list = airavataServerHandler.getAllUserProjects(gatewayId, "TestUser"+TAG);
-            Assert.assertTrue(list.size()==5);
-            //with pagination
-            list = airavataServerHandler.getAllUserProjectsWithPagination(new AuthzToken(""), gatewayId, "TestUser" + TAG, 2, 2);
+            list = airavataServerHandler.getUserProjects(token, gatewayId, "TestUser"+TAG, 2,2);
             Assert.assertTrue(list.size()==2);
             Project project1 = list.get(0);
             Project project2 = list.get(1);
@@ -266,69 +257,45 @@ public class AiravataServerHandlerTest {
             experiment.setUserConfigurationData(userConfigurationData);
             experiment.addToExperimentInputs(inputDataObjectType);
 
-            String experimentId3 = airavataServerHandler.createExperiment(new AuthzToken(""), gatewayId, experiment);
+            String experimentId3 = airavataServerHandler.createExperiment(token, gatewayId, experiment);
             Assert.assertNotNull(experimentId3);
 
             //searching experiments by name
-            List<ExperimentSummaryModel> results = airavataServerHandler.searchExperimentsByName(gatewayId,
-                    "TestUser" + TAG, "Experiment2");
+            List<ExperimentSummaryModel> results = airavataServerHandler.searchExperimentsByName(token, gatewayId,
+                    "TestUser" + TAG, "Experiment2", 2, 0);
             Assert.assertTrue(results.size()==1);
-            //with pagination
-            results = airavataServerHandler.searchExperimentsByNameWithPagination(new AuthzToken(""), gatewayId,
-                    "TestUser" + TAG, "Experi", 2, 0);
-            Assert.assertTrue(results.size()==2);
 
             //searching experiments by creation time
             long time = System.currentTimeMillis();
-            results = airavataServerHandler.searchExperimentsByCreationTime(
-                    gatewayId, "TestUser" + TAG, time-10000, time+1000);
-            Assert.assertTrue(results.size()==3);
-            //with pagination
-            results = airavataServerHandler.searchExperimentsByCreationTimeWithPagination(new AuthzToken(""),
-                    gatewayId, "TestUser" + TAG, time-10000, time+1000, 2, 1);
+            results = airavataServerHandler.searchExperimentsByCreationTime(token,
+                    gatewayId, "TestUser" + TAG, time-10000, time+1000, 2,0);
+
             Assert.assertTrue(results.size()==2);
 
             //searching based on experiment state
             ExperimentState experimentState = ExperimentState.findByValue(0);
-            results = airavataServerHandler.searchExperimentsByStatus(
-                    gatewayId, "TestUser" + TAG, experimentState);
-            Assert.assertTrue(results.size() == 3);
             //with pagination
-            results = airavataServerHandler.searchExperimentsByStatusWithPagination(new AuthzToken(""),
+            results = airavataServerHandler.searchExperimentsByStatus(token,
                     gatewayId, "TestUser" + TAG, experimentState, 2, 0);
             Assert.assertTrue(results.size()==2);
 
             //searching based on application
-            results = airavataServerHandler.searchExperimentsByApplication(
-                    gatewayId, "TestUser" + TAG, "Ech");
-            Assert.assertTrue(results.size() == 3);
-            //with pagination
-            results = airavataServerHandler.searchExperimentsByApplicationWithPagination(new AuthzToken(""),
+            results = airavataServerHandler.searchExperimentsByApplication(new AuthzToken(""),
                     gatewayId, "TestUser" + TAG, "Ech", 2, 0);
             Assert.assertTrue(results.size()==2);
 
             //searching experiments by description
-            results = airavataServerHandler.searchExperimentsByDesc(
-                    gatewayId, "TestUser" + TAG, "exp");
-            Assert.assertTrue(results.size() == 3);
-            //with pagination
-            results = airavataServerHandler.searchExperimentsByDescWithPagination(new AuthzToken(""),
+            results = airavataServerHandler.searchExperimentsByDesc(new AuthzToken(""),
                     gatewayId, "TestUser" + TAG, "exp", 2, 0);
             Assert.assertTrue(results.size()==2);
 
 
             //retrieving all experiments in project
-            List<ExperimentModel> list = airavataServerHandler.getAllExperimentsInProject(projectId1);
-            Assert.assertTrue(list.size()==3);
-            //with pagination
-            list = airavataServerHandler.getAllExperimentsInProjectWithPagination(new AuthzToken(""), projectId1, 2, 1);
+            List<ExperimentModel> list = airavataServerHandler.getExperimentsInProject(token, projectId1, 2, 1);
             Assert.assertTrue(list.size()==2);
 
             //getting all user experiments
-            list = airavataServerHandler.getAllUserExperiments(gatewayId, "TestUser" + TAG);
-            Assert.assertTrue(list.size() == 3);
-            //with pagination
-            list = airavataServerHandler.getAllUserExperimentsWithPagination(new AuthzToken(""),
+            list = airavataServerHandler.getUserExperiments(token,
                     gatewayId, "TestUser" + TAG, 2, 0);
             //testing time ordering
             Assert.assertTrue(list.size()==2);

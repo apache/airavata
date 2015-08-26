@@ -260,7 +260,9 @@ public class JobResource extends AbstractExpCatResource {
             job.setJobId(jobId);
             job.setTaskId(taskId);
 	        job.setProcessId(processId);
-//            job.setJobDescription(jobDescription); // fixme - Data too long for column 'JOB_DESCRIPTION'
+            if (jobDescription != null) {
+                job.setJobDescription(jobDescription.toCharArray());
+            }
             job.setCreationTime(creationTime);
             job.setComputeResourceConsumed(computeResourceConsumed);
             job.setJobName(jobName);
