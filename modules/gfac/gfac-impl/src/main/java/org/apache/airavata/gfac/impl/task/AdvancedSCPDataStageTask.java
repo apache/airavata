@@ -27,7 +27,6 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.credential.store.credential.Credential;
-import org.apache.airavata.credential.store.credential.impl.password.PasswordCredential;
 import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
@@ -103,16 +102,16 @@ public class AdvancedSCPDataStageTask implements Task{
             URI sourceURI = new URI(subTaskModel.getSource());
             URI destinationURI = new URI(subTaskModel.getDestination());
 
-            File tempOutputDir = getLocalDir(taskContext);
-            if (!tempOutputDir.exists()) {
-                if (!tempOutputDir.mkdirs()) {
+            File templocalDataDir = getLocalDataDir(taskContext);
+            if (!templocalDataDir.exists()) {
+                if (!templocalDataDir.mkdirs()) {
                     // failed to create temp output location
                 }
             }
 
             String fileName = sourceURI.getPath().substring(sourceURI.getPath().lastIndexOf(File.separator) + 1,
                     sourceURI.getPath().length());
-            String filePath = tempOutputDir + File.separator + fileName;
+            String filePath = templocalDataDir + File.separator + fileName;
 
             ServerInfo serverInfo = new ServerInfo(userName, hostName, DEFAULT_SSH_PORT);
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
@@ -214,14 +213,10 @@ public class AdvancedSCPDataStageTask implements Task{
 		SSHUtils.scpTo(filePath, destinationURI.getPath(), sshSession);
 	}
 
-	private File getLocalDir(TaskContext taskContext) {
-		if (inputPath == null) {
-			return new File(ServerSettings.getOutputLocation() + taskContext.getParentProcessContext()
-					.getProcessId());
-		} else {
-			inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
-			return new File(inputPath + taskContext.getParentProcessContext().getProcessId());
-		}
+	private File getLocalDataDir(TaskContext taskContext) {
+		String outputPath = ServerSettings.getLocalDataLocation();
+		outputPath = (outputPath.endsWith(File.separator) ? outputPath : outputPath + File.separator);
+		return new File(outputPath + taskContext.getParentProcessContext() .getProcessId());
 	}
 
 	@Override
