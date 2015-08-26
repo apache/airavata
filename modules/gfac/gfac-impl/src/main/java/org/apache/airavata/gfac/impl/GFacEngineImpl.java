@@ -32,7 +32,6 @@ import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.Task;
-import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.task.SSHEnvironmentSetupTask;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
@@ -63,7 +62,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -105,7 +103,7 @@ public class GFacEngineImpl implements GFacEngine {
 			processContext.setRemoteCluster(Factory.getRemoteCluster(processContext.getJobSubmissionProtocol(),
 					processContext.getComputeResourceId(), processContext.getResourceJobManager()));
 
-			String inputPath = ServerSettings.getOutputLocation();
+			String inputPath = ServerSettings.getLocalDataLocation();
 			if (inputPath != null) {
 				processContext.setLocalWorkingDir((inputPath.endsWith("/") ? inputPath : inputPath + "/") +
 						processContext.getProcessId());
