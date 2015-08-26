@@ -492,6 +492,7 @@ public class ProcessResource extends AbstractExpCatResource {
             process.setEmailAddresses(emailAddresses);
             em.persist(process);
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

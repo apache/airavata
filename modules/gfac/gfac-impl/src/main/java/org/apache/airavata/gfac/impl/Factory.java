@@ -20,14 +20,12 @@
  */
 package org.apache.airavata.gfac.impl;
 
-import com.google.common.eventbus.EventBus;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
@@ -42,7 +40,6 @@ import org.apache.airavata.gfac.core.config.GFacYamlConfigruation;
 import org.apache.airavata.gfac.core.config.JobSubmitterTaskConfig;
 import org.apache.airavata.gfac.core.config.ResourceConfig;
 import org.apache.airavata.gfac.core.context.GFacContext;
-import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.monitor.JobMonitor;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
@@ -50,27 +47,16 @@ import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
 import org.apache.airavata.gfac.core.watcher.RedeliveryRequestWatcher;
 import org.apache.airavata.gfac.impl.job.LSFJobConfiguration;
-import org.apache.airavata.gfac.impl.job.LSFOutputParser;
 import org.apache.airavata.gfac.impl.job.PBSJobConfiguration;
-import org.apache.airavata.gfac.impl.job.PBSOutputParser;
 import org.apache.airavata.gfac.impl.job.SlurmJobConfiguration;
-import org.apache.airavata.gfac.impl.job.SlurmOutputParser;
 import org.apache.airavata.gfac.impl.job.UGEJobConfiguration;
-import org.apache.airavata.gfac.impl.job.UGEOutputParser;
 import org.apache.airavata.gfac.impl.watcher.CancelRequestWatcherImpl;
 import org.apache.airavata.gfac.impl.watcher.RedeliveryRequestWatcherImpl;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.impl.RabbitMQProcessLaunchConsumer;
 import org.apache.airavata.messaging.core.impl.RabbitMQStatusPublisher;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
@@ -84,11 +70,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public abstract class Factory {
