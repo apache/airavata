@@ -100,7 +100,6 @@ public class AdvancedSCPDataStageTask implements Task{
             subTaskModel = (DataStagingTaskModel) ThriftUtils.getSubTaskModel
                     (taskContext.getTaskModel());
             URI sourceURI = new URI(subTaskModel.getSource());
-            URI destinationURI = new URI(subTaskModel.getDestination());
 
             File templocalDataDir = getLocalDataDir(taskContext);
             if (!templocalDataDir.exists()) {
@@ -116,13 +115,22 @@ public class AdvancedSCPDataStageTask implements Task{
             ServerInfo serverInfo = new ServerInfo(userName, hostName, DEFAULT_SSH_PORT);
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
             ProcessState processState = taskContext.getParentProcessContext().getProcessState();
-            if (processState == ProcessState.INPUT_DATA_STAGING) {
+	        URI destinationURI = null;
+	        if (processState == ProcessState.INPUT_DATA_STAGING) {
+		        destinationURI = new URI(subTaskModel.getDestination());
                 inputDataStaging(taskContext, sshSession, sourceURI, destinationURI, filePath);
                 status.setReason("Successfully staged input data");
             }else if (processState == ProcessState.OUTPUT_DATA_STAGING) {
-                outputDataStaging(taskContext, sshSession, sourceURI, destinationURI, filePath);
-                status.setReason("Successfully staged output data");
-            } else {
+		        String targetPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator) +
+				        taskContext.getParentProcessContext().getProcessId();
+		        SSHUtils.makeDirectory(targetPath, sshSession);
+		        String targetFilePath =  targetPath + File.separator + fileName;
+		        destinationURI = new URI("SCP", hostName, targetFilePath, null);
+		        subTaskModel.setDestination(destinationURI.getPath());
+		        // TODO - save updated subtask model with new destination
+		        outputDataStaging(taskContext, sshSession, sourceURI, destinationURI, filePath);
+		        status.setReason("Successfully staged output data");
+	        } else {
                 status.setState(TaskState.FAILED);
                 status.setReason("Invalid task invocation, Support " + ProcessState.INPUT_DATA_STAGING.name() + " and " +
                         "" + ProcessState.OUTPUT_DATA_STAGING.name() + " process phases. found " + processState.name());
