@@ -34,7 +34,7 @@ public class Job {
     private String jobId;
     private String taskId;
 	private String processId;
-    private String jobDescription;
+    private char[] jobDescription;
     private Timestamp creationTime;
     private String computeResourceConsumed;
     private String jobName;
@@ -72,13 +72,13 @@ public class Job {
         this.taskId = taskId;
     }
 
-    @Basic
+    @Lob
     @Column(name = "JOB_DESCRIPTION")
-    public String getJobDescription() {
+    public char[] getJobDescription() {
         return jobDescription;
     }
 
-    public void setJobDescription(String jobDescription) {
+    public void setJobDescription(char[] jobDescription) {
         this.jobDescription = jobDescription;
     }
 

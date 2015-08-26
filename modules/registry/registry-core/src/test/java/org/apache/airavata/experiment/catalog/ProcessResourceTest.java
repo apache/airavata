@@ -77,6 +77,6 @@ public class ProcessResourceTest extends AbstractResourceTest{
     @Test
     public void testRemove() throws Exception {
     	experimentResource.remove(ResourceType.PROCESS, processId);
-    	assertFalse("process data removed successfully", processResource.isExists(ResourceType.PROCESS, processId));
+    	assertFalse("process data removed successfully", experimentResource.isExists(ResourceType.PROCESS, processId));
     }
 }
