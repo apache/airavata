@@ -46,10 +46,7 @@ import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
 import org.apache.airavata.gfac.core.watcher.RedeliveryRequestWatcher;
-import org.apache.airavata.gfac.impl.job.LSFJobConfiguration;
-import org.apache.airavata.gfac.impl.job.PBSJobConfiguration;
-import org.apache.airavata.gfac.impl.job.SlurmJobConfiguration;
-import org.apache.airavata.gfac.impl.job.UGEJobConfiguration;
+import org.apache.airavata.gfac.impl.job.*;
 import org.apache.airavata.gfac.impl.watcher.CancelRequestWatcherImpl;
 import org.apache.airavata.gfac.impl.watcher.RedeliveryRequestWatcherImpl;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
@@ -180,6 +177,9 @@ public abstract class Factory {
 			case UGE:
 				return new UGEJobConfiguration("UGETemplate.xslt", ".pbs", resourceJobManager.getJobManagerBinPath(),
 						resourceJobManager.getJobManagerCommands(), outputParser);
+            case FORK:
+                return new ForkJobConfiguration("ForkTemplate.xslt", ".sh", resourceJobManager.getJobManagerBinPath(),
+                        resourceJobManager.getJobManagerCommands(), outputParser);
 			default:
 				return null;
 		}

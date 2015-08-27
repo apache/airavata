@@ -93,7 +93,8 @@ struct JobSubmissionProtocol {
     SSH = 1,
     GLOBUS = 2,
     UNICORE = 3,
-    CLOUD = 4
+    CLOUD = 4,
+    SSH_FORK = 5
   };
 };
 
@@ -103,7 +104,8 @@ struct MonitorMode {
   enum type {
     POLL_JOB_MANAGER = 0,
     JOB_EMAIL_NOTIFICATION_MONITOR = 1,
-    XSEDE_AMQP_SUBSCRIBE = 2
+    XSEDE_AMQP_SUBSCRIBE = 2,
+    FORK = 3
   };
 };
 

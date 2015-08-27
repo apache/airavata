@@ -103,28 +103,32 @@ int _kJobSubmissionProtocolValues[] = {
   JobSubmissionProtocol::SSH,
   JobSubmissionProtocol::GLOBUS,
   JobSubmissionProtocol::UNICORE,
-  JobSubmissionProtocol::CLOUD
+  JobSubmissionProtocol::CLOUD,
+  JobSubmissionProtocol::SSH_FORK
 };
 const char* _kJobSubmissionProtocolNames[] = {
   "LOCAL",
   "SSH",
   "GLOBUS",
   "UNICORE",
-  "CLOUD"
+  "CLOUD",
+  "SSH_FORK"
 };
-const std::map<int, const char*> _JobSubmissionProtocol_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(5, _kJobSubmissionProtocolValues, _kJobSubmissionProtocolNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _JobSubmissionProtocol_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kJobSubmissionProtocolValues, _kJobSubmissionProtocolNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kMonitorModeValues[] = {
   MonitorMode::POLL_JOB_MANAGER,
   MonitorMode::JOB_EMAIL_NOTIFICATION_MONITOR,
-  MonitorMode::XSEDE_AMQP_SUBSCRIBE
+  MonitorMode::XSEDE_AMQP_SUBSCRIBE,
+  MonitorMode::FORK
 };
 const char* _kMonitorModeNames[] = {
   "POLL_JOB_MANAGER",
   "JOB_EMAIL_NOTIFICATION_MONITOR",
-  "XSEDE_AMQP_SUBSCRIBE"
+  "XSEDE_AMQP_SUBSCRIBE",
+  "FORK"
 };
-const std::map<int, const char*> _MonitorMode_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(3, _kMonitorModeValues, _kMonitorModeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _MonitorMode_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(4, _kMonitorModeValues, _kMonitorModeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kDataMovementProtocolValues[] = {
   DataMovementProtocol::LOCAL,

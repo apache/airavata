@@ -95,6 +95,16 @@ public class AdvancedSCPDataStageTask implements Task{
                 passPhrase = sshCredential.getPassphrase();
 //                userName = sshCredential.getPortalUserName(); // this might not same as login user name
                 authenticationInfo = getSSHKeyAuthentication();
+            }else {
+                String msg = "Provided credential store token is not valid. Please provide the correct credential store token";
+                log.error(msg);
+                status.setState(TaskState.FAILED);
+                status.setReason(msg);
+                ErrorModel errorModel = new ErrorModel();
+                errorModel.setActualErrorMessage(msg);
+                errorModel.setUserFriendlyMessage(msg);
+                taskContext.getTaskModel().setTaskError(errorModel);
+                return status;
             }
             status = new TaskStatus(TaskState.COMPLETED);
             subTaskModel = (DataStagingTaskModel) ThriftUtils.getSubTaskModel

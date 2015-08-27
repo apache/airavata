@@ -174,12 +174,14 @@ final class JobSubmissionProtocol {
   const GLOBUS = 2;
   const UNICORE = 3;
   const CLOUD = 4;
+  const SSH_FORK = 5;
   static public $__names = array(
     0 => 'LOCAL',
     1 => 'SSH',
     2 => 'GLOBUS',
     3 => 'UNICORE',
     4 => 'CLOUD',
+    5 => 'SSH_FORK',
   );
 }
 
@@ -198,10 +200,12 @@ final class MonitorMode {
   const POLL_JOB_MANAGER = 0;
   const JOB_EMAIL_NOTIFICATION_MONITOR = 1;
   const XSEDE_AMQP_SUBSCRIBE = 2;
+  const FORK = 3;
   static public $__names = array(
     0 => 'POLL_JOB_MANAGER',
     1 => 'JOB_EMAIL_NOTIFICATION_MONITOR',
     2 => 'XSEDE_AMQP_SUBSCRIBE',
+    3 => 'FORK',
   );
 }
 
