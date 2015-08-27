@@ -28,6 +28,9 @@ jobSubmitters:
 #       publicKeyPath: /path/to/the/publickey
 #       hostName: remote.client.hostName
 
+  - submissionProtocol: SSH_FORK
+    taskClass: org.apache.airavata.gfac.impl.task.SSHForkJobSubmissionTask
+
   - submissionProtocol: LOCAL
     taskClass: org.apache.airavata.gfac.impl.task.LocalJobSubmissionTask
 
@@ -100,4 +103,6 @@ resources:
     resourceEmailAddresses:
       - iu.xsede.edu # test resource mail address
 
+  - jobManagerType: FORK
+      commandOutputParser: org.apache.airavata.gfac.impl.job.ForkOutputParser
 

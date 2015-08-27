@@ -131,7 +131,7 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 		    }
 
 	    } catch (AppCatalogException e) {
-		    String msg = "Error while instatiating app catalog";
+		    String msg = "Error while instantiating app catalog";
 		    log.error(msg, e);
 		    taskStatus.setState(TaskState.FAILED);
 		    taskStatus.setReason(msg);

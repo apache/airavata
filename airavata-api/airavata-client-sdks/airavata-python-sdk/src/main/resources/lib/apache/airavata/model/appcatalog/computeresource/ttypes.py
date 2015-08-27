@@ -209,6 +209,7 @@ class JobSubmissionProtocol:
   GLOBUS = 2
   UNICORE = 3
   CLOUD = 4
+  SSH_FORK = 5
 
   _VALUES_TO_NAMES = {
     0: "LOCAL",
@@ -216,6 +217,7 @@ class JobSubmissionProtocol:
     2: "GLOBUS",
     3: "UNICORE",
     4: "CLOUD",
+    5: "SSH_FORK",
   }
 
   _NAMES_TO_VALUES = {
@@ -224,6 +226,7 @@ class JobSubmissionProtocol:
     "GLOBUS": 2,
     "UNICORE": 3,
     "CLOUD": 4,
+    "SSH_FORK": 5,
   }
 
 class MonitorMode:
@@ -241,17 +244,20 @@ class MonitorMode:
   POLL_JOB_MANAGER = 0
   JOB_EMAIL_NOTIFICATION_MONITOR = 1
   XSEDE_AMQP_SUBSCRIBE = 2
+  FORK = 3
 
   _VALUES_TO_NAMES = {
     0: "POLL_JOB_MANAGER",
     1: "JOB_EMAIL_NOTIFICATION_MONITOR",
     2: "XSEDE_AMQP_SUBSCRIBE",
+    3: "FORK",
   }
 
   _NAMES_TO_VALUES = {
     "POLL_JOB_MANAGER": 0,
     "JOB_EMAIL_NOTIFICATION_MONITOR": 1,
     "XSEDE_AMQP_SUBSCRIBE": 2,
+    "FORK": 3,
   }
 
 class DataMovementProtocol:

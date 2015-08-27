@@ -970,7 +970,7 @@ public class GFacUtils {
         try {
             JobSubmissionProtocol submissionProtocol = getPreferredJobSubmissionProtocol(processContext);
             JobSubmissionInterface jobSubmissionInterface = getPreferredJobSubmissionInterface(processContext);
-            if (submissionProtocol == JobSubmissionProtocol.SSH) {
+            if (submissionProtocol == JobSubmissionProtocol.SSH ) {
                 SSHJobSubmission sshJobSubmission = GFacUtils.getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
                 if (sshJobSubmission != null) {
                     return sshJobSubmission.getResourceJobManager();
@@ -979,6 +979,11 @@ public class GFacUtils {
                 LOCALSubmission localJobSubmission = GFacUtils.getLocalJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
                 if (localJobSubmission != null) {
                     return localJobSubmission.getResourceJobManager();
+                }
+            } else if (submissionProtocol == JobSubmissionProtocol.SSH_FORK){
+                SSHJobSubmission sshJobSubmission = GFacUtils.getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
+                if (sshJobSubmission != null) {
+                    return sshJobSubmission.getResourceJobManager();
                 }
             }
         } catch (AppCatalogException e) {
@@ -1059,7 +1064,7 @@ public class GFacUtils {
             Source xslt = new StreamSource(new File(resource.getPath()));
             Transformer transformer;
             StringWriter results = new StringWriter();
-            File tempPBSFile = null;
+            File tempJobFile = null;
             // generate the pbs script using xslt
             transformer = factory.newTransformer(xslt);
             Source text = new StreamSource(new ByteArrayInputStream(jobDescriptor.toXML().getBytes()));
@@ -1071,9 +1076,9 @@ public class GFacUtils {
             // creating a temporary file using pbs script generated above
             int number = new SecureRandom().nextInt();
             number = (number < 0 ? -number : number);
-            tempPBSFile = new File(Integer.toString(number) + jobManagerConfiguration.getScriptExtension());
-            FileUtils.writeStringToFile(tempPBSFile, scriptContent);
-            return tempPBSFile;
+            tempJobFile = new File(Integer.toString(number) + jobManagerConfiguration.getScriptExtension());
+            FileUtils.writeStringToFile(tempJobFile, scriptContent);
+            return tempJobFile;
         } catch (IOException e) {
             throw new GFacException("Error occurred while creating the temp job script file", e);
         } catch (TransformerConfigurationException e) {
