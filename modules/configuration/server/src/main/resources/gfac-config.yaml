@@ -104,5 +104,4 @@ resources:
       - iu.xsede.edu # test resource mail address
 
   - jobManagerType: FORK
-      commandOutputParser: org.apache.airavata.gfac.impl.job.ForkOutputParser
-
+    commandOutputParser: org.apache.airavata.gfac.impl.job.ForkOutputParser

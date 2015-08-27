@@ -122,7 +122,10 @@ public class GFacYamlConfigruation {
 					identifier = resource.get(JOB_MANAGER_TYPE).toString();
 					resourceConfig.setJobManagerType(ResourceJobManagerType.valueOf(identifier));
 					resourceConfig.setCommandOutputParser(resource.get(COMMAND_OUTPUT_PARSER).toString());
-					resourceConfig.setEmailParser(resource.get(EMAIL_PARSER).toString());
+                    Object emailParser = resource.get(EMAIL_PARSER);
+                    if (emailParser != null){
+                        resourceConfig.setEmailParser(emailParser.toString());
+                    }
 					List<String> emailAddressList = (List<String>) resource.get(RESOURCE_EMAIL_ADDRESS);
 					resourceConfig.setResourceEmailAddresses(emailAddressList);
 					resources.add(resourceConfig);
