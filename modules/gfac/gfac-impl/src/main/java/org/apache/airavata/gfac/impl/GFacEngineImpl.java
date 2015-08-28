@@ -465,7 +465,7 @@ public class GFacEngineImpl implements GFacEngine {
 		});
 	}
 
-	public static ResourceJobManager getResourceJobManager(ProcessContext processCtx) throws AppCatalogException {
+	public static ResourceJobManager getResourceJobManager(ProcessContext processCtx) throws AppCatalogException, GFacException {
 		List<JobSubmissionInterface> jobSubmissionInterfaces = Factory.getDefaultAppCatalog().getComputeResource()
 				.getComputeResource(processCtx.getComputeResourceId()).getJobSubmissionInterfaces();
 
@@ -489,8 +489,15 @@ public class GFacEngineImpl implements GFacEngine {
 			LOCALSubmission localSubmission = Factory.getDefaultAppCatalog().getComputeResource().getLocalJobSubmission
 					(jsInterface.getJobSubmissionInterfaceId());
 			resourceJobManager = localSubmission.getResourceJobManager();
+		} else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH_FORK) {
+			SSHJobSubmission sshJobSubmission = Factory.getDefaultAppCatalog().getComputeResource().getSSHJobSubmission
+					(jsInterface.getJobSubmissionInterfaceId());
+			processCtx.setMonitorMode(sshJobSubmission.getMonitorMode()); // fixme - Move this to populate process
+			resourceJobManager = sshJobSubmission.getResourceJobManager();
 		} else {
 			// TODO : throw an not supported jobsubmission protocol exception. we only support SSH and LOCAL
+			throw new GFacException("Unsupported JobSubmissionProtocol - " + jsInterface.getJobSubmissionProtocol()
+					.name());
 		}
 
 		if (resourceJobManager == null) {

@@ -40,7 +40,7 @@ public class ForkOutputParser implements OutputParser {
 
     @Override
     public String parseJobSubmission(String rawOutput) throws SSHApiException {
-        return null;
+	    return AiravataUtils.getId("JOB_ID_");
     }
 
     @Override
