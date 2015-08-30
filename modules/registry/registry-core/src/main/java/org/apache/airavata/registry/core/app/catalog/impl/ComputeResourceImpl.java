@@ -21,8 +21,6 @@
 
 package org.apache.airavata.registry.core.app.catalog.impl;
 
-import java.util.*;
-
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
@@ -31,6 +29,11 @@ import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ComputeResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ComputeResourceImpl implements ComputeResource {
     private final static Logger logger = LoggerFactory.getLogger(ComputeResourceImpl.class);
@@ -464,6 +467,27 @@ public class ComputeResourceImpl implements ComputeResource {
                 for (AppCatalogResource cm : allComputeResources){
                     ComputeResourceResource cmr = (ComputeResourceResource)cm;
                     computeResourceMap.put(cmr.getResourceId(), cmr.getHostName());
+                }
+            }
+            return computeResourceMap;
+        }catch (Exception e){
+            logger.error("Error while retrieving compute resource list...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public Map<String, String> getAvailableComputeResourceIdList() throws AppCatalogException {
+        try {
+            Map<String, String> computeResourceMap = new HashMap<String, String>();
+            ComputeResourceResource resource = new ComputeResourceResource();
+            List<AppCatalogResource> allComputeResources = resource.getAll();
+            if (allComputeResources != null && !allComputeResources.isEmpty()){
+                for (AppCatalogResource cm : allComputeResources){
+                    ComputeResourceResource cmr = (ComputeResourceResource)cm;
+                    if(cmr.isEnabled()) {
+                        computeResourceMap.put(cmr.getResourceId(), cmr.getHostName());
+                    }
                 }
             }
             return computeResourceMap;

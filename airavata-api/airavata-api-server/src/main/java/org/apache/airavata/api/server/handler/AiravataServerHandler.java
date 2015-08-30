@@ -2295,7 +2295,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             ApplicationDeployment applicationDeployment = appCatalog.getApplicationDeployment();
-            Map<String, String> allComputeResources = appCatalog.getComputeResource().getAllComputeResourceIdList();
+            Map<String, String> allComputeResources = appCatalog.getComputeResource().getAvailableComputeResourceIdList();
             Map<String, String> availableComputeResources = new HashMap<String, String>();
             ApplicationInterfaceDescription applicationInterface =
                     appCatalog.getApplicationInterface().getApplicationInterface(appInterfaceId);
