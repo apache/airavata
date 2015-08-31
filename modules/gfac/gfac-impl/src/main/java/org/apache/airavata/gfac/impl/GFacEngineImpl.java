@@ -100,8 +100,7 @@ public class GFacEngineImpl implements GFacEngine {
 			processContext.setApplicationInterfaceDescription(appCatalog.getApplicationInterface()
 					.getApplicationInterface(processModel.getApplicationInterfaceId()));
 			processContext.setResourceJobManager(getResourceJobManager(processContext));
-			processContext.setRemoteCluster(Factory.getRemoteCluster(processContext.getJobSubmissionProtocol(),
-					processContext.getComputeResourceId(), processContext.getResourceJobManager()));
+			processContext.setRemoteCluster(Factory.getRemoteCluster(processContext));
 
 			String inputPath = ServerSettings.getLocalDataLocation();
 			if (inputPath != null) {

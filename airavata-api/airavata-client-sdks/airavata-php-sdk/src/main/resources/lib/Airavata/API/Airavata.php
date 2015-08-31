@@ -1565,6 +1565,34 @@ interface AiravataIf {
    */
   public function addSSHJobSubmissionDetails(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\SSHJobSubmission $sshJobSubmission);
   /**
+   * Add a SSH_FORK Job Submission details to a compute resource
+   *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+   * 
+   * @param computeResourceId
+   *   The identifier of the compute resource to which JobSubmission protocol to be added
+   * 
+   * @param priorityOrder
+   *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   * 
+   * @param sshJobSubmission
+   *   The SSHJobSubmission object to be added to the resource.
+   * 
+   * @return status
+   *   Returns the unique job submission id.
+   * 
+   * 
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @param string $computeResourceId
+   * @param int $priorityOrder
+   * @param \Airavata\Model\AppCatalog\ComputeResource\SSHJobSubmission $sshJobSubmission
+   * @return string
+   * @throws \Airavata\API\Error\InvalidRequestException
+   * @throws \Airavata\API\Error\AiravataClientException
+   * @throws \Airavata\API\Error\AiravataSystemException
+   * @throws \Airavata\API\Error\AuthorizationException
+   */
+  public function addSSHForkJobSubmissionDetails(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\SSHJobSubmission $sshJobSubmission);
+  /**
    * This method returns SSHJobSubmission object
    * @param jobSubmissionInterfaceId
    *   The identifier of the JobSubmission Interface to be retrieved.
@@ -7002,6 +7030,72 @@ class AiravataClient implements \Airavata\API\AiravataIf {
       throw $result->ae;
     }
     throw new \Exception("addSSHJobSubmissionDetails failed: unknown result");
+  }
+
+  public function addSSHForkJobSubmissionDetails(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\SSHJobSubmission $sshJobSubmission)
+  {
+    $this->send_addSSHForkJobSubmissionDetails($authzToken, $computeResourceId, $priorityOrder, $sshJobSubmission);
+    return $this->recv_addSSHForkJobSubmissionDetails();
+  }
+
+  public function send_addSSHForkJobSubmissionDetails(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\SSHJobSubmission $sshJobSubmission)
+  {
+    $args = new \Airavata\API\Airavata_addSSHForkJobSubmissionDetails_args();
+    $args->authzToken = $authzToken;
+    $args->computeResourceId = $computeResourceId;
+    $args->priorityOrder = $priorityOrder;
+    $args->sshJobSubmission = $sshJobSubmission;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'addSSHForkJobSubmissionDetails', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('addSSHForkJobSubmissionDetails', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_addSSHForkJobSubmissionDetails()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_addSSHForkJobSubmissionDetails_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_addSSHForkJobSubmissionDetails_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    if ($result->ae !== null) {
+      throw $result->ae;
+    }
+    throw new \Exception("addSSHForkJobSubmissionDetails failed: unknown result");
   }
 
   public function getSSHJobSubmission(\Airavata\Model\Security\AuthzToken $authzToken, $jobSubmissionId)
@@ -31655,6 +31749,335 @@ class Airavata_addSSHJobSubmissionDetails_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_addSSHJobSubmissionDetails_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ae !== null) {
+      $xfer += $output->writeFieldBegin('ae', TType::STRUCT, 4);
+      $xfer += $this->ae->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_addSSHForkJobSubmissionDetails_args {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+  /**
+   * @var string
+   */
+  public $computeResourceId = null;
+  /**
+   * @var int
+   */
+  public $priorityOrder = null;
+  /**
+   * @var \Airavata\Model\AppCatalog\ComputeResource\SSHJobSubmission
+   */
+  public $sshJobSubmission = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        2 => array(
+          'var' => 'computeResourceId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'priorityOrder',
+          'type' => TType::I32,
+          ),
+        4 => array(
+          'var' => 'sshJobSubmission',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\AppCatalog\ComputeResource\SSHJobSubmission',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
+      if (isset($vals['computeResourceId'])) {
+        $this->computeResourceId = $vals['computeResourceId'];
+      }
+      if (isset($vals['priorityOrder'])) {
+        $this->priorityOrder = $vals['priorityOrder'];
+      }
+      if (isset($vals['sshJobSubmission'])) {
+        $this->sshJobSubmission = $vals['sshJobSubmission'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_addSSHForkJobSubmissionDetails_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->computeResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->priorityOrder);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRUCT) {
+            $this->sshJobSubmission = new \Airavata\Model\AppCatalog\ComputeResource\SSHJobSubmission();
+            $xfer += $this->sshJobSubmission->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_addSSHForkJobSubmissionDetails_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->computeResourceId !== null) {
+      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 2);
+      $xfer += $output->writeString($this->computeResourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->priorityOrder !== null) {
+      $xfer += $output->writeFieldBegin('priorityOrder', TType::I32, 3);
+      $xfer += $output->writeI32($this->priorityOrder);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->sshJobSubmission !== null) {
+      if (!is_object($this->sshJobSubmission)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('sshJobSubmission', TType::STRUCT, 4);
+      $xfer += $this->sshJobSubmission->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_addSSHForkJobSubmissionDetails_result {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\API\Error\InvalidRequestException
+   */
+  public $ire = null;
+  /**
+   * @var \Airavata\API\Error\AiravataClientException
+   */
+  public $ace = null;
+  /**
+   * @var \Airavata\API\Error\AiravataSystemException
+   */
+  public $ase = null;
+  /**
+   * @var \Airavata\API\Error\AuthorizationException
+   */
+  public $ae = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        4 => array(
+          'var' => 'ae',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AuthorizationException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+      if (isset($vals['ae'])) {
+        $this->ae = $vals['ae'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_addSSHForkJobSubmissionDetails_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRUCT) {
+            $this->ae = new \Airavata\API\Error\AuthorizationException();
+            $xfer += $this->ae->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_addSSHForkJobSubmissionDetails_result');
     if ($this->success !== null) {
       $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
       $xfer += $output->writeString($this->success);
