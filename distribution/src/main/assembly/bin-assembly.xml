@@ -110,6 +110,15 @@
 			</includes>
 		</fileSet>
 
+        <!-- Create logs directory -->
+        <fileSet>
+            <directory>./</directory>
+            <outputDirectory>logs</outputDirectory>
+            <excludes>
+                <exclude>*/**</exclude>
+            </excludes>
+        </fileSet>
+
 		<!-- ********************** Copy samples ********************** -->
 		<fileSet>
 			<directory>${project.build.directory}/samples/applications
