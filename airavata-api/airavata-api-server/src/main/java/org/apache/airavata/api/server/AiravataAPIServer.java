@@ -74,11 +74,23 @@ public class AiravataAPIServer implements IServer{
 
 				TServerTransport serverTransport;
 
-				if (serverHost == null) {
-					serverTransport = new TServerSocket(serverPort);
+				if(ServerSettings.isAPIServerTLSEnabled()) {
+					logger.info("Starting API Server with TLS Security..");
+
+					String keystore = ServerSettings.getApiServerKeystore();
+					String keystorePWD = ServerSettings.getApiServerKeystorePasswd();
+					TSSLTransportFactory.TSSLTransportParameters tlsParams =
+							new TSSLTransportFactory.TSSLTransportParameters();
+					tlsParams.setKeyStore(keystore, keystorePWD);
+					serverTransport = TSSLTransportFactory.getServerSocket(serverPort, 10000,
+							InetAddress.getByName(serverHost), tlsParams);
 				} else {
-					InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
-					serverTransport = new TServerSocket(inetSocketAddress);
+					if(serverHost == null){
+						serverTransport = new TServerSocket(serverPort);
+					}else{
+						InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
+						serverTransport = new TServerSocket(inetSocketAddress);
+					}
 				}
 
 				TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
