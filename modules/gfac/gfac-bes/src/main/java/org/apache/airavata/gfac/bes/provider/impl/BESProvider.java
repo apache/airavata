@@ -127,10 +127,6 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
             eprt.addNewAddress().setStringValue(factoryUrl);
             String userDN = getUserName(jobExecutionContext);
 
-            // TODO: to be removed
-            if (userDN == null || userDN.equalsIgnoreCase("admin")) {
-                userDN = "CN=zdv575, O=Ultrascan Gateway, C=DE";
-            }
             CreateActivityDocument cad = CreateActivityDocument.Factory.newInstance();
             
             // create storage

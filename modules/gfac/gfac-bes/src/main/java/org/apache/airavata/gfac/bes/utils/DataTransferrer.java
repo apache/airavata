@@ -149,8 +149,17 @@ public class DataTransferrer {
 	           		resultantOutputsLst.add(output);
 	           	}
 				else if(output.getType().equals(DataType.STRING)) {
-					String value = output.getValue();
-					String outputPath = gatewayDownloadLocation + File.separator + value;
+					String value = null;
+					if(!output.getLocation().isEmpty()){
+						value = output.getLocation() + File.separator + output.getValue(); 
+					}else{
+					value = output.getValue();
+					}
+					String outputPath = gatewayDownloadLocation + File.separator + output.getValue();
+					File f = new File(gatewayDownloadLocation);
+					if(!f.exists())
+						f.mkdirs();
+					
 					FileDownloader fileDownloader = new FileDownloader(value,outputPath, Mode.overwrite);
 					try {
 						fileDownloader.perform(storageClient);

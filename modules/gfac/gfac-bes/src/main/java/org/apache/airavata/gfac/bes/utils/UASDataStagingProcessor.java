@@ -22,9 +22,14 @@
 package org.apache.airavata.gfac.bes.utils;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.context.MessageContext;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
@@ -135,10 +140,27 @@ public class UASDataStagingProcessor {
 	
 	private static void buildDataStagingFromInputContext(JobExecutionContext context, JobDefinitionType value, String smsUrl) 
 			throws Exception {
-		List<InputDataObjectType> applicationInputs = context.getTaskData().getApplicationInputs();
+//		List<InputDataObjectType> applicationInputs = context.getTaskData().getApplicationInputs();
+	      MessageContext input1 = context.getInMessageContext();
+
+		  // sort the inputs first and then build the command ListR
+        Comparator<InputDataObjectType> inputOrderComparator = new Comparator<InputDataObjectType>() {
+            @Override
+            public int compare(InputDataObjectType inputDataObjectType, InputDataObjectType t1) {
+                return inputDataObjectType.getInputOrder() - t1.getInputOrder();
+            }
+        };
+        Set<InputDataObjectType> sortedInputSet = new TreeSet<InputDataObjectType>(inputOrderComparator);
+        for (Object object : input1.getParameters().values()) {
+            if (object instanceof InputDataObjectType) {
+                InputDataObjectType inputDOT = (InputDataObjectType) object;
+                sortedInputSet.add(inputDOT);
+            }
+        }
+      
 		
-		if (applicationInputs != null && !applicationInputs.isEmpty()){
-			for (InputDataObjectType input : applicationInputs){
+		if (sortedInputSet != null && !sortedInputSet.isEmpty()){
+			for (InputDataObjectType input : sortedInputSet){
 				if("".equals(input.getValue()) || input.getValue() == null) {
 					continue;
 				}
