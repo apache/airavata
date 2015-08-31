@@ -40,6 +40,7 @@ import org.apache.airavata.gfac.core.config.GFacYamlConfigruation;
 import org.apache.airavata.gfac.core.config.JobSubmitterTaskConfig;
 import org.apache.airavata.gfac.core.config.ResourceConfig;
 import org.apache.airavata.gfac.core.context.GFacContext;
+import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.monitor.JobMonitor;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
@@ -194,25 +195,22 @@ public abstract class Factory {
 	/**
 	 * Factory class manage reomete cluster map, this will solve too many connections/ sessions issues with cluster
 	 * communications.
-	 * @param jobSubmissionProtocol
-	 * @param computeResourceId
-	 * @param resourceJobManager
+	 * @param processContext
 	 * @return
 	 * @throws GFacException
 	 * @throws AppCatalogException
 	 * @throws AiravataException
 	 */
-	public static RemoteCluster getRemoteCluster(JobSubmissionProtocol jobSubmissionProtocol, String computeResourceId,
-	                                             ResourceJobManager resourceJobManager) throws GFacException,
+	public static RemoteCluster getRemoteCluster(ProcessContext processContext) throws GFacException,
 			AppCatalogException, AiravataException {
 
-		String key = jobSubmissionProtocol.toString() + ":" + computeResourceId;
+        String computeResourceId = processContext.getComputeResourceId();
+        String key = processContext.getJobSubmissionProtocol().toString() + ":" + computeResourceId;
 		RemoteCluster remoteCluster = remoteClusterMap.get(key);
 		if (remoteCluster == null) {
 			String hostName = Factory.getDefaultAppCatalog().getComputeResource().getComputeResource(computeResourceId).getHostName();
-			// fixme - read login user name from computeResourcePreference
-			ServerInfo serverInfo = new ServerInfo(ServerSettings.getSetting("ssh.username"), hostName);
-			JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(resourceJobManager);
+			ServerInfo serverInfo = new ServerInfo(processContext.getComputeResourcePreference().getLoginUserName(), hostName);
+			JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
 			AuthenticationInfo authenticationInfo = getSSHKeyAuthentication();
 			remoteCluster = new HPCRemoteCluster(serverInfo, jobManagerConfiguration, authenticationInfo);
 			remoteClusterMap.put(key, remoteCluster);
