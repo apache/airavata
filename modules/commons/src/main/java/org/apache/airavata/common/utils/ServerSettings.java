@@ -37,8 +37,12 @@ public class ServerSettings extends ApplicationSettings {
     private static final String DEFAULT_USER_GATEWAY = "default.registry.gateway";
     private static final String LOCAL_DATA_DIR = "local.data.dir";
 
-    private static final String SERVER_CONTEXT_ROOT = "server.context-root";
     public static final String IP = "ip";
+
+    private static final String API_SERVER_TLS_ENABLED = "apiserver.tls.enabled";
+    private static final String API_SERVER_KEYSTORE = "apiserver.keystore";
+    private static final String API_SERVER_KEYSTORE_PASSWD = "apiserver.keystore.password";
+
     // Orchestrator Constants
     public static final String ORCHESTRATOR_SERVER_HOST = "orchestrator.server.host";
     public static final String ORCHESTRATOR_SERVER_PORT = "orchestrator.server.port";
@@ -68,7 +72,6 @@ public class ServerSettings extends ApplicationSettings {
     private static final String REGISTRY_DB_USER = "registry.jdbc.user";
     private static final String REGISTRY_DB_PASSWORD = "registry.jdbc.password";
     private static final String REGISTRY_DB_DRIVER = "registry.jdbc.driver";
-    private static final String ENABLE_HTTPS = "enable.https";
     private static final String HOST_SCHEDULER = "host.scheduler";
     private static final String MY_PROXY_SERVER = "myproxy.server";
     private static final String MY_PROXY_USER = "myproxy.user";
@@ -122,10 +125,6 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(DEFAULT_USER_GATEWAY);
     }
 
-    public static String getServerContextRoot() {
-        return getSetting(SERVER_CONTEXT_ROOT, "axis2");
-    }
-
     public static String getCredentialStoreDBUser() throws ApplicationSettingsException {
         try {
             return getSetting(CREDENTIAL_STORE_DB_USER);
@@ -159,14 +158,21 @@ public class ServerSettings extends ApplicationSettings {
 
     }
 
-    public static boolean isEnableHttps() {
+    public static boolean isAPIServerTLSEnabled() {
         try {
-            return Boolean.parseBoolean(getSetting(ENABLE_HTTPS));
+            return Boolean.parseBoolean(getSetting(API_SERVER_TLS_ENABLED));
         } catch (ApplicationSettingsException e) {
             return false;
         }
     }
 
+    public static String getApiServerKeystorePasswd() throws ApplicationSettingsException{
+        return getSetting(API_SERVER_KEYSTORE_PASSWD);
+    }
+
+    public static String getApiServerKeystore() throws ApplicationSettingsException{
+        return getSetting(API_SERVER_KEYSTORE);
+    }
 
     public static String getHostScheduler() throws ApplicationSettingsException {
         return getSetting(HOST_SCHEDULER);
