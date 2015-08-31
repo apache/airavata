@@ -1321,6 +1321,32 @@ class Iface:
     """
     pass
 
+  def addSSHForkJobSubmissionDetails(self, authzToken, computeResourceId, priorityOrder, sshJobSubmission):
+    """
+    Add a SSH_FORK Job Submission details to a compute resource
+     App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+
+    @param computeResourceId
+      The identifier of the compute resource to which JobSubmission protocol to be added
+
+    @param priorityOrder
+      Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+
+    @param sshJobSubmission
+      The SSHJobSubmission object to be added to the resource.
+
+    @return status
+      Returns the unique job submission id.
+
+
+    Parameters:
+     - authzToken
+     - computeResourceId
+     - priorityOrder
+     - sshJobSubmission
+    """
+    pass
+
   def getSSHJobSubmission(self, authzToken, jobSubmissionId):
     """
     This method returns SSHJobSubmission object
@@ -5734,6 +5760,67 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "addSSHJobSubmissionDetails failed: unknown result");
 
+  def addSSHForkJobSubmissionDetails(self, authzToken, computeResourceId, priorityOrder, sshJobSubmission):
+    """
+    Add a SSH_FORK Job Submission details to a compute resource
+     App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+
+    @param computeResourceId
+      The identifier of the compute resource to which JobSubmission protocol to be added
+
+    @param priorityOrder
+      Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+
+    @param sshJobSubmission
+      The SSHJobSubmission object to be added to the resource.
+
+    @return status
+      Returns the unique job submission id.
+
+
+    Parameters:
+     - authzToken
+     - computeResourceId
+     - priorityOrder
+     - sshJobSubmission
+    """
+    self.send_addSSHForkJobSubmissionDetails(authzToken, computeResourceId, priorityOrder, sshJobSubmission)
+    return self.recv_addSSHForkJobSubmissionDetails()
+
+  def send_addSSHForkJobSubmissionDetails(self, authzToken, computeResourceId, priorityOrder, sshJobSubmission):
+    self._oprot.writeMessageBegin('addSSHForkJobSubmissionDetails', TMessageType.CALL, self._seqid)
+    args = addSSHForkJobSubmissionDetails_args()
+    args.authzToken = authzToken
+    args.computeResourceId = computeResourceId
+    args.priorityOrder = priorityOrder
+    args.sshJobSubmission = sshJobSubmission
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_addSSHForkJobSubmissionDetails(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = addSSHForkJobSubmissionDetails_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "addSSHForkJobSubmissionDetails failed: unknown result");
+
   def getSSHJobSubmission(self, authzToken, jobSubmissionId):
     """
     This method returns SSHJobSubmission object
@@ -8184,6 +8271,7 @@ class Processor(Iface, TProcessor):
     self._processMap["updateLocalSubmissionDetails"] = Processor.process_updateLocalSubmissionDetails
     self._processMap["getLocalJobSubmission"] = Processor.process_getLocalJobSubmission
     self._processMap["addSSHJobSubmissionDetails"] = Processor.process_addSSHJobSubmissionDetails
+    self._processMap["addSSHForkJobSubmissionDetails"] = Processor.process_addSSHForkJobSubmissionDetails
     self._processMap["getSSHJobSubmission"] = Processor.process_getSSHJobSubmission
     self._processMap["addUNICOREJobSubmissionDetails"] = Processor.process_addUNICOREJobSubmissionDetails
     self._processMap["getUnicoreJobSubmission"] = Processor.process_getUnicoreJobSubmission
@@ -9636,6 +9724,26 @@ class Processor(Iface, TProcessor):
     except apache.airavata.api.error.ttypes.AuthorizationException, ae:
       result.ae = ae
     oprot.writeMessageBegin("addSSHJobSubmissionDetails", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_addSSHForkJobSubmissionDetails(self, seqid, iprot, oprot):
+    args = addSSHForkJobSubmissionDetails_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = addSSHForkJobSubmissionDetails_result()
+    try:
+      result.success = self._handler.addSSHForkJobSubmissionDetails(args.authzToken, args.computeResourceId, args.priorityOrder, args.sshJobSubmission)
+    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException, ae:
+      result.ae = ae
+    oprot.writeMessageBegin("addSSHForkJobSubmissionDetails", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -25791,6 +25899,240 @@ class addSSHJobSubmissionDetails_result:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('addSSHJobSubmissionDetails_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class addSSHForkJobSubmissionDetails_args:
+  """
+  Attributes:
+   - authzToken
+   - computeResourceId
+   - priorityOrder
+   - sshJobSubmission
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'computeResourceId', None, None, ), # 2
+    (3, TType.I32, 'priorityOrder', None, None, ), # 3
+    (4, TType.STRUCT, 'sshJobSubmission', (apache.airavata.model.appcatalog.computeresource.ttypes.SSHJobSubmission, apache.airavata.model.appcatalog.computeresource.ttypes.SSHJobSubmission.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, authzToken=None, computeResourceId=None, priorityOrder=None, sshJobSubmission=None,):
+    self.authzToken = authzToken
+    self.computeResourceId = computeResourceId
+    self.priorityOrder = priorityOrder
+    self.sshJobSubmission = sshJobSubmission
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.computeResourceId = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I32:
+          self.priorityOrder = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.sshJobSubmission = apache.airavata.model.appcatalog.computeresource.ttypes.SSHJobSubmission()
+          self.sshJobSubmission.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('addSSHForkJobSubmissionDetails_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.computeResourceId is not None:
+      oprot.writeFieldBegin('computeResourceId', TType.STRING, 2)
+      oprot.writeString(self.computeResourceId)
+      oprot.writeFieldEnd()
+    if self.priorityOrder is not None:
+      oprot.writeFieldBegin('priorityOrder', TType.I32, 3)
+      oprot.writeI32(self.priorityOrder)
+      oprot.writeFieldEnd()
+    if self.sshJobSubmission is not None:
+      oprot.writeFieldBegin('sshJobSubmission', TType.STRUCT, 4)
+      self.sshJobSubmission.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.computeResourceId is None:
+      raise TProtocol.TProtocolException(message='Required field computeResourceId is unset!')
+    if self.priorityOrder is None:
+      raise TProtocol.TProtocolException(message='Required field priorityOrder is unset!')
+    if self.sshJobSubmission is None:
+      raise TProtocol.TProtocolException(message='Required field sshJobSubmission is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.computeResourceId)
+    value = (value * 31) ^ hash(self.priorityOrder)
+    value = (value * 31) ^ hash(self.sshJobSubmission)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class addSSHForkJobSubmissionDetails_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.STRING, 'success', None, None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('addSSHForkJobSubmissionDetails_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.STRING, 0)
       oprot.writeString(self.success)
