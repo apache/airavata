@@ -234,24 +234,21 @@ public class GFacUtils {
         return buf.toString();
     }
 
-	public static void saveJobStatus(TaskContext taskContext,
-                                     JobModel jobModel, JobState state) throws GFacException {
+	public static void saveJobStatus(ProcessContext processContext, JobModel jobModel) throws GFacException {
 		try {
             // first we save job jobModel to the registry for sa and then save the job status.
-            ProcessContext processContext = taskContext.getParentProcessContext();
+			JobStatus jobStatus = jobModel.getJobStatus();
             ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-            JobStatus status = new JobStatus();
-            status.setJobState(state);
-            jobModel.setJobStatus(status);
-            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            CompositeIdentifier ids = new CompositeIdentifier(taskContext.getTaskId(), jobModel.getJobId());
-			experimentCatalog.add(ExpCatChildDataType.JOB_STATUS, status, ids);
-            JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), taskContext.getTaskModel().getTaskId(),
+            jobModel.setJobStatus(jobStatus);
+            jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            CompositeIdentifier ids = new CompositeIdentifier(jobModel.getProcessId(), jobModel.getJobId());
+			experimentCatalog.add(ExpCatChildDataType.JOB_STATUS, jobStatus, ids);
+            JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), jobModel.getTaskId(),
                     processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
                     processContext.getGatewayId());
-            JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent(state, identifier);
+            JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent(jobStatus.getJobState(), identifier);
 			MessageContext msgCtx = new MessageContext(jobStatusChangeEvent, MessageType.JOB, AiravataUtils.getId
-					(MessageType.JOB.name()), taskContext.getParentProcessContext().getGatewayId());
+					(MessageType.JOB.name()), processContext.getGatewayId());
 			msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
 			processContext.getStatusPublisher().publish(msgCtx);
         } catch (Exception e) {
@@ -973,7 +970,7 @@ public class GFacUtils {
         try {
             JobSubmissionProtocol submissionProtocol = getPreferredJobSubmissionProtocol(processContext);
             JobSubmissionInterface jobSubmissionInterface = getPreferredJobSubmissionInterface(processContext);
-            if (submissionProtocol == JobSubmissionProtocol.SSH) {
+            if (submissionProtocol == JobSubmissionProtocol.SSH ) {
                 SSHJobSubmission sshJobSubmission = GFacUtils.getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
                 if (sshJobSubmission != null) {
                     return sshJobSubmission.getResourceJobManager();
@@ -982,6 +979,11 @@ public class GFacUtils {
                 LOCALSubmission localJobSubmission = GFacUtils.getLocalJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
                 if (localJobSubmission != null) {
                     return localJobSubmission.getResourceJobManager();
+                }
+            } else if (submissionProtocol == JobSubmissionProtocol.SSH_FORK){
+                SSHJobSubmission sshJobSubmission = GFacUtils.getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
+                if (sshJobSubmission != null) {
+                    return sshJobSubmission.getResourceJobManager();
                 }
             }
         } catch (AppCatalogException e) {
@@ -1028,7 +1030,8 @@ public class GFacUtils {
         try {
             GwyResourceProfile gatewayProfile = context.getAppCatalog().getGatewayProfile();
             String resourceHostId = context.getComputeResourceDescription().getComputeResourceId();
-            ComputeResourcePreference preference = gatewayProfile.getComputeResourcePreference(context.getGatewayId(), resourceHostId);
+            ComputeResourcePreference preference = gatewayProfile.getComputeResourcePreference(context.getGatewayId()
+		            , resourceHostId);
             return preference.getPreferredJobSubmissionProtocol();
         } catch (AppCatalogException e) {
             log.error("Error occurred while initializing app catalog", e);
@@ -1061,7 +1064,7 @@ public class GFacUtils {
             Source xslt = new StreamSource(new File(resource.getPath()));
             Transformer transformer;
             StringWriter results = new StringWriter();
-            File tempPBSFile = null;
+            File tempJobFile = null;
             // generate the pbs script using xslt
             transformer = factory.newTransformer(xslt);
             Source text = new StreamSource(new ByteArrayInputStream(jobDescriptor.toXML().getBytes()));
@@ -1073,9 +1076,9 @@ public class GFacUtils {
             // creating a temporary file using pbs script generated above
             int number = new SecureRandom().nextInt();
             number = (number < 0 ? -number : number);
-            tempPBSFile = new File(Integer.toString(number) + jobManagerConfiguration.getScriptExtension());
-            FileUtils.writeStringToFile(tempPBSFile, scriptContent);
-            return tempPBSFile;
+            tempJobFile = new File(Integer.toString(number) + jobManagerConfiguration.getScriptExtension());
+            FileUtils.writeStringToFile(tempJobFile, scriptContent);
+            return tempJobFile;
         } catch (IOException e) {
             throw new GFacException("Error occurred while creating the temp job script file", e);
         } catch (TransformerConfigurationException e) {
@@ -1089,35 +1092,22 @@ public class GFacUtils {
 		return GFacConstants.ZOOKEEPER_EXPERIMENT_NODE + File.separator + experimentId;
 	}
 
-	public static void createProcessZKNode(CuratorFramework curatorClient, String gfacServerName, String
-			processId, long deliveryTag, String token) throws Exception {
-		// TODO - To handle multiple processes per experiment, need to create a /experiment/{expId}/{processId} node
-		// create /experiments/{processId} node and set data - serverName, add redelivery listener
-		String zkProcessNodePath = ZKPaths.makePath(GFacConstants.ZOOKEEPER_EXPERIMENT_NODE, processId);
-		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), zkProcessNodePath);
-		curatorClient.setData().withVersion(-1).forPath(zkProcessNodePath, gfacServerName.getBytes());
-		curatorClient.getData().usingWatcher(new RedeliveryRequestWatcher()).forPath(zkProcessNodePath);
-
-		// create /experiments/{processId}/deliveryTag node and set data - deliveryTag
-		String deliveryTagPath = ZKPaths.makePath(zkProcessNodePath, GFacConstants.ZOOKEEPER_DELIVERYTAG_NODE);
-		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), deliveryTagPath);
-		curatorClient.setData().withVersion(-1).forPath(deliveryTagPath, GFacUtils.longToBytes(deliveryTag));
-
-		// create /experiments/{processId}/token node and set data - token
-		String tokenNodePath = ZKPaths.makePath(processId, GFacConstants.ZOOKEEPER_TOKEN_NODE);
-		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), tokenNodePath);
-		curatorClient.setData().withVersion(-1).forPath(tokenNodePath, token.getBytes());
-
-		// create /experiments/{processId}/cancelListener node and set watcher for data changes
-		String cancelListenerNode = ZKPaths.makePath(zkProcessNodePath, GFacConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
-		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), cancelListenerNode);
-		curatorClient.getData().usingWatcher(new CancelRequestWatcher()).forPath(cancelListenerNode);
-	}
-
 	public static long getProcessDeliveryTag(CuratorFramework curatorClient, String processId) throws Exception {
 		String deliveryTagPath = GFacConstants.ZOOKEEPER_EXPERIMENT_NODE + "/" + processId + GFacConstants
 				.ZOOKEEPER_DELIVERYTAG_NODE;
 		byte[] bytes = curatorClient.getData().forPath(deliveryTagPath);
 		return GFacUtils.bytesToLong(bytes);
 	}
+
+	public static void saveJobModel(ProcessContext processContext, JobModel jobModel) throws GFacException {
+		try {
+			ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+			experimentCatalog.add(ExpCatChildDataType.JOB, jobModel, processContext.getProcessId());
+		} catch (RegistryException e) {
+			String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
+					+ " jobId: " + jobModel.getJobId() + " : - Error while saving Job Model";
+			throw new GFacException(msg, e);
+		}
+	}
+
 }

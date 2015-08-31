@@ -73,9 +73,10 @@ public class JobResourceTest extends AbstractResourceTest{
         taskResource.setSubTaskModel(new DataStagingTaskModel("source","destination").toString().getBytes());
         taskResource.save();
 
-        jobResource = (JobResource)taskResource.create(ResourceType.JOB);
+        jobResource = (JobResource)processResource.create(ResourceType.JOB);
         jobResource.setJobId(jobId);
-        taskResource.setTaskId(taskId);
+        jobResource.setProcessId(processId);
+        jobResource.setTaskId(taskId);
         jobResource.setJobDescription("Job Description");
         jobResource.setComputeResourceConsumed("computer-resource-host");
         jobResource.setJobName("JobName");
@@ -91,17 +92,17 @@ public class JobResourceTest extends AbstractResourceTest{
     
     @Test
     public void testSave() throws Exception {
-        assertTrue("job save successfully", taskResource.isExists(ResourceType.JOB, jobId));
+        assertTrue("job save successfully", processResource.isExists(ResourceType.JOB, jobId));
     }
     
     @Test
     public void testGet() throws Exception {
-        assertNotNull("job data retrieved successfully", taskResource.get(ResourceType.JOB, jobId));
+        assertNotNull("job data retrieved successfully", processResource.get(ResourceType.JOB, jobId));
     }
 
     @Test
     public void testRemove() throws Exception {
-    	taskResource.remove(ResourceType.JOB, jobId);
-    	assertFalse("job data removed successfully", taskResource.isExists(ResourceType.JOB, jobId));
+    	processResource.remove(ResourceType.JOB, jobId);
+    	assertFalse("job data removed successfully", processResource.isExists(ResourceType.JOB, jobId));
     }
 }

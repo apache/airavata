@@ -67,7 +67,7 @@ class AiravataIf {
    * @param userName
    */
   virtual void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName) = 0;
-  virtual void getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken) = 0;
+  virtual void getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) = 0;
   virtual void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName) = 0;
 
   /**
@@ -1111,6 +1111,30 @@ class AiravataIf {
   virtual void addSSHJobSubmissionDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) = 0;
 
   /**
+   * Add a SSH_FORK Job Submission details to a compute resource
+   *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+   * 
+   * @param computeResourceId
+   *   The identifier of the compute resource to which JobSubmission protocol to be added
+   * 
+   * @param priorityOrder
+   *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   * 
+   * @param sshJobSubmission
+   *   The SSHJobSubmission object to be added to the resource.
+   * 
+   * @return status
+   *   Returns the unique job submission id.
+   * 
+   * 
+   * @param authzToken
+   * @param computeResourceId
+   * @param priorityOrder
+   * @param sshJobSubmission
+   */
+  virtual void addSSHForkJobSubmissionDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) = 0;
+
+  /**
    * This method returns SSHJobSubmission object
    * @param jobSubmissionInterfaceId
    *   The identifier of the JobSubmission Interface to be retrieved.
@@ -1743,7 +1767,7 @@ class AiravataNull : virtual public AiravataIf {
   void generateAndRegisterSSHKeys(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */) {
     return;
   }
-  void getSSHPubKey(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataCredStoreToken */) {
+  void getSSHPubKey(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataCredStoreToken */, const std::string& /* gatewayId */) {
     return;
   }
   void getAllUserSSHPubKeys(std::map<std::string, std::string> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* userName */) {
@@ -1935,6 +1959,9 @@ class AiravataNull : virtual public AiravataIf {
     return;
   }
   void addSSHJobSubmissionDetails(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& /* sshJobSubmission */) {
+    return;
+  }
+  void addSSHForkJobSubmissionDetails(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& /* sshJobSubmission */) {
     return;
   }
   void getSSHJobSubmission( ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* jobSubmissionId */) {
@@ -3309,27 +3336,32 @@ class Airavata_generateAndRegisterSSHKeys_presult {
 class Airavata_getSSHPubKey_args {
  public:
 
-  static const char* ascii_fingerprint; // = "5C8C4FD14D732E7EC3E0A61A8C24C7FF";
-  static const uint8_t binary_fingerprint[16]; // = {0x5C,0x8C,0x4F,0xD1,0x4D,0x73,0x2E,0x7E,0xC3,0xE0,0xA6,0x1A,0x8C,0x24,0xC7,0xFF};
+  static const char* ascii_fingerprint; // = "1E6476DBB101101BCE4A4B190EDEB468";
+  static const uint8_t binary_fingerprint[16]; // = {0x1E,0x64,0x76,0xDB,0xB1,0x01,0x10,0x1B,0xCE,0x4A,0x4B,0x19,0x0E,0xDE,0xB4,0x68};
 
   Airavata_getSSHPubKey_args(const Airavata_getSSHPubKey_args&);
   Airavata_getSSHPubKey_args& operator=(const Airavata_getSSHPubKey_args&);
-  Airavata_getSSHPubKey_args() : airavataCredStoreToken() {
+  Airavata_getSSHPubKey_args() : airavataCredStoreToken(), gatewayId() {
   }
 
   virtual ~Airavata_getSSHPubKey_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string airavataCredStoreToken;
+  std::string gatewayId;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
   void __set_airavataCredStoreToken(const std::string& val);
+
+  void __set_gatewayId(const std::string& val);
 
   bool operator == (const Airavata_getSSHPubKey_args & rhs) const
   {
     if (!(authzToken == rhs.authzToken))
       return false;
     if (!(airavataCredStoreToken == rhs.airavataCredStoreToken))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
       return false;
     return true;
   }
@@ -3349,13 +3381,14 @@ class Airavata_getSSHPubKey_args {
 class Airavata_getSSHPubKey_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "5C8C4FD14D732E7EC3E0A61A8C24C7FF";
-  static const uint8_t binary_fingerprint[16]; // = {0x5C,0x8C,0x4F,0xD1,0x4D,0x73,0x2E,0x7E,0xC3,0xE0,0xA6,0x1A,0x8C,0x24,0xC7,0xFF};
+  static const char* ascii_fingerprint; // = "1E6476DBB101101BCE4A4B190EDEB468";
+  static const uint8_t binary_fingerprint[16]; // = {0x1E,0x64,0x76,0xDB,0xB1,0x01,0x10,0x1B,0xCE,0x4A,0x4B,0x19,0x0E,0xDE,0xB4,0x68};
 
 
   virtual ~Airavata_getSSHPubKey_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* airavataCredStoreToken;
+  const std::string* gatewayId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -8081,8 +8114,8 @@ typedef struct _Airavata_getJobDetails_result__isset {
 class Airavata_getJobDetails_result {
  public:
 
-  static const char* ascii_fingerprint; // = "16139AD29C6F63C7091087027DC2FE6D";
-  static const uint8_t binary_fingerprint[16]; // = {0x16,0x13,0x9A,0xD2,0x9C,0x6F,0x63,0xC7,0x09,0x10,0x87,0x02,0x7D,0xC2,0xFE,0x6D};
+  static const char* ascii_fingerprint; // = "85D8CE6F76E396F1CD5A41458FB135E7";
+  static const uint8_t binary_fingerprint[16]; // = {0x85,0xD8,0xCE,0x6F,0x76,0xE3,0x96,0xF1,0xCD,0x5A,0x41,0x45,0x8F,0xB1,0x35,0xE7};
 
   Airavata_getJobDetails_result(const Airavata_getJobDetails_result&);
   Airavata_getJobDetails_result& operator=(const Airavata_getJobDetails_result&);
@@ -8152,8 +8185,8 @@ typedef struct _Airavata_getJobDetails_presult__isset {
 class Airavata_getJobDetails_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "16139AD29C6F63C7091087027DC2FE6D";
-  static const uint8_t binary_fingerprint[16]; // = {0x16,0x13,0x9A,0xD2,0x9C,0x6F,0x63,0xC7,0x09,0x10,0x87,0x02,0x7D,0xC2,0xFE,0x6D};
+  static const char* ascii_fingerprint; // = "85D8CE6F76E396F1CD5A41458FB135E7";
+  static const uint8_t binary_fingerprint[16]; // = {0x85,0xD8,0xCE,0x6F,0x76,0xE3,0x96,0xF1,0xCD,0x5A,0x41,0x45,0x8F,0xB1,0x35,0xE7};
 
 
   virtual ~Airavata_getJobDetails_presult() throw();
@@ -12981,6 +13014,170 @@ class Airavata_addSSHJobSubmissionDetails_presult {
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
   friend std::ostream& operator<<(std::ostream& out, const Airavata_addSSHJobSubmissionDetails_presult& obj);
+};
+
+
+class Airavata_addSSHForkJobSubmissionDetails_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "739C379FFFDF31048FBFCFE69A609387";
+  static const uint8_t binary_fingerprint[16]; // = {0x73,0x9C,0x37,0x9F,0xFF,0xDF,0x31,0x04,0x8F,0xBF,0xCF,0xE6,0x9A,0x60,0x93,0x87};
+
+  Airavata_addSSHForkJobSubmissionDetails_args(const Airavata_addSSHForkJobSubmissionDetails_args&);
+  Airavata_addSSHForkJobSubmissionDetails_args& operator=(const Airavata_addSSHForkJobSubmissionDetails_args&);
+  Airavata_addSSHForkJobSubmissionDetails_args() : computeResourceId(), priorityOrder(0) {
+  }
+
+  virtual ~Airavata_addSSHForkJobSubmissionDetails_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string computeResourceId;
+  int32_t priorityOrder;
+   ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission sshJobSubmission;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_computeResourceId(const std::string& val);
+
+  void __set_priorityOrder(const int32_t val);
+
+  void __set_sshJobSubmission(const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& val);
+
+  bool operator == (const Airavata_addSSHForkJobSubmissionDetails_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(computeResourceId == rhs.computeResourceId))
+      return false;
+    if (!(priorityOrder == rhs.priorityOrder))
+      return false;
+    if (!(sshJobSubmission == rhs.sshJobSubmission))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_addSSHForkJobSubmissionDetails_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_addSSHForkJobSubmissionDetails_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_addSSHForkJobSubmissionDetails_args& obj);
+};
+
+
+class Airavata_addSSHForkJobSubmissionDetails_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "739C379FFFDF31048FBFCFE69A609387";
+  static const uint8_t binary_fingerprint[16]; // = {0x73,0x9C,0x37,0x9F,0xFF,0xDF,0x31,0x04,0x8F,0xBF,0xCF,0xE6,0x9A,0x60,0x93,0x87};
+
+
+  virtual ~Airavata_addSSHForkJobSubmissionDetails_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* computeResourceId;
+  const int32_t* priorityOrder;
+  const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission* sshJobSubmission;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_addSSHForkJobSubmissionDetails_pargs& obj);
+};
+
+typedef struct _Airavata_addSSHForkJobSubmissionDetails_result__isset {
+  _Airavata_addSSHForkJobSubmissionDetails_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_addSSHForkJobSubmissionDetails_result__isset;
+
+class Airavata_addSSHForkJobSubmissionDetails_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "21BF57A9FE5AAA661540804D4FB9F023";
+  static const uint8_t binary_fingerprint[16]; // = {0x21,0xBF,0x57,0xA9,0xFE,0x5A,0xAA,0x66,0x15,0x40,0x80,0x4D,0x4F,0xB9,0xF0,0x23};
+
+  Airavata_addSSHForkJobSubmissionDetails_result(const Airavata_addSSHForkJobSubmissionDetails_result&);
+  Airavata_addSSHForkJobSubmissionDetails_result& operator=(const Airavata_addSSHForkJobSubmissionDetails_result&);
+  Airavata_addSSHForkJobSubmissionDetails_result() : success() {
+  }
+
+  virtual ~Airavata_addSSHForkJobSubmissionDetails_result() throw();
+  std::string success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_addSSHForkJobSubmissionDetails_result__isset __isset;
+
+  void __set_success(const std::string& val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_addSSHForkJobSubmissionDetails_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_addSSHForkJobSubmissionDetails_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_addSSHForkJobSubmissionDetails_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_addSSHForkJobSubmissionDetails_result& obj);
+};
+
+typedef struct _Airavata_addSSHForkJobSubmissionDetails_presult__isset {
+  _Airavata_addSSHForkJobSubmissionDetails_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_addSSHForkJobSubmissionDetails_presult__isset;
+
+class Airavata_addSSHForkJobSubmissionDetails_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "21BF57A9FE5AAA661540804D4FB9F023";
+  static const uint8_t binary_fingerprint[16]; // = {0x21,0xBF,0x57,0xA9,0xFE,0x5A,0xAA,0x66,0x15,0x40,0x80,0x4D,0x4F,0xB9,0xF0,0x23};
+
+
+  virtual ~Airavata_addSSHForkJobSubmissionDetails_presult() throw();
+  std::string* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_addSSHForkJobSubmissionDetails_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_addSSHForkJobSubmissionDetails_presult& obj);
 };
 
 
@@ -20510,8 +20707,8 @@ class AiravataClient : virtual public AiravataIf {
   void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
   void send_generateAndRegisterSSHKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
   void recv_generateAndRegisterSSHKeys(std::string& _return);
-  void getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken);
-  void send_getSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken);
+  void getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
+  void send_getSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
   void recv_getSSHPubKey(std::string& _return);
   void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName);
   void send_getAllUserSSHPubKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName);
@@ -20693,6 +20890,9 @@ class AiravataClient : virtual public AiravataIf {
   void addSSHJobSubmissionDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission);
   void send_addSSHJobSubmissionDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission);
   void recv_addSSHJobSubmissionDetails(std::string& _return);
+  void addSSHForkJobSubmissionDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission);
+  void send_addSSHForkJobSubmissionDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission);
+  void recv_addSSHForkJobSubmissionDetails(std::string& _return);
   void getSSHJobSubmission( ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionId);
   void send_getSSHJobSubmission(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionId);
   void recv_getSSHJobSubmission( ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& _return);
@@ -20921,6 +21121,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_updateLocalSubmissionDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getLocalJobSubmission(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_addSSHJobSubmissionDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_addSSHForkJobSubmissionDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getSSHJobSubmission(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_addUNICOREJobSubmissionDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getUnicoreJobSubmission(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -21041,6 +21242,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["updateLocalSubmissionDetails"] = &AiravataProcessor::process_updateLocalSubmissionDetails;
     processMap_["getLocalJobSubmission"] = &AiravataProcessor::process_getLocalJobSubmission;
     processMap_["addSSHJobSubmissionDetails"] = &AiravataProcessor::process_addSSHJobSubmissionDetails;
+    processMap_["addSSHForkJobSubmissionDetails"] = &AiravataProcessor::process_addSSHForkJobSubmissionDetails;
     processMap_["getSSHJobSubmission"] = &AiravataProcessor::process_getSSHJobSubmission;
     processMap_["addUNICOREJobSubmissionDetails"] = &AiravataProcessor::process_addUNICOREJobSubmissionDetails;
     processMap_["getUnicoreJobSubmission"] = &AiravataProcessor::process_getUnicoreJobSubmission;
@@ -21194,13 +21396,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken) {
+  void getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getSSHPubKey(_return, authzToken, airavataCredStoreToken);
+      ifaces_[i]->getSSHPubKey(_return, authzToken, airavataCredStoreToken, gatewayId);
     }
-    ifaces_[i]->getSSHPubKey(_return, authzToken, airavataCredStoreToken);
+    ifaces_[i]->getSSHPubKey(_return, authzToken, airavataCredStoreToken, gatewayId);
     return;
   }
 
@@ -21784,6 +21986,16 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->addSSHJobSubmissionDetails(_return, authzToken, computeResourceId, priorityOrder, sshJobSubmission);
     }
     ifaces_[i]->addSSHJobSubmissionDetails(_return, authzToken, computeResourceId, priorityOrder, sshJobSubmission);
+    return;
+  }
+
+  void addSSHForkJobSubmissionDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->addSSHForkJobSubmissionDetails(_return, authzToken, computeResourceId, priorityOrder, sshJobSubmission);
+    }
+    ifaces_[i]->addSSHForkJobSubmissionDetails(_return, authzToken, computeResourceId, priorityOrder, sshJobSubmission);
     return;
   }
 

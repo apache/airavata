@@ -28,7 +28,7 @@ include "credentialStoreErrors.thrift"
 
 namespace java org.apache.airavata.credential.store.cpi
 
-const string CS_CPI_VERSION = "0.15.0"
+const string CS_CPI_VERSION = "0.16.0"
 
 service CredentialStoreService {
 
@@ -55,6 +55,9 @@ service CredentialStoreService {
 
   credentialStoreDataModel.PasswordCredential getPasswordCredential (1: required string tokenId, 2: required string gatewayId)
                         throws (1:credentialStoreErrors.CredentialStoreException csException);
+
+  map<string,string> getAllSSHKeysForUser (1: required string username) throws (1:credentialStoreErrors.CredentialStoreException csException);
+
 
 
 

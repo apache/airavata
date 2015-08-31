@@ -56,16 +56,11 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 
     @Override
     public TaskStatus execute(TaskContext taskContext){
-	    TaskStatus status = new TaskStatus(TaskState.COMPLETED); // set to completed.
+	    TaskStatus taskStatus = new TaskStatus(TaskState.COMPLETED); // set to completed.
 	    try {
 		    ProcessContext processContext = taskContext.getParentProcessContext();
 		    JobModel jobModel = processContext.getJobModel();
-		    if (jobModel == null) {
-			    jobModel = new JobModel();
-			    jobModel.setWorkingDir(processContext.getWorkingDir());
-			    jobModel.setTaskId(taskContext.getTaskId());
-			    jobModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
-		    }
+		    jobModel.setTaskId(taskContext.getTaskId());
 		    RemoteCluster remoteCluster = processContext.getRemoteCluster();
 		    JobDescriptor jobDescriptor = GFacUtils.createJobDescriptor(processContext);
 		    jobModel.setJobName(jobDescriptor.getJobName());
@@ -74,25 +69,28 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 		    if (resourceJobManager != null) {
 			    jConfig = Factory.getJobManagerConfiguration(resourceJobManager);
 		    }
+		    JobStatus jobStatus = new JobStatus();
 		    File jobFile = GFacUtils.createJobFile(jobDescriptor, jConfig);
 		    if (jobFile != null && jobFile.exists()) {
 			    jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
 			    String jobId = remoteCluster.submitBatchJob(jobFile.getPath(), processContext.getWorkingDir());
 			    if (jobId != null && !jobId.isEmpty()) {
 				    jobModel.setJobId(jobId);
-				    GFacUtils.saveJobStatus(taskContext, jobModel, JobState.SUBMITTED);
-//                    publisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
-//                            , GfacExperimentState.JOBSUBMITTED));
-				    processContext.setJobModel(jobModel);
+				    GFacUtils.saveJobModel(processContext, jobModel);
+				    jobStatus.setJobState(JobState.SUBMITTED);
+				    jobStatus.setReason("Successfully Submitted to " + taskContext.getParentProcessContext()
+						    .getComputeResourceDescription().getHostName());
+				    jobModel.setJobStatus(jobStatus);
+				    GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
 				    if (verifyJobSubmissionByJobId(remoteCluster, jobId)) {
-//                        publisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
-//                                , GfacExperimentState.JOBSUBMITTED));
-					    GFacUtils.saveJobStatus(taskContext, jobModel, JobState.QUEUED);
+					    jobStatus.setJobState(JobState.QUEUED);
+					    jobStatus.setReason("Verification step succeeded");
+					    jobModel.setJobStatus(jobStatus);
+					    GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
 				    }
-				    status = new TaskStatus(TaskState.COMPLETED);
-				    status.setReason("Submitted job to compute resource");
+				    taskStatus = new TaskStatus(TaskState.COMPLETED);
+				    taskStatus.setReason("Submitted job to compute resource");
 			    } else {
-				    processContext.setJobModel(jobModel);
 				    int verificationTryCount = 0;
 				    while (verificationTryCount++ < 3) {
 					    String verifyJobId = verifyJobSubmission(remoteCluster, jobModel);
@@ -100,13 +98,16 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 						    // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
 						    jobId = verifyJobId;
 						    jobModel.setJobId(jobId);
-//                            publisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
-//                                    , GfacExperimentState.JOBSUBMITTED));
-						    GFacUtils.saveJobStatus(taskContext, jobModel, JobState.QUEUED);
-						    status.setState(TaskState.COMPLETED);
-						    status.setReason("Submitted job to compute resource");
+						    GFacUtils.saveJobModel(processContext,jobModel);
+						    jobStatus.setJobState(JobState.QUEUED);
+						    jobStatus.setReason("Verification step succeeded");
+						    jobModel.setJobStatus(jobStatus);
+						    GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
+						    taskStatus.setState(TaskState.COMPLETED);
+						    taskStatus.setReason("Submitted job to compute resource");
 						    break;
 					    }
+					    log.info("Verify step return invalid jobId, retry verification step in {} secs", verificationTryCount);
 					    Thread.sleep(verificationTryCount * 1000);
 				    }
 			    }
@@ -117,23 +118,23 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 						    "doesn't return a valid JobId. " + "Hence changing experiment state to Failed";
 				    log.error(msg);
 				    GFacUtils.saveErrorDetails(processContext, msg);
-				    status.setState(TaskState.FAILED);
-				    status.setReason("Couldn't find job id in both submitted and verified steps");
+				    taskStatus.setState(TaskState.FAILED);
+				    taskStatus.setReason("Couldn't find job id in both submitted and verified steps");
 			    }
 		    } else {
-			    status.setState(TaskState.FAILED);
+			    taskStatus.setState(TaskState.FAILED);
 			    if (jobFile == null) {
-				    status.setReason("JobFile is null");
+				    taskStatus.setReason("JobFile is null");
 			    } else {
-				    status.setReason("Job file doesn't exist");
+				    taskStatus.setReason("Job file doesn't exist");
 			    }
 		    }
 
 	    } catch (AppCatalogException e) {
-		    String msg = "Error while instatiating app catalog";
+		    String msg = "Error while instantiating app catalog";
 		    log.error(msg, e);
-		    status.setState(TaskState.FAILED);
-		    status.setReason(msg);
+		    taskStatus.setState(TaskState.FAILED);
+		    taskStatus.setReason(msg);
 		    ErrorModel errorModel = new ErrorModel();
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);
@@ -141,8 +142,8 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 	    } catch (ApplicationSettingsException e) {
 		    String msg = "Error occurred while creating job descriptor";
 		    log.error(msg, e);
-		    status.setState(TaskState.FAILED);
-		    status.setReason(msg);
+		    taskStatus.setState(TaskState.FAILED);
+		    taskStatus.setReason(msg);
 		    ErrorModel errorModel = new ErrorModel();
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);
@@ -150,8 +151,8 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 	    } catch (GFacException e) {
 		    String msg = "Error occurred while creating job descriptor";
 		    log.error(msg, e);
-		    status.setState(TaskState.FAILED);
-		    status.setReason(msg);
+		    taskStatus.setState(TaskState.FAILED);
+		    taskStatus.setReason(msg);
 		    ErrorModel errorModel = new ErrorModel();
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);
@@ -159,8 +160,8 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 	    } catch (SSHApiException e) {
 		    String msg = "Error occurred while submitting the job";
 		    log.error(msg, e);
-		    status.setState(TaskState.FAILED);
-		    status.setReason(msg);
+		    taskStatus.setState(TaskState.FAILED);
+		    taskStatus.setReason(msg);
 		    ErrorModel errorModel = new ErrorModel();
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);
@@ -168,8 +169,8 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 	    } catch (IOException e) {
 		    String msg = "Error while reading the content of the job file";
 		    log.error(msg, e);
-		    status.setState(TaskState.FAILED);
-		    status.setReason(msg);
+		    taskStatus.setState(TaskState.FAILED);
+		    taskStatus.setReason(msg);
 		    ErrorModel errorModel = new ErrorModel();
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);
@@ -177,21 +178,21 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 	    } catch (InterruptedException e) {
 		    String msg = "Error occurred while verifying the job submission";
 		    log.error(msg, e);
-		    status.setState(TaskState.FAILED);
-		    status.setReason(msg);
+		    taskStatus.setState(TaskState.FAILED);
+		    taskStatus.setReason(msg);
 		    ErrorModel errorModel = new ErrorModel();
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);
 		    taskContext.getTaskModel().setTaskError(errorModel);
 	    }
 
-	    taskContext.setTaskStatus(status);
+	    taskContext.setTaskStatus(taskStatus);
 	    try {
 		    GFacUtils.saveAndPublishTaskStatus(taskContext);
 	    } catch (GFacException e) {
 		    log.error("Error while saving task status", e);
 	    }
-	    return status;
+	    return taskStatus;
     }
 
     private boolean verifyJobSubmissionByJobId(RemoteCluster remoteCluster, String jobID) throws SSHApiException {

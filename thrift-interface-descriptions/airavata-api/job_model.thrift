@@ -28,11 +28,12 @@
 struct JobModel {
     1: required string jobId,
     2: required string taskId,
-    3: required string jobDescription,
-    4: optional i64 creationTime,
-    5: optional status_models.JobStatus jobStatus,
-    6: optional string computeResourceConsumed,
-    7: optional string jobName,
-    8: optional string workingDir
+    3: required string processId,
+    4: required string jobDescription,
+    5: optional i64 creationTime,
+    6: optional status_models.JobStatus jobStatus,
+    7: optional string computeResourceConsumed,
+    8: optional string jobName,
+    9: optional string workingDir
 }
 

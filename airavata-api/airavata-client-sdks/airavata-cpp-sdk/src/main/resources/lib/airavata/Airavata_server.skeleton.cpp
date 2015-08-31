@@ -104,7 +104,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("generateAndRegisterSSHKeys\n");
   }
 
-  void getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken) {
+  void getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getSSHPubKey\n");
   }
@@ -1338,6 +1338,33 @@ class AiravataHandler : virtual public AiravataIf {
   void addSSHJobSubmissionDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) {
     // Your implementation goes here
     printf("addSSHJobSubmissionDetails\n");
+  }
+
+  /**
+   * Add a SSH_FORK Job Submission details to a compute resource
+   *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+   * 
+   * @param computeResourceId
+   *   The identifier of the compute resource to which JobSubmission protocol to be added
+   * 
+   * @param priorityOrder
+   *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   * 
+   * @param sshJobSubmission
+   *   The SSHJobSubmission object to be added to the resource.
+   * 
+   * @return status
+   *   Returns the unique job submission id.
+   * 
+   * 
+   * @param authzToken
+   * @param computeResourceId
+   * @param priorityOrder
+   * @param sshJobSubmission
+   */
+  void addSSHForkJobSubmissionDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) {
+    // Your implementation goes here
+    printf("addSSHForkJobSubmissionDetails\n");
   }
 
   /**

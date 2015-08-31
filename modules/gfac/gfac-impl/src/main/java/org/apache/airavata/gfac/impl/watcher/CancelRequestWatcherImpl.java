@@ -18,19 +18,14 @@
  * under the License.
  *
  */
-package org.apache.airavata.api.server.security;
+package org.apache.airavata.gfac.impl.watcher;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import com.google.inject.BindingAnnotation;
+import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
+import org.apache.zookeeper.WatchedEvent;
 
-/**
- * This is just the definition of the annotation used to mark the API methods to be intercepted.
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-@BindingAnnotation
-public @interface SecurityCheck {
+public class CancelRequestWatcherImpl implements CancelRequestWatcher {
+	@Override
+	public void process(WatchedEvent watchedEvent) throws Exception {
+		// this watcher change data in cancel listener node in the experiment node
+	}
 }

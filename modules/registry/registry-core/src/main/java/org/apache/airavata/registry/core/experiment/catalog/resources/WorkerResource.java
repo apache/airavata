@@ -681,6 +681,17 @@ public class WorkerResource extends AbstractExpCatResource {
         experimentStatisticsResource.setAllExperimentCount(allExperiments.size());
         experimentStatisticsResource.setAllExperiments(allExperiments);
 
+        List<ExperimentSummaryResource> createdExperiments = getExperimentStatisticsForState(ExperimentState.CREATED, gatewayId, fromTime, toTime);
+        createdExperiments.addAll(getExperimentStatisticsForState(ExperimentState.VALIDATED, gatewayId, fromTime, toTime));
+        experimentStatisticsResource.setCreatedExperimentCount(createdExperiments.size());
+        experimentStatisticsResource.setCreatedExperiments(createdExperiments);
+
+        List<ExperimentSummaryResource> runningExperiments = getExperimentStatisticsForState(ExperimentState.EXECUTING, gatewayId, fromTime, toTime);
+        runningExperiments.addAll(getExperimentStatisticsForState(ExperimentState.SCHEDULED, gatewayId, fromTime, toTime));
+        runningExperiments.addAll(getExperimentStatisticsForState(ExperimentState.LAUNCHED, gatewayId, fromTime, toTime));
+        experimentStatisticsResource.setRunningExperimentCount(runningExperiments.size());
+        experimentStatisticsResource.setRunningExperiments(runningExperiments);
+
         List<ExperimentSummaryResource> completedExperiments = getExperimentStatisticsForState(ExperimentState.COMPLETED, gatewayId, fromTime, toTime);
         experimentStatisticsResource.setCompletedExperimentCount(completedExperiments.size());
         experimentStatisticsResource.setCompletedExperiments(completedExperiments);
@@ -690,6 +701,7 @@ public class WorkerResource extends AbstractExpCatResource {
         experimentStatisticsResource.setFailedExperiments(failedExperiments);
 
         List<ExperimentSummaryResource> cancelledExperiments = getExperimentStatisticsForState(ExperimentState.CANCELED, gatewayId, fromTime, toTime);
+        cancelledExperiments.addAll(getExperimentStatisticsForState(ExperimentState.CANCELING, gatewayId, fromTime, toTime));
         experimentStatisticsResource.setCancelledExperimentCount(cancelledExperiments.size());
         experimentStatisticsResource.setCancelledExperiments(cancelledExperiments);
 
@@ -702,7 +714,7 @@ public class WorkerResource extends AbstractExpCatResource {
         List<ExperimentSummaryResource> result = new ArrayList();
         try {
             String query = "SELECT e FROM ExperimentSummary e " +
-                    "WHERE e.expId=s.expId AND ";
+                    "WHERE ";
             if (expState != null) {
                 query += "e.state='" + expState.toString() + "' AND ";
             }

@@ -215,14 +215,14 @@ public class RegisterSampleApplications {
             System.out.println("Stampede Resource Id is " + stampedeResourceId);
 
             //Register Trestles
-            List<BatchQueue> trestlesQueues = new ArrayList<BatchQueue>();
-            BatchQueue normalQueue_tr = createBatchQueue("normal", "Normal Queue", 2880, 32, 32, 50, 0);
-            BatchQueue sharedQueue_tr = createBatchQueue("shared", "Shared Queue", 2880, 4, 32, 50, 0);
-            trestlesQueues.add(normalQueue_tr);
-            trestlesQueues.add(sharedQueue_tr);
-            trestlesResourceId = registerComputeHost("trestles.sdsc.xsede.org", "SDSC Trestles Cluster",
-                    ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22, "mpirun -np", trestlesQueues);
-            System.out.println("Trestles Resource Id is " + trestlesResourceId);
+//            List<BatchQueue> trestlesQueues = new ArrayList<BatchQueue>();
+//            BatchQueue normalQueue_tr = createBatchQueue("normal", "Normal Queue", 2880, 32, 32, 50, 0);
+//            BatchQueue sharedQueue_tr = createBatchQueue("shared", "Shared Queue", 2880, 4, 32, 50, 0);
+//            trestlesQueues.add(normalQueue_tr);
+//            trestlesQueues.add(sharedQueue_tr);
+//            trestlesResourceId = registerComputeHost("trestles.sdsc.xsede.org", "SDSC Trestles Cluster",
+//                    ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22, "mpirun -np", trestlesQueues);
+//            System.out.println("Trestles Resource Id is " + trestlesResourceId);
 
             //Register BigRedII
             List<BatchQueue> br2Queues = new ArrayList<BatchQueue>();

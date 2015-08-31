@@ -394,8 +394,9 @@ public class ThriftDataModelConversion {
 
     public static JobModel getJobModel (JobResource jobResource) throws RegistryException {
         JobModel model = new JobModel();
-        model.setJobId(jobResource.getJobId());
-        model.setTaskId(jobResource.getTaskId());
+	    model.setJobId(jobResource.getJobId());
+	    model.setProcessId(jobResource.getProcessId());
+	    model.setTaskId(jobResource.getTaskId());
         model.setJobDescription(jobResource.getJobDescription());
         model.setCreationTime(jobResource.getCreationTime().getTime());
         model.setComputeResourceConsumed(jobResource.getComputeResourceConsumed());

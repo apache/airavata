@@ -194,7 +194,8 @@ enum JobSubmissionProtocol {
     SSH,
     GLOBUS,
     UNICORE,
-    CLOUD
+    CLOUD,
+    SSH_FORK
 }
 
 /**
@@ -210,7 +211,8 @@ enum JobSubmissionProtocol {
 enum MonitorMode {
    POLL_JOB_MANAGER,
    JOB_EMAIL_NOTIFICATION_MONITOR,
-   XSEDE_AMQP_SUBSCRIBE
+   XSEDE_AMQP_SUBSCRIBE,
+   FORK
 }
 
 /**

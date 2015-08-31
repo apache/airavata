@@ -21,11 +21,7 @@
 package org.apache.airavata.gfac.core.watcher;
 
 import org.apache.curator.framework.api.CuratorWatcher;
-import org.apache.zookeeper.WatchedEvent;
 
-public class RedeliveryRequestWatcher implements CuratorWatcher {
-	@Override
-	public void process(WatchedEvent watchedEvent) throws Exception {
-		// get the data in experiment node and compare with gfac server name.
-	}
+public interface RedeliveryRequestWatcher extends CuratorWatcher {
+
 }

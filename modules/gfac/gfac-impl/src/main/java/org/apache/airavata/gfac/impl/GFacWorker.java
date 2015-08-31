@@ -22,7 +22,6 @@
 package org.apache.airavata.gfac.impl;
 
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.gfac.core.GFac;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -38,11 +37,12 @@ import java.text.MessageFormat;
 public class GFacWorker implements Runnable {
 
 	private static final Logger log = LoggerFactory.getLogger(GFacWorker.class);
+	private GFacEngine engine;
 	private ProcessContext processContext;
 	private String processId;
 	private String gatewayId;
 	private String tokenId;
-	private boolean isProcessContextPopulated = false;
+	private boolean runOutflow = false;
 
 
 	/**
@@ -55,7 +55,9 @@ public class GFacWorker implements Runnable {
 		this.processId = processContext.getProcessId();
 		this.gatewayId = processContext.getGatewayId();
 		this.tokenId = processContext.getTokenId();
+		engine = Factory.getGFacEngine();
 		this.processContext = processContext;
+		runOutflow = true;
 	}
 
 	/**
@@ -65,62 +67,57 @@ public class GFacWorker implements Runnable {
 		this.processId = processId;
 		this.gatewayId = gatewayId;
 		this.tokenId = tokenId;
+		engine = Factory.getGFacEngine();
+		this.processContext = engine.populateProcessContext(processId, gatewayId, tokenId);
+		Factory.getGfacContext().addProcess(this.processContext);
 	}
 
 	@Override
 	public void run() {
+		if (processContext.isHandOver()) {
+			return;
+		}
 		try {
-			GFacEngine engine = Factory.getGFacEngine();
-			if (processContext == null) {
-				processContext = engine.populateProcessContext(processId, gatewayId, tokenId);
-				isProcessContextPopulated = true;
-			}
-			ProcessType type = getProcessType(processContext);
-			try {
-				switch (type) {
-					case NEW:
-						exectuteProcess(engine);
-						break;
-					case RECOVER:
-						recoverProcess(engine);
-						break;
-					case OUTFLOW:
-						// run the outflow task
-						engine.runProcessOutflow(processContext);
-						processContext.setProcessStatus(new ProcessStatus(ProcessState.COMPLETED));
-						GFacUtils.saveAndPublishProcessStatus(processContext);
-						sendAck();
-						break;
-					case RECOVER_OUTFLOW:
-						// recover  outflow task;
-						engine.recoverProcessOutflow(processContext);
-						processContext.setProcessStatus(new ProcessStatus(ProcessState.COMPLETED));
-						GFacUtils.saveAndPublishProcessStatus(processContext);
-						sendAck();
-						break;
-					default:
-						throw new GFacException("process Id : " + processId + " Couldn't identify process type");
-				}
-			} catch (GFacException e) {
-				switch (type) {
-					case NEW:
-						log.error("Process execution error", e);
-						break;
-					case RECOVER:
-						log.error("Process recover error ", e);
-						break;
-					case OUTFLOW:
-						log.error("Process outflow execution error", e);
-						break;
-					case RECOVER_OUTFLOW:
-						log.error("Process outflow recover error", e);
-						break;
-				}
-				throw e;
+			ProcessState processState = processContext.getProcessStatus().getState();
+			switch (processState) {
+				case CREATED:
+				case VALIDATED:
+					executeProcess();
+					break;
+				case PRE_PROCESSING:
+				case CONFIGURING_WORKSPACE:
+				case INPUT_DATA_STAGING:
+				case EXECUTING:
+					recoverProcess();
+					break;
+				case MONITORING:
+					if (runOutflow) {
+						runProcessOutflow();
+					} else {
+						monitorProcess();
+					}
+					break;
+				case OUTPUT_DATA_STAGING:
+				case POST_PROCESSING:
+					recoverProcessOutflow();
+					break;
+				case COMPLETED:
+					completeProcess();
+					break;
+				case CANCELED:
+					// TODO - implement cancel scenario
+					break;
+				case FAILED:
+					// TODO - implement failed scenario
+					break;
+				default:
+					throw new GFacException("process Id : " + processId + " Couldn't identify process type");
 			}
 		} catch (GFacException e) {
 			log.error("GFac Worker throws an exception", e);
-			processContext.setProcessStatus(new ProcessStatus(ProcessState.FAILED));
+			ProcessStatus status = new ProcessStatus(ProcessState.FAILED);
+			status.setReason(e.getMessage());
+			processContext.setProcessStatus(status);
 			try {
 				GFacUtils.saveAndPublishProcessStatus(processContext);
 			} catch (GFacException e1) {
@@ -131,29 +128,49 @@ public class GFacWorker implements Runnable {
 		}
 	}
 
-	private void recoverProcess(GFacEngine engine) throws GFacException {
-		// recover the process
-		//	engine.recoverProcess(processContext);
-		exectuteProcess(engine); // TODO - implement recover process.
+	private void completeProcess() throws GFacException {
+		processContext.setProcessStatus(new ProcessStatus(ProcessState.COMPLETED));
+		GFacUtils.saveAndPublishProcessStatus(processContext);
+		sendAck();
+		Factory.getGfacContext().remoteProcess(processContext.getProcessId());
 	}
 
-	private void exectuteProcess(GFacEngine engine) throws GFacException {
+	private void recoverProcessOutflow() throws GFacException {
+		engine.recoverProcessOutflow(processContext);
+		completeProcess();
+	}
+
+	private void runProcessOutflow() throws GFacException {
+		engine.runProcessOutflow(processContext);
+		completeProcess();
+	}
+
+	private void recoverProcess() throws GFacException {
+		engine.recoverProcess(processContext);
+		monitorProcess();
+	}
+
+	private void executeProcess() throws GFacException {
+		if (processContext.isHandOver()) {
+			return;
+		}
 		engine.executeProcess(processContext);
-		if (processContext.getMonitorMode() == null) {
-			engine.runProcessOutflow(processContext);
-		} else {
-			try {
-				JobMonitor monitorService = Factory.getMonitorService(processContext.getMonitorMode());
-				if (monitorService != null) {
-					monitorService.monitor(processContext.getJobModel().getJobId(), processContext);
-					processContext.setProcessStatus(new ProcessStatus(ProcessState.MONITORING));
-				} else {
-					// we directly invoke outflow
-					engine.runProcessOutflow(processContext);
-				}
-			} catch (AiravataException e) {
-				throw new GFacException("Error while retrieving moniot service", e);
+		monitorProcess();
+	}
+
+	private void monitorProcess() throws GFacException {
+		try {
+			JobMonitor monitorService = Factory.getMonitorService(processContext.getMonitorMode());
+			if (monitorService != null) {
+				monitorService.monitor(processContext.getJobModel().getJobId(), processContext);
+				processContext.setProcessStatus(new ProcessStatus(ProcessState.MONITORING));
+				GFacUtils.saveAndPublishProcessStatus(processContext);
+			} else {
+				// we directly invoke outflow
+				runProcessOutflow();
 			}
+		} catch (AiravataException e) {
+			throw new GFacException("Error while retrieving moniot service", e);
 		}
 	}
 
@@ -170,43 +187,4 @@ public class GFacWorker implements Runnable {
 		}
 	}
 
-	private ProcessType getProcessType(ProcessContext processContext) {
-		// check the status and return correct type of process.
-		switch (processContext.getProcessState()) {
-			case CREATED:
-			case VALIDATED:
-				return ProcessType.NEW;
-			case PRE_PROCESSING:
-			case CONFIGURING_WORKSPACE:
-			case INPUT_DATA_STAGING:
-			case EXECUTING:
-				return ProcessType.RECOVER;
-			case MONITORING:
-				if (isProcessContextPopulated) {
-					return ProcessType.RECOVER; // hand over to monitor task
-				} else {
-					return ProcessType.OUTFLOW; // execute outflow
-				}
-			case OUTPUT_DATA_STAGING:
-			case POST_PROCESSING:
-				return ProcessType.RECOVER_OUTFLOW;
-			case COMPLETED:
-			case CANCELED:
-			case FAILED:
-				return ProcessType.COMPLETED;
-			//case CANCELLING: // TODO: handle this
-			default:
-				// this will never hit as we have handle all states in cases.
-				return ProcessType.NEW;
-		}
-	}
-
-
-	private enum ProcessType {
-		NEW,
-		RECOVER,
-		OUTFLOW,
-		RECOVER_OUTFLOW,
-		COMPLETED
-	}
 }

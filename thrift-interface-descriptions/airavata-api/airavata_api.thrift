@@ -143,17 +143,17 @@ service Airavata {
                    3: airavata_errors.AiravataSystemException ase)
 
    string getSSHPubKey (1: required security_model.AuthzToken authzToken,
-                    2: required string airavataCredStoreToken)
+                        2: required string airavataCredStoreToken,
+                        3: required string gatewayId)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
 
    map<string, string> getAllUserSSHPubKeys (1: required security_model.AuthzToken authzToken,
-                    2: required string userName)
+                                             2: required string userName)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
-
   /**
    * Creates a Project with basic metadata.
    *    A Project is a container of experiments.
@@ -1378,6 +1378,34 @@ service Airavata {
 
 
   string addSSHJobSubmissionDetails(1: required security_model.AuthzToken authzToken,
+            2: required string computeResourceId,
+            3: required i32 priorityOrder,
+            4: required compute_resource_model.SSHJobSubmission sshJobSubmission)
+  	throws (1: airavata_errors.InvalidRequestException ire,
+            2: airavata_errors.AiravataClientException ace,
+            3: airavata_errors.AiravataSystemException ase,
+            4: airavata_errors.AuthorizationException ae)
+
+  /**
+   * Add a SSH_FORK Job Submission details to a compute resource
+   *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+   *
+   * @param computeResourceId
+   *   The identifier of the compute resource to which JobSubmission protocol to be added
+   *
+   * @param priorityOrder
+   *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   *
+   * @param sshJobSubmission
+   *   The SSHJobSubmission object to be added to the resource.
+   *
+   * @return status
+   *   Returns the unique job submission id.
+   *
+  */
+
+
+  string addSSHForkJobSubmissionDetails(1: required security_model.AuthzToken authzToken,
             2: required string computeResourceId,
             3: required i32 priorityOrder,
             4: required compute_resource_model.SSHJobSubmission sshJobSubmission)

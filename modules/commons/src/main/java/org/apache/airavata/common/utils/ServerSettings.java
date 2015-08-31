@@ -30,25 +30,29 @@ import org.slf4j.LoggerFactory;
 
 public class ServerSettings extends ApplicationSettings {
 
-	private static final Logger log = LoggerFactory.getLogger(ServerSettings.class);
+    private static final Logger log = LoggerFactory.getLogger(ServerSettings.class);
 
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_USER_PASSWORD = "default.registry.password";
-	private static final String DEFAULT_USER_GATEWAY = "default.registry.gateway";
-	private static final String OUTPUT_LOCATION = "out.location";
+    private static final String DEFAULT_USER_GATEWAY = "default.registry.gateway";
+    private static final String LOCAL_DATA_DIR = "local.data.dir";
 
-    private static final String SERVER_CONTEXT_ROOT = "server.context-root";
     public static final String IP = "ip";
+
+    private static final String API_SERVER_TLS_ENABLED = "apiserver.tls.enabled";
+    private static final String API_SERVER_KEYSTORE = "apiserver.keystore";
+    private static final String API_SERVER_KEYSTORE_PASSWD = "apiserver.keystore.password";
+
     // Orchestrator Constants
     public static final String ORCHESTRATOR_SERVER_HOST = "orchestrator.server.host";
     public static final String ORCHESTRATOR_SERVER_PORT = "orchestrator.server.port";
-	public static final String ORCHESTRATOR_SERVER_NAME = "orchestrator.server.name";
-	// Gfac constants
+    public static final String ORCHESTRATOR_SERVER_NAME = "orchestrator.server.name";
+    // Gfac constants
     public static final String GFAC_SERVER_HOST = "gfac.server.host";
     public static final String GFAC_SERVER_PORT = "gfac.server.port";
     public static final String GFAC_SERVER_NAME = "gfac.server.name";
     public static final String GFAC_THREAD_POOL_SIZE = "gfac.thread.pool.size";
-	public static final int DEFAULT_GFAC_THREAD_POOL_SIZE = 50;
+    public static final int DEFAULT_GFAC_THREAD_POOL_SIZE = 50;
     public static final String GFAC_CONFIG_XML = "gfac-config.xml";
     // Credential Store constants
     public static final String CREDENTIAL_SERVER_HOST = "credential.store.server.host";
@@ -68,7 +72,6 @@ public class ServerSettings extends ApplicationSettings {
     private static final String REGISTRY_DB_USER = "registry.jdbc.user";
     private static final String REGISTRY_DB_PASSWORD = "registry.jdbc.password";
     private static final String REGISTRY_DB_DRIVER = "registry.jdbc.driver";
-    private static final String ENABLE_HTTPS = "enable.https";
     private static final String HOST_SCHEDULER = "host.scheduler";
     private static final String MY_PROXY_SERVER = "myproxy.server";
     private static final String MY_PROXY_USER = "myproxy.user";
@@ -99,9 +102,9 @@ public class ServerSettings extends ApplicationSettings {
 
     private static boolean stopAllThreads = false;
     private static boolean emailBaseNotificationEnable;
-	private static String outputLocation;
+    private static String outputLocation;
 
-	public static String getDefaultUser() throws ApplicationSettingsException {
+    public static String getDefaultUser() throws ApplicationSettingsException {
         return getSetting(DEFAULT_USER);
     }
 
@@ -120,10 +123,6 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String getDefaultUserGateway() throws ApplicationSettingsException {
         return getSetting(DEFAULT_USER_GATEWAY);
-    }
-
-    public static String getServerContextRoot() {
-        return getSetting(SERVER_CONTEXT_ROOT, "axis2");
     }
 
     public static String getCredentialStoreDBUser() throws ApplicationSettingsException {
@@ -159,14 +158,21 @@ public class ServerSettings extends ApplicationSettings {
 
     }
 
-    public static boolean isEnableHttps() {
+    public static boolean isAPIServerTLSEnabled() {
         try {
-            return Boolean.parseBoolean(getSetting(ENABLE_HTTPS));
+            return Boolean.parseBoolean(getSetting(API_SERVER_TLS_ENABLED));
         } catch (ApplicationSettingsException e) {
             return false;
         }
     }
 
+    public static String getApiServerKeystorePasswd() throws ApplicationSettingsException{
+        return getSetting(API_SERVER_KEYSTORE_PASSWD);
+    }
+
+    public static String getApiServerKeystore() throws ApplicationSettingsException{
+        return getSetting(API_SERVER_KEYSTORE);
+    }
 
     public static String getHostScheduler() throws ApplicationSettingsException {
         return getSetting(HOST_SCHEDULER);
@@ -269,7 +275,7 @@ public class ServerSettings extends ApplicationSettings {
         return Boolean.valueOf(getSetting(Constants.IS_API_SECURED));
     }
 
-    public static String getRemoteOauthServerUrl() throws ApplicationSettingsException {
+    public static String getRemoteAuthzServerUrl() throws ApplicationSettingsException {
         return getSetting(Constants.REMOTE_OAUTH_SERVER_URL);
     }
 
@@ -281,13 +287,17 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(Constants.ADMIN_PASSWORD);
     }
 
+    public static String getAuthorizationPoliyName() throws ApplicationSettingsException {
+        return getSetting(Constants.AUTHORIZATION_POLICY_NAME);
+    }
+
     public static String getZookeeperConnection() throws ApplicationSettingsException {
         return getSetting(ZOOKEEPER_SERVER_CONNECTION, "localhost:2181");
     }
 
-	public static int getZookeeperTimeout() {
-		return Integer.valueOf(getSetting(ZOOKEEPER_TIMEOUT, "3000"));
-	}
+    public static int getZookeeperTimeout() {
+        return Integer.valueOf(getSetting(ZOOKEEPER_TIMEOUT, "3000"));
+    }
 
     public static String getGFacServerName() throws ApplicationSettingsException {
         return getSetting(GFAC_SERVER_NAME);
@@ -304,43 +314,47 @@ public class ServerSettings extends ApplicationSettings {
     public static int getGFacThreadPoolSize() {
         try {
             String threadPoolSize = getSetting(GFAC_THREAD_POOL_SIZE);
-	        if (threadPoolSize != null && !threadPoolSize.isEmpty()) {
-		        return Integer.valueOf(threadPoolSize);
-	        } else {
-		        log.warn("Thread pool size is not configured, use default gfac thread pool size " +
-				        DEFAULT_GFAC_THREAD_POOL_SIZE);
-	        }
+            if (threadPoolSize != null && !threadPoolSize.isEmpty()) {
+                return Integer.valueOf(threadPoolSize);
+            } else {
+                log.warn("Thread pool size is not configured, use default gfac thread pool size " +
+                        DEFAULT_GFAC_THREAD_POOL_SIZE);
+            }
         } catch (ApplicationSettingsException e) {
-	        log.warn("Couldn't read thread pool size from configuration on exception, use default gfac thread pool " +
-			        "size " + DEFAULT_GFAC_THREAD_POOL_SIZE);
+            log.warn("Couldn't read thread pool size from configuration on exception, use default gfac thread pool " +
+                    "size " + DEFAULT_GFAC_THREAD_POOL_SIZE);
         }
-	    return DEFAULT_GFAC_THREAD_POOL_SIZE;
+        return DEFAULT_GFAC_THREAD_POOL_SIZE;
     }
 
-	public static String getOrchestratorServerName() throws ApplicationSettingsException {
-		return getSetting(ORCHESTRATOR_SERVER_NAME);
-	}
+    public static String getOrchestratorServerName() throws ApplicationSettingsException {
+        return getSetting(ORCHESTRATOR_SERVER_NAME);
+    }
 
-	public static String getOrchestratorServerHost() throws ApplicationSettingsException {
-		return getSetting(ORCHESTRATOR_SERVER_HOST);
-	}
+    public static String getOrchestratorServerHost() throws ApplicationSettingsException {
+        return getSetting(ORCHESTRATOR_SERVER_HOST);
+    }
 
-	public static int getOrchestratorServerPort() throws ApplicationSettingsException {
-		return Integer.valueOf(getSetting(ORCHESTRATOR_SERVER_PORT));
-	}
+    public static int getOrchestratorServerPort() throws ApplicationSettingsException {
+        return Integer.valueOf(getSetting(ORCHESTRATOR_SERVER_PORT));
+    }
 
     public static boolean isTLSEnabled() throws ApplicationSettingsException {
         return Boolean.valueOf(getSetting(Constants.IS_TLS_ENABLED));
     }
+
     public static int getTLSServerPort() throws ApplicationSettingsException {
         return Integer.valueOf(getSetting(Constants.TLS_SERVER_PORT));
     }
+
     public static String getKeyStorePath() throws ApplicationSettingsException {
         return getSetting(Constants.KEYSTORE_PATH);
     }
+
     public static String getKeyStorePassword() throws ApplicationSettingsException {
         return getSetting(Constants.KEYSTORE_PASSWORD);
     }
+
     public static int getTLSClientTimeout() throws ApplicationSettingsException {
         return Integer.valueOf(getSetting(Constants.TLS_CLIENT_TIMEOUT));
     }
@@ -349,7 +363,19 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(Constants.SECURITY_MANAGER_CLASS);
     }
 
-	public static String getOutputLocation() {
-		return getSetting(OUTPUT_LOCATION, System.getProperty("java.io.tmpdir"));
-	}
+    public static String getAuthzCacheManagerClassName() throws ApplicationSettingsException {
+        return getSetting(Constants.AUTHZ_CACHE_MANAGER_CLASS);
+    }
+
+    public static boolean isAuthzCacheEnabled() throws ApplicationSettingsException {
+        return Boolean.valueOf(getSetting(Constants.AUTHZ_CACHE_ENABLED));
+    }
+
+    public static int getCacheSize() throws ApplicationSettingsException {
+        return Integer.valueOf(getSetting(Constants.IN_MEMORY_CACHE_SIZE));
+    }
+
+    public static String getLocalDataLocation() {
+        return getSetting(LOCAL_DATA_DIR, System.getProperty("java.io.tmpdir"));
+    }
 }

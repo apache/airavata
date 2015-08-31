@@ -30,7 +30,7 @@ import java.io.Serializable;
 public class JobPK implements Serializable {
     private final static Logger logger = LoggerFactory.getLogger(JobPK.class);
     private String jobId;
-    private String taskId;
+    private String processId;
 
     @Id
     @Column(name = "JOB_ID")
@@ -43,13 +43,13 @@ public class JobPK implements Serializable {
     }
 
     @Id
-    @Column(name = "TASK_ID")
-    public String getTaskId() {
-        return taskId;
+    @Column(name = "PROCESS_ID")
+    public String getProcessId() {
+        return processId;
     }
 
-    public void setTaskId(String taskId) {
-        this.taskId = taskId;
+    public void setProcessId(String processId) {
+        this.processId = processId;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class JobPK implements Serializable {
         JobPK that = (JobPK) o;
 
         if (getJobId() != null ? !getJobId().equals(that.getJobId()) : that.getJobId() != null) return false;
-        if (getTaskId() != null ? !getTaskId().equals(that.getTaskId()) : that.getTaskId() != null) return false;
+        if (getProcessId() != null ? !getProcessId().equals(that.getProcessId()) : that.getProcessId() != null) return false;
 
         return true;
     }
@@ -68,7 +68,7 @@ public class JobPK implements Serializable {
     @Override
     public int hashCode() {
         int result = getJobId() != null ? getJobId().hashCode() : 0;
-        result = 31 * result + (getTaskId() != null ? getTaskId().hashCode() : 0);
+        result = 31 * result + (getProcessId() != null ? getProcessId().hashCode() : 0);
         return result;
     }
 }

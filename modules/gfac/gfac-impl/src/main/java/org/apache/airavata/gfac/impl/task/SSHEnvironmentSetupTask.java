@@ -48,7 +48,7 @@ public class SSHEnvironmentSetupTask implements Task {
 		try {
 			RemoteCluster remoteCluster = taskContext.getParentProcessContext().getRemoteCluster();
 			remoteCluster.makeDirectory(taskContext.getParentProcessContext().getWorkingDir());
-			status.setReason("Successfully createded environment");
+			status.setReason("Successfully created environment");
 		} catch (SSHApiException e) {
 			String msg = "Error while environment setup";
 			log.error(msg, e);

@@ -42,6 +42,7 @@ public class JobResource extends AbstractExpCatResource {
     private static final Logger logger = LoggerFactory.getLogger(JobResource.class);
     private String jobId;
     private String taskId;
+	private String processId;
     private String jobDescription;
     private Timestamp creationTime;
     private String computeResourceConsumed;
@@ -64,7 +65,15 @@ public class JobResource extends AbstractExpCatResource {
         this.taskId = taskId;
     }
 
-    public String getJobDescription() {
+	public String getProcessId() {
+		return processId;
+	}
+
+	public void setProcessId(String processId) {
+		this.processId = processId;
+	}
+
+	public String getJobDescription() {
         return jobDescription;
     }
 
@@ -201,7 +210,7 @@ public class JobResource extends AbstractExpCatResource {
                 case JOB_STATUS:
                     generator = new QueryGenerator(JOB_STATUS);
                     generator.setParameter(JobStatusConstants.JOB_ID, jobId);
-                    generator.setParameter(JobStatusConstants.TASK_ID, taskId);
+                    generator.setParameter(JobStatusConstants.PROCESS_ID, processId);
                     q = generator.selectQuery(em);
                     results = q.getResultList();
                     if (results.size() != 0) {
@@ -243,14 +252,17 @@ public class JobResource extends AbstractExpCatResource {
             em.getTransaction().begin();
             JobPK jobPK = new JobPK();
             jobPK.setJobId(jobId);
-            jobPK.setTaskId(taskId);
+            jobPK.setProcessId(processId);
             Job job = em.find(Job.class, jobPK);
             if(job == null){
                 job = new Job();
             }
             job.setJobId(jobId);
             job.setTaskId(taskId);
-            job.setJobDescription(jobDescription);
+	        job.setProcessId(processId);
+            if (jobDescription != null) {
+                job.setJobDescription(jobDescription.toCharArray());
+            }
             job.setCreationTime(creationTime);
             job.setComputeResourceConsumed(computeResourceConsumed);
             job.setJobName(jobName);

@@ -24,6 +24,7 @@ class JobModel:
   Attributes:
    - jobId
    - taskId
+   - processId
    - jobDescription
    - creationTime
    - jobStatus
@@ -36,17 +37,19 @@ class JobModel:
     None, # 0
     (1, TType.STRING, 'jobId', None, None, ), # 1
     (2, TType.STRING, 'taskId', None, None, ), # 2
-    (3, TType.STRING, 'jobDescription', None, None, ), # 3
-    (4, TType.I64, 'creationTime', None, None, ), # 4
-    (5, TType.STRUCT, 'jobStatus', (apache.airavata.model.status.ttypes.JobStatus, apache.airavata.model.status.ttypes.JobStatus.thrift_spec), None, ), # 5
-    (6, TType.STRING, 'computeResourceConsumed', None, None, ), # 6
-    (7, TType.STRING, 'jobName', None, None, ), # 7
-    (8, TType.STRING, 'workingDir', None, None, ), # 8
+    (3, TType.STRING, 'processId', None, None, ), # 3
+    (4, TType.STRING, 'jobDescription', None, None, ), # 4
+    (5, TType.I64, 'creationTime', None, None, ), # 5
+    (6, TType.STRUCT, 'jobStatus', (apache.airavata.model.status.ttypes.JobStatus, apache.airavata.model.status.ttypes.JobStatus.thrift_spec), None, ), # 6
+    (7, TType.STRING, 'computeResourceConsumed', None, None, ), # 7
+    (8, TType.STRING, 'jobName', None, None, ), # 8
+    (9, TType.STRING, 'workingDir', None, None, ), # 9
   )
 
-  def __init__(self, jobId=None, taskId=None, jobDescription=None, creationTime=None, jobStatus=None, computeResourceConsumed=None, jobName=None, workingDir=None,):
+  def __init__(self, jobId=None, taskId=None, processId=None, jobDescription=None, creationTime=None, jobStatus=None, computeResourceConsumed=None, jobName=None, workingDir=None,):
     self.jobId = jobId
     self.taskId = taskId
+    self.processId = processId
     self.jobDescription = jobDescription
     self.creationTime = creationTime
     self.jobStatus = jobStatus
@@ -75,31 +78,36 @@ class JobModel:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
-          self.jobDescription = iprot.readString();
+          self.processId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 4:
+        if ftype == TType.STRING:
+          self.jobDescription = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
         if ftype == TType.I64:
           self.creationTime = iprot.readI64();
         else:
           iprot.skip(ftype)
-      elif fid == 5:
+      elif fid == 6:
         if ftype == TType.STRUCT:
           self.jobStatus = apache.airavata.model.status.ttypes.JobStatus()
           self.jobStatus.read(iprot)
         else:
           iprot.skip(ftype)
-      elif fid == 6:
+      elif fid == 7:
         if ftype == TType.STRING:
           self.computeResourceConsumed = iprot.readString();
         else:
           iprot.skip(ftype)
-      elif fid == 7:
+      elif fid == 8:
         if ftype == TType.STRING:
           self.jobName = iprot.readString();
         else:
           iprot.skip(ftype)
-      elif fid == 8:
+      elif fid == 9:
         if ftype == TType.STRING:
           self.workingDir = iprot.readString();
         else:
@@ -122,28 +130,32 @@ class JobModel:
       oprot.writeFieldBegin('taskId', TType.STRING, 2)
       oprot.writeString(self.taskId)
       oprot.writeFieldEnd()
+    if self.processId is not None:
+      oprot.writeFieldBegin('processId', TType.STRING, 3)
+      oprot.writeString(self.processId)
+      oprot.writeFieldEnd()
     if self.jobDescription is not None:
-      oprot.writeFieldBegin('jobDescription', TType.STRING, 3)
+      oprot.writeFieldBegin('jobDescription', TType.STRING, 4)
       oprot.writeString(self.jobDescription)
       oprot.writeFieldEnd()
     if self.creationTime is not None:
-      oprot.writeFieldBegin('creationTime', TType.I64, 4)
+      oprot.writeFieldBegin('creationTime', TType.I64, 5)
       oprot.writeI64(self.creationTime)
       oprot.writeFieldEnd()
     if self.jobStatus is not None:
-      oprot.writeFieldBegin('jobStatus', TType.STRUCT, 5)
+      oprot.writeFieldBegin('jobStatus', TType.STRUCT, 6)
       self.jobStatus.write(oprot)
       oprot.writeFieldEnd()
     if self.computeResourceConsumed is not None:
-      oprot.writeFieldBegin('computeResourceConsumed', TType.STRING, 6)
+      oprot.writeFieldBegin('computeResourceConsumed', TType.STRING, 7)
       oprot.writeString(self.computeResourceConsumed)
       oprot.writeFieldEnd()
     if self.jobName is not None:
-      oprot.writeFieldBegin('jobName', TType.STRING, 7)
+      oprot.writeFieldBegin('jobName', TType.STRING, 8)
       oprot.writeString(self.jobName)
       oprot.writeFieldEnd()
     if self.workingDir is not None:
-      oprot.writeFieldBegin('workingDir', TType.STRING, 8)
+      oprot.writeFieldBegin('workingDir', TType.STRING, 9)
       oprot.writeString(self.workingDir)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -154,6 +166,8 @@ class JobModel:
       raise TProtocol.TProtocolException(message='Required field jobId is unset!')
     if self.taskId is None:
       raise TProtocol.TProtocolException(message='Required field taskId is unset!')
+    if self.processId is None:
+      raise TProtocol.TProtocolException(message='Required field processId is unset!')
     if self.jobDescription is None:
       raise TProtocol.TProtocolException(message='Required field jobDescription is unset!')
     return
@@ -163,6 +177,7 @@ class JobModel:
     value = 17
     value = (value * 31) ^ hash(self.jobId)
     value = (value * 31) ^ hash(self.taskId)
+    value = (value * 31) ^ hash(self.processId)
     value = (value * 31) ^ hash(self.jobDescription)
     value = (value * 31) ^ hash(self.creationTime)
     value = (value * 31) ^ hash(self.jobStatus)

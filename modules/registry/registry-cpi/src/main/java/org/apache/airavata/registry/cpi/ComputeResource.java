@@ -19,10 +19,10 @@
 
 package org.apache.airavata.registry.cpi;
 
+import org.apache.airavata.model.appcatalog.computeresource.*;
+
 import java.util.List;
 import java.util.Map;
-
-import org.apache.airavata.model.appcatalog.computeresource.*;
 
 public interface ComputeResource {
     /**
@@ -138,7 +138,12 @@ public interface ComputeResource {
      */
     Map<String, String> getAllComputeResourceIdList () throws AppCatalogException;
 
-
+    /**
+     * This method will retrieve all the enabled compute resource id with it's name
+     * @return
+     * @throws AppCatalogException
+     */
+    Map<String, String> getAvailableComputeResourceIdList() throws AppCatalogException;
 
 //    /**
 //     * This method will retrieve GlobusJobSubmission object

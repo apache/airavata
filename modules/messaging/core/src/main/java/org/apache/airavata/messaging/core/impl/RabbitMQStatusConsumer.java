@@ -154,6 +154,7 @@ public class RabbitMQStatusConsumer implements Consumer {
                         ThriftUtils.createThriftFromBytes(body, message);
                         TBase event = null;
                         String gatewayId = null;
+
                         if (message.getMessageType().equals(MessageType.EXPERIMENT)) {
                             ExperimentStatusChangeEvent experimentStatusChangeEvent = new ExperimentStatusChangeEvent();
                             ThriftUtils.createThriftFromBytes(message.getEvent(), experimentStatusChangeEvent);
@@ -211,6 +212,7 @@ public class RabbitMQStatusConsumer implements Consumer {
                         }
                         MessageContext messageContext = new MessageContext(event, message.getMessageType(), message.getMessageId(), gatewayId);
                         messageContext.setUpdatedTime(AiravataUtils.getTime(message.getUpdatedTime()));
+	                    messageContext.setIsRedeliver(envelope.isRedeliver());
                         handler.onMessage(messageContext);
                     } catch (TException e) {
                         String msg = "Failed to de-serialize the thrift message, from routing keys and queueName " + id;

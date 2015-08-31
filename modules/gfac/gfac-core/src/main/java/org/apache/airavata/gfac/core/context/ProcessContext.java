@@ -21,7 +21,7 @@
 
 package org.apache.airavata.gfac.core.context;
 
-import org.apache.airavata.gfac.core.GFacUtils;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -77,6 +77,7 @@ public class ProcessContext {
 	private ComputeResourcePreference computeResourcePreference;
 	private MonitorMode monitorMode;
 	private ResourceJobManager resourceJobManager;
+	private boolean handOver;
 
 	/**
 	 * Note: process context property use lazy loading approach. In runtime you will see some properties as null
@@ -272,6 +273,12 @@ public class ProcessContext {
 	}
 
 	public JobModel getJobModel() {
+		if (jobModel == null) {
+			jobModel = new JobModel();
+			jobModel.setProcessId(processId);
+			jobModel.setWorkingDir(getWorkingDir());
+			jobModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
+		}
 		return jobModel;
 	}
 
@@ -333,5 +340,13 @@ public class ProcessContext {
 
 	public String getExperimentId() {
 		return processModel.getExperimentId();
+	}
+
+	public boolean isHandOver() {
+		return handOver;
+	}
+
+	public void setHandOver(boolean handOver) {
+		this.handOver = handOver;
 	}
 }

@@ -21,11 +21,7 @@
 package org.apache.airavata.gfac.core.watcher;
 
 import org.apache.curator.framework.api.CuratorWatcher;
-import org.apache.zookeeper.WatchedEvent;
 
-public class CancelRequestWatcher implements CuratorWatcher {
-	@Override
-	public void process(WatchedEvent watchedEvent) throws Exception {
-		// this watcher change data in cancel listener node in the experiment node
-	}
+public interface CancelRequestWatcher extends CuratorWatcher {
+
 }

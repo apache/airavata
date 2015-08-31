@@ -27,17 +27,18 @@ import java.net.InetAddress;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.server.handler.AiravataServerHandler;
-import org.apache.airavata.api.server.security.SecurityModule;
+import org.apache.airavata.api.server.security.AiravataSecurityManager;
+import org.apache.airavata.api.server.security.SecurityManagerFactory;
+import org.apache.airavata.api.server.security.interceptor.SecurityModule;
 import org.apache.airavata.api.server.util.AppCatalogInitUtil;
 import org.apache.airavata.api.server.util.Constants;
 import org.apache.airavata.api.server.util.RegistryInitUtil;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
@@ -73,11 +74,23 @@ public class AiravataAPIServer implements IServer{
 
 				TServerTransport serverTransport;
 
-				if (serverHost == null) {
-					serverTransport = new TServerSocket(serverPort);
+				if(ServerSettings.isAPIServerTLSEnabled()) {
+					logger.info("Starting API Server with TLS Security..");
+
+					String keystore = ServerSettings.getApiServerKeystore();
+					String keystorePWD = ServerSettings.getApiServerKeystorePasswd();
+					TSSLTransportFactory.TSSLTransportParameters tlsParams =
+							new TSSLTransportFactory.TSSLTransportParameters();
+					tlsParams.setKeyStore(keystore, keystorePWD);
+					serverTransport = TSSLTransportFactory.getServerSocket(serverPort, 10000,
+							InetAddress.getByName(serverHost), tlsParams);
 				} else {
-					InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
-					serverTransport = new TServerSocket(inetSocketAddress);
+					if(serverHost == null){
+						serverTransport = new TServerSocket(serverPort);
+					}else{
+						InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
+						serverTransport = new TServerSocket(inetSocketAddress);
+					}
 				}
 
 				TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
@@ -145,6 +158,11 @@ public class AiravataAPIServer implements IServer{
                 }.start();
                 logger.info("Airavata API server starter over TLS on Port: " + ServerSettings.getTLSServerPort());
             }
+            /*perform any security related initialization at the server startup, according to the underlying security
+             manager implementation being used.*/
+            AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
+            securityManager.initializeSecurityInfra();
+
         } catch (TTransportException e) {
             logger.error(e.getMessage());
             setStatus(ServerStatus.FAILED);
@@ -154,6 +172,9 @@ public class AiravataAPIServer implements IServer{
             logger.error(e.getMessage(), e);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         } catch (UnknownHostException e) {
+            logger.error(e.getMessage(), e);
+            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+        } catch (AiravataSecurityException e) {
             logger.error(e.getMessage(), e);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }

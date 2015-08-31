@@ -22,12 +22,16 @@
 package org.apache.airavata.api.server.handler;
 
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.airavataAPIConstants;
-import org.apache.airavata.api.server.security.SecurityCheck;
+import org.apache.airavata.api.airavata_apiConstants;
+import org.apache.airavata.api.server.security.interceptor.SecurityCheck;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
+import org.apache.airavata.credential.store.cpi.CredentialStoreService;
+import org.apache.airavata.credential.store.datamodel.SSHCredential;
+import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
@@ -76,6 +80,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     private AppCatalog appCatalog;
     private Publisher publisher;
 	private WorkflowCatalog workflowCatalog;
+    private CredentialStoreService.Client csClient;
 
     public AiravataServerHandler() {
         try {
@@ -95,7 +100,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String getAPIVersion(AuthzToken authzToken) throws InvalidRequestException, AiravataClientException,
             AiravataSystemException, AuthorizationException, TException {
 
-        return airavataAPIConstants.AIRAVATA_API_VERSION;
+        return airavata_apiConstants.AIRAVATA_API_VERSION;
     }
 
     @Override
@@ -246,19 +251,56 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public String generateAndRegisterSSHKeys(AuthzToken authzToken, String gatewayId, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            if (csClient == null){
+                csClient = getCredentialStoreServiceClient();
+            }
+            SSHCredential sshCredential = new SSHCredential();
+            sshCredential.setUsername(userName);
+            sshCredential.setGatewayId(gatewayId);
+            return csClient.addSSHCredential(sshCredential);
+        }catch (Exception e){
+            logger.error("Error occurred while registering SSH Credential", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while registering SSH Credential. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     @SecurityCheck
-    public String getSSHPubKey(AuthzToken authzToken, String airavataCredStoreToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+    public String getSSHPubKey(AuthzToken authzToken, String airavataCredStoreToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            if (csClient == null){
+                csClient = getCredentialStoreServiceClient();
+            }
+            SSHCredential sshCredential = csClient.getSSHCredential(airavataCredStoreToken, gatewayId);
+            return sshCredential.getPublicKey();
+        }catch (Exception e){
+            logger.error("Error occurred while retrieving SSH credential", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while retrieving SSH credential. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     @SecurityCheck
     public Map<String, String> getAllUserSSHPubKeys(AuthzToken authzToken, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            if (csClient == null){
+                csClient = getCredentialStoreServiceClient();
+            }
+            return csClient.getAllSSHKeysForUser(userName);
+        }catch (Exception e){
+            logger.error("Error occurred while retrieving SSH public keys for user : " + userName , e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while retrieving SSH public keys for user : " + userName + ". More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -2253,7 +2295,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             ApplicationDeployment applicationDeployment = appCatalog.getApplicationDeployment();
-            Map<String, String> allComputeResources = appCatalog.getComputeResource().getAllComputeResourceIdList();
+            Map<String, String> allComputeResources = appCatalog.getComputeResource().getAvailableComputeResourceIdList();
             Map<String, String> availableComputeResources = new HashMap<String, String>();
             ApplicationInterfaceDescription applicationInterface =
                     appCatalog.getApplicationInterface().getApplicationInterface(appInterfaceId);
@@ -2500,6 +2542,34 @@ public class AiravataServerHandler implements Airavata.Iface {
             ComputeResource computeResource = appCatalog.getComputeResource();
             return addJobSubmissionInterface(computeResource, computeResourceId,
             		computeResource.addSSHJobSubmission(sshJobSubmission), JobSubmissionProtocol.SSH, priorityOrder);
+        } catch (AppCatalogException e) {
+            logger.error(computeResourceId, "Error while adding job submission interface to resource compute resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Add a SSH_FORK Job Submission details to a compute resource
+     * App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+     *
+     * @param computeResourceId The identifier of the compute resource to which JobSubmission protocol to be added
+     * @param priorityOrder     Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+     * @param sshJobSubmission  The SSHJobSubmission object to be added to the resource.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    @SecurityCheck
+    public String addSSHForkJobSubmissionDetails(AuthzToken authzToken, String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            ComputeResource computeResource = appCatalog.getComputeResource();
+            return addJobSubmissionInterface(computeResource, computeResourceId,
+                    computeResource.addSSHJobSubmission(sshJobSubmission), JobSubmissionProtocol.SSH_FORK, priorityOrder);
         } catch (AppCatalogException e) {
             logger.error(computeResourceId, "Error while adding job submission interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -3619,6 +3689,16 @@ public class AiravataServerHandler implements Airavata.Iface {
             ProjectNotFoundException exception = new ProjectNotFoundException();
             exception.setMessage("Error while removing the project. More info : " + e.getMessage());
             throw exception;
+        }
+    }
+
+    private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
+        final String serverHost = ServerSettings.getCredentialStoreServerHost();
+        try {
+            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
+        } catch (CredentialStoreException e) {
+            throw new TException("Unable to create credential store client...", e);
         }
     }
 }

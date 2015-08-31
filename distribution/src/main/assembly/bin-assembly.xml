@@ -102,9 +102,11 @@
 				<include>SLURMTemplate.xslt</include>
 				<include>LSFTemplate.xslt</include>
 				<include>UGETemplate.xslt</include>
+				<include>ForkTemplate.xslt</include>
 				<include>gsissh.properties</include>
 				<include>airavata.jks</include>
 				<include>client_truststore.jks</include>
+				<include>airavata-default-xacml-policy.xml</include>
 			</includes>
 		</fileSet>
 

@@ -1,0 +1,167 @@
+<Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17" PolicyId="airavata-default-xacml-policy"
+        RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:permit-overrides" Version="1.0">
+    <Target/>
+    <Rule Effect="Permit" RuleId="admin-permit">
+        <Target>
+            <AnyOf>
+                <AllOf>
+                    <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">/airavata/*</AttributeValue>
+                        <AttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
+                                             Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
+                                             DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="true"/>
+                    </Match>
+                </AllOf>
+            </AnyOf>
+        </Target>
+        <Condition>
+            <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+                <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">admin</AttributeValue>
+                <AttributeDesignator AttributeId="http://wso2.org/claims/role"
+                                     Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                     DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="true"/>
+            </Apply>
+        </Condition>
+    </Rule>
+    <Rule Effect="Permit" RuleId="admin-read-only-permit">
+        <Target>
+            <AnyOf>
+                <AllOf>
+                    <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">^(?:(?!
+/airavata/addGateway|
+/airavata/deleteteway|
+/airavata/updateGateway|
+/airavata/registerApplicationModule|
+/airavata/deleteApplicationModule|
+/airavata/updateApplicationInterface|
+/airavata/deleteApplicationInterface|
+/airavata/updateApplicationDeployment|
+/airavata/registerApplicationDeployment|
+/airavata/deleteApplicationDeployment|
+/airavata/updateComputeResource|
+/airavata/registerComputeResource|
+/airavata/deleteBatchQueue|
+/airavata/updateResourceJobManager|
+/airavata/addLocalSubmissionDetails|
+/airavata/updateResourceJobManager|
+/airavaa/updateSSHJobSubmissionDetails|
+/airavata/addSSHJobSubmissionDetails|
+/airavata/addSSHForkJobSubmissionDetails|
+/airavata/updateUnicoreJobSubmissionDetails|
+/airavata/addUNICOREJobSubmissionDetails|
+/airavata/addLocalDataMovementDetails|
+/airavata/updateSCPDataMovementDetails|
+/airavata/addSCPDataMovementDetails|
+/airavata/updateGridFTPDataMovementDetails|
+/airavata/addGridFTPDataMovementDetails|
+/airavata/updateUnicoreDataMovementDetails|
+/airavata/addUnicoreDataMovementDetails|
+/airavata/deleteJobSubmissionInterface|
+/airavata/deleteDataMovementInterface|
+/airavata/deleteComputeResource|
+/airavata/updateGatewayResourceProfile|
+/airavata/registerGatewayResourceProfile|
+/airavata/addGatewayComputeResourcePreference|
+/airavata/deleteGatewayResourceProfile|
+/airavata/deleteGatewayComputeResourcePreference).)*$\r?\n?
+</AttributeValue>
+                        <AttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
+                                             Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
+                                             DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="true"/>
+                    </Match>
+                </AllOf>
+            </AnyOf>
+        </Target>
+        <Condition>
+            <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+                <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">admin_read_only</AttributeValue>
+                <AttributeDesignator AttributeId="http://wso2.org/claims/role"
+                                     Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                     DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="true"/>
+            </Apply>
+        </Condition>
+    </Rule>
+    <Rule Effect="Permit" RuleId="user-permit">
+        <Target>
+            <AnyOf>
+                <AllOf>
+                    <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">^(?:(?!
+/airavata/addGateway|
+/airavata/getExperimentStatistics|
+/airavata/deleteteway|
+/airavata/updateGateway|
+/airavata/registerApplicationModule|
+/airavata/deleteApplicationModule|
+/airavata/getAllApplicationInterfaces|
+/airavata/updateApplicationInterface|
+/airavata/deleteApplicationInterface|
+/airavata/getAllComputeResourceNames|
+/airavata/getAllApplicationDeployments|
+/airavata/updateApplicationDeployment|
+/airavata/registerApplicationDeployment|
+/airavata/deleteApplicationDeployment|
+/airavata/getAllAppModules|
+/airavata/getApplicationInterface|
+/airavata/getApplicationInputs|
+/airavata/getApplicationOutputs|
+/airavata/updateComputeResource|
+/airavata/getComputeResource|
+/airavata/registerComputeResource|
+/airavata/deleteBatchQueue|
+/airavata/getLocalJobSubmission|
+/airavata/updateResourceJobManager|
+/airavata/addLocalSubmissionDetails|
+/airavata/getSSHJobSubmission|
+/airavata/updateResourceJobManager|
+/airavata/getresourceJobManager|
+/airavaa/updateSSHJobSubmissionDetails|
+/airavata/addSSHJobSubmissionDetails|
+/airavata/addSSHForkJobSubmissionDetails|
+/airavata/getUnicoreJobSubmission|
+/airavata/updateUnicoreJobSubmissionDetails|
+/airavata/addUNICOREJobSubmissionDetails|
+/airavata/addLocalDataMovementDetails|
+/airavata/updateSCPDataMovementDetails|
+/airavata/addSCPDataMovementDetails|
+/airavata/updateGridFTPDataMovementDetails|
+/airavata/addGridFTPDataMovementDetails|
+/airavata/updateUnicoreDataMovementDetails|
+/airavata/addUnicoreDataMovementDetails|
+/airavata/getCloudJobSubmission|
+/airavata/getSCPDataMovement|
+/airavata/getGridFTPDataMovement|
+/airavata/getUnicoreDataMovement|
+/airavata/deleteJobSubmissionInterface|
+/airavata/deleteDataMovementInterface|
+/airavata/deleteComputeResource|
+/airavata/updateGatewayResourceProfile|
+/airavata/registerGatewayResourceProfile|
+/airavata/getAllGateways|
+/airavata/getGateway|
+/airavata/getAllGatewayComputeResources|
+/airavata/addGatewayComputeResourcePreference|
+/airavata/deleteGatewayResourceProfile|
+/airavata/deleteGatewayComputeResourcePreference|
+/airavata/getAvailableAppInterfaceComputeResources).)*$\r?\n?
+</AttributeValue>
+                        <AttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
+                                             Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
+                                             DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="true"/>
+                    </Match>
+                </AllOf>
+            </AnyOf>
+        </Target>
+        <Condition>
+            <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+                <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">Internal/everyone</AttributeValue>
+                <AttributeDesignator AttributeId="http://wso2.org/claims/role"
+                                     Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                     DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="true"/>
+            </Apply>
+        </Condition>
+    </Rule>
+    <Rule Effect="Deny" RuleId="deny-rule"/>
+</Policy>
+                            

@@ -33,6 +33,7 @@ public class MessageContext {
     private final String gatewayId;
     private Timestamp updatedTime;
     private long deliveryTag;
+	private boolean isRedeliver;
 
 
     public MessageContext(TBase event, MessageType type, String messageId, String gatewayId) {
@@ -81,4 +82,12 @@ public class MessageContext {
     public void setDeliveryTag(long deliveryTag) {
         this.deliveryTag = deliveryTag;
     }
+
+	public void setIsRedeliver(boolean isRedeliver) {
+		this.isRedeliver = isRedeliver;
+	}
+
+	public boolean isRedeliver() {
+		return isRedeliver;
+	}
 }

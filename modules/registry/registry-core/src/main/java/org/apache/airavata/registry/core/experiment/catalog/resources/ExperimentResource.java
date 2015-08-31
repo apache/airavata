@@ -457,6 +457,7 @@ public class ExperimentResource extends AbstractExpCatResource {
             experiment.setEmailAddresses(emailAddresses);
             em.persist(experiment);
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

@@ -18,22 +18,27 @@
  * under the License.
  *
  */
+
 package org.apache.airavata.api.server.security;
 
-import com.google.inject.matcher.Matchers;
-import com.google.inject.AbstractModule;
+import org.apache.airavata.model.security.AuthzToken;
 
 /**
- * This does the plumbing work of integrating the interceptor with Guice framework for the methods to be
- * intercepted upon their invocation.
+ * This provides a thread local container for AuthzToken through out the execution of a particular thread.
  */
-public class SecurityModule extends AbstractModule {
-    public void configure(){
-        System.out.println("Security module reached...");
-        SecurityInterceptor interceptor = new SecurityInterceptor();
-        //requestInjection(interceptor);
+public class IdentityContext {
+    private static ThreadLocal authzTokenContainer = new ThreadLocal();
 
-        bindInterceptor(Matchers.any(), Matchers.annotatedWith(SecurityCheck.class), interceptor);
+    public static void set(AuthzToken authzToken){
+        authzTokenContainer.set(authzToken);
+    }
+
+    public static void unset(){
+        authzTokenContainer.remove();
+    }
+
+    public static AuthzToken get(){
+        return (AuthzToken) authzTokenContainer.get();
     }
 
 }
