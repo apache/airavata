@@ -47,6 +47,7 @@
 /airavata/updateResourceJobManager|
 /airavaa/updateSSHJobSubmissionDetails|
 /airavata/addSSHJobSubmissionDetails|
+/airavata/addSSHForkJobSubmissionDetails|
 /airavata/updateUnicoreJobSubmissionDetails|
 /airavata/addUNICOREJobSubmissionDetails|
 /airavata/addLocalDataMovementDetails|
@@ -117,6 +118,7 @@
 /airavata/getresourceJobManager|
 /airavaa/updateSSHJobSubmissionDetails|
 /airavata/addSSHJobSubmissionDetails|
+/airavata/addSSHForkJobSubmissionDetails|
 /airavata/getUnicoreJobSubmission|
 /airavata/updateUnicoreJobSubmissionDetails|
 /airavata/addUNICOREJobSubmissionDetails|

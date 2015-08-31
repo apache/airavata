@@ -2551,6 +2551,34 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    /**
+     * Add a SSH_FORK Job Submission details to a compute resource
+     * App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+     *
+     * @param computeResourceId The identifier of the compute resource to which JobSubmission protocol to be added
+     * @param priorityOrder     Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+     * @param sshJobSubmission  The SSHJobSubmission object to be added to the resource.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    @SecurityCheck
+    public String addSSHForkJobSubmissionDetails(AuthzToken authzToken, String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            ComputeResource computeResource = appCatalog.getComputeResource();
+            return addJobSubmissionInterface(computeResource, computeResourceId,
+                    computeResource.addSSHJobSubmission(sshJobSubmission), JobSubmissionProtocol.SSH_FORK, priorityOrder);
+        } catch (AppCatalogException e) {
+            logger.error(computeResourceId, "Error while adding job submission interface to resource compute resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     @Override
     @SecurityCheck
     public SSHJobSubmission getSSHJobSubmission(AuthzToken authzToken, String jobSubmissionId) throws InvalidRequestException,
