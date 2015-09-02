@@ -78,7 +78,7 @@ public class ProcessContext {
 	private MonitorMode monitorMode;
 	private ResourceJobManager resourceJobManager;
 	private boolean handOver;
-
+	private boolean cancel;
 	/**
 	 * Note: process context property use lazy loading approach. In runtime you will see some properties as null
 	 * unless you have access it previously. Once that property access using the api,it will be set to correct value.
@@ -348,5 +348,17 @@ public class ProcessContext {
 
 	public void setHandOver(boolean handOver) {
 		this.handOver = handOver;
+	}
+
+	public boolean isCancel() {
+		return cancel;
+	}
+
+	public void setCancel(boolean cancel) {
+		this.cancel = cancel;
+	}
+
+	public boolean isInterrupted(){
+		return this.cancel || this.handOver;
 	}
 }
