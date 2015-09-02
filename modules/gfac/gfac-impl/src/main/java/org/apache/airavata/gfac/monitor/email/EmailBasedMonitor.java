@@ -103,16 +103,18 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 			ResourceJobManagerType type = resourceConfigEntry.getKey();
 			ResourceConfig config = resourceConfigEntry.getValue();
 			List<String> resourceEmailAddresses = config.getResourceEmailAddresses();
-			for (String resourceEmailAddress : resourceEmailAddresses) {
-				addressMap.put(resourceEmailAddress, type);
-			}
-			try {
-				Class<? extends EmailParser> emailParserClass = Class.forName(config.getEmailParser()).asSubclass(EmailParser.class);
-				EmailParser emailParser = emailParserClass.getConstructor().newInstance();
-				emailParserMap.put(type, emailParser);
-			} catch (Exception e) {
-				throw new AiravataException("Error while instantiation email parsers", e);
-			}
+            if (resourceEmailAddresses != null && !resourceEmailAddresses.isEmpty()){
+                for (String resourceEmailAddress : resourceEmailAddresses) {
+                    addressMap.put(resourceEmailAddress, type);
+                }
+                try {
+                    Class<? extends EmailParser> emailParserClass = Class.forName(config.getEmailParser()).asSubclass(EmailParser.class);
+                    EmailParser emailParser = emailParserClass.getConstructor().newInstance();
+                    emailParserMap.put(type, emailParser);
+                } catch (Exception e) {
+                    throw new AiravataException("Error while instantiation email parsers", e);
+                }
+            }
 		}
 
 	}
