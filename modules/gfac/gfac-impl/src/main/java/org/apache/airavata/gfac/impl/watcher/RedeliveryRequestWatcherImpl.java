@@ -38,9 +38,9 @@ public class RedeliveryRequestWatcherImpl implements RedeliveryRequestWatcher {
 		String path = watchedEvent.getPath();
 		Watcher.Event.EventType eventType = watchedEvent.getType();
 		log.info("Redelivery request came for zk path {} event type {} ", path, eventType.name());
+		CuratorFramework curatorClient = Factory.getCuratorClient();
 		switch (eventType) {
 			case NodeDataChanged:
-				CuratorFramework curatorClient = Factory.getCuratorClient();
 				byte[] bytes = curatorClient.getData().forPath(path);
 				String serverName = new String(bytes);
 				String processId = path.substring(path.lastIndexOf("/") + 1);
@@ -61,8 +61,11 @@ public class RedeliveryRequestWatcherImpl implements RedeliveryRequestWatcher {
 			case NodeCreated:
 			case NodeChildrenChanged:
 			case None:
+				curatorClient.getData().usingWatcher(this).forPath(path);
+				break;
 				// not yet implemented
 			default:
+				curatorClient.getData().usingWatcher(this).forPath(path);
 				break;
 		}
 	}

@@ -127,7 +127,8 @@ public class GFacEngineImpl implements GFacEngine {
 
 	@Override
 	public void executeProcess(ProcessContext processContext) throws GFacException {
-		if (processContext.isHandOver()) {
+		if (processContext.isInterrupted()) {
+			GFacUtils.handleProcessInterrupt(processContext);
 			return;
 		}
 //		List<TaskContext> taskChain = new ArrayList<>();
@@ -139,20 +140,23 @@ public class GFacEngineImpl implements GFacEngine {
 		// exit if process is handed orver to another instance while job submission.
 		if (executeJobSubmission(processContext)) return;
 //		processContext.setTaskChain(taskChain);
-		if (processContext.isHandOver()) {
+		if (processContext.isInterrupted()) {
+			GFacUtils.handleProcessInterrupt(processContext);
 			return;
 		}
 	}
 
 	private boolean executeJobSubmission(ProcessContext processContext) throws GFacException {
-		if (processContext.isHandOver()) {
+		if (processContext.isInterrupted()) {
+			GFacUtils.handleProcessInterrupt(processContext);
 			return true;
 		}
 		TaskContext taskCtx;
 		TaskStatus taskStatus;
 		processContext.setProcessStatus(new ProcessStatus(ProcessState.EXECUTING));
 		JobSubmissionTask jobSubmissionTask = Factory.getJobSubmissionTask(processContext.getJobSubmissionProtocol());
-		if (processContext.isHandOver()) {
+		if (processContext.isInterrupted()) {
+			GFacUtils.handleProcessInterrupt(processContext);
 			return true;
 		}
 		GFacUtils.saveAndPublishProcessStatus(processContext);
@@ -163,11 +167,16 @@ public class GFacEngineImpl implements GFacEngine {
 		if (taskStatus.getState() == TaskState.FAILED) {
 			throw new GFacException("Job submission task failed");
 		}
-		return processContext.isHandOver();
+		if (processContext.isInterrupted()) {
+			GFacUtils.handleProcessInterrupt(processContext);
+			return true;
+		}
+		return false;
 	}
 
 	private boolean inputDataStaging(ProcessContext processContext, boolean recover) throws GFacException {
-		if (processContext.isHandOver()) {
+		if (processContext.isInterrupted()) {
+			GFacUtils.handleProcessInterrupt(processContext);
 			return true;
 		}
 		TaskContext taskCtx;
@@ -178,7 +187,8 @@ public class GFacEngineImpl implements GFacEngine {
 		sortByInputOrder(processInputs);
 		if (processInputs != null) {
 			for (InputDataObjectType processInput : processInputs) {
-				if (processContext.isHandOver()) {
+				if (processContext.isInterrupted()) {
+					GFacUtils.handleProcessInterrupt(processContext);
 					return true;
 				}
 				DataType type = processInput.getType();
@@ -211,11 +221,16 @@ public class GFacEngineImpl implements GFacEngine {
 				}
 			}
 		}
-		return processContext.isHandOver();
+		if (processContext.isInterrupted()) {
+			GFacUtils.handleProcessInterrupt(processContext);
+			return true;
+		}
+		return false;
 	}
 
 	private boolean configureWorkspace(ProcessContext processContext, boolean recover) throws GFacException {
-		if (processContext.isHandOver()) {
+		if (processContext.isInterrupted()) {
+			GFacUtils.handleProcessInterrupt(processContext);
 			return true;
 		}
 		TaskContext taskCtx;
@@ -234,7 +249,11 @@ public class GFacEngineImpl implements GFacEngine {
 					().name(), taskStatus.getReason());
 			throw new GFacException("Error while environment setup");
 		}
-		return processContext.isHandOver();
+		if (processContext.isInterrupted()) {
+			GFacUtils.handleProcessInterrupt(processContext);
+			return true;
+		}
+		return false;
 	}
 
 
@@ -266,37 +285,58 @@ public class GFacEngineImpl implements GFacEngine {
 
 	@Override
 	public void runProcessOutflow(ProcessContext processContext) throws GFacException {
-		if (processContext.isHandOver()) {
+		if (processContext.isInterrupted()) {
+			GFacUtils.handleProcessInterrupt(processContext);
 			return;
 		}
 		// exit if process is handed over to another instance while output staging.
 		if (outpuDataStaging(processContext, false)) return;
 
-		if (processContext.isHandOver()) {
+		if (processContext.isInterrupted()) {
+			GFacUtils.handleProcessInterrupt(processContext);
 			return;
 		}
 
 		postProcessing(processContext,false);
 
-		if (processContext.isHandOver()) {
-			return;
+		if (processContext.isInterrupted()) {
+			GFacUtils.handleProcessInterrupt(processContext);
 		}
 	}
 
+	/**
+	 *
+	 * @param processContext
+	 * @param recovery
+	 * @return <code>true</code> if you need to interrupt processing <code>false</code> otherwise.
+	 * @throws GFacException
+	 */
 	private boolean postProcessing(ProcessContext processContext, boolean recovery) throws GFacException {
 		processContext.setProcessStatus(new ProcessStatus(ProcessState.POST_PROCESSING));
 		GFacUtils.saveAndPublishProcessStatus(processContext);
 //		taskCtx = getEnvCleanupTaskContext(processContext);
-		return processContext.isHandOver();
+		if (processContext.isInterrupted()) {
+			GFacUtils.handleProcessInterrupt(processContext);
+			return true;
+		}
+		return false;
 	}
 
+	/**
+	 *
+	 * @param processContext
+	 * @param recovery
+	 * @return <code>true</code> if process execution interrupted , <code>false</code> otherwise.
+	 * @throws GFacException
+	 */
 	private boolean outpuDataStaging(ProcessContext processContext, boolean recovery) throws GFacException {
 		TaskContext taskCtx;
 		processContext.setProcessStatus(new ProcessStatus(ProcessState.OUTPUT_DATA_STAGING));
 		GFacUtils.saveAndPublishProcessStatus(processContext);
 		List<OutputDataObjectType> processOutputs = processContext.getProcessModel().getProcessOutputs();
 		for (OutputDataObjectType processOutput : processOutputs) {
-			if (processContext.isHandOver()) {
+			if (processContext.isInterrupted()) {
+				GFacUtils.handleProcessInterrupt(processContext);
 				return true;
 			}
 			DataType type = processOutput.getType();

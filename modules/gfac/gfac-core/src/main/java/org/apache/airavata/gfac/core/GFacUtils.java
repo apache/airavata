@@ -1134,4 +1134,21 @@ public class GFacUtils {
 		}
 	}
 
+	public static void handleProcessInterrupt(ProcessContext processContext) throws GFacException {
+		if (processContext.isCancel()) {
+			ProcessStatus pStatus = new ProcessStatus(ProcessState.CANCELLING);
+			pStatus.setReason("Process Cancel triggered");
+			saveAndPublishProcessStatus(processContext);
+			// do cancel operation here
+
+			pStatus.setState(ProcessState.CANCELED);
+			saveAndPublishProcessStatus(processContext);
+		}else if (processContext.isHandOver()) {
+
+		} else {
+			log.error("expId: {}, processId: {} :- Unknown process interrupt", processContext.getExperimentId(),
+					processContext.getProcessId());
+		}
+	}
+
 }

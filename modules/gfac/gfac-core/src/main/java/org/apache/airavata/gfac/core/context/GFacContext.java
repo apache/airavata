@@ -54,7 +54,7 @@ public class GFacContext {
 		return processes.get(processId);
 	}
 
-	public void remoteProcess(String processId) {
+	public void removeProcess(String processId) {
 		processes.remove(processId);
 	}
 }
