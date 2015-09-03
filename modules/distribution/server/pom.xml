@@ -302,11 +302,7 @@
 			<artifactId>airavata-gfac-ssh</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<!--<dependency> -->
-		<!--<groupId>org.apache.airavata</groupId> -->
-		<!--<artifactId>airavata-gfac-gram</artifactId> -->
-		<!--<version>${project.version}</version> -->
-		<!--</dependency> -->
+
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-gfac-bes</artifactId>
@@ -327,11 +323,7 @@
 			<artifactId>airavata-gfac-local</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<!--<dependency> -->
-		<!--<groupId>org.apache.airavata</groupId> -->
-		<!--<artifactId>airavata-gfac-hadoop</artifactId> -->
-		<!--<version>${project.version}</version> -->
-		<!--</dependency> -->
+
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-gfac-core</artifactId>
@@ -342,31 +334,13 @@
 			<artifactId>airavata-gfac-service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<!--<dependency> -->
-		<!--<groupId>org.apache.airavata</groupId> -->
-		<!--<artifactId>airavata-message-monitor</artifactId> -->
-		<!--<version>${project.version}</version> -->
-		<!--</dependency> -->
+
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-workflow-model-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<!--<dependency> -->
-		<!--<groupId>org.apache.airavata</groupId> -->
-		<!--<artifactId>airavata-messenger-commons</artifactId> -->
-		<!--<version>${project.version}</version> -->
-		<!--</dependency> -->
-		<!--<dependency> -->
-		<!--<groupId>org.apache.airavata</groupId> -->
-		<!--<artifactId>airavata-messenger-client</artifactId> -->
-		<!--<version>${project.version}</version> -->
-		<!--</dependency> -->
-		<!--<dependency> -->
-		<!--<groupId>org.apache.airavata</groupId> -->
-		<!--<artifactId>airavata-workflow-tracking</artifactId> -->
-		<!--<version>${project.version}</version> -->
-		<!--</dependency> -->
+
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>gsissh</artifactId>
@@ -382,8 +356,7 @@
 			<artifactId>airavata-api-server</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<!--dependency> <groupId>org.apache.airavata</groupId> <artifactId>apache-airavata-samples</artifactId> 
-			<type>zip</type> <version>${project.version}</version> </dependency -->
+
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk15on</artifactId>
@@ -399,58 +372,7 @@
 			<artifactId>shiro-core</artifactId>
 			<version>1.2.1</version>
 		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-client</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<!--dependency> <groupId>org.apache.airavata</groupId> <artifactId>airavata-common-utils</artifactId>
-			<version>${project.version}</version> </dependency -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.0.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-logging-juli</artifactId>
-			<version>7.0.22</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-jasper</artifactId>
-			<version>7.0.22</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-servlet</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-json</artifactId>
-			<version>${jersey.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>stax</groupId>
-					<artifactId>stax-api</artifactId>
-				</exclusion>
-			</exclusions>
 
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey.contribs</groupId>
-			<artifactId>jersey-multipart</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-server</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<!--dependency> <groupId>com.sun.jersey</groupId> <artifactId>jersey-client</artifactId> 
-			<version>${jersey.version}</version> </dependency -->
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
@@ -493,47 +415,7 @@
 			<version>12.0</version>
 		</dependency>
 
-		<!-- Hadoop provider related dependencies -->
-		<dependency>
-			<groupId>org.apache.hadoop</groupId>
-			<artifactId>hadoop-core</artifactId>
-			<version>1.0.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.hadoop</groupId>
-			<artifactId>hadoop-client</artifactId>
-			<version>1.0.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.whirr</groupId>
-			<artifactId>whirr-core</artifactId>
-			<version>0.7.1</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bouncycastle</groupId>
-					<artifactId>bcprov-jdk16</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jclouds.driver</groupId>
-					<artifactId>jclouds-bouncycastle</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.whirr</groupId>
-			<artifactId>whirr-hadoop</artifactId>
-			<version>0.7.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-all</artifactId>
-			<version>1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.8.5</version>
-		</dependency>
+
 		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
@@ -554,8 +436,6 @@
 			<artifactId>jsch</artifactId>
 			<version>0.1.50</version>
 		</dependency>
-		<!-- dependency> <groupId>org.ogce</groupId> <artifactId>bcgss</artifactId> 
-			<version>146</version> </dependency> -->
 		<dependency>
 			<groupId>org.apache.xmlbeans</groupId>
 			<artifactId>xmlbeans</artifactId>
