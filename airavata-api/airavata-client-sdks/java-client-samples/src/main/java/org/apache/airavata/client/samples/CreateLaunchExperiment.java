@@ -48,7 +48,7 @@ import java.util.*;
 public class CreateLaunchExperiment {
 
     //FIXME: Read from a config file
-    public static final String THRIFT_SERVER_HOST = "localhost";
+    public static final String THRIFT_SERVER_HOST = "gw56.iu.xsede.org";
     public static final int THRIFT_SERVER_PORT = 8930;
 //	public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
 //	public static final int THRIFT_SERVER_PORT = 9930;
@@ -58,7 +58,7 @@ public class CreateLaunchExperiment {
     public static final String DEFAULT_GATEWAY = "default";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_b730bf47-6a22-44ac-91f3-91bd463bd627";
+    private static String echoAppId = "Python_Echo_069ea651-4937-4b89-9684-fb0682ac52f5";
     private static String mpiAppId = "HelloMPI_71b6f45e-40c2-46e9-a417-160b2640fcb9";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
     private static String amberAppId = "Amber_74ad818e-7633-476a-b861-952de9b0a529";
@@ -967,19 +967,19 @@ public class CreateLaunchExperiment {
     public static String createEchoExperimentForStampede(Airavata.Client client) throws TException {
         try {
             List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), echoAppId);
-            for (InputDataObjectType inputDataObjectType : exInputs) {
-                if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo")) {
-                    inputDataObjectType.setValue("Hello World");
-                }
-            }
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), echoAppId);
+//            for (InputDataObjectType inputDataObjectType : exInputs) {
+//                if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo")) {
+//                    inputDataObjectType.setValue("Hello World");
+//                }
+//            }
+//            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), echoAppId);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
 	        String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
 
             ExperimentModel simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY,projectId, "admin", "echoExperiment", "SimpleEcho3", echoAppId, exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+//            simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), echoAppId);
             if (computeResources != null && computeResources.size() != 0) {
@@ -1441,7 +1441,7 @@ public class CreateLaunchExperiment {
     public static void launchExperiment(Airavata.Client client, String expId)
             throws TException {
         try {
-            String tokenId = "-0bbb-403b-a88a-42b6dbe198e9";
+            String tokenId = "47507a08-1579-4883-be03-3c8e3b7da061";
             client.launchExperiment(new AuthzToken(""), expId, tokenId);
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());

@@ -29,8 +29,6 @@ import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
-import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
-import org.apache.airavata.gfac.core.watcher.RedeliveryRequestWatcher;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
@@ -1008,10 +1006,36 @@ public class GFacUtils {
     public static JobSubmissionInterface getPreferredJobSubmissionInterface(ProcessContext context) throws AppCatalogException {
         try {
             String resourceHostId = context.getComputeResourceDescription().getComputeResourceId();
+            ComputeResourcePreference resourcePreference = context.getComputeResourcePreference();
+            JobSubmissionProtocol preferredJobSubmissionProtocol = resourcePreference.getPreferredJobSubmissionProtocol();
             ComputeResourceDescription resourceDescription = context.getAppCatalog().getComputeResource().getComputeResource(resourceHostId);
             List<JobSubmissionInterface> jobSubmissionInterfaces = resourceDescription.getJobSubmissionInterfaces();
+            Map<JobSubmissionProtocol, List<JobSubmissionInterface>> orderedInterfaces = new HashMap<>();
+            List<JobSubmissionInterface> interfaces = new ArrayList<>();
             if (jobSubmissionInterfaces != null && !jobSubmissionInterfaces.isEmpty()) {
-                Collections.sort(jobSubmissionInterfaces, new Comparator<JobSubmissionInterface>() {
+                for (JobSubmissionInterface submissionInterface : jobSubmissionInterfaces){
+
+                    if (preferredJobSubmissionProtocol != null){
+                        if (preferredJobSubmissionProtocol.toString().equals(submissionInterface.getJobSubmissionProtocol().toString())){
+                            if (orderedInterfaces.containsKey(submissionInterface.getJobSubmissionProtocol())){
+                                List<JobSubmissionInterface> interfaceList = orderedInterfaces.get(submissionInterface.getJobSubmissionProtocol());
+                                interfaceList.add(submissionInterface);
+                            }else {
+                                interfaces.add(submissionInterface);
+                                orderedInterfaces.put(submissionInterface.getJobSubmissionProtocol(), interfaces);
+                            }
+                        }
+                    }else {
+                        Collections.sort(jobSubmissionInterfaces, new Comparator<JobSubmissionInterface>() {
+                            @Override
+                            public int compare(JobSubmissionInterface jobSubmissionInterface, JobSubmissionInterface jobSubmissionInterface2) {
+                                return jobSubmissionInterface.getPriorityOrder() - jobSubmissionInterface2.getPriorityOrder();
+                            }
+                        });
+                    }
+                }
+                interfaces = orderedInterfaces.get(preferredJobSubmissionProtocol);
+                Collections.sort(interfaces, new Comparator<JobSubmissionInterface>() {
                     @Override
                     public int compare(JobSubmissionInterface jobSubmissionInterface, JobSubmissionInterface jobSubmissionInterface2) {
                         return jobSubmissionInterface.getPriorityOrder() - jobSubmissionInterface2.getPriorityOrder();
@@ -1020,7 +1044,7 @@ public class GFacUtils {
             } else {
                 throw new AppCatalogException("Compute resource should have at least one job submission interface defined...");
             }
-            return jobSubmissionInterfaces.get(0);
+            return interfaces.get(0);
         } catch (AppCatalogException e) {
             throw new AppCatalogException("Error occurred while retrieving data from app catalog", e);
         }
@@ -1107,6 +1131,23 @@ public class GFacUtils {
 			String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
 					+ " jobId: " + jobModel.getJobId() + " : - Error while saving Job Model";
 			throw new GFacException(msg, e);
+		}
+	}
+
+	public static void handleProcessInterrupt(ProcessContext processContext) throws GFacException {
+		if (processContext.isCancel()) {
+			ProcessStatus pStatus = new ProcessStatus(ProcessState.CANCELLING);
+			pStatus.setReason("Process Cancel triggered");
+			saveAndPublishProcessStatus(processContext);
+			// do cancel operation here
+
+			pStatus.setState(ProcessState.CANCELED);
+			saveAndPublishProcessStatus(processContext);
+		}else if (processContext.isHandOver()) {
+
+		} else {
+			log.error("expId: {}, processId: {} :- Unknown process interrupt", processContext.getExperimentId(),
+					processContext.getProcessId());
 		}
 	}
 

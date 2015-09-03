@@ -74,10 +74,11 @@ public class GFacWorker implements Runnable {
 
 	@Override
 	public void run() {
-		if (processContext.isHandOver()) {
-			return;
-		}
 		try {
+			if (processContext.isInterrupted()) {
+				GFacUtils.handleProcessInterrupt(processContext);
+				return;
+			}
 			ProcessState processState = processContext.getProcessStatus().getState();
 			switch (processState) {
 				case CREATED:
@@ -113,6 +114,10 @@ public class GFacWorker implements Runnable {
 				default:
 					throw new GFacException("process Id : " + processId + " Couldn't identify process type");
 			}
+			if (processContext.isCancel()) {
+				sendAck();
+				Factory.getGfacContext().removeProcess(processContext.getProcessId());
+			}
 		} catch (GFacException e) {
 			log.error("GFac Worker throws an exception", e);
 			ProcessStatus status = new ProcessStatus(ProcessState.FAILED);
@@ -132,7 +137,7 @@ public class GFacWorker implements Runnable {
 		processContext.setProcessStatus(new ProcessStatus(ProcessState.COMPLETED));
 		GFacUtils.saveAndPublishProcessStatus(processContext);
 		sendAck();
-		Factory.getGfacContext().remoteProcess(processContext.getProcessId());
+		Factory.getGfacContext().removeProcess(processContext.getProcessId());
 	}
 
 	private void recoverProcessOutflow() throws GFacException {
@@ -151,7 +156,8 @@ public class GFacWorker implements Runnable {
 	}
 
 	private void executeProcess() throws GFacException {
-		if (processContext.isHandOver()) {
+		if (processContext.isInterrupted()) {
+			GFacUtils.handleProcessInterrupt(processContext);
 			return;
 		}
 		engine.executeProcess(processContext);
