@@ -30,6 +30,7 @@ import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
@@ -41,12 +42,14 @@ import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.gfac.impl.SSHUtils;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskTypes;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +60,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
 
 public class AdvancedSCPDataStageTask implements Task{
@@ -201,8 +205,17 @@ public class AdvancedSCPDataStageTask implements Task{
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskError(errorModel);
+        } catch (GFacException e) {
+            String msg = "Failed update experiment and process inputs and outputs";
+            log.error(msg, e);
+            status.setState(TaskState.FAILED);
+            status.setReason(msg);
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setActualErrorMessage(e.getMessage());
+            errorModel.setUserFriendlyMessage(msg);
+            taskContext.getTaskModel().setTaskError(errorModel);
         }
-		return status;
+        return status;
 	}
 
 	private void inputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI
@@ -219,7 +232,7 @@ public class AdvancedSCPDataStageTask implements Task{
 	}
 
 	private void outputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI destinationURI,
-	                               String filePath) throws SSHApiException, AiravataException, IOException, JSchException {
+	                               String filePath) throws SSHApiException, AiravataException, IOException, JSchException, GFacException {
 		/**
 		 * scp remote file from comute resource to airavata local
 		 */
@@ -229,7 +242,11 @@ public class AdvancedSCPDataStageTask implements Task{
 		 * scp local file to remote client
 		 */
 		SSHUtils.scpTo(filePath, destinationURI.getPath(), sshSession);
-	}
+        // update output locations
+        GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());
+        GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());
+
+    }
 
 	private File getLocalDataDir(TaskContext taskContext) {
 		String outputPath = ServerSettings.getLocalDataLocation();

@@ -20,6 +20,8 @@
  */
 package org.apache.airavata.gfac.core.context;
 
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
@@ -32,6 +34,8 @@ public class TaskContext {
 
 	private TaskModel taskModel;
 	private ProcessContext parentProcessContext;
+    private InputDataObjectType processInput;
+    private OutputDataObjectType processOutput;
 
 	public TaskModel getTaskModel() {
 		return taskModel;
@@ -79,4 +83,20 @@ public class TaskContext {
 	public String getLocalWorkingDir() {
 		return getParentProcessContext().getLocalWorkingDir();
 	}
+
+    public InputDataObjectType getProcessInput() {
+        return processInput;
+    }
+
+    public void setProcessInput(InputDataObjectType processInput) {
+        this.processInput = processInput;
+    }
+
+    public OutputDataObjectType getProcessOutput() {
+        return processOutput;
+    }
+
+    public void setProcessOutput(OutputDataObjectType processOutput) {
+        this.processOutput = processOutput;
+    }
 }

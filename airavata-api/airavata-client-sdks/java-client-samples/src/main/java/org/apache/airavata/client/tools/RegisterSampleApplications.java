@@ -20,12 +20,6 @@
 */
 package org.apache.airavata.client.tools;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.*;
-
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.client.samples.CreateLaunchExperiment;
@@ -42,6 +36,12 @@ import org.apache.airavata.model.security.AuthzToken;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.*;
 
 public class RegisterSampleApplications {
 
@@ -144,7 +144,7 @@ public class RegisterSampleApplications {
     public static void main(String[] args) {
         try {
             Airavata.Client airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-            System.out.println("API version is " + airavataClient.getAPIVersion(null));
+            System.out.println("API version is " + airavataClient.getAPIVersion());
 
             RegisterSampleApplications registerSampleApplications = new RegisterSampleApplications(airavataClient);
 
