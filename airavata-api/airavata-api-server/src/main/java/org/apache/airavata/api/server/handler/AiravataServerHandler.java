@@ -96,8 +96,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Query Airavata to fetch the API version
      */
     @Override
-    @SecurityCheck
-    public String getAPIVersion(AuthzToken authzToken) throws InvalidRequestException, AiravataClientException,
+    public String getAPIVersion() throws InvalidRequestException, AiravataClientException,
             AiravataSystemException, AuthorizationException, TException {
 
         return airavata_apiConstants.AIRAVATA_API_VERSION;
