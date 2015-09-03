@@ -18,12 +18,9 @@ except:
 
 
 class Iface:
-  def getAPIVersion(self, authzToken):
+  def getAPIVersion(self):
     """
     Fetch Apache Airavata API version
-
-    Parameters:
-     - authzToken
     """
     pass
 
@@ -2118,20 +2115,16 @@ class Client(Iface):
       self._oprot = oprot
     self._seqid = 0
 
-  def getAPIVersion(self, authzToken):
+  def getAPIVersion(self):
     """
     Fetch Apache Airavata API version
-
-    Parameters:
-     - authzToken
     """
-    self.send_getAPIVersion(authzToken)
+    self.send_getAPIVersion()
     return self.recv_getAPIVersion()
 
-  def send_getAPIVersion(self, authzToken):
+  def send_getAPIVersion(self):
     self._oprot.writeMessageBegin('getAPIVersion', TMessageType.CALL, self._seqid)
     args = getAPIVersion_args()
-    args.authzToken = authzToken
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -8342,7 +8335,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = getAPIVersion_result()
     try:
-      result.success = self._handler.getAPIVersion(args.authzToken)
+      result.success = self._handler.getAPIVersion()
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -10712,18 +10705,9 @@ class Processor(Iface, TProcessor):
 # HELPER FUNCTIONS AND STRUCTURES
 
 class getAPIVersion_args:
-  """
-  Attributes:
-   - authzToken
-  """
 
   thrift_spec = (
-    None, # 0
-    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
   )
-
-  def __init__(self, authzToken=None,):
-    self.authzToken = authzToken
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -10734,12 +10718,6 @@ class getAPIVersion_args:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRUCT:
-          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
-          self.authzToken.read(iprot)
-        else:
-          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -10750,22 +10728,15 @@ class getAPIVersion_args:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('getAPIVersion_args')
-    if self.authzToken is not None:
-      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
-      self.authzToken.write(oprot)
-      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.authzToken is None:
-      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
     return
 
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.authzToken)
     return value
 
   def __repr__(self):
