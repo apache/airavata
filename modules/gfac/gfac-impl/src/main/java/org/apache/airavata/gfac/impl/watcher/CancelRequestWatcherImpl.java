@@ -20,6 +20,7 @@
  */
 package org.apache.airavata.gfac.impl.watcher;
 
+import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
 import org.apache.airavata.gfac.impl.Factory;
@@ -44,7 +45,7 @@ public class CancelRequestWatcherImpl implements CancelRequestWatcher {
 				byte[] bytes = curatorClient.getData().forPath(path);
 				String processId = path.substring(path.lastIndexOf("/") + 1);
 				String action = new String(bytes);
-				if (action.equalsIgnoreCase("CANCEL")) {
+				if (action.equalsIgnoreCase(ZkConstants.ZOOKEEPER_CANCEL_REQEUST)) {
 					ProcessContext processContext = Factory.getGfacContext().getProcess(processId);
 					if (processContext != null) {
 						processContext.setCancel(true);
@@ -56,9 +57,12 @@ public class CancelRequestWatcherImpl implements CancelRequestWatcher {
 					curatorClient.getData().usingWatcher(this).forPath(path);
 				}
 				break;
+			case NodeDeleted:
+				//end of experiment execution, ignore this event
+				break;
 			case NodeCreated:
 			case NodeChildrenChanged:
-			case NodeDeleted:
+			case None:
 				curatorClient.getData().usingWatcher(this).forPath(path);
 				break;
 			default:

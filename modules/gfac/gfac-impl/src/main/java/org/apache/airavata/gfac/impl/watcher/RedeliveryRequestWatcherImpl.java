@@ -58,6 +58,8 @@ public class RedeliveryRequestWatcherImpl implements RedeliveryRequestWatcher {
 				}
 				break;
 			case NodeDeleted:
+				//end of experiment execution, ignore this event
+				break;
 			case NodeCreated:
 			case NodeChildrenChanged:
 			case None:
