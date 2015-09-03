@@ -438,6 +438,7 @@ public class GFacEngineImpl implements GFacEngine {
 				());
 		taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
 		taskCtx.setTaskModel(taskModel);
+        taskCtx.setProcessInput(processInput);
 		return taskCtx;
 	}
 
@@ -462,6 +463,7 @@ public class GFacEngineImpl implements GFacEngine {
 		submodel.setDestination("file://" + localWorkingDir);
 		taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
 		taskCtx.setTaskModel(taskModel);
+        taskCtx.setProcessOutput(processOutput);
 		return taskCtx;
 	}
 

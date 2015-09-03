@@ -706,7 +706,7 @@ public class ExperimentRegistry {
             }
             if(process.getTasks() != null && process.getTasks().size() > 0){
                 for(TaskModel task : process.getTasks()){
-                    updateTask(task, process.getProcessId());
+                    updateTask(task, task.getTaskId());
                 }
             }
         } catch (Exception e) {

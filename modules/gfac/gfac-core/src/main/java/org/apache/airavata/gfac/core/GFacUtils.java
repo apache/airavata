@@ -1135,6 +1135,90 @@ public class GFacUtils {
 		}
 	}
 
+    public static void saveExperimentInput(ProcessContext processContext, String inputName, String inputVal) throws GFacException {
+        try {
+            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            String experimentId = processContext.getExperimentId();
+            ExperimentModel experiment = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            List<InputDataObjectType> experimentInputs = experiment.getExperimentInputs();
+            if (experimentInputs != null && !experimentInputs.isEmpty()){
+                for (InputDataObjectType expInput : experimentInputs){
+                    if (expInput.getName().equals(inputName)){
+                        expInput.setValue(inputVal);
+                    }
+                }
+            }
+            experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT, experiment, experimentId);
+        } catch (RegistryException e) {
+            String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
+                    + " : - Error while updating experiment inputs";
+            throw new GFacException(msg, e);
+        }
+    }
+
+    public static void saveProcessInput(ProcessContext processContext, String inputName, String inputVal) throws GFacException {
+        try {
+            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            String processId = processContext.getProcessId();
+            ProcessModel processModel = (ProcessModel)experimentCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
+            List<InputDataObjectType> processInputs = processModel.getProcessInputs();
+            if (processInputs != null && !processInputs.isEmpty()){
+                for (InputDataObjectType processInput : processInputs){
+                    if (processInput.getName().equals(inputName)){
+                        processInput.setValue(inputVal);
+                    }
+                }
+            }
+            experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processId);
+        } catch (RegistryException e) {
+            String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
+                    + " : - Error while updating experiment inputs";
+            throw new GFacException(msg, e);
+        }
+    }
+
+    public static void saveExperimentOutput(ProcessContext processContext, String outputName, String outputVal) throws GFacException {
+        try {
+            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            String experimentId = processContext.getExperimentId();
+            ExperimentModel experiment = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
+            if (experimentOutputs != null && !experimentOutputs.isEmpty()){
+                for (OutputDataObjectType expOutput : experimentOutputs){
+                    if (expOutput.getName().equals(outputName)){
+                        expOutput.setValue(outputVal);
+                    }
+                }
+            }
+            experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT, experiment, experimentId);
+        } catch (RegistryException e) {
+            String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
+                    + " : - Error while updating experiment outputs";
+            throw new GFacException(msg, e);
+        }
+    }
+
+    public static void saveProcessOutput(ProcessContext processContext, String outputName, String outputVal) throws GFacException {
+        try {
+            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            String processId = processContext.getProcessId();
+            ProcessModel processModel = (ProcessModel)experimentCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
+            List<OutputDataObjectType> processOutputs = processModel.getProcessOutputs();
+            if (processOutputs != null && !processOutputs.isEmpty()){
+                for (OutputDataObjectType processOutput : processOutputs){
+                    if (processOutput.getName().equals(outputName)){
+                        processOutput.setValue(outputVal);
+                    }
+                }
+            }
+            experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processId);
+        } catch (RegistryException e) {
+            String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
+                    + " : - Error while updating experiment outputs";
+            throw new GFacException(msg, e);
+        }
+    }
+
 	public static void handleProcessInterrupt(ProcessContext processContext) throws GFacException {
 		if (processContext.isCancel()) {
 			ProcessStatus pStatus = new ProcessStatus(ProcessState.CANCELLING);
