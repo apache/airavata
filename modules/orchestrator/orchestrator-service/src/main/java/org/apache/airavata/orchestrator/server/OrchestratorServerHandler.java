@@ -26,6 +26,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
@@ -59,8 +60,14 @@ import org.apache.airavata.registry.core.app.catalog.resources.AppCatAbstractRes
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
 import org.apache.airavata.registry.cpi.*;
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.curator.utils.ZKPaths;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,6 +87,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	private String gatewayName;
 	private Publisher publisher;
 	private RabbitMQStatusConsumer statusConsumer;
+	private CuratorFramework curatorClient;
 
     /**
 	 * Query orchestrator server to fetch the CPI version
@@ -109,6 +117,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			String exchangeName = ServerSettings.getSetting(MessagingConstants.RABBITMQ_STATUS_EXCHANGE_NAME);
 			statusConsumer = new RabbitMQStatusConsumer(brokerUrl, exchangeName);
 			statusConsumer.listen(new ProcessStatusHandler());
+			startCurator();
 		} catch (OrchestratorException | RegistryException | AppCatalogException | AiravataException e) {
 			log.error(e.getMessage(), e);
 			throw new OrchestratorException("Error while initializing orchestrator service", e);
@@ -209,7 +218,12 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	 */
 	public boolean terminateExperiment(String experimentId, String tokenId) throws TException {
         log.info(experimentId, "Experiment: {} is cancelling  !!!!!", experimentId);
-        return validateStatesAndCancel(experimentId, tokenId);
+		try {
+			return validateStatesAndCancel(experimentId, tokenId);
+		} catch (Exception e) {
+			log.error("expId : " + experimentId + " :- Error while cancelling experiment", e);
+			return false;
+		}
 	}
 
 	private String getAiravataUserName() {
@@ -277,7 +291,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         List<ComputeResourceDescription> computeHostList = Arrays.asList(deploymentMap.keySet().toArray(new ComputeResourceDescription[]{}));
         Class<? extends HostScheduler> aClass = Class.forName(
                 ServerSettings.getHostScheduler()).asSubclass(
-                HostScheduler.class);
+		        HostScheduler.class);
         HostScheduler hostScheduler = aClass.newInstance();
         ComputeResourceDescription ComputeResourceDescription = hostScheduler.schedule(computeHostList);
         return deploymentMap.get(ComputeResourceDescription);
@@ -297,124 +311,15 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		return selectedModuleId;
 	}
 
-    private boolean validateStatesAndCancel(String experimentId, String tokenId)throws TException{
-        // FIXME
-//        try {
-//            Experiment experiment = (Experiment) experimentCatalog.get(
-//                    ExperimentCatalogModelType.EXPERIMENT, experimentId);
-//			log.info("Waiting for zookeeper to connect to the server");
-//			synchronized (mutex){
-//				mutex.wait(5000);
-//			}
-//            if (experiment == null) {
-//                log.errorId(experimentId, "Error retrieving the Experiment by the given experimentID: {}.", experimentId);
-//                throw new OrchestratorException("Error retrieving the Experiment by the given experimentID: " + experimentId);
-//            }
-//            ExperimentState experimentState = experiment.getExperimentStatus().getExperimentState();
-//            if (isCancelValid(experimentState)){
-//                ExperimentStatus status = new ExperimentStatus();
-//                status.setExperimentState(ExperimentState.CANCELING);
-//                status.setTimeOfStateChange(Calendar.getInstance()
-//                        .getTimeInMillis());
-//                experiment.setExperimentStatus(status);
-//                experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT, experiment,
-//                        experimentId);
-//
-//                List<String> ids = experimentCatalog.getIds(
-//                        ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL,
-//                        WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
-//                for (String workflowNodeId : ids) {
-//                    WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) experimentCatalog
-//                            .get(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL,
-//                                    workflowNodeId);
-//                    int value = workflowNodeDetail.getWorkflowNodeStatus().getWorkflowNodeState().getValue();
-//                    if ( value> 1 && value < 7) { // we skip the unknown state
-//                        log.error(workflowNodeDetail.getNodeName() + " Workflow Node status cannot mark as cancelled, because " +
-//                                "current status is " + workflowNodeDetail.getWorkflowNodeStatus().getWorkflowNodeState().toString());
-//                        continue; // this continue is very useful not to process deeper loops if the upper layers have non-cancel states
-//                    } else {
-//                        WorkflowNodeStatus workflowNodeStatus = new WorkflowNodeStatus();
-//                        workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.CANCELING);
-//                        workflowNodeStatus.setTimeOfStateChange(Calendar.getInstance()
-//                                .getTimeInMillis());
-//                        workflowNodeDetail.setWorkflowNodeStatus(workflowNodeStatus);
-//                        experimentCatalog.update(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetail,
-//                                workflowNodeId);
-//                    }
-//                    List<Object> taskDetailList = experimentCatalog.get(
-//                            ExperimentCatalogModelType.TASK_DETAIL,
-//                            TaskDetailConstants.NODE_ID, workflowNodeId);
-//                    for (Object o : taskDetailList) {
-//                        TaskDetails taskDetails = (TaskDetails) o;
-//                        TaskStatus taskStatus = ((TaskDetails) o).getTaskStatus();
-//                        if (taskStatus.getExecutionState().getValue() > 7 && taskStatus.getExecutionState().getValue()<12) {
-//                            log.error(((TaskDetails) o).getTaskID() + " Task status cannot mark as cancelled, because " +
-//                                    "current task state is " + ((TaskDetails) o).getTaskStatus().getExecutionState().toString());
-//                            continue;// this continue is very useful not to process deeper loops if the upper layers have non-cancel states
-//                        } else {
-//                            taskStatus.setExecutionState(TaskState.CANCELING);
-//                            taskStatus.setTimeOfStateChange(Calendar.getInstance()
-//                                    .getTimeInMillis());
-//                            taskDetails.setTaskStatus(taskStatus);
-//                            experimentCatalog.update(ExperimentCatalogModelType.TASK_DETAIL, o,
-//                                    taskDetails.getTaskID());
-//                        }
-//                        orchestrator.cancelExperiment(experiment,
-//                                workflowNodeDetail, taskDetails, tokenId);
-//                        // Status update should be done at the monitor
-//                    }
-//                }
-//            }else {
-//                if (isCancelAllowed(experimentState)){
-//                    // when experiment status is < 3 no jobDetails object is created,
-//                    // so we don't have to worry, we simply have to change the status and stop the execution
-//                    ExperimentStatus status = new ExperimentStatus();
-//                    status.setExperimentState(ExperimentState.CANCELED);
-//                    status.setTimeOfStateChange(Calendar.getInstance()
-//                            .getTimeInMillis());
-//                    experiment.setExperimentStatus(status);
-//                    experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT, experiment,
-//                            experimentId);
-//                    List<String> ids = experimentCatalog.getIds(
-//                            ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL,
-//                            WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
-//                    for (String workflowNodeId : ids) {
-//                        WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) experimentCatalog
-//                                .get(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL,
-//                                        workflowNodeId);
-//                        WorkflowNodeStatus workflowNodeStatus = new WorkflowNodeStatus();
-//                        workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.CANCELED);
-//                        workflowNodeStatus.setTimeOfStateChange(Calendar.getInstance()
-//                                .getTimeInMillis());
-//                        workflowNodeDetail.setWorkflowNodeStatus(workflowNodeStatus);
-//                        experimentCatalog.update(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetail,
-//                                workflowNodeId);
-//                        List<Object> taskDetailList = experimentCatalog.get(
-//                                ExperimentCatalogModelType.TASK_DETAIL,
-//                                TaskDetailConstants.NODE_ID, workflowNodeId);
-//                        for (Object o : taskDetailList) {
-//                            TaskDetails taskDetails = (TaskDetails) o;
-//                            TaskStatus taskStatus = ((TaskDetails) o).getTaskStatus();
-//                            taskStatus.setExecutionState(TaskState.CANCELED);
-//                            taskStatus.setTimeOfStateChange(Calendar.getInstance()
-//                                    .getTimeInMillis());
-//                            taskDetails.setTaskStatus(taskStatus);
-//                            experimentCatalog.update(ExperimentCatalogModelType.TASK_DETAIL, o,
-//                                    taskDetails);
-//                        }
-//                    }
-//                }else {
-//                    log.errorId(experimentId, "Unable to mark experiment as Cancelled, current state {} doesn't allow to cancel the experiment {}.",
-//                            experiment.getExperimentStatus().getExperimentState().toString(), experimentId);
-//                    throw new OrchestratorException("Unable to mark experiment as Cancelled, because current state is: "
-//                            + experiment.getExperimentStatus().getExperimentState().toString());
-//                }
-//            }
-//            log.info("Experiment: " + experimentId + " is cancelled !!!!!");
-//        } catch (Exception e) {
-//            throw new TException(e);
-//        }
-        return true;
+    private boolean validateStatesAndCancel(String experimentId, String tokenId) throws Exception {
+	    String expCancelNodePath = ZKPaths.makePath(ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE,
+			    experimentId), ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+	    Stat stat = curatorClient.checkExists().forPath(expCancelNodePath);
+	    if (stat != null) {
+		    curatorClient.setData().withVersion(-1).forPath(expCancelNodePath, ZkConstants.ZOOKEEPER_CANCEL_REQEUST
+				    .getBytes());
+	    }
+	    return true;
     }
 
     private void launchWorkflowExperiment(String experimentId, String airavataCredStoreToken) throws TException {
@@ -427,6 +332,12 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 //        }
     }
 
+	private void startCurator() throws ApplicationSettingsException {
+		String connectionSting = ServerSettings.getZookeeperConnection();
+		RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 5);
+		curatorClient = CuratorFrameworkFactory.newClient(connectionSting, retryPolicy);
+		curatorClient.start();
+	}
     private class SingleAppExperimentRunner implements Runnable {
 
         String experimentId;

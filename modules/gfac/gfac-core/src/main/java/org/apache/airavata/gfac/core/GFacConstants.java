@@ -50,13 +50,7 @@ public class GFacConstants {
 	public static final String _127_0_0_1 = "127.0.0.1";
 	public static final String LOCALHOST = "localhost";
 
-	public static final String ZOOKEEPER_SERVERS_NODE = "/servers";
-	public static final String ZOOKEEPER_GFAC_SERVER_NODE = "/gfac";
-	public static final String ZOOKEEPER_EXPERIMENT_NODE = "/experiments";
-	public static final String ZOOKEEPER_DELIVERYTAG_NODE = "/deliveryTag";
-	public static final String ZOOKEEPER_TOKEN_NODE = "/token";
-	public static final String ZOOKEEPER_CANCEL_LISTENER_NODE = "/cancelListener";
-	public static final String ZOOKEEPER_CANCEL_REQEUST = "CANCEL_REQUEST";
+
 
 	public static final String PROP_WORKFLOW_INSTANCE_ID = "workflow.instance.id";
 	public static final String PROP_WORKFLOW_NODE_ID = "workflow.node.id";
