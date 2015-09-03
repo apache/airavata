@@ -25,6 +25,7 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.gfac.core.context.ProcessContext;
@@ -551,7 +552,7 @@ public class GFacUtils {
      * @throws InterruptedException
      */
     public static String findExperimentEntry(String experimentID, CuratorFramework curatorClient) throws Exception {
-        String experimentNode = GFacConstants.ZOOKEEPER_EXPERIMENT_NODE;
+        String experimentNode = ZkConstants.ZOOKEEPER_EXPERIMENT_NODE;
         List<String> children = curatorClient.getChildren().forPath(experimentNode);
         for (String pickedChild : children) {
             String experimentPath = experimentNode + File.separator + pickedChild;
@@ -568,9 +569,9 @@ public class GFacUtils {
 
     public static boolean setExperimentCancelRequest(String processId, CuratorFramework curatorClient, long
 		    deliveryTag) throws Exception {
-	    String experimentNode = ZKPaths.makePath(GFacConstants.ZOOKEEPER_EXPERIMENT_NODE, processId);
-	    String cancelListenerNodePath = ZKPaths.makePath(experimentNode, GFacConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
-	    curatorClient.setData().withVersion(-1).forPath(cancelListenerNodePath, GFacConstants.ZOOKEEPER_CANCEL_REQEUST
+	    String experimentNode = ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE, processId);
+	    String cancelListenerNodePath = ZKPaths.makePath(experimentNode, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+	    curatorClient.setData().withVersion(-1).forPath(cancelListenerNodePath, ZkConstants.ZOOKEEPER_CANCEL_REQEUST
 			    .getBytes());
 	    return true;
     }
@@ -768,7 +769,7 @@ public class GFacUtils {
 //    }
 
     public static String getZKGfacServersParentPath() {
-        return ZKPaths.makePath(GFacConstants.ZOOKEEPER_SERVERS_NODE, GFacConstants.ZOOKEEPER_GFAC_SERVER_NODE);
+        return ZKPaths.makePath(ZkConstants.ZOOKEEPER_SERVERS_NODE, ZkConstants.ZOOKEEPER_GFAC_SERVER_NODE);
     }
 
     public static JobDescriptor createJobDescriptor(ProcessContext processContext) throws GFacException, AppCatalogException, ApplicationSettingsException {
@@ -1113,11 +1114,11 @@ public class GFacUtils {
     }
 
 	public static String getExperimentNodePath(String experimentId) {
-		return GFacConstants.ZOOKEEPER_EXPERIMENT_NODE + File.separator + experimentId;
+		return ZkConstants.ZOOKEEPER_EXPERIMENT_NODE + File.separator + experimentId;
 	}
 
 	public static long getProcessDeliveryTag(CuratorFramework curatorClient, String processId) throws Exception {
-		String deliveryTagPath = GFacConstants.ZOOKEEPER_EXPERIMENT_NODE + "/" + processId + GFacConstants
+		String deliveryTagPath = ZkConstants.ZOOKEEPER_EXPERIMENT_NODE + "/" + processId + ZkConstants
 				.ZOOKEEPER_DELIVERYTAG_NODE;
 		byte[] bytes = curatorClient.getData().forPath(deliveryTagPath);
 		return GFacUtils.bytesToLong(bytes);
