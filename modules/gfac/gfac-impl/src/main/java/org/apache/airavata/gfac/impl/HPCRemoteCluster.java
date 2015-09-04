@@ -88,7 +88,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 
 		StandardOutReader reader = new StandardOutReader();
 		executeCommand(submitCommand, reader);
-		throwExceptionOnError(reader, submitCommand);
+//		throwExceptionOnError(reader, submitCommand);
 		jsoutput.setJobId(outputParser.parseJobSubmission(reader.getStdOutputString()));
 		jsoutput.setExitCode(reader.getExitCode());
 		jsoutput.setStdOut(reader.getStdOutputString());
