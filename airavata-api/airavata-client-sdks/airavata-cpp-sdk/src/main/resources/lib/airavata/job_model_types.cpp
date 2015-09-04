@@ -76,8 +76,23 @@ void JobModel::__set_workingDir(const std::string& val) {
 __isset.workingDir = true;
 }
 
-const char* JobModel::ascii_fingerprint = "05A24C8A362DCCB6B6A7257CB37E424B";
-const uint8_t JobModel::binary_fingerprint[16] = {0x05,0xA2,0x4C,0x8A,0x36,0x2D,0xCC,0xB6,0xB6,0xA7,0x25,0x7C,0xB3,0x7E,0x42,0x4B};
+void JobModel::__set_stdout(const std::string& val) {
+  this->stdout = val;
+__isset.stdout = true;
+}
+
+void JobModel::__set_stderr(const std::string& val) {
+  this->stderr = val;
+__isset.stderr = true;
+}
+
+void JobModel::__set_exitCode(const int32_t val) {
+  this->exitCode = val;
+__isset.exitCode = true;
+}
+
+const char* JobModel::ascii_fingerprint = "EFFF4955898CBB369996B994565E85FE";
+const uint8_t JobModel::binary_fingerprint[16] = {0xEF,0xFF,0x49,0x55,0x89,0x8C,0xBB,0x36,0x99,0x96,0xB9,0x94,0x56,0x5E,0x85,0xFE};
 
 uint32_t JobModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -175,6 +190,30 @@ uint32_t JobModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 10:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->stdout);
+          this->__isset.stdout = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 11:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->stderr);
+          this->__isset.stderr = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 12:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->exitCode);
+          this->__isset.exitCode = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -241,6 +280,21 @@ uint32_t JobModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeString(this->workingDir);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.stdout) {
+    xfer += oprot->writeFieldBegin("stdout", ::apache::thrift::protocol::T_STRING, 10);
+    xfer += oprot->writeString(this->stdout);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.stderr) {
+    xfer += oprot->writeFieldBegin("stderr", ::apache::thrift::protocol::T_STRING, 11);
+    xfer += oprot->writeString(this->stderr);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.exitCode) {
+    xfer += oprot->writeFieldBegin("exitCode", ::apache::thrift::protocol::T_I32, 12);
+    xfer += oprot->writeI32(this->exitCode);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
@@ -258,6 +312,9 @@ void swap(JobModel &a, JobModel &b) {
   swap(a.computeResourceConsumed, b.computeResourceConsumed);
   swap(a.jobName, b.jobName);
   swap(a.workingDir, b.workingDir);
+  swap(a.stdout, b.stdout);
+  swap(a.stderr, b.stderr);
+  swap(a.exitCode, b.exitCode);
   swap(a.__isset, b.__isset);
 }
 
@@ -271,6 +328,9 @@ JobModel::JobModel(const JobModel& other0) {
   computeResourceConsumed = other0.computeResourceConsumed;
   jobName = other0.jobName;
   workingDir = other0.workingDir;
+  stdout = other0.stdout;
+  stderr = other0.stderr;
+  exitCode = other0.exitCode;
   __isset = other0.__isset;
 }
 JobModel& JobModel::operator=(const JobModel& other1) {
@@ -283,6 +343,9 @@ JobModel& JobModel::operator=(const JobModel& other1) {
   computeResourceConsumed = other1.computeResourceConsumed;
   jobName = other1.jobName;
   workingDir = other1.workingDir;
+  stdout = other1.stdout;
+  stderr = other1.stderr;
+  exitCode = other1.exitCode;
   __isset = other1.__isset;
   return *this;
 }
@@ -298,6 +361,9 @@ std::ostream& operator<<(std::ostream& out, const JobModel& obj) {
   out << ", " << "computeResourceConsumed="; (obj.__isset.computeResourceConsumed ? (out << to_string(obj.computeResourceConsumed)) : (out << "<null>"));
   out << ", " << "jobName="; (obj.__isset.jobName ? (out << to_string(obj.jobName)) : (out << "<null>"));
   out << ", " << "workingDir="; (obj.__isset.workingDir ? (out << to_string(obj.workingDir)) : (out << "<null>"));
+  out << ", " << "stdout="; (obj.__isset.stdout ? (out << to_string(obj.stdout)) : (out << "<null>"));
+  out << ", " << "stderr="; (obj.__isset.stderr ? (out << to_string(obj.stderr)) : (out << "<null>"));
+  out << ", " << "exitCode="; (obj.__isset.exitCode ? (out << to_string(obj.exitCode)) : (out << "<null>"));
   out << ")";
   return out;
 }
