@@ -296,8 +296,6 @@ public class GatewayResource extends AbstractExpCatResource {
                     }
                     break;
                 default:
-                    em.getTransaction().commit();
-                    em.close();
                     logger.error("Unsupported resource type for gateway resource.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
             }
