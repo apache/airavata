@@ -35,6 +35,9 @@ public class Job {
     private String taskId;
 	private String processId;
     private char[] jobDescription;
+    private char[] stdout;
+    private char[] stderr;
+    private int exitCode;
     private Timestamp creationTime;
     private String computeResourceConsumed;
     private String jobName;
@@ -80,6 +83,36 @@ public class Job {
 
     public void setJobDescription(char[] jobDescription) {
         this.jobDescription = jobDescription;
+    }
+
+    @Lob
+    @Column(name = "STDOUT")
+    public char[] getStdout() {
+        return stdout;
+    }
+
+    public void setStdout(char[] stdout) {
+        this.stdout = stdout;
+    }
+
+    @Lob
+    @Column(name = "STDERR")
+    public char[] getStderr() {
+        return stderr;
+    }
+
+    public void setStderr(char[] stderr) {
+        this.stderr = stderr;
+    }
+
+    @Basic
+    @Column(name = "EXIT_CODE")
+    public int getExitCode() {
+        return exitCode;
+    }
+
+    public void setExitCode(int exitCode) {
+        this.exitCode = exitCode;
     }
 
     @Basic

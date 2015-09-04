@@ -8106,8 +8106,8 @@ typedef struct _Airavata_getJobDetails_result__isset {
 class Airavata_getJobDetails_result {
  public:
 
-  static const char* ascii_fingerprint; // = "85D8CE6F76E396F1CD5A41458FB135E7";
-  static const uint8_t binary_fingerprint[16]; // = {0x85,0xD8,0xCE,0x6F,0x76,0xE3,0x96,0xF1,0xCD,0x5A,0x41,0x45,0x8F,0xB1,0x35,0xE7};
+  static const char* ascii_fingerprint; // = "86F1505AC518EEA27AAFCE2F68FCA761";
+  static const uint8_t binary_fingerprint[16]; // = {0x86,0xF1,0x50,0x5A,0xC5,0x18,0xEE,0xA2,0x7A,0xAF,0xCE,0x2F,0x68,0xFC,0xA7,0x61};
 
   Airavata_getJobDetails_result(const Airavata_getJobDetails_result&);
   Airavata_getJobDetails_result& operator=(const Airavata_getJobDetails_result&);
@@ -8177,8 +8177,8 @@ typedef struct _Airavata_getJobDetails_presult__isset {
 class Airavata_getJobDetails_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "85D8CE6F76E396F1CD5A41458FB135E7";
-  static const uint8_t binary_fingerprint[16]; // = {0x85,0xD8,0xCE,0x6F,0x76,0xE3,0x96,0xF1,0xCD,0x5A,0x41,0x45,0x8F,0xB1,0x35,0xE7};
+  static const char* ascii_fingerprint; // = "86F1505AC518EEA27AAFCE2F68FCA761";
+  static const uint8_t binary_fingerprint[16]; // = {0x86,0xF1,0x50,0x5A,0xC5,0x18,0xEE,0xA2,0x7A,0xAF,0xCE,0x2F,0x68,0xFC,0xA7,0x61};
 
 
   virtual ~Airavata_getJobDetails_presult() throw();
