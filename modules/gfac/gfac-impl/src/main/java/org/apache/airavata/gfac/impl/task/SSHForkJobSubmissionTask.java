@@ -23,6 +23,7 @@ package org.apache.airavata.gfac.impl.task;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.core.*;
+import org.apache.airavata.gfac.core.cluster.JobSubmissionOutput;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
@@ -72,8 +73,13 @@ public class SSHForkJobSubmissionTask implements JobSubmissionTask {
             File jobFile = GFacUtils.createJobFile(jobDescriptor, jConfig);
             if (jobFile != null && jobFile.exists()) {
                 jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
-                String jobId = remoteCluster.submitBatchJob(jobFile.getPath(), processContext.getWorkingDir());
-                if (jobId != null && !jobId.isEmpty()) {
+	            JobSubmissionOutput jobSubmissionOutput = remoteCluster.submitBatchJob(jobFile.getPath(),
+			            processContext.getWorkingDir());
+	            jobModel.setExitCode(jobSubmissionOutput.getExitCode());
+	            jobModel.setStderr(jobSubmissionOutput.getStdErr());
+	            jobModel.setStdout(jobSubmissionOutput.getStdOut());
+	            String jobId = jobSubmissionOutput.getJobId();
+	            if (jobId != null && !jobId.isEmpty()) {
                     jobModel.setJobId(jobId);
                     GFacUtils.saveJobModel(processContext, jobModel);
                     jobStatus.setJobState(JobState.SUBMITTED);
@@ -93,6 +99,8 @@ public class SSHForkJobSubmissionTask implements JobSubmissionTask {
                     taskStatus.setState(TaskState.FAILED);
                     taskStatus.setReason("Couldn't find job id in both submitted and verified steps");
                 }
+
+	            GFacUtils.saveJobModel(processContext, jobModel);
             } else {
                 taskStatus.setState(TaskState.FAILED);
                 if (jobFile == null) {
