@@ -250,8 +250,6 @@ public class JobResource extends AbstractExpCatResource {
                     }
                     break;
                 default:
-                    em.getTransaction().commit();
-                    em.close();
                     logger.error("Unsupported resource type for job resource.", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
             }

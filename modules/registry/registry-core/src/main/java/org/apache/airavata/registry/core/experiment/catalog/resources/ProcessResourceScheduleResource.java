@@ -134,12 +134,12 @@ public class ProcessResourceScheduleResource extends AbstractExpCatResource {
     public void save() throws RegistryException{
         EntityManager em = null;
         try {
-            em = ExpCatResourceUtils.getEntityManager();
-            em.getTransaction().begin();
-            ProcessResourceSchedule processResourceSchedule;
             if(processId == null){
                 throw new RegistryException("Does not have the process id");
             }
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            ProcessResourceSchedule processResourceSchedule;
             processResourceSchedule = em.find(ProcessResourceSchedule.class, processId);
             if(processResourceSchedule == null){
                 processResourceSchedule = new ProcessResourceSchedule();
