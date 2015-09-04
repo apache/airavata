@@ -1,4 +1,4 @@
-package org.apache.airavata.gfac.core.cluster;/*
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,39 +18,53 @@ package org.apache.airavata.gfac.core.cluster;/*
  * under the License.
  *
  */
+package org.apache.airavata.gfac.core.cluster;
 
+public class JobSubmissionOutput {
 
-import com.jcraft.jsch.Channel;
+	private int exitCode;
+	private String stdOut;
+	private String stdErr;
+	private String command;
+	private String jobId;
 
-import java.io.OutputStream;
+	public int getExitCode() {
+		return exitCode;
+	}
 
-/**
- * Output of a certain command. TODO rethink
- */
-public interface CommandOutput {
+	public void setExitCode(int exitCode) {
+		this.exitCode = exitCode;
+	}
 
-    /**
-     * Gets the output of the command as a stream.
-     * @param  channel Command output as a stream.
-     */
-    void onOutput(Channel channel);
+	public String getStdOut() {
+		return stdOut;
+	}
 
-    /**
-     * Gets standard error as a output stream.
-     * @return Command error as a stream.
-     */
-    OutputStream getStandardError();
+	public void setStdOut(String stdOut) {
+		this.stdOut = stdOut;
+	}
 
-    /**
-     * The command exit code.
-     * @param code The program exit code
-     */
-    void exitCode(int code);
+	public String getStdErr() {
+		return stdErr;
+	}
 
-	/**
-	 * Return the exit code of the command execution.
-	 * @return exit code
-	 */
-	int getExitCode();
+	public void setStdErr(String stdErr) {
+		this.stdErr = stdErr;
+	}
 
+	public String getCommand() {
+		return command;
+	}
+
+	public void setCommand(String command) {
+		this.command = command;
+	}
+
+	public String getJobId() {
+		return jobId;
+	}
+
+	public void setJobId(String jobId) {
+		this.jobId = jobId;
+	}
 }
