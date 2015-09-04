@@ -314,7 +314,7 @@ public class GfacServerHandler implements GfacService.Iface {
 		long deliveryTag = messageContext.getDeliveryTag();
 
 		// create /experiments//{experimentId}{processId} node and set data - serverName, add redelivery listener
-		String experimentNodePath = ZkConstants.ZOOKEEPER_EXPERIMENT_NODE + "/" + experimentId;
+		String experimentNodePath = GFacUtils.getExperimentNodePath(experimentId);
 		String zkProcessNodePath = ZKPaths.makePath(experimentNodePath, processId);
 		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), zkProcessNodePath);
 		curatorClient.setData().withVersion(-1).forPath(zkProcessNodePath, gfacServerName.getBytes());
@@ -347,8 +347,7 @@ public class GfacServerHandler implements GfacService.Iface {
 		String experimentId = event.getExperimentId();
 		String processId = event.getProcessId();
 		long deliveryTag = messageContext.getDeliveryTag();
-		String processNodePath = ZKPaths.makePath(ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE,
-				experimentId), processId);
+		String processNodePath = ZKPaths.makePath(GFacUtils.getExperimentNodePath(experimentId), processId);
 		Stat stat = curatorClient.checkExists().forPath(processNodePath);
 		if (stat != null) {
 			// create /experiments/{processId}/deliveryTag node and set data - deliveryTag
