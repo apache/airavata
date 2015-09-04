@@ -101,6 +101,8 @@ public class ProjectResource extends AbstractExpCatResource {
                 Query q = generator.deleteQuery(em);
                 q.executeUpdate();
             } else {
+                em.getTransaction().commit();
+                em.close();
                 logger.error("Unsupported resource type for project resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported resource type for project resource.");
             }

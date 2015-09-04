@@ -250,8 +250,6 @@ public class TaskResource extends AbstractExpCatResource {
                     }
                     break;
                 default:
-                    em.getTransaction().commit();
-                    em.close();
                     logger.error("Unsupported resource type for task resource.", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
             }
