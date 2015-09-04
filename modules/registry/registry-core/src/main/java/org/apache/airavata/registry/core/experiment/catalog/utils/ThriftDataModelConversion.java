@@ -403,7 +403,9 @@ public class ThriftDataModelConversion {
         model.setJobName(jobResource.getJobName());
         model.setWorkingDir(jobResource.getWorkingDir());
         model.setJobStatus(getJobStatus(jobResource.getJobStatus()));
-
+        model.setExitCode(jobResource.getExitCode());
+        model.setStdout(jobResource.getStdOut());
+        model.setStderr(jobResource.getStderr());
         return model;
     }
 
