@@ -48,6 +48,9 @@ public class JobResource extends AbstractExpCatResource {
     private String computeResourceConsumed;
     private String jobName;
     private String workingDir;
+    private String stdOut;
+    private String stderr;
+    private int exitCode;
 
     public String getJobId() {
         return jobId;
@@ -111,6 +114,30 @@ public class JobResource extends AbstractExpCatResource {
 
     public void setWorkingDir(String workingDir) {
         this.workingDir = workingDir;
+    }
+
+    public String getStdOut() {
+        return stdOut;
+    }
+
+    public void setStdOut(String stdOut) {
+        this.stdOut = stdOut;
+    }
+
+    public String getStderr() {
+        return stderr;
+    }
+
+    public void setStderr(String stderr) {
+        this.stderr = stderr;
+    }
+
+    public int getExitCode() {
+        return exitCode;
+    }
+
+    public void setExitCode(int exitCode) {
+        this.exitCode = exitCode;
     }
 
     public ExperimentCatResource create(ResourceType type) throws RegistryException {
@@ -263,10 +290,17 @@ public class JobResource extends AbstractExpCatResource {
             if (jobDescription != null) {
                 job.setJobDescription(jobDescription.toCharArray());
             }
+            if (stdOut != null) {
+                job.setStdout(stdOut.toCharArray());
+            }
+            if (stderr != null) {
+                job.setStderr(stderr.toCharArray());
+            }
             job.setCreationTime(creationTime);
             job.setComputeResourceConsumed(computeResourceConsumed);
             job.setJobName(jobName);
             job.setWorkingDir(workingDir);
+            job.setExitCode(exitCode);
             em.persist(job);
             em.getTransaction().commit();
             em.close();

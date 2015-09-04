@@ -40,23 +40,26 @@ namespace apache { namespace airavata { namespace model { namespace job {
 class JobModel;
 
 typedef struct _JobModel__isset {
-  _JobModel__isset() : creationTime(false), jobStatus(false), computeResourceConsumed(false), jobName(false), workingDir(false) {}
+  _JobModel__isset() : creationTime(false), jobStatus(false), computeResourceConsumed(false), jobName(false), workingDir(false), stdout(false), stderr(false), exitCode(false) {}
   bool creationTime :1;
   bool jobStatus :1;
   bool computeResourceConsumed :1;
   bool jobName :1;
   bool workingDir :1;
+  bool stdout :1;
+  bool stderr :1;
+  bool exitCode :1;
 } _JobModel__isset;
 
 class JobModel {
  public:
 
-  static const char* ascii_fingerprint; // = "05A24C8A362DCCB6B6A7257CB37E424B";
-  static const uint8_t binary_fingerprint[16]; // = {0x05,0xA2,0x4C,0x8A,0x36,0x2D,0xCC,0xB6,0xB6,0xA7,0x25,0x7C,0xB3,0x7E,0x42,0x4B};
+  static const char* ascii_fingerprint; // = "EFFF4955898CBB369996B994565E85FE";
+  static const uint8_t binary_fingerprint[16]; // = {0xEF,0xFF,0x49,0x55,0x89,0x8C,0xBB,0x36,0x99,0x96,0xB9,0x94,0x56,0x5E,0x85,0xFE};
 
   JobModel(const JobModel&);
   JobModel& operator=(const JobModel&);
-  JobModel() : jobId(), taskId(), processId(), jobDescription(), creationTime(0), computeResourceConsumed(), jobName(), workingDir() {
+  JobModel() : jobId(), taskId(), processId(), jobDescription(), creationTime(0), computeResourceConsumed(), jobName(), workingDir(), stdout(), stderr(), exitCode(0) {
   }
 
   virtual ~JobModel() throw();
@@ -69,6 +72,9 @@ class JobModel {
   std::string computeResourceConsumed;
   std::string jobName;
   std::string workingDir;
+  std::string stdout;
+  std::string stderr;
+  int32_t exitCode;
 
   _JobModel__isset __isset;
 
@@ -89,6 +95,12 @@ class JobModel {
   void __set_jobName(const std::string& val);
 
   void __set_workingDir(const std::string& val);
+
+  void __set_stdout(const std::string& val);
+
+  void __set_stderr(const std::string& val);
+
+  void __set_exitCode(const int32_t val);
 
   bool operator == (const JobModel & rhs) const
   {
@@ -119,6 +131,18 @@ class JobModel {
     if (__isset.workingDir != rhs.__isset.workingDir)
       return false;
     else if (__isset.workingDir && !(workingDir == rhs.workingDir))
+      return false;
+    if (__isset.stdout != rhs.__isset.stdout)
+      return false;
+    else if (__isset.stdout && !(stdout == rhs.stdout))
+      return false;
+    if (__isset.stderr != rhs.__isset.stderr)
+      return false;
+    else if (__isset.stderr && !(stderr == rhs.stderr))
+      return false;
+    if (__isset.exitCode != rhs.__isset.exitCode)
+      return false;
+    else if (__isset.exitCode && !(exitCode == rhs.exitCode))
       return false;
     return true;
   }
