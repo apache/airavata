@@ -336,7 +336,7 @@ public class GfacServerHandler implements GfacService.Iface {
 		curatorClient.getData().usingWatcher(Factory.getCancelRequestWatcher()).forPath(cancelListenerNode);*/
 
 		// create /experiments/{experimentId}/cancel node and set watcher for data changes
-		String experimentCancelNode = experimentNodePath + "/" + ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE;
+		String experimentCancelNode = ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
 		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
 		curatorClient.getData().usingWatcher(Factory.getCancelRequestWatcher()).forPath (experimentCancelNode);
 
