@@ -21,4 +21,13 @@
 package org.apache.airavata.common.utils;
 
 public interface ZkConstants {
+
+	public static final String ZOOKEEPER_SERVERS_NODE = "/servers";
+	public static final String ZOOKEEPER_GFAC_SERVER_NODE = "/gfac";
+	public static final String ZOOKEEPER_EXPERIMENT_NODE = "/experiments";
+	public static final String ZOOKEEPER_DELIVERYTAG_NODE = "/deliveryTag";
+	public static final String ZOOKEEPER_TOKEN_NODE = "/token";
+	public static final String ZOOKEEPER_CANCEL_LISTENER_NODE = "/cancelListener";
+	public static final String ZOOKEEPER_CANCEL_REQEUST = "CANCEL_REQUEST";
+
 }
