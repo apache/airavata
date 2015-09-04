@@ -118,12 +118,12 @@ public class JobStatusResource extends AbstractExpCatResource {
     public void save() throws RegistryException{
         EntityManager em = null;
         try {
-            em = ExpCatResourceUtils.getEntityManager();
-            em.getTransaction().begin();
-            JobStatus jobStatus;
             if(jobId == null || statusId == null || processId == null){
                 throw new RegistryException("Does not have the job id or status id or task id");
             }
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            JobStatus jobStatus;
             JobStatusPK jobStatusPK = new JobStatusPK();
             jobStatusPK.setJobId(jobId);
             jobStatusPK.setStatusId(statusId);

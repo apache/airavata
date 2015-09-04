@@ -127,12 +127,12 @@ public class ProcessErrorResource extends AbstractExpCatResource {
     public void save() throws RegistryException{
         EntityManager em = null;
         try {
-            em = ExpCatResourceUtils.getEntityManager();
-            em.getTransaction().begin();
-            ProcessError processError;
             if(processId == null || errorId == null){
                 throw new RegistryException("Does not have the process id or error id");
             }
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            ProcessError processError;
             ProcessErrorPK processErrorPK = new ProcessErrorPK();
             processErrorPK.setProcessId(processId);
             processErrorPK.setErrorId(errorId);
