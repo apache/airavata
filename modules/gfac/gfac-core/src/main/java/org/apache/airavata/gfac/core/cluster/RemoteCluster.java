@@ -42,7 +42,7 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 * @return jobId after successful job submission
 	 * @throws SSHApiException throws exception during error
 	 */
-	public String submitBatchJob(String jobScriptFilePath, String workingDirectory) throws SSHApiException;
+	public JobSubmissionOutput submitBatchJob(String jobScriptFilePath, String workingDirectory) throws SSHApiException;
 
 	/**
 	 * This will copy the localFile to remoteFile location in configured cluster

@@ -36,7 +36,9 @@ public class StandardOutReader implements CommandOutput {
     private static final Logger logger = LoggerFactory.getLogger(StandardOutReader.class);
     String stdOutputString = null;
     ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-    public void onOutput(Channel channel) {
+	private int exitCode;
+
+	public void onOutput(Channel channel) {
         try {
             StringBuffer pbsOutput = new StringBuffer("");
             InputStream inputStream =  channel.getInputStream();
@@ -59,9 +61,15 @@ public class StandardOutReader implements CommandOutput {
 
     public void exitCode(int code) {
         System.out.println("Program exit code - " + code);
+	    this.exitCode = code;
     }
 
-    public String getStdOutputString() {
+	@Override
+	public int getExitCode() {
+		return exitCode;
+	}
+
+	public String getStdOutputString() {
         return stdOutputString;
     }
 
