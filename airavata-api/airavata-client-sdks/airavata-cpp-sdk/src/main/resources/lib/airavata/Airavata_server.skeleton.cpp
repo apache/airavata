@@ -41,8 +41,10 @@ class AiravataHandler : virtual public AiravataIf {
 
   /**
    * Fetch Apache Airavata API version
+   * 
+   * @param authzToken
    */
-  void getAPIVersion(std::string& _return) {
+  void getAPIVersion(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
     // Your implementation goes here
     printf("getAPIVersion\n");
   }
