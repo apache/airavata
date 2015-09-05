@@ -28,6 +28,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 @Entity
+@Table(name = "JOB")
 @IdClass(JobPK.class)
 public class Job {
     private final static Logger logger = LoggerFactory.getLogger(Job.class);
