@@ -289,10 +289,10 @@ public class JobResource extends AbstractExpCatResource {
                 job.setJobDescription(jobDescription.toCharArray());
             }
             if (stdOut != null) {
-                job.setStdout(stdOut.toCharArray());
+                job.setStdOut(stdOut.toCharArray());
             }
             if (stdErr != null) {
-                job.setStderr(stdErr.toCharArray());
+                job.setStdErr(stdErr.toCharArray());
             }
             job.setCreationTime(creationTime);
             job.setComputeResourceConsumed(computeResourceConsumed);
