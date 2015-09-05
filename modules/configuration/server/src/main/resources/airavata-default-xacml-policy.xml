@@ -29,6 +29,7 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
                         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">^(?:(?!
+/airavata/getAPIVersion|
 /airavata/addGateway|
 /airavata/deleteteway|
 /airavata/updateGateway|
@@ -75,7 +76,7 @@
         </Target>
         <Condition>
             <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
-                <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">admin_read_only</AttributeValue>
+                <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">admin-read-only</AttributeValue>
                 <AttributeDesignator AttributeId="http://wso2.org/claims/role"
                                      Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
                                      DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="true"/>
@@ -88,6 +89,7 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
                         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">^(?:(?!
+/airavata/getAPIVersion|
 /airavata/addGateway|
 /airavata/getExperimentStatistics|
 /airavata/deleteteway|
@@ -155,7 +157,7 @@
         </Target>
         <Condition>
             <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
-                <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">Internal/everyone</AttributeValue>
+                <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">airavata-user</AttributeValue>
                 <AttributeDesignator AttributeId="http://wso2.org/claims/role"
                                      Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
                                      DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="true"/>

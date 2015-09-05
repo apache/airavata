@@ -46,4 +46,11 @@ public interface CommandOutput {
      * @param code The program exit code
      */
     void exitCode(int code);
+
+	/**
+	 * Return the exit code of the command execution.
+	 * @return exit code
+	 */
+	int getExitCode();
+
 }

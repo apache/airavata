@@ -33,6 +33,7 @@ import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
 import org.apache.airavata.gfac.core.cluster.AbstractRemoteCluster;
 import org.apache.airavata.gfac.core.cluster.CommandInfo;
 import org.apache.airavata.gfac.core.cluster.CommandOutput;
+import org.apache.airavata.gfac.core.cluster.JobSubmissionOutput;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.model.status.JobStatus;
@@ -80,14 +81,19 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	}
 
 	@Override
-	public String submitBatchJob(String jobScriptFilePath, String workingDirectory) throws SSHApiException {
+	public JobSubmissionOutput submitBatchJob(String jobScriptFilePath, String workingDirectory) throws SSHApiException {
+		JobSubmissionOutput jsoutput = new JobSubmissionOutput();
 		scpTo(jobScriptFilePath, workingDirectory); // scp script file to working directory
 		RawCommandInfo submitCommand = jobManagerConfiguration.getSubmitCommand(workingDirectory, jobScriptFilePath);
 
 		StandardOutReader reader = new StandardOutReader();
 		executeCommand(submitCommand, reader);
-		throwExceptionOnError(reader, submitCommand);
-		return outputParser.parseJobSubmission(reader.getStdOutputString());
+//		throwExceptionOnError(reader, submitCommand);
+		jsoutput.setJobId(outputParser.parseJobSubmission(reader.getStdOutputString()));
+		jsoutput.setExitCode(reader.getExitCode());
+		jsoutput.setStdOut(reader.getStdOutputString());
+		jsoutput.setStdErr(reader.getStdErrorString());
+		return jsoutput;
 	}
 
 	@Override
@@ -276,6 +282,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 		}finally {
 			//Only disconnecting the channel, session can be reused
 			if (channelExec != null) {
+				commandOutput.exitCode(channelExec.getExitStatus());
 				channelExec.disconnect();
 			}
 		}

@@ -56,6 +56,18 @@ class JobModel {
    * @var string
    */
   public $workingDir = null;
+  /**
+   * @var string
+   */
+  public $stdout = null;
+  /**
+   * @var string
+   */
+  public $stderr = null;
+  /**
+   * @var int
+   */
+  public $exitCode = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -97,6 +109,18 @@ class JobModel {
           'var' => 'workingDir',
           'type' => TType::STRING,
           ),
+        10 => array(
+          'var' => 'stdout',
+          'type' => TType::STRING,
+          ),
+        11 => array(
+          'var' => 'stderr',
+          'type' => TType::STRING,
+          ),
+        12 => array(
+          'var' => 'exitCode',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -126,6 +150,15 @@ class JobModel {
       }
       if (isset($vals['workingDir'])) {
         $this->workingDir = $vals['workingDir'];
+      }
+      if (isset($vals['stdout'])) {
+        $this->stdout = $vals['stdout'];
+      }
+      if (isset($vals['stderr'])) {
+        $this->stderr = $vals['stderr'];
+      }
+      if (isset($vals['exitCode'])) {
+        $this->exitCode = $vals['exitCode'];
       }
     }
   }
@@ -213,6 +246,27 @@ class JobModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 10:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->stdout);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 11:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->stderr);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 12:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->exitCode);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -272,6 +326,21 @@ class JobModel {
     if ($this->workingDir !== null) {
       $xfer += $output->writeFieldBegin('workingDir', TType::STRING, 9);
       $xfer += $output->writeString($this->workingDir);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->stdout !== null) {
+      $xfer += $output->writeFieldBegin('stdout', TType::STRING, 10);
+      $xfer += $output->writeString($this->stdout);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->stderr !== null) {
+      $xfer += $output->writeFieldBegin('stderr', TType::STRING, 11);
+      $xfer += $output->writeString($this->stderr);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->exitCode !== null) {
+      $xfer += $output->writeFieldBegin('exitCode', TType::I32, 12);
+      $xfer += $output->writeI32($this->exitCode);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

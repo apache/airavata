@@ -99,6 +99,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
         }
         experimentRegistry = new ExperimentRegistry(gatewayResource, user);
         projectRegistry = new ProjectRegistry(gatewayResource, user);
+        gatewayRegistry = new GatewayRegistry();
     }
 
     /**
