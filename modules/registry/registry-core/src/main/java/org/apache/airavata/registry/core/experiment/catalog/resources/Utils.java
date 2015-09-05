@@ -654,11 +654,11 @@ public class Utils {
             if (o.getJobDescription() != null){
                 jobResource.setJobDescription(new String(o.getJobDescription()));
             }
-            if (o.getStderr() != null){
-                jobResource.setStdErr(new String(o.getStderr()));
+            if (o.getStdErr() != null){
+                jobResource.setStdErr(new String(o.getStdErr()));
             }
-            if (o.getStdout() != null){
-                jobResource.setStdOut(new String(o.getStdout()));
+            if (o.getStdOut() != null){
+                jobResource.setStdOut(new String(o.getStdOut()));
             }
             jobResource.setComputeResourceConsumed(o.getComputeResourceConsumed());
             jobResource.setJobName(o.getJobName());

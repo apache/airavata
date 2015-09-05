@@ -36,8 +36,8 @@ public class Job {
     private String taskId;
 	private String processId;
     private char[] jobDescription;
-    private char[] stdout;
-    private char[] stderr;
+    private char[] stdOut;
+    private char[] stdErr;
     private int exitCode;
     private Timestamp creationTime;
     private String computeResourceConsumed;
@@ -87,23 +87,23 @@ public class Job {
     }
 
     @Lob
-    @Column(name = "STDOUT")
-    public char[] getStdout() {
-        return stdout;
+    @Column(name = "STD_OUT")
+    public char[] getStdOut() {
+        return stdOut;
     }
 
-    public void setStdout(char[] stdout) {
-        this.stdout = stdout;
+    public void setStdOut(char[] stdOut) {
+        this.stdOut = stdOut;
     }
 
     @Lob
-    @Column(name = "STDERR")
-    public char[] getStderr() {
-        return stderr;
+    @Column(name = "STD_ERR")
+    public char[] getStdErr() {
+        return stdErr;
     }
 
-    public void setStderr(char[] stderr) {
-        this.stderr = stderr;
+    public void setStdErr(char[] stdErr) {
+        this.stdErr = stdErr;
     }
 
     @Basic
