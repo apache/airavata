@@ -31,6 +31,9 @@ class JobModel:
    - computeResourceConsumed
    - jobName
    - workingDir
+   - stdout
+   - stderr
+   - exitCode
   """
 
   thrift_spec = (
@@ -44,9 +47,12 @@ class JobModel:
     (7, TType.STRING, 'computeResourceConsumed', None, None, ), # 7
     (8, TType.STRING, 'jobName', None, None, ), # 8
     (9, TType.STRING, 'workingDir', None, None, ), # 9
+    (10, TType.STRING, 'stdout', None, None, ), # 10
+    (11, TType.STRING, 'stderr', None, None, ), # 11
+    (12, TType.I32, 'exitCode', None, None, ), # 12
   )
 
-  def __init__(self, jobId=None, taskId=None, processId=None, jobDescription=None, creationTime=None, jobStatus=None, computeResourceConsumed=None, jobName=None, workingDir=None,):
+  def __init__(self, jobId=None, taskId=None, processId=None, jobDescription=None, creationTime=None, jobStatus=None, computeResourceConsumed=None, jobName=None, workingDir=None, stdout=None, stderr=None, exitCode=None,):
     self.jobId = jobId
     self.taskId = taskId
     self.processId = processId
@@ -56,6 +62,9 @@ class JobModel:
     self.computeResourceConsumed = computeResourceConsumed
     self.jobName = jobName
     self.workingDir = workingDir
+    self.stdout = stdout
+    self.stderr = stderr
+    self.exitCode = exitCode
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -112,6 +121,21 @@ class JobModel:
           self.workingDir = iprot.readString();
         else:
           iprot.skip(ftype)
+      elif fid == 10:
+        if ftype == TType.STRING:
+          self.stdout = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 11:
+        if ftype == TType.STRING:
+          self.stderr = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 12:
+        if ftype == TType.I32:
+          self.exitCode = iprot.readI32();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -158,6 +182,18 @@ class JobModel:
       oprot.writeFieldBegin('workingDir', TType.STRING, 9)
       oprot.writeString(self.workingDir)
       oprot.writeFieldEnd()
+    if self.stdout is not None:
+      oprot.writeFieldBegin('stdout', TType.STRING, 10)
+      oprot.writeString(self.stdout)
+      oprot.writeFieldEnd()
+    if self.stderr is not None:
+      oprot.writeFieldBegin('stderr', TType.STRING, 11)
+      oprot.writeString(self.stderr)
+      oprot.writeFieldEnd()
+    if self.exitCode is not None:
+      oprot.writeFieldBegin('exitCode', TType.I32, 12)
+      oprot.writeI32(self.exitCode)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -184,6 +220,9 @@ class JobModel:
     value = (value * 31) ^ hash(self.computeResourceConsumed)
     value = (value * 31) ^ hash(self.jobName)
     value = (value * 31) ^ hash(self.workingDir)
+    value = (value * 31) ^ hash(self.stdout)
+    value = (value * 31) ^ hash(self.stderr)
+    value = (value * 31) ^ hash(self.exitCode)
     return value
 
   def __repr__(self):

@@ -34,6 +34,9 @@ struct JobModel {
     6: optional status_models.JobStatus jobStatus,
     7: optional string computeResourceConsumed,
     8: optional string jobName,
-    9: optional string workingDir
+    9: optional string workingDir,
+    10: optional string stdout,
+    11: optional string stderr,
+    12: optional i32 exitCode
 }
 

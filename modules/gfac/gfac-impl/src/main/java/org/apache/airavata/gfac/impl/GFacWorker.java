@@ -182,7 +182,8 @@ public class GFacWorker implements Runnable {
 
 	private void sendAck() {
 		try {
-			long processDeliveryTag = GFacUtils.getProcessDeliveryTag(processContext.getCuratorClient(), processId);
+			long processDeliveryTag = GFacUtils.getProcessDeliveryTag(processContext.getCuratorClient(),
+					processContext.getExperimentId(), processId);
 			Factory.getProcessLaunchConsumer().sendAck(processDeliveryTag);
 			log.info("expId: {}, procesId: {} :- Sent ack for deliveryTag {}", processContext.getExperimentId(),
 					processId, processDeliveryTag);

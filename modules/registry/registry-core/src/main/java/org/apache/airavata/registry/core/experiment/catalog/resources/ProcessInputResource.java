@@ -171,11 +171,11 @@ public class ProcessInputResource extends AbstractExpCatResource {
     public void save() throws RegistryException{
         EntityManager em = null;
         try {
-            em = ExpCatResourceUtils.getEntityManager();
-            em.getTransaction().begin();
             if(processId == null){
                 throw new RegistryException("Does not have the process id");
             }
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
             ProcessInput processInput;
             ProcessInputPK processInputPk = new ProcessInputPK();
             processInputPk.setProcessId(processId);

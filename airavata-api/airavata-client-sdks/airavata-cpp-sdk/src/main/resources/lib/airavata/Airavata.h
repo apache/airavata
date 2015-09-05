@@ -35,8 +35,10 @@ class AiravataIf {
 
   /**
    * Fetch Apache Airavata API version
+   * 
+   * @param authzToken
    */
-  virtual void getAPIVersion(std::string& _return) = 0;
+  virtual void getAPIVersion(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) = 0;
   virtual void addGateway(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Gateway& gateway) = 0;
   virtual void updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway) = 0;
   virtual void getGateway( ::apache::airavata::model::workspace::Gateway& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
@@ -1739,7 +1741,7 @@ class AiravataIfSingletonFactory : virtual public AiravataIfFactory {
 class AiravataNull : virtual public AiravataIf {
  public:
   virtual ~AiravataNull() {}
-  void getAPIVersion(std::string& /* _return */) {
+  void getAPIVersion(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */) {
     return;
   }
   void addGateway(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::apache::airavata::model::workspace::Gateway& /* gateway */) {
@@ -2134,8 +2136,8 @@ class AiravataNull : virtual public AiravataIf {
 class Airavata_getAPIVersion_args {
  public:
 
-  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
-  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+  static const char* ascii_fingerprint; // = "75A7E945AEBB96C8FA8998CBCEB31C27";
+  static const uint8_t binary_fingerprint[16]; // = {0x75,0xA7,0xE9,0x45,0xAE,0xBB,0x96,0xC8,0xFA,0x89,0x98,0xCB,0xCE,0xB3,0x1C,0x27};
 
   Airavata_getAPIVersion_args(const Airavata_getAPIVersion_args&);
   Airavata_getAPIVersion_args& operator=(const Airavata_getAPIVersion_args&);
@@ -2143,9 +2145,14 @@ class Airavata_getAPIVersion_args {
   }
 
   virtual ~Airavata_getAPIVersion_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
 
-  bool operator == (const Airavata_getAPIVersion_args & /* rhs */) const
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  bool operator == (const Airavata_getAPIVersion_args & rhs) const
   {
+    if (!(authzToken == rhs.authzToken))
+      return false;
     return true;
   }
   bool operator != (const Airavata_getAPIVersion_args &rhs) const {
@@ -2164,11 +2171,12 @@ class Airavata_getAPIVersion_args {
 class Airavata_getAPIVersion_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
-  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+  static const char* ascii_fingerprint; // = "75A7E945AEBB96C8FA8998CBCEB31C27";
+  static const uint8_t binary_fingerprint[16]; // = {0x75,0xA7,0xE9,0x45,0xAE,0xBB,0x96,0xC8,0xFA,0x89,0x98,0xCB,0xCE,0xB3,0x1C,0x27};
 
 
   virtual ~Airavata_getAPIVersion_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -8106,8 +8114,8 @@ typedef struct _Airavata_getJobDetails_result__isset {
 class Airavata_getJobDetails_result {
  public:
 
-  static const char* ascii_fingerprint; // = "85D8CE6F76E396F1CD5A41458FB135E7";
-  static const uint8_t binary_fingerprint[16]; // = {0x85,0xD8,0xCE,0x6F,0x76,0xE3,0x96,0xF1,0xCD,0x5A,0x41,0x45,0x8F,0xB1,0x35,0xE7};
+  static const char* ascii_fingerprint; // = "86F1505AC518EEA27AAFCE2F68FCA761";
+  static const uint8_t binary_fingerprint[16]; // = {0x86,0xF1,0x50,0x5A,0xC5,0x18,0xEE,0xA2,0x7A,0xAF,0xCE,0x2F,0x68,0xFC,0xA7,0x61};
 
   Airavata_getJobDetails_result(const Airavata_getJobDetails_result&);
   Airavata_getJobDetails_result& operator=(const Airavata_getJobDetails_result&);
@@ -8177,8 +8185,8 @@ typedef struct _Airavata_getJobDetails_presult__isset {
 class Airavata_getJobDetails_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "85D8CE6F76E396F1CD5A41458FB135E7";
-  static const uint8_t binary_fingerprint[16]; // = {0x85,0xD8,0xCE,0x6F,0x76,0xE3,0x96,0xF1,0xCD,0x5A,0x41,0x45,0x8F,0xB1,0x35,0xE7};
+  static const char* ascii_fingerprint; // = "86F1505AC518EEA27AAFCE2F68FCA761";
+  static const uint8_t binary_fingerprint[16]; // = {0x86,0xF1,0x50,0x5A,0xC5,0x18,0xEE,0xA2,0x7A,0xAF,0xCE,0x2F,0x68,0xFC,0xA7,0x61};
 
 
   virtual ~Airavata_getJobDetails_presult() throw();
@@ -20675,8 +20683,8 @@ class AiravataClient : virtual public AiravataIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
-  void getAPIVersion(std::string& _return);
-  void send_getAPIVersion();
+  void getAPIVersion(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken);
+  void send_getAPIVersion(const  ::apache::airavata::model::security::AuthzToken& authzToken);
   void recv_getAPIVersion(std::string& _return);
   void addGateway(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Gateway& gateway);
   void send_addGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Gateway& gateway);
@@ -21311,13 +21319,13 @@ class AiravataMultiface : virtual public AiravataIf {
     ifaces_.push_back(iface);
   }
  public:
-  void getAPIVersion(std::string& _return) {
+  void getAPIVersion(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAPIVersion(_return);
+      ifaces_[i]->getAPIVersion(_return, authzToken);
     }
-    ifaces_[i]->getAPIVersion(_return);
+    ifaces_[i]->getAPIVersion(_return, authzToken);
     return;
   }
 
