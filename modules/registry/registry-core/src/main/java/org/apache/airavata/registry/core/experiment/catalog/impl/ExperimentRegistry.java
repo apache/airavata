@@ -489,8 +489,8 @@ public class ExperimentRegistry {
             jobResource.setJobName(job.getJobName());
             jobResource.setWorkingDir(job.getWorkingDir());
             jobResource.setExitCode(job.getExitCode());
-            jobResource.setStdOut(job.getStdout());
-            jobResource.setStderr(job.getStderr());
+            jobResource.setStdOut(job.getStdOut());
+            jobResource.setStdErr(job.getStdErr());
 			jobResource.save();
         } catch (Exception e) {
             logger.error(processId, "Error while adding task...", e);
@@ -854,8 +854,8 @@ public class ExperimentRegistry {
 	        jobResource.setComputeResourceConsumed(job.getComputeResourceConsumed());
 	        jobResource.setJobName(job.getJobName());
 	        jobResource.setWorkingDir(job.getWorkingDir());
-            jobResource.setStdOut(job.getStdout());
-            jobResource.setStderr(job.getStderr());
+            jobResource.setStdOut(job.getStdOut());
+            jobResource.setStdErr(job.getStdErr());
             jobResource.setExitCode(job.getExitCode());
 	        jobResource.save();
         } catch (Exception e) {

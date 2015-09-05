@@ -77,8 +77,8 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 			    JobSubmissionOutput jobSubmissionOutput = remoteCluster.submitBatchJob(jobFile.getPath(),
 					    processContext.getWorkingDir());
 			    jobModel.setExitCode(jobSubmissionOutput.getExitCode());
-			    jobModel.setStderr(jobSubmissionOutput.getStdErr());
-			    jobModel.setStdout(jobSubmissionOutput.getStdOut());
+			    jobModel.setStdErr(jobSubmissionOutput.getStdErr());
+			    jobModel.setStdOut(jobSubmissionOutput.getStdOut());
 			    String jobId = jobSubmissionOutput.getJobId();
 			    if (jobId != null && !jobId.isEmpty()) {
 				    jobModel.setJobId(jobId);

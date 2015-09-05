@@ -31,8 +31,8 @@ class JobModel:
    - computeResourceConsumed
    - jobName
    - workingDir
-   - stdout
-   - stderr
+   - stdOut
+   - stdErr
    - exitCode
   """
 
@@ -47,12 +47,12 @@ class JobModel:
     (7, TType.STRING, 'computeResourceConsumed', None, None, ), # 7
     (8, TType.STRING, 'jobName', None, None, ), # 8
     (9, TType.STRING, 'workingDir', None, None, ), # 9
-    (10, TType.STRING, 'stdout', None, None, ), # 10
-    (11, TType.STRING, 'stderr', None, None, ), # 11
+    (10, TType.STRING, 'stdOut', None, None, ), # 10
+    (11, TType.STRING, 'stdErr', None, None, ), # 11
     (12, TType.I32, 'exitCode', None, None, ), # 12
   )
 
-  def __init__(self, jobId=None, taskId=None, processId=None, jobDescription=None, creationTime=None, jobStatus=None, computeResourceConsumed=None, jobName=None, workingDir=None, stdout=None, stderr=None, exitCode=None,):
+  def __init__(self, jobId=None, taskId=None, processId=None, jobDescription=None, creationTime=None, jobStatus=None, computeResourceConsumed=None, jobName=None, workingDir=None, stdOut=None, stdErr=None, exitCode=None,):
     self.jobId = jobId
     self.taskId = taskId
     self.processId = processId
@@ -62,8 +62,8 @@ class JobModel:
     self.computeResourceConsumed = computeResourceConsumed
     self.jobName = jobName
     self.workingDir = workingDir
-    self.stdout = stdout
-    self.stderr = stderr
+    self.stdOut = stdOut
+    self.stdErr = stdErr
     self.exitCode = exitCode
 
   def read(self, iprot):
@@ -123,12 +123,12 @@ class JobModel:
           iprot.skip(ftype)
       elif fid == 10:
         if ftype == TType.STRING:
-          self.stdout = iprot.readString();
+          self.stdOut = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 11:
         if ftype == TType.STRING:
-          self.stderr = iprot.readString();
+          self.stdErr = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 12:
@@ -182,13 +182,13 @@ class JobModel:
       oprot.writeFieldBegin('workingDir', TType.STRING, 9)
       oprot.writeString(self.workingDir)
       oprot.writeFieldEnd()
-    if self.stdout is not None:
-      oprot.writeFieldBegin('stdout', TType.STRING, 10)
-      oprot.writeString(self.stdout)
+    if self.stdOut is not None:
+      oprot.writeFieldBegin('stdOut', TType.STRING, 10)
+      oprot.writeString(self.stdOut)
       oprot.writeFieldEnd()
-    if self.stderr is not None:
-      oprot.writeFieldBegin('stderr', TType.STRING, 11)
-      oprot.writeString(self.stderr)
+    if self.stdErr is not None:
+      oprot.writeFieldBegin('stdErr', TType.STRING, 11)
+      oprot.writeString(self.stdErr)
       oprot.writeFieldEnd()
     if self.exitCode is not None:
       oprot.writeFieldBegin('exitCode', TType.I32, 12)
@@ -220,8 +220,8 @@ class JobModel:
     value = (value * 31) ^ hash(self.computeResourceConsumed)
     value = (value * 31) ^ hash(self.jobName)
     value = (value * 31) ^ hash(self.workingDir)
-    value = (value * 31) ^ hash(self.stdout)
-    value = (value * 31) ^ hash(self.stderr)
+    value = (value * 31) ^ hash(self.stdOut)
+    value = (value * 31) ^ hash(self.stdErr)
     value = (value * 31) ^ hash(self.exitCode)
     return value
 
