@@ -49,7 +49,7 @@ public class JobResource extends AbstractExpCatResource {
     private String jobName;
     private String workingDir;
     private String stdOut;
-    private String stderr;
+    private String stdErr;
     private int exitCode;
 
     public String getJobId() {
@@ -124,12 +124,12 @@ public class JobResource extends AbstractExpCatResource {
         this.stdOut = stdOut;
     }
 
-    public String getStderr() {
-        return stderr;
+    public String getStdErr() {
+        return stdErr;
     }
 
-    public void setStderr(String stderr) {
-        this.stderr = stderr;
+    public void setStdErr(String stderr) {
+        this.stdErr = stderr;
     }
 
     public int getExitCode() {
@@ -291,8 +291,8 @@ public class JobResource extends AbstractExpCatResource {
             if (stdOut != null) {
                 job.setStdout(stdOut.toCharArray());
             }
-            if (stderr != null) {
-                job.setStderr(stderr.toCharArray());
+            if (stdErr != null) {
+                job.setStderr(stdErr.toCharArray());
             }
             job.setCreationTime(creationTime);
             job.setComputeResourceConsumed(computeResourceConsumed);

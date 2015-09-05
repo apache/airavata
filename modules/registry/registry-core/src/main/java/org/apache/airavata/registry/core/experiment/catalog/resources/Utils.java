@@ -655,7 +655,7 @@ public class Utils {
                 jobResource.setJobDescription(new String(o.getJobDescription()));
             }
             if (o.getStderr() != null){
-                jobResource.setStderr(new String(o.getStderr()));
+                jobResource.setStdErr(new String(o.getStderr()));
             }
             if (o.getStdout() != null){
                 jobResource.setStdOut(new String(o.getStdout()));
