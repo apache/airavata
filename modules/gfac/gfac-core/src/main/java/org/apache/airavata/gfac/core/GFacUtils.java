@@ -1093,6 +1093,41 @@ public class GFacUtils {
         }
     }
 
+    public static void saveExperimentError(ProcessContext processContext, ErrorModel errorModel) throws GFacException {
+        try {
+            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            String experimentId = processContext.getExperimentId();
+            experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_ERROR, errorModel, experimentId);
+        } catch (RegistryException e) {
+            String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
+                    + " : - Error while updating experiment errors";
+            throw new GFacException(msg, e);
+        }
+    }
+
+    public static void saveProcessError(ProcessContext processContext, ErrorModel errorModel) throws GFacException {
+        try {
+            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            experimentCatalog.add(ExpCatChildDataType.PROCESS_ERROR, errorModel, processContext.getProcessId());
+        } catch (RegistryException e) {
+            String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
+                    + " : - Error while updating process errors";
+            throw new GFacException(msg, e);
+        }
+    }
+
+    public static void saveTaskError(TaskContext taskContext, ErrorModel errorModel) throws GFacException {
+        try {
+            ExperimentCatalog experimentCatalog = taskContext.getParentProcessContext().getExperimentCatalog();
+            String taskId = taskContext.getTaskId();
+            experimentCatalog.add(ExpCatChildDataType.TASK_ERROR, errorModel, taskId);
+        } catch (RegistryException e) {
+            String msg = "expId: " + taskContext.getParentProcessContext().getExperimentId() + " processId: " + taskContext.getParentProcessContext().getProcessId() + " taskId: " + taskContext.getTaskId()
+                    + " : - Error while updating task errors";
+            throw new GFacException(msg, e);
+        }
+    }
+
 	public static void handleProcessInterrupt(ProcessContext processContext) throws GFacException {
 		if (processContext.isCancel()) {
 			ProcessStatus pStatus = new ProcessStatus(ProcessState.CANCELLING);
