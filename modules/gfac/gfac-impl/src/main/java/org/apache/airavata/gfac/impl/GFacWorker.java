@@ -22,6 +22,7 @@
 package org.apache.airavata.gfac.impl;
 
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -131,6 +132,7 @@ public class GFacWorker implements Runnable {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setUserFriendlyMessage("GFac Worker throws an exception");
             errorModel.setActualErrorMessage(errors.toString());
+            errorModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
 			try {
 				GFacUtils.saveAndPublishProcessStatus(processContext);
                 GFacUtils.saveExperimentError(processContext, errorModel);

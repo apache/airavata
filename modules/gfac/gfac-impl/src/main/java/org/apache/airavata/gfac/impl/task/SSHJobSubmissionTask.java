@@ -123,7 +123,12 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 						    "remote jobId for JobName:" + jobModel.getJobName() + ", both submit and verify steps " +
 						    "doesn't return a valid JobId. " + "Hence changing experiment state to Failed";
 				    log.error(msg);
-				    GFacUtils.saveErrorDetails(processContext, msg);
+                    ErrorModel errorModel = new ErrorModel();
+                    errorModel.setUserFriendlyMessage(msg);
+                    errorModel.setActualErrorMessage(msg);
+				    GFacUtils.saveExperimentError(processContext, errorModel);
+                    GFacUtils.saveProcessError(processContext, errorModel);
+                    GFacUtils.saveTaskError(taskContext, errorModel);
 				    taskStatus.setState(TaskState.FAILED);
 				    taskStatus.setReason("Couldn't find job id in both submitted and verified steps");
 			    }else {
