@@ -337,22 +337,22 @@ public class GFacUtils {
 //		}
 //	}
 
-	public static void saveErrorDetails(
-			ProcessContext processContext, String errorMessage)
-			throws GFacException {
-		try {
-			ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-			ErrorModel details = new ErrorModel();
-			details.setActualErrorMessage(errorMessage);
-			details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-			// FIXME : Save error model according to new data model
-//            experimentCatalog.add(ExpCatChildDataType.ERROR_DETAIL, details,
-//					jobExecutionContext.getTaskData().getTaskID());
-		} catch (Exception e) {
-			throw new GFacException("Error persisting job status"
-					+ e.getLocalizedMessage(), e);
-		}
-	}
+//	public static void saveErrorDetails(
+//			ProcessContext processContext, String errorMessage)
+//			throws GFacException {
+//		try {
+//			ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+//			ErrorModel details = new ErrorModel();
+//			details.setActualErrorMessage(errorMessage);
+//			details.setCreationTime(Calendar.getInstance().getTimeInMillis());
+//			// FIXME : Save error model according to new data model
+////            experimentCatalog.add(ExpCatChildDataType.ERROR_DETAIL, details,
+////					jobExecutionContext.getTaskData().getTaskID());
+//		} catch (Exception e) {
+//			throw new GFacException("Error persisting job status"
+//					+ e.getLocalizedMessage(), e);
+//		}
+//	}
 
     public static Map<String, Object> getInputParamMap(List<InputDataObjectType> experimentData) throws GFacException {
         Map<String, Object> map = new HashMap<String, Object>();
