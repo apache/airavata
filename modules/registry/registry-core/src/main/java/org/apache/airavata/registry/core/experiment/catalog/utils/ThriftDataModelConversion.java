@@ -420,16 +420,22 @@ public class ThriftDataModelConversion {
                 errorModel.setActualErrorMessage(errorResource.getActualErrorMessage());
                 errorModel.setUserFriendlyMessage(errorResource.getUserFriendlyMessage());
                 errorModel.setTransientOrPersistent(errorResource.getTransientOrPersistent());
-                errorModel.setRootCauseErrorIdList(Arrays.asList(errorResource.getRootCauseErrorIdList().split(",")));
+                String rootCauseErrorIdList = errorResource.getRootCauseErrorIdList();
+                if (rootCauseErrorIdList != null){
+                    errorModel.setRootCauseErrorIdList(Arrays.asList(rootCauseErrorIdList.split(",")));
+                }
                 return errorModel;
-            } else if (object instanceof ProcessOutputResource) {
+            } else if (object instanceof ProcessErrorResource) {
                 ProcessErrorResource errorResource = (ProcessErrorResource) object;
                 errorModel.setErrorId(errorResource.getErrorId());
                 errorModel.setCreationTime(errorResource.getCreationTime().getTime());
                 errorModel.setActualErrorMessage(errorResource.getActualErrorMessage());
                 errorModel.setUserFriendlyMessage(errorResource.getUserFriendlyMessage());
                 errorModel.setTransientOrPersistent(errorResource.getTransientOrPersistent());
-                errorModel.setRootCauseErrorIdList(Arrays.asList(errorResource.getRootCauseErrorIdList().split(",")));
+                String rootCauseErrorIdList = errorResource.getRootCauseErrorIdList();
+                if (rootCauseErrorIdList != null){
+                    errorModel.setRootCauseErrorIdList(Arrays.asList(rootCauseErrorIdList.split(",")));
+                }
                 return errorModel;
             } else if (object instanceof TaskErrorResource) {
                 TaskErrorResource errorResource = (TaskErrorResource) object;
@@ -438,7 +444,10 @@ public class ThriftDataModelConversion {
                 errorModel.setActualErrorMessage(errorResource.getActualErrorMessage());
                 errorModel.setUserFriendlyMessage(errorResource.getUserFriendlyMessage());
                 errorModel.setTransientOrPersistent(errorResource.getTransientOrPersistent());
-                errorModel.setRootCauseErrorIdList(Arrays.asList(errorResource.getRootCauseErrorIdList().split(",")));
+                String rootCauseErrorIdList = errorResource.getRootCauseErrorIdList();
+                if (rootCauseErrorIdList != null){
+                    errorModel.setRootCauseErrorIdList(Arrays.asList(rootCauseErrorIdList.split(",")));
+                }
                 return errorModel;
             } else {
                 return null;
