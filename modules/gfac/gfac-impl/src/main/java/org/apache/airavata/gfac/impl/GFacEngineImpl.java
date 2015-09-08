@@ -42,6 +42,7 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfil
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ProcessState;
@@ -209,9 +210,15 @@ public class GFacEngineImpl implements GFacEngine {
 						taskStatus = executeTask(taskCtx, dMoveTask, false);
 						if (taskStatus.getState() == TaskState.FAILED) {
 							log.error("expId: {}, processId: {}, taskId: {} type: {},:- Input statging failed, " +
-									"reason:" + " {}", taskCtx.getParentProcessContext().getExperimentId(), taskCtx
-									.getParentProcessContext().getProcessId(), taskCtx.getTaskId(), dMoveTask.getType
-									().name(), taskStatus.getReason());
+                                    "reason:" + " {}", taskCtx.getParentProcessContext().getExperimentId(), taskCtx
+                                    .getParentProcessContext().getProcessId(), taskCtx.getTaskId(), dMoveTask.getType
+                                    ().name(), taskStatus.getReason());
+                            String errorMsg = "expId: {}, processId: {}, taskId: {} type: {},:- Input staging failed, " +
+                                    "reason:" + " {}" + processContext.getExperimentId() + processContext.getProcessId() + taskCtx.getTaskId() + dMoveTask.getType().name() + taskStatus.getReason();
+                            ErrorModel errorModel = new ErrorModel();
+                            errorModel.setUserFriendlyMessage("Error while staging input data");
+                            errorModel.setActualErrorMessage(errorMsg);
+                            GFacUtils.saveTaskError(taskCtx, errorModel);
 							throw new GFacException("Error while staging input data");
 						}
 						break;
@@ -243,10 +250,16 @@ public class GFacEngineImpl implements GFacEngine {
 		SSHEnvironmentSetupTask envSetupTask = new SSHEnvironmentSetupTask();
 		TaskStatus taskStatus = executeTask(taskCtx, envSetupTask, recover);
 		if (taskStatus.getState() == TaskState.FAILED) {
-			log.error("expId: {}, processId: {}, taskId: {} type: {},:- Input statging failed, " +
+			log.error("expId: {}, processId: {}, taskId: {} type: {},:- Input staging failed, " +
 					"reason:" + " {}", taskCtx.getParentProcessContext().getExperimentId(), taskCtx
 					.getParentProcessContext().getProcessId(), taskCtx.getTaskId(), envSetupTask.getType
 					().name(), taskStatus.getReason());
+            String errorMsg = "expId: {}, processId: {}, taskId: {} type: {},:- Input staging failed, " +
+                    "reason:" + " {}" + processContext.getExperimentId() + processContext.getProcessId() + taskCtx.getTaskId() + envSetupTask.getType().name() + taskStatus.getReason();
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setUserFriendlyMessage("Error while environment setup");
+            errorModel.setActualErrorMessage(errorMsg);
+            GFacUtils.saveTaskError(taskCtx, errorModel);
 			throw new GFacException("Error while environment setup");
 		}
 		if (processContext.isInterrupted()) {
@@ -349,7 +362,7 @@ public class GFacEngineImpl implements GFacEngine {
 					try {
 						taskCtx = getDataStagingTaskContext(processContext, processOutput);
 					} catch (TException e) {
-						throw new GFacException("Thrift model to byte[] convertion issue", e);
+						throw new GFacException("Thrift model to byte[] conversion issue", e);
 					}
 					File localWorkingdir = new File(taskCtx.getLocalWorkingDir());
 					localWorkingdir.mkdirs(); // make local dir if not exist
@@ -358,11 +371,18 @@ public class GFacEngineImpl implements GFacEngine {
 					Task dMoveTask = Factory.getDataMovementTask(processContext.getDataMovementProtocol());
 					TaskStatus taskStatus = executeTask(taskCtx, dMoveTask, recovery);
 					if (taskStatus.getState() == TaskState.FAILED) {
-						log.error("expId: {}, processId: {}, taskId: {} type: {},:- Input statging failed, " +
+						log.error("expId: {}, processId: {}, taskId: {} type: {},:- output staging failed, " +
 								"reason:" + " {}", taskCtx.getParentProcessContext().getExperimentId(), taskCtx
 								.getParentProcessContext().getProcessId(), taskCtx.getTaskId(), dMoveTask.getType
 								().name(), taskStatus.getReason());
-						throw new GFacException("Error while staging input data");
+
+                        String errorMsg = "expId: {}, processId: {}, taskId: {} type: {},:- output staging failed, " +
+                                "reason:" + " {}" + processContext.getExperimentId() + processContext.getProcessId() + taskCtx.getTaskId() + dMoveTask.getType().name() + taskStatus.getReason();
+                        ErrorModel errorModel = new ErrorModel();
+                        errorModel.setUserFriendlyMessage("Error while staging output data");
+                        errorModel.setActualErrorMessage(errorMsg);
+                        GFacUtils.saveTaskError(taskCtx, errorModel);
+						throw new GFacException("Error while staging output data");
 					}
 					break;
 				default:
