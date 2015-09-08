@@ -126,9 +126,9 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 				    GFacUtils.saveErrorDetails(processContext, msg);
 				    taskStatus.setState(TaskState.FAILED);
 				    taskStatus.setReason("Couldn't find job id in both submitted and verified steps");
-			    }
-
-			    GFacUtils.saveJobModel(processContext, jobModel);
+			    }else {
+                    GFacUtils.saveJobModel(processContext, jobModel);
+                }
 		    } else {
 			    taskStatus.setState(TaskState.FAILED);
 			    if (jobFile == null) {
