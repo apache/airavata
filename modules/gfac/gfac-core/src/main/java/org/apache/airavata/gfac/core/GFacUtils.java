@@ -1097,6 +1097,7 @@ public class GFacUtils {
         try {
             ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
             String experimentId = processContext.getExperimentId();
+            errorModel.setErrorId(AiravataUtils.getId("EXP_ERROR"));
             experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_ERROR, errorModel, experimentId);
         } catch (RegistryException e) {
             String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
@@ -1108,6 +1109,7 @@ public class GFacUtils {
     public static void saveProcessError(ProcessContext processContext, ErrorModel errorModel) throws GFacException {
         try {
             ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            errorModel.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
             experimentCatalog.add(ExpCatChildDataType.PROCESS_ERROR, errorModel, processContext.getProcessId());
         } catch (RegistryException e) {
             String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
@@ -1120,6 +1122,7 @@ public class GFacUtils {
         try {
             ExperimentCatalog experimentCatalog = taskContext.getParentProcessContext().getExperimentCatalog();
             String taskId = taskContext.getTaskId();
+            errorModel.setErrorId(AiravataUtils.getId("TASK_ERROR"));
             experimentCatalog.add(ExpCatChildDataType.TASK_ERROR, errorModel, taskId);
         } catch (RegistryException e) {
             String msg = "expId: " + taskContext.getParentProcessContext().getExperimentId() + " processId: " + taskContext.getParentProcessContext().getProcessId() + " taskId: " + taskContext.getTaskId()
