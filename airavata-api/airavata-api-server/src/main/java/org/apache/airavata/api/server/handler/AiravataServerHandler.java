@@ -1543,10 +1543,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             return jobStatus;
         } catch (Exception e) {
-            logger.error(airavataExperimentId, "Error while retrieving the job details", e);
+            logger.error(airavataExperimentId, "Error while retrieving the job statuses", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving the job details. More info : " + e.getMessage());
+            exception.setMessage("Error while retrieving the job statuses. More info : " + e.getMessage());
             throw exception;
         }
     }

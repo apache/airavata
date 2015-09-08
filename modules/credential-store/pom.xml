@@ -26,7 +26,6 @@
     <modules>
         <module>credential-store-service</module>
         <module>credential-store-stubs</module>
-        <module>credential-store-webapp</module>
     </modules>
 
     <properties>
