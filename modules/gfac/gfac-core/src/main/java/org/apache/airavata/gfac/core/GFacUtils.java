@@ -944,7 +944,7 @@ public class GFacUtils {
         }
     }
 
-    public static File createJobFile(JobDescriptor jobDescriptor, JobManagerConfiguration jobManagerConfiguration) throws GFacException {
+    public static File createJobFile(TaskContext taskContext, JobDescriptor jobDescriptor, JobManagerConfiguration jobManagerConfiguration) throws GFacException {
         try {
             TransformerFactory factory = TransformerFactory.newInstance();
             URL resource = GFacUtils.class.getClassLoader().getResource(jobManagerConfiguration.getJobDescriptionTemplateName());
@@ -971,7 +971,7 @@ public class GFacUtils {
             int number = new SecureRandom().nextInt();
             number = (number < 0 ? -number : number);
 
-	        tempJobFile = new File(ServerSettings.getLocalDataLocation(), Integer.toString(number) +
+	        tempJobFile = new File(GFacUtils.getLocalDataDir(taskContext), Integer.toString(number) +
 			        jobManagerConfiguration.getScriptExtension());
 	        FileUtils.writeStringToFile(tempJobFile, scriptContent);
             return tempJobFile;
@@ -984,6 +984,11 @@ public class GFacUtils {
         }
     }
 
+	public static File getLocalDataDir(TaskContext taskContext) {
+		String outputPath = ServerSettings.getLocalDataLocation();
+		outputPath = (outputPath.endsWith(File.separator) ? outputPath : outputPath + File.separator);
+		return new File(outputPath + taskContext.getParentProcessContext() .getProcessId());
+	}
 	public static String getExperimentNodePath(String experimentId) {
 		return ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE, experimentId);
 	}

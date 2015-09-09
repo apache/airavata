@@ -71,7 +71,7 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 			    jConfig = Factory.getJobManagerConfiguration(resourceJobManager);
 		    }
 		    JobStatus jobStatus = new JobStatus();
-		    File jobFile = GFacUtils.createJobFile(jobDescriptor, jConfig);
+		    File jobFile = GFacUtils.createJobFile(taskContext, jobDescriptor, jConfig);
 		    if (jobFile != null && jobFile.exists()) {
 			    jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
 			    JobSubmissionOutput jobSubmissionOutput = remoteCluster.submitBatchJob(jobFile.getPath(),
