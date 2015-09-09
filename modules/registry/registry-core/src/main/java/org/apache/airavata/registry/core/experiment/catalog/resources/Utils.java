@@ -601,6 +601,7 @@ public class Utils {
         TaskStatusResource taskStatusResource = new TaskStatusResource();
         if (o != null){
             taskStatusResource.setTaskId(o.getTaskId());
+            taskStatusResource.setStatusId(o.getStatusId());
             taskStatusResource.setState(o.getState());
 	        taskStatusResource.setStatusId(o.getStatusId());
             taskStatusResource.setTimeOfStateChange(o.getTimeOfStateChange());
@@ -614,6 +615,7 @@ public class Utils {
         ProcessStatusResource processStatusResource = new ProcessStatusResource();
         if (o != null){
             processStatusResource.setProcessId(o.getProcessId());
+            processStatusResource.setStatusId(o.getStatusId());
             processStatusResource.setState(o.getState());
             processStatusResource.setTimeOfStateChange(o.getTimeOfStateChange());
             processStatusResource.setReason(o.getReason());
@@ -625,6 +627,7 @@ public class Utils {
         ExperimentStatusResource experimentStatusResource = new ExperimentStatusResource();
         if (o != null){
             experimentStatusResource.setExperimentId(o.getExperimentId());
+            experimentStatusResource.setStatusId(o.getStatusId());
             experimentStatusResource.setState(o.getState());
             experimentStatusResource.setTimeOfStateChange(o.getTimeOfStateChange());
             experimentStatusResource.setReason(o.getReason());
