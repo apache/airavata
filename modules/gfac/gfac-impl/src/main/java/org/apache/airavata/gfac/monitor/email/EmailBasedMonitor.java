@@ -269,11 +269,15 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
         // TODO - Handle all other valid JobStates
         if (resultState == JobState.COMPLETE) {
             jobMonitorMap.remove(jobStatusResult.getJobId());
-            runOutflowTasks = true;
+	        jobStatus.setJobState(JobState.COMPLETE);
+	        jobStatus.setReason("Complete email received");
+	        runOutflowTasks = true;
             log.info("[EJM]: Job Complete email received , removed job from job monitoring. " + jobDetails);
         }else if (resultState == JobState.QUEUED) {
-            // nothing special thing to do, update the status change to rabbit mq at the end of this method.
-            log.info("[EJM]: Job Queued email received, " + jobDetails);
+	        // nothing special thing to do, update the status change to rabbit mq at the end of this method.
+	        jobStatus.setJobState(JobState.QUEUED);
+	        jobStatus.setReason("Queue email received");
+	        log.info("[EJM]: Job Queued email received, " + jobDetails);
         }else if (resultState == JobState.ACTIVE) {
             // nothing special thing to do, update the status change to rabbit mq at the end of this method.
 	        jobStatus.setJobState(JobState.ACTIVE);
