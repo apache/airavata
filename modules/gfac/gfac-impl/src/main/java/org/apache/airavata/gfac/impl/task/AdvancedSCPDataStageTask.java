@@ -115,7 +115,7 @@ public class AdvancedSCPDataStageTask implements Task{
                     (taskContext.getTaskModel());
             URI sourceURI = new URI(subTaskModel.getSource());
 
-            File templocalDataDir = getLocalDataDir(taskContext);
+            File templocalDataDir = GFacUtils.getLocalDataDir(taskContext);
             if (!templocalDataDir.exists()) {
                 if (!templocalDataDir.mkdirs()) {
                     // failed to create temp output location
@@ -247,12 +247,6 @@ public class AdvancedSCPDataStageTask implements Task{
         GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());
 
     }
-
-	private File getLocalDataDir(TaskContext taskContext) {
-		String outputPath = ServerSettings.getLocalDataLocation();
-		outputPath = (outputPath.endsWith(File.separator) ? outputPath : outputPath + File.separator);
-		return new File(outputPath + taskContext.getParentProcessContext() .getProcessId());
-	}
 
 	@Override
 	public TaskStatus recover(TaskContext taskContext) {
