@@ -970,8 +970,10 @@ public class GFacUtils {
             // creating a temporary file using pbs script generated above
             int number = new SecureRandom().nextInt();
             number = (number < 0 ? -number : number);
-            tempJobFile = new File(Integer.toString(number) + jobManagerConfiguration.getScriptExtension());
-            FileUtils.writeStringToFile(tempJobFile, scriptContent);
+
+	        tempJobFile = new File(ServerSettings.getLocalDataLocation(), Integer.toString(number) +
+			        jobManagerConfiguration.getScriptExtension());
+	        FileUtils.writeStringToFile(tempJobFile, scriptContent);
             return tempJobFile;
         } catch (IOException e) {
             throw new GFacException("Error occurred while creating the temp job script file", e);
