@@ -303,7 +303,7 @@ public class GFacEngineImpl implements GFacEngine {
 			return;
 		}
 		// exit if process is handed over to another instance while output staging.
-		if (outpuDataStaging(processContext, false)) return;
+		if (outputDataStaging(processContext, false)) return;
 
 		if (processContext.isInterrupted()) {
 			GFacUtils.handleProcessInterrupt(processContext);
@@ -342,7 +342,7 @@ public class GFacEngineImpl implements GFacEngine {
 	 * @return <code>true</code> if process execution interrupted , <code>false</code> otherwise.
 	 * @throws GFacException
 	 */
-	private boolean outpuDataStaging(ProcessContext processContext, boolean recovery) throws GFacException {
+	private boolean outputDataStaging(ProcessContext processContext, boolean recovery) throws GFacException {
 		TaskContext taskCtx;
 		processContext.setProcessStatus(new ProcessStatus(ProcessState.OUTPUT_DATA_STAGING));
 		GFacUtils.saveAndPublishProcessStatus(processContext);
@@ -398,7 +398,7 @@ public class GFacEngineImpl implements GFacEngine {
 		ProcessState processState = processContext.getProcessStatus().getState();
 		switch (processState) {
 			case OUTPUT_DATA_STAGING:
-				if (outpuDataStaging(processContext, true)) return;
+				if (outputDataStaging(processContext, true)) return;
 				if (postProcessing(processContext, false)) return;
 			case POST_PROCESSING:
 				postProcessing(processContext, true);
