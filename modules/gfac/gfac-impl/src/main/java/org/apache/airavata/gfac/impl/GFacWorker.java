@@ -22,16 +22,20 @@
 package org.apache.airavata.gfac.impl;
 
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.monitor.JobMonitor;
+import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.MessageFormat;
 
 public class GFacWorker implements Runnable {
@@ -123,8 +127,16 @@ public class GFacWorker implements Runnable {
 			ProcessStatus status = new ProcessStatus(ProcessState.FAILED);
 			status.setReason(e.getMessage());
 			processContext.setProcessStatus(status);
+            StringWriter errors = new StringWriter();
+            e.printStackTrace(new PrintWriter(errors));
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setUserFriendlyMessage("GFac Worker throws an exception");
+            errorModel.setActualErrorMessage(errors.toString());
+            errorModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
 			try {
 				GFacUtils.saveAndPublishProcessStatus(processContext);
+                GFacUtils.saveExperimentError(processContext, errorModel);
+                GFacUtils.saveProcessError(processContext, errorModel);
 			} catch (GFacException e1) {
 				log.error("expId: {}, processId: {} :- Couldn't save and publish process status {}", processContext
 						.getExperimentId(), processContext.getProcessId(), processContext.getProcessState());

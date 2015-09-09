@@ -134,6 +134,7 @@
 
 	<dependencySets>
 		<dependencySet>
+			<useProjectArtifact>false</useProjectArtifact>
 			<outputDirectory>lib</outputDirectory>
 			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
 			<includes>

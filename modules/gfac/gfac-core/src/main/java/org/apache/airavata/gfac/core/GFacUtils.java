@@ -337,22 +337,22 @@ public class GFacUtils {
 //		}
 //	}
 
-	public static void saveErrorDetails(
-			ProcessContext processContext, String errorMessage)
-			throws GFacException {
-		try {
-			ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-			ErrorModel details = new ErrorModel();
-			details.setActualErrorMessage(errorMessage);
-			details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-			// FIXME : Save error model according to new data model
-//            experimentCatalog.add(ExpCatChildDataType.ERROR_DETAIL, details,
-//					jobExecutionContext.getTaskData().getTaskID());
-		} catch (Exception e) {
-			throw new GFacException("Error persisting job status"
-					+ e.getLocalizedMessage(), e);
-		}
-	}
+//	public static void saveErrorDetails(
+//			ProcessContext processContext, String errorMessage)
+//			throws GFacException {
+//		try {
+//			ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+//			ErrorModel details = new ErrorModel();
+//			details.setActualErrorMessage(errorMessage);
+//			details.setCreationTime(Calendar.getInstance().getTimeInMillis());
+//			// FIXME : Save error model according to new data model
+////            experimentCatalog.add(ExpCatChildDataType.ERROR_DETAIL, details,
+////					jobExecutionContext.getTaskData().getTaskID());
+//		} catch (Exception e) {
+//			throw new GFacException("Error persisting job status"
+//					+ e.getLocalizedMessage(), e);
+//		}
+//	}
 
     public static Map<String, Object> getInputParamMap(List<InputDataObjectType> experimentData) throws GFacException {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -1091,6 +1091,44 @@ public class GFacUtils {
         } catch (RegistryException e) {
             String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
                     + " : - Error while updating experiment outputs";
+            throw new GFacException(msg, e);
+        }
+    }
+
+    public static void saveExperimentError(ProcessContext processContext, ErrorModel errorModel) throws GFacException {
+        try {
+            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            String experimentId = processContext.getExperimentId();
+            errorModel.setErrorId(AiravataUtils.getId("EXP_ERROR"));
+            experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_ERROR, errorModel, experimentId);
+        } catch (RegistryException e) {
+            String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
+                    + " : - Error while updating experiment errors";
+            throw new GFacException(msg, e);
+        }
+    }
+
+    public static void saveProcessError(ProcessContext processContext, ErrorModel errorModel) throws GFacException {
+        try {
+            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            errorModel.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
+            experimentCatalog.add(ExpCatChildDataType.PROCESS_ERROR, errorModel, processContext.getProcessId());
+        } catch (RegistryException e) {
+            String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
+                    + " : - Error while updating process errors";
+            throw new GFacException(msg, e);
+        }
+    }
+
+    public static void saveTaskError(TaskContext taskContext, ErrorModel errorModel) throws GFacException {
+        try {
+            ExperimentCatalog experimentCatalog = taskContext.getParentProcessContext().getExperimentCatalog();
+            String taskId = taskContext.getTaskId();
+            errorModel.setErrorId(AiravataUtils.getId("TASK_ERROR"));
+            experimentCatalog.add(ExpCatChildDataType.TASK_ERROR, errorModel, taskId);
+        } catch (RegistryException e) {
+            String msg = "expId: " + taskContext.getParentProcessContext().getExperimentId() + " processId: " + taskContext.getParentProcessContext().getProcessId() + " taskId: " + taskContext.getTaskId()
+                    + " : - Error while updating task errors";
             throw new GFacException(msg, e);
         }
     }

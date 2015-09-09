@@ -77,8 +77,8 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 			    JobSubmissionOutput jobSubmissionOutput = remoteCluster.submitBatchJob(jobFile.getPath(),
 					    processContext.getWorkingDir());
 			    jobModel.setExitCode(jobSubmissionOutput.getExitCode());
-			    jobModel.setStderr(jobSubmissionOutput.getStdErr());
-			    jobModel.setStdout(jobSubmissionOutput.getStdOut());
+			    jobModel.setStdErr(jobSubmissionOutput.getStdErr());
+			    jobModel.setStdOut(jobSubmissionOutput.getStdOut());
 			    String jobId = jobSubmissionOutput.getJobId();
 			    if (jobId != null && !jobId.isEmpty()) {
 				    jobModel.setJobId(jobId);
@@ -123,12 +123,17 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 						    "remote jobId for JobName:" + jobModel.getJobName() + ", both submit and verify steps " +
 						    "doesn't return a valid JobId. " + "Hence changing experiment state to Failed";
 				    log.error(msg);
-				    GFacUtils.saveErrorDetails(processContext, msg);
+                    ErrorModel errorModel = new ErrorModel();
+                    errorModel.setUserFriendlyMessage(msg);
+                    errorModel.setActualErrorMessage(msg);
+				    GFacUtils.saveExperimentError(processContext, errorModel);
+                    GFacUtils.saveProcessError(processContext, errorModel);
+                    GFacUtils.saveTaskError(taskContext, errorModel);
 				    taskStatus.setState(TaskState.FAILED);
 				    taskStatus.setReason("Couldn't find job id in both submitted and verified steps");
-			    }
-
-			    GFacUtils.saveJobModel(processContext, jobModel);
+			    }else {
+                    GFacUtils.saveJobModel(processContext, jobModel);
+                }
 		    } else {
 			    taskStatus.setState(TaskState.FAILED);
 			    if (jobFile == null) {

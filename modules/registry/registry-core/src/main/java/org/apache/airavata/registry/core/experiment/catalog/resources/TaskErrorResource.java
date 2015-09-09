@@ -142,6 +142,7 @@ public class TaskErrorResource extends AbstractExpCatResource {
             }
 
             taskError.setTaskId(taskId);
+            taskError.setErrorId(errorId);
             taskError.setActualErrorMessage(actualErrorMessage);
             taskError.setUserFriendlyMessage(userFriendlyMessage);
             taskError.setRootCauseErrorIdList(rootCauseErrorIdList);

@@ -20,13 +20,14 @@ interface AiravataIf {
   /**
    * Fetch Apache Airavata API version
    * 
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @return string
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function getAPIVersion();
+  public function getAPIVersion(\Airavata\Model\Security\AuthzToken $authzToken);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param \Airavata\Model\Workspace\Gateway $gateway
@@ -807,7 +808,7 @@ interface AiravataIf {
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $airavataExperimentId
-   * @return \Airavata\Model\job\JobModel[]
+   * @return \Airavata\Model\Job\JobModel[]
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\ExperimentNotFoundException
    * @throws \Airavata\API\Error\AiravataClientException
@@ -2554,15 +2555,16 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     $this->output_ = $output ? $output : $input;
   }
 
-  public function getAPIVersion()
+  public function getAPIVersion(\Airavata\Model\Security\AuthzToken $authzToken)
   {
-    $this->send_getAPIVersion();
+    $this->send_getAPIVersion($authzToken);
     return $this->recv_getAPIVersion();
   }
 
-  public function send_getAPIVersion()
+  public function send_getAPIVersion(\Airavata\Model\Security\AuthzToken $authzToken)
   {
     $args = new \Airavata\API\Airavata_getAPIVersion_args();
+    $args->authzToken = $authzToken;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -10202,11 +10204,25 @@ class AiravataClient implements \Airavata\API\AiravataIf {
 class Airavata_getAPIVersion_args {
   static $_TSPEC;
 
+  /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
 
-  public function __construct() {
+  public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
+        1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
         );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
     }
   }
 
@@ -10229,6 +10245,14 @@ class Airavata_getAPIVersion_args {
       }
       switch ($fid)
       {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -10242,6 +10266,14 @@ class Airavata_getAPIVersion_args {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_getAPIVersion_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
     $xfer += $output->writeFieldStop();
     $xfer += $output->writeStructEnd();
     return $xfer;
@@ -22233,7 +22265,7 @@ class Airavata_getJobDetails_result {
   static $_TSPEC;
 
   /**
-   * @var \Airavata\Model\job\JobModel[]
+   * @var \Airavata\Model\Job\JobModel[]
    */
   public $success = null;
   /**
@@ -22266,7 +22298,7 @@ class Airavata_getJobDetails_result {
           'etype' => TType::STRUCT,
           'elem' => array(
             'type' => TType::STRUCT,
-            'class' => '\Airavata\Model\job\JobModel',
+            'class' => '\Airavata\Model\Job\JobModel',
             ),
           ),
         1 => array(
@@ -22346,7 +22378,7 @@ class Airavata_getJobDetails_result {
             for ($_i129 = 0; $_i129 < $_size125; ++$_i129)
             {
               $elem130 = null;
-              $elem130 = new \Airavata\Model\job\JobModel();
+              $elem130 = new \Airavata\Model\Job\JobModel();
               $xfer += $elem130->read($input);
               $this->success []= $elem130;
             }
