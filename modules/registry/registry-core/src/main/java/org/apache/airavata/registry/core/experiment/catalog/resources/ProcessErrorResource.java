@@ -141,6 +141,7 @@ public class ProcessErrorResource extends AbstractExpCatResource {
                 processError = new ProcessError();
             }
             processError.setProcessId(processId);
+            processError.setErrorId(errorId);
             processError.setActualErrorMessage(actualErrorMessage);
             processError.setUserFriendlyMessage(userFriendlyMessage);
             processError.setRootCauseErrorIdList(rootCauseErrorIdList);

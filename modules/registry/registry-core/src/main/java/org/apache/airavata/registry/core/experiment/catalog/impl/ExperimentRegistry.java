@@ -225,7 +225,11 @@ public class ExperimentRegistry {
     public String addExperimentError(ErrorModel experimentError, String expId) throws RegistryException {
         try {
             ExperimentErrorResource error = new ExperimentErrorResource();
-            error.setErrorId(getErrorID(expId));
+            if (experimentError.getErrorId() == null){
+                error.setErrorId(AiravataUtils.getId("EXP_ERROR"));
+            }else {
+                error.setErrorId(experimentError.getErrorId());
+            }
             error.setExperimentId(expId);
             error.setCreationTime(AiravataUtils.getTime(experimentError.getCreationTime()));
             error.setActualErrorMessage(experimentError.getActualErrorMessage());
@@ -391,7 +395,11 @@ public class ExperimentRegistry {
         try {
             ProcessErrorResource error = new ProcessErrorResource();
             error.setProcessId(processID);
-            error.setErrorId(getErrorID(processID));
+            if (processError.getErrorId() == null){
+                error.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
+            }else {
+                error.setErrorId(processError.getErrorId());
+            }
             error.setCreationTime(AiravataUtils.getTime(processError.getCreationTime()));
             error.setActualErrorMessage(processError.getActualErrorMessage());
             error.setUserFriendlyMessage(processError.getUserFriendlyMessage());
@@ -461,7 +469,11 @@ public class ExperimentRegistry {
         try {
             TaskErrorResource error = new TaskErrorResource();
             error.setTaskId(taskId);
-            error.setErrorId(getErrorID(taskId));
+            if (taskError.getErrorId() == null){
+                error.setErrorId(AiravataUtils.getId("TASK_ERROR"));
+            }else {
+                error.setErrorId(taskError.getErrorId());
+            }
             error.setCreationTime(AiravataUtils.getTime(taskError.getCreationTime()));
             error.setActualErrorMessage(taskError.getActualErrorMessage());
             error.setUserFriendlyMessage(taskError.getUserFriendlyMessage());
@@ -489,8 +501,8 @@ public class ExperimentRegistry {
             jobResource.setJobName(job.getJobName());
             jobResource.setWorkingDir(job.getWorkingDir());
             jobResource.setExitCode(job.getExitCode());
-            jobResource.setStdOut(job.getStdout());
-            jobResource.setStderr(job.getStderr());
+            jobResource.setStdOut(job.getStdOut());
+            jobResource.setStdErr(job.getStdErr());
 			jobResource.save();
         } catch (Exception e) {
             logger.error(processId, "Error while adding task...", e);
@@ -854,8 +866,8 @@ public class ExperimentRegistry {
 	        jobResource.setComputeResourceConsumed(job.getComputeResourceConsumed());
 	        jobResource.setJobName(job.getJobName());
 	        jobResource.setWorkingDir(job.getWorkingDir());
-            jobResource.setStdOut(job.getStdout());
-            jobResource.setStderr(job.getStderr());
+            jobResource.setStdOut(job.getStdOut());
+            jobResource.setStdErr(job.getStdErr());
             jobResource.setExitCode(job.getExitCode());
 	        jobResource.save();
         } catch (Exception e) {
