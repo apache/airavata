@@ -42,6 +42,7 @@ public class PBSJobConfiguration implements JobManagerConfiguration {
 		this.jobDescriptionTemplateName = jobDescriptionTemplateName;
 		this.scriptExtension = scriptExtension;
 		this.parser = parser;
+		installedPath = installedPath.trim();
 		if (installedPath.endsWith("/")) {
 			this.installedPath = installedPath;
 		} else {
@@ -51,7 +52,7 @@ public class PBSJobConfiguration implements JobManagerConfiguration {
 	}
 
 	public RawCommandInfo getCancelCommand(String jobID) {
-		return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.DELETION) + " " +
+		return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.DELETION).trim() + " " +
 				jobID);
 	}
 
@@ -64,7 +65,7 @@ public class PBSJobConfiguration implements JobManagerConfiguration {
 	}
 
 	public RawCommandInfo getMonitorCommand(String jobID) {
-		return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.JOB_MONITORING)
+		return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.JOB_MONITORING).trim()
 				+ " -f " + jobID);
 	}
 
@@ -73,7 +74,7 @@ public class PBSJobConfiguration implements JobManagerConfiguration {
 	}
 
 	public RawCommandInfo getSubmitCommand(String workingDirectory, String pbsFilePath) {
-		return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.SUBMISSION) + " " +
+		return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.SUBMISSION).trim() + " " +
 				workingDirectory + File.separator + FilenameUtils.getName(pbsFilePath));
 	}
 
@@ -94,29 +95,29 @@ public class PBSJobConfiguration implements JobManagerConfiguration {
 	}
 
 	public RawCommandInfo getUserBasedMonitorCommand(String userName) {
-		return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.JOB_MONITORING)
+		return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.JOB_MONITORING).trim()
 				+ " -u " + userName);
 	}
 
 	@Override
 	public RawCommandInfo getJobIdMonitorCommand(String jobName, String userName) {
 		// For PBS there is no option to get jobDetails by JobName, so we search with userName
-		return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.JOB_MONITORING)
+		return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.JOB_MONITORING).trim()
 				+ " -u " + userName + " -f  | grep \"Job_Name = " + jobName + "\" -B1");
 	}
 
 	@Override
 	public String getBaseCancelCommand() {
-		return jobManagerCommands.get(JobManagerCommand.DELETION);
+		return jobManagerCommands.get(JobManagerCommand.DELETION).trim();
 	}
 
 	@Override
 	public String getBaseMonitorCommand() {
-		return jobManagerCommands.get(JobManagerCommand.JOB_MONITORING);
+		return jobManagerCommands.get(JobManagerCommand.JOB_MONITORING).trim();
 	}
 
 	@Override
 	public String getBaseSubmitCommand() {
-		return jobManagerCommands.get(JobManagerCommand.SUBMISSION);
+		return jobManagerCommands.get(JobManagerCommand.SUBMISSION).trim();
 	}
 }
