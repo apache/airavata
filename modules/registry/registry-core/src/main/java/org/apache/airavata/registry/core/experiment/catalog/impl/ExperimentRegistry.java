@@ -205,15 +205,23 @@ public class ExperimentRegistry {
             ExperimentResource experiment = new ExperimentResource();
             experiment.setExperimentId(expId);
             ExperimentStatusResource status = experiment.getExperimentStatus();
+            ExperimentState newState = experimentStatus.getState();
             if (status == null) {
                 status = (ExperimentStatusResource) experiment.create(ResourceType.EXPERIMENT_STATUS);
+                status.setStatusId(getStatusID("EXPERIMENT_STATE"));
+            }else {
+                String state = status.getState();
+                if (newState != null && !state.equals(newState.toString())){
+                    status.setStatusId(getStatusID("EXPERIMENT_STATE"));
+                }
             }
-	        status.setStatusId(getStatusID(expId));
-	        status.setExperimentId(expId);
-	        status.setTimeOfStateChange(AiravataUtils.getTime(experimentStatus.getTimeOfStateChange()));
-	        status.setState(experimentStatus.getState().toString());
-	        status.setReason(experimentStatus.getReason());
-	        status.save();
+            status.setExperimentId(expId);
+            status.setTimeOfStateChange(AiravataUtils.getTime(experimentStatus.getTimeOfStateChange()));
+            if (newState != null){
+                status.setState(newState.toString());
+            }
+            status.setReason(experimentStatus.getReason());
+            status.save();
 	        logger.debug(expId, "Added experiment {} status to {}.", expId, experimentStatus.toString());
         } catch (Exception e) {
             logger.error(expId, "Error while adding experiment status...", e);
@@ -371,15 +379,20 @@ public class ExperimentRegistry {
             ProcessResource processResource = new ProcessResource();
             processResource.setProcessId(processID);
             ProcessStatusResource status = processResource.getProcessStatus();
+            ProcessState newState = processStatus.getState();
             if (status == null) {
                 status = (ProcessStatusResource) processResource.create(ResourceType.PROCESS_STATUS);
+                status.setStatusId(getStatusID("PROCESS_STATE"));
+            }else {
+                String state = status.getState();
+                if (newState != null && !state.equals(newState.toString())){
+                    status.setStatusId(getStatusID("PROCESS_STATE"));
+                }
             }
-            status.setStatusId(getStatusID(processID));
             status.setProcessId(processID);
             status.setTimeOfStateChange(AiravataUtils.getTime(processStatus.getTimeOfStateChange()));
-            ProcessState state = processStatus.getState();
-            if (state != null){
-                status.setState(state.toString());
+            if (newState != null){
+                status.setState(newState.toString());
             }
             status.setReason(processStatus.getReason());
             status.save();
@@ -448,15 +461,23 @@ public class ExperimentRegistry {
             TaskResource taskResource = new TaskResource();
             taskResource.setTaskId(taskID);
             TaskStatusResource status = taskResource.getTaskStatus();
+            TaskState newState = taskStatus.getState();
             if (status == null) {
-                status = new TaskStatusResource();
+                status = (TaskStatusResource) taskResource.create(ResourceType.TASK_STATUS);
+                status.setStatusId(getStatusID("TASK_STATE"));
+            }else {
+                String state = status.getState();
+                if (newState != null && !state.equals(newState.toString())){
+                    status.setStatusId(getStatusID("TASK_STATE"));
+                }
             }
-	        status.setStatusId(getStatusID(taskID));
-	        status.setTaskId(taskID);
-	        status.setTimeOfStateChange(AiravataUtils.getTime(taskStatus.getTimeOfStateChange()));
-	        status.setState(taskStatus.getState().toString());
-	        status.setReason(taskStatus.getReason());
-	        status.save();
+            status.setTaskId(taskID);
+            status.setTimeOfStateChange(AiravataUtils.getTime(taskStatus.getTimeOfStateChange()));
+            if (newState != null){
+                status.setState(newState.toString());
+            }
+            status.setReason(taskStatus.getReason());
+            status.save();
 	        logger.debug(taskID, "Added task {} status to {}.", taskID, taskStatus.toString());
         } catch (Exception e) {
             logger.error(taskID, "Error while adding task status...", e);
