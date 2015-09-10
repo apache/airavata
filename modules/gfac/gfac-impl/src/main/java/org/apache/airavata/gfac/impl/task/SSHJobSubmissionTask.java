@@ -113,8 +113,8 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 						    taskStatus.setReason("Submitted job to compute resource");
 						    break;
 					    }
-					    log.info("Verify step return invalid jobId, retry verification step in {} secs", verificationTryCount);
-					    Thread.sleep(verificationTryCount * 1000);
+					    log.info("Verify step return invalid jobId, retry verification step in {} secs", verificationTryCount * 10);
+					    Thread.sleep(verificationTryCount * 10000);
 				    }
 			    }
 
