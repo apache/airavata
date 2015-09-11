@@ -87,6 +87,7 @@ public class GFacWorker implements Runnable {
 			switch (processState) {
 				case CREATED:
 				case VALIDATED:
+				case STARTED:
 					executeProcess();
 					break;
 				case PRE_PROCESSING:

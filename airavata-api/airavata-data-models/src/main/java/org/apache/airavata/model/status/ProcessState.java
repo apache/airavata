@@ -31,17 +31,18 @@ import org.apache.thrift.TEnum;
 public enum ProcessState implements org.apache.thrift.TEnum {
   CREATED(0),
   VALIDATED(1),
-  PRE_PROCESSING(2),
-  CONFIGURING_WORKSPACE(3),
-  INPUT_DATA_STAGING(4),
-  EXECUTING(5),
-  MONITORING(6),
-  OUTPUT_DATA_STAGING(7),
-  POST_PROCESSING(8),
-  COMPLETED(9),
-  FAILED(10),
-  CANCELLING(11),
-  CANCELED(12);
+  STARTED(2),
+  PRE_PROCESSING(3),
+  CONFIGURING_WORKSPACE(4),
+  INPUT_DATA_STAGING(5),
+  EXECUTING(6),
+  MONITORING(7),
+  OUTPUT_DATA_STAGING(8),
+  POST_PROCESSING(9),
+  COMPLETED(10),
+  FAILED(11),
+  CANCELLING(12),
+  CANCELED(13);
 
   private final int value;
 
@@ -67,26 +68,28 @@ public enum ProcessState implements org.apache.thrift.TEnum {
       case 1:
         return VALIDATED;
       case 2:
-        return PRE_PROCESSING;
+        return STARTED;
       case 3:
-        return CONFIGURING_WORKSPACE;
+        return PRE_PROCESSING;
       case 4:
-        return INPUT_DATA_STAGING;
+        return CONFIGURING_WORKSPACE;
       case 5:
-        return EXECUTING;
+        return INPUT_DATA_STAGING;
       case 6:
-        return MONITORING;
+        return EXECUTING;
       case 7:
-        return OUTPUT_DATA_STAGING;
+        return MONITORING;
       case 8:
-        return POST_PROCESSING;
+        return OUTPUT_DATA_STAGING;
       case 9:
-        return COMPLETED;
+        return POST_PROCESSING;
       case 10:
-        return FAILED;
+        return COMPLETED;
       case 11:
-        return CANCELLING;
+        return FAILED;
       case 12:
+        return CANCELLING;
+      case 13:
         return CANCELED;
       default:
         return null;

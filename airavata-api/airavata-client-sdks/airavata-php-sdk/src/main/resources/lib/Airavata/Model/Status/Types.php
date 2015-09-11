@@ -58,31 +58,33 @@ final class TaskState {
 final class ProcessState {
   const CREATED = 0;
   const VALIDATED = 1;
-  const PRE_PROCESSING = 2;
-  const CONFIGURING_WORKSPACE = 3;
-  const INPUT_DATA_STAGING = 4;
-  const EXECUTING = 5;
-  const MONITORING = 6;
-  const OUTPUT_DATA_STAGING = 7;
-  const POST_PROCESSING = 8;
-  const COMPLETED = 9;
-  const FAILED = 10;
-  const CANCELLING = 11;
-  const CANCELED = 12;
+  const STARTED = 2;
+  const PRE_PROCESSING = 3;
+  const CONFIGURING_WORKSPACE = 4;
+  const INPUT_DATA_STAGING = 5;
+  const EXECUTING = 6;
+  const MONITORING = 7;
+  const OUTPUT_DATA_STAGING = 8;
+  const POST_PROCESSING = 9;
+  const COMPLETED = 10;
+  const FAILED = 11;
+  const CANCELLING = 12;
+  const CANCELED = 13;
   static public $__names = array(
     0 => 'CREATED',
     1 => 'VALIDATED',
-    2 => 'PRE_PROCESSING',
-    3 => 'CONFIGURING_WORKSPACE',
-    4 => 'INPUT_DATA_STAGING',
-    5 => 'EXECUTING',
-    6 => 'MONITORING',
-    7 => 'OUTPUT_DATA_STAGING',
-    8 => 'POST_PROCESSING',
-    9 => 'COMPLETED',
-    10 => 'FAILED',
-    11 => 'CANCELLING',
-    12 => 'CANCELED',
+    2 => 'STARTED',
+    3 => 'PRE_PROCESSING',
+    4 => 'CONFIGURING_WORKSPACE',
+    5 => 'INPUT_DATA_STAGING',
+    6 => 'EXECUTING',
+    7 => 'MONITORING',
+    8 => 'OUTPUT_DATA_STAGING',
+    9 => 'POST_PROCESSING',
+    10 => 'COMPLETED',
+    11 => 'FAILED',
+    12 => 'CANCELLING',
+    13 => 'CANCELED',
   );
 }
 
