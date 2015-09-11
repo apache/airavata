@@ -217,7 +217,7 @@ public class GfacServerHandler implements GfacService.Iface {
 		            + "' and with message type '" + message.getType());
             if (message.getType().equals(MessageType.LAUNCHPROCESS)) {
 	            ProcessStatus status = new ProcessStatus();
-	            status.setState(ProcessState.EXECUTING);
+	            status.setState(ProcessState.STARTED);
                 try {
                     ProcessSubmitEvent event = new ProcessSubmitEvent();
                     TBase messageEvent = message.getEvent();
@@ -243,13 +243,12 @@ public class GfacServerHandler implements GfacService.Iface {
 				                // ignore
 			                }
 			                // read process status from registry
-			                ProcessStatus processStatus = ((ProcessStatus) Factory.getDefaultExpCatalog().get(ExperimentCatalogModelType
-							                .PROCESS_STATUS,
-					                event.getProcessId()));
+			                ProcessStatus processStatus = ((ProcessStatus) Factory.getDefaultExpCatalog().get
+					                (ExperimentCatalogModelType.PROCESS_STATUS, event.getProcessId()));
 			                status.setState(processStatus.getState());
 		                }
 	                }
-                    // update process status to executing
+                    // update process status
 	                status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
 	                Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.PROCESS_STATUS, status, event
 			                .getProcessId());

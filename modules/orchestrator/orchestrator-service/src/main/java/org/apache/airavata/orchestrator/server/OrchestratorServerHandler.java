@@ -418,12 +418,13 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 					switch (processStatusChangeEvent.getState()) {
 //						case CREATED:
 //						case VALIDATED:
-//						case PRE_PROCESSING:
-//							break;
-						case CONFIGURING_WORKSPACE:
+						case STARTED:
 							status.setState(ExperimentState.EXECUTING);
 							status.setReason("process  started");
 							break;
+//						case PRE_PROCESSING:
+//							break;
+//						case CONFIGURING_WORKSPACE:
 //						case INPUT_DATA_STAGING:
 //						case EXECUTING:
 //						case MONITORING:

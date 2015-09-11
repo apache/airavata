@@ -276,6 +276,7 @@ public class GFacEngineImpl implements GFacEngine {
 		switch (state) {
 			case CREATED:
 			case VALIDATED:
+			case STARTED:
 				executeProcess(processContext);
 				break;
 			case PRE_PROCESSING:
