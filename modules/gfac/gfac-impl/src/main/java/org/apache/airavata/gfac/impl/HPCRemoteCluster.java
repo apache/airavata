@@ -90,7 +90,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 		JobSubmissionOutput jsoutput = new JobSubmissionOutput();
 		scpTo(jobScriptFilePath, workingDirectory); // scp script file to working directory
 		RawCommandInfo submitCommand = jobManagerConfiguration.getSubmitCommand(workingDirectory, jobScriptFilePath);
-
+		submitCommand.setRawCommand("cd " + workingDirectory + "; " + submitCommand.getRawCommand());
 		StandardOutReader reader = new StandardOutReader();
 		executeCommand(submitCommand, reader);
 //		throwExceptionOnError(reader, submitCommand);
