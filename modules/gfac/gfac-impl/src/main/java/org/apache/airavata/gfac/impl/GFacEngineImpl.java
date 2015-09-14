@@ -33,6 +33,7 @@ import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.impl.task.SSHEnvironmentSetupTask;
+import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
@@ -98,9 +99,33 @@ public class GFacEngineImpl implements GFacEngine {
 					(processContext.getComputeResourcePreference().getComputeResourceId()));
 			processContext.setApplicationDeploymentDescription(appCatalog.getApplicationDeployment()
 					.getApplicationDeployement(processModel.getApplicationDeploymentId()));
-			processContext.setApplicationInterfaceDescription(appCatalog.getApplicationInterface()
-					.getApplicationInterface(processModel.getApplicationInterfaceId()));
-			processContext.setResourceJobManager(getResourceJobManager(processContext));
+            ApplicationInterfaceDescription applicationInterface = appCatalog.getApplicationInterface()
+                    .getApplicationInterface(processModel.getApplicationInterfaceId());
+            processContext.setApplicationInterfaceDescription(applicationInterface);
+            List<OutputDataObjectType> applicationOutputs = applicationInterface.getApplicationOutputs();
+            if (applicationOutputs != null && !applicationOutputs.isEmpty()){
+                for (OutputDataObjectType outputDataObjectType : applicationOutputs){
+                    if (outputDataObjectType.getType().equals(DataType.STDOUT)){
+                        if (outputDataObjectType.getValue() == null || outputDataObjectType.getValue().equals("")){
+                            outputDataObjectType.setValue(applicationInterface.getApplicationName()+ ".stdout");
+                            processContext.setStdoutLocation(applicationInterface.getApplicationName()+ ".stdout");
+                        }else {
+                            processContext.setStdoutLocation(outputDataObjectType.getValue());
+                        }
+                    }
+                    if (outputDataObjectType.getType().equals(DataType.STDERR)){
+                        if (outputDataObjectType.getValue() == null || outputDataObjectType.getValue().equals("")){
+                            String stderrLocation = applicationInterface.getApplicationName() + ".stderr";
+                            outputDataObjectType.setValue(stderrLocation);
+                            processContext.setStderrLocation(stderrLocation);
+                        }else {
+                            processContext.setStderrLocation(outputDataObjectType.getValue());
+                        }
+                    }
+                }
+            }
+            expCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processId);
+            processContext.setResourceJobManager(getResourceJobManager(processContext));
 			processContext.setRemoteCluster(Factory.getRemoteCluster(processContext));
 
 			String inputPath = ServerSettings.getLocalDataLocation();
@@ -347,7 +372,9 @@ public class GFacEngineImpl implements GFacEngine {
 		TaskContext taskCtx;
 		processContext.setProcessStatus(new ProcessStatus(ProcessState.OUTPUT_DATA_STAGING));
 		GFacUtils.saveAndPublishProcessStatus(processContext);
-		List<OutputDataObjectType> processOutputs = processContext.getProcessModel().getProcessOutputs();
+        File localWorkingdir = new File(processContext.getLocalWorkingDir());
+        localWorkingdir.mkdirs(); // make local dir if not exist
+        List<OutputDataObjectType> processOutputs = processContext.getProcessModel().getProcessOutputs();
 		for (OutputDataObjectType processOutput : processOutputs) {
 			if (processContext.isInterrupted()) {
 				GFacUtils.handleProcessInterrupt(processContext);
@@ -355,18 +382,12 @@ public class GFacEngineImpl implements GFacEngine {
 			}
 			DataType type = processOutput.getType();
 			switch (type) {
-				case STDERR:
-					break;
-				case STDOUT:
-					break;
-				case URI:
+				case URI: case STDERR: case STDOUT:
 					try {
 						taskCtx = getDataStagingTaskContext(processContext, processOutput);
 					} catch (TException e) {
 						throw new GFacException("Thrift model to byte[] conversion issue", e);
 					}
-					File localWorkingdir = new File(taskCtx.getLocalWorkingDir());
-					localWorkingdir.mkdirs(); // make local dir if not exist
 					saveTaskModel(taskCtx);
 					GFacUtils.saveAndPublishTaskStatus(taskCtx);
 					Task dMoveTask = Factory.getDataMovementTask(processContext.getDataMovementProtocol());
