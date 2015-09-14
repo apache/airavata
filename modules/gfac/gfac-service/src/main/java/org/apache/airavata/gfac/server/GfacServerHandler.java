@@ -238,7 +238,7 @@ public class GfacServerHandler implements GfacService.Iface {
 		                } else {
 			                // give time to complete handover logic in previous instance.
 			                try {
-				                Thread.sleep(60000);
+				                Thread.sleep(6000);
 			                } catch (InterruptedException e) {
 				                // ignore
 			                }
