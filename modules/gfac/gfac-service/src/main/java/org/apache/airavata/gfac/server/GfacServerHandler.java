@@ -236,16 +236,11 @@ public class GfacServerHandler implements GfacService.Iface {
 				                rabbitMQProcessLaunchConsumer.sendAck(message.getDeliveryTag());
 			                }
 		                } else {
-			                // give time to complete handover logic in previous instance.
-			                try {
-				                Thread.sleep(6000);
-			                } catch (InterruptedException e) {
-				                // ignore
-			                }
 			                // read process status from registry
 			                ProcessStatus processStatus = ((ProcessStatus) Factory.getDefaultExpCatalog().get
 					                (ExperimentCatalogModelType.PROCESS_STATUS, event.getProcessId()));
 			                status.setState(processStatus.getState());
+			                // write server name to zookeeper , this is happen inside createProcessZKNode(...) method 
 		                }
 	                }
                     // update process status
