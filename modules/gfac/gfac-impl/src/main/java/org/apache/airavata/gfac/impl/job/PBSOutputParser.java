@@ -125,7 +125,14 @@ public class PBSOutputParser implements OutputParser {
 
     public String parseJobSubmission(String rawOutput) {
         log.debug(rawOutput);
-        return rawOutput;  //In PBS stdout is going to be directly the jobID
+        String jobId = rawOutput;
+        if (!rawOutput.isEmpty() && rawOutput.contains("\n")){
+            String[] split = rawOutput.split("\n");
+            if (split.length != 0){
+                jobId = split[0];
+            }
+        }
+        return jobId;  //In PBS stdout is going to be directly the jobID
     }
 
     public JobStatus parseJobStatus(String jobID, String rawOutput) {
@@ -150,7 +157,7 @@ public class PBSOutputParser implements OutputParser {
                     line = anInfo.split("=", 2);
                     if (line.length != 0) {
                         if (line[0].contains("job_state")) {
-	                        return new JobStatus(JobState.valueOf(line[1].replaceAll(" ", "")));
+	                        return new JobStatus(JobUtil.getJobState(line[1].replaceAll(" ", "")));
                         }
                     }
                 }
@@ -180,9 +187,9 @@ public class PBSOutputParser implements OutputParser {
                     }
 //                    lastStop = i + 1;
                     try {
-	                    statusMap.put(jobID, new JobStatus(JobState.valueOf(columnList.get(9))));
+	                    statusMap.put(jobID, new JobStatus(JobUtil.getJobState(columnList.get(9))));
                     }catch(IndexOutOfBoundsException e) {
-	                    statusMap.put(jobID, new JobStatus(JobState.valueOf("U")));
+	                    statusMap.put(jobID, new JobStatus(JobUtil.getJobState("U")));
                     }
                     found = true;
                     break;
