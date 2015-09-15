@@ -811,7 +811,17 @@ public class GFacUtils {
         ApplicationParallelismType parallelism = appDepDescription.getParallelism();
         if (parallelism != null) {
             if (parallelism == ApplicationParallelismType.MPI || parallelism == ApplicationParallelismType.OPENMP || parallelism == ApplicationParallelismType.OPENMP_MPI) {
-	            jobDescriptor.setJobSubmitter("ibrun");
+                // FIXME this is wrong for BR2
+                if (appDepDescription.getComputeHostId().contains("stampede")){
+                    jobDescriptor.setJobSubmitter("ibrun");
+                }else if (appDepDescription.getComputeHostId().contains("bigred2")){
+                    jobDescriptor.setJobSubmitter("aprun -n");
+                }else if (appDepDescription.getComputeHostId().contains("comet")){
+                    jobDescriptor.setJobSubmitter("mpiexec");
+                }else {
+                    jobDescriptor.setJobSubmitter("ibrun");
+                }
+
             }
         }
         return jobDescriptor;
