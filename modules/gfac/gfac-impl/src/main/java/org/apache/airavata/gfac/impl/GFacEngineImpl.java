@@ -193,6 +193,21 @@ public class GFacEngineImpl implements GFacEngine {
 		GFacUtils.saveAndPublishTaskStatus(taskCtx);
 		taskStatus = executeTask(taskCtx, jobSubmissionTask, false);
 		if (taskStatus.getState() == TaskState.FAILED) {
+            log.error("expId: {}, processId: {}, taskId: {} type: {},:- Job submission task failed, " +
+                    "reason:" + " {}", taskCtx.getParentProcessContext().getExperimentId(), taskCtx
+                    .getParentProcessContext().getProcessId(), taskCtx.getTaskId(), jobSubmissionTask.getType
+                    ().name(), taskStatus.getReason());
+            String errorMsg = "expId: {}, processId: {}, taskId: {} type: {},:- Job submission task failed, " +
+                    "reason:" + " {}" + processContext.getExperimentId() + processContext.getProcessId() + taskCtx.getTaskId() + jobSubmissionTask.getType().name() + taskStatus.getReason();
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setUserFriendlyMessage("Job submission task failed");
+            errorModel.setActualErrorMessage(errorMsg);
+            GFacUtils.saveTaskError(taskCtx, errorModel);
+            ProcessStatus processStatus = processContext.getProcessStatus();
+            processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            processStatus.setReason(errorMsg);
+            processContext.setProcessStatus(processStatus);
+            GFacUtils.saveAndPublishProcessStatus(processContext);
 			throw new GFacException("Job submission task failed");
 		}
 		if (processContext.isInterrupted()) {
@@ -246,6 +261,11 @@ public class GFacEngineImpl implements GFacEngine {
                             errorModel.setUserFriendlyMessage("Error while staging input data");
                             errorModel.setActualErrorMessage(errorMsg);
                             GFacUtils.saveTaskError(taskCtx, errorModel);
+                            ProcessStatus processStatus = processContext.getProcessStatus();
+                            processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                            processStatus.setReason(errorMsg);
+                            processContext.setProcessStatus(processStatus);
+                            GFacUtils.saveAndPublishProcessStatus(processContext);
 							throw new GFacException("Error while staging input data");
 						}
 						break;
@@ -287,6 +307,11 @@ public class GFacEngineImpl implements GFacEngine {
             errorModel.setUserFriendlyMessage("Error while environment setup");
             errorModel.setActualErrorMessage(errorMsg);
             GFacUtils.saveTaskError(taskCtx, errorModel);
+            ProcessStatus processStatus = processContext.getProcessStatus();
+            processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            processStatus.setReason(errorMsg);
+            processContext.setProcessStatus(processStatus);
+            GFacUtils.saveAndPublishProcessStatus(processContext);
 			throw new GFacException("Error while environment setup");
 		}
 		if (processContext.isInterrupted()) {
@@ -411,7 +436,6 @@ public class GFacEngineImpl implements GFacEngine {
                         processStatus.setReason(errorMsg);
                         processContext.setProcessStatus(processStatus);
                         GFacUtils.saveAndPublishProcessStatus(processContext);
-                        GFacUtils.saveAndPublishProcessStatus(processContext);
 						throw new GFacException("Error while staging output data");
 					}
 					break;
@@ -484,8 +508,7 @@ public class GFacEngineImpl implements GFacEngine {
 		// create data staging sub task model
 		DataStagingTaskModel submodel = new DataStagingTaskModel();
 		submodel.setSource(processInput.getValue());
-		submodel.setDestination(processContext.getDataMovementProtocol().name() + ":" + processContext.getWorkingDir
-				());
+		submodel.setDestination(processContext.getDataMovementProtocol().name() + ":" + processContext.getWorkingDir());
 		taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
 		taskCtx.setTaskModel(taskModel);
         taskCtx.setProcessInput(processInput);
