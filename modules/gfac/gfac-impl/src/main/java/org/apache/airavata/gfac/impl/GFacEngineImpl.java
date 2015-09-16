@@ -25,6 +25,7 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.gfac.core.GFac;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -405,6 +406,12 @@ public class GFacEngineImpl implements GFacEngine {
                         errorModel.setUserFriendlyMessage("Error while staging output data");
                         errorModel.setActualErrorMessage(errorMsg);
                         GFacUtils.saveTaskError(taskCtx, errorModel);
+                        ProcessStatus processStatus = processContext.getProcessStatus();
+                        processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                        processStatus.setReason(errorMsg);
+                        processContext.setProcessStatus(processStatus);
+                        GFacUtils.saveAndPublishProcessStatus(processContext);
+                        GFacUtils.saveAndPublishProcessStatus(processContext);
 						throw new GFacException("Error while staging output data");
 					}
 					break;

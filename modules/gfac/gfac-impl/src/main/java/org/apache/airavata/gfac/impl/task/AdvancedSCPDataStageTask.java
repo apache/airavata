@@ -250,12 +250,19 @@ public class AdvancedSCPDataStageTask implements Task{
 
 	@Override
 	public TaskStatus recover(TaskContext taskContext) {
-		return null;
-	}
+        // FIXME - Recover gives NPE s because of this
+        TaskState state = taskContext.getTaskStatus().getState();
+        if (state == TaskState.EXECUTING || state == TaskState.CREATED) {
+            return execute(taskContext);
+        } else {
+            // files already transferred or failed
+            return taskContext.getTaskStatus();
+        }
+    }
 
 	@Override
 	public TaskTypes getType() {
-		return null;
+		return TaskTypes.DATA_STAGING;
 	}
 
 	private SSHPasswordAuthentication getSSHPasswordAuthentication() {
