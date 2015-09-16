@@ -88,7 +88,7 @@ public class AdvancedSCPDataStageTask implements Task{
         DataStagingTaskModel subTaskModel = null;
 
 		OutputDataObjectType processOutput = taskContext.getProcessOutput();
-		if (processOutput.getValue() == null) {
+		if (processOutput != null && processOutput.getValue() == null) {
 				log.error("expId: {}, processId:{} :- Couldn't stage file {} , file name shouldn't be null",
 						taskContext.getExperimentId(), taskContext.getProcessId(), processOutput.getName ());
 			status = new TaskStatus(TaskState.FAILED);
