@@ -206,6 +206,7 @@ public class GFacEngineImpl implements GFacEngine {
             ProcessStatus processStatus = processContext.getProcessStatus();
             processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             processStatus.setReason(errorMsg);
+            processStatus.setState(ProcessState.FAILED);
             processContext.setProcessStatus(processStatus);
             GFacUtils.saveAndPublishProcessStatus(processContext);
 			throw new GFacException("Job submission task failed");
@@ -264,6 +265,7 @@ public class GFacEngineImpl implements GFacEngine {
                             ProcessStatus processStatus = processContext.getProcessStatus();
                             processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                             processStatus.setReason(errorMsg);
+                            processStatus.setState(ProcessState.FAILED);
                             processContext.setProcessStatus(processStatus);
                             GFacUtils.saveAndPublishProcessStatus(processContext);
 							throw new GFacException("Error while staging input data");
@@ -434,6 +436,7 @@ public class GFacEngineImpl implements GFacEngine {
                         ProcessStatus processStatus = processContext.getProcessStatus();
                         processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                         processStatus.setReason(errorMsg);
+                        processStatus.setState(ProcessState.FAILED);
                         processContext.setProcessStatus(processStatus);
                         GFacUtils.saveAndPublishProcessStatus(processContext);
 						throw new GFacException("Error while staging output data");
