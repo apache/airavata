@@ -115,6 +115,6 @@ public class SCPDataStageTask implements Task {
 
 	@Override
 	public TaskTypes getType() {
-		return null;
+		return TaskTypes.DATA_STAGING;
 	}
 }

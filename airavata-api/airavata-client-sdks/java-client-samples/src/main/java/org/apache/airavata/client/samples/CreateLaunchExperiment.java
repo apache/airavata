@@ -34,6 +34,7 @@ import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.ExperimentState;
+import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Gateway;
@@ -85,9 +86,15 @@ public class CreateLaunchExperiment {
     public static void main(String[] args) throws Exception {
         airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
         AuthzToken token = new AuthzToken("empty_token");
-        System.out.println("API version is " + airavataClient.getAPIVersion(null));
+        System.out.println("API version is " + airavataClient.getAPIVersion(token));
 //        registerApplications(); // run this only the first time
-        createAndLaunchExp();
+        Map<String, JobStatus> jobStatuses = airavataClient.getJobStatuses(token, "test_78ddc6f0-ddd1-4154-ba45-6d597b8c8f3b");
+        for (String jobId : jobStatuses.keySet()){
+            JobStatus jobStatus = jobStatuses.get(jobId);
+            System.out.println(jobId);
+            System.out.println(jobStatus.getJobState().toString());
+        }
+//        createAndLaunchExp();
     }
 
     private static String fsdResourceId;
