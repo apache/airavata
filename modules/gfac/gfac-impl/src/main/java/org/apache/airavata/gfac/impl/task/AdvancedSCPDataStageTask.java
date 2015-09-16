@@ -86,7 +86,16 @@ public class AdvancedSCPDataStageTask implements Task{
         TaskStatus status = new TaskStatus(TaskState.CREATED);
         AuthenticationInfo authenticationInfo = null;
         DataStagingTaskModel subTaskModel = null;
-        try {
+
+		OutputDataObjectType processOutput = taskContext.getProcessOutput();
+		if (processOutput.getValue() == null) {
+				log.error("expId: {}, processId:{} :- Couldn't stage file {} , file name shouldn't be null",
+						taskContext.getExperimentId(), taskContext.getProcessId(), processOutput.getName ());
+			status = new TaskStatus(TaskState.FAILED);
+			status.setReason("File name is null");
+			return status;
+		}
+		try {
             String tokenId = taskContext.getParentProcessContext().getTokenId();
             CredentialReader credentialReader = GFacUtils.getCredentialReader();
             Credential credential = credentialReader.getCredential(taskContext.getParentProcessContext().getGatewayId(), tokenId);

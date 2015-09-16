@@ -99,4 +99,12 @@ public class TaskContext {
     public void setProcessOutput(OutputDataObjectType processOutput) {
         this.processOutput = processOutput;
     }
+
+	public String getProcessId() {
+		return parentProcessContext.getProcessId();
+	}
+
+	public String getExperimentId() {
+		return parentProcessContext.getExperimentId();
+	}
 }
