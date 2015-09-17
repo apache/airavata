@@ -185,6 +185,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
             }
         } catch (MessagingException e) {
             log.error("[EJM]: Couldn't connect to the store ", e);
+            // we should retry
         } catch (InterruptedException e) {
             log.error("[EJM]: Interrupt exception while sleep ", e);
         } catch (AiravataException e) {
