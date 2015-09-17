@@ -113,7 +113,7 @@ public class ProcessStatusResource extends AbstractExpCatResource {
                 throw new RegistryException("Does not have the process id or status id");
             }
             em = ExpCatResourceUtils.getEntityManager();
-            em.getTransaction().begin();
+
             ProcessStatus processStatus;
             ProcessStatusPK processStatusPK = new ProcessStatusPK();
             processStatusPK.setStatusId(statusId);
@@ -126,6 +126,7 @@ public class ProcessStatusResource extends AbstractExpCatResource {
             processStatus.setProcessId(processId);
             processStatus.setState(state);
             processStatus.setReason(reason);
+            em.getTransaction().begin();
             em.persist(processStatus);
             em.getTransaction().commit();
             em.close();
