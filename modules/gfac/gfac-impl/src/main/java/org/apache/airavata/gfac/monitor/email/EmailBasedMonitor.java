@@ -153,50 +153,58 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 
     @Override
     public void run() {
-        try {
-            session = Session.getDefaultInstance(properties);
-            store = session.getStore(storeProtocol);
-            store.connect(host, emailAddress, password);
-            emailFolder = store.getFolder(folderName);
-            // first time we search for all unread messages.
-            SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
-            while (!(stopMonitoring || ServerSettings.isStopAllThreads())) {
-                Thread.sleep(ServerSettings.getEmailMonitorPeriod());// sleep a bit - get a rest till job finishes
-                if (jobMonitorMap.isEmpty()) {
-                    log.info("[EJM]: Job Monitor Map is empty, no need to retrieve emails");
-                    continue;
-                } else {
-                    log.info("[EJM]: " + jobMonitorMap.size() + " job/s in job monitor map");
-                }
-                if (!store.isConnected()) {
-                    store.connect();
-                    emailFolder = store.getFolder(folderName);
-                }
-                log.info("[EJM]: Retrieving unseen emails");
-                emailFolder.open(Folder.READ_WRITE);
-                Message[] searchMessages = emailFolder.search(unseenBefore);
-                if (searchMessages == null || searchMessages.length == 0) {
-                    log.info("[EJM]: No new email messages");
-                } else {
-                    log.info("[EJM]: "+searchMessages.length + " new email/s received");
-                }
-                processMessages(searchMessages);
-                emailFolder.close(false);
-            }
-        } catch (MessagingException e) {
-            log.error("[EJM]: Couldn't connect to the store ", e);
-        } catch (InterruptedException e) {
-            log.error("[EJM]: Interrupt exception while sleep ", e);
-        } catch (AiravataException e) {
-            log.error("[EJM]: UnHandled arguments ", e);
-        } finally {
-            try {
-                emailFolder.close(false);
-                store.close();
-            } catch (MessagingException e) {
-                log.error("[EJM]: Store close operation failed, couldn't close store", e);
-            }
-        }
+
+	    while (!stopMonitoring && !ServerSettings.isStopAllThreads()) {
+		    try {
+			    session = Session.getDefaultInstance(properties);
+			    store = session.getStore(storeProtocol);
+			    store.connect(host, emailAddress, password);
+			    emailFolder = store.getFolder(folderName);
+			    // first time we search for all unread messages.
+			    SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
+			    while (!(stopMonitoring || ServerSettings.isStopAllThreads())) {
+				    Thread.sleep(ServerSettings.getEmailMonitorPeriod());// sleep a bit - get a rest till job finishes
+				    if (jobMonitorMap.isEmpty()) {
+					    log.info("[EJM]: Job Monitor Map is empty, no need to retrieve emails");
+					    continue;
+				    } else {
+					    log.info("[EJM]: " + jobMonitorMap.size() + " job/s in job monitor map");
+				    }
+				    if (!store.isConnected()) {
+					    store.connect();
+					    emailFolder = store.getFolder(folderName);
+				    }
+				    log.info("[EJM]: Retrieving unseen emails");
+				    emailFolder.open(Folder.READ_WRITE);
+				    Message[] searchMessages = emailFolder.search(unseenBefore);
+				    if (searchMessages == null || searchMessages.length == 0) {
+					    log.info("[EJM]: No new email messages");
+				    } else {
+					    log.info("[EJM]: " + searchMessages.length + " new email/s received");
+				    }
+				    processMessages(searchMessages);
+				    emailFolder.close(false);
+			    }
+		    } catch (MessagingException e) {
+			    log.error("[EJM]: Couldn't connect to the store ", e);
+		    } catch (InterruptedException e) {
+			    log.error("[EJM]: Interrupt exception while sleep ", e);
+		    } catch (AiravataException e) {
+			    log.error("[EJM]: UnHandled arguments ", e);
+		    } catch (Throwable e)  {
+			    log.error("[EJM]: Caught a throwable ", e);
+		    } finally {
+			    try {
+				    emailFolder.close(false);
+				    store.close();
+			    } catch (MessagingException e) {
+				    log.error("[EJM]: Store close operation failed, couldn't close store", e);
+			    } catch (Throwable e) {
+				    log.error("[EJM]: Caught a throwable while closing email store ", e);
+			    }
+		    }
+	    }
+	    log.info("[EJM]: Email monitoring daemon stopped");
     }
 
     private void processMessages(Message[] searchMessages) throws MessagingException {
