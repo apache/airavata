@@ -32,6 +32,13 @@ import org.slf4j.Logger;
 public class RedeliveryRequestWatcherImpl implements RedeliveryRequestWatcher {
 
 	private static final Logger log = org.slf4j.LoggerFactory.getLogger(RedeliveryRequestWatcherImpl.class);
+	private final String processId;
+	private final String experimentId;
+
+	public RedeliveryRequestWatcherImpl(String experimentId, String procesId) {
+		this.experimentId = experimentId;
+		this.processId = procesId;
+	}
 
 	@Override
 	public void process(WatchedEvent watchedEvent) throws Exception {
@@ -43,31 +50,40 @@ public class RedeliveryRequestWatcherImpl implements RedeliveryRequestWatcher {
 			case NodeDataChanged:
 				byte[] bytes = curatorClient.getData().forPath(path);
 				String serverName = new String(bytes);
-				String processId = path.substring(path.lastIndexOf("/") + 1);
 				if (ServerSettings.getGFacServerName().trim().equals(serverName)) {
 					curatorClient.getData().usingWatcher(this).forPath(path);
-					log.info("processId: {}, change data with same server name : {}" , processId, serverName);
+					log.info("processId: {},event type {}, change data with same server name : {}", processId,
+							eventType, serverName);
 				} else {
 					ProcessContext processContext = Factory.getGfacContext().getProcess(processId);
 					if (processContext != null) {
 						processContext.setHandOver(true);
-						log.info("procesId : {}, handing over to new server instance : {}", processId, serverName);
+						log.info("processId : {}, event type {}, handing over to new server instance : {}", processId,
+								eventType, serverName);
 					} else {
-						log.info("Redelivery request came for processId {} but couldn't find process context");
+						log.info("Redelivery request came for processId {}, with event type {}, but couldn't find " +
+								"process context", processId, eventType.name());
 					}
 				}
 				break;
 			case NodeDeleted:
 				//end of experiment execution, ignore this event
+				log.info("Redelivery watcher trigger for process {} with event type {}", processId, eventType.name());
 				break;
 			case NodeCreated:
 			case NodeChildrenChanged:
 			case None:
-				curatorClient.getData().usingWatcher(this).forPath(path);
+				if (path != null) {
+					curatorClient.getData().usingWatcher(this).forPath(path);
+					log.info("Redelivery watcher trigger for process {} with event type {}", processId, eventType.name());
+				}
 				break;
 				// not yet implemented
 			default:
-				curatorClient.getData().usingWatcher(this).forPath(path);
+				if (path != null) {
+					curatorClient.getData().usingWatcher(this).forPath(path);
+					log.info("Redelivery watcher trigger for process {} with event type {}", processId, eventType.name());
+				}
 				break;
 		}
 	}

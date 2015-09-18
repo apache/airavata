@@ -312,7 +312,7 @@ public class GfacServerHandler implements GfacService.Iface {
 		String zkProcessNodePath = ZKPaths.makePath(experimentNodePath, processId);
 		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), zkProcessNodePath);
 		curatorClient.setData().withVersion(-1).forPath(zkProcessNodePath, gfacServerName.getBytes());
-		curatorClient.getData().usingWatcher(Factory.getRedeliveryReqeustWatcher()).forPath(zkProcessNodePath);
+		curatorClient.getData().usingWatcher(Factory.getRedeliveryReqeustWatcher(experimentId, processId)).forPath(zkProcessNodePath);
 
 		// create /experiments/{experimentId}/{processId}/deliveryTag node and set data - deliveryTag
 		String deliveryTagPath = ZKPaths.makePath(zkProcessNodePath, ZkConstants.ZOOKEEPER_DELIVERYTAG_NODE);
@@ -331,8 +331,7 @@ public class GfacServerHandler implements GfacService.Iface {
 
 		// create /experiments/{experimentId}/cancel node and set watcher for data changes
 		String experimentCancelNode = ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
-		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
-		curatorClient.getData().usingWatcher(Factory.getCancelRequestWatcher()).forPath (experimentCancelNode);
+		curatorClient.getData().usingWatcher(Factory.getCancelRequestWatcher(experimentId, processId)).forPath (experimentCancelNode);
 
 	}
 
