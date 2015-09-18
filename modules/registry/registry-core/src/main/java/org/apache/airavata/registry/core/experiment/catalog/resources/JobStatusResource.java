@@ -122,7 +122,6 @@ public class JobStatusResource extends AbstractExpCatResource {
                 throw new RegistryException("Does not have the job id or status id or task id");
             }
             em = ExpCatResourceUtils.getEntityManager();
-            em.getTransaction().begin();
             JobStatus jobStatus;
             JobStatusPK jobStatusPK = new JobStatusPK();
             jobStatusPK.setJobId(jobId);
@@ -137,6 +136,7 @@ public class JobStatusResource extends AbstractExpCatResource {
             jobStatus.setProcessId(processId);
             jobStatus.setState(state);
             jobStatus.setReason(reason);
+            em.getTransaction().begin();
             em.persist(jobStatus);
             em.getTransaction().commit();
             em.close();

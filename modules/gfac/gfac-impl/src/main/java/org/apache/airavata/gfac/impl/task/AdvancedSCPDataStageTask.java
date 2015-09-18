@@ -285,7 +285,6 @@ public class AdvancedSCPDataStageTask implements Task{
 
 	@Override
 	public TaskStatus recover(TaskContext taskContext) {
-        // FIXME - Recover gives NPE s because of this
         TaskState state = taskContext.getTaskStatus().getState();
         if (state == TaskState.EXECUTING || state == TaskState.CREATED) {
             return execute(taskContext);

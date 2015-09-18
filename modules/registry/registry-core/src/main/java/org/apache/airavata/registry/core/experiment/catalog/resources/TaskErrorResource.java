@@ -128,7 +128,7 @@ public class TaskErrorResource extends AbstractExpCatResource {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
-            em.getTransaction().begin();
+
             TaskError taskError;
             if(taskId == null || errorId == null){
                 throw new RegistryException("Does not have the task id or error id");
@@ -147,6 +147,7 @@ public class TaskErrorResource extends AbstractExpCatResource {
             taskError.setUserFriendlyMessage(userFriendlyMessage);
             taskError.setRootCauseErrorIdList(rootCauseErrorIdList);
             taskError.setTransientOrPersistent(transientOrPersistent);
+            em.getTransaction().begin();
             em.persist(taskError);
             em.getTransaction().commit();
             em.close();
