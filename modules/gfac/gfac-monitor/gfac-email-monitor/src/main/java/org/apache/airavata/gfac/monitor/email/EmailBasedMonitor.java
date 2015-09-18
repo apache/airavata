@@ -181,69 +181,72 @@ public class EmailBasedMonitor implements Runnable{
 
     @Override
     public void run() {
-        try {
-            session = Session.getDefaultInstance(properties);
-            store = session.getStore(storeProtocol);
-            store.connect(host, emailAddress, password);
-            emailFolder = store.getFolder(folderName);
-            // first time we search for all unread messages.
-            while (!(stopMonitoring || ServerSettings.isStopAllThreads())) {
-                Thread.sleep(ServerSettings.getEmailMonitorPeriod());// sleep a bit - get a rest till job finishes
-                if (jobMonitorMap.isEmpty()) {
-                    log.info("[EJM]: Job Monitor Map is empty, no need to retrieve emails");
-                    continue;
-                } else {
-                    log.info("[EJM]: " + jobMonitorMap.size() + " job/s in job monitor map");
-                }
-                if (!store.isConnected()) {
-                    store.connect();
-                    emailFolder = store.getFolder(folderName);
-                }
-                emailFolder.open(Folder.READ_WRITE);
-                if (emailFolder.isOpen()) {
-                    // flush if any message left in flushUnseenMessage
-                    if (flushUnseenMessages != null && flushUnseenMessages.length > 0) {
-                        try {
-                            emailFolder.setFlags(flushUnseenMessages, new Flags(Flags.Flag.SEEN), false);
-                            flushUnseenMessages = null;
-                        } catch (MessagingException e) {
-                            if (!store.isConnected()) {
-                                store.connect();
+
+        while (!stopMonitoring && !ServerSettings.isStopAllThreads()) {
+            try {
+                session = Session.getDefaultInstance(properties);
+                store = session.getStore(storeProtocol);
+                store.connect(host, emailAddress, password);
+                emailFolder = store.getFolder(folderName);
+                // first time we search for all unread messages.
+                while (!(stopMonitoring || ServerSettings.isStopAllThreads())) {
+                    Thread.sleep(ServerSettings.getEmailMonitorPeriod());// sleep a bit - get a rest till job finishes
+                    if (jobMonitorMap.isEmpty()) {
+                        log.info("[EJM]: Job Monitor Map is empty, no need to retrieve emails");
+                        continue;
+                    } else {
+                        log.info("[EJM]: " + jobMonitorMap.size() + " job/s in job monitor map");
+                    }
+                    if (!store.isConnected()) {
+                        store.connect();
+                        emailFolder = store.getFolder(folderName);
+                    }
+                    emailFolder.open(Folder.READ_WRITE);
+                    if (emailFolder.isOpen()) {
+                        // flush if any message left in flushUnseenMessage
+                        if (flushUnseenMessages != null && flushUnseenMessages.length > 0) {
+                            try {
                                 emailFolder.setFlags(flushUnseenMessages, new Flags(Flags.Flag.SEEN), false);
                                 flushUnseenMessages = null;
+                            } catch (MessagingException e) {
+                                if (!store.isConnected()) {
+                                    store.connect();
+                                    emailFolder.setFlags(flushUnseenMessages, new Flags(Flags.Flag.SEEN), false);
+                                    flushUnseenMessages = null;
+                                }
                             }
                         }
+                        // read unread messages
+                        Message[] searchMessages = getMessagesToProcess();
+                        if (searchMessages == null || searchMessages.length == 0) {
+                            log.info("[EJM]: No new email messages");
+                        } else {
+                            log.info("[EJM]: " + searchMessages.length + " new email/s received");
+                        }
+                        processMessages(searchMessages);
+                        emailFolder.close(false);
                     }
-                    // read unread messages
-                    Message[] searchMessages = getMessagesToProcess();
-                    if (searchMessages == null || searchMessages.length == 0) {
-                        log.info("[EJM]: No new email messages");
-                    } else {
-                        log.info("[EJM]: " + searchMessages.length + " new email/s received");
-                    }
-                    processMessages(searchMessages);
                 }
-                emailFolder.close(false);
-            }
-        } catch (MessagingException e) {
-            log.error("[EJM]: Couldn't connect to the store ", e);
-        } catch (InterruptedException e) {
-            log.error("[EJM]: Interrupt exception while sleep ", e);
-        } catch (AiravataException e) {
-            log.error("[EJM]: UnHandled arguments ", e);
-        } finally {
-            try {
-                emailFolder.close(false);
-                store.close();
             } catch (MessagingException e) {
-                log.error("[EJM]: Store close operation failed, couldn't close store", e);
+                log.error("[EJM]: Couldn't connect to the store ", e);
+            } catch (InterruptedException e) {
+                log.error("[EJM]: Interrupt exception while sleep ", e);
+            } catch (AiravataException e) {
+                log.error("[EJM]: UnHandled arguments ", e);
+            } catch (Throwable e) {
+                log.error("[EJM]: Caught a throwable ", e);
+            } finally {
+                try {
+                    emailFolder.close(false);
+                    store.close();
+                } catch (MessagingException e) {
+                    log.error("[EJM]: Store close operation failed, couldn't close store", e);
+                } catch (Throwable e) {
+                    log.error("[EJM]: Caught a throwable while closing email store ", e);
+                }
             }
         }
-        // Recursively try to connect to email server and monitor
-        if (!(stopMonitoring || ServerSettings.isStopAllThreads())) {
-            log.info("[EJM]: Retry email monitoring on exceptions");
-            run();
-        }
+        log.info("[EJM]: Email monitoring daemon stopped");
 
     }
 
@@ -335,7 +338,8 @@ public class EmailBasedMonitor implements Runnable{
                         flushUnseenMessages = unseenMessages; // anyway we need to push this update.
                         throw e1;
                     }
-
+                } else {
+                    flushUnseenMessages = unseenMessages; // anyway we need to push this update.
                 }
             }
         }
