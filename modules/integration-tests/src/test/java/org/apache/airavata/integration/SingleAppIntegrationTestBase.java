@@ -23,13 +23,13 @@ package org.apache.airavata.integration;
 import java.util.Date;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.ExperimentNotFoundException;
 import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.experiment.ExperimentState;
-import org.apache.airavata.model.experiment.ExperimentStatus;
+import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.model.status.ExperimentState;
+import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.thrift.TException;
 import org.junit.Assert;
 
@@ -38,27 +38,32 @@ import org.junit.Assert;
  */
 public class SingleAppIntegrationTestBase extends AbstractIntegrationTest {
 
-    protected String createExperiment(Experiment experiment) throws AiravataSystemException, InvalidRequestException, TException, ApplicationSettingsException {
-        return getClient().createExperiment("php_reference_gateway", experiment);
+    private AuthzToken authzToken;
+
+    protected String createExperiment(ExperimentModel experiment) throws AiravataSystemException, InvalidRequestException, TException, ApplicationSettingsException {
+        authzToken = new AuthzToken("empty token");
+        return getClient().createExperiment(authzToken, "php_reference_gateway", experiment);
     }
 
     protected void launchExperiment(String expId) throws ExperimentNotFoundException, AiravataSystemException, InvalidRequestException, TException {
-        getClient().launchExperiment(expId, "testToken");
+        authzToken = new AuthzToken("empty token");
+        getClient().launchExperiment(authzToken, expId, "testToken");
     }
 
     //monitoring the job
     protected void monitorJob(final String expId) {
         Thread monitor = (new Thread() {
             public void run() {
+                authzToken = new AuthzToken("empty token");
             	long previousUpdateTime=-1;
                 ExperimentStatus experimentStatus = null;
                 do {
                     try {
-                    	experimentStatus = airavataClient.getExperimentStatus(expId);
+                    	experimentStatus = airavataClient.getExperimentStatus(authzToken, expId);
 						if (previousUpdateTime!=experimentStatus.getTimeOfStateChange()) {
 							previousUpdateTime=experimentStatus.getTimeOfStateChange();
 							log.info(expId
-									+ " : " + experimentStatus.getExperimentState().toString()
+									+ " : " + experimentStatus.getState().toString()
 									+ " ["+new Date(previousUpdateTime).toString()+"]");
 							
 						}
@@ -66,8 +71,8 @@ public class SingleAppIntegrationTestBase extends AbstractIntegrationTest {
                     } catch (Exception e) {
                         log.error("Thread interrupted", e);
                     }
-                    Assert.assertFalse(experimentStatus.getExperimentState().equals(ExperimentState.FAILED));
-                }while(!experimentStatus.getExperimentState().equals(ExperimentState.COMPLETED));
+                    Assert.assertFalse(experimentStatus.getState().equals(ExperimentState.FAILED));
+                }while(!experimentStatus.getState().equals(ExperimentState.COMPLETED));
             }
         });
         monitor.start();

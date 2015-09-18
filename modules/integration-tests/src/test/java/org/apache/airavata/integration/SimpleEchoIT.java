@@ -21,17 +21,17 @@
 
 package org.apache.airavata.integration;
 
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.integration.tools.DocumentCreatorNew;
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.experiment.UserConfigurationData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeTest;
@@ -42,6 +42,7 @@ import java.util.List;
 
 public class SimpleEchoIT extends SingleAppIntegrationTestBase {
     private final static Logger log = LoggerFactory.getLogger(SimpleEchoIT.class);
+    private AuthzToken authzToken;
 
     public SimpleEchoIT() {
         //super();
@@ -51,6 +52,8 @@ public class SimpleEchoIT extends SingleAppIntegrationTestBase {
     public void setUp() throws Exception {
 //        Thread.sleep(20000);
         init();
+        authzToken = new AuthzToken("empty token");
+
     }
 
     @Test
@@ -78,14 +81,14 @@ public class SimpleEchoIT extends SingleAppIntegrationTestBase {
         exOut.add(output);
 
         Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-        String projectId = getClient().createProject("php_reference_gateway", project);
-        Experiment simpleExperiment =
-                ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", appId, appId, exInputs);
+        String projectId = getClient().createProject(authzToken, "php_reference_gateway", project);
+        ExperimentModel simpleExperiment =
+                ExperimentModelUtil.createSimpleExperiment("php_reference_gateway", projectId, "admin", "echoExperiment", appId, appId, exInputs);
         simpleExperiment.setExperimentOutputs(exOut);
 
-        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(hostId, 1, 1, 1, "normal", 1, 0, 1, "sds128");
+        ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling(hostId, 1, 1, 1, "normal", 1, 0);
         scheduling.setResourceHostId(hostId);
-        UserConfigurationData userConfigurationData = new UserConfigurationData();
+        UserConfigurationDataModel userConfigurationData = new UserConfigurationDataModel();
         userConfigurationData.setAiravataAutoSchedule(false);
         userConfigurationData.setOverrideManualScheduledParams(false);
         userConfigurationData.setComputationalResourceScheduling(scheduling);
