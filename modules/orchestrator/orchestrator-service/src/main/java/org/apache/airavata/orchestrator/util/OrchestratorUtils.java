@@ -40,4 +40,10 @@ public class OrchestratorUtils {
 			log.error("expId : " + experimentId + " Error while updating experiment status to " + status.toString(), e);
 		}
 	}
+
+	public static ExperimentStatus getExperimentStatus(String experimentId) throws RegistryException {
+		return ((ExperimentStatus) RegistryFactory.getDefaultExpCatalog().get(ExperimentCatalogModelType
+						.EXPERIMENT_STATUS,
+				experimentId));
+	}
 }
