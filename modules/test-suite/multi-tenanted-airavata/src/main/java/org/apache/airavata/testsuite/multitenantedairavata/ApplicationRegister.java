@@ -26,9 +26,10 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentD
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.FrameworkUtils;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.TestFrameworkConstants;
@@ -52,6 +53,7 @@ public class ApplicationRegister {
     private String gordenResourceId;
     private String alamoResourceId;
     private List<String> gatewaysToAvoid;
+    private AuthzToken authzToken;
 
 
     public ApplicationRegister(Airavata.Client airavata, TestFrameworkProps props) throws Exception {
@@ -61,11 +63,12 @@ public class ApplicationRegister {
         applicationDeployementListPerGateway = new HashMap<String, String>();
         FrameworkUtils frameworkUtils = FrameworkUtils.getInstance();
         gatewaysToAvoid = frameworkUtils.getGatewayListToAvoid(props.getSkippedGateways());
+        authzToken = new AuthzToken("emptyToken");
     }
 
     public List<Gateway> getAllGateways(Airavata.Client client) throws Exception{
         try {
-             return client.getAllGateways();
+             return client.getAllGateways(authzToken);
         }catch (Exception e){
             logger.error("Error while getting all the gateways", e);
             throw new Exception("Error while getting all the gateways", e);
@@ -73,7 +76,7 @@ public class ApplicationRegister {
     }
 
     public void addApplications () throws Exception{
-        Map<String, String> allComputeResourceNames = airavata.getAllComputeResourceNames();
+        Map<String, String> allComputeResourceNames = airavata.getAllComputeResourceNames(authzToken);
         System.out.println("All compute resources :" + allComputeResourceNames.size());
         for (String resourceId : allComputeResourceNames.keySet()){
             String resourceName = allComputeResourceNames.get(resourceId);
@@ -106,7 +109,7 @@ public class ApplicationRegister {
                 }
                 if (isgatewayValid) {
                     // add amber module
-                    String amberModuleId = airavata.registerApplicationModule(gateway.getGatewayId(),
+                    String amberModuleId = airavata.registerApplicationModule(authzToken, gateway.getGatewayId(),
                             createApplicationModule(TestFrameworkConstants.AppcatalogConstants.AMBER_APP_NAME, "12.0", TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION));
                     System.out.println("Amber Module Id " + amberModuleId);
 
@@ -120,9 +123,9 @@ public class ApplicationRegister {
                     ApplicationDeploymentDescription amberStampedeDeployment = createApplicationDeployment(amberModuleId, stampedeResourceId,
                             "/opt/apps/intel13/mvapich2_1_9/amber/12.0/bin/sander.MPI -O", ApplicationParallelismType.MPI,
                             TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION, moduleLoadCMDs, null, null);
-                    String amberStampedeAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(), amberStampedeDeployment);
+                    String amberStampedeAppDeployId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(), amberStampedeDeployment);
 
-                    String amberTrestlesAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
+                    String amberTrestlesAppDeployId = airavata.registerApplicationDeployment(authzToken,gateway.getGatewayId(),
                             createApplicationDeployment(amberModuleId, trestlesResourceId,
                                     "/opt/amber/bin/sander.MPI -O", ApplicationParallelismType.MPI,
                                     TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION, moduleLoadCMDs, null, null));
@@ -130,7 +133,7 @@ public class ApplicationRegister {
                     List<String> amberModuleLoadCMDsBr2 = new ArrayList<String>();
                     amberModuleLoadCMDsBr2.add("module load amber/gnu/mpi/12");
                     amberModuleLoadCMDsBr2.add("module swap PrgEnv-cray PrgEnv-gnu");
-                    String amberBr2AppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
+                    String amberBr2AppDeployId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(),
                             createApplicationDeployment(amberModuleId, br2ResourceId,
                                     "/N/soft/cle4/amber/gnu/mpi/12/amber12/bin/sander.MPI -O", ApplicationParallelismType.MPI,
                                     TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION, amberModuleLoadCMDsBr2, null, null));
@@ -155,7 +158,7 @@ public class ApplicationRegister {
             }
             if (isgatewayValid) {
                 // add amber module
-                String ultrascanModuleId = airavata.registerApplicationModule(gateway.getGatewayId(),
+                String ultrascanModuleId = airavata.registerApplicationModule(authzToken, gateway.getGatewayId(),
                         createApplicationModule(TestFrameworkConstants.AppcatalogConstants.ULTRASCAN, "1.0", TestFrameworkConstants.AppcatalogConstants.ULTRASCAN_DESCRIPTION));
                 System.out.println("Ultrascan module Id " + ultrascanModuleId);
 
@@ -167,14 +170,14 @@ public class ApplicationRegister {
                 ApplicationDeploymentDescription ultrascanStampedeDeployment = createApplicationDeployment(ultrascanModuleId, stampedeResourceId,
                         "/home1/01623/us3/bin/us_mpi_analysis", ApplicationParallelismType.MPI,
                         TestFrameworkConstants.AppcatalogConstants.ULTRASCAN_DESCRIPTION, null, null, null);
-                String ultrascanStampedeAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(), ultrascanStampedeDeployment);
+                String ultrascanStampedeAppDeployId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(), ultrascanStampedeDeployment);
 
-                String ultrascanTrestlesAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
+                String ultrascanTrestlesAppDeployId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(),
                         createApplicationDeployment(ultrascanModuleId, trestlesResourceId,
                                 "/home/us3/trestles/bin/us_mpi_analysis", ApplicationParallelismType.MPI,
                                 TestFrameworkConstants.AppcatalogConstants.ULTRASCAN_DESCRIPTION, null, null, null));
 
-                String ultrascanGordenAppDepId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
+                String ultrascanGordenAppDepId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(),
                         createApplicationDeployment(ultrascanModuleId,gordenResourceId,
                                 "/home/us3/gordon/bin/us_mpi_analysis", ApplicationParallelismType.MPI,
                                 TestFrameworkConstants.AppcatalogConstants.ULTRASCAN_DESCRIPTION, null, null, null));
@@ -184,7 +187,7 @@ public class ApplicationRegister {
                 alamoModules.add("module load openmpi/intel/1.8.4");
                 alamoModules.add("module load qt4/4.8.6");
                 alamoModules.add("module load ultrascan3/3.3");
-                String ultrascanAlamoAppId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
+                String ultrascanAlamoAppId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(),
                         createApplicationDeployment(ultrascanModuleId,alamoResourceId,
                                 "/home/us3/bin/us_mpi_analysis", ApplicationParallelismType.OPENMP,
                                 TestFrameworkConstants.AppcatalogConstants.ULTRASCAN_DESCRIPTION, alamoModules, null, null));
@@ -223,7 +226,7 @@ public class ApplicationRegister {
         applicationOutputs.add(output2);
         applicationOutputs.add(output3);
 
-        String ultrascanAppId = airavata.registerApplicationInterface(gateway.getGatewayId(),
+        String ultrascanAppId = airavata.registerApplicationInterface(authzToken, gateway.getGatewayId(),
                 createApplicationInterfaceDescription(TestFrameworkConstants.AppcatalogConstants.ULTRASCAN, TestFrameworkConstants.AppcatalogConstants.ULTRASCAN_DESCRIPTION,
                         appModules, applicationInputs, applicationOutputs));
         System.out.println("Ultrascan Application Interface Id " + ultrascanAppId);
@@ -262,7 +265,7 @@ public class ApplicationRegister {
         applicationOutputs.add(output5);
         applicationOutputs.add(output6);
 
-        String amberInterfaceId = airavata.registerApplicationInterface(gateway.getGatewayId(),
+        String amberInterfaceId = airavata.registerApplicationInterface(authzToken, gateway.getGatewayId(),
                 createApplicationInterfaceDescription(TestFrameworkConstants.AppcatalogConstants.AMBER_APP_NAME, TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION,
                         appModules, applicationInputs, applicationOutputs));
         System.out.println("Amber Application Interface Id " + amberInterfaceId);
@@ -285,7 +288,7 @@ public class ApplicationRegister {
         applicationOutputs.add(output1);
         applicationOutputs.add(output2);
 
-        String echoInterfaceId = airavata.registerApplicationInterface(gateway.getGatewayId(),
+        String echoInterfaceId = airavata.registerApplicationInterface(authzToken, gateway.getGatewayId(),
                 createApplicationInterfaceDescription(TestFrameworkConstants.AppcatalogConstants.ECHO_NAME, TestFrameworkConstants.AppcatalogConstants.ECHO_DESCRIPTION,
                         appModules, applicationInputs, applicationOutputs));
         System.out.println("Echo Application Interface Id " + echoInterfaceId);
@@ -304,7 +307,7 @@ public class ApplicationRegister {
             }
             if (isgatewayValid) {
                 // add echo module
-                String echoModuleId = airavata.registerApplicationModule(gateway.getGatewayId(),
+                String echoModuleId = airavata.registerApplicationModule(authzToken, gateway.getGatewayId(),
                         createApplicationModule(TestFrameworkConstants.AppcatalogConstants.ECHO_NAME, "1.0", TestFrameworkConstants.AppcatalogConstants.ECHO_DESCRIPTION));
                 System.out.println("Echo Module Id " + echoModuleId);
 
@@ -313,17 +316,17 @@ public class ApplicationRegister {
                 applicationInterfaceListPerGateway.put(echoInterfaceId, gateway.getGatewayId());
 
                 // add amber deployment
-                String echoStampedeAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
+                String echoStampedeAppDeployId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(),
                         createApplicationDeployment(echoModuleId, stampedeResourceId,
                                 "/home1/01437/ogce/production/app_wrappers/echo_wrapper.sh", ApplicationParallelismType.SERIAL,
                                 TestFrameworkConstants.AppcatalogConstants.ECHO_DESCRIPTION, null, null, null));
 
-                String echoTrestlesAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
+                String echoTrestlesAppDeployId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(),
                         createApplicationDeployment(echoModuleId, trestlesResourceId,
                                 "/home/ogce/production/app_wrappers/echo_wrapper.sh", ApplicationParallelismType.SERIAL,
                                 TestFrameworkConstants.AppcatalogConstants.ECHO_DESCRIPTION, null, null, null));
 
-                String echoBr2AppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
+                String echoBr2AppDeployId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(),
                         createApplicationDeployment(echoModuleId, br2ResourceId,
                                 "/N/u/cgateway/BigRed2/production/app_wrappers/echo_wrapper.sh", ApplicationParallelismType.SERIAL,
                                 TestFrameworkConstants.AppcatalogConstants.ECHO_DESCRIPTION, null, null, null));

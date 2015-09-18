@@ -557,7 +557,7 @@
 				<module>modules/credential-store</module>
 				<module>modules/orchestrator</module>
 				<module>modules/server</module>
-				<!--<module>modules/test-suite</module>-->
+				<module>modules/test-suite</module>
 				<!--<module>modules/integration-tests</module>-->
 				<!--<module>modules/workflow</module>-->
 				<!--<module>modules/xbaya-gui</module>-->

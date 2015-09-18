@@ -34,6 +34,7 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfil
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.FrameworkUtils;
@@ -60,6 +61,7 @@ public class GatewayRegister {
     private String testProject;
     private List<String> gatewaysToAvoid;
     private TestFrameworkProps properties;
+    private AuthzToken authzToken;
 
     public GatewayRegister(Airavata.Client client, TestFrameworkProps props) throws Exception{
         try {
@@ -72,6 +74,7 @@ public class GatewayRegister {
             testProject = properties.getTestProjectName();
             FrameworkUtils frameworkUtils = FrameworkUtils.getInstance();
             gatewaysToAvoid = frameworkUtils.getGatewayListToAvoid(properties.getSkippedGateways());
+            authzToken = new AuthzToken("emptyToken");
         }catch (Exception e){
             logger.error("Error while initializing setup step", e);
             throw new Exception("Error while initializing setup step", e);
@@ -90,10 +93,10 @@ public class GatewayRegister {
                 gateway.setGatewayId(gatewayId);
                 gateway.setGatewayName(gatewayId);
                 gateway.setDomain(gatewayId + genericGatewayDomain);
-                airavata.addGateway(gateway);
+                airavata.addGateway(authzToken, gateway);
                 GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
                 gatewayResourceProfile.setGatewayID(gatewayId);
-                airavata.registerGatewayResourceProfile(gatewayResourceProfile);
+                airavata.registerGatewayResourceProfile(authzToken, gatewayResourceProfile);
                 // create a project per each gateway
                 createProject(gatewayId);
             }
@@ -116,7 +119,7 @@ public class GatewayRegister {
         Project project = new Project();
         project.setName(testProject);
         project.setOwner(testUser);
-        String projectId = airavata.createProject(gatewayId, project);
+        String projectId = airavata.createProject(authzToken, gatewayId, project);
         projectMap.put(projectId, gatewayId);
     }
 
@@ -137,7 +140,7 @@ public class GatewayRegister {
             String keyPassword = properties.getSshPassword();
             DBUtil dbUtil = new DBUtil(jdbcURL, userName, password, jdbcDriver);
             SSHCredentialWriter writer = new SSHCredentialWriter(dbUtil);
-            List<Gateway> allGateways = airavata.getAllGateways();
+            List<Gateway> allGateways = airavata.getAllGateways(authzToken);
             for (Gateway gateway : allGateways){
                 boolean isgatewayValid = true;
                 for (String ovoidGateway : gatewaysToAvoid){
