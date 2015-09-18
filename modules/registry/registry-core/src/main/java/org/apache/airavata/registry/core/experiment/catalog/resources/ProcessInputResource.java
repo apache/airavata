@@ -175,7 +175,7 @@ public class ProcessInputResource extends AbstractExpCatResource {
                 throw new RegistryException("Does not have the process id");
             }
             em = ExpCatResourceUtils.getEntityManager();
-            em.getTransaction().begin();
+
             ProcessInput processInput;
             ProcessInputPK processInputPk = new ProcessInputPK();
             processInputPk.setProcessId(processId);
@@ -196,6 +196,7 @@ public class ProcessInputResource extends AbstractExpCatResource {
             processInput.setIsRequired(isRequired);
             processInput.setRequiredToAddedToCmd(requiredToAddedToCmd);
             processInput.setDataStaged(dataStaged);
+            em.getTransaction().begin();
             em.persist(processInput);
             em.getTransaction().commit();
             em.close();

@@ -138,7 +138,7 @@ public class ProcessResourceScheduleResource extends AbstractExpCatResource {
                 throw new RegistryException("Does not have the process id");
             }
             em = ExpCatResourceUtils.getEntityManager();
-            em.getTransaction().begin();
+
             ProcessResourceSchedule processResourceSchedule;
             processResourceSchedule = em.find(ProcessResourceSchedule.class, processId);
             if(processResourceSchedule == null){
@@ -152,6 +152,7 @@ public class ProcessResourceScheduleResource extends AbstractExpCatResource {
             processResourceSchedule.setQueueName(queueName);
             processResourceSchedule.setWallTimeLimit(wallTimeLimit);
             processResourceSchedule.setTotalPhysicalMemory(totalPhysicalMemory);
+            em.getTransaction().begin();
             em.persist(processResourceSchedule);
             em.getTransaction().commit();
             em.close();

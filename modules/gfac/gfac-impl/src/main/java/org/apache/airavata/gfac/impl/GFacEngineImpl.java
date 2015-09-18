@@ -595,7 +595,7 @@ public class GFacEngineImpl implements GFacEngine {
 			}
 		}
 		if (jsInterface == null) {
-			// TODO: throw an exception.
+	        throw new GFacException("Job Submission interface cannot be empty at this point");
 		} else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
 			SSHJobSubmission sshJobSubmission = Factory.getDefaultAppCatalog().getComputeResource().getSSHJobSubmission
 					(jsInterface.getJobSubmissionInterfaceId());
@@ -612,13 +612,12 @@ public class GFacEngineImpl implements GFacEngine {
 			processCtx.setMonitorMode(sshJobSubmission.getMonitorMode()); // fixme - Move this to populate process
 			resourceJobManager = sshJobSubmission.getResourceJobManager();
 		} else {
-			// TODO : throw an not supported jobsubmission protocol exception. we only support SSH and LOCAL
 			throw new GFacException("Unsupported JobSubmissionProtocol - " + jsInterface.getJobSubmissionProtocol()
 					.name());
 		}
 
 		if (resourceJobManager == null) {
-			// TODO throw an exception
+			throw new GFacException("Resource Job Manager is empty.");
 		}
 		return resourceJobManager;
 	}

@@ -274,7 +274,6 @@ public class JobResource extends AbstractExpCatResource {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
-            em.getTransaction().begin();
             JobPK jobPK = new JobPK();
             jobPK.setJobId(jobId);
             jobPK.setProcessId(processId);
@@ -299,6 +298,7 @@ public class JobResource extends AbstractExpCatResource {
             job.setJobName(jobName);
             job.setWorkingDir(workingDir);
             job.setExitCode(exitCode);
+            em.getTransaction().begin();
             em.persist(job);
             em.getTransaction().commit();
             em.close();

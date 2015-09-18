@@ -436,7 +436,6 @@ public class ExperimentResource extends AbstractExpCatResource {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
-            em.getTransaction().begin();
             Experiment experiment = em.find(Experiment.class, experimentId);
             if (experiment == null) {
             	experiment = new Experiment();
@@ -453,6 +452,7 @@ public class ExperimentResource extends AbstractExpCatResource {
             experiment.setGatewayExecutionId(gatewayExecutionId);
             experiment.setEnableEmailNotification(enableEmailNotification);
             experiment.setEmailAddresses(emailAddresses);
+            em.getTransaction().begin();
             em.persist(experiment);
             em.getTransaction().commit();
             em.close();

@@ -110,7 +110,7 @@ public class TaskStatusResource extends AbstractExpCatResource {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
-            em.getTransaction().begin();
+
             TaskStatus taskStatus;
             if(taskId == null || statusId == null){
                 throw new RegistryException("Does not have the task id or status id");
@@ -127,6 +127,7 @@ public class TaskStatusResource extends AbstractExpCatResource {
             taskStatus.setState(state);
             taskStatus.setReason(reason);
             taskStatus.setTimeOfStateChange(timeOfStateChange);
+            em.getTransaction().begin();
 	        em.persist(taskStatus);
             em.getTransaction().commit();
             em.close();

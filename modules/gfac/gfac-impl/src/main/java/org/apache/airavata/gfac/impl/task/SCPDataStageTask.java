@@ -110,7 +110,13 @@ public class SCPDataStageTask implements Task {
 
 	@Override
 	public TaskStatus recover(TaskContext taskContext) {
-		return null;
+        TaskState state = taskContext.getTaskStatus().getState();
+        if (state == TaskState.EXECUTING || state == TaskState.CREATED) {
+            return execute(taskContext);
+        } else {
+            // files already transferred or failed
+            return taskContext.getTaskStatus();
+        }
 	}
 
 	@Override
