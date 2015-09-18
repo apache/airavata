@@ -77,6 +77,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
     private Date monitorStartDate;
     private Map<ResourceJobManagerType, EmailParser> emailParserMap = new HashMap<ResourceJobManagerType, EmailParser>();
 	private Map<String, ResourceJobManagerType> addressMap = new HashMap<>();
+	private Message[] flushUnseenMessages;
 
 
 	public EmailBasedMonitor(Map<ResourceJobManagerType, ResourceConfig> resourceConfigs) throws AiravataException {
@@ -176,14 +177,29 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 				    }
 				    log.info("[EJM]: Retrieving unseen emails");
 				    emailFolder.open(Folder.READ_WRITE);
-				    Message[] searchMessages = emailFolder.search(unseenBefore);
-				    if (searchMessages == null || searchMessages.length == 0) {
-					    log.info("[EJM]: No new email messages");
-				    } else {
-					    log.info("[EJM]: " + searchMessages.length + " new email/s received");
+				    if (emailFolder.isOpen()) {
+					    // flush if any message left in flushUnseenMessage
+					    if (flushUnseenMessages != null && flushUnseenMessages.length > 0) {
+						    try {
+							    emailFolder.setFlags(flushUnseenMessages, new Flags(Flags.Flag.SEEN), false);
+							    flushUnseenMessages = null;
+						    } catch (MessagingException e) {
+							    if (!store.isConnected()) {
+								    store.connect();
+								    emailFolder.setFlags(flushUnseenMessages, new Flags(Flags.Flag.SEEN), false);
+								    flushUnseenMessages = null;
+							    }
+						    }
+					    }
+					    Message[] searchMessages = emailFolder.search(unseenBefore);
+					    if (searchMessages == null || searchMessages.length == 0) {
+						    log.info("[EJM]: No new email messages");
+					    } else {
+						    log.info("[EJM]: " + searchMessages.length + " new email/s received");
+					    }
+					    processMessages(searchMessages);
+					    emailFolder.close(false);
 				    }
-				    processMessages(searchMessages);
-				    emailFolder.close(false);
 			    }
 		    } catch (MessagingException e) {
 			    log.error("[EJM]: Couldn't connect to the store ", e);
@@ -258,11 +274,13 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
             try {
                 emailFolder.setFlags(unseenMessages, new Flags(Flags.Flag.SEEN), false);
             } catch (MessagingException e) {
-                if (!store.isConnected()) {
-                    store.connect();
-                    emailFolder.setFlags(unseenMessages, new Flags(Flags.Flag.SEEN), false);
-
-                }
+	            if (!store.isConnected()) {
+		            store.connect();
+		            emailFolder.setFlags(unseenMessages, new Flags(Flags.Flag.SEEN), false);
+		            flushUnseenMessages = unseenMessages; // anyway we need to push this update.
+	            } else {
+		            flushUnseenMessages = unseenMessages; // anyway we need to push this update.
+	            }
             }
         }
     }
