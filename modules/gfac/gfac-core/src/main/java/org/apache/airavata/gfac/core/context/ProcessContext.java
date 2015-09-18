@@ -300,7 +300,7 @@ public class ProcessContext {
 
 	public void setProcessStatus(ProcessStatus status) {
 		if (status != null) {
-			log.info("expId: {}, processId: {} :- Status changed {} -> {}", getExperimentId(), processId,
+			log.info("expId: {}, processId: {} :- Process status changed {} -> {}", getExperimentId(), processId,
 					getProcessState().name(), status.getState().name());
 			processModel.setProcessStatus(status);
 		}
