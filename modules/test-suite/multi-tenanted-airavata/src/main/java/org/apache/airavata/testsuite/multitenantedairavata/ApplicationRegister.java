@@ -58,12 +58,12 @@ public class ApplicationRegister {
 
     public ApplicationRegister(Airavata.Client airavata, TestFrameworkProps props) throws Exception {
         this.airavata = airavata;
+        authzToken = new AuthzToken("emptyToken");
         allGateways = getAllGateways(airavata);
         applicationInterfaceListPerGateway = new HashMap<String, String>();
         applicationDeployementListPerGateway = new HashMap<String, String>();
         FrameworkUtils frameworkUtils = FrameworkUtils.getInstance();
         gatewaysToAvoid = frameworkUtils.getGatewayListToAvoid(props.getSkippedGateways());
-        authzToken = new AuthzToken("emptyToken");
     }
 
     public List<Gateway> getAllGateways(Airavata.Client client) throws Exception{
@@ -82,8 +82,6 @@ public class ApplicationRegister {
             String resourceName = allComputeResourceNames.get(resourceId);
             if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.STAMPEDE_RESOURCE_NAME)){
                 stampedeResourceId = resourceId;
-            }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.TRESTLES_RESOURCE_NAME)){
-                trestlesResourceId = resourceId;
             }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)){
                 br2ResourceId = resourceId;
             }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.GORDEN_RESOURCE_NAME)){
@@ -92,10 +90,10 @@ public class ApplicationRegister {
                 alamoResourceId = resourceId;
             }
         }
-        addUltrascanApplication();
-//        addAmberApplication();
-//        addEchoApplication();
-//        addLAMMPSApplication();
+//        addUltrascanApplication();
+        addAmberApplication();
+        addEchoApplication();
+        addLAMMPSApplication();
     }
 
     protected void addAmberApplication () throws Exception{

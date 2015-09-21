@@ -78,10 +78,10 @@ public class ExperimentExecution {
                                TestFrameworkProps props) throws Exception {
         this.airavata = airavata;
         this.csTokens = tokenMap;
+        authzToken = new AuthzToken("emptyToken");
         this.appInterfaceMap = getApplicationMap(tokenMap);
         this.propertyReader = new PropertyReader();
         this.properties = props;
-        authzToken = new AuthzToken("emptyToken");
         FrameworkUtils frameworkUtils = FrameworkUtils.getInstance();
         testUser = props.getTestUserName();
         gatewaysToAvoid = frameworkUtils.getGatewayListToAvoid(properties.getSkippedGateways());
@@ -331,7 +331,7 @@ public class ExperimentExecution {
                             experimentsWithTokens.put(experimentId, token);
                             experimentsWithGateway.put(experimentId, gatewayId);
                         } else if (hostName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)) {
-                            ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling(hostId, 4, 1, 1, "normal", 20, 0);
+                            ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling(hostId, 4, 1, 1, "cpu", 20, 0);
                             UserConfigurationDataModel userConfigurationData = new UserConfigurationDataModel();
                             userConfigurationData.setAiravataAutoSchedule(false);
                             userConfigurationData.setOverrideManualScheduledParams(false);
@@ -483,7 +483,7 @@ public class ExperimentExecution {
                                     createAmberWithErrorInputs(gatewayId, token, projectID, id, appId);
                                     createAmberWithErrorUserConfig(gatewayId, token, projectID, id, appId);
                                 } else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)) {
-                                    ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0);
+                                    ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "cpu", 20, 0);
                                     UserConfigurationDataModel userConfigurationData = new UserConfigurationDataModel();
                                     userConfigurationData.setAiravataAutoSchedule(false);
                                     userConfigurationData.setOverrideManualScheduledParams(false);
@@ -667,7 +667,7 @@ public class ExperimentExecution {
                                             experimentsWithTokens.put(experimentId, token);
                                             experimentsWithGateway.put(experimentId, gatewayId);
                                         } else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)) {
-                                            ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0);
+                                            ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "cpu", 20, 0);
                                             UserConfigurationDataModel userConfigurationData = new UserConfigurationDataModel();
                                             userConfigurationData.setAiravataAutoSchedule(false);
                                             userConfigurationData.setOverrideManualScheduledParams(false);
