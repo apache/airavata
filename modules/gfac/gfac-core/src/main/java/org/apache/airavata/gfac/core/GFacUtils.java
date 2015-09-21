@@ -1152,10 +1152,12 @@ public class GFacUtils {
 		if (processContext.isCancel()) {
 			ProcessStatus pStatus = new ProcessStatus(ProcessState.CANCELLING);
 			pStatus.setReason("Process Cancel triggered");
+			processContext.setProcessStatus(pStatus);
 			saveAndPublishProcessStatus(processContext);
 			// do cancel operation here
 
 			pStatus.setState(ProcessState.CANCELED);
+			processContext.setProcessStatus(pStatus);
 			saveAndPublishProcessStatus(processContext);
 		}else if (processContext.isHandOver()) {
 
