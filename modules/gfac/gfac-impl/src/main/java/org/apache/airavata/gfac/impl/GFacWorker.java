@@ -81,6 +81,10 @@ public class GFacWorker implements Runnable {
 		try {
 			if (processContext.isInterrupted()) {
 				GFacUtils.handleProcessInterrupt(processContext);
+				if (processContext.isCancel()) {
+					sendAck();
+					Factory.getGfacContext().removeProcess(processContext.getProcessId());
+				}
 				return;
 			}
 			ProcessState processState = processContext.getProcessStatus().getState();
@@ -155,25 +159,33 @@ public class GFacWorker implements Runnable {
 
 	private void recoverProcessOutflow() throws GFacException {
 		engine.recoverProcessOutflow(processContext);
+		if (processContext.isInterrupted()) {
+			return;
+		}
 		completeProcess();
 	}
 
 	private void runProcessOutflow() throws GFacException {
 		engine.runProcessOutflow(processContext);
+		if (processContext.isInterrupted()) {
+			return;
+		}
 		completeProcess();
 	}
 
 	private void recoverProcess() throws GFacException {
 		engine.recoverProcess(processContext);
+		if (processContext.isInterrupted()) {
+			return;
+		}
 		monitorProcess();
 	}
 
 	private void executeProcess() throws GFacException {
+		engine.executeProcess(processContext);
 		if (processContext.isInterrupted()) {
-			GFacUtils.handleProcessInterrupt(processContext);
 			return;
 		}
-		engine.executeProcess(processContext);
 		monitorProcess();
 	}
 
