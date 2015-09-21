@@ -82,9 +82,9 @@ public class FrameworkBootstrapping {
             }else if (expExec){
                 tokens = readTokens();
                 experimentExecution = new ExperimentExecution(setup.getAiravata(), tokens, setup.getTestFrameworkProps());
-                experimentExecution.createUltrascanExperiment();
-//                experimentExecution.createEchoExperiment();
-//                experimentExecution.createAmberExperiment();
+//                experimentExecution.createUltrascanExperiment();
+                experimentExecution.createEchoExperiment();
+                experimentExecution.createAmberExperiment();
                 experimentExecution.launchExperiments();
                 experimentExecution.monitorExperiments();
             }

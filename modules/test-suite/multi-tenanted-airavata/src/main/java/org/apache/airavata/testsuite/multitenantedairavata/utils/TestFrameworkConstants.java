@@ -69,7 +69,7 @@ public class TestFrameworkConstants {
     }
 
     public static final class AppcatalogConstants {
-        public static final String AMBER_APP_NAME = "amber_sander";
+        public static final String AMBER_APP_NAME = "Amber_Sander";
         public static final String ECHO_NAME = "Echo";
         public static final String ULTRASCAN = "Ultrascan";
         public static final String ESPRESSO_NAME = "ESPRESSO";

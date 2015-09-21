@@ -2,46 +2,26 @@
     "gcount": 1,
     "gname": "testGateway",
     "gdomain": ".airavata.org",
-    "testUserName": "testUser",
+    "testUserName": "admin",
     "testProjectName": "test.project",
     "sshPubKeyLoc": "/Users/chathuri/Desktop/ssh_gw111/id_rsa.pub",
     "sshPrivateKeyLoc": "/Users/chathuri/Desktop/ssh_gw111/id_rsa",
     "sshPassword": "ultrascan",
-    "sshUsername": "us3",
+    "sshUsername": "ogce",
     "tokenFileLoc": "/tmp/",
     "resultFileLoc": "/tmp/test_framework_results/",
-    "skippedGateways": "default,php_reference_gateway,umass",
-    "injectErrors" : true,
-    "numberOfIterations" : 10,
+    "skippedGateways": "php_reference_gateway,umass",
+    "injectErrors" : false,
+    "numberOfIterations" : 1,
     "resources": [
         {
-            "name": "trestles.sdsc.xsede.org",
-            "loginUser": "us3"
-
-        },
-        {
             "name": "stampede.tacc.xsede.org",
-            "loginUser": "us3"
-
-        },
-        {
-            "name": "gordon.sdsc.edu",
-            "loginUser": "us3"
-
-        },
-        {
-            "name": "alamo.uthscsa.edu",
-            "loginUser": "us3"
+            "loginUser": "ogce"
 
         },
         {
             "name": "comet.sdsc.edu",
-            "loginUser": "us3"
-
-        },
-        {
-            "name": "lonestar.tacc.utexas.edu",
-            "loginUser": "us3"
+            "loginUser": "ogce"
 
         },
         {
@@ -54,9 +34,9 @@
         {
             "name": "amber_sander",
             "inputs": {
-                "heatRst": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/02_Heat.rst",
-                "prodIn": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/03_Prod.in",
-                "prmtop": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/prmtop"
+                "Heat-Restart-File": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES1/02_Heat.rst",
+                "Parameter-Topology-File": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES1/03_Prod.in",
+                "Production-Control-File": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES1/prmtop"
             }
         },
         {
@@ -74,9 +54,9 @@
             "application": "amber_sander",
             "resoureName": "stampede.tacc.xsede.org",
             "errorFeeds": {
-                "heatRst": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES1/02_Heat.rst",
-                "prodIn": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES1/03_Prod.in",
-                "prmtop": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES1/prmtop"
+                "Heat-Restart-File": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES1/02_Heat.rst",
+                "Parameter-Topology-File": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES1/03_Prod.in",
+                "Production-Control-File": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES1/prmtop"
             }
         },
         {
