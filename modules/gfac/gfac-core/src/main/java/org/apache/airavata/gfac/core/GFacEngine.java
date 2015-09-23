@@ -35,5 +35,5 @@ public interface GFacEngine {
 
 	public void recoverProcessOutflow(ProcessContext processContext) throws GFacException ;
 
-	public void cancelProcess() throws GFacException ;
+	public void cancelProcess(ProcessContext processContext) throws GFacException ;
 }

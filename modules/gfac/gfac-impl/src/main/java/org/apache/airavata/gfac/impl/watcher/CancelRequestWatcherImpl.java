@@ -55,6 +55,7 @@ public class CancelRequestWatcherImpl implements CancelRequestWatcher {
 					ProcessContext processContext = Factory.getGfacContext().getProcess(processId);
 					if (processContext != null) {
 						processContext.setCancel(true);
+						Factory.getGFacEngine().cancelProcess(processContext);
 						log.info("expId {}, processId : {}, Cancelling process", experimentId, processId);
 					} else {
 						log.info("expId: {}, Cancel request came for processId {} but couldn't find process context",

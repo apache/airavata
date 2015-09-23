@@ -180,4 +180,9 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
 	public TaskTypes getType() {
 		return TaskTypes.JOB_SUBMISSION;
 	}
+
+	@Override
+	public void cancel(TaskContext taskcontext) {
+		// TODO - implement Local Job cancel
+	}
 }

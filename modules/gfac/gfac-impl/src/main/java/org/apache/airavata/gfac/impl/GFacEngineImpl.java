@@ -33,6 +33,7 @@ import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.Task;
+import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.task.SSHEnvironmentSetupTask;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
@@ -465,8 +466,13 @@ public class GFacEngineImpl implements GFacEngine {
 	}
 
 	@Override
-	public void cancelProcess() throws GFacException {
-
+	public void cancelProcess(ProcessContext processContext) throws GFacException {
+		if (processContext.getProcessState() == ProcessState.MONITORING) {
+			// get job submission task and invoke cancel
+			JobSubmissionTask jobSubmissionTask = Factory.getJobSubmissionTask(processContext.getJobSubmissionProtocol());
+			TaskContext taskCtx = getJobSubmissionTaskContext(processContext);
+			executeCancel(taskCtx, jobSubmissionTask);
+		}
 	}
 
 	private TaskStatus executeTask(TaskContext taskCtx, Task task, boolean recover) throws GFacException {
@@ -481,6 +487,14 @@ public class GFacEngineImpl implements GFacEngine {
 		taskCtx.setTaskStatus(taskStatus);
 		GFacUtils.saveAndPublishTaskStatus(taskCtx);
 		return taskCtx.getTaskStatus();
+	}
+
+	private void executeCancel(TaskContext taskContext, JobSubmissionTask jSTask) throws GFacException {
+		try {
+			jSTask.cancel(taskContext);
+		} catch (TaskException e) {
+			throw new GFacException("Error while cancelling job");
+		}
 	}
 
 	private TaskContext getJobSubmissionTaskContext(ProcessContext processContext) throws GFacException {
