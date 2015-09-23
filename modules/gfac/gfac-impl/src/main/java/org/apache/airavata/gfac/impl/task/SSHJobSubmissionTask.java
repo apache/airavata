@@ -248,13 +248,24 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 		ProcessContext processContext = taskcontext.getParentProcessContext();
 		RemoteCluster remoteCluster = processContext.getRemoteCluster();
 		JobModel jobModel = processContext.getJobModel();
-		JobStatus oldJobStatus = null;
+		int retryCount = 0;
 		if (jobModel != null) {
 			try {
-				oldJobStatus = remoteCluster.cancelJob(jobModel.getJobId());
-				return oldJobStatus;
-			} catch (SSHApiException e) {
-				throw new TaskException("Error while cancelling job " + jobModel.getJobId());
+				JobStatus oldJobStatus = remoteCluster.getJobStatus(jobModel.getJobId());
+				while (oldJobStatus == null && retryCount <= 5) {
+					retryCount++;
+					Thread.sleep(retryCount * 1000);
+					oldJobStatus = remoteCluster.getJobStatus(jobModel.getJobId());
+				}
+				if (oldJobStatus != null) {
+					oldJobStatus = remoteCluster.cancelJob(jobModel.getJobId());
+					return oldJobStatus;
+				} else {
+					throw new TaskException("Cancel operation failed, Job status couldn't find in resource, JobId " +
+							jobModel.getJobId());
+				}
+			} catch (SSHApiException | InterruptedException e) {
+				throw new TaskException("Error while cancelling job " + jobModel.getJobId(), e);
 			}
 		} else {
 			throw new TaskException("Couldn't complete cancel operation, JobModel is null in ProcessContext.");
