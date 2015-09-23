@@ -29,11 +29,10 @@ public interface JobMonitor {
 	 * @param jobId
 	 * @param processContext
 	 */
-	public void monitor(String jobId, ProcessContext processContext);
+	void monitor(String jobId, ProcessContext processContext);
 
 	/**
 	 * Stop monitoring for given jobId
-	 * @param jobId
 	 */
-	public void stopMonitor(String jobId);
+	void stopMonitor(String jobId, boolean runOutFlow);
 }

@@ -190,12 +190,13 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	}
 
 	@Override
-	public boolean cancelJob(String jobId) throws SSHApiException {
+	public JobStatus cancelJob(String jobId) throws SSHApiException {
+		JobStatus oldStatus = getJobStatus(jobId);
 		RawCommandInfo cancelCommand = jobManagerConfiguration.getCancelCommand(jobId);
 		StandardOutReader reader = new StandardOutReader();
 		executeCommand(cancelCommand, reader);
 		throwExceptionOnError(reader, cancelCommand);
-		return true;
+		return oldStatus;
 	}
 
 	@Override

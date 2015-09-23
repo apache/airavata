@@ -84,7 +84,7 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 * @return return the description of the deleted job
 	 * @throws SSHApiException throws exception during error
 	 */
-	public boolean cancelJob(String jobID) throws SSHApiException;
+	public JobStatus cancelJob(String jobID) throws SSHApiException;
 
 	/**
 	 * This will get the job status of the the job associated with this jobId
