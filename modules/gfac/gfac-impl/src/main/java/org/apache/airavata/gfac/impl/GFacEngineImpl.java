@@ -31,6 +31,7 @@ import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
+import org.apache.airavata.gfac.core.monitor.JobMonitor;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
@@ -48,6 +49,8 @@ import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.TaskState;
@@ -491,9 +494,15 @@ public class GFacEngineImpl implements GFacEngine {
 
 	private void executeCancel(TaskContext taskContext, JobSubmissionTask jSTask) throws GFacException {
 		try {
-			jSTask.cancel(taskContext);
+			JobStatus oldJobStatus = jSTask.cancel(taskContext);
+			if (oldJobStatus.getJobState() == JobState.QUEUED) {
+				JobMonitor monitorService = Factory.getMonitorService(taskContext.getParentProcessContext().getMonitorMode());
+				monitorService.stopMonitor(taskContext.getParentProcessContext().getJobModel().getJobId(),true);
+			}
 		} catch (TaskException e) {
 			throw new GFacException("Error while cancelling job");
+		} catch (AiravataException e) {
+			throw new GFacException("Error wile getting monitoring service");
 		}
 	}
 

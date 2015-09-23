@@ -126,8 +126,15 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 	}
 
 	@Override
-	public void stopMonitor(String jobId) {
-		jobMonitorMap.remove(jobId);
+	public void stopMonitor(String jobId, boolean runOutflow) {
+		ProcessContext processContext = jobMonitorMap.remove(jobId);
+		if (processContext != null && runOutflow) {
+			try {
+				GFacThreadPoolExecutor.getCachedThreadPool().execute(new GFacWorker(processContext));
+			} catch (GFacException e) {
+				log.info("[EJM]: Error while running output tasks", e);
+			}
+		}
 	}
 
     private JobStatusResult parse(Message message) throws MessagingException, AiravataException {
