@@ -497,7 +497,12 @@ public class GFacEngineImpl implements GFacEngine {
 			JobStatus oldJobStatus = jSTask.cancel(taskContext);
 			if (oldJobStatus.getJobState() == JobState.QUEUED) {
 				JobMonitor monitorService = Factory.getMonitorService(taskContext.getParentProcessContext().getMonitorMode());
-				monitorService.stopMonitor(taskContext.getParentProcessContext().getJobModel().getJobId(),true);
+				monitorService.stopMonitor(taskContext.getParentProcessContext().getJobModel().getJobId(), true);
+				JobStatus newJobStatus = new JobStatus(JobState.CANCELED);
+				newJobStatus.setReason("Job cancelled");
+				taskContext.getParentProcessContext().getJobModel().setJobStatus(newJobStatus);
+				GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), taskContext.getParentProcessContext()
+						.getJobModel());
 			}
 		} catch (TaskException e) {
 			throw new GFacException("Error while cancelling job");
