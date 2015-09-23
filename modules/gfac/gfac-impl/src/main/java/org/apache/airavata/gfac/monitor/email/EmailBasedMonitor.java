@@ -317,10 +317,10 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
             log.info("[EJM]: Job failed email received , removed job from job monitoring. " + jobDetails);
         }else if (resultState == JobState.CANCELED) {
             jobMonitorMap.remove(jobStatusResult.getJobId());
-            runOutflowTasks = false; // Do we need to run out handlers in canceled case?
 	        jobStatus.setJobState(JobState.CANCELED);
 	        jobStatus.setReason("Canceled email received");
-            log.info("[EJM]: Job canceled mail received, removed job from job monitoring. " + jobDetails);
+	        log.info("[EJM]: Job canceled mail received, removed job from job monitoring. " + jobDetails);
+	        runOutflowTasks = true; // we run out flow and this will move process to cancel state.
         }
 	    if (jobStatus.getJobState() != null) {
 		    try {
