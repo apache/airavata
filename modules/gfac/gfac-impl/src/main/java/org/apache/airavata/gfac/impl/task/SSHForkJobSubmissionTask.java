@@ -173,4 +173,9 @@ public class SSHForkJobSubmissionTask implements JobSubmissionTask {
 	public TaskTypes getType() {
 		return TaskTypes.JOB_SUBMISSION;
 	}
+
+	@Override
+	public void cancel(TaskContext taskcontext) {
+		// TODO - implement cancel with SSH Fork
+	}
 }

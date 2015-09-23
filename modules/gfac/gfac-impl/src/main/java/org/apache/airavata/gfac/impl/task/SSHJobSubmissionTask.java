@@ -242,4 +242,18 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 	public TaskTypes getType() {
 		return TaskTypes.JOB_SUBMISSION;
 	}
+
+	@Override
+	public void cancel(TaskContext taskcontext) throws TaskException {
+		ProcessContext processContext = taskcontext.getParentProcessContext();
+		RemoteCluster remoteCluster = processContext.getRemoteCluster();
+		JobModel jobModel = processContext.getJobModel();
+		if (jobModel != null) {
+			try {
+				remoteCluster.cancelJob(jobModel.getJobId());
+			} catch (SSHApiException e) {
+				throw new TaskException("Error while cancelling job " + jobModel.getJobId());
+			}
+		}
+	}
 }
