@@ -181,6 +181,10 @@ public class ProcessInputResource extends AbstractExpCatResource {
             processInputPk.setProcessId(processId);
             processInputPk.setInputName(inputName);
             processInput = em.find(ProcessInput.class, processInputPk);
+            em.close();
+
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
             if(processInput == null){
                 processInput = new ProcessInput();
             }
@@ -196,8 +200,7 @@ public class ProcessInputResource extends AbstractExpCatResource {
             processInput.setIsRequired(isRequired);
             processInput.setRequiredToAddedToCmd(requiredToAddedToCmd);
             processInput.setDataStaged(dataStaged);
-            em.getTransaction().begin();
-            em.persist(processInput);
+            em.merge(processInput);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {

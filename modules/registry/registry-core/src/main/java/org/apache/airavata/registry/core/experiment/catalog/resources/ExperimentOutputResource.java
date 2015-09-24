@@ -162,6 +162,10 @@ public class ExperimentOutputResource extends AbstractExpCatResource {
             experimentOutputPK.setExperimentId(experimentId);
             experimentOutputPK.setOutputName(outputName);
             experimentOutput = em.find(ExperimentOutput.class, experimentOutputPK);
+            em.close();
+
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
             if(experimentOutput == null){
                 experimentOutput = new ExperimentOutput();
             }
@@ -175,8 +179,7 @@ public class ExperimentOutputResource extends AbstractExpCatResource {
             experimentOutput.setDataMovement(dataMovement);
             experimentOutput.setLocation(location);
             experimentOutput.setSearchQuery(searchQuery);
-            em.getTransaction().begin();
-            em.persist(experimentOutput);
+            em.merge(experimentOutput);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {

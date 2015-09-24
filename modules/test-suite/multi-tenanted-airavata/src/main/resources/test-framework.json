@@ -32,7 +32,7 @@
     ],
     "applications": [
         {
-            "name": "amber_sander",
+            "name": "Amber_Sander",
             "inputs": {
                 "Heat-Restart-File": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES1/02_Heat.rst",
                 "Parameter-Topology-File": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES1/03_Prod.in",

@@ -137,6 +137,10 @@ public class ProcessErrorResource extends AbstractExpCatResource {
             processErrorPK.setProcessId(processId);
             processErrorPK.setErrorId(errorId);
             processError = em.find(ProcessError.class, processErrorPK);
+            em.close();
+
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
             if(processError == null){
                 processError = new ProcessError();
             }
@@ -146,8 +150,7 @@ public class ProcessErrorResource extends AbstractExpCatResource {
             processError.setUserFriendlyMessage(userFriendlyMessage);
             processError.setRootCauseErrorIdList(rootCauseErrorIdList);
             processError.setTransientOrPersistent(transientOrPersistent);
-            em.persist(processError);
-            em.getTransaction().begin();
+            em.merge(processError);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {

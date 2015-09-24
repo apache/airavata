@@ -746,7 +746,7 @@ public class ExperimentRegistry {
                 }
             }
         } catch (Exception e) {
-            logger.error("Error while updating experiment...", e);
+            logger.error("Error while updating process...", e);
             throw new RegistryException(e);
         }
     }

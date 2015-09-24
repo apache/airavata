@@ -60,7 +60,7 @@ public class FrameworkBootstrapping {
                 logger.info("Applications registered for each each gateway...");
                 experimentExecution = new ExperimentExecution(setup.getAiravata(), tokens, properties);
                 experimentExecution.createEchoExperiment();
-                experimentExecution.createAmberExperiment();
+//                experimentExecution.createAmberExperiment();
                 experimentExecution.launchExperiments();
                 experimentExecution.monitorExperiments();
             }else if (regApps){
