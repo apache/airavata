@@ -195,6 +195,10 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
                 throw new RegistryException("Does not have the experiment id");
             }
             userConfigurationData = em.find(UserConfigurationData.class, experimentId);
+            em.close();
+
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
             if(userConfigurationData == null){
                 userConfigurationData = new UserConfigurationData();
             }
@@ -212,8 +216,7 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
             userConfigurationData.setQueueName(queueName);
             userConfigurationData.setWallTimeLimit(wallTimeLimit);
             userConfigurationData.setTotalPhysicalMemory(totalPhysicalMemory);
-            em.getTransaction().begin();
-            em.persist(userConfigurationData);
+            em.merge(userConfigurationData);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {

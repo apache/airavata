@@ -40,7 +40,7 @@ public class JobResourceTest extends AbstractResourceTest{
 	   private ProcessResource processResource;
 	   private TaskResource taskResource;
        private JobResource jobResource;
-       private String experimentID = "testExpID";
+       private String experimentID = "testExpID4";
 	   private String processId = "processID";
        private String taskId = "taskID";
        private String jobId = "jobID";

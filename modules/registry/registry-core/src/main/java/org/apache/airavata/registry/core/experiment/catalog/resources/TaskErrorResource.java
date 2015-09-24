@@ -137,6 +137,10 @@ public class TaskErrorResource extends AbstractExpCatResource {
             taskErrorPK.setTaskId(taskId);
             taskErrorPK.setErrorId(errorId);
             taskError = em.find(TaskError.class, taskErrorPK);
+            em.close();
+
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
             if(taskError == null){
                 taskError = new TaskError();
             }
@@ -147,8 +151,7 @@ public class TaskErrorResource extends AbstractExpCatResource {
             taskError.setUserFriendlyMessage(userFriendlyMessage);
             taskError.setRootCauseErrorIdList(rootCauseErrorIdList);
             taskError.setTransientOrPersistent(transientOrPersistent);
-            em.getTransaction().begin();
-            em.persist(taskError);
+            em.merge(taskError);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {

@@ -34,7 +34,7 @@ public class ProcessResourceTest extends AbstractResourceTest{
 	
 	   private ExperimentResource experimentResource;
 	   private ProcessResource processResource;
-	   private String experimentID = "testExpID";
+	   private String experimentID = "testExpID5";
 	   private String processId = "processID";
 
 	

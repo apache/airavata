@@ -141,6 +141,10 @@ public class ProcessResourceScheduleResource extends AbstractExpCatResource {
 
             ProcessResourceSchedule processResourceSchedule;
             processResourceSchedule = em.find(ProcessResourceSchedule.class, processId);
+            em.close();
+
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
             if(processResourceSchedule == null){
                 processResourceSchedule = new ProcessResourceSchedule();
             }
@@ -152,8 +156,7 @@ public class ProcessResourceScheduleResource extends AbstractExpCatResource {
             processResourceSchedule.setQueueName(queueName);
             processResourceSchedule.setWallTimeLimit(wallTimeLimit);
             processResourceSchedule.setTotalPhysicalMemory(totalPhysicalMemory);
-            em.getTransaction().begin();
-            em.persist(processResourceSchedule);
+            em.merge(processResourceSchedule);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
