@@ -20,12 +20,12 @@
 */
 package org.apache.airavata.registry.core.app.catalog.model;
 
-import org.apache.openjpa.persistence.DataCache;
-
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 
-@DataCache
 @Entity
 @Table(name = "CLOUD_JOB_SUBMISSION")
 public class CloudJobSubmission implements Serializable {

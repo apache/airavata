@@ -32,9 +32,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.apache.openjpa.persistence.DataCache;
 
-@DataCache
 @Entity
 @Table(name = "COMPUTE_RESOURCE_FILE_SYSTEM")
 @IdClass(ComputeResourceFileSystem_PK.class)
