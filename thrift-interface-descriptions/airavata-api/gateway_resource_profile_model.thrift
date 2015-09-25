@@ -54,6 +54,10 @@ include "compute_resource_model.thrift"
  *    allocation is approved, an allocation number is assigned. Before passing this number with job submittions, the
  *    account to be used has to be added to the allocation.
  *
+ * resourceSpecificCredentialStoreToken:
+ *  Resource specific credential store token. If this token is specified, then it is superceeded by the gateway's
+ *   default credential store.
+ *
 */
 struct ComputeResourcePreference {
     1: required string computeResourceId,
@@ -63,21 +67,33 @@ struct ComputeResourcePreference {
     5: optional compute_resource_model.DataMovementProtocol preferredDataMovementProtocol,
     6: optional string preferredBatchQueue,
     7: optional string scratchLocation,
-    8: optional string allocationProjectNumber
+    8: optional string allocationProjectNumber,
+    9: optional string resourceSpecificCredentialStoreToken
+}
+
+struct DataStoragePreference {
+    1: required string dataMovememtResourceId,
+    2: optional string loginUserName,
+    3: optional string fileSystemRootLocation,
+    3: optional string resourceSpecificCredentialStoreToken
 }
 
 /**
  * Gateway Resource Profile
  *
  * gatewayID:
- *   Unique identifier for the gateway assigned by Airavata. Corelate this to Airavata Admin API Gateway Registration.
+ *  Unique identifier for the gateway assigned by Airavata. Corelate this to Airavata Admin API Gateway Registration.
+ *
+ * credentialStoreToken:
+ *  Gateway's defualt credential store token.
  *
  * computeResourcePreferences:
  *  List of resource preferences for each of the registered compute resources.
  *
- *
 */
 struct GatewayResourceProfile {
     1: required string gatewayID,
-    2: optional list<ComputeResourcePreference> computeResourcePreferences
+    2: optional string credentialStoreToken,
+    3: optional list<ComputeResourcePreference> computeResourcePreferences
+    4: optional list<DataStoragePreference> dataStoragePreferences,
 }

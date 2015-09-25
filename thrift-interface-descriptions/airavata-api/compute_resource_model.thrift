@@ -317,6 +317,13 @@ struct LOCALDataMovement {
  *
  * sshPort:
  *  If a non-default port needs to used, specify it.
+ *
+ * batchQueueEmailSenders:
+ *  If a resource always sends the monitoring from a specific address, specify the
+ *   full email address. If a resource sends emails from multiple addresses (
+ *    example: based on the submitted login node) then use the wildchar * to indicate
+ *    the same. Example: *@*.example.com or *@example.com
+ *
 */
 struct SSHJobSubmission {
     1: required string jobSubmissionInterfaceId = airavata_commons.DEFAULT_ID,
@@ -325,6 +332,7 @@ struct SSHJobSubmission {
     4: optional string alternativeSSHHostName,
     5: optional i32 sshPort = 22,
     6: optional MonitorMode monitorMode,
+    7: optional list<string> batchQueueEmailSenders
 }
 
 struct GlobusJobSubmission {
