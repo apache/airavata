@@ -27,6 +27,7 @@ import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
+@Cacheable
 @Table(name = "USERS")
 public class Users {
     private final static Logger logger = LoggerFactory.getLogger(Users.class);

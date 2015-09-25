@@ -28,9 +28,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.apache.openjpa.persistence.DataCache;
-
-@DataCache
 @Entity
 @Table(name = "LOCAL_DATA_MOVEMENT")
 public class LocalDataMovement implements Serializable {

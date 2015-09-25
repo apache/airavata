@@ -33,9 +33,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.apache.openjpa.persistence.DataCache;
-
-@DataCache
 @Entity
 @Table(name = "DATA_MOVEMENT_INTERFACE")
 @IdClass(DataMovementInterface_PK.class)

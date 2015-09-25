@@ -32,9 +32,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.apache.openjpa.persistence.DataCache;
-
-@DataCache
 @Entity
 @Table(name = "SSH_JOB_SUBMISSION")
 public class SshJobSubmission implements Serializable {

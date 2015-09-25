@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.*;
 
 @Entity
+@Cacheable
 @Table(name = "EXPERIMENT_INPUT")
 @IdClass(ExperimentInputPK.class)
 public class ExperimentInput {

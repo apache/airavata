@@ -27,6 +27,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
+@Cacheable
 @Table(name = "TASK_ERROR")
 @IdClass(TaskErrorPK.class)
 public class TaskError {
