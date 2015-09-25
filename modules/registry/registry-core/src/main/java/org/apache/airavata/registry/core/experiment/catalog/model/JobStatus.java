@@ -27,6 +27,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
+@Cacheable
 @Table(name = "JOB_STATUS")
 @IdClass(JobStatusPK.class)
 public class JobStatus {

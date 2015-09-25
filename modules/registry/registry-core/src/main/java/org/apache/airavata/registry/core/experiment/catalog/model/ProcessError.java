@@ -28,6 +28,7 @@ import java.lang.*;
 import java.sql.Timestamp;
 
 @Entity
+@Cacheable
 @Table(name = "PROCESS_ERROR")
 @IdClass(ProcessErrorPK.class)
 public class ProcessError {

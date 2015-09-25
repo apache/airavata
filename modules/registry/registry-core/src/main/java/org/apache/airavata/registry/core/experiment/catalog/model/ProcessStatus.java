@@ -28,6 +28,7 @@ import java.lang.*;
 import java.sql.Timestamp;
 
 @Entity
+@Cacheable
 @Table(name = "PROCESS_STATUS")
 @IdClass(ProcessStatusPK.class)
 public class ProcessStatus {

@@ -27,6 +27,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
+@Cacheable
 @Table(name = "EXPERIMENT_SUMMARY")
 public class ExperimentSummary {
     private final static Logger logger = LoggerFactory.getLogger(ExperimentSummary.class);
