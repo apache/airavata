@@ -60,7 +60,7 @@ public class FrameworkBootstrapping {
                 logger.info("Applications registered for each each gateway...");
                 experimentExecution = new ExperimentExecution(setup.getAiravata(), tokens, properties);
                 experimentExecution.createEchoExperiment();
-                experimentExecution.createAmberExperiment();
+//                experimentExecution.createAmberExperiment();
                 experimentExecution.launchExperiments();
                 experimentExecution.monitorExperiments();
             }else if (regApps){
@@ -82,9 +82,9 @@ public class FrameworkBootstrapping {
             }else if (expExec){
                 tokens = readTokens();
                 experimentExecution = new ExperimentExecution(setup.getAiravata(), tokens, setup.getTestFrameworkProps());
-                experimentExecution.createUltrascanExperiment();
-//                experimentExecution.createEchoExperiment();
-//                experimentExecution.createAmberExperiment();
+//                experimentExecution.createUltrascanExperiment();
+                experimentExecution.createEchoExperiment();
+                experimentExecution.createAmberExperiment();
                 experimentExecution.launchExperiments();
                 experimentExecution.monitorExperiments();
             }

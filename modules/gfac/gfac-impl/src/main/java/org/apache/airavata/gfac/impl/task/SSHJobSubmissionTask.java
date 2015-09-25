@@ -71,14 +71,14 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 			    jConfig = Factory.getJobManagerConfiguration(resourceJobManager);
 		    }
 		    JobStatus jobStatus = new JobStatus();
-		    File jobFile = GFacUtils.createJobFile(jobDescriptor, jConfig);
+		    File jobFile = GFacUtils.createJobFile(taskContext, jobDescriptor, jConfig);
 		    if (jobFile != null && jobFile.exists()) {
 			    jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
 			    JobSubmissionOutput jobSubmissionOutput = remoteCluster.submitBatchJob(jobFile.getPath(),
 					    processContext.getWorkingDir());
 			    jobModel.setExitCode(jobSubmissionOutput.getExitCode());
-			    jobModel.setStderr(jobSubmissionOutput.getStdErr());
-			    jobModel.setStdout(jobSubmissionOutput.getStdOut());
+			    jobModel.setStdErr(jobSubmissionOutput.getStdErr());
+			    jobModel.setStdOut(jobSubmissionOutput.getStdOut());
 			    String jobId = jobSubmissionOutput.getJobId();
 			    if (jobId != null && !jobId.isEmpty()) {
 				    jobModel.setJobId(jobId);
@@ -113,8 +113,8 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 						    taskStatus.setReason("Submitted job to compute resource");
 						    break;
 					    }
-					    log.info("Verify step return invalid jobId, retry verification step in {} secs", verificationTryCount);
-					    Thread.sleep(verificationTryCount * 1000);
+					    log.info("Verify step return invalid jobId, retry verification step in {} secs", verificationTryCount * 10);
+					    Thread.sleep(verificationTryCount * 10000);
 				    }
 			    }
 
@@ -123,12 +123,17 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 						    "remote jobId for JobName:" + jobModel.getJobName() + ", both submit and verify steps " +
 						    "doesn't return a valid JobId. " + "Hence changing experiment state to Failed";
 				    log.error(msg);
-				    GFacUtils.saveErrorDetails(processContext, msg);
+                    ErrorModel errorModel = new ErrorModel();
+                    errorModel.setUserFriendlyMessage(msg);
+                    errorModel.setActualErrorMessage(msg);
+				    GFacUtils.saveExperimentError(processContext, errorModel);
+                    GFacUtils.saveProcessError(processContext, errorModel);
+                    GFacUtils.saveTaskError(taskContext, errorModel);
 				    taskStatus.setState(TaskState.FAILED);
 				    taskStatus.setReason("Couldn't find job id in both submitted and verified steps");
-			    }
-
-			    GFacUtils.saveJobModel(processContext, jobModel);
+			    }else {
+                    GFacUtils.saveJobModel(processContext, jobModel);
+                }
 		    } else {
 			    taskStatus.setState(TaskState.FAILED);
 			    if (jobFile == null) {
@@ -236,5 +241,34 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 	@Override
 	public TaskTypes getType() {
 		return TaskTypes.JOB_SUBMISSION;
+	}
+
+	@Override
+	public JobStatus cancel(TaskContext taskcontext) throws TaskException {
+		ProcessContext processContext = taskcontext.getParentProcessContext();
+		RemoteCluster remoteCluster = processContext.getRemoteCluster();
+		JobModel jobModel = processContext.getJobModel();
+		int retryCount = 0;
+		if (jobModel != null) {
+			try {
+				JobStatus oldJobStatus = remoteCluster.getJobStatus(jobModel.getJobId());
+				while (oldJobStatus == null && retryCount <= 5) {
+					retryCount++;
+					Thread.sleep(retryCount * 1000);
+					oldJobStatus = remoteCluster.getJobStatus(jobModel.getJobId());
+				}
+				if (oldJobStatus != null) {
+					oldJobStatus = remoteCluster.cancelJob(jobModel.getJobId());
+					return oldJobStatus;
+				} else {
+					throw new TaskException("Cancel operation failed, Job status couldn't find in resource, JobId " +
+							jobModel.getJobId());
+				}
+			} catch (SSHApiException | InterruptedException e) {
+				throw new TaskException("Error while cancelling job " + jobModel.getJobId(), e);
+			}
+		} else {
+			throw new TaskException("Couldn't complete cancel operation, JobModel is null in ProcessContext.");
+		}
 	}
 }

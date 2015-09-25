@@ -173,7 +173,9 @@ public class SSHUtils {
 			OutputStream out = channel.getOutputStream();
 			InputStream in = channel.getInputStream();
 
-			channel.connect();
+            if (!channel.isClosed()){
+                channel.connect();
+            }
 
 			byte[] buf = new byte[1024];
 

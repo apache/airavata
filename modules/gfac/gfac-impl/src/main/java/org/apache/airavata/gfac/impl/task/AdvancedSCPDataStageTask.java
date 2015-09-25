@@ -42,6 +42,7 @@ import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.gfac.impl.SSHUtils;
+import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.status.ProcessState;
@@ -63,6 +64,10 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This will be used for both Input file staging and output file staging, hence if you do any changes to a part of logic
+ * in this class please consider that will works with both input and output cases.
+ */
 public class AdvancedSCPDataStageTask implements Task{
 	private static final Logger log = LoggerFactory.getLogger(AdvancedSCPDataStageTask.class);
 	private static final int DEFAULT_SSH_PORT = 22;
@@ -86,7 +91,42 @@ public class AdvancedSCPDataStageTask implements Task{
         TaskStatus status = new TaskStatus(TaskState.CREATED);
         AuthenticationInfo authenticationInfo = null;
         DataStagingTaskModel subTaskModel = null;
-        try {
+		ProcessState processState = taskContext.getParentProcessContext().getProcessState();
+		if (processState == ProcessState.OUTPUT_DATA_STAGING) {
+			OutputDataObjectType processOutput = taskContext.getProcessOutput();
+			if (processOutput != null && processOutput.getValue() == null) {
+				log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , file name shouldn't be null",
+						taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
+						processOutput.getName());
+				status = new TaskStatus(TaskState.FAILED);
+				if (processOutput.isIsRequired()) {
+					status.setReason("File name is null, but this output's isRequired bit is not set");
+				} else {
+					status.setReason("File name is null");
+				}
+				return status;
+			}
+		} else if (processState == ProcessState.INPUT_DATA_STAGING) {
+			InputDataObjectType processInput = taskContext.getProcessInput();
+			if (processInput != null && processInput.getValue() == null) {
+				log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , file name shouldn't be null",
+						taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
+						processInput.getName());
+				status = new TaskStatus(TaskState.FAILED);
+				if (processInput.isIsRequired()) {
+					status.setReason("File name is null, but this input's isRequired bit is not set");
+				} else {
+					status.setReason("File name is null");
+				}
+				return status;
+			}
+		} else {
+			status.setState(TaskState.FAILED);
+			status.setReason("Invalid task invocation, Support " + ProcessState.INPUT_DATA_STAGING.name() + " and " +
+					"" + ProcessState.OUTPUT_DATA_STAGING.name() + " process phases. found " + processState.name());
+		}
+
+		try {
             String tokenId = taskContext.getParentProcessContext().getTokenId();
             CredentialReader credentialReader = GFacUtils.getCredentialReader();
             Credential credential = credentialReader.getCredential(taskContext.getParentProcessContext().getGatewayId(), tokenId);
@@ -115,7 +155,7 @@ public class AdvancedSCPDataStageTask implements Task{
                     (taskContext.getTaskModel());
             URI sourceURI = new URI(subTaskModel.getSource());
 
-            File templocalDataDir = getLocalDataDir(taskContext);
+            File templocalDataDir = GFacUtils.getLocalDataDir(taskContext);
             if (!templocalDataDir.exists()) {
                 if (!templocalDataDir.mkdirs()) {
                     // failed to create temp output location
@@ -128,7 +168,6 @@ public class AdvancedSCPDataStageTask implements Task{
 
             ServerInfo serverInfo = new ServerInfo(userName, hostName, DEFAULT_SSH_PORT);
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
-            ProcessState processState = taskContext.getParentProcessContext().getProcessState();
 	        URI destinationURI = null;
 	        if (processState == ProcessState.INPUT_DATA_STAGING) {
 		        destinationURI = new URI(subTaskModel.getDestination());
@@ -144,11 +183,7 @@ public class AdvancedSCPDataStageTask implements Task{
 		        // TODO - save updated subtask model with new destination
 		        outputDataStaging(taskContext, sshSession, sourceURI, destinationURI, filePath);
 		        status.setReason("Successfully staged output data");
-	        } else {
-                status.setState(TaskState.FAILED);
-                status.setReason("Invalid task invocation, Support " + ProcessState.INPUT_DATA_STAGING.name() + " and " +
-                        "" + ProcessState.OUTPUT_DATA_STAGING.name() + " process phases. found " + processState.name());
-            }
+	        }
         }  catch (TException e) {
 			String msg = "Couldn't create subTask model thrift model";
 			log.error(msg, e);
@@ -248,20 +283,20 @@ public class AdvancedSCPDataStageTask implements Task{
 
     }
 
-	private File getLocalDataDir(TaskContext taskContext) {
-		String outputPath = ServerSettings.getLocalDataLocation();
-		outputPath = (outputPath.endsWith(File.separator) ? outputPath : outputPath + File.separator);
-		return new File(outputPath + taskContext.getParentProcessContext() .getProcessId());
-	}
-
 	@Override
 	public TaskStatus recover(TaskContext taskContext) {
-		return null;
-	}
+        TaskState state = taskContext.getTaskStatus().getState();
+        if (state == TaskState.EXECUTING || state == TaskState.CREATED) {
+            return execute(taskContext);
+        } else {
+            // files already transferred or failed
+            return taskContext.getTaskStatus();
+        }
+    }
 
 	@Override
 	public TaskTypes getType() {
-		return null;
+		return TaskTypes.DATA_STAGING;
 	}
 
 	private SSHPasswordAuthentication getSSHPasswordAuthentication() {

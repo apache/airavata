@@ -22,6 +22,7 @@
 package org.apache.airavata.gfac.impl.task;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.gfac.core.*;
 import org.apache.airavata.gfac.core.cluster.JobSubmissionOutput;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
@@ -70,14 +71,14 @@ public class SSHForkJobSubmissionTask implements JobSubmissionTask {
                 jConfig = Factory.getJobManagerConfiguration(resourceJobManager);
             }
             JobStatus jobStatus = new JobStatus();
-            File jobFile = GFacUtils.createJobFile(jobDescriptor, jConfig);
-            if (jobFile != null && jobFile.exists()) {
+	        File jobFile = GFacUtils.createJobFile(taskContext, jobDescriptor, jConfig);
+	        if (jobFile != null && jobFile.exists()) {
                 jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
 	            JobSubmissionOutput jobSubmissionOutput = remoteCluster.submitBatchJob(jobFile.getPath(),
 			            processContext.getWorkingDir());
 	            jobModel.setExitCode(jobSubmissionOutput.getExitCode());
-	            jobModel.setStderr(jobSubmissionOutput.getStdErr());
-	            jobModel.setStdout(jobSubmissionOutput.getStdOut());
+	            jobModel.setStdErr(jobSubmissionOutput.getStdErr());
+	            jobModel.setStdOut(jobSubmissionOutput.getStdOut());
 	            String jobId = jobSubmissionOutput.getJobId();
 	            if (jobId != null && !jobId.isEmpty()) {
                     jobModel.setJobId(jobId);
@@ -95,12 +96,17 @@ public class SSHForkJobSubmissionTask implements JobSubmissionTask {
                             "remote jobId for JobName:" + jobModel.getJobName() + ", both submit and verify steps " +
                             "doesn't return a valid JobId. " + "Hence changing experiment state to Failed";
                     log.error(msg);
-                    GFacUtils.saveErrorDetails(processContext, msg);
+                    ErrorModel errorModel = new ErrorModel();
+                    errorModel.setActualErrorMessage(msg);
+                    errorModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
+                    GFacUtils.saveExperimentError(processContext, errorModel);
+                    GFacUtils.saveProcessError(processContext, errorModel);
+                    GFacUtils.saveTaskError(taskContext, errorModel);
                     taskStatus.setState(TaskState.FAILED);
                     taskStatus.setReason("Couldn't find job id in both submitted and verified steps");
+                }else {
+                    GFacUtils.saveJobModel(processContext, jobModel);
                 }
-
-	            GFacUtils.saveJobModel(processContext, jobModel);
             } else {
                 taskStatus.setState(TaskState.FAILED);
                 if (jobFile == null) {
@@ -166,5 +172,11 @@ public class SSHForkJobSubmissionTask implements JobSubmissionTask {
 	@Override
 	public TaskTypes getType() {
 		return TaskTypes.JOB_SUBMISSION;
+	}
+
+	@Override
+	public JobStatus cancel(TaskContext taskcontext) {
+		// TODO - implement cancel with SSH Fork
+		return null;
 	}
 }

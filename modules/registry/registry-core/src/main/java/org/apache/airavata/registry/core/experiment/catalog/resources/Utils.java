@@ -468,6 +468,7 @@ public class Utils {
         TaskErrorResource taskErrorResource = new TaskErrorResource();
         if (o != null){
             taskErrorResource.setTaskId(o.getTaskId());
+            taskErrorResource.setErrorId(o.getErrorId());
             taskErrorResource.setCreationTime(o.getCreationTime());
             taskErrorResource.setActualErrorMessage(o.getActualErrorMessage());
             taskErrorResource.setUserFriendlyMessage(o.getUserFriendlyMessage());
@@ -482,6 +483,7 @@ public class Utils {
         ExperimentErrorResource experimentErrorResource = new ExperimentErrorResource();
         if (o != null){
             experimentErrorResource.setExperimentId(o.getExperimentId());
+            experimentErrorResource.setErrorId(o.getErrorId());
             experimentErrorResource.setCreationTime(o.getCreationTime());
             experimentErrorResource.setActualErrorMessage(o.getActualErrorMessage());
             experimentErrorResource.setUserFriendlyMessage(o.getUserFriendlyMessage());
@@ -535,6 +537,7 @@ public class Utils {
         ProcessErrorResource processErrorResource = new ProcessErrorResource();
         if (o != null){
             processErrorResource.setProcessId(o.getProcessId());
+            processErrorResource.setErrorId(o.getErrorId());
             processErrorResource.setCreationTime(o.getCreationTime());
             processErrorResource.setActualErrorMessage(o.getActualErrorMessage());
             processErrorResource.setUserFriendlyMessage(o.getUserFriendlyMessage());
@@ -598,6 +601,7 @@ public class Utils {
         TaskStatusResource taskStatusResource = new TaskStatusResource();
         if (o != null){
             taskStatusResource.setTaskId(o.getTaskId());
+            taskStatusResource.setStatusId(o.getStatusId());
             taskStatusResource.setState(o.getState());
 	        taskStatusResource.setStatusId(o.getStatusId());
             taskStatusResource.setTimeOfStateChange(o.getTimeOfStateChange());
@@ -611,6 +615,7 @@ public class Utils {
         ProcessStatusResource processStatusResource = new ProcessStatusResource();
         if (o != null){
             processStatusResource.setProcessId(o.getProcessId());
+            processStatusResource.setStatusId(o.getStatusId());
             processStatusResource.setState(o.getState());
             processStatusResource.setTimeOfStateChange(o.getTimeOfStateChange());
             processStatusResource.setReason(o.getReason());
@@ -622,6 +627,7 @@ public class Utils {
         ExperimentStatusResource experimentStatusResource = new ExperimentStatusResource();
         if (o != null){
             experimentStatusResource.setExperimentId(o.getExperimentId());
+            experimentStatusResource.setStatusId(o.getStatusId());
             experimentStatusResource.setState(o.getState());
             experimentStatusResource.setTimeOfStateChange(o.getTimeOfStateChange());
             experimentStatusResource.setReason(o.getReason());
@@ -654,11 +660,11 @@ public class Utils {
             if (o.getJobDescription() != null){
                 jobResource.setJobDescription(new String(o.getJobDescription()));
             }
-            if (o.getStderr() != null){
-                jobResource.setStderr(new String(o.getStderr()));
+            if (o.getStdErr() != null){
+                jobResource.setStdErr(new String(o.getStdErr()));
             }
-            if (o.getStdout() != null){
-                jobResource.setStdOut(new String(o.getStdout()));
+            if (o.getStdOut() != null){
+                jobResource.setStdOut(new String(o.getStdOut()));
             }
             jobResource.setComputeResourceConsumed(o.getComputeResourceConsumed());
             jobResource.setJobName(o.getJobName());

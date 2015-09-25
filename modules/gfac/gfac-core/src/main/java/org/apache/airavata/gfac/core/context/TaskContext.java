@@ -58,7 +58,7 @@ public class TaskContext {
 	}
 
 	public void setTaskStatus(TaskStatus taskStatus) {
-		log.info("expId: {}, processId: {}, taskId: {}, type: {}:- Status changed {} -> {}", parentProcessContext
+		log.info("expId: {}, processId: {}, taskId: {}, type: {}:- Task status changed {} -> {}", parentProcessContext
 				.getExperimentId(), parentProcessContext.getProcessId(), getTaskId(), getTaskType().name(),
 				getTaskState().name(), taskStatus .getState().name());
 		taskModel.setTaskStatus(taskStatus);
@@ -99,4 +99,12 @@ public class TaskContext {
     public void setProcessOutput(OutputDataObjectType processOutput) {
         this.processOutput = processOutput;
     }
+
+	public String getProcessId() {
+		return parentProcessContext.getProcessId();
+	}
+
+	public String getExperimentId() {
+		return parentProcessContext.getExperimentId();
+	}
 }

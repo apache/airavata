@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 public class ExperimentOutputResourceTest extends AbstractResourceTest  {
     private ExperimentResource experimentResource;
-    private String experimentID = "testExpID";
+    private String experimentID = "testExpID1";
     ExperimentOutputResource outputResource;
 
     @Override

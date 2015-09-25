@@ -217,7 +217,7 @@ public class GfacServerHandler implements GfacService.Iface {
 		            + "' and with message type '" + message.getType());
             if (message.getType().equals(MessageType.LAUNCHPROCESS)) {
 	            ProcessStatus status = new ProcessStatus();
-	            status.setState(ProcessState.EXECUTING);
+	            status.setState(ProcessState.STARTED);
                 try {
                     ProcessSubmitEvent event = new ProcessSubmitEvent();
                     TBase messageEvent = message.getEvent();
@@ -236,20 +236,14 @@ public class GfacServerHandler implements GfacService.Iface {
 				                rabbitMQProcessLaunchConsumer.sendAck(message.getDeliveryTag());
 			                }
 		                } else {
-			                // give time to complete handover logic in previous instance.
-			                try {
-				                Thread.sleep(60000);
-			                } catch (InterruptedException e) {
-				                // ignore
-			                }
 			                // read process status from registry
-			                ProcessStatus processStatus = ((ProcessStatus) Factory.getDefaultExpCatalog().get(ExperimentCatalogModelType
-							                .PROCESS_STATUS,
-					                event.getProcessId()));
+			                ProcessStatus processStatus = ((ProcessStatus) Factory.getDefaultExpCatalog().get
+					                (ExperimentCatalogModelType.PROCESS_STATUS, event.getProcessId()));
 			                status.setState(processStatus.getState());
+			                // write server name to zookeeper , this is happen inside createProcessZKNode(...) method 
 		                }
 	                }
-                    // update process status to executing
+                    // update process status
 	                status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
 	                Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.PROCESS_STATUS, status, event
 			                .getProcessId());
@@ -318,7 +312,7 @@ public class GfacServerHandler implements GfacService.Iface {
 		String zkProcessNodePath = ZKPaths.makePath(experimentNodePath, processId);
 		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), zkProcessNodePath);
 		curatorClient.setData().withVersion(-1).forPath(zkProcessNodePath, gfacServerName.getBytes());
-		curatorClient.getData().usingWatcher(Factory.getRedeliveryReqeustWatcher()).forPath(zkProcessNodePath);
+		curatorClient.getData().usingWatcher(Factory.getRedeliveryReqeustWatcher(experimentId, processId)).forPath(zkProcessNodePath);
 
 		// create /experiments/{experimentId}/{processId}/deliveryTag node and set data - deliveryTag
 		String deliveryTagPath = ZKPaths.makePath(zkProcessNodePath, ZkConstants.ZOOKEEPER_DELIVERYTAG_NODE);
@@ -337,8 +331,7 @@ public class GfacServerHandler implements GfacService.Iface {
 
 		// create /experiments/{experimentId}/cancel node and set watcher for data changes
 		String experimentCancelNode = ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
-		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
-		curatorClient.getData().usingWatcher(Factory.getCancelRequestWatcher()).forPath (experimentCancelNode);
+		curatorClient.getData().usingWatcher(Factory.getCancelRequestWatcher(experimentId, processId)).forPath (experimentCancelNode);
 
 	}
 

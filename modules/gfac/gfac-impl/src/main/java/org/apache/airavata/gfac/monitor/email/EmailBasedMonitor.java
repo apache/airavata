@@ -77,6 +77,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
     private Date monitorStartDate;
     private Map<ResourceJobManagerType, EmailParser> emailParserMap = new HashMap<ResourceJobManagerType, EmailParser>();
 	private Map<String, ResourceJobManagerType> addressMap = new HashMap<>();
+	private Message[] flushUnseenMessages;
 
 
 	public EmailBasedMonitor(Map<ResourceJobManagerType, ResourceConfig> resourceConfigs) throws AiravataException {
@@ -125,8 +126,15 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 	}
 
 	@Override
-	public void stopMonitor(String jobId) {
-		jobMonitorMap.remove(jobId);
+	public void stopMonitor(String jobId, boolean runOutflow) {
+		ProcessContext processContext = jobMonitorMap.remove(jobId);
+		if (processContext != null && runOutflow) {
+			try {
+				GFacThreadPoolExecutor.getCachedThreadPool().execute(new GFacWorker(processContext));
+			} catch (GFacException e) {
+				log.info("[EJM]: Error while running output tasks", e);
+			}
+		}
 	}
 
     private JobStatusResult parse(Message message) throws MessagingException, AiravataException {
@@ -153,50 +161,73 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 
     @Override
     public void run() {
-        try {
-            session = Session.getDefaultInstance(properties);
-            store = session.getStore(storeProtocol);
-            store.connect(host, emailAddress, password);
-            emailFolder = store.getFolder(folderName);
-            // first time we search for all unread messages.
-            SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
-            while (!(stopMonitoring || ServerSettings.isStopAllThreads())) {
-                Thread.sleep(ServerSettings.getEmailMonitorPeriod());// sleep a bit - get a rest till job finishes
-                if (jobMonitorMap.isEmpty()) {
-                    log.info("[EJM]: Job Monitor Map is empty, no need to retrieve emails");
-                    continue;
-                } else {
-                    log.info("[EJM]: " + jobMonitorMap.size() + " job/s in job monitor map");
-                }
-                if (!store.isConnected()) {
-                    store.connect();
-                    emailFolder = store.getFolder(folderName);
-                }
-                log.info("[EJM]: Retrieving unseen emails");
-                emailFolder.open(Folder.READ_WRITE);
-                Message[] searchMessages = emailFolder.search(unseenBefore);
-                if (searchMessages == null || searchMessages.length == 0) {
-                    log.info("[EJM]: No new email messages");
-                } else {
-                    log.info("[EJM]: "+searchMessages.length + " new email/s received");
-                }
-                processMessages(searchMessages);
-                emailFolder.close(false);
-            }
-        } catch (MessagingException e) {
-            log.error("[EJM]: Couldn't connect to the store ", e);
-        } catch (InterruptedException e) {
-            log.error("[EJM]: Interrupt exception while sleep ", e);
-        } catch (AiravataException e) {
-            log.error("[EJM]: UnHandled arguments ", e);
-        } finally {
-            try {
-                emailFolder.close(false);
-                store.close();
-            } catch (MessagingException e) {
-                log.error("[EJM]: Store close operation failed, couldn't close store", e);
-            }
-        }
+
+	    while (!stopMonitoring && !ServerSettings.isStopAllThreads()) {
+		    try {
+			    session = Session.getDefaultInstance(properties);
+			    store = session.getStore(storeProtocol);
+			    store.connect(host, emailAddress, password);
+			    emailFolder = store.getFolder(folderName);
+			    // first time we search for all unread messages.
+			    SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
+			    while (!(stopMonitoring || ServerSettings.isStopAllThreads())) {
+				    Thread.sleep(ServerSettings.getEmailMonitorPeriod());// sleep a bit - get a rest till job finishes
+				    if (jobMonitorMap.isEmpty()) {
+					    log.info("[EJM]: Job Monitor Map is empty, no need to retrieve emails");
+					    continue;
+				    } else {
+					    log.info("[EJM]: " + jobMonitorMap.size() + " job/s in job monitor map");
+				    }
+				    if (!store.isConnected()) {
+					    store.connect();
+					    emailFolder = store.getFolder(folderName);
+				    }
+				    log.info("[EJM]: Retrieving unseen emails");
+				    emailFolder.open(Folder.READ_WRITE);
+				    if (emailFolder.isOpen()) {
+					    // flush if any message left in flushUnseenMessage
+					    if (flushUnseenMessages != null && flushUnseenMessages.length > 0) {
+						    try {
+							    emailFolder.setFlags(flushUnseenMessages, new Flags(Flags.Flag.SEEN), false);
+							    flushUnseenMessages = null;
+						    } catch (MessagingException e) {
+							    if (!store.isConnected()) {
+								    store.connect();
+								    emailFolder.setFlags(flushUnseenMessages, new Flags(Flags.Flag.SEEN), false);
+								    flushUnseenMessages = null;
+							    }
+						    }
+					    }
+					    Message[] searchMessages = emailFolder.search(unseenBefore);
+					    if (searchMessages == null || searchMessages.length == 0) {
+						    log.info("[EJM]: No new email messages");
+					    } else {
+						    log.info("[EJM]: " + searchMessages.length + " new email/s received");
+					    }
+					    processMessages(searchMessages);
+					    emailFolder.close(false);
+				    }
+			    }
+		    } catch (MessagingException e) {
+			    log.error("[EJM]: Couldn't connect to the store ", e);
+		    } catch (InterruptedException e) {
+			    log.error("[EJM]: Interrupt exception while sleep ", e);
+		    } catch (AiravataException e) {
+			    log.error("[EJM]: UnHandled arguments ", e);
+		    } catch (Throwable e)  {
+			    log.error("[EJM]: Caught a throwable ", e);
+		    } finally {
+			    try {
+				    emailFolder.close(false);
+				    store.close();
+			    } catch (MessagingException e) {
+				    log.error("[EJM]: Store close operation failed, couldn't close store", e);
+			    } catch (Throwable e) {
+				    log.error("[EJM]: Caught a throwable while closing email store ", e);
+			    }
+		    }
+	    }
+	    log.info("[EJM]: Email monitoring daemon stopped");
     }
 
     private void processMessages(Message[] searchMessages) throws MessagingException {
@@ -250,11 +281,13 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
             try {
                 emailFolder.setFlags(unseenMessages, new Flags(Flags.Flag.SEEN), false);
             } catch (MessagingException e) {
-                if (!store.isConnected()) {
-                    store.connect();
-                    emailFolder.setFlags(unseenMessages, new Flags(Flags.Flag.SEEN), false);
-
-                }
+	            if (!store.isConnected()) {
+		            store.connect();
+		            emailFolder.setFlags(unseenMessages, new Flags(Flags.Flag.SEEN), false);
+		            flushUnseenMessages = unseenMessages; // anyway we need to push this update.
+	            } else {
+		            flushUnseenMessages = unseenMessages; // anyway we need to push this update.
+	            }
             }
         }
     }
@@ -269,11 +302,15 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
         // TODO - Handle all other valid JobStates
         if (resultState == JobState.COMPLETE) {
             jobMonitorMap.remove(jobStatusResult.getJobId());
-            runOutflowTasks = true;
+	        jobStatus.setJobState(JobState.COMPLETE);
+	        jobStatus.setReason("Complete email received");
+	        runOutflowTasks = true;
             log.info("[EJM]: Job Complete email received , removed job from job monitoring. " + jobDetails);
         }else if (resultState == JobState.QUEUED) {
-            // nothing special thing to do, update the status change to rabbit mq at the end of this method.
-            log.info("[EJM]: Job Queued email received, " + jobDetails);
+	        // nothing special thing to do, update the status change to rabbit mq at the end of this method.
+	        jobStatus.setJobState(JobState.QUEUED);
+	        jobStatus.setReason("Queue email received");
+	        log.info("[EJM]: Job Queued email received, " + jobDetails);
         }else if (resultState == JobState.ACTIVE) {
             // nothing special thing to do, update the status change to rabbit mq at the end of this method.
 	        jobStatus.setJobState(JobState.ACTIVE);
@@ -287,10 +324,10 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
             log.info("[EJM]: Job failed email received , removed job from job monitoring. " + jobDetails);
         }else if (resultState == JobState.CANCELED) {
             jobMonitorMap.remove(jobStatusResult.getJobId());
-            runOutflowTasks = false; // Do we need to run out handlers in canceled case?
 	        jobStatus.setJobState(JobState.CANCELED);
 	        jobStatus.setReason("Canceled email received");
-            log.info("[EJM]: Job canceled mail received, removed job from job monitoring. " + jobDetails);
+	        log.info("[EJM]: Job canceled mail received, removed job from job monitoring. " + jobDetails);
+	        runOutflowTasks = true; // we run out flow and this will move process to cancel state.
         }
 	    if (jobStatus.getJobState() != null) {
 		    try {

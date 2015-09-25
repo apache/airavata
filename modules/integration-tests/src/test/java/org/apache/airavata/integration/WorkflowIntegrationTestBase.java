@@ -27,6 +27,7 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,7 @@ public abstract class WorkflowIntegrationTestBase {
     private static final String MYPROXY_USER_NAME = "myproxy.user";
     private static final String MYPROXY_PWD = "myproxy.pass";
     private static final String CERT_LOCATION = "trusted.cert.location";
+    private AuthzToken authzToken;
 
 
     public static final String THRIFT_SERVER_HOST = "localhost";
@@ -61,7 +63,7 @@ public abstract class WorkflowIntegrationTestBase {
         log.info(message);
     }
 
-    public Airavata.Client getClient() throws AiravataClientConnectException {
+    public Airavata.Client getClient() throws AiravataClientException {
         if (client == null){
             client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
         }
@@ -106,6 +108,7 @@ public abstract class WorkflowIntegrationTestBase {
         String myProxyUserName = System.getProperty("myproxy.user");
         String myProxyPassword = System.getProperty("myproxy.password");
         String certLocation = System.getProperty("trusted.cert.location");
+        authzToken = new AuthzToken("empty token");
         if (myProxyUserName == null || myProxyPassword == null || certLocation == null ) {
             log.error(">>>>>> Please run tests with my proxy user name, password and grid cert location. " +
                     "E.g :- mvn clean install -Duser=xxx -Dpwd=xxx -Dcert=/path<<<<<<<");
@@ -185,12 +188,12 @@ public abstract class WorkflowIntegrationTestBase {
 //
 //    }
 
-    protected String createExperiment (Experiment experiment) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException, AiravataClientConnectException {
-        return getClient().createExperiment("default", experiment);
+    protected String createExperiment (ExperimentModel experiment) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException, AiravataClientException {
+        return getClient().createExperiment(authzToken, "default", experiment);
     }
 
-    protected void launchExperiment (String expId) throws ExperimentNotFoundException, AiravataSystemException, InvalidRequestException, AiravataClientException, TException, AiravataClientConnectException {
-        getClient().launchExperiment(expId, "testToken");
+    protected void launchExperiment (String expId) throws ExperimentNotFoundException, AiravataSystemException, InvalidRequestException, AiravataClientException, TException, AiravataClientException {
+        getClient().launchExperiment(authzToken, expId, "testToken");
     }
 
 

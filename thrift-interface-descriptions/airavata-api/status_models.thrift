@@ -46,6 +46,7 @@ enum TaskState {
 enum ProcessState {
     CREATED,
     VALIDATED,
+    STARTED,
     PRE_PROCESSING,
     CONFIGURING_WORKSPACE,
     INPUT_DATA_STAGING,

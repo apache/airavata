@@ -171,26 +171,25 @@ public class RabbitMQProcessLaunchConsumer {
                         TBase event = null;
                         String gatewayId = null;
                         long deliveryTag = envelope.getDeliveryTag();
-                        if(message.getMessageType().equals(MessageType.LAUNCHPROCESS)) {
-                            ProcessSubmitEvent processSubmitEvent = new ProcessSubmitEvent();
-                            ThriftUtils.createThriftFromBytes(message.getEvent(), processSubmitEvent);
-                            log.debug(" Message Received with message id '" + message.getMessageId()
-                                    + "' and with message type '" + message.getMessageType() + "'  for experimentId: " +
-                                    processSubmitEvent.getProcessId());
-                            event = processSubmitEvent;
-                            gatewayId = processSubmitEvent.getGatewayId();
-                        }else if(message.getMessageType().equals(MessageType.LAUNCHPROCESS)) {
-                            ProcessTerminateEvent processTerminateEvent = new ProcessTerminateEvent();
-                            ThriftUtils.createThriftFromBytes(message.getEvent(), processTerminateEvent);
-                            log.debug(" Message Received with message id '" + message.getMessageId()
-                                    + "' and with message type '" + message.getMessageType() + "'  for processId: " +
-                                    processTerminateEvent.getProcessId());
-                            event = processTerminateEvent;
-                            gatewayId = processTerminateEvent.getGatewayId();
-                        }
-                        MessageContext messageContext = new MessageContext(event, message.getMessageType(), message.getMessageId(), gatewayId,deliveryTag);
-                        messageContext.setUpdatedTime(AiravataUtils.getTime(message.getUpdatedTime()));
-                        handler.onMessage(messageContext);
+	                    if (message.getMessageType().equals(MessageType.LAUNCHPROCESS)) {
+		                    ProcessSubmitEvent processSubmitEvent = new ProcessSubmitEvent();
+		                    ThriftUtils.createThriftFromBytes(message.getEvent(), processSubmitEvent);
+		                    log.debug(" Message Received with message id '" + message.getMessageId()
+				                    + "' and with message type '" + message.getMessageType() + "'  for experimentId:" +
+				                    " " +
+				                    processSubmitEvent.getProcessId());
+		                    event = processSubmitEvent;
+		                    gatewayId = processSubmitEvent.getGatewayId();
+		                    MessageContext messageContext = new MessageContext(event, message.getMessageType(),
+				                    message.getMessageId(), gatewayId, deliveryTag);
+		                    messageContext.setUpdatedTime(AiravataUtils.getTime(message.getUpdatedTime()));
+		                    messageContext.setIsRedeliver(envelope.isRedeliver());
+		                    handler.onMessage(messageContext);
+	                    } else {
+		                    log.error("{} message type is not handle in ProcessLaunch Consumer. Sending ack for " +
+				                    "delivery tag {} ", message.getMessageType().name(), deliveryTag);
+		                    sendAck(deliveryTag);
+	                    }
                     } catch (TException e) {
                         String msg = "Failed to de-serialize the thrift message, from routing keys and queueName " + id;
                         log.warn(msg, e);

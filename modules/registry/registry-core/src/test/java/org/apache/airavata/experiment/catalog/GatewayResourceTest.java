@@ -40,6 +40,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
     private UserResource userResource;
     private WorkerResource workerResource;
     private ExperimentResource experimentResource;
+    private String testExpID = "testExpID3";
 
 
     @Override
@@ -61,7 +62,8 @@ public class GatewayResourceTest extends AbstractResourceTest {
 
         experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
 
-        experimentResource.setExperimentId("testExpID");
+
+        experimentResource.setExperimentId(testExpID);
         experimentResource.setUserName(getWorkerResource().getUser());
         experimentResource.setProjectId(getProjectResource().getId());
         experimentResource.setCreationTime(currentDate);
@@ -91,13 +93,13 @@ public class GatewayResourceTest extends AbstractResourceTest {
     @Test
     public void testIsExists() throws Exception {
         assertTrue(gatewayResource.isExists(ResourceType.GATEWAY_WORKER, ServerSettings.getDefaultUser()));
-        assertTrue(gatewayResource.isExists(ResourceType.EXPERIMENT, "testExpID"));
+        assertTrue(gatewayResource.isExists(ResourceType.EXPERIMENT, testExpID));
     }
 
     @Test
     public void testGet() throws Exception {
         assertNotNull(gatewayResource.get(ResourceType.GATEWAY_WORKER, ServerSettings.getDefaultUser()));
-        assertNotNull(gatewayResource.get(ResourceType.EXPERIMENT, "testExpID"));
+        assertNotNull(gatewayResource.get(ResourceType.EXPERIMENT, testExpID));
     }
 
     @Test
@@ -109,8 +111,8 @@ public class GatewayResourceTest extends AbstractResourceTest {
     @Test
     public void testRemove() throws Exception {
 
-        gatewayResource.remove(ResourceType.EXPERIMENT, "testExpID");
-        assertFalse(gatewayResource.isExists(ResourceType.EXPERIMENT, "testExpID"));
+        gatewayResource.remove(ResourceType.EXPERIMENT, testExpID);
+        assertFalse(gatewayResource.isExists(ResourceType.EXPERIMENT, testExpID));
 
     }
 

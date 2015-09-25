@@ -26,14 +26,15 @@ import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.error.AiravataClientException;
-import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyFileType;
-import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyReader;
-import org.apache.airavata.testsuite.multitenantedairavata.utils.TestFrameworkConstants;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ComputeResourceRegister {
     private Airavata.Client airavata;
@@ -42,12 +43,14 @@ public class ComputeResourceRegister {
     private Map<String, String> loginNamesWithResourceIds;
     private final static Logger logger = LoggerFactory.getLogger(ComputeResourceRegister.class);
     private TestFrameworkProps properties;
+    private AuthzToken authzToken;
 
     public ComputeResourceRegister(Airavata.Client airavata, TestFrameworkProps props) throws Exception {
         this.airavata = airavata;
         this.properties = props;
         computeResourceIds = new ArrayList<String>();
         loginNamesWithResourceMap = getLoginNamesMap();
+        authzToken = new AuthzToken("emptyToken");
 
     }
 
@@ -64,7 +67,7 @@ public class ComputeResourceRegister {
 
     public Map<String, String> getLoginNamesWithResourceIDs() throws Exception {
         loginNamesWithResourceIds = new HashMap<String, String>();
-        Map<String, String> allComputeResourceNames = airavata.getAllComputeResourceNames();
+        Map<String, String> allComputeResourceNames = airavata.getAllComputeResourceNames(authzToken);
         for (String resourceId : allComputeResourceNames.keySet()) {
             String resourceName = allComputeResourceNames.get(resourceId);
             loginNamesWithResourceIds.put(resourceId, loginNamesWithResourceMap.get(resourceName));
@@ -127,7 +130,7 @@ public class ComputeResourceRegister {
 
         ComputeResourceDescription computeResourceDescription = createComputeResourceDescription(hostName, hostDesc, null, null);
 
-        String computeResourceId = airavata.registerComputeResource(computeResourceDescription);
+        String computeResourceId = airavata.registerComputeResource(authzToken, computeResourceDescription);
 
         if (computeResourceId.isEmpty()) throw new AiravataClientException();
 
@@ -144,12 +147,12 @@ public class ComputeResourceRegister {
         sshJobSubmission.setSecurityProtocol(securityProtocol);
 //        sshJobSubmission.setMonitorMode(MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR);
         sshJobSubmission.setSshPort(portNumber);
-        airavata.addSSHJobSubmissionDetails(computeResourceId, 1, sshJobSubmission);
+        airavata.addSSHJobSubmissionDetails(authzToken, computeResourceId, 1, sshJobSubmission);
 
         SCPDataMovement scpDataMovement = new SCPDataMovement();
         scpDataMovement.setSecurityProtocol(securityProtocol);
         scpDataMovement.setSshPort(portNumber);
-        airavata.addSCPDataMovementDetails(computeResourceId, 1, scpDataMovement);
+        airavata.addSCPDataMovementDetails(authzToken, computeResourceId, 1, scpDataMovement);
 
         return computeResourceId;
     }
@@ -187,7 +190,7 @@ public class ComputeResourceRegister {
 
             loginNamesWithResourceIds = getLoginNamesWithResourceIDs();
 
-            List<GatewayResourceProfile> allGatewayComputeResources = airavata.getAllGatewayComputeResources();
+            List<GatewayResourceProfile> allGatewayComputeResources = airavata.getAllGatewayComputeResources(authzToken);
             for (GatewayResourceProfile gatewayResourceProfile : allGatewayComputeResources) {
                 for (String resourceId : loginNamesWithResourceIds.keySet()) {
                     String loginUserName = loginNamesWithResourceIds.get(resourceId);
@@ -195,34 +198,34 @@ public class ComputeResourceRegister {
                         if (loginUserName.equals("ogce")){
                             stampedeOGCEResourcePreferences = createComputeResourcePreference(resourceId, "TG-STA110014S", false, null,
                                     JobSubmissionProtocol.SSH, DataMovementProtocol.SCP, "/scratch/01437/ogce/gta-work-dirs", loginUserName);
-                            airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, stampedeOGCEResourcePreferences);
+                            airavata.addGatewayComputeResourcePreference(authzToken, gatewayResourceProfile.getGatewayID(), resourceId, stampedeOGCEResourcePreferences);
                         }else if (loginUserName.equals("us3")){
                             stampedeUS3ResourcePreferences = createComputeResourcePreference(resourceId, "TG-MCB070039N", false, null,
                                     JobSubmissionProtocol.SSH, DataMovementProtocol.SCP, "/scratch/01623/us3/jobs/", loginUserName);
-                            airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, stampedeUS3ResourcePreferences);
+                            airavata.addGatewayComputeResourcePreference(authzToken, gatewayResourceProfile.getGatewayID(), resourceId, stampedeUS3ResourcePreferences);
                         }
                     }else if (resourceId.contains("trestles")){
                         if (loginUserName.equals("ogce")){
                             trestlesOGCEResourcePreferences = createComputeResourcePreference(resourceId, "sds128", false, null, JobSubmissionProtocol.SSH,
                                     DataMovementProtocol.SCP, "/oasis/scratch/trestles/ogce/temp_project/gta-work-dirs", loginUserName);
-                            airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, trestlesOGCEResourcePreferences);
+                            airavata.addGatewayComputeResourcePreference(authzToken, gatewayResourceProfile.getGatewayID(), resourceId, trestlesOGCEResourcePreferences);
                         }else if (loginUserName.equals("us3")){
                             trestlesUS3ResourcePreferences = createComputeResourcePreference(resourceId, "uot111", false, null, JobSubmissionProtocol.SSH,
                                     DataMovementProtocol.SCP, "/oasis/projects/nsf/uot111/us3/airavata-workdirs/", loginUserName);
-                            airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, trestlesUS3ResourcePreferences);
+                            airavata.addGatewayComputeResourcePreference(authzToken, gatewayResourceProfile.getGatewayID(), resourceId, trestlesUS3ResourcePreferences);
                         }
                     }else if (resourceId.contains("bigred2") && loginUserName.equals("cgateway")){
                         bigRedCgatewayResourcePreferences = createComputeResourcePreference(resourceId, "TG-STA110014S", false, null, null, null,
                                 "/N/dc2/scratch/cgateway/gta-work-dirs", loginUserName);
-                        airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, bigRedCgatewayResourcePreferences);
+                        airavata.addGatewayComputeResourcePreference(authzToken, gatewayResourceProfile.getGatewayID(), resourceId, bigRedCgatewayResourcePreferences);
                     }else if (resourceId.contains("gordon") && loginUserName.equals("us3")){
                         gordenUS3ResourcePreference = createComputeResourcePreference(resourceId, "uot111", false, null, JobSubmissionProtocol.SSH,
                                 DataMovementProtocol.SCP, "/home/us3/gordon/work/airavata", loginUserName);
-                        airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, gordenUS3ResourcePreference);
+                        airavata.addGatewayComputeResourcePreference(authzToken, gatewayResourceProfile.getGatewayID(), resourceId, gordenUS3ResourcePreference);
                     }else if (resourceId.contains("alamo") && loginUserName.equals("us3")){
                         alamoUS3ResourcePreference = createComputeResourcePreference(resourceId, null, false, "batch", JobSubmissionProtocol.SSH,
                                 DataMovementProtocol.SCP, "/home/us3/work/airavata", loginUserName);
-                        airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, alamoUS3ResourcePreference);
+                        airavata.addGatewayComputeResourcePreference(authzToken, gatewayResourceProfile.getGatewayID(), resourceId, alamoUS3ResourcePreference);
                     }
                 }
             }

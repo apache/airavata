@@ -40,14 +40,14 @@ namespace apache { namespace airavata { namespace model { namespace job {
 class JobModel;
 
 typedef struct _JobModel__isset {
-  _JobModel__isset() : creationTime(false), jobStatus(false), computeResourceConsumed(false), jobName(false), workingDir(false), stdout(false), stderr(false), exitCode(false) {}
+  _JobModel__isset() : creationTime(false), jobStatus(false), computeResourceConsumed(false), jobName(false), workingDir(false), stdOut(false), stdErr(false), exitCode(false) {}
   bool creationTime :1;
   bool jobStatus :1;
   bool computeResourceConsumed :1;
   bool jobName :1;
   bool workingDir :1;
-  bool stdout :1;
-  bool stderr :1;
+  bool stdOut :1;
+  bool stdErr :1;
   bool exitCode :1;
 } _JobModel__isset;
 
@@ -59,7 +59,7 @@ class JobModel {
 
   JobModel(const JobModel&);
   JobModel& operator=(const JobModel&);
-  JobModel() : jobId(), taskId(), processId(), jobDescription(), creationTime(0), computeResourceConsumed(), jobName(), workingDir(), stdout(), stderr(), exitCode(0) {
+  JobModel() : jobId(), taskId(), processId(), jobDescription(), creationTime(0), computeResourceConsumed(), jobName(), workingDir(), stdOut(), stdErr(), exitCode(0) {
   }
 
   virtual ~JobModel() throw();
@@ -72,8 +72,8 @@ class JobModel {
   std::string computeResourceConsumed;
   std::string jobName;
   std::string workingDir;
-  std::string stdout;
-  std::string stderr;
+  std::string stdOut;
+  std::string stdErr;
   int32_t exitCode;
 
   _JobModel__isset __isset;
@@ -96,9 +96,9 @@ class JobModel {
 
   void __set_workingDir(const std::string& val);
 
-  void __set_stdout(const std::string& val);
+  void __set_stdOut(const std::string& val);
 
-  void __set_stderr(const std::string& val);
+  void __set_stdErr(const std::string& val);
 
   void __set_exitCode(const int32_t val);
 
@@ -132,13 +132,13 @@ class JobModel {
       return false;
     else if (__isset.workingDir && !(workingDir == rhs.workingDir))
       return false;
-    if (__isset.stdout != rhs.__isset.stdout)
+    if (__isset.stdOut != rhs.__isset.stdOut)
       return false;
-    else if (__isset.stdout && !(stdout == rhs.stdout))
+    else if (__isset.stdOut && !(stdOut == rhs.stdOut))
       return false;
-    if (__isset.stderr != rhs.__isset.stderr)
+    if (__isset.stdErr != rhs.__isset.stdErr)
       return false;
-    else if (__isset.stderr && !(stderr == rhs.stderr))
+    else if (__isset.stdErr && !(stdErr == rhs.stdErr))
       return false;
     if (__isset.exitCode != rhs.__isset.exitCode)
       return false;

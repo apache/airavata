@@ -33,6 +33,13 @@ import org.slf4j.LoggerFactory;
 
 public class CancelRequestWatcherImpl implements CancelRequestWatcher {
 	private static final Logger log = LoggerFactory.getLogger(CancelRequestWatcherImpl.class);
+	private final String processId;
+	private final String experimentId;
+
+	public CancelRequestWatcherImpl(String experimentId, String processId) {
+		this.experimentId = experimentId;
+		this.processId = processId;
+	}
 
 	@Override
 	public void process(WatchedEvent watchedEvent) throws Exception {
@@ -43,15 +50,16 @@ public class CancelRequestWatcherImpl implements CancelRequestWatcher {
 		switch (type) {
 			case NodeDataChanged:
 				byte[] bytes = curatorClient.getData().forPath(path);
-				String processId = path.substring(path.lastIndexOf("/") + 1);
 				String action = new String(bytes);
 				if (action.equalsIgnoreCase(ZkConstants.ZOOKEEPER_CANCEL_REQEUST)) {
 					ProcessContext processContext = Factory.getGfacContext().getProcess(processId);
 					if (processContext != null) {
 						processContext.setCancel(true);
-						log.info("procesId : {}, Cancelling process", processId);
+						Factory.getGFacEngine().cancelProcess(processContext);
+						log.info("expId {}, processId : {}, Cancelling process", experimentId, processId);
 					} else {
-						log.info("Cancel request came for processId {} but couldn't find process context");
+						log.info("expId: {}, Cancel request came for processId {} but couldn't find process context",
+								experimentId, processId);
 					}
 				} else {
 					curatorClient.getData().usingWatcher(this).forPath(path);
@@ -59,14 +67,24 @@ public class CancelRequestWatcherImpl implements CancelRequestWatcher {
 				break;
 			case NodeDeleted:
 				//end of experiment execution, ignore this event
+				log.info("expId: {}, cancel watcher trigger for process {} with event type {}", experimentId,
+						processId, type.name());
 				break;
 			case NodeCreated:
 			case NodeChildrenChanged:
 			case None:
-				curatorClient.getData().usingWatcher(this).forPath(path);
+				log.info("expId: {}, Cancel watcher trigger for process {} with event type {}", experimentId,
+						processId, type.name());
+				if (path != null) {
+					curatorClient.getData().usingWatcher(this).forPath(path);
+				}
 				break;
 			default:
-				curatorClient.getData().usingWatcher(this).forPath(path);
+				log.info("expId: {}, Cancel watcher trigger for process {} with event type {}", experimentId,
+						processId, type.name());
+				if (path != null) {
+					curatorClient.getData().usingWatcher(this).forPath(path);
+				}
 				break;
 		}
 	}

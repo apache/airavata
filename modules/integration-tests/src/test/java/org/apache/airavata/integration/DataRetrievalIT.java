@@ -21,13 +21,15 @@
 
 package org.apache.airavata.integration;
 
+import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.api.Airavata.Client;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.integration.tools.DocumentCreatorNew;
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
@@ -56,6 +58,7 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
     private String[] users={"admin"};
     private String[] projects={"project1","project2","project3"};
     private List<String> projectIds = new ArrayList<String>();
+    private AuthzToken authzToken;
 
     private static final int NUM_OF_EXPERIMENTS=10;
     
@@ -65,6 +68,7 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
     @BeforeTest
     public void setUp() throws Exception {
         init();
+        authzToken = new AuthzToken("empty token");
         experimentDataList=new ArrayList<String[]>();
 		addApplications();
         addProjects();
@@ -83,7 +87,7 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
     private void addProjects() throws TException {
         for (int i = 0; i < projects.length; i++){
         	Project project = ProjectModelUtil.createProject(projects[i], "admin", "test project");
-            String projectId = getClient().createProject("default", project);
+            String projectId = getClient().createProject(authzToken, "default", project);
             projectIds.add(projectId);
         }
     }
@@ -105,12 +109,12 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
 		log.info("Testing user experiments");
 		log.info("========================");
         for (String user : users) {
-			List<Experiment> listUserExperiments = listUserExperiments(user);
+			List<ExperimentModel> listUserExperiments = listUserExperiments(user);
 			List<String> data = getData(1, user, 0);
         	log.info("\t"+user+" : "+data.size()+" experiments");
 			Assert.assertEquals(listUserExperiments.size(), data.size());
-			for (Experiment experiment : listUserExperiments) {
-				Assert.assertThat(experiment.getExperimentID(), isIn(data)); 
+			for (ExperimentModel experiment : listUserExperiments) {
+				Assert.assertThat(experiment.getExperimentId(), isIn(data));
 			}
 		}
     }
@@ -120,12 +124,12 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
 		log.info("Testing project experiments");
 		log.info("===========================");
         for (String project : projectIds) {
-			List<Experiment> listProjectExperiments = listProjectExperiments(project);
+			List<ExperimentModel> listProjectExperiments = listProjectExperiments(project);
 			List<String> data = getData(2, project, 0);
         	log.info("\t"+project+" : "+data.size()+" experiments");
 			Assert.assertEquals(listProjectExperiments.size(), data.size());
-			for (Experiment experiment : listProjectExperiments) {
-				Assert.assertThat(experiment.getExperimentID(), isIn(data)); 
+			for (ExperimentModel experiment : listProjectExperiments) {
+				Assert.assertThat(experiment.getExperimentId(), isIn(data));
 			}
 		}
     }
@@ -158,25 +162,25 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
     }
     
     
-	public List<Experiment> listUserExperiments(String user) throws ApplicationSettingsException,
-			AiravataClientConnectException, InvalidRequestException,
+	public List<ExperimentModel> listUserExperiments(String user) throws ApplicationSettingsException,
+			AiravataClientException, InvalidRequestException,
 			AiravataClientException, AiravataSystemException, TException {
-		return getClient().getAllUserExperiments("default", user);
+		return getClient().getUserExperiments(authzToken, "default", user, 10, 0);
 	}
 
-	public List<Experiment> listProjectExperiments(String projectID) throws ApplicationSettingsException,
-			AiravataClientConnectException, InvalidRequestException,
+	public List<ExperimentModel> listProjectExperiments(String projectID) throws ApplicationSettingsException,
+			AiravataClientException, InvalidRequestException,
 			AiravataClientException, AiravataSystemException, TException {
-		return getClient().getAllExperimentsInProject(projectID);
+		return getClient().getExperimentsInProject(authzToken, projectID, 10, 0);
 	}
 	
 	public List<Project> listUserProjects(String user) throws ApplicationSettingsException,
-			AiravataClientConnectException, InvalidRequestException,
+			AiravataClientException, InvalidRequestException,
 			AiravataClientException, AiravataSystemException, TException {
-		return getClient().getAllUserProjects("default", user);
+		return getClient().getUserProjects(authzToken, "default", user, 10, 0);
 	}
 
-	public String runExperiment(String user, String project) throws ApplicationSettingsException, AiravataClientConnectException,
+	public String runExperiment(String user, String project) throws ApplicationSettingsException, AiravataClientException,
 			InvalidRequestException, AiravataClientException,
 			AiravataSystemException, TException, ExperimentNotFoundException {
 		List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
@@ -193,25 +197,25 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
 		output.setValue("");
 		exOut.add(output);
 
-		Experiment simpleExperiment = ExperimentModelUtil
-				.createSimpleExperiment(project, user, "echoExperiment",
+		ExperimentModel simpleExperiment = ExperimentModelUtil
+				.createSimpleExperiment("default", project, user, "echoExperiment",
 						"SimpleEcho0", "SimpleEcho0", exInputs);
 		simpleExperiment.setExperimentOutputs(exOut);
 
-		ComputationalResourceScheduling scheduling = ExperimentModelUtil
+		ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil
 				.createComputationResourceScheduling("localhost", 1, 1, 1,
-						"normal", 0, 0, 1, "sds128");
+						"normal", 0, 0);
 		scheduling.setResourceHostId("localhost");
-		UserConfigurationData userConfigurationData = new UserConfigurationData();
+		UserConfigurationDataModel userConfigurationData = new UserConfigurationDataModel();
 		userConfigurationData.setAiravataAutoSchedule(false);
 		userConfigurationData.setOverrideManualScheduledParams(false);
 		userConfigurationData.setComputationalResourceScheduling(scheduling);
 		simpleExperiment.setUserConfigurationData(userConfigurationData);
 
 		Client client = getClient();
-		final String expId = client.createExperiment("default", simpleExperiment);
+		final String expId = client.createExperiment(authzToken, "default", simpleExperiment);
 
-		client.launchExperiment(expId, "testToken");
+		client.launchExperiment(authzToken, expId, "testToken");
 		return expId;
 	}
 

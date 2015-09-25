@@ -23,17 +23,18 @@ package org.apache.airavata.integration;
 
 import junit.framework.Assert;
 import org.apache.airavata.integration.tools.DocumentCreatorNew;
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.experiment.JobState;
-import org.apache.airavata.model.experiment.JobStatus;
-import org.apache.airavata.model.experiment.UserConfigurationData;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -56,7 +57,7 @@ import java.util.Set;
  */
 public class BaseCaseIT extends WorkflowIntegrationTestBase {
 
-
+    private AuthzToken authzToken;
     public BaseCaseIT() throws Exception {
         setUpEnvironment();
     }
@@ -71,6 +72,7 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
         String version = this.client.getAPIVersion(null);
         Assert.assertNotNull(version);
         log("Airavata version - " + version);
+
 
     }
 
@@ -103,14 +105,14 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
         exOut.add(output);
 
         Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-        String projectId = getClient().createProject("default", project);
+        String projectId = getClient().createProject(authzToken, "default", project);
 
-        Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
+        ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment(gatewayName, projectId, "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
         simpleExperiment.setExperimentOutputs(exOut);
 
-        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");
+        ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0);
         scheduling.setResourceHostId("gsissh-trestles");
-        UserConfigurationData userConfigurationData = new UserConfigurationData();
+        UserConfigurationDataModel userConfigurationData = new UserConfigurationDataModel();
         userConfigurationData.setAiravataAutoSchedule(false);
         userConfigurationData.setOverrideManualScheduledParams(false);
         userConfigurationData.setComputationalResourceScheduling(scheduling);
@@ -126,7 +128,7 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
                 Map<String, JobStatus> jobStatuses = null;
                 while (true) {
                     try {
-                        jobStatuses = client.getJobStatuses(expId);
+                        jobStatuses = client.getJobStatuses(authzToken, expId);
                         Set<String> strings = jobStatuses.keySet();
                         for (String key : strings) {
                             JobStatus jobStatus = jobStatuses.get(key);
@@ -177,14 +179,14 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
         exOut.add(output);
 
         Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-        String projectId = getClient().createProject("default", project);
+        String projectId = getClient().createProject(authzToken, "default", project);
 
-        Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho3", "SimpleEcho3", exInputs);
+        ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment(gatewayName, projectId, "admin", "echoExperiment", "SimpleEcho3", "SimpleEcho3", exInputs);
         simpleExperiment.setExperimentOutputs(exOut);
 
-        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 1, 1, 1, "normal", 0, 0, 1, "TG-STA110014S");
+        ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 1, 1, 1, "normal", 0, 0);
         scheduling.setResourceHostId("stampede-host");
-        UserConfigurationData userConfigurationData = new UserConfigurationData();
+        UserConfigurationDataModel userConfigurationData = new UserConfigurationDataModel();
         userConfigurationData.setAiravataAutoSchedule(false);
         userConfigurationData.setOverrideManualScheduledParams(false);
         userConfigurationData.setComputationalResourceScheduling(scheduling);
@@ -200,7 +202,7 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
                 Map<String, JobStatus> jobStatuses = null;
                 while (true) {
                     try {
-                        jobStatuses = client.getJobStatuses(expId);
+                        jobStatuses = client.getJobStatuses(authzToken, expId);
                         Set<String> strings = jobStatuses.keySet();
                         for (String key : strings) {
                             JobStatus jobStatus = jobStatuses.get(key);

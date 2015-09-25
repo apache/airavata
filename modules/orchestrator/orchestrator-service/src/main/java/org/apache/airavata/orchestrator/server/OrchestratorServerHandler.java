@@ -154,7 +154,12 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 log.info("Couldn't identify the gateway Id using the credential token, Use default gateway Id");
 //                throw new AiravataException("Couldn't identify the gateway Id using the credential token");
             }
-            ExperimentType executionType = experiment.getExperimentType();
+	        String experimentNodePath = GFacUtils.getExperimentNodePath (experimentId);
+	        ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentNodePath);
+	        String experimentCancelNode = ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+	        ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
+
+	        ExperimentType executionType = experiment.getExperimentType();
             if (executionType == ExperimentType.SINGLE_APPLICATION) {
                 //its an single application execution experiment
                 log.debug(experimentId, "Launching single application experiment {}.", experimentId);
@@ -318,8 +323,14 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	    if (stat != null) {
 		    curatorClient.setData().withVersion(-1).forPath(expCancelNodePath, ZkConstants.ZOOKEEPER_CANCEL_REQEUST
 				    .getBytes());
+		    ExperimentStatus status = new ExperimentStatus(ExperimentState.CANCELING);
+		    status.setReason("Experiment cancel request processed");
+		    status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+		    OrchestratorUtils.updageExperimentStatus(experimentId, status);
+		    log.info("expId : " + experimentId + " :- Experiment status updated to " + status.getState());
+		    return true;
 	    }
-	    return true;
+	    return false;
     }
 
     private void launchWorkflowExperiment(String experimentId, String airavataCredStoreToken) throws TException {
@@ -418,12 +429,25 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 					switch (processStatusChangeEvent.getState()) {
 //						case CREATED:
 //						case VALIDATED:
+						case STARTED:
+							try {
+								ExperimentStatus stat = OrchestratorUtils.getExperimentStatus(processIdentity
+										.getExperimentId());
+								if (stat.getState() == ExperimentState.CANCELING) {
+									status.setState(ExperimentState.CANCELING);
+									status.setReason("Process competed but experiment cancelling is triggered");
+								} else {
+									status.setState(ExperimentState.EXECUTING);
+									status.setReason("process  started");
+								}
+							} catch (RegistryException e) {
+								status.setState(ExperimentState.EXECUTING);
+								status.setReason("process  started");
+							}
+							break;
 //						case PRE_PROCESSING:
 //							break;
-						case CONFIGURING_WORKSPACE:
-							status.setState(ExperimentState.EXECUTING);
-							status.setReason("process  started");
-							break;
+//						case CONFIGURING_WORKSPACE:
 //						case INPUT_DATA_STAGING:
 //						case EXECUTING:
 //						case MONITORING:
@@ -432,12 +456,36 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 //						case CANCELLING:
 //							break;
 						case COMPLETED:
-							status.setState(ExperimentState.COMPLETED);
-							status.setReason("process  completed");
+							try {
+								ExperimentStatus stat = OrchestratorUtils.getExperimentStatus(processIdentity
+										.getExperimentId());
+								if (stat.getState() == ExperimentState.CANCELING) {
+									status.setState(ExperimentState.CANCELED);
+									status.setReason("Process competed but experiment cancelling is triggered");
+								} else {
+									status.setState(ExperimentState.COMPLETED);
+									status.setReason("process  completed");
+								}
+							} catch (RegistryException e) {
+								status.setState(ExperimentState.COMPLETED);
+								status.setReason("process  completed");
+							}
 							break;
 						case FAILED:
-							status.setState(ExperimentState.FAILED);
-							status.setReason("process  failed");
+							try {
+								ExperimentStatus stat = OrchestratorUtils.getExperimentStatus(processIdentity
+										.getExperimentId());
+								if (stat.getState() == ExperimentState.CANCELING) {
+									status.setState(ExperimentState.CANCELED);
+									status.setReason("Process failed but experiment cancelling is triggered");
+								} else {
+									status.setState(ExperimentState.FAILED);
+									status.setReason("process  failed");
+								}
+							} catch (RegistryException e) {
+								status.setState(ExperimentState.FAILED);
+								status.setReason("process  failed");
+							}
 							break;
 						case CANCELED:
 							status.setState(ExperimentState.CANCELED);

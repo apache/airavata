@@ -808,7 +808,7 @@ interface AiravataIf {
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $airavataExperimentId
-   * @return \Airavata\Model\job\JobModel[]
+   * @return \Airavata\Model\Job\JobModel[]
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\ExperimentNotFoundException
    * @throws \Airavata\API\Error\AiravataClientException
@@ -22265,7 +22265,7 @@ class Airavata_getJobDetails_result {
   static $_TSPEC;
 
   /**
-   * @var \Airavata\Model\job\JobModel[]
+   * @var \Airavata\Model\Job\JobModel[]
    */
   public $success = null;
   /**
@@ -22298,7 +22298,7 @@ class Airavata_getJobDetails_result {
           'etype' => TType::STRUCT,
           'elem' => array(
             'type' => TType::STRUCT,
-            'class' => '\Airavata\Model\job\JobModel',
+            'class' => '\Airavata\Model\Job\JobModel',
             ),
           ),
         1 => array(
@@ -22378,7 +22378,7 @@ class Airavata_getJobDetails_result {
             for ($_i129 = 0; $_i129 < $_size125; ++$_i129)
             {
               $elem130 = null;
-              $elem130 = new \Airavata\Model\job\JobModel();
+              $elem130 = new \Airavata\Model\Job\JobModel();
               $xfer += $elem130->read($input);
               $this->success []= $elem130;
             }
