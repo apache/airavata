@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.*;
 
 @Entity
+@Cacheable
 @Table(name = "USER_CONFIGURATION_DATA")
 public class UserConfigurationData {
     private final static Logger logger = LoggerFactory.getLogger(UserConfigurationData.class);

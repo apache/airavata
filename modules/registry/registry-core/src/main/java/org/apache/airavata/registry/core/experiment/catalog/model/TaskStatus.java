@@ -27,6 +27,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
+@Cacheable
 @Table(name = "TASK_STATUS")
 @IdClass(TaskStatusPK.class)
 public class TaskStatus {

@@ -28,6 +28,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 @Entity
+@Cacheable
 @Table(name = "JOB")
 @IdClass(JobPK.class)
 public class Job {
