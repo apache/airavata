@@ -471,8 +471,11 @@ public class ProcessResource extends AbstractExpCatResource {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
-            em.getTransaction().begin();
             Process process = em.find(Process.class, processId);
+            em.close();
+
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
             if (process == null) {
             	process = new Process();
             }
@@ -488,7 +491,7 @@ public class ProcessResource extends AbstractExpCatResource {
             process.setGatewayExecutionId(gatewayExecutionId);
             process.setEnableEmailNotification(enableEmailNotification);
             process.setEmailAddresses(emailAddresses);
-            em.persist(process);
+            em.merge(process);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {

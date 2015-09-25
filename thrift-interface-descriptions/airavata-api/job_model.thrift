@@ -21,7 +21,7 @@
  include "status_models.thrift"
 
   namespace java org.apache.airavata.model.job
-  namespace php Airavata.Model.job
+  namespace php Airavata.Model.Job
   namespace cpp apache.airavata.model.job
   namespace py apache.airavata.model.job
 
@@ -35,8 +35,8 @@ struct JobModel {
     7: optional string computeResourceConsumed,
     8: optional string jobName,
     9: optional string workingDir,
-    10: optional string stdout,
-    11: optional string stderr,
+    10: optional string stdOut,
+    11: optional string stdErr,
     12: optional i32 exitCode
 }
 

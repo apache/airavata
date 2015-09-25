@@ -23,7 +23,7 @@ package org.apache.airavata.testsuite.multitenantedairavata;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.model.error.AiravataClientConnectException;
+import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyFileType;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyReader;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.TestFrameworkConstants;
@@ -51,7 +51,7 @@ public class AiravataClient {
             int airavataport = Integer.valueOf(propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.THRIFT_SERVER_PORT, PropertyFileType.AIRAVATA_CLIENT));
             airavataClient = AiravataClientFactory.createAiravataClient(airavataHost, airavataport);
             return airavataClient;
-        } catch (AiravataClientConnectException e) {
+        } catch (AiravataClientException e) {
             logger.error("Error while creating airavata client instance", e);
             throw new Exception("Error while creating airavata client instance", e);
         }

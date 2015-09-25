@@ -49,6 +49,7 @@ import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.ExperimentState;
@@ -63,6 +64,8 @@ import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
+import org.apache.airavata.registry.core.experiment.catalog.model.*;
+import org.apache.airavata.registry.core.experiment.catalog.model.Process;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
@@ -1520,81 +1523,63 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public Map<String, JobStatus> getJobStatuses(AuthzToken authzToken, String airavataExperimentId)
             throws AuthorizationException, TException {
-        Map<String, JobStatus> jobStatus = new HashMap<String, JobStatus>();
-	    // FIXME : implement this method with new data model
-/*        try {
+        try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
-                logger.error(airavataExperimentId, "Error while retrieving job status, the experiment {} doesn't exist.", airavataExperimentId);
+                logger.error(airavataExperimentId, "Error while retrieving job details, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            List<Object> workflowNodes = experimentCatalog.get(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL, Constants.FieldConstants.WorkflowNodeConstants.EXPERIMENT_ID, airavataExperimentId);
-            if (workflowNodes != null && !workflowNodes.isEmpty()){
-                for (Object wf : workflowNodes){
-                    String nodeInstanceId = ((WorkflowNodeDetails) wf).getNodeInstanceId();
-                    List<Object> taskDetails = experimentCatalog.get(ExperimentCatalogModelType.TASK_DETAIL, Constants.FieldConstants.TaskDetailConstants.NODE_ID, nodeInstanceId);
-                    if (taskDetails != null && !taskDetails.isEmpty()){
-                        for (Object ts : taskDetails){
-                            String taskID = ((TaskDetails) ts).getTaskID();
-                            List<Object> jobDetails = experimentCatalog.get(ExperimentCatalogModelType.JOB_DETAIL, Constants.FieldConstants.JobDetaisConstants.TASK_ID, taskID);
-                            if (jobDetails != null && !jobDetails.isEmpty()){
-                                for (Object job : jobDetails){
-                                    String jobID = ((JobDetails) job).getJobID();
-                                    jobStatus.put(jobID, ((JobDetails) job).getJobStatus());
-                                }
-                            }
-                        }
+            List<Object> processModels = experimentCatalog.get(ExperimentCatalogModelType.PROCESS, Constants.FieldConstants.ProcessConstants.EXPERIMENT_ID, airavataExperimentId);
+            Map<String, JobStatus> jobStatus = new HashMap<String, JobStatus>();
+            if (processModels != null && !processModels.isEmpty()){
+                for (Object process : processModels) {
+                    String processId =  ((ProcessModel)process).getProcessId();
+                    List<Object> jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.PROCESS_ID, processId);
+                    for (Object jobObject : jobs) {
+                        String jobID = ((JobModel)jobObject).getJobId();
+                        jobStatus.put(jobID, ((JobModel)jobObject).getJobStatus());
                     }
                 }
             }
+            return jobStatus;
         } catch (Exception e) {
             logger.error(airavataExperimentId, "Error while retrieving the job statuses", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving the job statuses. More info : " + e.getMessage());
             throw exception;
-        }*/
-        return jobStatus;
+        }
     }
 
     @Override
     @SecurityCheck
     public List<JobModel> getJobDetails(AuthzToken authzToken, String airavataExperimentId) throws InvalidRequestException,
             ExperimentNotFoundException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        List<JobModel> jobDetailsList = new ArrayList<JobModel>();
-	    // FIXME : fix this method with new data model.
-      /*  try {
+        try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
                 logger.error(airavataExperimentId, "Error while retrieving job details, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            List<Object> workflowNodes = experimentCatalog.get(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL, Constants.FieldConstants.WorkflowNodeConstants.EXPERIMENT_ID, airavataExperimentId);
-            if (workflowNodes != null && !workflowNodes.isEmpty()){
-                for (Object wf : workflowNodes){
-                    String nodeInstanceId = ((WorkflowNodeDetails) wf).getNodeInstanceId();
-                    List<Object> taskDetails = experimentCatalog.get(ExperimentCatalogModelType.TASK_DETAIL, Constants.FieldConstants.TaskDetailConstants.NODE_ID, nodeInstanceId);
-                    if (taskDetails != null && !taskDetails.isEmpty()){
-                        for (Object ts : taskDetails){
-                            String taskID = ((TaskDetails) ts).getTaskID();
-                            List<Object> jobDetails = experimentCatalog.get(ExperimentCatalogModelType.JOB_DETAIL, Constants.FieldConstants.JobDetaisConstants.TASK_ID, taskID);
-                            if (jobDetails != null && !jobDetails.isEmpty()){
-                                for (Object job : jobDetails){
-                                    jobDetailsList.add((JobDetails) job);
-                                }
-                            }
-                        }
+            List<Object> processModels = experimentCatalog.get(ExperimentCatalogModelType.PROCESS, Constants.FieldConstants.ProcessConstants.EXPERIMENT_ID, airavataExperimentId);
+            List<JobModel> jobList = new ArrayList<>();
+            if (processModels != null && !processModels.isEmpty()){
+                for (Object process : processModels) {
+                    String processId =  ((ProcessModel)process).getProcessId();
+                    List<Object> jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.PROCESS_ID, processId);
+                    for (Object jobObject : jobs) {
+                        jobList.add ((JobModel)jobObject);
                     }
                 }
             }
+            return jobList;
         } catch (Exception e) {
             logger.error(airavataExperimentId, "Error while retrieving the job details", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving the job details. More info : " + e.getMessage());
             throw exception;
-        }*/
-        return jobDetailsList;
+        }
     }
 
 

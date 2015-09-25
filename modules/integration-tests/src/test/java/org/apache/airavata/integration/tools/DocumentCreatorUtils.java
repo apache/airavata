@@ -21,12 +21,13 @@
 
 package org.apache.airavata.integration.tools;
 
+import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
@@ -113,7 +114,7 @@ public class DocumentCreatorUtils {
 			String jobManagerBinPath,
 			Map<JobManagerCommand, String> jobManagerCommands,
 			String pushMonitoringEndpoint) {
-		ResourceJobManager resourceJobManager=new ResourceJobManager();;
+		ResourceJobManager resourceJobManager=new ResourceJobManager();
 		resourceJobManager.setResourceJobManagerType(resourceJobManagerType);
 		resourceJobManager.setJobManagerBinPath(jobManagerBinPath);
 		resourceJobManager.setJobManagerCommands(jobManagerCommands);
@@ -121,7 +122,7 @@ public class DocumentCreatorUtils {
 		return resourceJobManager;
 	}
 
-	public static InputDataObjectType createAppInput (String inputName, String argumentName, String description, String value, org.apache.airavata.model.appcatalog.appinterface.DataType type ){
+	public static InputDataObjectType createAppInput (String inputName, String argumentName, String description, String value, DataType type ){
         InputDataObjectType input = new InputDataObjectType();
 //        input.setIsEmpty(false);
         if (inputName!=null) {
@@ -142,7 +143,7 @@ public class DocumentCreatorUtils {
 		return input;
     }
 
-    public static OutputDataObjectType createAppOutput (String inputName, String value, org.apache.airavata.model.appcatalog.appinterface.DataType type ){
+    public static OutputDataObjectType createAppOutput (String inputName, String value, DataType type ){
         OutputDataObjectType outputDataObjectType = new OutputDataObjectType();
 //        outputDataObjectType.setIsEmpty(false);
         if (inputName!=null) {

@@ -301,12 +301,12 @@ public abstract class Factory {
 		return getMonitorService(MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR);
 	}
 
-	public static RedeliveryRequestWatcher getRedeliveryReqeustWatcher() {
-		return new RedeliveryRequestWatcherImpl();
+	public static RedeliveryRequestWatcher getRedeliveryReqeustWatcher(String experimentId, String processId) {
+		return new RedeliveryRequestWatcherImpl(experimentId, processId);
 	}
 
-	public static CancelRequestWatcher getCancelRequestWatcher() {
-		return new CancelRequestWatcherImpl();
+	public static CancelRequestWatcher getCancelRequestWatcher(String experimentId, String processId) {
+		return new CancelRequestWatcherImpl(experimentId, processId);
 	}
 
 	public static Session getSSHSession(AuthenticationInfo authenticationInfo, ServerInfo serverInfo) throws AiravataException {

@@ -35,6 +35,7 @@ import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskTypes;
@@ -179,5 +180,11 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
 	@Override
 	public TaskTypes getType() {
 		return TaskTypes.JOB_SUBMISSION;
+	}
+
+	@Override
+	public JobStatus cancel(TaskContext taskcontext) {
+		// TODO - implement Local Job cancel
+		return null;
 	}
 }

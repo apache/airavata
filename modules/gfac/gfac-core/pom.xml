@@ -114,12 +114,6 @@
             <artifactId>airavata-data-models</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.xmlbeans</groupId>
-            <artifactId>xmlbeans</artifactId>
-            <version>${xmlbeans.version}</version>
-            <scope>compile</scope>
-        </dependency>
         <!-- this is the dependency for amqp implementation -->
         <!-- zookeeper dependencies -->
         <dependency>

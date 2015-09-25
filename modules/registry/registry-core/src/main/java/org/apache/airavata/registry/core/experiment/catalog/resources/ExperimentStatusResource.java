@@ -110,7 +110,6 @@ public class ExperimentStatusResource extends AbstractExpCatResource {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
-            em.getTransaction().begin();
             ExperimentStatus experimentStatus;
             if(experimentId == null || statusId == null){
                 throw new RegistryException("Does not have the experiment id or status id");
@@ -119,6 +118,10 @@ public class ExperimentStatusResource extends AbstractExpCatResource {
             experimentStatusPK.setStatusId(statusId);
             experimentStatusPK.setExperimentId(experimentId);
             experimentStatus = em.find(ExperimentStatus.class, experimentStatusPK);
+            em.close();
+
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
             if(experimentStatus == null){
                 experimentStatus = new ExperimentStatus();
             }
@@ -127,7 +130,7 @@ public class ExperimentStatusResource extends AbstractExpCatResource {
             experimentStatus.setState(state);
             experimentStatus.setReason(reason);
 	        experimentStatus.setTimeOfStateChange(timeOfStateChange);
-	        em.persist(experimentStatus);
+	        em.merge(experimentStatus);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {

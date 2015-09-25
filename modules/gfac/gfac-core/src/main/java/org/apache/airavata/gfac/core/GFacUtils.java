@@ -337,22 +337,22 @@ public class GFacUtils {
 //		}
 //	}
 
-	public static void saveErrorDetails(
-			ProcessContext processContext, String errorMessage)
-			throws GFacException {
-		try {
-			ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-			ErrorModel details = new ErrorModel();
-			details.setActualErrorMessage(errorMessage);
-			details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-			// FIXME : Save error model according to new data model
-//            experimentCatalog.add(ExpCatChildDataType.ERROR_DETAIL, details,
-//					jobExecutionContext.getTaskData().getTaskID());
-		} catch (Exception e) {
-			throw new GFacException("Error persisting job status"
-					+ e.getLocalizedMessage(), e);
-		}
-	}
+//	public static void saveErrorDetails(
+//			ProcessContext processContext, String errorMessage)
+//			throws GFacException {
+//		try {
+//			ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+//			ErrorModel details = new ErrorModel();
+//			details.setActualErrorMessage(errorMessage);
+//			details.setCreationTime(Calendar.getInstance().getTimeInMillis());
+//			// FIXME : Save error model according to new data model
+////            experimentCatalog.add(ExpCatChildDataType.ERROR_DETAIL, details,
+////					jobExecutionContext.getTaskData().getTaskID());
+//		} catch (Exception e) {
+//			throw new GFacException("Error persisting job status"
+//					+ e.getLocalizedMessage(), e);
+//		}
+//	}
 
     public static Map<String, Object> getInputParamMap(List<InputDataObjectType> experimentData) throws GFacException {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -811,7 +811,19 @@ public class GFacUtils {
         ApplicationParallelismType parallelism = appDepDescription.getParallelism();
         if (parallelism != null) {
             if (parallelism == ApplicationParallelismType.MPI || parallelism == ApplicationParallelismType.OPENMP || parallelism == ApplicationParallelismType.OPENMP_MPI) {
-	            jobDescriptor.setJobSubmitter("ibrun");
+                // FIXME this needs to be fixed once parallaliasation retrieved by app catalog
+                if (appDepDescription.getComputeHostId().contains("stampede")){
+                    jobDescriptor.setJobSubmitter("ibrun");
+                }else if (appDepDescription.getComputeHostId().contains("bigred2")){
+                    jobDescriptor.setJobSubmitter("aprun -n");
+                }else if (appDepDescription.getComputeHostId().contains("comet")){
+                    jobDescriptor.setJobSubmitter("mpiexec");
+                }else if (appDepDescription.getComputeHostId().contains("gordon")){
+                    jobDescriptor.setJobSubmitter(" mpirun_rsh -hostfile $PBS_NODEFILE -np");
+                }else {
+                    jobDescriptor.setJobSubmitter("ibrun");
+                }
+
             }
         }
         return jobDescriptor;
@@ -944,7 +956,7 @@ public class GFacUtils {
         }
     }
 
-    public static File createJobFile(JobDescriptor jobDescriptor, JobManagerConfiguration jobManagerConfiguration) throws GFacException {
+    public static File createJobFile(TaskContext taskContext, JobDescriptor jobDescriptor, JobManagerConfiguration jobManagerConfiguration) throws GFacException {
         try {
             TransformerFactory factory = TransformerFactory.newInstance();
             URL resource = GFacUtils.class.getClassLoader().getResource(jobManagerConfiguration.getJobDescriptionTemplateName());
@@ -970,8 +982,10 @@ public class GFacUtils {
             // creating a temporary file using pbs script generated above
             int number = new SecureRandom().nextInt();
             number = (number < 0 ? -number : number);
-            tempJobFile = new File(Integer.toString(number) + jobManagerConfiguration.getScriptExtension());
-            FileUtils.writeStringToFile(tempJobFile, scriptContent);
+
+	        tempJobFile = new File(GFacUtils.getLocalDataDir(taskContext), Integer.toString(number) +
+			        jobManagerConfiguration.getScriptExtension());
+	        FileUtils.writeStringToFile(tempJobFile, scriptContent);
             return tempJobFile;
         } catch (IOException e) {
             throw new GFacException("Error occurred while creating the temp job script file", e);
@@ -982,6 +996,11 @@ public class GFacUtils {
         }
     }
 
+	public static File getLocalDataDir(TaskContext taskContext) {
+		String outputPath = ServerSettings.getLocalDataLocation();
+		outputPath = (outputPath.endsWith(File.separator) ? outputPath : outputPath + File.separator);
+		return new File(outputPath + taskContext.getParentProcessContext() .getProcessId());
+	}
 	public static String getExperimentNodePath(String experimentId) {
 		return ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE, experimentId);
 	}
@@ -1093,14 +1112,54 @@ public class GFacUtils {
         }
     }
 
+    public static void saveExperimentError(ProcessContext processContext, ErrorModel errorModel) throws GFacException {
+        try {
+            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            String experimentId = processContext.getExperimentId();
+            errorModel.setErrorId(AiravataUtils.getId("EXP_ERROR"));
+            experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_ERROR, errorModel, experimentId);
+        } catch (RegistryException e) {
+            String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
+                    + " : - Error while updating experiment errors";
+            throw new GFacException(msg, e);
+        }
+    }
+
+    public static void saveProcessError(ProcessContext processContext, ErrorModel errorModel) throws GFacException {
+        try {
+            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            errorModel.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
+            experimentCatalog.add(ExpCatChildDataType.PROCESS_ERROR, errorModel, processContext.getProcessId());
+        } catch (RegistryException e) {
+            String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
+                    + " : - Error while updating process errors";
+            throw new GFacException(msg, e);
+        }
+    }
+
+    public static void saveTaskError(TaskContext taskContext, ErrorModel errorModel) throws GFacException {
+        try {
+            ExperimentCatalog experimentCatalog = taskContext.getParentProcessContext().getExperimentCatalog();
+            String taskId = taskContext.getTaskId();
+            errorModel.setErrorId(AiravataUtils.getId("TASK_ERROR"));
+            experimentCatalog.add(ExpCatChildDataType.TASK_ERROR, errorModel, taskId);
+        } catch (RegistryException e) {
+            String msg = "expId: " + taskContext.getParentProcessContext().getExperimentId() + " processId: " + taskContext.getParentProcessContext().getProcessId() + " taskId: " + taskContext.getTaskId()
+                    + " : - Error while updating task errors";
+            throw new GFacException(msg, e);
+        }
+    }
+
 	public static void handleProcessInterrupt(ProcessContext processContext) throws GFacException {
 		if (processContext.isCancel()) {
 			ProcessStatus pStatus = new ProcessStatus(ProcessState.CANCELLING);
 			pStatus.setReason("Process Cancel triggered");
+			processContext.setProcessStatus(pStatus);
 			saveAndPublishProcessStatus(processContext);
 			// do cancel operation here
 
 			pStatus.setState(ProcessState.CANCELED);
+			processContext.setProcessStatus(pStatus);
 			saveAndPublishProcessStatus(processContext);
 		}else if (processContext.isHandOver()) {
 

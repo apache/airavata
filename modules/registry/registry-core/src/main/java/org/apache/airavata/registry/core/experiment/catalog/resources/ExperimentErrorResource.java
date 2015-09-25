@@ -128,7 +128,6 @@ public class ExperimentErrorResource extends AbstractExpCatResource {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
-            em.getTransaction().begin();
             ExperimentError experimentError;
             if(experimentId == null || errorId == null){
                 throw new RegistryException("Does not have the experiment id or error id");
@@ -137,6 +136,10 @@ public class ExperimentErrorResource extends AbstractExpCatResource {
             experimentErrorPK.setExperimentId(experimentId);
             experimentErrorPK.setErrorId(errorId);
             experimentError = em.find(ExperimentError.class, experimentErrorPK);
+            em.close();
+
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
             if(experimentError == null){
                 experimentError = new ExperimentError();
             }

@@ -172,7 +172,6 @@ public class ExperimentInputResource extends AbstractExpCatResource {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
-            em.getTransaction().begin();
             if(experimentId == null){
                 throw new RegistryException("Does not have the experiment id");
             }
@@ -181,6 +180,10 @@ public class ExperimentInputResource extends AbstractExpCatResource {
             experimentInputPK.setExperimentId(experimentId);
             experimentInputPK.setInputName(inputName);
             experimentInput = em.find(ExperimentInput.class, experimentInputPK);
+            em.close();
+
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
             if(experimentInput == null){
                 experimentInput = new ExperimentInput();
             }
@@ -196,7 +199,7 @@ public class ExperimentInputResource extends AbstractExpCatResource {
             experimentInput.setIsRequired(isRequired);
             experimentInput.setRequiredToAddedToCmd(requiredToAddedToCmd);
             experimentInput.setDataStaged(dataStaged);
-            em.persist(experimentInput);
+            em.merge(experimentInput);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {

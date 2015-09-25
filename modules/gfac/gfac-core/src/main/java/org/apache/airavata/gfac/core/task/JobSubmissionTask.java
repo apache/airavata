@@ -20,7 +20,12 @@
  */
 package org.apache.airavata.gfac.core.task;
 
+import org.apache.airavata.gfac.core.context.TaskContext;
+import org.apache.airavata.model.status.JobStatus;
+
 public interface JobSubmissionTask extends Task {
+
+	JobStatus cancel(TaskContext taskcontext) throws TaskException;
 
 }
 

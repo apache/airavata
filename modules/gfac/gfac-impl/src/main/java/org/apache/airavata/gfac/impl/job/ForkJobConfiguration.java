@@ -42,6 +42,7 @@ public class ForkJobConfiguration implements JobManagerConfiguration {
         this.jobDescriptionTemplateName = jobDescriptionTemplateName;
         this.scriptExtension = scriptExtension;
         this.parser = parser;
+	    installedPath = installedPath.trim();
         if (installedPath.endsWith("/")) {
             this.installedPath = installedPath;
         } else {
@@ -52,7 +53,7 @@ public class ForkJobConfiguration implements JobManagerConfiguration {
 
     @Override
     public RawCommandInfo getCancelCommand(String jobID) {
-        return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.DELETION) + " " +
+        return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.DELETION).trim() + " " +
                 jobID);
     }
 
@@ -83,7 +84,7 @@ public class ForkJobConfiguration implements JobManagerConfiguration {
 
     @Override
     public RawCommandInfo getSubmitCommand(String workingDirectory, String forkFilePath) {
-        return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.SUBMISSION) + " " +
+        return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.SUBMISSION).trim() + " " +
                 workingDirectory + File.separator + FilenameUtils.getName(forkFilePath));
     }
 

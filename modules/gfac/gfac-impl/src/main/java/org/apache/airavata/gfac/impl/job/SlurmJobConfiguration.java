@@ -42,6 +42,7 @@ public class SlurmJobConfiguration implements JobManagerConfiguration {
         this.jobDescriptionTemplateName = jobDescriptionTemplateName;
         this.scriptExtension = scriptExtension;
         this.parser = parser;
+	    installedPath = installedPath.trim();
         if (installedPath.endsWith("/")) {
             this.installedPath = installedPath;
         } else {
@@ -51,7 +52,7 @@ public class SlurmJobConfiguration implements JobManagerConfiguration {
     }
 
     public RawCommandInfo getCancelCommand(String jobID) {
-        return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.DELETION) + " " + jobID);
+        return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.DELETION).trim() + " " + jobID);
     }
 
     public String getJobDescriptionTemplateName() {
@@ -63,7 +64,7 @@ public class SlurmJobConfiguration implements JobManagerConfiguration {
     }
 
     public RawCommandInfo getMonitorCommand(String jobID) {
-        return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.JOB_MONITORING) + " -j " + jobID);
+        return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.JOB_MONITORING).trim() + " -j " + jobID);
     }
 
     public String getScriptExtension() {
@@ -71,7 +72,7 @@ public class SlurmJobConfiguration implements JobManagerConfiguration {
     }
 
     public RawCommandInfo getSubmitCommand(String workingDirectory,String pbsFilePath) {
-          return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.SUBMISSION) + " " +
+          return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.SUBMISSION).trim() + " " +
                 workingDirectory + File.separator + FilenameUtils.getName(pbsFilePath));
     }
 
@@ -92,26 +93,26 @@ public class SlurmJobConfiguration implements JobManagerConfiguration {
     }
 
     public RawCommandInfo getUserBasedMonitorCommand(String userName) {
-        return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.JOB_MONITORING) + " -u " + userName);
+        return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.JOB_MONITORING).trim() + " -u " + userName);
     }
 
     @Override
     public RawCommandInfo getJobIdMonitorCommand(String jobName, String userName) {
-        return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.JOB_MONITORING) + " -n " + jobName + " -u " + userName);
+        return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.JOB_MONITORING).trim() + " -n " + jobName + " -u " + userName);
     }
 
     @Override
     public String getBaseCancelCommand() {
-	    return jMCommands.get(JobManagerCommand.DELETION);
+	    return jMCommands.get(JobManagerCommand.DELETION).trim();
     }
 
     @Override
     public String getBaseMonitorCommand() {
-        return jMCommands.get(JobManagerCommand.JOB_MONITORING);
+        return jMCommands.get(JobManagerCommand.JOB_MONITORING).trim();
     }
 
     @Override
     public String getBaseSubmitCommand() {
-        return jMCommands.get(JobManagerCommand.SUBMISSION);
+        return jMCommands.get(JobManagerCommand.SUBMISSION).trim();
     }
 }
