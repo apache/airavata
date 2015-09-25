@@ -20,12 +20,9 @@
 */
 package org.apache.airavata.registry.core.app.catalog.model;
 
-import org.apache.openjpa.persistence.DataCache;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
-@DataCache
 @Entity
 @Table(name ="CONFIGURATION")
 @IdClass(Configuration_PK.class)

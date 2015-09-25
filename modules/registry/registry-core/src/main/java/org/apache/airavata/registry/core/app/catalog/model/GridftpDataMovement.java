@@ -29,9 +29,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.apache.openjpa.persistence.DataCache;
-
-@DataCache
 @Entity
 @Table(name = "GRIDFTP_DATA_MOVEMENT")
 public class GridftpDataMovement implements Serializable {
