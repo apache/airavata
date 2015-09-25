@@ -29,6 +29,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 @Entity
+@Cacheable
 @Table(name = "TASK")
 public class Task {
     private final static Logger logger = LoggerFactory.getLogger(Task.class);

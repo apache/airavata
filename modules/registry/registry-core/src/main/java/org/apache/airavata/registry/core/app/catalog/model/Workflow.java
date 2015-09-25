@@ -21,13 +21,11 @@
 
 package org.apache.airavata.registry.core.app.catalog.model;
 
-import org.apache.openjpa.persistence.DataCache;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-@DataCache
 @Entity
 @Table(name = "WORKFLOW")
 public class Workflow implements Serializable {

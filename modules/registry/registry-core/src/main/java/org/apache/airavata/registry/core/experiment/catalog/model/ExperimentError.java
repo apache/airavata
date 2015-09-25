@@ -27,6 +27,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
+@Cacheable
 @Table(name = "EXPERIMENT_ERROR")
 @IdClass(ExperimentErrorPK.class)
 public class ExperimentError {

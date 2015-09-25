@@ -27,6 +27,7 @@ import javax.persistence.*;
 import java.lang.*;
 
 @Entity
+@Cacheable
 @Table(name = "PROCESS_RESOURCE_SCHEDULE")
 public class ProcessResourceSchedule {
     private final static Logger logger = LoggerFactory.getLogger(ProcessResourceSchedule.class);

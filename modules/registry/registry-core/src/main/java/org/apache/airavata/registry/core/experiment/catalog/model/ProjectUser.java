@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.*;
 
 @Entity
+@Cacheable
 @Table(name = "PROJECT_USER")
 @IdClass(ProjectUserPK.class)
 public class ProjectUser {

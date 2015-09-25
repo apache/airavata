@@ -27,6 +27,7 @@ import javax.persistence.*;
 import java.lang.*;
 
 @Entity
+@Cacheable
 @Table(name = "PROCESS_INPUT")
 @IdClass(ProcessInputPK.class)
 public class ProcessInput {

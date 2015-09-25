@@ -28,6 +28,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 @Entity
+@Cacheable
 @Table(name = "PROJECT")
 public class Project {
     private final static Logger logger = LoggerFactory.getLogger(Project.class);

@@ -27,6 +27,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
+@Cacheable
 @Table(name = "EXPERIMENT_STATUS")
 @IdClass(ExperimentStatusPK.class)
 public class ExperimentStatus {

@@ -21,12 +21,9 @@
 
 package org.apache.airavata.registry.core.app.catalog.model;
 
-import org.apache.openjpa.persistence.DataCache;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
-@DataCache
 @Entity
 @Table(name = "MODULE_LOAD_CMD")
 @IdClass(ModuleLoadCmd_PK.class)
