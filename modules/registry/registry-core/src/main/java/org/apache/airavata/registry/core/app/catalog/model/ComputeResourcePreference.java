@@ -55,6 +55,8 @@ public class ComputeResourcePreference {
     private String projectNumber;
     @Column(name = "LOGIN_USERNAME")
     private String loginUserName;
+    @Column(name = "RESOURCE_CS_TOKEN")
+    private String computeResourceCSToken;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "RESOURCE_ID")
@@ -150,5 +152,13 @@ public class ComputeResourcePreference {
 
     public void setLoginUserName(String loginUserName) {
         this.loginUserName = loginUserName;
+    }
+
+    public String getComputeResourceCSToken() {
+        return computeResourceCSToken;
+    }
+
+    public void setComputeResourceCSToken(String computeResourceCSToken) {
+        this.computeResourceCSToken = computeResourceCSToken;
     }
 }

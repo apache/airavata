@@ -53,6 +53,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
     public static final String WORKFLOW_OUTPUT = "WorkflowOutput";
     public static final String GATEWAY_PROFILE = "GatewayProfile";
     public static final String COMPUTE_RESOURCE_PREFERENCE = "ComputeResourcePreference";
+    public static final String DATA_STORAGE_PREFERENCE = "DataStoragePreference";
 	public static final String BATCH_QUEUE = "BatchQueue";
 	public static final String COMPUTE_RESOURCE_FILE_SYSTEM = "ComputeResourceFileSystem";
 	public static final String JOB_SUBMISSION_INTERFACE = "JobSubmissionInterface";
@@ -282,6 +283,11 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
         public static final String PREFERED_BATCH_QUEUE = "batchQueue";
         public static final String SCRATCH_LOCATION = "scratchLocation";
         public static final String ALLOCATION_PROJECT_NUMBER = "projectNumber";
+    }
+
+    public final class DataStoragePreferenceConstants {
+        public static final String GATEWAY_ID = "gatewayId";
+        public static final String DATA_MOVEMENT_ID = "dataMovementId";
     }
 
     // Batch Queue Table

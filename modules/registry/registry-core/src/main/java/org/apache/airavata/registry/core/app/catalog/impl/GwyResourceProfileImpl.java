@@ -22,6 +22,7 @@
 package org.apache.airavata.registry.core.app.catalog.impl;
 
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.gatewayprofile.DataStoragePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
@@ -58,6 +59,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     resource.setGatewayId(profileResource.getGatewayID());
                     resource.setOverrideByAiravata(preference.isOverridebyAiravata());
                     resource.setLoginUserName(preference.getLoginUserName());
+                    resource.setResourceCSToken(preference.getResourceSpecificCredentialStoreToken());
                     if (preference.getPreferredJobSubmissionProtocol() != null){
                         resource.setPreferredJobProtocol(preference.getPreferredJobSubmissionProtocol().toString());
                     }
@@ -69,6 +71,19 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     resource.setBatchQueue(preference.getPreferredBatchQueue());
                     resource.setProjectNumber(preference.getAllocationProjectNumber());
                     resource.setScratchLocation(preference.getScratchLocation());
+                    resource.save();
+                }
+            }
+            List<DataStoragePreference> dataStoragePreferences = gatewayProfile.getDataStoragePreferences();
+            if (dataStoragePreferences != null && !dataStoragePreferences.isEmpty()){
+                for (DataStoragePreference storagePreference : dataStoragePreferences){
+                    DataStoragePreferenceResource resource = new DataStoragePreferenceResource();
+                    resource.setDataMoveId(storagePreference.getDataMovememtResourceId());
+                    resource.setGatewayId(profileResource.getGatewayID());
+                    resource.setFsRootLocation(storagePreference.getFileSystemRootLocation());
+                    resource.setLoginUserName(storagePreference.getLoginUserName());
+                    resource.setResourceCSToken(storagePreference.getResourceSpecificCredentialStoreToken());
+                    resource.setGatewayProfile(profileResource);
                     resource.save();
                 }
             }
@@ -110,6 +125,19 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     resource.save();
                 }
             }
+            List<DataStoragePreference> dataStoragePreferences = updatedProfile.getDataStoragePreferences();
+            if (dataStoragePreferences != null && !dataStoragePreferences.isEmpty()){
+                for (DataStoragePreference storagePreference : dataStoragePreferences){
+                    DataStoragePreferenceResource resource = new DataStoragePreferenceResource();
+                    resource.setDataMoveId(storagePreference.getDataMovememtResourceId());
+                    resource.setGatewayId(profileResource.getGatewayID());
+                    resource.setFsRootLocation(storagePreference.getFileSystemRootLocation());
+                    resource.setLoginUserName(storagePreference.getLoginUserName());
+                    resource.setResourceCSToken(storagePreference.getResourceSpecificCredentialStoreToken());
+                    resource.setGatewayProfile(profileResource);
+                    resource.save();
+                }
+            }
         }catch (Exception e) {
             logger.error("Error while updating gateway profile...", e);
             throw new AppCatalogException(e);
@@ -124,7 +152,8 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
             ComputeHostPreferenceResource prefResource = new ComputeHostPreferenceResource();
             List<AppCatalogResource> computePrefList = prefResource.get(AppCatAbstractResource.ComputeResourcePreferenceConstants.GATEWAY_ID, gatewayId);
             List<ComputeResourcePreference> computeResourcePreferences = AppCatalogThriftConversion.getComputeResourcePreferences(computePrefList);
-            return AppCatalogThriftConversion.getGatewayResourceProfile(gwresource, computeResourcePreferences);
+            List<DataStoragePreference> dataStoragePreferences = getAllDataStoragePreferences(gatewayId);
+            return AppCatalogThriftConversion.getGatewayResourceProfile(gwresource, computeResourcePreferences, dataStoragePreferences);
         }catch (Exception e) {
             logger.error("Error while retrieving gateway profile...", e);
             throw new AppCatalogException(e);
@@ -150,6 +179,21 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
             Map<String, String> ids = new HashMap<String, String>();
             ids.put(AppCatAbstractResource.ComputeResourcePreferenceConstants.GATEWAY_ID, gatewayId);
             ids.put(AppCatAbstractResource.ComputeResourcePreferenceConstants.RESOURCE_ID, preferenceId);
+            resource.remove(ids);
+            return true;
+        }catch (Exception e) {
+            logger.error("Error while deleting gateway profile...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public boolean removeDataStoragePreferenceFromGateway(String gatewayId, String preferenceId) throws AppCatalogException {
+        try {
+            DataStoragePreferenceResource resource = new DataStoragePreferenceResource();
+            Map<String, String> ids = new HashMap<String, String>();
+            ids.put(AppCatAbstractResource.DataStoragePreferenceConstants.GATEWAY_ID, gatewayId);
+            ids.put(AppCatAbstractResource.DataStoragePreferenceConstants.DATA_MOVEMENT_ID, preferenceId);
             resource.remove(ids);
             return true;
         }catch (Exception e) {
@@ -194,6 +238,26 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
         return null;
     }
 
+    @Override
+    public DataStoragePreference getDataStoragePreference(String gatewayId, String dataMoveId) throws AppCatalogException {
+        try {
+            DataStoragePreferenceResource prefResource = new DataStoragePreferenceResource();
+            List<AppCatalogResource> computePrefList = prefResource.get(AppCatAbstractResource.ComputeResourcePreferenceConstants.GATEWAY_ID, gatewayId);
+            for (AppCatalogResource resource : computePrefList){
+                DataStoragePreferenceResource dsP = (DataStoragePreferenceResource) resource;
+                if (dsP.getDataMoveId() != null && !dsP.getDataMoveId().equals("")){
+                    if (dsP.getDataMoveId().equals(dataMoveId)){
+                        return AppCatalogThriftConversion.getDataStoragePreference(dsP);
+                    }
+                }
+            }
+        }catch (Exception e) {
+            logger.error("Error while retrieving data storage preference...", e);
+            throw new AppCatalogException(e);
+        }
+        return null;
+    }
+
     /**
      * @param gatewayId
      * @return
@@ -206,6 +270,18 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
             return AppCatalogThriftConversion.getComputeResourcePreferences(computePrefList);
         }catch (Exception e) {
             logger.error("Error while retrieving compute resource preference...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public List<DataStoragePreference> getAllDataStoragePreferences(String gatewayId) throws AppCatalogException {
+        try {
+            DataStoragePreferenceResource prefResource = new DataStoragePreferenceResource();
+            List<AppCatalogResource> dataStoragePrefList = prefResource.get(AppCatAbstractResource.DataStoragePreferenceConstants.GATEWAY_ID, gatewayId);
+            return AppCatalogThriftConversion.getDataStoragePreferences(dataStoragePrefList);
+        }catch (Exception e) {
+            logger.error("Error while retrieving data storage preference...", e);
             throw new AppCatalogException(e);
         }
     }
@@ -238,7 +314,8 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                 for (AppCatalogResource resource : resourceList){
                     GatewayProfileResource gatewayProfileResource = (GatewayProfileResource)resource;
                     List<ComputeResourcePreference> computeResourcePreferences = getAllComputeResourcePreferences(gatewayProfileResource.getGatewayID());
-                    GatewayResourceProfile gatewayResourceProfile = AppCatalogThriftConversion.getGatewayResourceProfile(gatewayProfileResource, computeResourcePreferences);
+                    List<DataStoragePreference> dataStoragePreferences = getAllDataStoragePreferences(gatewayProfileResource.getGatewayID());
+                    GatewayResourceProfile gatewayResourceProfile = AppCatalogThriftConversion.getGatewayResourceProfile(gatewayProfileResource, computeResourcePreferences, dataStoragePreferences);
                     gatewayResourceProfileList.add(gatewayResourceProfile);
                 }
             }

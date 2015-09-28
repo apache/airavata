@@ -1958,6 +1958,16 @@ class Iface:
     """
     pass
 
+  def addGatewayDataStoragePreference(self, authzToken, gatewayID, dataMoveId, dataStoragePreference):
+    """
+    Parameters:
+     - authzToken
+     - gatewayID
+     - dataMoveId
+     - dataStoragePreference
+    """
+    pass
+
   def getGatewayComputeResourcePreference(self, authzToken, gatewayID, computeResourceId):
     """
     Fetch a Compute Resource Preference of a registered gateway profile.
@@ -1979,6 +1989,15 @@ class Iface:
     """
     pass
 
+  def getGatewayDataStoragePreference(self, authzToken, gatewayID, dataMoveId):
+    """
+    Parameters:
+     - authzToken
+     - gatewayID
+     - dataMoveId
+    """
+    pass
+
   def getAllGatewayComputeResourcePreferences(self, authzToken, gatewayID):
     """
     Fetch all Compute Resource Preferences of a registered gateway profile.
@@ -1990,6 +2009,14 @@ class Iface:
       Returns the ComputeResourcePreference object.
 
 
+    Parameters:
+     - authzToken
+     - gatewayID
+    """
+    pass
+
+  def getAllGatewayDataStoragePreferences(self, authzToken, gatewayID):
+    """
     Parameters:
      - authzToken
      - gatewayID
@@ -2031,6 +2058,16 @@ class Iface:
     """
     pass
 
+  def updateGatewayDataStoragePreference(self, authzToken, gatewayID, dataMoveId, dataStoragePreference):
+    """
+    Parameters:
+     - authzToken
+     - gatewayID
+     - dataMoveId
+     - dataStoragePreference
+    """
+    pass
+
   def deleteGatewayComputeResourcePreference(self, authzToken, gatewayID, computeResourceId):
     """
     Delete the Compute Resource Preference of a registered gateway profile.
@@ -2049,6 +2086,15 @@ class Iface:
      - authzToken
      - gatewayID
      - computeResourceId
+    """
+    pass
+
+  def deleteGatewayDataStoragePreference(self, authzToken, gatewayID, dataMoveId):
+    """
+    Parameters:
+     - authzToken
+     - gatewayID
+     - dataMoveId
     """
     pass
 
@@ -7648,6 +7694,51 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "addGatewayComputeResourcePreference failed: unknown result");
 
+  def addGatewayDataStoragePreference(self, authzToken, gatewayID, dataMoveId, dataStoragePreference):
+    """
+    Parameters:
+     - authzToken
+     - gatewayID
+     - dataMoveId
+     - dataStoragePreference
+    """
+    self.send_addGatewayDataStoragePreference(authzToken, gatewayID, dataMoveId, dataStoragePreference)
+    return self.recv_addGatewayDataStoragePreference()
+
+  def send_addGatewayDataStoragePreference(self, authzToken, gatewayID, dataMoveId, dataStoragePreference):
+    self._oprot.writeMessageBegin('addGatewayDataStoragePreference', TMessageType.CALL, self._seqid)
+    args = addGatewayDataStoragePreference_args()
+    args.authzToken = authzToken
+    args.gatewayID = gatewayID
+    args.dataMoveId = dataMoveId
+    args.dataStoragePreference = dataStoragePreference
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_addGatewayDataStoragePreference(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = addGatewayDataStoragePreference_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "addGatewayDataStoragePreference failed: unknown result");
+
   def getGatewayComputeResourcePreference(self, authzToken, gatewayID, computeResourceId):
     """
     Fetch a Compute Resource Preference of a registered gateway profile.
@@ -7703,6 +7794,49 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getGatewayComputeResourcePreference failed: unknown result");
 
+  def getGatewayDataStoragePreference(self, authzToken, gatewayID, dataMoveId):
+    """
+    Parameters:
+     - authzToken
+     - gatewayID
+     - dataMoveId
+    """
+    self.send_getGatewayDataStoragePreference(authzToken, gatewayID, dataMoveId)
+    return self.recv_getGatewayDataStoragePreference()
+
+  def send_getGatewayDataStoragePreference(self, authzToken, gatewayID, dataMoveId):
+    self._oprot.writeMessageBegin('getGatewayDataStoragePreference', TMessageType.CALL, self._seqid)
+    args = getGatewayDataStoragePreference_args()
+    args.authzToken = authzToken
+    args.gatewayID = gatewayID
+    args.dataMoveId = dataMoveId
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_getGatewayDataStoragePreference(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = getGatewayDataStoragePreference_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getGatewayDataStoragePreference failed: unknown result");
+
   def getAllGatewayComputeResourcePreferences(self, authzToken, gatewayID):
     """
     Fetch all Compute Resource Preferences of a registered gateway profile.
@@ -7752,6 +7886,47 @@ class Client(Iface):
     if result.ae is not None:
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllGatewayComputeResourcePreferences failed: unknown result");
+
+  def getAllGatewayDataStoragePreferences(self, authzToken, gatewayID):
+    """
+    Parameters:
+     - authzToken
+     - gatewayID
+    """
+    self.send_getAllGatewayDataStoragePreferences(authzToken, gatewayID)
+    return self.recv_getAllGatewayDataStoragePreferences()
+
+  def send_getAllGatewayDataStoragePreferences(self, authzToken, gatewayID):
+    self._oprot.writeMessageBegin('getAllGatewayDataStoragePreferences', TMessageType.CALL, self._seqid)
+    args = getAllGatewayDataStoragePreferences_args()
+    args.authzToken = authzToken
+    args.gatewayID = gatewayID
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_getAllGatewayDataStoragePreferences(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = getAllGatewayDataStoragePreferences_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllGatewayDataStoragePreferences failed: unknown result");
 
   def getAllGatewayComputeResources(self, authzToken):
     """
@@ -7855,6 +8030,51 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "updateGatewayComputeResourcePreference failed: unknown result");
 
+  def updateGatewayDataStoragePreference(self, authzToken, gatewayID, dataMoveId, dataStoragePreference):
+    """
+    Parameters:
+     - authzToken
+     - gatewayID
+     - dataMoveId
+     - dataStoragePreference
+    """
+    self.send_updateGatewayDataStoragePreference(authzToken, gatewayID, dataMoveId, dataStoragePreference)
+    return self.recv_updateGatewayDataStoragePreference()
+
+  def send_updateGatewayDataStoragePreference(self, authzToken, gatewayID, dataMoveId, dataStoragePreference):
+    self._oprot.writeMessageBegin('updateGatewayDataStoragePreference', TMessageType.CALL, self._seqid)
+    args = updateGatewayDataStoragePreference_args()
+    args.authzToken = authzToken
+    args.gatewayID = gatewayID
+    args.dataMoveId = dataMoveId
+    args.dataStoragePreference = dataStoragePreference
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_updateGatewayDataStoragePreference(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = updateGatewayDataStoragePreference_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "updateGatewayDataStoragePreference failed: unknown result");
+
   def deleteGatewayComputeResourcePreference(self, authzToken, gatewayID, computeResourceId):
     """
     Delete the Compute Resource Preference of a registered gateway profile.
@@ -7909,6 +8129,49 @@ class Client(Iface):
     if result.ae is not None:
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "deleteGatewayComputeResourcePreference failed: unknown result");
+
+  def deleteGatewayDataStoragePreference(self, authzToken, gatewayID, dataMoveId):
+    """
+    Parameters:
+     - authzToken
+     - gatewayID
+     - dataMoveId
+    """
+    self.send_deleteGatewayDataStoragePreference(authzToken, gatewayID, dataMoveId)
+    return self.recv_deleteGatewayDataStoragePreference()
+
+  def send_deleteGatewayDataStoragePreference(self, authzToken, gatewayID, dataMoveId):
+    self._oprot.writeMessageBegin('deleteGatewayDataStoragePreference', TMessageType.CALL, self._seqid)
+    args = deleteGatewayDataStoragePreference_args()
+    args.authzToken = authzToken
+    args.gatewayID = gatewayID
+    args.dataMoveId = dataMoveId
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_deleteGatewayDataStoragePreference(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = deleteGatewayDataStoragePreference_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "deleteGatewayDataStoragePreference failed: unknown result");
 
   def getAllWorkflows(self, authzToken, gatewayId):
     """
@@ -8308,11 +8571,16 @@ class Processor(Iface, TProcessor):
     self._processMap["updateGatewayResourceProfile"] = Processor.process_updateGatewayResourceProfile
     self._processMap["deleteGatewayResourceProfile"] = Processor.process_deleteGatewayResourceProfile
     self._processMap["addGatewayComputeResourcePreference"] = Processor.process_addGatewayComputeResourcePreference
+    self._processMap["addGatewayDataStoragePreference"] = Processor.process_addGatewayDataStoragePreference
     self._processMap["getGatewayComputeResourcePreference"] = Processor.process_getGatewayComputeResourcePreference
+    self._processMap["getGatewayDataStoragePreference"] = Processor.process_getGatewayDataStoragePreference
     self._processMap["getAllGatewayComputeResourcePreferences"] = Processor.process_getAllGatewayComputeResourcePreferences
+    self._processMap["getAllGatewayDataStoragePreferences"] = Processor.process_getAllGatewayDataStoragePreferences
     self._processMap["getAllGatewayComputeResources"] = Processor.process_getAllGatewayComputeResources
     self._processMap["updateGatewayComputeResourcePreference"] = Processor.process_updateGatewayComputeResourcePreference
+    self._processMap["updateGatewayDataStoragePreference"] = Processor.process_updateGatewayDataStoragePreference
     self._processMap["deleteGatewayComputeResourcePreference"] = Processor.process_deleteGatewayComputeResourcePreference
+    self._processMap["deleteGatewayDataStoragePreference"] = Processor.process_deleteGatewayDataStoragePreference
     self._processMap["getAllWorkflows"] = Processor.process_getAllWorkflows
     self._processMap["getWorkflow"] = Processor.process_getWorkflow
     self._processMap["deleteWorkflow"] = Processor.process_deleteWorkflow
@@ -10468,6 +10736,26 @@ class Processor(Iface, TProcessor):
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
+  def process_addGatewayDataStoragePreference(self, seqid, iprot, oprot):
+    args = addGatewayDataStoragePreference_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = addGatewayDataStoragePreference_result()
+    try:
+      result.success = self._handler.addGatewayDataStoragePreference(args.authzToken, args.gatewayID, args.dataMoveId, args.dataStoragePreference)
+    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException, ae:
+      result.ae = ae
+    oprot.writeMessageBegin("addGatewayDataStoragePreference", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
   def process_getGatewayComputeResourcePreference(self, seqid, iprot, oprot):
     args = getGatewayComputeResourcePreference_args()
     args.read(iprot)
@@ -10488,6 +10776,26 @@ class Processor(Iface, TProcessor):
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
+  def process_getGatewayDataStoragePreference(self, seqid, iprot, oprot):
+    args = getGatewayDataStoragePreference_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = getGatewayDataStoragePreference_result()
+    try:
+      result.success = self._handler.getGatewayDataStoragePreference(args.authzToken, args.gatewayID, args.dataMoveId)
+    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException, ae:
+      result.ae = ae
+    oprot.writeMessageBegin("getGatewayDataStoragePreference", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
   def process_getAllGatewayComputeResourcePreferences(self, seqid, iprot, oprot):
     args = getAllGatewayComputeResourcePreferences_args()
     args.read(iprot)
@@ -10504,6 +10812,26 @@ class Processor(Iface, TProcessor):
     except apache.airavata.api.error.ttypes.AuthorizationException, ae:
       result.ae = ae
     oprot.writeMessageBegin("getAllGatewayComputeResourcePreferences", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_getAllGatewayDataStoragePreferences(self, seqid, iprot, oprot):
+    args = getAllGatewayDataStoragePreferences_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = getAllGatewayDataStoragePreferences_result()
+    try:
+      result.success = self._handler.getAllGatewayDataStoragePreferences(args.authzToken, args.gatewayID)
+    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException, ae:
+      result.ae = ae
+    oprot.writeMessageBegin("getAllGatewayDataStoragePreferences", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -10548,6 +10876,26 @@ class Processor(Iface, TProcessor):
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
+  def process_updateGatewayDataStoragePreference(self, seqid, iprot, oprot):
+    args = updateGatewayDataStoragePreference_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = updateGatewayDataStoragePreference_result()
+    try:
+      result.success = self._handler.updateGatewayDataStoragePreference(args.authzToken, args.gatewayID, args.dataMoveId, args.dataStoragePreference)
+    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException, ae:
+      result.ae = ae
+    oprot.writeMessageBegin("updateGatewayDataStoragePreference", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
   def process_deleteGatewayComputeResourcePreference(self, seqid, iprot, oprot):
     args = deleteGatewayComputeResourcePreference_args()
     args.read(iprot)
@@ -10564,6 +10912,26 @@ class Processor(Iface, TProcessor):
     except apache.airavata.api.error.ttypes.AuthorizationException, ae:
       result.ae = ae
     oprot.writeMessageBegin("deleteGatewayComputeResourcePreference", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_deleteGatewayDataStoragePreference(self, seqid, iprot, oprot):
+    args = deleteGatewayDataStoragePreference_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = deleteGatewayDataStoragePreference_result()
+    try:
+      result.success = self._handler.deleteGatewayDataStoragePreference(args.authzToken, args.gatewayID, args.dataMoveId)
+    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException, ae:
+      result.ae = ae
+    oprot.writeMessageBegin("deleteGatewayDataStoragePreference", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -33955,6 +34323,240 @@ class addGatewayComputeResourcePreference_result:
   def __ne__(self, other):
     return not (self == other)
 
+class addGatewayDataStoragePreference_args:
+  """
+  Attributes:
+   - authzToken
+   - gatewayID
+   - dataMoveId
+   - dataStoragePreference
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'gatewayID', None, None, ), # 2
+    (3, TType.STRING, 'dataMoveId', None, None, ), # 3
+    (4, TType.STRUCT, 'dataStoragePreference', (apache.airavata.model.appcatalog.gatewayprofile.ttypes.DataStoragePreference, apache.airavata.model.appcatalog.gatewayprofile.ttypes.DataStoragePreference.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, authzToken=None, gatewayID=None, dataMoveId=None, dataStoragePreference=None,):
+    self.authzToken = authzToken
+    self.gatewayID = gatewayID
+    self.dataMoveId = dataMoveId
+    self.dataStoragePreference = dataStoragePreference
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.gatewayID = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.dataMoveId = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.dataStoragePreference = apache.airavata.model.appcatalog.gatewayprofile.ttypes.DataStoragePreference()
+          self.dataStoragePreference.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('addGatewayDataStoragePreference_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.gatewayID is not None:
+      oprot.writeFieldBegin('gatewayID', TType.STRING, 2)
+      oprot.writeString(self.gatewayID)
+      oprot.writeFieldEnd()
+    if self.dataMoveId is not None:
+      oprot.writeFieldBegin('dataMoveId', TType.STRING, 3)
+      oprot.writeString(self.dataMoveId)
+      oprot.writeFieldEnd()
+    if self.dataStoragePreference is not None:
+      oprot.writeFieldBegin('dataStoragePreference', TType.STRUCT, 4)
+      self.dataStoragePreference.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.gatewayID is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayID is unset!')
+    if self.dataMoveId is None:
+      raise TProtocol.TProtocolException(message='Required field dataMoveId is unset!')
+    if self.dataStoragePreference is None:
+      raise TProtocol.TProtocolException(message='Required field dataStoragePreference is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.gatewayID)
+    value = (value * 31) ^ hash(self.dataMoveId)
+    value = (value * 31) ^ hash(self.dataStoragePreference)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class addGatewayDataStoragePreference_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.BOOL, 'success', None, None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.BOOL:
+          self.success = iprot.readBool();
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('addGatewayDataStoragePreference_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.BOOL, 0)
+      oprot.writeBool(self.success)
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
 class getGatewayComputeResourcePreference_args:
   """
   Attributes:
@@ -34127,6 +34729,225 @@ class getGatewayComputeResourcePreference_result:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('getGatewayComputeResourcePreference_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getGatewayDataStoragePreference_args:
+  """
+  Attributes:
+   - authzToken
+   - gatewayID
+   - dataMoveId
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'gatewayID', None, None, ), # 2
+    (3, TType.STRING, 'dataMoveId', None, None, ), # 3
+  )
+
+  def __init__(self, authzToken=None, gatewayID=None, dataMoveId=None,):
+    self.authzToken = authzToken
+    self.gatewayID = gatewayID
+    self.dataMoveId = dataMoveId
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.gatewayID = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.dataMoveId = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getGatewayDataStoragePreference_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.gatewayID is not None:
+      oprot.writeFieldBegin('gatewayID', TType.STRING, 2)
+      oprot.writeString(self.gatewayID)
+      oprot.writeFieldEnd()
+    if self.dataMoveId is not None:
+      oprot.writeFieldBegin('dataMoveId', TType.STRING, 3)
+      oprot.writeString(self.dataMoveId)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.gatewayID is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayID is unset!')
+    if self.dataMoveId is None:
+      raise TProtocol.TProtocolException(message='Required field dataMoveId is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.gatewayID)
+    value = (value * 31) ^ hash(self.dataMoveId)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getGatewayDataStoragePreference_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.STRUCT, 'success', (apache.airavata.model.appcatalog.gatewayprofile.ttypes.DataStoragePreference, apache.airavata.model.appcatalog.gatewayprofile.ttypes.DataStoragePreference.thrift_spec), None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRUCT:
+          self.success = apache.airavata.model.appcatalog.gatewayprofile.ttypes.DataStoragePreference()
+          self.success.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getGatewayDataStoragePreference_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.STRUCT, 0)
       self.success.write(oprot)
@@ -34386,6 +35207,218 @@ class getAllGatewayComputeResourcePreferences_result:
   def __ne__(self, other):
     return not (self == other)
 
+class getAllGatewayDataStoragePreferences_args:
+  """
+  Attributes:
+   - authzToken
+   - gatewayID
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'gatewayID', None, None, ), # 2
+  )
+
+  def __init__(self, authzToken=None, gatewayID=None,):
+    self.authzToken = authzToken
+    self.gatewayID = gatewayID
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.gatewayID = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getAllGatewayDataStoragePreferences_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.gatewayID is not None:
+      oprot.writeFieldBegin('gatewayID', TType.STRING, 2)
+      oprot.writeString(self.gatewayID)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.gatewayID is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayID is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.gatewayID)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getAllGatewayDataStoragePreferences_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.appcatalog.gatewayprofile.ttypes.DataStoragePreference, apache.airavata.model.appcatalog.gatewayprofile.ttypes.DataStoragePreference.thrift_spec)), None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.LIST:
+          self.success = []
+          (_etype229, _size226) = iprot.readListBegin()
+          for _i230 in xrange(_size226):
+            _elem231 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.DataStoragePreference()
+            _elem231.read(iprot)
+            self.success.append(_elem231)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getAllGatewayDataStoragePreferences_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.LIST, 0)
+      oprot.writeListBegin(TType.STRUCT, len(self.success))
+      for iter232 in self.success:
+        iter232.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
 class getAllGatewayComputeResources_args:
   """
   Attributes:
@@ -34491,11 +35524,11 @@ class getAllGatewayComputeResources_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype229, _size226) = iprot.readListBegin()
-          for _i230 in xrange(_size226):
-            _elem231 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.GatewayResourceProfile()
-            _elem231.read(iprot)
-            self.success.append(_elem231)
+          (_etype236, _size233) = iprot.readListBegin()
+          for _i237 in xrange(_size233):
+            _elem238 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.GatewayResourceProfile()
+            _elem238.read(iprot)
+            self.success.append(_elem238)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -34536,8 +35569,8 @@ class getAllGatewayComputeResources_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter232 in self.success:
-        iter232.write(oprot)
+      for iter239 in self.success:
+        iter239.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -34817,6 +35850,240 @@ class updateGatewayComputeResourcePreference_result:
   def __ne__(self, other):
     return not (self == other)
 
+class updateGatewayDataStoragePreference_args:
+  """
+  Attributes:
+   - authzToken
+   - gatewayID
+   - dataMoveId
+   - dataStoragePreference
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'gatewayID', None, None, ), # 2
+    (3, TType.STRING, 'dataMoveId', None, None, ), # 3
+    (4, TType.STRUCT, 'dataStoragePreference', (apache.airavata.model.appcatalog.gatewayprofile.ttypes.DataStoragePreference, apache.airavata.model.appcatalog.gatewayprofile.ttypes.DataStoragePreference.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, authzToken=None, gatewayID=None, dataMoveId=None, dataStoragePreference=None,):
+    self.authzToken = authzToken
+    self.gatewayID = gatewayID
+    self.dataMoveId = dataMoveId
+    self.dataStoragePreference = dataStoragePreference
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.gatewayID = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.dataMoveId = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.dataStoragePreference = apache.airavata.model.appcatalog.gatewayprofile.ttypes.DataStoragePreference()
+          self.dataStoragePreference.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('updateGatewayDataStoragePreference_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.gatewayID is not None:
+      oprot.writeFieldBegin('gatewayID', TType.STRING, 2)
+      oprot.writeString(self.gatewayID)
+      oprot.writeFieldEnd()
+    if self.dataMoveId is not None:
+      oprot.writeFieldBegin('dataMoveId', TType.STRING, 3)
+      oprot.writeString(self.dataMoveId)
+      oprot.writeFieldEnd()
+    if self.dataStoragePreference is not None:
+      oprot.writeFieldBegin('dataStoragePreference', TType.STRUCT, 4)
+      self.dataStoragePreference.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.gatewayID is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayID is unset!')
+    if self.dataMoveId is None:
+      raise TProtocol.TProtocolException(message='Required field dataMoveId is unset!')
+    if self.dataStoragePreference is None:
+      raise TProtocol.TProtocolException(message='Required field dataStoragePreference is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.gatewayID)
+    value = (value * 31) ^ hash(self.dataMoveId)
+    value = (value * 31) ^ hash(self.dataStoragePreference)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class updateGatewayDataStoragePreference_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.BOOL, 'success', None, None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.BOOL:
+          self.success = iprot.readBool();
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('updateGatewayDataStoragePreference_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.BOOL, 0)
+      oprot.writeBool(self.success)
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
 class deleteGatewayComputeResourcePreference_args:
   """
   Attributes:
@@ -35035,6 +36302,224 @@ class deleteGatewayComputeResourcePreference_result:
   def __ne__(self, other):
     return not (self == other)
 
+class deleteGatewayDataStoragePreference_args:
+  """
+  Attributes:
+   - authzToken
+   - gatewayID
+   - dataMoveId
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'gatewayID', None, None, ), # 2
+    (3, TType.STRING, 'dataMoveId', None, None, ), # 3
+  )
+
+  def __init__(self, authzToken=None, gatewayID=None, dataMoveId=None,):
+    self.authzToken = authzToken
+    self.gatewayID = gatewayID
+    self.dataMoveId = dataMoveId
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.gatewayID = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.dataMoveId = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('deleteGatewayDataStoragePreference_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.gatewayID is not None:
+      oprot.writeFieldBegin('gatewayID', TType.STRING, 2)
+      oprot.writeString(self.gatewayID)
+      oprot.writeFieldEnd()
+    if self.dataMoveId is not None:
+      oprot.writeFieldBegin('dataMoveId', TType.STRING, 3)
+      oprot.writeString(self.dataMoveId)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.gatewayID is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayID is unset!')
+    if self.dataMoveId is None:
+      raise TProtocol.TProtocolException(message='Required field dataMoveId is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.gatewayID)
+    value = (value * 31) ^ hash(self.dataMoveId)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class deleteGatewayDataStoragePreference_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.BOOL, 'success', None, None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.BOOL:
+          self.success = iprot.readBool();
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('deleteGatewayDataStoragePreference_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.BOOL, 0)
+      oprot.writeBool(self.success)
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
 class getAllWorkflows_args:
   """
   Attributes:
@@ -35155,10 +36640,10 @@ class getAllWorkflows_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype236, _size233) = iprot.readListBegin()
-          for _i237 in xrange(_size233):
-            _elem238 = iprot.readString();
-            self.success.append(_elem238)
+          (_etype243, _size240) = iprot.readListBegin()
+          for _i244 in xrange(_size240):
+            _elem245 = iprot.readString();
+            self.success.append(_elem245)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -35199,8 +36684,8 @@ class getAllWorkflows_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRING, len(self.success))
-      for iter239 in self.success:
-        oprot.writeString(iter239)
+      for iter246 in self.success:
+        oprot.writeString(iter246)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
