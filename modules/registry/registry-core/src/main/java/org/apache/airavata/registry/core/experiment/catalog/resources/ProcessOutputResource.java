@@ -153,8 +153,9 @@ public class ProcessOutputResource extends AbstractExpCatResource {
     public void save() throws RegistryException{
         EntityManager em = null;
         try {
-            if(processId == null){
-                throw new RegistryException("Does not have the process id");
+            if (processId == null || outputName == null) {
+                throw new RegistryException("Primary keys must have not null values. ProcessId:" + processId
+                        + " OutputName:" + outputName);
             }
             em = ExpCatResourceUtils.getEntityManager();
 
