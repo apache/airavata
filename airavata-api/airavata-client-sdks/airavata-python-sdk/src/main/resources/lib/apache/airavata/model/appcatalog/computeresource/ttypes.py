@@ -1125,6 +1125,13 @@ class SSHJobSubmission:
   sshPort:
    If a non-default port needs to used, specify it.
 
+  batchQueueEmailSenders:
+   If a resource always sends the monitoring from a specific address, specify the
+    full email address. If a resource sends emails from multiple addresses (
+     example: based on the submitted login node) then use the wildchar * to indicate
+     the same. Example: *@*.example.com or *@example.com
+
+
   Attributes:
    - jobSubmissionInterfaceId
    - securityProtocol
@@ -1132,6 +1139,7 @@ class SSHJobSubmission:
    - alternativeSSHHostName
    - sshPort
    - monitorMode
+   - batchQueueEmailSenders
   """
 
   thrift_spec = (
@@ -1142,15 +1150,17 @@ class SSHJobSubmission:
     (4, TType.STRING, 'alternativeSSHHostName', None, None, ), # 4
     (5, TType.I32, 'sshPort', None, 22, ), # 5
     (6, TType.I32, 'monitorMode', None, None, ), # 6
+    (7, TType.LIST, 'batchQueueEmailSenders', (TType.STRING,None), None, ), # 7
   )
 
-  def __init__(self, jobSubmissionInterfaceId=thrift_spec[1][4], securityProtocol=None, resourceJobManager=None, alternativeSSHHostName=None, sshPort=thrift_spec[5][4], monitorMode=None,):
+  def __init__(self, jobSubmissionInterfaceId=thrift_spec[1][4], securityProtocol=None, resourceJobManager=None, alternativeSSHHostName=None, sshPort=thrift_spec[5][4], monitorMode=None, batchQueueEmailSenders=None,):
     self.jobSubmissionInterfaceId = jobSubmissionInterfaceId
     self.securityProtocol = securityProtocol
     self.resourceJobManager = resourceJobManager
     self.alternativeSSHHostName = alternativeSSHHostName
     self.sshPort = sshPort
     self.monitorMode = monitorMode
+    self.batchQueueEmailSenders = batchQueueEmailSenders
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1192,6 +1202,16 @@ class SSHJobSubmission:
           self.monitorMode = iprot.readI32();
         else:
           iprot.skip(ftype)
+      elif fid == 7:
+        if ftype == TType.LIST:
+          self.batchQueueEmailSenders = []
+          (_etype19, _size16) = iprot.readListBegin()
+          for _i20 in xrange(_size16):
+            _elem21 = iprot.readString();
+            self.batchQueueEmailSenders.append(_elem21)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1226,6 +1246,13 @@ class SSHJobSubmission:
       oprot.writeFieldBegin('monitorMode', TType.I32, 6)
       oprot.writeI32(self.monitorMode)
       oprot.writeFieldEnd()
+    if self.batchQueueEmailSenders is not None:
+      oprot.writeFieldBegin('batchQueueEmailSenders', TType.LIST, 7)
+      oprot.writeListBegin(TType.STRING, len(self.batchQueueEmailSenders))
+      for iter22 in self.batchQueueEmailSenders:
+        oprot.writeString(iter22)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -1247,6 +1274,7 @@ class SSHJobSubmission:
     value = (value * 31) ^ hash(self.alternativeSSHHostName)
     value = (value * 31) ^ hash(self.sshPort)
     value = (value * 31) ^ hash(self.monitorMode)
+    value = (value * 31) ^ hash(self.batchQueueEmailSenders)
     return value
 
   def __repr__(self):
@@ -1302,10 +1330,10 @@ class GlobusJobSubmission:
       elif fid == 3:
         if ftype == TType.LIST:
           self.globusGateKeeperEndPoint = []
-          (_etype19, _size16) = iprot.readListBegin()
-          for _i20 in xrange(_size16):
-            _elem21 = iprot.readString();
-            self.globusGateKeeperEndPoint.append(_elem21)
+          (_etype26, _size23) = iprot.readListBegin()
+          for _i27 in xrange(_size23):
+            _elem28 = iprot.readString();
+            self.globusGateKeeperEndPoint.append(_elem28)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -1330,8 +1358,8 @@ class GlobusJobSubmission:
     if self.globusGateKeeperEndPoint is not None:
       oprot.writeFieldBegin('globusGateKeeperEndPoint', TType.LIST, 3)
       oprot.writeListBegin(TType.STRING, len(self.globusGateKeeperEndPoint))
-      for iter22 in self.globusGateKeeperEndPoint:
-        oprot.writeString(iter22)
+      for iter29 in self.globusGateKeeperEndPoint:
+        oprot.writeString(iter29)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -1919,20 +1947,20 @@ class ComputeResourceDescription:
       elif fid == 3:
         if ftype == TType.LIST:
           self.hostAliases = []
-          (_etype26, _size23) = iprot.readListBegin()
-          for _i27 in xrange(_size23):
-            _elem28 = iprot.readString();
-            self.hostAliases.append(_elem28)
+          (_etype33, _size30) = iprot.readListBegin()
+          for _i34 in xrange(_size30):
+            _elem35 = iprot.readString();
+            self.hostAliases.append(_elem35)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 4:
         if ftype == TType.LIST:
           self.ipAddresses = []
-          (_etype32, _size29) = iprot.readListBegin()
-          for _i33 in xrange(_size29):
-            _elem34 = iprot.readString();
-            self.ipAddresses.append(_elem34)
+          (_etype39, _size36) = iprot.readListBegin()
+          for _i40 in xrange(_size36):
+            _elem41 = iprot.readString();
+            self.ipAddresses.append(_elem41)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -1949,44 +1977,44 @@ class ComputeResourceDescription:
       elif fid == 7:
         if ftype == TType.LIST:
           self.batchQueues = []
-          (_etype38, _size35) = iprot.readListBegin()
-          for _i39 in xrange(_size35):
-            _elem40 = BatchQueue()
-            _elem40.read(iprot)
-            self.batchQueues.append(_elem40)
+          (_etype45, _size42) = iprot.readListBegin()
+          for _i46 in xrange(_size42):
+            _elem47 = BatchQueue()
+            _elem47.read(iprot)
+            self.batchQueues.append(_elem47)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 8:
         if ftype == TType.MAP:
           self.fileSystems = {}
-          (_ktype42, _vtype43, _size41 ) = iprot.readMapBegin()
-          for _i45 in xrange(_size41):
-            _key46 = iprot.readI32();
-            _val47 = iprot.readString();
-            self.fileSystems[_key46] = _val47
+          (_ktype49, _vtype50, _size48 ) = iprot.readMapBegin()
+          for _i52 in xrange(_size48):
+            _key53 = iprot.readI32();
+            _val54 = iprot.readString();
+            self.fileSystems[_key53] = _val54
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 9:
         if ftype == TType.LIST:
           self.jobSubmissionInterfaces = []
-          (_etype51, _size48) = iprot.readListBegin()
-          for _i52 in xrange(_size48):
-            _elem53 = JobSubmissionInterface()
-            _elem53.read(iprot)
-            self.jobSubmissionInterfaces.append(_elem53)
+          (_etype58, _size55) = iprot.readListBegin()
+          for _i59 in xrange(_size55):
+            _elem60 = JobSubmissionInterface()
+            _elem60.read(iprot)
+            self.jobSubmissionInterfaces.append(_elem60)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 10:
         if ftype == TType.LIST:
           self.dataMovementInterfaces = []
-          (_etype57, _size54) = iprot.readListBegin()
-          for _i58 in xrange(_size54):
-            _elem59 = DataMovementInterface()
-            _elem59.read(iprot)
-            self.dataMovementInterfaces.append(_elem59)
+          (_etype64, _size61) = iprot.readListBegin()
+          for _i65 in xrange(_size61):
+            _elem66 = DataMovementInterface()
+            _elem66.read(iprot)
+            self.dataMovementInterfaces.append(_elem66)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -2016,15 +2044,15 @@ class ComputeResourceDescription:
     if self.hostAliases is not None:
       oprot.writeFieldBegin('hostAliases', TType.LIST, 3)
       oprot.writeListBegin(TType.STRING, len(self.hostAliases))
-      for iter60 in self.hostAliases:
-        oprot.writeString(iter60)
+      for iter67 in self.hostAliases:
+        oprot.writeString(iter67)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ipAddresses is not None:
       oprot.writeFieldBegin('ipAddresses', TType.LIST, 4)
       oprot.writeListBegin(TType.STRING, len(self.ipAddresses))
-      for iter61 in self.ipAddresses:
-        oprot.writeString(iter61)
+      for iter68 in self.ipAddresses:
+        oprot.writeString(iter68)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.resourceDescription is not None:
@@ -2038,30 +2066,30 @@ class ComputeResourceDescription:
     if self.batchQueues is not None:
       oprot.writeFieldBegin('batchQueues', TType.LIST, 7)
       oprot.writeListBegin(TType.STRUCT, len(self.batchQueues))
-      for iter62 in self.batchQueues:
-        iter62.write(oprot)
+      for iter69 in self.batchQueues:
+        iter69.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.fileSystems is not None:
       oprot.writeFieldBegin('fileSystems', TType.MAP, 8)
       oprot.writeMapBegin(TType.I32, TType.STRING, len(self.fileSystems))
-      for kiter63,viter64 in self.fileSystems.items():
-        oprot.writeI32(kiter63)
-        oprot.writeString(viter64)
+      for kiter70,viter71 in self.fileSystems.items():
+        oprot.writeI32(kiter70)
+        oprot.writeString(viter71)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.jobSubmissionInterfaces is not None:
       oprot.writeFieldBegin('jobSubmissionInterfaces', TType.LIST, 9)
       oprot.writeListBegin(TType.STRUCT, len(self.jobSubmissionInterfaces))
-      for iter65 in self.jobSubmissionInterfaces:
-        iter65.write(oprot)
+      for iter72 in self.jobSubmissionInterfaces:
+        iter72.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.dataMovementInterfaces is not None:
       oprot.writeFieldBegin('dataMovementInterfaces', TType.LIST, 10)
       oprot.writeListBegin(TType.STRUCT, len(self.dataMovementInterfaces))
-      for iter66 in self.dataMovementInterfaces:
-        iter66.write(oprot)
+      for iter73 in self.dataMovementInterfaces:
+        iter73.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.maxMemoryPerNode is not None:

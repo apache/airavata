@@ -1994,6 +1994,13 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
+  bool addGatewayDataStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string gatewayID,
+              3: required string dataMoveId,
+              4: required gateway_resource_profile_model.DataStoragePreference dataStoragePreference)
+    	throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
   /**
    * Fetch a Compute Resource Preference of a registered gateway profile.
    *
@@ -2015,6 +2022,14 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
+  gateway_resource_profile_model.DataStoragePreference getGatewayDataStoragePreference(1: required security_model.AuthzToken authzToken,
+              2: required string gatewayID,
+              3: required string dataMoveId)
+    	throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
+
   /**
    * Fetch all Compute Resource Preferences of a registered gateway profile.
    *
@@ -2032,6 +2047,13 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
+
+  list<gateway_resource_profile_model.DataStoragePreference>
+              getAllGatewayDataStoragePreferences(1: required security_model.AuthzToken authzToken, 2: required string gatewayID)
+    	throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
 
   /**
   * Fetch all gateway profiles registered
@@ -2067,6 +2089,14 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
+  bool updateGatewayDataStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string gatewayID,
+              3: required string dataMoveId,
+              4: required gateway_resource_profile_model.DataStoragePreference dataStoragePreference)
+    	throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
+
   /**
    * Delete the Compute Resource Preference of a registered gateway profile.
    *
@@ -2086,6 +2116,13 @@ service Airavata {
             2: airavata_errors.AiravataClientException ace,
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
+
+  bool deleteGatewayDataStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string gatewayID,
+              3: required string dataMoveId)
+    	throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
 
   list<string> getAllWorkflows(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
           throws (1: airavata_errors.InvalidRequestException ire,

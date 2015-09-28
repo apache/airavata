@@ -75,7 +75,7 @@ struct DataStoragePreference {
     1: required string dataMovememtResourceId,
     2: optional string loginUserName,
     3: optional string fileSystemRootLocation,
-    3: optional string resourceSpecificCredentialStoreToken
+    4: optional string resourceSpecificCredentialStoreToken
 }
 
 /**
