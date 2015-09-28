@@ -46,6 +46,10 @@ use Thrift\Exception\TApplicationException;
  *    allocation is approved, an allocation number is assigned. Before passing this number with job submittions, the
  *    account to be used has to be added to the allocation.
  * 
+ * resourceSpecificCredentialStoreToken:
+ *  Resource specific credential store token. If this token is specified, then it is superceeded by the gateway's
+ *   default credential store.
+ * 
  */
 class ComputeResourcePreference {
   static $_TSPEC;
@@ -82,6 +86,10 @@ class ComputeResourcePreference {
    * @var string
    */
   public $allocationProjectNumber = null;
+  /**
+   * @var string
+   */
+  public $resourceSpecificCredentialStoreToken = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -118,6 +126,10 @@ class ComputeResourcePreference {
           'var' => 'allocationProjectNumber',
           'type' => TType::STRING,
           ),
+        9 => array(
+          'var' => 'resourceSpecificCredentialStoreToken',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -144,6 +156,9 @@ class ComputeResourcePreference {
       }
       if (isset($vals['allocationProjectNumber'])) {
         $this->allocationProjectNumber = $vals['allocationProjectNumber'];
+      }
+      if (isset($vals['resourceSpecificCredentialStoreToken'])) {
+        $this->resourceSpecificCredentialStoreToken = $vals['resourceSpecificCredentialStoreToken'];
       }
     }
   }
@@ -223,6 +238,13 @@ class ComputeResourcePreference {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 9:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->resourceSpecificCredentialStoreToken);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -276,6 +298,155 @@ class ComputeResourcePreference {
       $xfer += $output->writeString($this->allocationProjectNumber);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->resourceSpecificCredentialStoreToken !== null) {
+      $xfer += $output->writeFieldBegin('resourceSpecificCredentialStoreToken', TType::STRING, 9);
+      $xfer += $output->writeString($this->resourceSpecificCredentialStoreToken);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class DataStoragePreference {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $dataMovememtResourceId = null;
+  /**
+   * @var string
+   */
+  public $loginUserName = null;
+  /**
+   * @var string
+   */
+  public $fileSystemRootLocation = null;
+  /**
+   * @var string
+   */
+  public $resourceSpecificCredentialStoreToken = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'dataMovememtResourceId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'loginUserName',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'fileSystemRootLocation',
+          'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'resourceSpecificCredentialStoreToken',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['dataMovememtResourceId'])) {
+        $this->dataMovememtResourceId = $vals['dataMovememtResourceId'];
+      }
+      if (isset($vals['loginUserName'])) {
+        $this->loginUserName = $vals['loginUserName'];
+      }
+      if (isset($vals['fileSystemRootLocation'])) {
+        $this->fileSystemRootLocation = $vals['fileSystemRootLocation'];
+      }
+      if (isset($vals['resourceSpecificCredentialStoreToken'])) {
+        $this->resourceSpecificCredentialStoreToken = $vals['resourceSpecificCredentialStoreToken'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'DataStoragePreference';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->dataMovememtResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->loginUserName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->fileSystemRootLocation);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->resourceSpecificCredentialStoreToken);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('DataStoragePreference');
+    if ($this->dataMovememtResourceId !== null) {
+      $xfer += $output->writeFieldBegin('dataMovememtResourceId', TType::STRING, 1);
+      $xfer += $output->writeString($this->dataMovememtResourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->loginUserName !== null) {
+      $xfer += $output->writeFieldBegin('loginUserName', TType::STRING, 2);
+      $xfer += $output->writeString($this->loginUserName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->fileSystemRootLocation !== null) {
+      $xfer += $output->writeFieldBegin('fileSystemRootLocation', TType::STRING, 3);
+      $xfer += $output->writeString($this->fileSystemRootLocation);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->resourceSpecificCredentialStoreToken !== null) {
+      $xfer += $output->writeFieldBegin('resourceSpecificCredentialStoreToken', TType::STRING, 4);
+      $xfer += $output->writeString($this->resourceSpecificCredentialStoreToken);
+      $xfer += $output->writeFieldEnd();
+    }
     $xfer += $output->writeFieldStop();
     $xfer += $output->writeStructEnd();
     return $xfer;
@@ -287,11 +458,13 @@ class ComputeResourcePreference {
  * Gateway Resource Profile
  * 
  * gatewayID:
- *   Unique identifier for the gateway assigned by Airavata. Corelate this to Airavata Admin API Gateway Registration.
+ *  Unique identifier for the gateway assigned by Airavata. Corelate this to Airavata Admin API Gateway Registration.
+ * 
+ * credentialStoreToken:
+ *  Gateway's defualt credential store token.
  * 
  * computeResourcePreferences:
  *  List of resource preferences for each of the registered compute resources.
- * 
  * 
  */
 class GatewayResourceProfile {
@@ -302,9 +475,17 @@ class GatewayResourceProfile {
    */
   public $gatewayID = null;
   /**
+   * @var string
+   */
+  public $credentialStoreToken = null;
+  /**
    * @var \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference[]
    */
   public $computeResourcePreferences = null;
+  /**
+   * @var \Airavata\Model\AppCatalog\GatewayProfile\DataStoragePreference[]
+   */
+  public $dataStoragePreferences = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -314,6 +495,10 @@ class GatewayResourceProfile {
           'type' => TType::STRING,
           ),
         2 => array(
+          'var' => 'credentialStoreToken',
+          'type' => TType::STRING,
+          ),
+        3 => array(
           'var' => 'computeResourcePreferences',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -322,14 +507,29 @@ class GatewayResourceProfile {
             'class' => '\Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference',
             ),
           ),
+        4 => array(
+          'var' => 'dataStoragePreferences',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\AppCatalog\GatewayProfile\DataStoragePreference',
+            ),
+          ),
         );
     }
     if (is_array($vals)) {
       if (isset($vals['gatewayID'])) {
         $this->gatewayID = $vals['gatewayID'];
       }
+      if (isset($vals['credentialStoreToken'])) {
+        $this->credentialStoreToken = $vals['credentialStoreToken'];
+      }
       if (isset($vals['computeResourcePreferences'])) {
         $this->computeResourcePreferences = $vals['computeResourcePreferences'];
+      }
+      if (isset($vals['dataStoragePreferences'])) {
+        $this->dataStoragePreferences = $vals['dataStoragePreferences'];
       }
     }
   }
@@ -361,6 +561,13 @@ class GatewayResourceProfile {
           }
           break;
         case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->credentialStoreToken);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
           if ($ftype == TType::LST) {
             $this->computeResourcePreferences = array();
             $_size0 = 0;
@@ -372,6 +579,24 @@ class GatewayResourceProfile {
               $elem5 = new \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference();
               $xfer += $elem5->read($input);
               $this->computeResourcePreferences []= $elem5;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::LST) {
+            $this->dataStoragePreferences = array();
+            $_size6 = 0;
+            $_etype9 = 0;
+            $xfer += $input->readListBegin($_etype9, $_size6);
+            for ($_i10 = 0; $_i10 < $_size6; ++$_i10)
+            {
+              $elem11 = null;
+              $elem11 = new \Airavata\Model\AppCatalog\GatewayProfile\DataStoragePreference();
+              $xfer += $elem11->read($input);
+              $this->dataStoragePreferences []= $elem11;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -396,17 +621,39 @@ class GatewayResourceProfile {
       $xfer += $output->writeString($this->gatewayID);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->credentialStoreToken !== null) {
+      $xfer += $output->writeFieldBegin('credentialStoreToken', TType::STRING, 2);
+      $xfer += $output->writeString($this->credentialStoreToken);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->computeResourcePreferences !== null) {
       if (!is_array($this->computeResourcePreferences)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('computeResourcePreferences', TType::LST, 2);
+      $xfer += $output->writeFieldBegin('computeResourcePreferences', TType::LST, 3);
       {
         $output->writeListBegin(TType::STRUCT, count($this->computeResourcePreferences));
         {
-          foreach ($this->computeResourcePreferences as $iter6)
+          foreach ($this->computeResourcePreferences as $iter12)
           {
-            $xfer += $iter6->write($output);
+            $xfer += $iter12->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->dataStoragePreferences !== null) {
+      if (!is_array($this->dataStoragePreferences)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('dataStoragePreferences', TType::LST, 4);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->dataStoragePreferences));
+        {
+          foreach ($this->dataStoragePreferences as $iter13)
+          {
+            $xfer += $iter13->write($output);
           }
         }
         $output->writeListEnd();

@@ -130,11 +130,16 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  bool updateGatewayResourceProfile(AuthzToken authzToken, string gatewayID, GatewayResourceProfile gatewayResourceProfile)')
   print('  bool deleteGatewayResourceProfile(AuthzToken authzToken, string gatewayID)')
   print('  bool addGatewayComputeResourcePreference(AuthzToken authzToken, string gatewayID, string computeResourceId, ComputeResourcePreference computeResourcePreference)')
+  print('  bool addGatewayDataStoragePreference(AuthzToken authzToken, string gatewayID, string dataMoveId, DataStoragePreference dataStoragePreference)')
   print('  ComputeResourcePreference getGatewayComputeResourcePreference(AuthzToken authzToken, string gatewayID, string computeResourceId)')
+  print('  DataStoragePreference getGatewayDataStoragePreference(AuthzToken authzToken, string gatewayID, string dataMoveId)')
   print('   getAllGatewayComputeResourcePreferences(AuthzToken authzToken, string gatewayID)')
+  print('   getAllGatewayDataStoragePreferences(AuthzToken authzToken, string gatewayID)')
   print('   getAllGatewayComputeResources(AuthzToken authzToken)')
   print('  bool updateGatewayComputeResourcePreference(AuthzToken authzToken, string gatewayID, string computeResourceId, ComputeResourcePreference computeResourcePreference)')
+  print('  bool updateGatewayDataStoragePreference(AuthzToken authzToken, string gatewayID, string dataMoveId, DataStoragePreference dataStoragePreference)')
   print('  bool deleteGatewayComputeResourcePreference(AuthzToken authzToken, string gatewayID, string computeResourceId)')
+  print('  bool deleteGatewayDataStoragePreference(AuthzToken authzToken, string gatewayID, string dataMoveId)')
   print('   getAllWorkflows(AuthzToken authzToken, string gatewayId)')
   print('  Workflow getWorkflow(AuthzToken authzToken, string workflowTemplateId)')
   print('  void deleteWorkflow(AuthzToken authzToken, string workflowTemplateId)')
@@ -834,17 +839,35 @@ elif cmd == 'addGatewayComputeResourcePreference':
     sys.exit(1)
   pp.pprint(client.addGatewayComputeResourcePreference(eval(args[0]),args[1],args[2],eval(args[3]),))
 
+elif cmd == 'addGatewayDataStoragePreference':
+  if len(args) != 4:
+    print('addGatewayDataStoragePreference requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.addGatewayDataStoragePreference(eval(args[0]),args[1],args[2],eval(args[3]),))
+
 elif cmd == 'getGatewayComputeResourcePreference':
   if len(args) != 3:
     print('getGatewayComputeResourcePreference requires 3 args')
     sys.exit(1)
   pp.pprint(client.getGatewayComputeResourcePreference(eval(args[0]),args[1],args[2],))
 
+elif cmd == 'getGatewayDataStoragePreference':
+  if len(args) != 3:
+    print('getGatewayDataStoragePreference requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.getGatewayDataStoragePreference(eval(args[0]),args[1],args[2],))
+
 elif cmd == 'getAllGatewayComputeResourcePreferences':
   if len(args) != 2:
     print('getAllGatewayComputeResourcePreferences requires 2 args')
     sys.exit(1)
   pp.pprint(client.getAllGatewayComputeResourcePreferences(eval(args[0]),args[1],))
+
+elif cmd == 'getAllGatewayDataStoragePreferences':
+  if len(args) != 2:
+    print('getAllGatewayDataStoragePreferences requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.getAllGatewayDataStoragePreferences(eval(args[0]),args[1],))
 
 elif cmd == 'getAllGatewayComputeResources':
   if len(args) != 1:
@@ -858,11 +881,23 @@ elif cmd == 'updateGatewayComputeResourcePreference':
     sys.exit(1)
   pp.pprint(client.updateGatewayComputeResourcePreference(eval(args[0]),args[1],args[2],eval(args[3]),))
 
+elif cmd == 'updateGatewayDataStoragePreference':
+  if len(args) != 4:
+    print('updateGatewayDataStoragePreference requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.updateGatewayDataStoragePreference(eval(args[0]),args[1],args[2],eval(args[3]),))
+
 elif cmd == 'deleteGatewayComputeResourcePreference':
   if len(args) != 3:
     print('deleteGatewayComputeResourcePreference requires 3 args')
     sys.exit(1)
   pp.pprint(client.deleteGatewayComputeResourcePreference(eval(args[0]),args[1],args[2],))
+
+elif cmd == 'deleteGatewayDataStoragePreference':
+  if len(args) != 3:
+    print('deleteGatewayDataStoragePreference requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.deleteGatewayDataStoragePreference(eval(args[0]),args[1],args[2],))
 
 elif cmd == 'getAllWorkflows':
   if len(args) != 2:

@@ -559,17 +559,18 @@ class LOCALDataMovement {
 void swap(LOCALDataMovement &a, LOCALDataMovement &b);
 
 typedef struct _SSHJobSubmission__isset {
-  _SSHJobSubmission__isset() : alternativeSSHHostName(false), sshPort(true), monitorMode(false) {}
+  _SSHJobSubmission__isset() : alternativeSSHHostName(false), sshPort(true), monitorMode(false), batchQueueEmailSenders(false) {}
   bool alternativeSSHHostName :1;
   bool sshPort :1;
   bool monitorMode :1;
+  bool batchQueueEmailSenders :1;
 } _SSHJobSubmission__isset;
 
 class SSHJobSubmission {
  public:
 
-  static const char* ascii_fingerprint; // = "A62183DAA7AFF027173705420A9D99D0";
-  static const uint8_t binary_fingerprint[16]; // = {0xA6,0x21,0x83,0xDA,0xA7,0xAF,0xF0,0x27,0x17,0x37,0x05,0x42,0x0A,0x9D,0x99,0xD0};
+  static const char* ascii_fingerprint; // = "46172F971809F7ECCCF7AB14291B87C6";
+  static const uint8_t binary_fingerprint[16]; // = {0x46,0x17,0x2F,0x97,0x18,0x09,0xF7,0xEC,0xCC,0xF7,0xAB,0x14,0x29,0x1B,0x87,0xC6};
 
   SSHJobSubmission(const SSHJobSubmission&);
   SSHJobSubmission& operator=(const SSHJobSubmission&);
@@ -583,6 +584,7 @@ class SSHJobSubmission {
   std::string alternativeSSHHostName;
   int32_t sshPort;
   MonitorMode::type monitorMode;
+  std::vector<std::string>  batchQueueEmailSenders;
 
   _SSHJobSubmission__isset __isset;
 
@@ -597,6 +599,8 @@ class SSHJobSubmission {
   void __set_sshPort(const int32_t val);
 
   void __set_monitorMode(const MonitorMode::type val);
+
+  void __set_batchQueueEmailSenders(const std::vector<std::string> & val);
 
   bool operator == (const SSHJobSubmission & rhs) const
   {
@@ -617,6 +621,10 @@ class SSHJobSubmission {
     if (__isset.monitorMode != rhs.__isset.monitorMode)
       return false;
     else if (__isset.monitorMode && !(monitorMode == rhs.monitorMode))
+      return false;
+    if (__isset.batchQueueEmailSenders != rhs.__isset.batchQueueEmailSenders)
+      return false;
+    else if (__isset.batchQueueEmailSenders && !(batchQueueEmailSenders == rhs.batchQueueEmailSenders))
       return false;
     return true;
   }

@@ -280,6 +280,13 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a Compute Resource Preference.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Compute Resource Preference.");
                 }
+            case DATA_STORAGE_PREFERENCE:
+                if (o instanceof DataStoragePreference){
+                    return createDataStoragePref((DataStoragePreference) o);
+                }else {
+                    logger.error("Object should be a data storage Preference.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a data storage Preference.");
+                }
             case APPLICATION_INPUT:
                 if (o instanceof ApplicationIntInput){
                     return createApplicationInput((ApplicationIntInput) o);
@@ -879,7 +886,21 @@ public class AppCatalogJPAUtils {
             resource.setScratchLocation(o.getScratchLocation());
             resource.setProjectNumber(o.getProjectNumber());
             resource.setLoginUserName(o.getLoginUserName());
+            resource.setResourceCSToken(o.getComputeResourceCSToken());
             resource.setComputeHostResource((ComputeResourceResource) createComputeResource(o.getComputeHostResource()));
+            resource.setGatewayProfile((GatewayProfileResource) createGatewayProfile(o.getGatewayProfile()));
+        }
+        return resource;
+    }
+
+    private static AppCatalogResource createDataStoragePref(DataStoragePreference o) {
+        DataStoragePreferenceResource resource = new DataStoragePreferenceResource();
+        if (o != null) {
+            resource.setGatewayId(o.getGatewayId());
+            resource.setDataMoveId(o.getDataMovementID());
+            resource.setLoginUserName(o.getLoginUserName());
+            resource.setResourceCSToken(o.getComputeResourceCSToken());
+            resource.setFsRootLocation(o.getFsRootLocation());
             resource.setGatewayProfile((GatewayProfileResource) createGatewayProfile(o.getGatewayProfile()));
         }
         return resource;
