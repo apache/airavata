@@ -51,6 +51,7 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
     private String scratchLocation;
     private String projectNumber;
     private String loginUserName;
+    private String resourceCSToken;
 
     private GatewayProfileResource gatewayProfile;
     private ComputeResourceResource computeHostResource;
@@ -141,6 +142,14 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
 
     public void setComputeHostResource(ComputeResourceResource computeHostResource) {
         this.computeHostResource = computeHostResource;
+    }
+
+    public String getResourceCSToken() {
+        return resourceCSToken;
+    }
+
+    public void setResourceCSToken(String resourceCSToken) {
+        this.resourceCSToken = resourceCSToken;
     }
 
     @Override
@@ -349,6 +358,7 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
                 existingPreference.setProjectNumber(projectNumber);
                 existingPreference.setBatchQueue(batchQueue);
                 existingPreference.setLoginUserName(loginUserName);
+                existingPreference.setComputeResourceCSToken(resourceCSToken);
                 em.merge(existingPreference);
             } else {
                 ComputeResourcePreference resourcePreference = new ComputeResourcePreference();
@@ -363,6 +373,7 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
                 resourcePreference.setProjectNumber(projectNumber);
                 resourcePreference.setBatchQueue(batchQueue);
                 resourcePreference.setLoginUserName(loginUserName);
+                resourcePreference.setComputeResourceCSToken(resourceCSToken);
                 em.persist(resourcePreference);
             }
             em.getTransaction().commit();

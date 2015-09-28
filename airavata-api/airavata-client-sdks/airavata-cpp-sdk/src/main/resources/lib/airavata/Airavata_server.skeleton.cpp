@@ -1972,6 +1972,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("addGatewayComputeResourcePreference\n");
   }
 
+  bool addGatewayDataStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& dataMoveId, const  ::apache::airavata::model::appcatalog::gatewayprofile::DataStoragePreference& dataStoragePreference) {
+    // Your implementation goes here
+    printf("addGatewayDataStoragePreference\n");
+  }
+
   /**
    * Fetch a Compute Resource Preference of a registered gateway profile.
    * 
@@ -1994,6 +1999,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getGatewayComputeResourcePreference\n");
   }
 
+  void getGatewayDataStoragePreference( ::apache::airavata::model::appcatalog::gatewayprofile::DataStoragePreference& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& dataMoveId) {
+    // Your implementation goes here
+    printf("getGatewayDataStoragePreference\n");
+  }
+
   /**
    * Fetch all Compute Resource Preferences of a registered gateway profile.
    * 
@@ -2010,6 +2020,11 @@ class AiravataHandler : virtual public AiravataIf {
   void getAllGatewayComputeResourcePreferences(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID) {
     // Your implementation goes here
     printf("getAllGatewayComputeResourcePreferences\n");
+  }
+
+  void getAllGatewayDataStoragePreferences(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::DataStoragePreference> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID) {
+    // Your implementation goes here
+    printf("getAllGatewayDataStoragePreferences\n");
   }
 
   /**
@@ -2049,6 +2064,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("updateGatewayComputeResourcePreference\n");
   }
 
+  bool updateGatewayDataStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& dataMoveId, const  ::apache::airavata::model::appcatalog::gatewayprofile::DataStoragePreference& dataStoragePreference) {
+    // Your implementation goes here
+    printf("updateGatewayDataStoragePreference\n");
+  }
+
   /**
    * Delete the Compute Resource Preference of a registered gateway profile.
    * 
@@ -2069,6 +2089,11 @@ class AiravataHandler : virtual public AiravataIf {
   bool deleteGatewayComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& computeResourceId) {
     // Your implementation goes here
     printf("deleteGatewayComputeResourcePreference\n");
+  }
+
+  bool deleteGatewayDataStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& dataMoveId) {
+    // Your implementation goes here
+    printf("deleteGatewayDataStoragePreference\n");
   }
 
   void getAllWorkflows(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {

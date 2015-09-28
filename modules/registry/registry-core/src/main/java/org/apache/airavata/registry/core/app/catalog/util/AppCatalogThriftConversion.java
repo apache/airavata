@@ -37,6 +37,7 @@ import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.UnicoreDataMovement;
 import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.gatewayprofile.DataStoragePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
@@ -744,6 +745,7 @@ public class AppCatalogThriftConversion {
         preference.setScratchLocation(resource.getScratchLocation());
         preference.setAllocationProjectNumber(resource.getProjectNumber());
         preference.setLoginUserName(resource.getLoginUserName());
+        preference.setResourceSpecificCredentialStoreToken(resource.getResourceCSToken());
         return preference;
     }
 
@@ -752,6 +754,25 @@ public class AppCatalogThriftConversion {
         if (resources != null && !resources.isEmpty()){
             for (AppCatalogResource resource : resources){
                  preferences.add(getComputeResourcePreference((ComputeHostPreferenceResource)resource));
+            }
+        }
+        return preferences;
+    }
+
+    public static DataStoragePreference getDataStoragePreference (DataStoragePreferenceResource resource){
+        DataStoragePreference preference = new DataStoragePreference();
+        preference.setDataMovememtResourceId(resource.getDataMoveId());
+        preference.setFileSystemRootLocation(resource.getFsRootLocation());
+        preference.setLoginUserName(resource.getLoginUserName());
+        preference.setResourceSpecificCredentialStoreToken(resource.getResourceCSToken());
+        return preference;
+    }
+
+    public static List<DataStoragePreference> getDataStoragePreferences (List<AppCatalogResource> resources){
+        List<DataStoragePreference> preferences = new ArrayList<DataStoragePreference>();
+        if (resources != null && !resources.isEmpty()){
+            for (AppCatalogResource resource : resources){
+                preferences.add(getDataStoragePreference((DataStoragePreferenceResource)resource));
             }
         }
         return preferences;
@@ -781,10 +802,11 @@ public class AppCatalogThriftConversion {
         return inputResources;
     }
 
-    public static GatewayResourceProfile getGatewayResourceProfile(GatewayProfileResource gw, List<ComputeResourcePreference> preferences){
+    public static GatewayResourceProfile getGatewayResourceProfile(GatewayProfileResource gw, List<ComputeResourcePreference> preferences, List<DataStoragePreference> storagePreferences){
         GatewayResourceProfile gatewayProfile = new GatewayResourceProfile();
         gatewayProfile.setGatewayID(gw.getGatewayID());
         gatewayProfile.setComputeResourcePreferences(preferences);
+        gatewayProfile.setDataStoragePreferences(storagePreferences);
         return gatewayProfile;
     }
 
