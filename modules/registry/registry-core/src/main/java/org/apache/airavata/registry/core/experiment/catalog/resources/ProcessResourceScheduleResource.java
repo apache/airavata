@@ -138,15 +138,16 @@ public class ProcessResourceScheduleResource extends AbstractExpCatResource {
                 throw new RegistryException("Does not have the process id");
             }
             em = ExpCatResourceUtils.getEntityManager();
-
             ProcessResourceSchedule processResourceSchedule;
-            processResourceSchedule = em.find(ProcessResourceSchedule.class, processId);
+            ProcessResourceSchedule existingSchedule = em.find(ProcessResourceSchedule.class, processId);
             em.close();
 
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            if(processResourceSchedule == null){
+            if(existingSchedule == null){
                 processResourceSchedule = new ProcessResourceSchedule();
+            }else {
+                processResourceSchedule = existingSchedule;
             }
             processResourceSchedule.setProcessId(processId);
             processResourceSchedule.setResourceHostId(resourceHostId);
@@ -156,7 +157,11 @@ public class ProcessResourceScheduleResource extends AbstractExpCatResource {
             processResourceSchedule.setQueueName(queueName);
             processResourceSchedule.setWallTimeLimit(wallTimeLimit);
             processResourceSchedule.setTotalPhysicalMemory(totalPhysicalMemory);
-            em.merge(processResourceSchedule);
+            if (existingSchedule == null){
+                em.persist(processResourceSchedule);
+            }else {
+                em.merge(processResourceSchedule);
+            }
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
