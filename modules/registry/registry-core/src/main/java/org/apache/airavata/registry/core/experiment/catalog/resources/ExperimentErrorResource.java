@@ -135,21 +135,28 @@ public class ExperimentErrorResource extends AbstractExpCatResource {
             ExperimentErrorPK experimentErrorPK = new ExperimentErrorPK();
             experimentErrorPK.setExperimentId(experimentId);
             experimentErrorPK.setErrorId(errorId);
-            experimentError = em.find(ExperimentError.class, experimentErrorPK);
+            ExperimentError existingExpError = em.find(ExperimentError.class, experimentErrorPK);
             em.close();
+
+            if (existingExpError == null){
+                experimentError = new ExperimentError();
+            }else {
+                experimentError = existingExpError;
+            }
 
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            if(experimentError == null){
-                experimentError = new ExperimentError();
-            }
             experimentError.setErrorId(errorId);
             experimentError.setExperimentId(experimentId);
             experimentError.setActualErrorMessage(actualErrorMessage);
             experimentError.setUserFriendlyMessage(userFriendlyMessage);
             experimentError.setRootCauseErrorIdList(rootCauseErrorIdList);
             experimentError.setTransientOrPersistent(transientOrPersistent);
-            em.persist(experimentError);
+            if (existingExpError == null){
+                em.persist(experimentError);
+            }else {
+                em.merge(experimentError);
+            }
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {

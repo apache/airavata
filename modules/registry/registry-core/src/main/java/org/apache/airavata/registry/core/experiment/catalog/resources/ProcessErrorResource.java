@@ -131,18 +131,19 @@ public class ProcessErrorResource extends AbstractExpCatResource {
                 throw new RegistryException("Does not have the process id or error id");
             }
             em = ExpCatResourceUtils.getEntityManager();
-
             ProcessError processError;
             ProcessErrorPK processErrorPK = new ProcessErrorPK();
             processErrorPK.setProcessId(processId);
             processErrorPK.setErrorId(errorId);
-            processError = em.find(ProcessError.class, processErrorPK);
+            ProcessError existingPrError = em.find(ProcessError.class, processErrorPK);
             em.close();
 
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            if(processError == null){
+            if(existingPrError == null){
                 processError = new ProcessError();
+            }else {
+                processError = existingPrError;
             }
             processError.setProcessId(processId);
             processError.setErrorId(errorId);
@@ -150,7 +151,11 @@ public class ProcessErrorResource extends AbstractExpCatResource {
             processError.setUserFriendlyMessage(userFriendlyMessage);
             processError.setRootCauseErrorIdList(rootCauseErrorIdList);
             processError.setTransientOrPersistent(transientOrPersistent);
-            em.merge(processError);
+            if (existingPrError == null){
+                em.persist(processError);
+            }else {
+                em.merge(processError);
+            }
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {

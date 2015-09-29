@@ -179,13 +179,15 @@ public class ExperimentInputResource extends AbstractExpCatResource {
             ExperimentInputPK experimentInputPK = new ExperimentInputPK();
             experimentInputPK.setExperimentId(experimentId);
             experimentInputPK.setInputName(inputName);
-            experimentInput = em.find(ExperimentInput.class, experimentInputPK);
+            ExperimentInput existingExpInput = em.find(ExperimentInput.class, experimentInputPK);
             em.close();
 
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            if(experimentInput == null){
+            if(existingExpInput == null){
                 experimentInput = new ExperimentInput();
+            }else {
+                experimentInput = existingExpInput;
             }
             experimentInput.setExperimentId(experimentId);
             experimentInput.setInputName(inputName);
@@ -199,7 +201,11 @@ public class ExperimentInputResource extends AbstractExpCatResource {
             experimentInput.setIsRequired(isRequired);
             experimentInput.setRequiredToAddedToCmd(requiredToAddedToCmd);
             experimentInput.setDataStaged(dataStaged);
-            em.merge(experimentInput);
+            if (existingExpInput == null){
+                em.persist(experimentInput);
+            }else {
+                em.merge(experimentInput);
+            }
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {

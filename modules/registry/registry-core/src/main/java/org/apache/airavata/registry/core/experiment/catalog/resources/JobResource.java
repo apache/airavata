@@ -277,17 +277,20 @@ public class JobResource extends AbstractExpCatResource {
             JobPK jobPK = new JobPK();
             jobPK.setJobId(jobId);
             jobPK.setProcessId(processId);
-            Job job = em.find(Job.class, jobPK);
+            Job existingJob = em.find(Job.class, jobPK);
             em.close();
 
+            Job job;
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            if(job == null){
+            if(existingJob == null){
                 job = new Job();
+            }else {
+                job = existingJob;
             }
             job.setJobId(jobId);
             job.setTaskId(taskId);
-	        job.setProcessId(processId);
+            job.setProcessId(processId);
             if (jobDescription != null) {
                 job.setJobDescription(jobDescription.toCharArray());
             }
@@ -302,7 +305,11 @@ public class JobResource extends AbstractExpCatResource {
             job.setJobName(jobName);
             job.setWorkingDir(workingDir);
             job.setExitCode(exitCode);
-            em.merge(job);
+            if (existingJob == null){
+                em.persist(job);
+            }else {
+                em.merge(job);
+            }
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
