@@ -175,18 +175,19 @@ public class ProcessInputResource extends AbstractExpCatResource {
                 throw new RegistryException("Does not have the process id");
             }
             em = ExpCatResourceUtils.getEntityManager();
-
             ProcessInput processInput;
             ProcessInputPK processInputPk = new ProcessInputPK();
             processInputPk.setProcessId(processId);
             processInputPk.setInputName(inputName);
-            processInput = em.find(ProcessInput.class, processInputPk);
+            ProcessInput existingProInput = em.find(ProcessInput.class, processInputPk);
             em.close();
 
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            if(processInput == null){
+            if(existingProInput == null){
                 processInput = new ProcessInput();
+            }else {
+                processInput = existingProInput;
             }
             processInput.setProcessId(processId);
             processInput.setInputName(inputName);
@@ -200,7 +201,11 @@ public class ProcessInputResource extends AbstractExpCatResource {
             processInput.setIsRequired(isRequired);
             processInput.setRequiredToAddedToCmd(requiredToAddedToCmd);
             processInput.setDataStaged(dataStaged);
-            em.merge(processInput);
+            if (existingProInput == null){
+                em.persist(processInput);
+            }else {
+                em.merge(processInput);
+            }
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {

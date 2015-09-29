@@ -23,6 +23,7 @@ package org.apache.airavata.registry.core.experiment.catalog;
 import org.apache.airavata.registry.core.experiment.catalog.model.*;
 import org.apache.airavata.registry.core.experiment.catalog.resources.*;
 import org.apache.airavata.registry.core.experiment.catalog.utils.QueryGenerator;
+import org.apache.airavata.registry.cpi.ExperimentCatalogException;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,11 +42,7 @@ public class ExpCatResourceUtils {
     @PersistenceContext(unitName="experiment_data")
     private static EntityManager expCatEntityManager;
 
-    public static void reset(){
-        expCatFactory=null;
-    }
-    
-    public static EntityManager getEntityManager(){
+    public static EntityManager getEntityManager() throws ExperimentCatalogException{
         if (expCatFactory == null) {
             String connectionProperties = "DriverClassName=" + Utils.getJDBCDriver() + "," + "Url=" +
                     Utils.getJDBCURL() + "?autoReconnect=true," +
