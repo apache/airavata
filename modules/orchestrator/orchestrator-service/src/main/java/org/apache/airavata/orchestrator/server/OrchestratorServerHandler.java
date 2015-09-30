@@ -426,6 +426,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 					ThriftUtils.createThriftFromBytes(bytes, processStatusChangeEvent);
 					ExperimentStatus status = new ExperimentStatus();
 					ProcessIdentifier processIdentity = processStatusChangeEvent.getProcessIdentity();
+					log.info("expId: {}, processId: {} :- Process status changed event received for status {}",
+							processIdentity.getExperimentId(), processIdentity.getProcessId(),
+							processStatusChangeEvent.getState().name());
 					switch (processStatusChangeEvent.getState()) {
 //						case CREATED:
 //						case VALIDATED:
@@ -488,6 +491,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 							}
 							break;
 						case CANCELED:
+							// TODO if experiment have more than one process associated with it, then this should be changed.
 							status.setState(ExperimentState.CANCELED);
 							status.setReason("process  cancelled");
 							break;
