@@ -62,7 +62,11 @@ public class ExpCatResourceUtils {
             properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
             properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
 			properties.put("openjpa.jdbc.QuerySQLCache", "false");
-            expCatFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
+            synchronized (ExpCatResourceUtils.class) {
+                if (expCatFactory == null) {
+                    expCatFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
+                }
+            }
         }
         expCatEntityManager = expCatFactory.createEntityManager();
         return expCatEntityManager;
