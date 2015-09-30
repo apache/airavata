@@ -1038,7 +1038,7 @@ public class ExperimentRegistry {
             } else if (fieldName.equals(Constants.FieldConstants.ProcessConstants.PROCESS_INPUTS)) {
                 return ThriftDataModelConversion.getProcessInputs(resource.getProcessInputs());
             } else if (fieldName.equals(Constants.FieldConstants.ProcessConstants.PROCESS_OUTPUTS)) {
-                return ThriftDataModelConversion.getErrorModel(resource.getProcessOutputs());
+                return ThriftDataModelConversion.getProcessOutputs(resource.getProcessOutputs());
             } else if (fieldName.equals(Constants.FieldConstants.ProcessConstants.PROCESS_RESOURCE_SCHEDULE)) {
                 return ThriftDataModelConversion.getProcessResourceSchedule(resource.getProcessResourceSchedule());
             } else {

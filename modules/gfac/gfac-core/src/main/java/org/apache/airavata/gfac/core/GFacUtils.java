@@ -46,6 +46,7 @@ import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
+import org.apache.airavata.registry.core.experiment.catalog.model.ProcessOutput;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.curator.framework.CuratorFramework;
@@ -1095,8 +1096,7 @@ public class GFacUtils {
         try {
             ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
             String processId = processContext.getProcessId();
-            ProcessModel processModel = (ProcessModel)experimentCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
-            List<OutputDataObjectType> processOutputs = processModel.getProcessOutputs();
+            List<OutputDataObjectType>  processOutputs = (List<OutputDataObjectType> )experimentCatalog.get(ExperimentCatalogModelType.PROCESS_OUTPUT, processId);
             if (processOutputs != null && !processOutputs.isEmpty()){
                 for (OutputDataObjectType processOutput : processOutputs){
                     if (processOutput.getName().equals(outputName)){
@@ -1104,6 +1104,8 @@ public class GFacUtils {
                     }
                 }
             }
+            ProcessModel processModel = processContext.getProcessModel();
+            processModel.setProcessOutputs(processOutputs);
             experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processId);
         } catch (RegistryException e) {
             String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
