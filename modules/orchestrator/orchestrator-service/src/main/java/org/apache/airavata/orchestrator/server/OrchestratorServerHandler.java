@@ -77,8 +77,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class
-        OrchestratorServerHandler implements OrchestratorService.Iface {
+public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	private static Logger log = LoggerFactory.getLogger(OrchestratorServerHandler.class);
 	private SimpleOrchestratorImpl orchestrator = null;
 	private ExperimentCatalog experimentCatalog;
