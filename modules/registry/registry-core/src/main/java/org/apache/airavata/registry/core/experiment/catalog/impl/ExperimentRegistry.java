@@ -111,6 +111,7 @@ public class ExperimentRegistry {
 
             ExperimentStatus experimentStatus = new ExperimentStatus();
             experimentStatus.setState(ExperimentState.CREATED);
+            experimentStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             addExperimentStatus(experimentStatus, experimentId);
 
             List<ErrorModel> errors = experiment.getErrors();
