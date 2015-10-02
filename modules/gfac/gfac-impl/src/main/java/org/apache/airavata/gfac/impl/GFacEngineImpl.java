@@ -25,7 +25,6 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
-import org.apache.airavata.gfac.core.GFac;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -354,10 +353,25 @@ public class GFacEngineImpl implements GFacEngine {
 				if (executeJobSubmission(processContext))  return;
 				break;
 			case EXECUTING:
-				if (executeJobSubmission(processContext))  return;
+				JobModel jobModel = getJobModel(processContext);
+				if (jobModel == null || jobModel.getJobId() == null) {
+					if (executeJobSubmission(processContext)) return;
+				} else {
+					processContext.setJobModel(jobModel);
+					return;
+				}
 				break;
 			default:
 				throw new GFacException("Invalid process recovery invocation");
+		}
+	}
+
+	private JobModel getJobModel(ProcessContext processContext) {
+		try {
+			return GFacUtils.getJobModel(processContext);
+		} catch (RegistryException e) {
+			log.error("Error while retrieving jobId,", e);
+			return null;
 		}
 	}
 

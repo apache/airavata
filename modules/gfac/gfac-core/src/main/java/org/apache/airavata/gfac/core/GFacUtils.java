@@ -48,6 +48,7 @@ import org.apache.airavata.model.status.*;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.core.experiment.catalog.model.ProcessOutput;
 import org.apache.airavata.registry.cpi.*;
+import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.commons.io.FileUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.ZKPaths;
@@ -1185,4 +1186,20 @@ public class GFacUtils {
 		}
 	}
 
+    public static JobModel getJobModel(ProcessContext processContext) throws RegistryException {
+        ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+        List<Object> objects = experimentCatalog.get(ExperimentCatalogModelType.JOB,
+                Constants.FieldConstants.JobConstants.PROCESS_ID, processContext.getProcessId());
+        List<JobModel> jobModels = new ArrayList<>();
+        JobModel jobModel = null;
+        if (objects != null) {
+            for (Object object : objects) {
+                jobModel = ((JobModel) object);
+                if (jobModel.getJobId() != null || !jobModel.equals("")) {
+                    return jobModel;
+                }
+            }
+        }
+        return jobModel;
+    }
 }
