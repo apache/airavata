@@ -363,8 +363,9 @@ public class TaskResource extends AbstractExpCatResource {
             return null;
         }else{
             TaskStatusResource max = taskStatusResources.get(0);
-            for(int i=1; i<taskStatusResources.size();i++){
-                if(taskStatusResources.get(i).getTimeOfStateChange().after(max.getTimeOfStateChange())){
+            for(int i=1; i<taskStatusResources.size();i++) {
+                if (taskStatusResources.get(i).getTimeOfStateChange().after(max.getTimeOfStateChange())
+                        || taskStatusResources.get(i).getTimeOfStateChange().equals(max.getTimeOfStateChange())) {
                     max = taskStatusResources.get(i);
                 }
             }
