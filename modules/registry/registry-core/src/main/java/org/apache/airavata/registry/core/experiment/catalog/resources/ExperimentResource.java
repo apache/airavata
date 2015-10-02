@@ -572,8 +572,9 @@ public class ExperimentResource extends AbstractExpCatResource {
             ExperimentStatusResource max = experimentStatusResources.get(0);
             for(int i=1; i<experimentStatusResources.size();i++){
                 Timestamp timeOfStateChange = experimentStatusResources.get(i).getTimeOfStateChange();
-                if (timeOfStateChange != null){
-                    if(timeOfStateChange.after(max.getTimeOfStateChange())){
+                if (timeOfStateChange != null) {
+                    if (timeOfStateChange.after(max.getTimeOfStateChange())
+                            || timeOfStateChange.equals(max.getTimeOfStateChange())) {
                         max = experimentStatusResources.get(i);
                     }
                 }
