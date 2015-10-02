@@ -185,7 +185,9 @@ public class GFacEngineImpl implements GFacEngine {
 		}
 		TaskContext taskCtx;
 		TaskStatus taskStatus;
-		processContext.setProcessStatus(new ProcessStatus(ProcessState.EXECUTING));
+        ProcessStatus status = new ProcessStatus(ProcessState.EXECUTING);
+        status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        processContext.setProcessStatus(status);
 		JobSubmissionTask jobSubmissionTask = Factory.getJobSubmissionTask(processContext.getJobSubmissionProtocol());
 		if (processContext.isInterrupted()) {
 			GFacUtils.handleProcessInterrupt(processContext);
@@ -229,7 +231,9 @@ public class GFacEngineImpl implements GFacEngine {
 		}
 		TaskContext taskCtx;
 		TaskStatus taskStatus;// execute process inputs
-		processContext.setProcessStatus(new ProcessStatus(ProcessState.INPUT_DATA_STAGING));
+        ProcessStatus status = new ProcessStatus(ProcessState.INPUT_DATA_STAGING);
+        status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        processContext.setProcessStatus(status);
 		GFacUtils.saveAndPublishProcessStatus(processContext);
 		List<InputDataObjectType> processInputs = processContext.getProcessModel().getProcessInputs();
 		sortByInputOrder(processInputs);
@@ -294,15 +298,17 @@ public class GFacEngineImpl implements GFacEngine {
 			return true;
 		}
 		TaskContext taskCtx;
-		processContext.setProcessStatus(new ProcessStatus(ProcessState.CONFIGURING_WORKSPACE));
+        ProcessStatus status = new ProcessStatus(ProcessState.CONFIGURING_WORKSPACE);
+        status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        processContext.setProcessStatus(status);
 		GFacUtils.saveAndPublishProcessStatus(processContext);
 		// Run all environment setup tasks
 		taskCtx = getEnvSetupTaskContext(processContext);
 		saveTaskModel(taskCtx);
-		GFacUtils.saveAndPublishTaskStatus(taskCtx);
 		SSHEnvironmentSetupTask envSetupTask = new SSHEnvironmentSetupTask();
-		TaskStatus taskStatus = executeTask(taskCtx, envSetupTask, recover);
-		if (taskStatus.getState() == TaskState.FAILED) {
+        TaskStatus taskStatus = executeTask(taskCtx, envSetupTask, recover);
+        GFacUtils.saveAndPublishTaskStatus(taskCtx);
+        if (taskStatus.getState() == TaskState.FAILED) {
 			log.error("expId: {}, processId: {}, taskId: {} type: {},:- Input staging failed, " +
 					"reason:" + " {}", taskCtx.getParentProcessContext().getExperimentId(), taskCtx
 					.getParentProcessContext().getProcessId(), taskCtx.getTaskId(), envSetupTask.getType
@@ -384,7 +390,9 @@ public class GFacEngineImpl implements GFacEngine {
 	 * @throws GFacException
 	 */
 	private boolean postProcessing(ProcessContext processContext, boolean recovery) throws GFacException {
-		processContext.setProcessStatus(new ProcessStatus(ProcessState.POST_PROCESSING));
+        ProcessStatus status = new ProcessStatus(ProcessState.POST_PROCESSING);
+        status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        processContext.setProcessStatus(status);
 		GFacUtils.saveAndPublishProcessStatus(processContext);
 //		taskCtx = getEnvCleanupTaskContext(processContext);
 		if (processContext.isInterrupted()) {
@@ -403,7 +411,9 @@ public class GFacEngineImpl implements GFacEngine {
 	 */
 	private boolean outputDataStaging(ProcessContext processContext, boolean recovery) throws GFacException {
 		TaskContext taskCtx;
-		processContext.setProcessStatus(new ProcessStatus(ProcessState.OUTPUT_DATA_STAGING));
+        ProcessStatus status = new ProcessStatus(ProcessState.OUTPUT_DATA_STAGING);
+        status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        processContext.setProcessStatus(status);
 		GFacUtils.saveAndPublishProcessStatus(processContext);
         File localWorkingdir = new File(processContext.getLocalWorkingDir());
         localWorkingdir.mkdirs(); // make local dir if not exist
@@ -479,7 +489,9 @@ public class GFacEngineImpl implements GFacEngine {
 	}
 
 	private TaskStatus executeTask(TaskContext taskCtx, Task task, boolean recover) throws GFacException {
-		taskCtx.setTaskStatus(new TaskStatus(TaskState.EXECUTING));
+        TaskStatus status = new TaskStatus(TaskState.EXECUTING);
+        status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        taskCtx.setTaskStatus(status);
 		GFacUtils.saveAndPublishTaskStatus(taskCtx);
 		TaskStatus taskStatus = null;
 		if (recover) {
@@ -487,6 +499,7 @@ public class GFacEngineImpl implements GFacEngine {
 		} else {
 			taskStatus = task.execute(taskCtx);
 		}
+        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 		taskCtx.setTaskStatus(taskStatus);
 		GFacUtils.saveAndPublishTaskStatus(taskCtx);
 		return taskCtx.getTaskStatus();
@@ -501,6 +514,7 @@ public class GFacEngineImpl implements GFacEngine {
 				monitorService.stopMonitor(taskContext.getParentProcessContext().getJobModel().getJobId(), true);
 				JobStatus newJobStatus = new JobStatus(JobState.CANCELED);
 				newJobStatus.setReason("Job cancelled");
+                newJobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 				taskContext.getParentProcessContext().getJobModel().setJobStatus(newJobStatus);
 				GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), taskContext.getParentProcessContext()
 						.getJobModel());
@@ -520,7 +534,9 @@ public class GFacEngineImpl implements GFacEngine {
 		taskModel.setParentProcessId(processContext.getProcessId());
 		taskModel.setCreationTime(new Date().getTime());
 		taskModel.setLastUpdateTime(taskModel.getCreationTime());
-		taskModel.setTaskStatus(new TaskStatus(TaskState.CREATED));
+        TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
+        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        taskModel.setTaskStatus(taskStatus);
 		taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
 		taskCtx.setTaskModel(taskModel);
 		return taskCtx;
@@ -535,7 +551,9 @@ public class GFacEngineImpl implements GFacEngine {
 		taskModel.setParentProcessId(processContext.getProcessId());
 		taskModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
 		taskModel.setLastUpdateTime(taskModel.getCreationTime());
-		taskModel.setTaskStatus(new TaskStatus(TaskState.CREATED));
+        TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
+        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        taskModel.setTaskStatus(taskStatus);
 		taskModel.setTaskType(TaskTypes.DATA_STAGING);
 		// create data staging sub task model
 		DataStagingTaskModel submodel = new DataStagingTaskModel();
@@ -556,7 +574,9 @@ public class GFacEngineImpl implements GFacEngine {
 		taskModel.setParentProcessId(processContext.getProcessId());
 		taskModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
 		taskModel.setLastUpdateTime(taskModel.getCreationTime());
-		taskModel.setTaskStatus(new TaskStatus(TaskState.CREATED));
+        TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
+        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        taskModel.setTaskStatus(taskStatus);
 		taskModel.setTaskType(TaskTypes.DATA_STAGING);
 		// create data staging sub task model
 		String remoteOutputDir = processContext.getOutputDir();

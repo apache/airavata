@@ -27,7 +27,6 @@ import javax.persistence.*;
 import java.lang.*;
 
 @Entity
-@Cacheable
 @Table(name = "PROCESS_RESOURCE_SCHEDULE")
 public class ProcessResourceSchedule {
     private final static Logger logger = LoggerFactory.getLogger(ProcessResourceSchedule.class);
@@ -51,7 +50,6 @@ public class ProcessResourceSchedule {
         this.processId = processId;
     }
 
-    @Basic
     @Column(name = "RESOURCE_HOST_ID")
     public String getResourceHostId() {
         return resourceHostId;
@@ -61,7 +59,6 @@ public class ProcessResourceSchedule {
         this.resourceHostId = resourceHostId;
     }
 
-    @Basic
     @Column(name = "TOTAL_CPU_COUNT")
     public Integer getTotalCpuCount() {
         return totalCpuCount;
@@ -71,7 +68,6 @@ public class ProcessResourceSchedule {
         this.totalCpuCount = totalCpuCount;
     }
 
-    @Basic
     @Column(name = "NODE_COUNT")
     public Integer getNodeCount() {
         return nodeCount;
@@ -81,7 +77,6 @@ public class ProcessResourceSchedule {
         this.nodeCount = nodeCount;
     }
 
-    @Basic
     @Column(name = "NUMBER_OF_THREADS")
     public Integer getNumberOfThreads() {
         return numberOfThreads;
@@ -91,7 +86,6 @@ public class ProcessResourceSchedule {
         this.numberOfThreads = numberOfThreads;
     }
 
-    @Basic
     @Column(name = "QUEUE_NAME")
     public String getQueueName() {
         return queueName;
@@ -101,7 +95,6 @@ public class ProcessResourceSchedule {
         this.queueName = queueName;
     }
 
-    @Basic
     @Column(name = "WALL_TIME_LIMIT")
     public Integer getWallTimeLimit() {
         return wallTimeLimit;
@@ -111,7 +104,6 @@ public class ProcessResourceSchedule {
         this.wallTimeLimit = wallTimeLimit;
     }
 
-    @Basic
     @Column(name = "TOTAL_PHYSICAL_MEMORY")
     public Integer getTotalPhysicalMemory() {
         return totalPhysicalMemory;

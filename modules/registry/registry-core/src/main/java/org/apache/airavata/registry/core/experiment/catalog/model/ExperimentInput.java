@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.*;
 
 @Entity
-@Cacheable
 @Table(name = "EXPERIMENT_INPUT")
 @IdClass(ExperimentInputPK.class)
 public class ExperimentInput {
@@ -65,7 +64,6 @@ public class ExperimentInput {
         this.inputName = inputName;
     }
 
-    @Basic
     @Lob
     @Column(name = "INPUT_VALUE")
     public String getInputValue() {
@@ -76,7 +74,6 @@ public class ExperimentInput {
         this.inputValue = inputValue;
     }
 
-    @Basic
     @Column(name = "DATA_TYPE")
     public String getDataType() {
         return dataType;
@@ -86,7 +83,6 @@ public class ExperimentInput {
         this.dataType = dataType;
     }
 
-    @Basic
     @Column(name = "APPLICATION_ARGUMENT")
     public String getApplicationArgument() {
         return applicationArgument;
@@ -96,7 +92,6 @@ public class ExperimentInput {
         this.applicationArgument = applicationArgument;
     }
 
-    @Basic
     @Column(name = "STANDARD_INPUT")
     public boolean getStandardInput() {
         return standardInput;
@@ -106,7 +101,6 @@ public class ExperimentInput {
         this.standardInput = standardInput;
     }
 
-    @Basic
     @Column(name = "USER_FRIENDLY_DESCRIPTION")
     public String getUserFriendlyDescription() {
         return userFriendlyDescription;
@@ -116,7 +110,6 @@ public class ExperimentInput {
         this.userFriendlyDescription = userFriendlyDescription;
     }
 
-    @Basic
     @Column(name = "METADATA")
     public String getMetadata() {
         return metadata;
@@ -126,7 +119,6 @@ public class ExperimentInput {
         this.metadata = metadata;
     }
 
-    @Basic
     @Column(name = "INPUT_ORDER")
     public Integer getInputOrder() {
         return inputOrder;
@@ -136,7 +128,6 @@ public class ExperimentInput {
         this.inputOrder = inputOrder;
     }
 
-    @Basic
     @Column(name = "IS_REQUIRED")
     public boolean getIsRequired() {
         return isRequired;
@@ -146,7 +137,6 @@ public class ExperimentInput {
         this.isRequired = isRequired;
     }
 
-    @Basic
     @Column(name = "REQUIRED_TO_ADDED_TO_CMD")
     public boolean getRequiredToAddedToCmd() {
         return requiredToAddedToCmd;
@@ -156,7 +146,6 @@ public class ExperimentInput {
         this.requiredToAddedToCmd = requiredToAddedToCmd;
     }
 
-    @Basic
     @Column(name = "DATA_STAGED")
     public boolean getDataStaged() {
         return dataStaged;

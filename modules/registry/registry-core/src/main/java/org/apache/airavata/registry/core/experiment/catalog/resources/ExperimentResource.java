@@ -234,7 +234,12 @@ public class ExperimentResource extends AbstractExpCatResource {
                     break;
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -264,7 +269,12 @@ public class ExperimentResource extends AbstractExpCatResource {
                     ExperimentStatus status = (ExperimentStatus) q.getSingleResult();
                     ExperimentStatusResource statusResource = (ExperimentStatusResource) Utils.getResource(ResourceType.EXPERIMENT_STATUS, status);
                     em.getTransaction().commit();
-                    em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
                     return statusResource;
                 case EXPERIMENT_ERROR:
                     generator = new QueryGenerator(EXPERIMENT_ERROR);
@@ -273,7 +283,12 @@ public class ExperimentResource extends AbstractExpCatResource {
                     ExperimentError experimentError = (ExperimentError) q.getSingleResult();
                     ExperimentErrorResource processErrorResource = (ExperimentErrorResource) Utils.getResource(ResourceType.EXPERIMENT_ERROR, experimentError);
                     em.getTransaction().commit();
-                    em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
                     return processErrorResource;
                 case EXPERIMENT_INPUT:
                     generator = new QueryGenerator(EXPERIMENT_INPUT);
@@ -283,7 +298,12 @@ public class ExperimentResource extends AbstractExpCatResource {
                     ExperimentInput experimentInput = (ExperimentInput) q.getSingleResult();
                     ExperimentInputResource experimentInputResource = (ExperimentInputResource) Utils.getResource(ResourceType.EXPERIMENT_INPUT, experimentInput);
                     em.getTransaction().commit();
-                    em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
                     return experimentInputResource;
                 case EXPERIMENT_OUTPUT:
                     generator = new QueryGenerator(EXPERIMENT_OUTPUT);
@@ -293,7 +313,12 @@ public class ExperimentResource extends AbstractExpCatResource {
                     ExperimentOutput experimentOutput = (ExperimentOutput) q.getSingleResult();
                     ExperimentOutputResource outputResource = (ExperimentOutputResource) Utils.getResource(ResourceType.EXPERIMENT_OUTPUT, experimentOutput);
                     em.getTransaction().commit();
-                    em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
                     return outputResource;
                 case USER_CONFIGURATION_DATA:
                     generator = new QueryGenerator(USER_CONFIGURATION_DATA);
@@ -303,7 +328,12 @@ public class ExperimentResource extends AbstractExpCatResource {
                     UserConfigurationDataResource configurationDataResource = (UserConfigurationDataResource)
                             Utils.getResource(ResourceType.USER_CONFIGURATION_DATA, configurationData);
                     em.getTransaction().commit();
-                    em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
                     return configurationDataResource;
                 case PROCESS:
                     generator = new QueryGenerator(PROCESS);
@@ -312,11 +342,21 @@ public class ExperimentResource extends AbstractExpCatResource {
                     Process process = (Process) q.getSingleResult();
                     ProcessResource processResource = (ProcessResource) Utils.getResource(ResourceType.PROCESS, process);
                     em.getTransaction().commit();
-                    em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
                     return processResource;
                 default:
                     em.getTransaction().commit();
-                    em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
                     logger.error("Unsupported resource type for experiment resource.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Unsupported resource type for experiment resource.");
             }
@@ -417,7 +457,12 @@ public class ExperimentResource extends AbstractExpCatResource {
                     throw new UnsupportedOperationException();
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -437,7 +482,13 @@ public class ExperimentResource extends AbstractExpCatResource {
         try {
             em = ExpCatResourceUtils.getEntityManager();
             Experiment existingExp = em.find(Experiment.class, experimentId);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+
             Experiment experiment;
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
@@ -464,7 +515,12 @@ public class ExperimentResource extends AbstractExpCatResource {
                 em.merge(experiment);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

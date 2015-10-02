@@ -118,7 +118,12 @@ public class ExperimentStatusResource extends AbstractExpCatResource {
             experimentStatusPK.setStatusId(statusId);
             experimentStatusPK.setExperimentId(experimentId);
             ExperimentStatus existingStatus = em.find(ExperimentStatus.class, experimentStatusPK);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
@@ -138,7 +143,12 @@ public class ExperimentStatusResource extends AbstractExpCatResource {
                 em.merge(experimentStatus);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

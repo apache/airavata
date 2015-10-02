@@ -136,7 +136,12 @@ public class ExperimentErrorResource extends AbstractExpCatResource {
             experimentErrorPK.setExperimentId(experimentId);
             experimentErrorPK.setErrorId(errorId);
             ExperimentError existingExpError = em.find(ExperimentError.class, experimentErrorPK);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             if (existingExpError == null){
                 experimentError = new ExperimentError();
@@ -158,7 +163,12 @@ public class ExperimentErrorResource extends AbstractExpCatResource {
                 em.merge(experimentError);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

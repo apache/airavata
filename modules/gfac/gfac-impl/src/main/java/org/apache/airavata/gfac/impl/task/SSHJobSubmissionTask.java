@@ -86,16 +86,19 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 				    jobStatus.setJobState(JobState.SUBMITTED);
 				    jobStatus.setReason("Successfully Submitted to " + taskContext.getParentProcessContext()
 						    .getComputeResourceDescription().getHostName());
+                    jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 				    jobModel.setJobStatus(jobStatus);
 				    GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
 				    if (verifyJobSubmissionByJobId(remoteCluster, jobId)) {
 					    jobStatus.setJobState(JobState.QUEUED);
 					    jobStatus.setReason("Verification step succeeded");
+                        jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 					    jobModel.setJobStatus(jobStatus);
 					    GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
 				    }
 				    taskStatus = new TaskStatus(TaskState.COMPLETED);
 				    taskStatus.setReason("Submitted job to compute resource");
+                    taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 			    } else {
 				    int verificationTryCount = 0;
 				    while (verificationTryCount++ < 3) {
@@ -107,10 +110,12 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 						    GFacUtils.saveJobModel(processContext,jobModel);
 						    jobStatus.setJobState(JobState.QUEUED);
 						    jobStatus.setReason("Verification step succeeded");
+                            jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 						    jobModel.setJobStatus(jobStatus);
 						    GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
 						    taskStatus.setState(TaskState.COMPLETED);
 						    taskStatus.setReason("Submitted job to compute resource");
+                            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 						    break;
 					    }
 					    log.info("Verify step return invalid jobId, retry verification step in {} secs", verificationTryCount * 10);
@@ -131,6 +136,7 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
                     GFacUtils.saveTaskError(taskContext, errorModel);
 				    taskStatus.setState(TaskState.FAILED);
 				    taskStatus.setReason("Couldn't find job id in both submitted and verified steps");
+                    taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 			    }else {
                     GFacUtils.saveJobModel(processContext, jobModel);
                 }
@@ -148,6 +154,7 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 		    log.error(msg, e);
 		    taskStatus.setState(TaskState.FAILED);
 		    taskStatus.setReason(msg);
+            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 		    ErrorModel errorModel = new ErrorModel();
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);
@@ -157,6 +164,7 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 		    log.error(msg, e);
 		    taskStatus.setState(TaskState.FAILED);
 		    taskStatus.setReason(msg);
+            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 		    ErrorModel errorModel = new ErrorModel();
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);
@@ -166,6 +174,7 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 		    log.error(msg, e);
 		    taskStatus.setState(TaskState.FAILED);
 		    taskStatus.setReason(msg);
+            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 		    ErrorModel errorModel = new ErrorModel();
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);
@@ -175,6 +184,7 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 		    log.error(msg, e);
 		    taskStatus.setState(TaskState.FAILED);
 		    taskStatus.setReason(msg);
+            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 		    ErrorModel errorModel = new ErrorModel();
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);
@@ -184,6 +194,7 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 		    log.error(msg, e);
 		    taskStatus.setState(TaskState.FAILED);
 		    taskStatus.setReason(msg);
+            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 		    ErrorModel errorModel = new ErrorModel();
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);
@@ -193,6 +204,7 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 		    log.error(msg, e);
 		    taskStatus.setState(TaskState.FAILED);
 		    taskStatus.setReason(msg);
+            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 		    ErrorModel errorModel = new ErrorModel();
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);

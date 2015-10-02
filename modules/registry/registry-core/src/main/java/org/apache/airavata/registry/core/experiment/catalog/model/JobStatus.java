@@ -27,7 +27,6 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Cacheable
 @Table(name = "JOB_STATUS")
 @IdClass(JobStatusPK.class)
 public class JobStatus {
@@ -70,7 +69,6 @@ public class JobStatus {
         this.processId = processId;
     }
 
-    @Basic
     @Column(name = "STATE")
     public String getState() {
         return state;
@@ -80,7 +78,6 @@ public class JobStatus {
         this.state = state;
     }
 
-    @Basic
     @Column(name = "TIME_OF_STATE_CHANGE")
     public Timestamp getTimeOfStateChange() {
         return timeOfStateChange;
@@ -90,7 +87,6 @@ public class JobStatus {
         this.timeOfStateChange = timeOfStateChange;
     }
 
-    @Basic
     @Lob
     @Column(name = "REASON")
     public String getReason() {

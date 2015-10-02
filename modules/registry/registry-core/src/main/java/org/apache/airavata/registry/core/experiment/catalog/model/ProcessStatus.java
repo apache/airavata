@@ -28,7 +28,6 @@ import java.lang.*;
 import java.sql.Timestamp;
 
 @Entity
-@Cacheable
 @Table(name = "PROCESS_STATUS")
 @IdClass(ProcessStatusPK.class)
 public class ProcessStatus {
@@ -60,7 +59,6 @@ public class ProcessStatus {
         this.processId = processId;
     }
 
-    @Basic
     @Column(name = "STATE")
     public String getState() {
         return state;
@@ -70,7 +68,6 @@ public class ProcessStatus {
         this.state = state;
     }
 
-    @Basic
     @Column(name = "TIME_OF_STATE_CHANGE")
     public Timestamp getTimeOfStateChange() {
         return timeOfStateChange;
@@ -80,7 +77,6 @@ public class ProcessStatus {
         this.timeOfStateChange = timeOfStateChange;
     }
 
-    @Basic
     @Lob
     @Column(name = "REASON")
     public String getReason() {

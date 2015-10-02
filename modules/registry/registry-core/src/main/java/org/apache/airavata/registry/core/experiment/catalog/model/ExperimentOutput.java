@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.*;
 
 @Entity
-@Cacheable
 @Table(name = "EXPERIMENT_OUTPUT")
 @IdClass(ExperimentOutputPK.class)
 public class ExperimentOutput {
@@ -63,7 +62,6 @@ public class ExperimentOutput {
         this.outputName = outputName;
     }
 
-    @Basic
     @Lob
     @Column(name = "OUTPUT_VALUE")
     public String getOutputValue() {
@@ -74,7 +72,6 @@ public class ExperimentOutput {
         this.outputValue = outputValue;
     }
 
-    @Basic
     @Column(name = "DATA_TYPE")
     public String getDataType() {
         return dataType;
@@ -84,7 +81,6 @@ public class ExperimentOutput {
         this.dataType = dataType;
     }
 
-    @Basic
     @Column(name = "APPLICATION_ARGUMENT")
     public String getApplicationArgument() {
         return applicationArgument;
@@ -94,7 +90,6 @@ public class ExperimentOutput {
         this.applicationArgument = applicationArgument;
     }
 
-    @Basic
     @Column(name = "IS_REQUIRED")
     public boolean getIsRequired() {
         return isRequired;
@@ -104,7 +99,6 @@ public class ExperimentOutput {
         this.isRequired = isRequired;
     }
 
-    @Basic
     @Column(name = "REQUIRED_TO_ADDED_TO_CMD")
     public boolean getRequiredToAddedToCmd() {
         return requiredToAddedToCmd;
@@ -114,7 +108,6 @@ public class ExperimentOutput {
         this.requiredToAddedToCmd = requiredToAddedToCmd;
     }
 
-    @Basic
     @Column(name = "DATA_MOVEMENT")
     public boolean getDataMovement() {
         return dataMovement;
@@ -124,7 +117,6 @@ public class ExperimentOutput {
         this.dataMovement = dataMovement;
     }
 
-    @Basic
     @Column(name = "LOCATION")
     public String getLocation() {
         return location;
@@ -134,7 +126,6 @@ public class ExperimentOutput {
         this.location = location;
     }
 
-    @Basic
     @Column(name = "SEARCH_QUERY")
     public String getSearchQuery() {
         return searchQuery;

@@ -131,6 +131,7 @@ public class GFacWorker implements Runnable {
 			log.error("GFac Worker throws an exception", e);
 			ProcessStatus status = new ProcessStatus(ProcessState.FAILED);
 			status.setReason(e.getMessage());
+            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 			processContext.setProcessStatus(status);
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
@@ -151,7 +152,9 @@ public class GFacWorker implements Runnable {
 	}
 
 	private void completeProcess() throws GFacException {
-		processContext.setProcessStatus(new ProcessStatus(ProcessState.COMPLETED));
+        ProcessStatus status = new ProcessStatus(ProcessState.COMPLETED);
+        status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        processContext.setProcessStatus(status);
 		GFacUtils.saveAndPublishProcessStatus(processContext);
 		sendAck();
 		Factory.getGfacContext().removeProcess(processContext.getProcessId());
@@ -194,7 +197,9 @@ public class GFacWorker implements Runnable {
 			JobMonitor monitorService = Factory.getMonitorService(processContext.getMonitorMode());
 			if (monitorService != null) {
 				monitorService.monitor(processContext.getJobModel().getJobId(), processContext);
-				processContext.setProcessStatus(new ProcessStatus(ProcessState.MONITORING));
+                ProcessStatus status = new ProcessStatus(ProcessState.MONITORING);
+                status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                processContext.setProcessStatus(status);
 				GFacUtils.saveAndPublishProcessStatus(processContext);
 			} else {
 				// we directly invoke outflow

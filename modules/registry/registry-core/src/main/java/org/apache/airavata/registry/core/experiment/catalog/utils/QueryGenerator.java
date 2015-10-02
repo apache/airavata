@@ -22,6 +22,8 @@
 package org.apache.airavata.registry.core.experiment.catalog.utils;
 
 import org.apache.airavata.registry.cpi.ResultOrderType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -29,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class QueryGenerator {
+    private final static Logger logger = LoggerFactory.getLogger(QueryGenerator.class);
 	private String tableName;
 	private Map<String,Object> matches=new HashMap<String, Object>();
 	private static final String SELECT_OBJ="p";
@@ -96,8 +99,7 @@ public class QueryGenerator {
 		return generateQueryWithParameters(entityManager, queryString);
 	}
 
-	private Query generateQueryWithParameters(EntityManager entityManager,
-			String queryString) {
+	private Query generateQueryWithParameters(EntityManager entityManager, String queryString) {
 		return generateQueryWithParameters(entityManager, queryString, "");
 	}
 

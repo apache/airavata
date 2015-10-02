@@ -86,6 +86,7 @@ public class SSHForkJobSubmissionTask implements JobSubmissionTask {
                     jobStatus.setJobState(JobState.SUBMITTED);
                     jobStatus.setReason("Successfully Submitted to " + taskContext.getParentProcessContext()
                             .getComputeResourceDescription().getHostName());
+                    jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                     jobModel.setJobStatus(jobStatus);
                     GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
                     taskStatus = new TaskStatus(TaskState.COMPLETED);

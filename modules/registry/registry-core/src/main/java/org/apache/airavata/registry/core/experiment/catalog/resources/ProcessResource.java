@@ -243,7 +243,12 @@ public class ProcessResource extends AbstractExpCatResource {
                     break;
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -273,7 +278,12 @@ public class ProcessResource extends AbstractExpCatResource {
                     ProcessStatus status = (ProcessStatus) q.getSingleResult();
                     ProcessStatusResource statusResource = (ProcessStatusResource) Utils.getResource(ResourceType.PROCESS_STATUS, status);
                     em.getTransaction().commit();
-                    em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
                     return statusResource;
                 case PROCESS_ERROR:
                     generator = new QueryGenerator(PROCESS_ERROR);
@@ -282,7 +292,12 @@ public class ProcessResource extends AbstractExpCatResource {
                     ProcessError processError = (ProcessError) q.getSingleResult();
                     ProcessErrorResource processErrorResource = (ProcessErrorResource) Utils.getResource(ResourceType.PROCESS_ERROR, processError);
                     em.getTransaction().commit();
-                    em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
                     return processErrorResource;
                 case PROCESS_INPUT:
                     generator = new QueryGenerator(PROCESS_INPUT);
@@ -292,7 +307,12 @@ public class ProcessResource extends AbstractExpCatResource {
                     ProcessInput processInput = (ProcessInput) q.getSingleResult();
                     ProcessInputResource processInputResource = (ProcessInputResource) Utils.getResource(ResourceType.PROCESS_INPUT, processInput);
                     em.getTransaction().commit();
-                    em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
                     return processInputResource;
                 case PROCESS_OUTPUT:
                     generator = new QueryGenerator(PROCESS_OUTPUT);
@@ -302,7 +322,12 @@ public class ProcessResource extends AbstractExpCatResource {
                     ProcessOutput processOutput = (ProcessOutput) q.getSingleResult();
                     ProcessOutputResource outputResource = (ProcessOutputResource) Utils.getResource(ResourceType.PROCESS_OUTPUT, processOutput);
                     em.getTransaction().commit();
-                    em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
                     return outputResource;
                 case PROCESS_RESOURCE_SCHEDULE:
                     generator = new QueryGenerator(PROCESS_RESOURCE_SCHEDULE);
@@ -312,7 +337,12 @@ public class ProcessResource extends AbstractExpCatResource {
                     ProcessResourceScheduleResource processResourceScheduleResource = (ProcessResourceScheduleResource)
                             Utils.getResource(ResourceType.PROCESS_RESOURCE_SCHEDULE, processResourceSchedule);
                     em.getTransaction().commit();
-                    em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
                     return processResourceScheduleResource;
                 case TASK:
                     generator = new QueryGenerator(TASK);
@@ -321,7 +351,12 @@ public class ProcessResource extends AbstractExpCatResource {
                     Task task = (Task) q.getSingleResult();
                     TaskResource taskResource = (TaskResource) Utils.getResource(ResourceType.TASK, task);
                     em.getTransaction().commit();
-                    em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
                     return taskResource;
 	            case JOB:
 		            generator = new QueryGenerator(JOB);
@@ -331,11 +366,21 @@ public class ProcessResource extends AbstractExpCatResource {
 		            Job job = (Job) q.getSingleResult();
 		            JobResource jobResource = (JobResource) Utils.getResource(ResourceType.JOB, job);
 		            em.getTransaction().commit();
-		            em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
 		            return jobResource;
 	            default:
                     em.getTransaction().commit();
-                    em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
                     logger.error("Unsupported resource type for process resource.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Unsupported resource type for process resource.");
             }
@@ -451,7 +496,12 @@ public class ProcessResource extends AbstractExpCatResource {
                     throw new UnsupportedOperationException();
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -472,7 +522,12 @@ public class ProcessResource extends AbstractExpCatResource {
         try {
             em = ExpCatResourceUtils.getEntityManager();
             Process existingProcess = em.find(Process.class, processId);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             Process process;
             em = ExpCatResourceUtils.getEntityManager();
@@ -500,7 +555,12 @@ public class ProcessResource extends AbstractExpCatResource {
                 em.merge(process);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

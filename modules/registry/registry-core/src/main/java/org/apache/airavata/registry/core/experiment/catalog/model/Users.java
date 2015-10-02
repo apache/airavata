@@ -27,7 +27,6 @@ import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
-@Cacheable
 @Table(name = "USERS")
 public class Users {
     private final static Logger logger = LoggerFactory.getLogger(Users.class);
@@ -48,7 +47,6 @@ public class Users {
         this.userName = userName;
     }
 
-    @Basic
     @Column(name = "PASSWORD")
     public String getPassword() {
         return password;

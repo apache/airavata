@@ -163,7 +163,12 @@ public class ProcessOutputResource extends AbstractExpCatResource {
             processOutputPK.setProcessId(processId);
             processOutputPK.setOutputName(outputName);
             ProcessOutput existingProcessOutput = em.find(ProcessOutput.class, processOutputPK);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
@@ -188,7 +193,12 @@ public class ProcessOutputResource extends AbstractExpCatResource {
                 em.merge(processOutput);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
