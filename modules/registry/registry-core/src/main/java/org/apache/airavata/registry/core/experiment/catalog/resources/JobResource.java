@@ -172,7 +172,12 @@ public class JobResource extends AbstractExpCatResource {
                     break;
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -202,11 +207,21 @@ public class JobResource extends AbstractExpCatResource {
                     JobStatus status = (JobStatus) q.getSingleResult();
                     JobStatusResource statusResource = (JobStatusResource) Utils.getResource(ResourceType.JOB_STATUS, status);
                     em.getTransaction().commit();
-                    em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
                     return statusResource;
                 default:
                     em.getTransaction().commit();
-                    em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
                     logger.error("Unsupported resource type for Job resource.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Unsupported resource type for Job resource.");
             }
@@ -254,7 +269,12 @@ public class JobResource extends AbstractExpCatResource {
                     throw new UnsupportedOperationException();
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -278,7 +298,12 @@ public class JobResource extends AbstractExpCatResource {
             jobPK.setJobId(jobId);
             jobPK.setProcessId(processId);
             Job existingJob = em.find(Job.class, jobPK);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             Job job;
             em = ExpCatResourceUtils.getEntityManager();
@@ -311,7 +336,12 @@ public class JobResource extends AbstractExpCatResource {
                 em.merge(job);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

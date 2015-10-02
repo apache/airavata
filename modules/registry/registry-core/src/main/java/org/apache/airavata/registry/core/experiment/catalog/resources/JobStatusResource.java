@@ -128,7 +128,12 @@ public class JobStatusResource extends AbstractExpCatResource {
             jobStatusPK.setStatusId(statusId);
             jobStatusPK.setProcessId(processId);
             JobStatus existingJobStatus = em.find(JobStatus.class, jobStatusPK);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
@@ -148,7 +153,12 @@ public class JobStatusResource extends AbstractExpCatResource {
                 em.merge(jobStatus);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

@@ -29,7 +29,6 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 @Entity
-@Cacheable
 @Table(name = "TASK")
 public class Task {
     private final static Logger logger = LoggerFactory.getLogger(Task.class);
@@ -54,7 +53,6 @@ public class Task {
         this.taskId = taskId;
     }
 
-    @Basic
     @Column(name = "TASK_TYPE")
     public String getTaskType() {
         return taskType;
@@ -64,7 +62,6 @@ public class Task {
         this.taskType = taskType;
     }
 
-    @Basic
     @Column(name = "PARENT_PROCESS_ID")
     public String getParentProcessId() {
         return parentProcessId;
@@ -74,7 +71,6 @@ public class Task {
         this.parentProcessId = parentProcessId;
     }
 
-    @Basic
     @Column(name = "CREATION_TIME")
     public Timestamp getCreationTime() {
         return creationTime;
@@ -84,7 +80,6 @@ public class Task {
         this.creationTime = creationTime;
     }
 
-    @Basic
     @Column(name = "LAST_UPDATE_TIME")
     public Timestamp getLastUpdateTime() {
         return lastUpdateTime;
@@ -94,7 +89,6 @@ public class Task {
         this.lastUpdateTime = lastUpdateTime;
     }
 
-    @Basic
     @Lob
     @Column(name = "TASK_DETAIL")
     public String getTaskDetail() {
@@ -105,7 +99,6 @@ public class Task {
         this.taskDetail = taskDetail;
     }
 
-    @Basic
     @Column(name = "SUB_TASK_MODEL")
     public byte[] getSetSubTaskModel() {
         return setSubTaskModel;

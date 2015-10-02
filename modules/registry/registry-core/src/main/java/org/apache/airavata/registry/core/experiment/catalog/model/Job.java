@@ -28,7 +28,6 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 @Entity
-@Cacheable
 @Table(name = "JOB")
 @IdClass(JobPK.class)
 public class Job {
@@ -67,7 +66,6 @@ public class Job {
 		this.processId = processId;
 	}
 
-    @Basic
     @Column(name = "TASK_ID")
     public String getTaskId() {
         return taskId;
@@ -107,7 +105,6 @@ public class Job {
         this.stdErr = stdErr;
     }
 
-    @Basic
     @Column(name = "EXIT_CODE")
     public int getExitCode() {
         return exitCode;
@@ -117,7 +114,6 @@ public class Job {
         this.exitCode = exitCode;
     }
 
-    @Basic
     @Column(name = "CREATION_TIME")
     public Timestamp getCreationTime() {
         return creationTime;
@@ -127,7 +123,6 @@ public class Job {
         this.creationTime = creationTime;
     }
 
-    @Basic
     @Column(name = "COMPUTE_RESOURCE_CONSUMED")
     public String getComputeResourceConsumed() {
         return computeResourceConsumed;
@@ -137,7 +132,6 @@ public class Job {
         this.computeResourceConsumed = computeResourceConsumed;
     }
 
-    @Basic
     @Column(name = "JOB_NAME")
     public String getJobName() {
         return jobName;
@@ -147,7 +141,6 @@ public class Job {
         this.jobName = jobName;
     }
 
-    @Basic
     @Column(name = "WORKING_DIR")
     public String getWorkingDir() {
         return workingDir;

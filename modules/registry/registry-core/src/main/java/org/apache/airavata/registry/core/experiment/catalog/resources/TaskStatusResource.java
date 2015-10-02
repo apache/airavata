@@ -118,7 +118,12 @@ public class TaskStatusResource extends AbstractExpCatResource {
             taskStatusPK.setTaskId(taskId);
             taskStatusPK.setStatusId(statusId);
             TaskStatus existingStatus = em.find(TaskStatus.class, taskStatusPK);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
@@ -138,7 +143,12 @@ public class TaskStatusResource extends AbstractExpCatResource {
                 em.merge(taskStatus);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

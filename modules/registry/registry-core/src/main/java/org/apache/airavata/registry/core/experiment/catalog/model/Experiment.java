@@ -28,7 +28,6 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 @Entity
-@Cacheable
 @Table(name = "EXPERIMENT")
 public class Experiment {
     private final static Logger logger = LoggerFactory.getLogger(Experiment.class);
@@ -63,7 +62,6 @@ public class Experiment {
         this.experimentId = experimentId;
     }
 
-    @Basic
     @Column(name = "GATEWAY_ID")
     public String getGatewayId() {
         return gatewayId;
@@ -73,7 +71,6 @@ public class Experiment {
         this.gatewayId = gatewayId;
     }
 
-    @Basic
     @Column(name = "PROJECT_ID")
     public String getProjectId() {
         return projectId;
@@ -83,7 +80,6 @@ public class Experiment {
         this.projectId = projectId;
     }
 
-    @Basic
     @Column(name = "EXPERIMENT_TYPE")
     public String getExperimentType() {
         return experimentType;
@@ -93,7 +89,6 @@ public class Experiment {
         this.experimentType = experimentType;
     }
 
-    @Basic
     @Column(name = "USER_NAME")
     public String getUserName() {
         return userName;
@@ -103,7 +98,6 @@ public class Experiment {
         this.userName = userName;
     }
 
-    @Basic
     @Column(name = "EXPERIMENT_NAME")
     public String getExperimentName() {
         return experimentName;
@@ -113,7 +107,6 @@ public class Experiment {
         this.experimentName = experimentName;
     }
 
-    @Basic
     @Column(name = "CREATION_TIME")
     public Timestamp getCreationTime() {
         return creationTime;
@@ -123,7 +116,6 @@ public class Experiment {
         this.creationTime = creationTime;
     }
 
-    @Basic
     @Column(name = "DESCRIPTION")
     public String getDescription() {
         return description;
@@ -133,7 +125,6 @@ public class Experiment {
         this.description = description;
     }
 
-    @Basic
     @Column(name = "EXECUTION_ID")
     public String getExecutionId() {
         return executionId;
@@ -143,7 +134,6 @@ public class Experiment {
         this.executionId = executionId;
     }
 
-    @Basic
     @Column(name = "GATEWAY_EXECUTION_ID")
     public String getGatewayExecutionId() {
         return gatewayExecutionId;
@@ -153,7 +143,6 @@ public class Experiment {
         this.gatewayExecutionId = gatewayExecutionId;
     }
 
-    @Basic
     @Column(name = "ENABLE_EMAIL_NOTIFICATION")
     public Boolean getEnableEmailNotification() {
         return enableEmailNotification;
@@ -163,7 +152,6 @@ public class Experiment {
         this.enableEmailNotification = enableEmailNotification;
     }
 
-    @Basic
     @Lob
     @Column(name = "EMAIL_ADDRESSES")
     public String getEmailAddresses() {

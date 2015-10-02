@@ -240,7 +240,11 @@ public class GFacUtils {
 			JobStatus jobStatus = jobModel.getJobStatus();
             ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
             jobModel.setJobStatus(jobStatus);
-            jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            if (jobStatus.getTimeOfStateChange() == 0 || jobStatus.getTimeOfStateChange() > 0 ){
+                jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            }else {
+                jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
+            }
             CompositeIdentifier ids = new CompositeIdentifier(jobModel.getProcessId(), jobModel.getJobId());
 			experimentCatalog.add(ExpCatChildDataType.JOB_STATUS, jobStatus, ids);
             JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), jobModel.getTaskId(),
@@ -264,7 +268,11 @@ public class GFacUtils {
 	        ProcessContext processContext = taskContext.getParentProcessContext();
 	        ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
 	        TaskStatus status = taskContext.getTaskStatus();
-	        status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            if (status.getTimeOfStateChange() == 0 || status.getTimeOfStateChange() > 0 ){
+                status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            }else {
+                status.setTimeOfStateChange(status.getTimeOfStateChange());
+            }
 	        experimentCatalog.add(ExpCatChildDataType.TASK_STATUS, status, taskContext.getTaskId());
 	        TaskIdentifier identifier = new TaskIdentifier(taskContext.getTaskId(),
 			        processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
@@ -286,7 +294,11 @@ public class GFacUtils {
             // first we save job jobModel to the registry for sa and then save the job status.
             ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
             ProcessStatus status = processContext.getProcessStatus();
-            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            if (status.getTimeOfStateChange() == 0 || status.getTimeOfStateChange() > 0 ){
+                status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            }else {
+                status.setTimeOfStateChange(status.getTimeOfStateChange());
+            }
             experimentCatalog.add(ExpCatChildDataType.PROCESS_STATUS, status, processContext.getProcessId());
             ProcessIdentifier identifier = new ProcessIdentifier(processContext.getProcessId(),
                                                                  processContext.getProcessModel().getExperimentId(),
@@ -1156,13 +1168,15 @@ public class GFacUtils {
 		if (processContext.isCancel()) {
 			ProcessStatus pStatus = new ProcessStatus(ProcessState.CANCELLING);
 			pStatus.setReason("Process Cancel triggered");
+			pStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 			processContext.setProcessStatus(pStatus);
 			saveAndPublishProcessStatus(processContext);
 			// do cancel operation here
 
 			pStatus.setState(ProcessState.CANCELED);
 			processContext.setProcessStatus(pStatus);
-			saveAndPublishProcessStatus(processContext);
+            pStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            saveAndPublishProcessStatus(processContext);
 		}else if (processContext.isHandOver()) {
 
 		} else {

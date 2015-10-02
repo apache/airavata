@@ -39,10 +39,10 @@ public class ExpCatResourceUtils {
     private static final String PERSISTENCE_UNIT_NAME = "experiment_data";
     @PersistenceUnit(unitName="experiment_data")
     protected static EntityManagerFactory expCatFactory;
-    @PersistenceContext(unitName="experiment_data")
-    private static EntityManager expCatEntityManager;
+
 
     public static EntityManager getEntityManager() throws ExperimentCatalogException{
+        EntityManager expCatEntityManager;
         if (expCatFactory == null) {
             String connectionProperties = "DriverClassName=" + Utils.getJDBCDriver() + "," + "Url=" +
                     Utils.getJDBCURL() + "?autoReconnect=true," +
@@ -54,18 +54,16 @@ public class ExpCatResourceUtils {
             properties.put("openjpa.ConnectionProperties", connectionProperties);
             properties.put("openjpa.DynamicEnhancementAgent", "true");
             properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
-            properties.put("openjpa.DataCache","" + Utils.isCachingEnabled() + "(CacheSize=" + Utils.getJPACacheSize() + ", SoftReferenceSize=0)");
-            properties.put("openjpa.QueryCache","" + Utils.isCachingEnabled() + "(CacheSize=" + Utils.getJPACacheSize() + ", SoftReferenceSize=0)");
-            properties.put("javax.persistence.sharedCache.mode","ALL");
+//            properties.put("openjpa.DataCache","" + Utils.isCachingEnabled() + "(CacheSize=" + Utils.getJPACacheSize() + ", SoftReferenceSize=0)");
+//            properties.put("openjpa.QueryCache","" + Utils.isCachingEnabled() + "(CacheSize=" + Utils.getJPACacheSize() + ", SoftReferenceSize=0)");
+//            properties.put("javax.persistence.sharedCache.mode","ALL");
             properties.put("openjpa.RemoteCommitProvider","sjvm");
             properties.put("openjpa.Log","DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
             properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
             properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
-			properties.put("openjpa.jdbc.QuerySQLCache", "false");
-            synchronized (ExpCatResourceUtils.class) {
-                if (expCatFactory == null) {
-                    expCatFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
-                }
+//			properties.put("openjpa.jdbc.QuerySQLCache", "false");
+            if (expCatFactory == null) {
+                expCatFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
             }
         }
         expCatEntityManager = expCatFactory.createEntityManager();

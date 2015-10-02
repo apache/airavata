@@ -148,7 +148,12 @@ public class TaskResource extends AbstractExpCatResource {
                     break;
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -178,7 +183,12 @@ public class TaskResource extends AbstractExpCatResource {
                     TaskStatus status = (TaskStatus) q.getSingleResult();
                     TaskStatusResource statusResource = (TaskStatusResource) Utils.getResource(ResourceType.TASK_STATUS, status);
                     em.getTransaction().commit();
-                    em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
                     return statusResource;
                 case TASK_ERROR:
                     generator = new QueryGenerator(TASK_ERROR);
@@ -189,11 +199,21 @@ public class TaskResource extends AbstractExpCatResource {
                             ResourceType.TASK_ERROR, error
                     );
                     em.getTransaction().commit();
-                    em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
                     return errorResource;
                 default:
                     em.getTransaction().commit();
-                    em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
                     logger.error("Unsupported resource type for Task resource.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Unsupported resource type for Task resource.");
             }
@@ -254,7 +274,12 @@ public class TaskResource extends AbstractExpCatResource {
                     throw new UnsupportedOperationException();
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -276,7 +301,12 @@ public class TaskResource extends AbstractExpCatResource {
             em = ExpCatResourceUtils.getEntityManager();
             Task task;
             Task existingTask = em.find(Task.class, taskId);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
@@ -298,7 +328,12 @@ public class TaskResource extends AbstractExpCatResource {
                 em.merge(task);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

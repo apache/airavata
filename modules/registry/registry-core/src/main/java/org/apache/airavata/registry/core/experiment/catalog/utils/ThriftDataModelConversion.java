@@ -354,13 +354,20 @@ public class ThriftDataModelConversion {
             processModel.setProcessInputs(getProcessInputs(processResource.getProcessInputs()));
             processModel.setProcessOutputs(getProcessOutputs(processResource.getProcessOutputs()));
 
-            processModel.setProcessError(getErrorModel(processResource.getProcessError()));
-            processModel.setProcessStatus(getProcessStatus(processResource.getProcessStatus()));
+            ErrorModel errorModel = getErrorModel(processResource.getProcessError());
+            if (errorModel != null){
+                processModel.setProcessError(errorModel);
+            }
+            ProcessStatus processStatus = getProcessStatus(processResource.getProcessStatus());
+            if (processStatus != null){
+                processModel.setProcessStatus(processStatus);
+            }
 
-            processModel.setResourceSchedule(getProcessResourceSchedule(processResource.getProcessResourceSchedule()));
-
+            ComputationalResourceSchedulingModel schedule = getProcessResourceSchedule(processResource.getProcessResourceSchedule());
+            if (schedule != null){
+                processModel.setResourceSchedule(schedule);
+            }
             processModel.setTasks(getTaskModelList(processResource.getTaskList()));
-
             return processModel;
         }
         return null;
@@ -386,8 +393,14 @@ public class ThriftDataModelConversion {
         model.setTaskDetail(taskResource.getTaskDetail());
         model.setSubTaskModel(taskResource.getSubTaskModel());
 
-        model.setTaskStatus(getTaskStatus(taskResource.getTaskStatus()));
-        model.setTaskError(getErrorModel(taskResource.getTaskError()));
+        TaskStatus taskStatus = getTaskStatus(taskResource.getTaskStatus());
+        if (taskStatus != null){
+            model.setTaskStatus(taskStatus);
+        }
+        ErrorModel errorModel = getErrorModel(taskResource.getTaskError());
+        if (errorModel != null) {
+            model.setTaskError(errorModel);
+        }
 
         return model;
     }
@@ -402,7 +415,10 @@ public class ThriftDataModelConversion {
         model.setComputeResourceConsumed(jobResource.getComputeResourceConsumed());
         model.setJobName(jobResource.getJobName());
         model.setWorkingDir(jobResource.getWorkingDir());
-        model.setJobStatus(getJobStatus(jobResource.getJobStatus()));
+        JobStatus jobStatus = getJobStatus(jobResource.getJobStatus());
+        if (jobStatus != null){
+            model.setJobStatus(jobStatus);
+        }
         model.setExitCode(jobResource.getExitCode());
         model.setStdOut(jobResource.getStdOut());
         model.setStdErr(jobResource.getStdErr());

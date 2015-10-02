@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.*;
 
 @Entity
-@Cacheable
 @Table(name = "USER_CONFIGURATION_DATA")
 public class UserConfigurationData {
     private final static Logger logger = LoggerFactory.getLogger(UserConfigurationData.class);
@@ -56,7 +55,6 @@ public class UserConfigurationData {
         this.experimentId = experimentId;
     }
 
-    @Basic
     @Column(name = "AIRAVATA_AUTO_SCHEDULE")
     public boolean getAiravataAutoSchedule() {
         return airavataAutoSchedule;
@@ -66,7 +64,6 @@ public class UserConfigurationData {
         this.airavataAutoSchedule = airavataAutoSchedule;
     }
 
-    @Basic
     @Column(name = "OVERRIDE_MANUAL_SCHEDULED_PARAMS")
     public boolean getOverrideManualScheduledParams() {
         return overrideManualScheduledParams;
@@ -76,7 +73,6 @@ public class UserConfigurationData {
         this.overrideManualScheduledParams = overrideManualScheduledParams;
     }
 
-    @Basic
     @Column(name = "SHARE_EXPERIMENT_PUBLICALLY")
     public boolean getShareExperimentPublically() {
         return shareExperimentPublically;
@@ -86,7 +82,6 @@ public class UserConfigurationData {
         this.shareExperimentPublically = shareExperimentPublically;
     }
 
-    @Basic
     @Column(name = "THROTTLE_RESOURCES")
     public boolean getThrottleResources() {
         return throttleResources;
@@ -96,7 +91,6 @@ public class UserConfigurationData {
         this.throttleResources = throttleResources;
     }
 
-    @Basic
     @Column(name = "USER_DN")
     public String getUserDn() {
         return userDn;
@@ -106,7 +100,6 @@ public class UserConfigurationData {
         this.userDn = userDn;
     }
 
-    @Basic
     @Column(name = "GENERATE_CERT")
     public boolean getGenerateCert() {
         return generateCert;
@@ -116,7 +109,6 @@ public class UserConfigurationData {
         this.generateCert = generateCert;
     }
 
-    @Basic
     @Column(name = "RESOURCE_HOST_ID")
     public String getResourceHostId() {
         return resourceHostId;
@@ -126,7 +118,6 @@ public class UserConfigurationData {
         this.resourceHostId = resourceHostId;
     }
 
-    @Basic
     @Column(name = "TOTAL_CPU_COUNT")
     public Integer getTotalCpuCount() {
         return totalCpuCount;
@@ -136,7 +127,6 @@ public class UserConfigurationData {
         this.totalCpuCount = totalCpuCount;
     }
 
-    @Basic
     @Column(name = "NODE_COUNT")
     public Integer getNodeCount() {
         return nodeCount;
@@ -146,7 +136,6 @@ public class UserConfigurationData {
         this.nodeCount = nodeCount;
     }
 
-    @Basic
     @Column(name = "NUMBER_OF_THREADS")
     public Integer getNumberOfThreads() {
         return numberOfThreads;
@@ -156,7 +145,6 @@ public class UserConfigurationData {
         this.numberOfThreads = numberOfThreads;
     }
 
-    @Basic
     @Column(name = "QUEUE_NAME")
     public String getQueueName() {
         return queueName;
@@ -166,7 +154,6 @@ public class UserConfigurationData {
         this.queueName = queueName;
     }
 
-    @Basic
     @Column(name = "WALL_TIME_LIMIT")
     public Integer getWallTimeLimit() {
         return wallTimeLimit;
@@ -176,7 +163,6 @@ public class UserConfigurationData {
         this.wallTimeLimit = wallTimeLimit;
     }
 
-    @Basic
     @Column(name = "TOTAL_PHYSICAL_MEMORY")
     public Integer getTotalPhysicalMemory() {
         return totalPhysicalMemory;

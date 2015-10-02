@@ -27,7 +27,6 @@ import javax.persistence.*;
 import java.lang.*;
 
 @Entity
-@Cacheable
 @Table(name = "PROCESS_INPUT")
 @IdClass(ProcessInputPK.class)
 public class ProcessInput {
@@ -66,7 +65,6 @@ public class ProcessInput {
         this.inputName = inputName;
     }
 
-    @Basic
     @Lob
     @Column(name = "INPUT_VALUE")
     public String getInputValue() {
@@ -77,7 +75,6 @@ public class ProcessInput {
         this.inputValue = inputValue;
     }
 
-    @Basic
     @Column(name = "DATA_TYPE")
     public String getDataType() {
         return dataType;
@@ -87,7 +84,6 @@ public class ProcessInput {
         this.dataType = dataType;
     }
 
-    @Basic
     @Column(name = "APPLICATION_ARGUMENT")
     public String getApplicationArgument() {
         return applicationArgument;
@@ -97,7 +93,6 @@ public class ProcessInput {
         this.applicationArgument = applicationArgument;
     }
 
-    @Basic
     @Column(name = "STANDARD_INPUT")
     public boolean getStandardInput() {
         return standardInput;
@@ -107,7 +102,6 @@ public class ProcessInput {
         this.standardInput = standardInput;
     }
 
-    @Basic
     @Column(name = "USER_FRIENDLY_DESCRIPTION")
     public String getUserFriendlyDescription() {
         return userFriendlyDescription;
@@ -117,7 +111,6 @@ public class ProcessInput {
         this.userFriendlyDescription = userFriendlyDescription;
     }
 
-    @Basic
     @Column(name = "METADATA")
     public String getMetadata() {
         return metadata;
@@ -127,7 +120,6 @@ public class ProcessInput {
         this.metadata = metadata;
     }
 
-    @Basic
     @Column(name = "INPUT_ORDER")
     public Integer getInputOrder() {
         return inputOrder;
@@ -137,7 +129,6 @@ public class ProcessInput {
         this.inputOrder = inputOrder;
     }
 
-    @Basic
     @Column(name = "IS_REQUIRED")
     public boolean getIsRequired() {
         return isRequired;
@@ -147,7 +138,6 @@ public class ProcessInput {
         this.isRequired = isRequired;
     }
 
-    @Basic
     @Column(name = "REQUIRED_TO_ADDED_TO_CMD")
     public boolean getRequiredToAddedToCmd() {
         return requiredToAddedToCmd;
@@ -157,7 +147,6 @@ public class ProcessInput {
         this.requiredToAddedToCmd = requiredToAddedToCmd;
     }
 
-    @Basic
     @Column(name = "DATA_STAGED")
     public boolean getDataStaged() {
         return dataStaged;

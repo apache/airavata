@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.*;
 
 @Entity
-@Cacheable
 @Table(name = "GATEWAY_WORKER")
 @IdClass(GatewayWorkerPK.class)
 public class GatewayWorker {

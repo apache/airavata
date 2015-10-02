@@ -27,7 +27,6 @@ import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
-@Cacheable
 @Table(name = "GATEWAY")
 public class Gateway {
     private final static Logger logger = LoggerFactory.getLogger(Gateway.class);
@@ -48,7 +47,6 @@ public class Gateway {
         this.gatewayId = gatewayId;
     }
 
-    @Basic
     @Column(name = "GATEWAY_NAME")
     public String getGatewayName() {
         return gatewayName;
@@ -58,7 +56,6 @@ public class Gateway {
         this.gatewayName = gatewayName;
     }
 
-    @Basic
     @Column(name = "DOMAIN")
     public String getDomain() {
         return domain;
@@ -68,7 +65,6 @@ public class Gateway {
         this.domain = domain;
     }
 
-    @Basic
     @Column(name = "EMAIL_ADDRESS")
     public String getEmailAddress() {
         return emailAddress;

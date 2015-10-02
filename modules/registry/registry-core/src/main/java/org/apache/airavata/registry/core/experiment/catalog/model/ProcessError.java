@@ -28,7 +28,6 @@ import java.lang.*;
 import java.sql.Timestamp;
 
 @Entity
-@Cacheable
 @Table(name = "PROCESS_ERROR")
 @IdClass(ProcessErrorPK.class)
 public class ProcessError {
@@ -52,7 +51,6 @@ public class ProcessError {
         this.errorId = errorId;
     }
 
-    @Basic
     @Column(name = "PROCESS_ID")
     public String getProcessId() {
         return processId;
@@ -62,7 +60,6 @@ public class ProcessError {
         this.processId = processId;
     }
 
-    @Basic
     @Column(name = "CREATION_TIME")
     public Timestamp getCreationTime() {
         return creationTime;
@@ -72,7 +69,6 @@ public class ProcessError {
         this.creationTime = creationTime;
     }
 
-    @Basic
     @Lob
     @Column(name = "ACTUAL_ERROR_MESSAGE")
     public String getActualErrorMessage() {
@@ -83,7 +79,6 @@ public class ProcessError {
         this.actualErrorMessage = actualErrorMessage;
     }
 
-    @Basic
     @Lob
     @Column(name = "USER_FRIENDLY_MESSAGE")
     public String getUserFriendlyMessage() {
@@ -94,7 +89,6 @@ public class ProcessError {
         this.userFriendlyMessage = userFriendlyMessage;
     }
 
-    @Basic
     @Column(name = "TRANSIENT_OR_PERSISTENT")
     public boolean getTransientOrPersistent() {
         return transientOrPersistent;
@@ -104,7 +98,6 @@ public class ProcessError {
         this.transientOrPersistent = transientOrPersistent;
     }
 
-    @Basic
     @Lob
     @Column(name = "ROOT_CAUSE_ERROR_ID_LIST")
     public String getRootCauseErrorIdList() {

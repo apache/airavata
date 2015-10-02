@@ -28,7 +28,6 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 @Entity
-@Cacheable
 @Table(name = "PROJECT")
 public class Project {
     private final static Logger logger = LoggerFactory.getLogger(Project.class);
@@ -43,7 +42,6 @@ public class Project {
     private Gateway gateway;
     private Collection<ProjectUser> projectUsers;
 
-    @Basic
     @Column(name = "GATEWAY_ID")
     public String getGatewayId() {
         return gatewayId;
@@ -53,7 +51,6 @@ public class Project {
         this.gatewayId = gatewayId;
     }
 
-    @Basic
     @Column(name = "USER_NAME")
     public String getUserName() {
         return userName;
@@ -63,7 +60,6 @@ public class Project {
         this.userName = ownerName;
     }
 
-    @Basic
     @Column(name = "PROJECT_NAME")
     public String getProjectName() {
         return projectName;
@@ -83,7 +79,6 @@ public class Project {
         this.projectId = projectId;
     }
 
-    @Basic
     @Column(name = "DESCRIPTION")
     public String getDescription() {
         return description;
@@ -93,7 +88,6 @@ public class Project {
         this.description = description;
     }
 
-    @Basic
     @Column(name = "CREATION_TIME")
     public Timestamp getCreationTime() {
         return creationTime;

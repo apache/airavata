@@ -27,7 +27,6 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Cacheable
 @Table(name = "EXPERIMENT_ERROR")
 @IdClass(ExperimentErrorPK.class)
 public class ExperimentError {
@@ -61,7 +60,6 @@ public class ExperimentError {
         this.experimentId = experimentId;
     }
 
-    @Basic
     @Column(name = "CREATION_TIME")
     public Timestamp getCreationTime() {
         return creationTime;
@@ -71,7 +69,6 @@ public class ExperimentError {
         this.creationTime = creationTime;
     }
 
-    @Basic
     @Lob
     @Column(name = "ACTUAL_ERROR_MESSAGE")
     public String getActualErrorMessage() {
@@ -82,7 +79,6 @@ public class ExperimentError {
         this.actualErrorMessage = actualErrorMessage;
     }
 
-    @Basic
     @Lob
     @Column(name = "USER_FRIENDLY_MESSAGE")
     public String getUserFriendlyMessage() {
@@ -93,7 +89,6 @@ public class ExperimentError {
         this.userFriendlyMessage = userFriendlyMessage;
     }
 
-    @Basic
     @Column(name = "TRANSIENT_OR_PERSISTENT")
     public boolean getTransientOrPersistent() {
         return transientOrPersistent;
@@ -103,7 +98,6 @@ public class ExperimentError {
         this.transientOrPersistent = transientOrPersistent;
     }
 
-    @Basic
     @Lob
     @Column(name = "ROOT_CAUSE_ERROR_ID_LIST")
     public String getRootCauseErrorIdList() {

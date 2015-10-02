@@ -27,7 +27,6 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Cacheable
 @Table(name = "EXPERIMENT_SUMMARY")
 public class ExperimentSummary {
     private final static Logger logger = LoggerFactory.getLogger(ExperimentSummary.class);
@@ -53,7 +52,6 @@ public class ExperimentSummary {
         this.experimentId = experimentId;
     }
 
-    @Basic
     @Column(name = "PROJECT_ID")
     public String getProjectId() {
         return projectId;
@@ -63,7 +61,6 @@ public class ExperimentSummary {
         this.projectId = projectId;
     }
 
-    @Basic
     @Column(name = "GATEWAY_ID")
     public String getGatewayId() {
         return gatewayId;
@@ -74,7 +71,6 @@ public class ExperimentSummary {
     }
 
 
-    @Basic
     @Column(name = "USER_NAME")
     public String getUserName() {
         return userName;
@@ -84,7 +80,6 @@ public class ExperimentSummary {
         this.userName = userName;
     }
 
-    @Basic
     @Column(name = "EXECUTION_ID")
     public String getExecutionId() {
         return executionId;
@@ -94,7 +89,6 @@ public class ExperimentSummary {
         this.executionId = executionId;
     }
 
-    @Basic
     @Column(name = "EXPERIMENT_NAME")
     public String getExperimentName() {
         return experimentName;
@@ -104,7 +98,6 @@ public class ExperimentSummary {
         this.experimentName = experimentName;
     }
 
-    @Basic
     @Column(name = "CREATION_TIME")
     public Timestamp getCreationTime() {
         return creationTime;
@@ -114,7 +107,6 @@ public class ExperimentSummary {
         this.creationTime = creationTime;
     }
 
-    @Basic
     @Column(name = "DESCRIPTION")
     public String getDescription() {
         return description;
@@ -124,7 +116,6 @@ public class ExperimentSummary {
         this.description = description;
     }
 
-    @Basic
     @Column(name = "STATE")
     public String getState() {
         return state;
@@ -134,7 +125,6 @@ public class ExperimentSummary {
         this.state = state;
     }
 
-    @Basic
     @Column(name = "RESOURCE_HOST_ID")
     public String getResourceHostId() {
         return resourceHostId;
@@ -144,7 +134,6 @@ public class ExperimentSummary {
         this.resourceHostId = resourceHostId;
     }
 
-    @Basic
     @Column(name = "TIME_OF_STATE_CHANGE")
     public Timestamp getTimeOfStateChange() {
         return timeOfStateChange;

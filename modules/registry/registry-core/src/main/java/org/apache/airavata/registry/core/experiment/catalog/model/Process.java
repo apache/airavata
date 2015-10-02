@@ -28,7 +28,6 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 @Entity
-@Cacheable
 @Table(name = "PROCESS")
 public class Process {
     private final static Logger logger = LoggerFactory.getLogger(Process.class);
@@ -62,7 +61,6 @@ public class Process {
         this.processId = processId;
     }
 
-    @Basic
     @Column(name = "EXPERIMENT_ID")
     public String getExperimentId() {
         return experimentId;
@@ -72,7 +70,6 @@ public class Process {
         this.experimentId = experimentId;
     }
 
-    @Basic
     @Column(name = "CREATION_TIME")
     public Timestamp getCreationTime() {
         return creationTime;
@@ -82,7 +79,6 @@ public class Process {
         this.creationTime = creationTime;
     }
 
-    @Basic
     @Column(name = "LAST_UPDATE_TIME")
     public Timestamp getLastUpdateTime() {
         return lastUpdateTime;
@@ -92,7 +88,6 @@ public class Process {
         this.lastUpdateTime = lastUpdateTime;
     }
 
-    @Basic
     @Lob
     @Column(name = "PROCESS_DETAIL")
     public String getProcessDetail() {
@@ -103,7 +98,6 @@ public class Process {
         this.processDetail = processDetail;
     }
 
-    @Basic
     @Column(name = "APPLICATION_INTERFACE_ID")
     public String getApplicationInterfaceId() {
         return applicationInterfaceId;
@@ -113,7 +107,6 @@ public class Process {
         this.applicationInterfaceId = applicationInterfaceId;
     }
 
-    @Basic
     @Column(name = "TASK_DAG")
     public String getTaskDag() {
         return taskDag;
@@ -123,7 +116,6 @@ public class Process {
         this.taskDag = taskDag;
     }
 
-    @Basic
     @Column(name = "APPLICATION_DEPLOYMENT_ID")
     public String getApplicationDeploymentId() {
         return applicationDeploymentId;
@@ -133,7 +125,6 @@ public class Process {
         this.applicationDeploymentId = applicationDeploymentId;
     }
 
-    @Basic
     @Column(name = "COMPUTE_RESOURCE_ID")
     public String getComputeResourceId() {
         return computeResourceId;
@@ -143,7 +134,6 @@ public class Process {
         this.computeResourceId = computeResourceId;
     }
 
-    @Basic
     @Column(name = "GATEWAY_EXECUTION_ID")
     public String getGatewayExecutionId() {
         return gatewayExecutionId;
@@ -153,8 +143,6 @@ public class Process {
         this.gatewayExecutionId = gatewayExecutionId;
     }
 
-
-    @Basic
     @Column(name = "ENABLE_EMAIL_NOTIFICATION")
     public boolean getEnableEmailNotification() {
         return enableEmailNotification;
@@ -164,7 +152,6 @@ public class Process {
         this.enableEmailNotification = enableEmailNotification;
     }
 
-    @Basic
     @Lob
     @Column(name = "EMAIL_ADDRESSES")
     public String getEmailAddresses() {

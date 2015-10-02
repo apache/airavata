@@ -63,7 +63,6 @@ public class ProcessOutput {
         this.outputName = outputName;
     }
 
-    @Basic
     @Lob
     @Column(name = "OUTPUT_VALUE")
     public String getOutputValue() {
@@ -74,7 +73,6 @@ public class ProcessOutput {
         this.outputValue = outputValue;
     }
 
-    @Basic
     @Column(name = "DATA_TYPE")
     public String getDataType() {
         return dataType;
@@ -84,7 +82,6 @@ public class ProcessOutput {
         this.dataType = dataType;
     }
 
-    @Basic
     @Column(name = "APPLICATION_ARGUMENT")
     public String getApplicationArgument() {
         return applicationArgument;
@@ -94,7 +91,6 @@ public class ProcessOutput {
         this.applicationArgument = applicationArgument;
     }
 
-    @Basic
     @Column(name = "IS_REQUIRED")
     public boolean getIsRequired() {
         return isRequired;
@@ -104,7 +100,6 @@ public class ProcessOutput {
         this.isRequired = isRequired;
     }
 
-    @Basic
     @Column(name = "REQUIRED_TO_ADDED_TO_CMD")
     public boolean getRequiredToAddedToCmd() {
         return requiredToAddedToCmd;
@@ -114,7 +109,6 @@ public class ProcessOutput {
         this.requiredToAddedToCmd = requiredToAddedToCmd;
     }
 
-    @Basic
     @Column(name = "DATA_MOVEMENT")
     public boolean getDataMovement() {
         return dataMovement;
@@ -124,7 +118,6 @@ public class ProcessOutput {
         this.dataMovement = dataMovement;
     }
 
-    @Basic
     @Column(name = "LOCATION")
     public String getLocation() {
         return location;
@@ -134,7 +127,6 @@ public class ProcessOutput {
         this.location = location;
     }
 
-    @Basic
     @Column(name = "SEARCH_QUERY")
     public String getSearchQuery() {
         return searchQuery;
