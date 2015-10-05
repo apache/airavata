@@ -240,6 +240,13 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	}
 
 	@Override
+	public boolean execute(CommandInfo commandInfo) throws SSHApiException {
+		StandardOutReader reader = new StandardOutReader();
+		executeCommand(commandInfo, reader);
+		return true;
+	}
+
+	@Override
 	public Session getSession() throws SSHApiException {
 		return session;
 	}
