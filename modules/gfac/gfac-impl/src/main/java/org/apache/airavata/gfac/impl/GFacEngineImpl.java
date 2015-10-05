@@ -25,9 +25,11 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
+import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.monitor.JobMonitor;
@@ -68,6 +70,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -251,7 +255,7 @@ public class GFacEngineImpl implements GFacEngine {
 					case URI:
 						try {
 							taskCtx = getDataStagingTaskContext(processContext, processInput);
-						} catch (TException e) {
+						} catch (TException | TaskException e) {
 							throw new GFacException("Error while serializing data staging sub task model");
 						}
 						saveTaskModel(taskCtx);
@@ -442,7 +446,7 @@ public class GFacEngineImpl implements GFacEngine {
 				case URI: case STDERR: case STDOUT:
 					try {
 						taskCtx = getDataStagingTaskContext(processContext, processOutput);
-					} catch (TException e) {
+					} catch (TException | TaskException e) {
 						throw new GFacException("Thrift model to byte[] conversion issue", e);
 					}
 					saveTaskModel(taskCtx);
@@ -557,7 +561,7 @@ public class GFacEngineImpl implements GFacEngine {
 	}
 
 	private TaskContext getDataStagingTaskContext(ProcessContext processContext, InputDataObjectType processInput)
-			throws TException {
+            throws TException, TaskException {
 		TaskContext taskCtx = new TaskContext();
 		taskCtx.setParentProcessContext(processContext);
 		// create new task model for this task
@@ -572,7 +576,15 @@ public class GFacEngineImpl implements GFacEngine {
 		// create data staging sub task model
 		DataStagingTaskModel submodel = new DataStagingTaskModel();
 		submodel.setSource(processInput.getValue());
-		submodel.setDestination(processContext.getDataMovementProtocol().name() + ":" + processContext.getWorkingDir());
+        ServerInfo serverInfo = processContext.getServerInfo();
+        URI destination = null;
+        try {
+            destination = new URI(processContext.getDataMovementProtocol().name(), serverInfo.getHost(),
+                    serverInfo.getUserName(), serverInfo.getPort(), processContext.getWorkingDir(), null, null);
+        } catch (URISyntaxException e) {
+            throw new TaskException("Error while constructing destination file URI");
+        }
+        submodel.setDestination(destination.toString());
 		taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
 		taskCtx.setTaskModel(taskModel);
         taskCtx.setProcessInput(processInput);
@@ -580,7 +592,7 @@ public class GFacEngineImpl implements GFacEngine {
 	}
 
 	private TaskContext getDataStagingTaskContext(ProcessContext processContext, OutputDataObjectType processOutput)
-			throws TException {
+            throws TException, TaskException {
 		TaskContext taskCtx = new TaskContext();
 		taskCtx.setParentProcessContext(processContext);
 		// create new task model for this task
@@ -596,8 +608,16 @@ public class GFacEngineImpl implements GFacEngine {
 		String remoteOutputDir = processContext.getOutputDir();
 		remoteOutputDir = remoteOutputDir.endsWith("/") ? remoteOutputDir : remoteOutputDir + "/";
 		DataStagingTaskModel submodel = new DataStagingTaskModel();
-		submodel.setSource(processContext.getDataMovementProtocol().name() + ":" + remoteOutputDir + processOutput
-				.getValue());
+        ServerInfo serverInfo = processContext.getServerInfo();
+        URI source = null;
+        try {
+            source = new URI(processContext.getDataMovementProtocol().name(), serverInfo.getHost(),
+                    serverInfo.getUserName(), serverInfo.getPort(), remoteOutputDir + processOutput.getValue(), null, null);
+        } catch (URISyntaxException e) {
+            throw new TaskException("Error while constructing source file URI");
+        }
+        submodel.setSource(source.toString());
+        // TODO after thridpary scp implemented we can fix following destination location correct one.
 		String localWorkingDir = processContext.getLocalWorkingDir();
 		submodel.setDestination("file://" + localWorkingDir);
 		taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
