@@ -124,6 +124,14 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	public List<String> listDirectory(String directoryPath) throws SSHApiException;
 
 	/**
+	 * This method can use to execute custom command on remote compute resource.
+	 * @param commandInfo
+	 * @return <code>true</code> if command successfully executed, <code>false</code> otherwise.
+	 * @throws SSHApiException
+	 */
+	public boolean execute(CommandInfo commandInfo) throws SSHApiException;
+
+	/**
 	 * This method can be used to get created ssh session
 	 * to reuse the created session.
 	 */

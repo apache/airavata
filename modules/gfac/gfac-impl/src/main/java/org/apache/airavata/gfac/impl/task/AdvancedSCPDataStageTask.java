@@ -36,6 +36,8 @@ import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
 import org.apache.airavata.gfac.core.authentication.SSHPasswordAuthentication;
+import org.apache.airavata.gfac.core.cluster.CommandInfo;
+import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
@@ -127,6 +129,19 @@ public class AdvancedSCPDataStageTask implements Task{
 		}
 
 		try {
+            // use cp instead of scp if source and destination host and user name is same.
+            URI sourceURI = new URI(subTaskModel.getSource());
+            URI destinationURI = new URI(subTaskModel.getDestination());
+
+            if (sourceURI.getHost().equalsIgnoreCase(destinationURI.getHost())
+                    && sourceURI.getUserInfo().equalsIgnoreCase(destinationURI.getUserInfo())) {
+                localDataCopy(taskContext, sourceURI, destinationURI);
+                status.setState(TaskState.COMPLETED);
+                status.setReason("Locally copied file using 'cp' command ");
+                return status;
+            }
+
+
             String tokenId = taskContext.getParentProcessContext().getTokenId();
             CredentialReader credentialReader = GFacUtils.getCredentialReader();
             Credential credential = credentialReader.getCredential(taskContext.getParentProcessContext().getGatewayId(), tokenId);
@@ -153,7 +168,6 @@ public class AdvancedSCPDataStageTask implements Task{
             status = new TaskStatus(TaskState.COMPLETED);
             subTaskModel = (DataStagingTaskModel) ThriftUtils.getSubTaskModel
                     (taskContext.getTaskModel());
-            URI sourceURI = new URI(subTaskModel.getSource());
 
             File templocalDataDir = GFacUtils.getLocalDataDir(taskContext);
             if (!templocalDataDir.exists()) {
@@ -168,9 +182,7 @@ public class AdvancedSCPDataStageTask implements Task{
 
             ServerInfo serverInfo = new ServerInfo(userName, hostName, DEFAULT_SSH_PORT);
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
-	        URI destinationURI = null;
 	        if (processState == ProcessState.INPUT_DATA_STAGING) {
-		        destinationURI = new URI(subTaskModel.getDestination());
                 inputDataStaging(taskContext, sshSession, sourceURI, destinationURI, filePath);
                 status.setReason("Successfully staged input data");
             }else if (processState == ProcessState.OUTPUT_DATA_STAGING) {
@@ -252,6 +264,13 @@ public class AdvancedSCPDataStageTask implements Task{
         }
         return status;
 	}
+
+    private void localDataCopy(TaskContext taskContext, URI sourceURI, URI destinationURI) throws SSHApiException {
+        StringBuilder sb = new StringBuilder("rsync -cr ");
+        sb.append(sourceURI.getPath()).append(" ").append(destinationURI.getPath());
+        CommandInfo commandInfo = new RawCommandInfo(sb.toString());
+        taskContext.getParentProcessContext().getRemoteCluster().execute(commandInfo);
+    }
 
 	private void inputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI
 			destinationURI, String filePath) throws SSHApiException, IOException, JSchException {
