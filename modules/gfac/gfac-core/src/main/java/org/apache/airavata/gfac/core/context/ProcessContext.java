@@ -23,6 +23,7 @@ package org.apache.airavata.gfac.core.context;
 
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
+import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -79,7 +80,9 @@ public class ProcessContext {
 	private ResourceJobManager resourceJobManager;
 	private boolean handOver;
 	private boolean cancel;
-	/**
+    private ServerInfo serverInfo;
+
+    /**
 	 * Note: process context property use lazy loading approach. In runtime you will see some properties as null
 	 * unless you have access it previously. Once that property access using the api,it will be set to correct value.
 	 */
@@ -361,4 +364,12 @@ public class ProcessContext {
 	public boolean isInterrupted(){
 		return this.cancel || this.handOver;
 	}
+
+    public void setServerInfo(ServerInfo serverInfo) {
+        this.serverInfo = serverInfo;
+    }
+
+    public ServerInfo getServerInfo() {
+        return serverInfo;
+    }
 }

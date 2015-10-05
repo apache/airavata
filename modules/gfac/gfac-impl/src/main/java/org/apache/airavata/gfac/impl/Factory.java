@@ -210,6 +210,7 @@ public abstract class Factory {
 		if (remoteCluster == null) {
 			String hostName = Factory.getDefaultAppCatalog().getComputeResource().getComputeResource(computeResourceId).getHostName();
 			ServerInfo serverInfo = new ServerInfo(processContext.getComputeResourcePreference().getLoginUserName(), hostName);
+            processContext.setServerInfo(serverInfo);
 			JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
 			AuthenticationInfo authenticationInfo = getSSHKeyAuthentication();
 			remoteCluster = new HPCRemoteCluster(serverInfo, jobManagerConfiguration, authenticationInfo);
