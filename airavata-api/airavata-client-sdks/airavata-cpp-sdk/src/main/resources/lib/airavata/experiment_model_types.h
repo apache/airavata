@@ -82,8 +82,8 @@ typedef struct _UserConfigurationDataModel__isset {
 class UserConfigurationDataModel {
  public:
 
-  static const char* ascii_fingerprint; // = "45F3B52108AC703F0CDC363B5EECA38B";
-  static const uint8_t binary_fingerprint[16]; // = {0x45,0xF3,0xB5,0x21,0x08,0xAC,0x70,0x3F,0x0C,0xDC,0x36,0x3B,0x5E,0xEC,0xA3,0x8B};
+  static const char* ascii_fingerprint; // = "D7D5F12196F1444CE2A35E68C2EEDAF2";
+  static const uint8_t binary_fingerprint[16]; // = {0xD7,0xD5,0xF1,0x21,0x96,0xF1,0x44,0x4C,0xE2,0xA3,0x5E,0x68,0xC2,0xEE,0xDA,0xF2};
 
   UserConfigurationDataModel(const UserConfigurationDataModel&);
   UserConfigurationDataModel& operator=(const UserConfigurationDataModel&);
@@ -175,8 +175,8 @@ typedef struct _ExperimentModel__isset {
 class ExperimentModel {
  public:
 
-  static const char* ascii_fingerprint; // = "42A5CF1C0F5D4554085ED4D46195079B";
-  static const uint8_t binary_fingerprint[16]; // = {0x42,0xA5,0xCF,0x1C,0x0F,0x5D,0x45,0x54,0x08,0x5E,0xD4,0xD4,0x61,0x95,0x07,0x9B};
+  static const char* ascii_fingerprint; // = "73D8AE6B0671F898D40E015337C4537D";
+  static const uint8_t binary_fingerprint[16]; // = {0x73,0xD8,0xAE,0x6B,0x06,0x71,0xF8,0x98,0xD4,0x0E,0x01,0x53,0x37,0xC4,0x53,0x7D};
 
   ExperimentModel(const ExperimentModel&);
   ExperimentModel& operator=(const ExperimentModel&);

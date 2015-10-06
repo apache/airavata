@@ -48,6 +48,7 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
     private String queueName;
     private Integer wallTimeLimit;
     private Integer totalPhysicalMemory;
+    private String staticWorkingDir;
 
     public String getExperimentId() {
         return experimentId;
@@ -161,6 +162,14 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
         this.generateCert = generateCert;
     }
 
+    public String getStaticWorkingDir() {
+        return staticWorkingDir;
+    }
+
+    public void setStaticWorkingDir(String staticWorkingDir) {
+        this.staticWorkingDir = staticWorkingDir;
+    }
+
     public ExperimentCatResource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for process resource scheduling data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
@@ -221,6 +230,7 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
             userConfigurationData.setNumberOfThreads(numberOfThreads);
             userConfigurationData.setQueueName(queueName);
             userConfigurationData.setWallTimeLimit(wallTimeLimit);
+            userConfigurationData.setStaticWorkingDir(staticWorkingDir);
             userConfigurationData.setTotalPhysicalMemory(totalPhysicalMemory);
             if (existingConf == null){
                 em.persist(userConfigurationData);

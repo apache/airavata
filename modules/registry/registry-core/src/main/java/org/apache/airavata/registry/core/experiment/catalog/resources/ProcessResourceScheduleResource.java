@@ -42,6 +42,7 @@ public class ProcessResourceScheduleResource extends AbstractExpCatResource {
     private String queueName;
     private Integer wallTimeLimit;
     private Integer totalPhysicalMemory;
+    private String staticWorkingDir;
 
     public String getProcessId() {
         return processId;
@@ -107,6 +108,14 @@ public class ProcessResourceScheduleResource extends AbstractExpCatResource {
         this.totalPhysicalMemory = totalPhysicalMemory;
     }
 
+    public String getStaticWorkingDir() {
+        return staticWorkingDir;
+    }
+
+    public void setStaticWorkingDir(String staticWorkingDir) {
+        this.staticWorkingDir = staticWorkingDir;
+    }
+
     public ExperimentCatResource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for process resource scheduling data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
@@ -162,6 +171,7 @@ public class ProcessResourceScheduleResource extends AbstractExpCatResource {
             processResourceSchedule.setQueueName(queueName);
             processResourceSchedule.setWallTimeLimit(wallTimeLimit);
             processResourceSchedule.setTotalPhysicalMemory(totalPhysicalMemory);
+            processResourceSchedule.setStaticWorkingDir(staticWorkingDir);
             if (existingSchedule == null){
                 em.persist(processResourceSchedule);
             }else {

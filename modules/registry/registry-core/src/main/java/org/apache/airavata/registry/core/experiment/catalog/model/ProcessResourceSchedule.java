@@ -39,6 +39,7 @@ public class ProcessResourceSchedule {
     private Integer wallTimeLimit;
     private Integer totalPhysicalMemory;
     private Process process;
+    private String staticWorkingDir;
 
     @Id
     @Column(name = "PROCESS_ID")
@@ -113,7 +114,16 @@ public class ProcessResourceSchedule {
         this.totalPhysicalMemory = totalPhysicalMemory;
     }
 
-//    @Override
+    @Column(name = "STATIC_WORKING_DIR")
+    public String getStaticWorkingDir() {
+        return staticWorkingDir;
+    }
+
+    public void setStaticWorkingDir(String staticWorkingDir) {
+        this.staticWorkingDir = staticWorkingDir;
+    }
+
+    //    @Override
 //    public boolean equals(Object o) {
 //        if (this == o) return true;
 //        if (o == null || getClass() != o.getClass()) return false;
