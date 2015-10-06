@@ -38,13 +38,13 @@ import java.io.IOException;
 public class SSHCredentialTest {
 
     public static void main(String[] args) {
-        String jdbcURL = "jdbc:mysql://gw85.iu.xsede.org:3306/airavata_prod";
+        String jdbcURL = "jdbc:mysql://gw85.iu.xsede.org:3306/exp_catalog16";
         String jdbcDriver = "com.mysql.jdbc.Driver";
-        String userName = "gtaAiravataUser";
-        String password = "gtaAiravataPWD";
+        String userName = "gtaDevUser";
+        String password = "gtaDevPWD";
         String gatewayId = "default";
-        String privateKeyPath = "/Users/chathuri/Desktop/ssh_gw127/id_rsa";
-        String pubKeyPath = "/Users/chathuri/Desktop/ssh_gw127/id_rsa.pub";
+        String privateKeyPath = "/Users/chathuri/Desktop/ssh_gw111/id_rsa";
+        String pubKeyPath = "/Users/chathuri/Desktop/ssh_gw111/id_rsa.pub";
 
         try {
             DBUtil dbUtil = new DBUtil(jdbcURL, userName, password, jdbcDriver);
