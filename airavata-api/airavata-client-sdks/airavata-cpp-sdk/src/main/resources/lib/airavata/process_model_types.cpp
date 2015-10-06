@@ -123,8 +123,8 @@ void ProcessModel::__set_emailAddresses(const std::vector<std::string> & val) {
 __isset.emailAddresses = true;
 }
 
-const char* ProcessModel::ascii_fingerprint = "784A051111BD540B35328CD018BE3F62";
-const uint8_t ProcessModel::binary_fingerprint[16] = {0x78,0x4A,0x05,0x11,0x11,0xBD,0x54,0x0B,0x35,0x32,0x8C,0xD0,0x18,0xBE,0x3F,0x62};
+const char* ProcessModel::ascii_fingerprint = "08E23244E43D7C5E015CA70E69E8A184";
+const uint8_t ProcessModel::binary_fingerprint[16] = {0x08,0xE2,0x32,0x44,0xE4,0x3D,0x7C,0x5E,0x01,0x5C,0xA7,0x0E,0x69,0xE8,0xA1,0x84};
 
 uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 

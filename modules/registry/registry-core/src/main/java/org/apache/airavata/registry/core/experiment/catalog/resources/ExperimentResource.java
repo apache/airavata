@@ -21,7 +21,6 @@
 
 package org.apache.airavata.registry.core.experiment.catalog.resources;
 
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;

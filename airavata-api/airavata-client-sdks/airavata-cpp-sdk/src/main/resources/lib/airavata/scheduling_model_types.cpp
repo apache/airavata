@@ -75,8 +75,13 @@ void ComputationalResourceSchedulingModel::__set_chessisNumber(const std::string
 __isset.chessisNumber = true;
 }
 
-const char* ComputationalResourceSchedulingModel::ascii_fingerprint = "40EF337C72E03F608878AED1911454B0";
-const uint8_t ComputationalResourceSchedulingModel::binary_fingerprint[16] = {0x40,0xEF,0x33,0x7C,0x72,0xE0,0x3F,0x60,0x88,0x78,0xAE,0xD1,0x91,0x14,0x54,0xB0};
+void ComputationalResourceSchedulingModel::__set_staticWorkingDir(const std::string& val) {
+  this->staticWorkingDir = val;
+__isset.staticWorkingDir = true;
+}
+
+const char* ComputationalResourceSchedulingModel::ascii_fingerprint = "566CA0BCA8B2A1764B22F7BEAA8D10F2";
+const uint8_t ComputationalResourceSchedulingModel::binary_fingerprint[16] = {0x56,0x6C,0xA0,0xBC,0xA8,0xB2,0xA1,0x76,0x4B,0x22,0xF7,0xBE,0xAA,0x8D,0x10,0xF2};
 
 uint32_t ComputationalResourceSchedulingModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -162,6 +167,14 @@ uint32_t ComputationalResourceSchedulingModel::read(::apache::thrift::protocol::
           xfer += iprot->skip(ftype);
         }
         break;
+      case 9:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->staticWorkingDir);
+          this->__isset.staticWorkingDir = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -219,6 +232,11 @@ uint32_t ComputationalResourceSchedulingModel::write(::apache::thrift::protocol:
     xfer += oprot->writeString(this->chessisNumber);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.staticWorkingDir) {
+    xfer += oprot->writeFieldBegin("staticWorkingDir", ::apache::thrift::protocol::T_STRING, 9);
+    xfer += oprot->writeString(this->staticWorkingDir);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
@@ -235,6 +253,7 @@ void swap(ComputationalResourceSchedulingModel &a, ComputationalResourceScheduli
   swap(a.wallTimeLimit, b.wallTimeLimit);
   swap(a.totalPhysicalMemory, b.totalPhysicalMemory);
   swap(a.chessisNumber, b.chessisNumber);
+  swap(a.staticWorkingDir, b.staticWorkingDir);
   swap(a.__isset, b.__isset);
 }
 
@@ -247,6 +266,7 @@ ComputationalResourceSchedulingModel::ComputationalResourceSchedulingModel(const
   wallTimeLimit = other0.wallTimeLimit;
   totalPhysicalMemory = other0.totalPhysicalMemory;
   chessisNumber = other0.chessisNumber;
+  staticWorkingDir = other0.staticWorkingDir;
   __isset = other0.__isset;
 }
 ComputationalResourceSchedulingModel& ComputationalResourceSchedulingModel::operator=(const ComputationalResourceSchedulingModel& other1) {
@@ -258,6 +278,7 @@ ComputationalResourceSchedulingModel& ComputationalResourceSchedulingModel::oper
   wallTimeLimit = other1.wallTimeLimit;
   totalPhysicalMemory = other1.totalPhysicalMemory;
   chessisNumber = other1.chessisNumber;
+  staticWorkingDir = other1.staticWorkingDir;
   __isset = other1.__isset;
   return *this;
 }
@@ -272,6 +293,7 @@ std::ostream& operator<<(std::ostream& out, const ComputationalResourceSchedulin
   out << ", " << "wallTimeLimit="; (obj.__isset.wallTimeLimit ? (out << to_string(obj.wallTimeLimit)) : (out << "<null>"));
   out << ", " << "totalPhysicalMemory="; (obj.__isset.totalPhysicalMemory ? (out << to_string(obj.totalPhysicalMemory)) : (out << "<null>"));
   out << ", " << "chessisNumber="; (obj.__isset.chessisNumber ? (out << to_string(obj.chessisNumber)) : (out << "<null>"));
+  out << ", " << "staticWorkingDir="; (obj.__isset.staticWorkingDir ? (out << to_string(obj.staticWorkingDir)) : (out << "<null>"));
   out << ")";
   return out;
 }

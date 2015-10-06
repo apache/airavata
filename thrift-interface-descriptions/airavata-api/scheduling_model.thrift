@@ -36,5 +36,6 @@ struct ComputationalResourceSchedulingModel {
     5: optional string queueName,
     6: optional i32 wallTimeLimit,
     7: optional i32 totalPhysicalMemory,
-    8: optional string chessisNumber
+    8: optional string chessisNumber,
+    9: optional string staticWorkingDir
 }

@@ -39,7 +39,7 @@ namespace apache { namespace airavata { namespace model { namespace scheduling {
 class ComputationalResourceSchedulingModel;
 
 typedef struct _ComputationalResourceSchedulingModel__isset {
-  _ComputationalResourceSchedulingModel__isset() : resourceHostId(false), totalCPUCount(false), nodeCount(false), numberOfThreads(false), queueName(false), wallTimeLimit(false), totalPhysicalMemory(false), chessisNumber(false) {}
+  _ComputationalResourceSchedulingModel__isset() : resourceHostId(false), totalCPUCount(false), nodeCount(false), numberOfThreads(false), queueName(false), wallTimeLimit(false), totalPhysicalMemory(false), chessisNumber(false), staticWorkingDir(false) {}
   bool resourceHostId :1;
   bool totalCPUCount :1;
   bool nodeCount :1;
@@ -48,17 +48,18 @@ typedef struct _ComputationalResourceSchedulingModel__isset {
   bool wallTimeLimit :1;
   bool totalPhysicalMemory :1;
   bool chessisNumber :1;
+  bool staticWorkingDir :1;
 } _ComputationalResourceSchedulingModel__isset;
 
 class ComputationalResourceSchedulingModel {
  public:
 
-  static const char* ascii_fingerprint; // = "40EF337C72E03F608878AED1911454B0";
-  static const uint8_t binary_fingerprint[16]; // = {0x40,0xEF,0x33,0x7C,0x72,0xE0,0x3F,0x60,0x88,0x78,0xAE,0xD1,0x91,0x14,0x54,0xB0};
+  static const char* ascii_fingerprint; // = "566CA0BCA8B2A1764B22F7BEAA8D10F2";
+  static const uint8_t binary_fingerprint[16]; // = {0x56,0x6C,0xA0,0xBC,0xA8,0xB2,0xA1,0x76,0x4B,0x22,0xF7,0xBE,0xAA,0x8D,0x10,0xF2};
 
   ComputationalResourceSchedulingModel(const ComputationalResourceSchedulingModel&);
   ComputationalResourceSchedulingModel& operator=(const ComputationalResourceSchedulingModel&);
-  ComputationalResourceSchedulingModel() : resourceHostId(), totalCPUCount(0), nodeCount(0), numberOfThreads(0), queueName(), wallTimeLimit(0), totalPhysicalMemory(0), chessisNumber() {
+  ComputationalResourceSchedulingModel() : resourceHostId(), totalCPUCount(0), nodeCount(0), numberOfThreads(0), queueName(), wallTimeLimit(0), totalPhysicalMemory(0), chessisNumber(), staticWorkingDir() {
   }
 
   virtual ~ComputationalResourceSchedulingModel() throw();
@@ -70,6 +71,7 @@ class ComputationalResourceSchedulingModel {
   int32_t wallTimeLimit;
   int32_t totalPhysicalMemory;
   std::string chessisNumber;
+  std::string staticWorkingDir;
 
   _ComputationalResourceSchedulingModel__isset __isset;
 
@@ -88,6 +90,8 @@ class ComputationalResourceSchedulingModel {
   void __set_totalPhysicalMemory(const int32_t val);
 
   void __set_chessisNumber(const std::string& val);
+
+  void __set_staticWorkingDir(const std::string& val);
 
   bool operator == (const ComputationalResourceSchedulingModel & rhs) const
   {
@@ -122,6 +126,10 @@ class ComputationalResourceSchedulingModel {
     if (__isset.chessisNumber != rhs.__isset.chessisNumber)
       return false;
     else if (__isset.chessisNumber && !(chessisNumber == rhs.chessisNumber))
+      return false;
+    if (__isset.staticWorkingDir != rhs.__isset.staticWorkingDir)
+      return false;
+    else if (__isset.staticWorkingDir && !(staticWorkingDir == rhs.staticWorkingDir))
       return false;
     return true;
   }

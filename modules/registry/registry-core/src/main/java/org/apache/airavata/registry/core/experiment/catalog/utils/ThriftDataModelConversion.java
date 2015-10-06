@@ -499,6 +499,7 @@ public class ThriftDataModelConversion {
             resourceSchedulingModel.setQueueName(resource.getQueueName());
             resourceSchedulingModel.setWallTimeLimit(resource.getWallTimeLimit());
             resourceSchedulingModel.setTotalPhysicalMemory(resource.getTotalPhysicalMemory());
+            resourceSchedulingModel.setStaticWorkingDir(resource.getStaticWorkingDir());
             data.setComputationalResourceScheduling(resourceSchedulingModel);
 
             return data;
@@ -516,6 +517,7 @@ public class ThriftDataModelConversion {
             resourceSchedulingModel.setQueueName(resource.getQueueName());
             resourceSchedulingModel.setWallTimeLimit(resource.getWallTimeLimit());
             resourceSchedulingModel.setTotalPhysicalMemory(resource.getTotalPhysicalMemory());
+            resourceSchedulingModel.setStaticWorkingDir(resource.getStaticWorkingDir());
             return resourceSchedulingModel;
         }
         return null;
@@ -531,6 +533,7 @@ public class ThriftDataModelConversion {
             resourceSchedulingModel.setQueueName(resource.getQueueName());
             resourceSchedulingModel.setWallTimeLimit(resource.getWallTimeLimit());
             resourceSchedulingModel.setTotalPhysicalMemory(resource.getTotalPhysicalMemory());
+            resourceSchedulingModel.setStaticWorkingDir(resource.getStaticWorkingDir());
             return resourceSchedulingModel;
         }
         return null;
