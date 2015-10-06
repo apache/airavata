@@ -57,6 +57,10 @@ class ComputationalResourceSchedulingModel {
    * @var string
    */
   public $chessisNumber = null;
+  /**
+   * @var string
+   */
+  public $staticWorkingDir = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -93,6 +97,10 @@ class ComputationalResourceSchedulingModel {
           'var' => 'chessisNumber',
           'type' => TType::STRING,
           ),
+        9 => array(
+          'var' => 'staticWorkingDir',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -119,6 +127,9 @@ class ComputationalResourceSchedulingModel {
       }
       if (isset($vals['chessisNumber'])) {
         $this->chessisNumber = $vals['chessisNumber'];
+      }
+      if (isset($vals['staticWorkingDir'])) {
+        $this->staticWorkingDir = $vals['staticWorkingDir'];
       }
     }
   }
@@ -198,6 +209,13 @@ class ComputationalResourceSchedulingModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 9:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->staticWorkingDir);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -249,6 +267,11 @@ class ComputationalResourceSchedulingModel {
     if ($this->chessisNumber !== null) {
       $xfer += $output->writeFieldBegin('chessisNumber', TType::STRING, 8);
       $xfer += $output->writeString($this->chessisNumber);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->staticWorkingDir !== null) {
+      $xfer += $output->writeFieldBegin('staticWorkingDir', TType::STRING, 9);
+      $xfer += $output->writeString($this->staticWorkingDir);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

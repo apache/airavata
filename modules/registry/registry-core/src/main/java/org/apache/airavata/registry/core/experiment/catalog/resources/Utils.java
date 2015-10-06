@@ -510,6 +510,7 @@ public class Utils {
             configurationDataResource.setQueueName(o.getQueueName());
             configurationDataResource.setWallTimeLimit(o.getWallTimeLimit());
             configurationDataResource.setTotalPhysicalMemory(o.getTotalPhysicalMemory());
+            configurationDataResource.setStaticWorkingDir(o.getStaticWorkingDir());
         }
         return configurationDataResource;
     }
@@ -646,6 +647,7 @@ public class Utils {
             resourceScheduleResource.setQueueName(o.getQueueName());
             resourceScheduleResource.setWallTimeLimit(o.getWallTimeLimit());
             resourceScheduleResource.setTotalPhysicalMemory(o.getTotalPhysicalMemory());
+            resourceScheduleResource.setStaticWorkingDir(o.getStaticWorkingDir());
         }
         return resourceScheduleResource;
     }
