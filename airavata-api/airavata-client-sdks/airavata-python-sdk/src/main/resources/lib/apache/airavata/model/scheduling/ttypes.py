@@ -32,6 +32,7 @@ class ComputationalResourceSchedulingModel:
    - wallTimeLimit
    - totalPhysicalMemory
    - chessisNumber
+   - staticWorkingDir
   """
 
   thrift_spec = (
@@ -44,9 +45,10 @@ class ComputationalResourceSchedulingModel:
     (6, TType.I32, 'wallTimeLimit', None, None, ), # 6
     (7, TType.I32, 'totalPhysicalMemory', None, None, ), # 7
     (8, TType.STRING, 'chessisNumber', None, None, ), # 8
+    (9, TType.STRING, 'staticWorkingDir', None, None, ), # 9
   )
 
-  def __init__(self, resourceHostId=None, totalCPUCount=None, nodeCount=None, numberOfThreads=None, queueName=None, wallTimeLimit=None, totalPhysicalMemory=None, chessisNumber=None,):
+  def __init__(self, resourceHostId=None, totalCPUCount=None, nodeCount=None, numberOfThreads=None, queueName=None, wallTimeLimit=None, totalPhysicalMemory=None, chessisNumber=None, staticWorkingDir=None,):
     self.resourceHostId = resourceHostId
     self.totalCPUCount = totalCPUCount
     self.nodeCount = nodeCount
@@ -55,6 +57,7 @@ class ComputationalResourceSchedulingModel:
     self.wallTimeLimit = wallTimeLimit
     self.totalPhysicalMemory = totalPhysicalMemory
     self.chessisNumber = chessisNumber
+    self.staticWorkingDir = staticWorkingDir
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -105,6 +108,11 @@ class ComputationalResourceSchedulingModel:
           self.chessisNumber = iprot.readString();
         else:
           iprot.skip(ftype)
+      elif fid == 9:
+        if ftype == TType.STRING:
+          self.staticWorkingDir = iprot.readString();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -147,6 +155,10 @@ class ComputationalResourceSchedulingModel:
       oprot.writeFieldBegin('chessisNumber', TType.STRING, 8)
       oprot.writeString(self.chessisNumber)
       oprot.writeFieldEnd()
+    if self.staticWorkingDir is not None:
+      oprot.writeFieldBegin('staticWorkingDir', TType.STRING, 9)
+      oprot.writeString(self.staticWorkingDir)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -164,6 +176,7 @@ class ComputationalResourceSchedulingModel:
     value = (value * 31) ^ hash(self.wallTimeLimit)
     value = (value * 31) ^ hash(self.totalPhysicalMemory)
     value = (value * 31) ^ hash(self.chessisNumber)
+    value = (value * 31) ^ hash(self.staticWorkingDir)
     return value
 
   def __repr__(self):

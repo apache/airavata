@@ -31,20 +31,24 @@ import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.error.*;
+import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.ExperimentSummaryModel;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.ExperimentState;
-import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.experiment.*;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class CreateLaunchExperiment {
 
@@ -88,13 +92,13 @@ public class CreateLaunchExperiment {
         AuthzToken token = new AuthzToken("empty_token");
         System.out.println("API version is " + airavataClient.getAPIVersion(token));
 //        registerApplications(); // run this only the first time
-        Map<String, JobStatus> jobStatuses = airavataClient.getJobStatuses(token, "test_78ddc6f0-ddd1-4154-ba45-6d597b8c8f3b");
-        for (String jobId : jobStatuses.keySet()){
-            JobStatus jobStatus = jobStatuses.get(jobId);
-            System.out.println(jobId);
-            System.out.println(jobStatus.getJobState().toString());
-        }
-//        createAndLaunchExp();
+//        Map<String, JobStatus> jobStatuses = airavataClient.getJobStatuses(token, "SLM1-Echo-BR2_ae9573d1-cc1e-49e5-b59c-99ad10bd09ee");
+//        for (String jobId : jobStatuses.keySet()){
+//            JobStatus jobStatus = jobStatuses.get(jobId);
+//            System.out.println(jobId);
+//            System.out.println(jobStatus.getJobState().toString());
+//        }
+        createAndLaunchExp();
     }
 
     private static String fsdResourceId;
@@ -173,14 +177,14 @@ public class CreateLaunchExperiment {
 //                final String expId = createExperimentForSSHHost(airavata);
 //                final String expId = createEchoExperimentForFSD(airavataClient);
 //                final String expId = createMPIExperimentForFSD(airavataClient);
-               final String expId = createEchoExperimentForStampede(airavataClient);
+//               final String expId = createEchoExperimentForStampede(airavataClient);
 //                final String expId = createEchoExperimentForTrestles(airavataClient);
 //                final String expId = createExperimentEchoForLocalHost(airavataClient);
 //                final String expId = createExperimentWRFTrestles(airavataClient);
 //                final String expId = createExperimentForBR2(airavataClient);
 //                final String expId = createExperimentForBR2Amber(airavataClient);
 //                final String expId = createExperimentWRFStampede(airavataClient);
-//                final String expId = createExperimentForStampedeAmber(airavataClient);
+                final String expId = createExperimentForStampedeAmber(airavataClient);
 //                String expId = createExperimentForTrestlesAmber(airavataClient);
 //                final String expId = createExperimentGROMACSStampede(airavataClient);
 //                final String expId = createExperimentESPRESSOStampede(airavataClient);
@@ -1330,11 +1334,11 @@ public class CreateLaunchExperiment {
 //			}
             for (InputDataObjectType inputDataObjectType : exInputs) {
                 if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
-                    inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/02_Heat.rst");
+                    inputDataObjectType.setValue("file://ogce@stampede.xsede.org:/scratch/01437/ogce/gta-work-dirs/PROCESS_e0610a6c-5778-4a69-a004-f440e29194af/02_Heat.rst");
                 } else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
-                    inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/03_Prod.in");
+                    inputDataObjectType.setValue("file://ogce@stampede.xsede.org:/scratch/01437/ogce/gta-work-dirs/PROCESS_e0610a6c-5778-4a69-a004-f440e29194af/03_Prod.in");
                 } else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
-                    inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/prmtop");
+                    inputDataObjectType.setValue("file://ogce@stampede.xsede.org:/scratch/01437/ogce/gta-work-dirs/PROCESS_e0610a6c-5778-4a69-a004-f440e29194af/prmtop");
                 }
             }
 
@@ -1354,7 +1358,7 @@ public class CreateLaunchExperiment {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
                     if (resourceName.equals(stampedeHostName)) {
-                        ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "development", 20, 1);
+                        ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 1);
                         UserConfigurationDataModel userConfigurationData = new UserConfigurationDataModel();
                         userConfigurationData.setAiravataAutoSchedule(false);
                         userConfigurationData.setOverrideManualScheduledParams(false);
