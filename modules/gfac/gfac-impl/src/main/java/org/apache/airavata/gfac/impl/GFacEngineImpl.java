@@ -621,9 +621,9 @@ public class GFacEngineImpl implements GFacEngine {
             throw new TaskException("Error while constructing source file URI");
         }
         submodel.setSource(source.toString());
-        // TODO after thridpary scp implemented we can fix following destination location correct one.
-		String localWorkingDir = processContext.getLocalWorkingDir();
-		submodel.setDestination("file://" + localWorkingDir);
+        // We don't know destination location at this time, data staging task will set this.
+        // because destination is required field we set dummy destination
+		submodel.setDestination("dummy://temp/file/location");
 		taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
 		taskCtx.setTaskModel(taskModel);
         taskCtx.setProcessOutput(processOutput);

@@ -38,6 +38,7 @@ import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
 import org.apache.airavata.gfac.core.authentication.SSHPasswordAuthentication;
 import org.apache.airavata.gfac.core.cluster.CommandInfo;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
@@ -110,7 +111,6 @@ public class AdvancedSCPDataStageTask implements Task {
                     } else {
                         status.setReason("File name is null");
                     }
-                    localDataDir = subTaskModel.getDestination();
                     return status;
                 }
             } else if (processState == ProcessState.INPUT_DATA_STAGING) {
@@ -133,20 +133,14 @@ public class AdvancedSCPDataStageTask implements Task {
                         "" + ProcessState.OUTPUT_DATA_STAGING.name() + " process phases. found " + processState.name());
             }
 
-            // use cp instead of scp if source and destination host and user name is same.
+            // use rsync instead of scp if source and destination host and user name is same.
             URI sourceURI = new URI(subTaskModel.getSource());
             String fileName = sourceURI.getPath().substring(sourceURI.getPath().lastIndexOf(File.separator) + 1,
                     sourceURI.getPath().length());
-            String targetPath = null;
-            String targetFilePath = null;
             URI destinationURI = null;
-            if (localDataDir != null) {
-                targetPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator) +
-                        taskContext.getParentProcessContext().getProcessId();
-                targetFilePath = targetPath + File.separator + fileName;
-                destinationURI = new URI("SCP", hostName, targetFilePath, null);
+            if (subTaskModel.getDestination().startsWith("dummy")) {
+                destinationURI = getDestinationURI(taskContext, fileName);
                 subTaskModel.setDestination(destinationURI.toString());
-
             } else {
                 destinationURI = new URI(subTaskModel.getDestination());
             }
@@ -185,25 +179,16 @@ public class AdvancedSCPDataStageTask implements Task {
             }
             status = new TaskStatus(TaskState.COMPLETED);
 
-
-            File templocalDataDir = GFacUtils.getLocalDataDir(taskContext);
-            if (!templocalDataDir.exists()) {
-                if (!templocalDataDir.mkdirs()) {
-                    // failed to create temp output location
-                }
-            }
-
-            String filePath = templocalDataDir + File.separator + fileName;
-
             ServerInfo serverInfo = new ServerInfo(userName, hostName, DEFAULT_SSH_PORT);
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
             if (processState == ProcessState.INPUT_DATA_STAGING) {
-                inputDataStaging(taskContext, sshSession, sourceURI, destinationURI, filePath);
+                inputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
                 status.setReason("Successfully staged input data");
             } else if (processState == ProcessState.OUTPUT_DATA_STAGING) {
+                String targetPath = destinationURI.getPath().substring(0, destinationURI.getPath().lastIndexOf('/'));
                 SSHUtils.makeDirectory(targetPath, sshSession);
                 // TODO - save updated subtask model with new destination
-                outputDataStaging(taskContext, sshSession, sourceURI, destinationURI, filePath);
+                outputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
                 status.setReason("Successfully staged output data");
             }
         } catch (TException e) {
@@ -283,29 +268,22 @@ public class AdvancedSCPDataStageTask implements Task {
     }
 
     private void inputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI
-            destinationURI, String filePath) throws SSHApiException, IOException, JSchException {
+            destinationURI) throws SSHApiException, IOException, JSchException {
         /**
-         * scp remote client file to airavata local dir.
+         * scp third party file transfer 'to' compute resource.
          */
-        SSHUtils.scpFrom(sourceURI.getPath(), filePath, sshSession);
-
-        /**
-         * scp local file to compute resource.
-         */
-        taskContext.getParentProcessContext().getRemoteCluster().scpTo(filePath, destinationURI.getPath());
+        taskContext.getParentProcessContext().getRemoteCluster().scpThirdParty(sourceURI.getPath(),
+                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.TO);
     }
 
-    private void outputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI destinationURI,
-                                   String filePath) throws SSHApiException, AiravataException, IOException, JSchException, GFacException {
-        /**
-         * scp remote file from comute resource to airavata local
-         */
-        taskContext.getParentProcessContext().getRemoteCluster().scpFrom(sourceURI.getPath(), filePath);
+    private void outputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI destinationURI)
+            throws SSHApiException, AiravataException, IOException, JSchException, GFacException {
 
         /**
-         * scp local file to remote client
+         * scp third party file transfer 'from' comute resource.
          */
-        SSHUtils.scpTo(filePath, destinationURI.getPath(), sshSession);
+        taskContext.getParentProcessContext().getRemoteCluster().scpThirdParty(sourceURI.getPath(),
+                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.FROM);
         // update output locations
         GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());
         GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());
@@ -354,5 +332,12 @@ public class AdvancedSCPDataStageTask implements Task {
             log.error(e.getMessage(), e);
         }
         return temp.getAbsolutePath();
+    }
+
+    public URI getDestinationURI(TaskContext taskContext, String fileName) throws URISyntaxException {
+        String filePath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator) +
+                taskContext.getParentProcessContext().getProcessId() + File.separator + fileName;
+        return new URI("SCP", hostName, filePath, null);
+
     }
 }
