@@ -64,10 +64,13 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	/**
 	 * This wil copy source remote file to target remote file.
 	 *
-	 * @param remoteFileSource remote file path, this has to be a full qualified path
-	 * @param remoteFileTarget This is the local file to copy, this can be a directory too
+	 * @param sourceFile remote file path, this has to be a full qualified path
+	 * @param destinationFile This is the local file to copy, this can be a directory too
+     * @param session jcraft session of other coner of thirdparty file transfer.
+     * @param inOrOut direction to file transfer , to the remote cluster(DIRECTION.IN) or from the remote cluster(DIRECTION.OUT)
+	 *
 	 */
-	public void scpThirdParty(String remoteFileSource, String remoteFileTarget) throws SSHApiException;
+	public void scpThirdParty(String sourceFile, String destinationFile ,Session session , DIRECTION inOrOut) throws SSHApiException;
 
 	/**
 	 * This will create directories in computing resources
@@ -147,5 +150,10 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 * This gives the server Info
 	 */
 	public ServerInfo getServerInfo();
+
+    enum DIRECTION {
+        TO,
+        FROM
+    }
 
 }

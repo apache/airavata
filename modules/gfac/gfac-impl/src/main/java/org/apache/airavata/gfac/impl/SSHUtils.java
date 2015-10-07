@@ -263,94 +263,171 @@ public class SSHUtils {
 		}
 	}
 
-	/**
-	 * This method will copy a remote file to a local directory
-	 *
-	 * @param remoteFileSource remote file path, this has to be a full qualified path
-	 * @param remoteFileTarget This is the local file to copy, this can be a directory too
-	 * @param session          JSch Session object
-	 * @return returns the final local file path of the new file came from the remote resource
-	 */
-	public static void scpThirdParty(String remoteFileSource, String remoteFileTarget, Session session) throws
-			IOException, JSchException, SSHApiException {
-		FileOutputStream fos = null;
-		try {
-			String prefix = null;
+    /**
+     * This method will copy a remote file to a local directory
+     *
+     * @param sourceRemoteFile remote file path, this has to be a full qualified path
+     * @param sourceSession JSch session for source
+     * @param targetRemoteFile This is the local file to copy, this can be a directory too
+     * @param targetSession JSch Session for target
+     * @return returns the final local file path of the new file came from the remote resource
+     */
+    public static void scpThirdParty(String sourceRemoteFile, Session sourceSession, String targetRemoteFile, Session targetSession) throws
+            IOException, JSchException {
+        OutputStream sout = null;
+        InputStream sin = null;
+        OutputStream tout = null;
+        InputStream tin = null;
+        try {
+            String prefix = null;
 
-			// exec 'scp -f remotefile' remotely
-			String command = "scp -3 " + remoteFileSource + " " + remoteFileTarget;
-			Channel channel = session.openChannel("exec");
-			((ChannelExec) channel).setCommand(command);
+            // exec 'scp -f sourceFile'
+            String sourceCommand = "scp -f " + sourceRemoteFile;
+            Channel sourceChannel = sourceSession.openChannel("exec");
+            ((ChannelExec) sourceChannel).setCommand(sourceCommand);
+            StandardOutReader sourceStdOutReader = new StandardOutReader();
+            ((ChannelExec) sourceChannel).setErrStream(sourceStdOutReader.getStandardError());
+            // get I/O streams for remote scp
+            sout = sourceChannel.getOutputStream();
+            sin = sourceChannel.getInputStream();
+            sourceChannel.connect();
 
-			StandardOutReader stdOutReader = new StandardOutReader();
-			((ChannelExec) channel).setErrStream(stdOutReader.getStandardError());
-			// get I/O streams for remote scp
-			OutputStream out = channel.getOutputStream();
-			InputStream in = channel.getInputStream();
 
-			channel.connect();
+            boolean ptimestamp = true;
+            // exec 'scp -t rfile' remotely
+            String command = "scp " + (ptimestamp ? "-p" : "") + " -t " + targetRemoteFile;
+            Channel targetChannel = targetSession.openChannel("exec");
+            StandardOutReader targetStdOutReader = new StandardOutReader();
+            ((ChannelExec) targetChannel).setErrStream(targetStdOutReader.getStandardError());
+            ((ChannelExec) targetChannel).setCommand(command);
+            // get I/O streams for remote scp
+            tout = targetChannel.getOutputStream();
+            tin = targetChannel.getInputStream();
+            targetChannel.connect();
 
-			byte[] buf = new byte[1024];
+            if (checkAck(tin) != 0) {
+                String error = "Error Reading input Stream";
+                log.error(error);
+                throw new Exception(error);
+            }
 
-			// send '\0'
-			buf[0] = 0;
-			out.write(buf, 0, 1);
-			out.flush();
 
-			while (true) {
-				int c = checkAck(in);
-				if (c != 'C') {
-					break;
-				}
+            byte[] buf = new byte[1024];
 
-				// read '0644 '
-				in.read(buf, 0, 5);
+            // send '\0'
+            buf[0] = 0;
+            sout.write(buf, 0, 1);
+            sout.flush();
 
-				long filesize = 0L;
-				while (true) {
-					if (in.read(buf, 0, 1) < 0) {
-						// error
-						break;
-					}
-					if (buf[0] == ' ') break;
-					filesize = filesize * 10L + (long) (buf[0] - '0');
-				}
-				int foo;
-				while (true) {
-					if (buf.length < filesize) foo = buf.length;
-					else foo = (int) filesize;
+            while (true) {
+                int c = checkAck(sin);
+                if (c != 'C') {
+                    break;
+                }
 
-					int len = in.read(buf, 0, foo);
-					if (len <= 0) break;
-					out.write(buf, 0, len);
-				}
-				// send '\0'
-				buf[0] = 0;
-				out.write(buf, 0, 1);
-				out.flush();
-				if (checkAck(in) != 0) {
-					String error = "Error transfering the file content";
-					log.error(error);
-					throw new SSHApiException(error);
-				}
+                // read '0644 '
+                sin.read(buf, 0, 5);
 
-			}
-			out.close();
+                long filesize = 0L;
+                while (true) {
+                    if (sin.read(buf, 0, 1) < 0) {
+                        // error
+                        break;
+                    }
+                    if (buf[0] == ' ') break;
+                    filesize = filesize * 10L + (long) (buf[0] - '0');
+                }
+                String initData = "C0644 " + filesize + " " +
+                        sourceRemoteFile.substring(sourceRemoteFile.lastIndexOf('/') + 1) + "\n";
+                tout.write(initData.getBytes());
+                tout.flush();
 
-			stdOutReader.onOutput(channel);
-			if (stdOutReader.getStdErrorString().contains("scp:")) {
-				throw new SSHApiException(stdOutReader.getStdErrorString());
-			}
+                String file = null;
+                for (int i = 0; ; i++) {
+                    sin.read(buf, i, 1);
+                    if (buf[i] == (byte) 0x0a) {
+                        file = new String(buf, 0, i);
+                        break;
+                    }
+                }
 
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		} finally {
-			try {
-				if (fos != null) fos.close();
-			} catch (Exception ee) {
-			}
-		}
-	}
+                //System.out.println("filesize="+filesize+", file="+file);
+
+                // send '\0'
+                buf[0] = 0;
+                sout.write(buf, 0, 1);
+                sout.flush();
+
+                // read a content of lfile
+//                fos = new FileOutputStream(prefix == null ? localFile : prefix + file);
+                int foo;
+                while (true) {
+                    if (buf.length < filesize) foo = buf.length;
+                    else foo = (int) filesize;
+                    foo = sin.read(buf, 0, foo);
+                    if (foo < 0) {
+                        // error
+                        break;
+                    }
+                    tout.write(buf, 0, foo);
+                    filesize -= foo;
+                    if (filesize == 0L) break;
+                }
+
+                // send '\0' to target
+                buf[0] = 0;
+                tout.write(buf, 0, 1);
+                tout.flush();
+                if (checkAck(tin) != 0) {
+                    String error = "Error Reading input Stream";
+                    log.error(error);
+                    throw new Exception(error);
+                }
+                tout.close();
+                tout = null;
+
+                if (checkAck(sin) != 0) {
+                    String error = "Error transfering the file content";
+                    log.error(error);
+                    throw new Exception(error);
+                }
+
+                // send '\0'
+                buf[0] = 0;
+                sout.write(buf, 0, 1);
+                sout.flush();
+            }
+//            stdOutReader.onOutput(channel);
+//            if (stdOutReader.getStdErrorString().contains("scp:")) {
+//                throw new SSHApiException(stdOutReader.getStdErrorString());
+//            }
+
+        } catch (Exception e) {
+//            log.error(e.getMessage(), e);
+            System.out.println(e.getMessage());
+        } finally {
+            try {
+                if (tout != null) tout.close();
+            } catch (Exception ee) {
+                log.error("", ee);
+            }
+            try {
+                if (tin != null) tin.close();
+            } catch (Exception ee) {
+                log.error("", ee);
+            }
+            try {
+                if (sout != null) sout.close();
+            } catch (Exception ee) {
+                log.error("", ee);
+            }
+            try {
+                if (tin != null) tin.close();
+            } catch (Exception ee) {
+                log.error("", ee);
+            }
+        }
+    }
 
 	public static void makeDirectory(String path, Session session) throws IOException, JSchException, SSHApiException {
 
