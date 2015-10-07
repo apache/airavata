@@ -266,23 +266,23 @@ public class SSHUtils {
     /**
      * This method will copy a remote file to a local directory
      *
-     * @param sourceRemoteFile remote file path, this has to be a full qualified path
+     * @param sourceFile remote file path, this has to be a full qualified path
      * @param sourceSession JSch session for source
-     * @param targetRemoteFile This is the local file to copy, this can be a directory too
-     * @param targetSession JSch Session for target
+     * @param destinationFile This is the local file to copy, this can be a directory too
+     * @param destinationSession JSch Session for target
      * @return returns the final local file path of the new file came from the remote resource
      */
-    public static void scpThirdParty(String sourceRemoteFile, Session sourceSession, String targetRemoteFile, Session targetSession) throws
+    public static void scpThirdParty(String sourceFile, Session sourceSession, String destinationFile, Session destinationSession) throws
             IOException, JSchException {
         OutputStream sout = null;
         InputStream sin = null;
-        OutputStream tout = null;
-        InputStream tin = null;
+        OutputStream dout = null;
+        InputStream din = null;
         try {
             String prefix = null;
 
             // exec 'scp -f sourceFile'
-            String sourceCommand = "scp -f " + sourceRemoteFile;
+            String sourceCommand = "scp -f " + sourceFile;
             Channel sourceChannel = sourceSession.openChannel("exec");
             ((ChannelExec) sourceChannel).setCommand(sourceCommand);
             StandardOutReader sourceStdOutReader = new StandardOutReader();
@@ -294,18 +294,18 @@ public class SSHUtils {
 
 
             boolean ptimestamp = true;
-            // exec 'scp -t rfile' remotely
-            String command = "scp " + (ptimestamp ? "-p" : "") + " -t " + targetRemoteFile;
-            Channel targetChannel = targetSession.openChannel("exec");
+            // exec 'scp -t destinationFile'
+            String command = "scp " + (ptimestamp ? "-p" : "") + " -t " + destinationFile;
+            Channel targetChannel = destinationSession.openChannel("exec");
             StandardOutReader targetStdOutReader = new StandardOutReader();
             ((ChannelExec) targetChannel).setErrStream(targetStdOutReader.getStandardError());
             ((ChannelExec) targetChannel).setCommand(command);
             // get I/O streams for remote scp
-            tout = targetChannel.getOutputStream();
-            tin = targetChannel.getInputStream();
+            dout = targetChannel.getOutputStream();
+            din = targetChannel.getInputStream();
             targetChannel.connect();
 
-            if (checkAck(tin) != 0) {
+            if (checkAck(din) != 0) {
                 String error = "Error Reading input Stream";
                 log.error(error);
                 throw new Exception(error);
@@ -328,63 +328,59 @@ public class SSHUtils {
                 // read '0644 '
                 sin.read(buf, 0, 5);
 
-                long filesize = 0L;
+                long fileSize = 0L;
                 while (true) {
                     if (sin.read(buf, 0, 1) < 0) {
                         // error
                         break;
                     }
                     if (buf[0] == ' ') break;
-                    filesize = filesize * 10L + (long) (buf[0] - '0');
+                    fileSize = fileSize * 10L + (long) (buf[0] - '0');
                 }
-                String initData = "C0644 " + filesize + " " +
-                        sourceRemoteFile.substring(sourceRemoteFile.lastIndexOf('/') + 1) + "\n";
-                tout.write(initData.getBytes());
-                tout.flush();
 
-                String file = null;
+                String fileName = null;
                 for (int i = 0; ; i++) {
                     sin.read(buf, i, 1);
                     if (buf[i] == (byte) 0x0a) {
-                        file = new String(buf, 0, i);
+                        fileName = new String(buf, 0, i);
                         break;
                     }
                 }
+                String initData = "C0644 " + fileSize + " " + fileName + "\n";
+                assert dout != null;
+                dout.write(initData.getBytes());
+                dout.flush();
 
-                //System.out.println("filesize="+filesize+", file="+file);
-
-                // send '\0'
+                // send '\0' to source
                 buf[0] = 0;
                 sout.write(buf, 0, 1);
                 sout.flush();
 
-                // read a content of lfile
-//                fos = new FileOutputStream(prefix == null ? localFile : prefix + file);
-                int foo;
+                int rLength;
                 while (true) {
-                    if (buf.length < filesize) foo = buf.length;
-                    else foo = (int) filesize;
-                    foo = sin.read(buf, 0, foo);
-                    if (foo < 0) {
+                    if (buf.length < fileSize) rLength = buf.length;
+                    else rLength = (int) fileSize;
+                    rLength = sin.read(buf, 0, rLength); // read content of the source File
+                    if (rLength < 0) {
                         // error
                         break;
                     }
-                    tout.write(buf, 0, foo);
-                    filesize -= foo;
-                    if (filesize == 0L) break;
+                    dout.write(buf, 0, rLength); // write to destination file
+                    fileSize -= rLength;
+                    if (fileSize == 0L) break;
                 }
 
                 // send '\0' to target
                 buf[0] = 0;
-                tout.write(buf, 0, 1);
-                tout.flush();
-                if (checkAck(tin) != 0) {
+                dout.write(buf, 0, 1);
+                dout.flush();
+                if (checkAck(din) != 0) {
                     String error = "Error Reading input Stream";
                     log.error(error);
                     throw new Exception(error);
                 }
-                tout.close();
-                tout = null;
+                dout.close();
+                dout = null;
 
                 if (checkAck(sin) != 0) {
                     String error = "Error transfering the file content";
@@ -397,22 +393,17 @@ public class SSHUtils {
                 sout.write(buf, 0, 1);
                 sout.flush();
             }
-//            stdOutReader.onOutput(channel);
-//            if (stdOutReader.getStdErrorString().contains("scp:")) {
-//                throw new SSHApiException(stdOutReader.getStdErrorString());
-//            }
 
         } catch (Exception e) {
-//            log.error(e.getMessage(), e);
-            System.out.println(e.getMessage());
+            log.error(e.getMessage(), e);
         } finally {
             try {
-                if (tout != null) tout.close();
+                if (dout != null) dout.close();
             } catch (Exception ee) {
                 log.error("", ee);
             }
             try {
-                if (tin != null) tin.close();
+                if (din != null) din.close();
             } catch (Exception ee) {
                 log.error("", ee);
             }
@@ -422,7 +413,7 @@ public class SSHUtils {
                 log.error("", ee);
             }
             try {
-                if (tin != null) tin.close();
+                if (din != null) din.close();
             } catch (Exception ee) {
                 log.error("", ee);
             }
