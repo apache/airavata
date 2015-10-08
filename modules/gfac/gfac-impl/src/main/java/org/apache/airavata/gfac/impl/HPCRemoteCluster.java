@@ -30,12 +30,7 @@ import org.apache.airavata.gfac.core.JobManagerConfiguration;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
-import org.apache.airavata.gfac.core.cluster.AbstractRemoteCluster;
-import org.apache.airavata.gfac.core.cluster.CommandInfo;
-import org.apache.airavata.gfac.core.cluster.CommandOutput;
-import org.apache.airavata.gfac.core.cluster.JobSubmissionOutput;
-import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
-import org.apache.airavata.gfac.core.cluster.ServerInfo;
+import org.apache.airavata.gfac.core.cluster.*;
 import org.apache.airavata.model.status.JobStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -163,16 +158,20 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	}
 
 	@Override
-	public void scpThirdParty(String remoteFileSource, String remoteFileTarget) throws SSHApiException {
+	public void scpThirdParty(String sourceFile, String destinationFile, Session clientSession, DIRECTION direction) throws SSHApiException {
 		try {
 			if(!session.isConnected()){
 				session = getOpenSession();
 			}
-			log.info("Transferring from:" + remoteFileSource + " To: " + remoteFileTarget);
-			SSHUtils.scpThirdParty(remoteFileSource, remoteFileTarget, session);
-		} catch (IOException | JSchException e) {
-			throw new SSHApiException("Failed scp file:" + remoteFileSource + " to remote file "
-					+remoteFileTarget , e);
+			log.info("Transferring from:" + sourceFile + " To: " + destinationFile);
+            if (direction == DIRECTION.TO) {
+                SSHUtils.scpThirdParty(sourceFile, clientSession, destinationFile, session);
+            } else {
+                SSHUtils.scpThirdParty(sourceFile, session, destinationFile, clientSession);
+            }
+        } catch (IOException | JSchException e) {
+			throw new SSHApiException("Failed scp file:" + sourceFile + " to remote file "
+					+destinationFile , e);
 		}
 	}
 
