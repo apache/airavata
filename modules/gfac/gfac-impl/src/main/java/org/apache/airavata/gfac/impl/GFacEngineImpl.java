@@ -110,6 +110,10 @@ public class GFacEngineImpl implements GFacEngine {
             ApplicationInterfaceDescription applicationInterface = appCatalog.getApplicationInterface()
                     .getApplicationInterface(processModel.getApplicationInterfaceId());
             processContext.setApplicationInterfaceDescription(applicationInterface);
+            String computeResourceId = processContext.getComputeResourceDescription().getComputeResourceId();
+            String hostName = Factory.getDefaultAppCatalog().getComputeResource().getComputeResource(computeResourceId).getHostName();
+            ServerInfo serverInfo = new ServerInfo(processContext.getComputeResourcePreference().getLoginUserName(), hostName);
+            processContext.setServerInfo(serverInfo);
             List<OutputDataObjectType> applicationOutputs = applicationInterface.getApplicationOutputs();
             if (applicationOutputs != null && !applicationOutputs.isEmpty()){
                 for (OutputDataObjectType outputDataObjectType : applicationOutputs){
@@ -579,8 +583,8 @@ public class GFacEngineImpl implements GFacEngine {
         ServerInfo serverInfo = processContext.getServerInfo();
         URI destination = null;
         try {
-            destination = new URI(processContext.getDataMovementProtocol().name(), serverInfo.getHost(),
-                    serverInfo.getUserName(), serverInfo.getPort(), processContext.getWorkingDir(), null, null);
+            destination = new URI(processContext.getDataMovementProtocol().name(), serverInfo.getUserName(),
+                    serverInfo.getHost(), serverInfo.getPort(), processContext.getWorkingDir(), null, null);
         } catch (URISyntaxException e) {
             throw new TaskException("Error while constructing destination file URI");
         }
@@ -617,9 +621,9 @@ public class GFacEngineImpl implements GFacEngine {
             throw new TaskException("Error while constructing source file URI");
         }
         submodel.setSource(source.toString());
-        // TODO after thridpary scp implemented we can fix following destination location correct one.
-		String localWorkingDir = processContext.getLocalWorkingDir();
-		submodel.setDestination("file://" + localWorkingDir);
+        // We don't know destination location at this time, data staging task will set this.
+        // because destination is required field we set dummy destination
+		submodel.setDestination("dummy://temp/file/location");
 		taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
 		taskCtx.setTaskModel(taskModel);
         taskCtx.setProcessOutput(processOutput);

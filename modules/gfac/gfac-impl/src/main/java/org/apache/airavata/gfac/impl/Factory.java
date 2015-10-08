@@ -208,12 +208,9 @@ public abstract class Factory {
         String key = processContext.getJobSubmissionProtocol().toString() + ":" + computeResourceId;
 		RemoteCluster remoteCluster = remoteClusterMap.get(key);
 		if (remoteCluster == null) {
-			String hostName = Factory.getDefaultAppCatalog().getComputeResource().getComputeResource(computeResourceId).getHostName();
-			ServerInfo serverInfo = new ServerInfo(processContext.getComputeResourcePreference().getLoginUserName(), hostName);
-            processContext.setServerInfo(serverInfo);
 			JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
 			AuthenticationInfo authenticationInfo = getSSHKeyAuthentication();
-			remoteCluster = new HPCRemoteCluster(serverInfo, jobManagerConfiguration, authenticationInfo);
+			remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration, authenticationInfo);
 			remoteClusterMap.put(key, remoteCluster);
 		}
 		return remoteCluster;
