@@ -2050,7 +2050,7 @@ service Airavata {
   * Fetch all gateway profiles registered
   **/
   list<gateway_resource_profile_model.GatewayResourceProfile>
-              getAllGatewayComputeResources(1: required security_model.AuthzToken authzToken)
+              getAllGatewayResourceProfiles(1: required security_model.AuthzToken authzToken)
     	throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.AiravataClientException ace,
               3: airavata_errors.AiravataSystemException ase,

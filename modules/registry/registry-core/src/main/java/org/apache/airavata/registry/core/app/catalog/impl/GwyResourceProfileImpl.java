@@ -46,6 +46,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
             if (!gatewayProfile.getGatewayID().equals("")){
                 profileResource.setGatewayID(gatewayProfile.getGatewayID());
             }
+            profileResource.setCredentialStoreToken(gatewayProfile.getCredentialStoreToken());
 //            profileResource.setGatewayID(gatewayProfile.getGatewayID());
             profileResource.save();
             List<ComputeResourcePreference> computeResourcePreferences = gatewayProfile.getComputeResourcePreferences();
@@ -99,6 +100,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
         try {
             GatewayProfileResource profileResource = new GatewayProfileResource();
             GatewayProfileResource existingGP = (GatewayProfileResource)profileResource.get(gatewayId);
+            existingGP.setCredentialStoreToken(updatedProfile.getCredentialStoreToken());
             existingGP.save();
 
             List<ComputeResourcePreference> computeResourcePreferences = updatedProfile.getComputeResourcePreferences();
@@ -122,6 +124,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     resource.setBatchQueue(preference.getPreferredBatchQueue());
                     resource.setProjectNumber(preference.getAllocationProjectNumber());
                     resource.setScratchLocation(preference.getScratchLocation());
+                    resource.setResourceCSToken(preference.getResourceSpecificCredentialStoreToken());
                     resource.save();
                 }
             }

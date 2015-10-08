@@ -34855,11 +34855,11 @@ uint32_t Airavata_getAllGatewayDataStoragePreferences_presult::read(::apache::th
 }
 
 
-Airavata_getAllGatewayComputeResources_args::~Airavata_getAllGatewayComputeResources_args() throw() {
+Airavata_getAllGatewayResourceProfiles_args::~Airavata_getAllGatewayResourceProfiles_args() throw() {
 }
 
 
-uint32_t Airavata_getAllGatewayComputeResources_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Airavata_getAllGatewayResourceProfiles_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -34902,10 +34902,10 @@ uint32_t Airavata_getAllGatewayComputeResources_args::read(::apache::thrift::pro
   return xfer;
 }
 
-uint32_t Airavata_getAllGatewayComputeResources_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t Airavata_getAllGatewayResourceProfiles_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("Airavata_getAllGatewayComputeResources_args");
+  xfer += oprot->writeStructBegin("Airavata_getAllGatewayResourceProfiles_args");
 
   xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
   xfer += this->authzToken.write(oprot);
@@ -34918,14 +34918,14 @@ uint32_t Airavata_getAllGatewayComputeResources_args::write(::apache::thrift::pr
 }
 
 
-Airavata_getAllGatewayComputeResources_pargs::~Airavata_getAllGatewayComputeResources_pargs() throw() {
+Airavata_getAllGatewayResourceProfiles_pargs::~Airavata_getAllGatewayResourceProfiles_pargs() throw() {
 }
 
 
-uint32_t Airavata_getAllGatewayComputeResources_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t Airavata_getAllGatewayResourceProfiles_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("Airavata_getAllGatewayComputeResources_pargs");
+  xfer += oprot->writeStructBegin("Airavata_getAllGatewayResourceProfiles_pargs");
 
   xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
   xfer += (*(this->authzToken)).write(oprot);
@@ -34938,11 +34938,11 @@ uint32_t Airavata_getAllGatewayComputeResources_pargs::write(::apache::thrift::p
 }
 
 
-Airavata_getAllGatewayComputeResources_result::~Airavata_getAllGatewayComputeResources_result() throw() {
+Airavata_getAllGatewayResourceProfiles_result::~Airavata_getAllGatewayResourceProfiles_result() throw() {
 }
 
 
-uint32_t Airavata_getAllGatewayComputeResources_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Airavata_getAllGatewayResourceProfiles_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -35026,11 +35026,11 @@ uint32_t Airavata_getAllGatewayComputeResources_result::read(::apache::thrift::p
   return xfer;
 }
 
-uint32_t Airavata_getAllGatewayComputeResources_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t Airavata_getAllGatewayResourceProfiles_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("Airavata_getAllGatewayComputeResources_result");
+  xfer += oprot->writeStructBegin("Airavata_getAllGatewayResourceProfiles_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
@@ -35067,11 +35067,11 @@ uint32_t Airavata_getAllGatewayComputeResources_result::write(::apache::thrift::
 }
 
 
-Airavata_getAllGatewayComputeResources_presult::~Airavata_getAllGatewayComputeResources_presult() throw() {
+Airavata_getAllGatewayResourceProfiles_presult::~Airavata_getAllGatewayResourceProfiles_presult() throw() {
 }
 
 
-uint32_t Airavata_getAllGatewayComputeResources_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Airavata_getAllGatewayResourceProfiles_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -46429,18 +46429,18 @@ void AiravataClient::recv_getAllGatewayDataStoragePreferences(std::vector< ::apa
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllGatewayDataStoragePreferences failed: unknown result");
 }
 
-void AiravataClient::getAllGatewayComputeResources(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken)
+void AiravataClient::getAllGatewayResourceProfiles(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken)
 {
-  send_getAllGatewayComputeResources(authzToken);
-  recv_getAllGatewayComputeResources(_return);
+  send_getAllGatewayResourceProfiles(authzToken);
+  recv_getAllGatewayResourceProfiles(_return);
 }
 
-void AiravataClient::send_getAllGatewayComputeResources(const  ::apache::airavata::model::security::AuthzToken& authzToken)
+void AiravataClient::send_getAllGatewayResourceProfiles(const  ::apache::airavata::model::security::AuthzToken& authzToken)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("getAllGatewayComputeResources", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("getAllGatewayResourceProfiles", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  Airavata_getAllGatewayComputeResources_pargs args;
+  Airavata_getAllGatewayResourceProfiles_pargs args;
   args.authzToken = &authzToken;
   args.write(oprot_);
 
@@ -46449,7 +46449,7 @@ void AiravataClient::send_getAllGatewayComputeResources(const  ::apache::airavat
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getAllGatewayComputeResources(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile> & _return)
+void AiravataClient::recv_getAllGatewayResourceProfiles(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile> & _return)
 {
 
   int32_t rseqid = 0;
@@ -46469,12 +46469,12 @@ void AiravataClient::recv_getAllGatewayComputeResources(std::vector< ::apache::a
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("getAllGatewayComputeResources") != 0) {
+  if (fname.compare("getAllGatewayResourceProfiles") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  Airavata_getAllGatewayComputeResources_presult result;
+  Airavata_getAllGatewayResourceProfiles_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -46496,7 +46496,7 @@ void AiravataClient::recv_getAllGatewayComputeResources(std::vector< ::apache::a
   if (result.__isset.ae) {
     throw result.ae;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllGatewayComputeResources failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllGatewayResourceProfiles failed: unknown result");
 }
 
 bool AiravataClient::updateGatewayComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference)
@@ -54634,30 +54634,30 @@ void AiravataProcessor::process_getAllGatewayDataStoragePreferences(int32_t seqi
   }
 }
 
-void AiravataProcessor::process_getAllGatewayComputeResources(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void AiravataProcessor::process_getAllGatewayResourceProfiles(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("Airavata.getAllGatewayComputeResources", callContext);
+    ctx = this->eventHandler_->getContext("Airavata.getAllGatewayResourceProfiles", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.getAllGatewayComputeResources");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.getAllGatewayResourceProfiles");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "Airavata.getAllGatewayComputeResources");
+    this->eventHandler_->preRead(ctx, "Airavata.getAllGatewayResourceProfiles");
   }
 
-  Airavata_getAllGatewayComputeResources_args args;
+  Airavata_getAllGatewayResourceProfiles_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "Airavata.getAllGatewayComputeResources", bytes);
+    this->eventHandler_->postRead(ctx, "Airavata.getAllGatewayResourceProfiles", bytes);
   }
 
-  Airavata_getAllGatewayComputeResources_result result;
+  Airavata_getAllGatewayResourceProfiles_result result;
   try {
-    iface_->getAllGatewayComputeResources(result.success, args.authzToken);
+    iface_->getAllGatewayResourceProfiles(result.success, args.authzToken);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -54673,11 +54673,11 @@ void AiravataProcessor::process_getAllGatewayComputeResources(int32_t seqid, ::a
     result.__isset.ae = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "Airavata.getAllGatewayComputeResources");
+      this->eventHandler_->handlerError(ctx, "Airavata.getAllGatewayResourceProfiles");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("getAllGatewayComputeResources", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("getAllGatewayResourceProfiles", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -54686,17 +54686,17 @@ void AiravataProcessor::process_getAllGatewayComputeResources(int32_t seqid, ::a
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "Airavata.getAllGatewayComputeResources");
+    this->eventHandler_->preWrite(ctx, "Airavata.getAllGatewayResourceProfiles");
   }
 
-  oprot->writeMessageBegin("getAllGatewayComputeResources", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("getAllGatewayResourceProfiles", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "Airavata.getAllGatewayComputeResources", bytes);
+    this->eventHandler_->postWrite(ctx, "Airavata.getAllGatewayResourceProfiles", bytes);
   }
 }
 
