@@ -40,6 +40,9 @@ public class GatewayProfile implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
+    @Column(name = "CS_TOKEN")
+    private String credentialStoreToken;
+
     public Timestamp getCreationTime() {
         return creationTime;
     }
@@ -65,4 +68,11 @@ public class GatewayProfile implements Serializable {
         this.gatewayID = gatewayID;
     }
 
+    public String getCredentialStoreToken() {
+        return credentialStoreToken;
+    }
+
+    public void setCredentialStoreToken(String credentialStoreToken) {
+        this.credentialStoreToken = credentialStoreToken;
+    }
 }

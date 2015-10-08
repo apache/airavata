@@ -3510,7 +3510,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public List<GatewayResourceProfile> getAllGatewayComputeResources(AuthzToken authzToken) throws InvalidRequestException,
+    public List<GatewayResourceProfile> getAllGatewayResourceProfiles(AuthzToken authzToken) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();

@@ -2024,9 +2024,9 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * @param authzToken
    */
-  void getAllGatewayComputeResources(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
+  void getAllGatewayResourceProfiles(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
     // Your implementation goes here
-    printf("getAllGatewayComputeResources\n");
+    printf("getAllGatewayResourceProfiles\n");
   }
 
   /**

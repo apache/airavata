@@ -805,6 +805,7 @@ public class AppCatalogThriftConversion {
     public static GatewayResourceProfile getGatewayResourceProfile(GatewayProfileResource gw, List<ComputeResourcePreference> preferences, List<DataStoragePreference> storagePreferences){
         GatewayResourceProfile gatewayProfile = new GatewayResourceProfile();
         gatewayProfile.setGatewayID(gw.getGatewayID());
+        gatewayProfile.setCredentialStoreToken(gw.getCredentialStoreToken());
         gatewayProfile.setComputeResourcePreferences(preferences);
         gatewayProfile.setDataStoragePreferences(storagePreferences);
         return gatewayProfile;

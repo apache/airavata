@@ -2458,7 +2458,7 @@ interface AiravataIf {
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function getAllGatewayComputeResources(\Airavata\Model\Security\AuthzToken $authzToken);
+  public function getAllGatewayResourceProfiles(\Airavata\Model\Security\AuthzToken $authzToken);
   /**
    * Update a Compute Resource Preference to a registered gateway profile.
    * 
@@ -9814,34 +9814,34 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getAllGatewayDataStoragePreferences failed: unknown result");
   }
 
-  public function getAllGatewayComputeResources(\Airavata\Model\Security\AuthzToken $authzToken)
+  public function getAllGatewayResourceProfiles(\Airavata\Model\Security\AuthzToken $authzToken)
   {
-    $this->send_getAllGatewayComputeResources($authzToken);
-    return $this->recv_getAllGatewayComputeResources();
+    $this->send_getAllGatewayResourceProfiles($authzToken);
+    return $this->recv_getAllGatewayResourceProfiles();
   }
 
-  public function send_getAllGatewayComputeResources(\Airavata\Model\Security\AuthzToken $authzToken)
+  public function send_getAllGatewayResourceProfiles(\Airavata\Model\Security\AuthzToken $authzToken)
   {
-    $args = new \Airavata\API\Airavata_getAllGatewayComputeResources_args();
+    $args = new \Airavata\API\Airavata_getAllGatewayResourceProfiles_args();
     $args->authzToken = $authzToken;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
-      thrift_protocol_write_binary($this->output_, 'getAllGatewayComputeResources', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+      thrift_protocol_write_binary($this->output_, 'getAllGatewayResourceProfiles', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
     }
     else
     {
-      $this->output_->writeMessageBegin('getAllGatewayComputeResources', TMessageType::CALL, $this->seqid_);
+      $this->output_->writeMessageBegin('getAllGatewayResourceProfiles', TMessageType::CALL, $this->seqid_);
       $args->write($this->output_);
       $this->output_->writeMessageEnd();
       $this->output_->getTransport()->flush();
     }
   }
 
-  public function recv_getAllGatewayComputeResources()
+  public function recv_getAllGatewayResourceProfiles()
   {
     $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
-    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_getAllGatewayComputeResources_result', $this->input_->isStrictRead());
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_getAllGatewayResourceProfiles_result', $this->input_->isStrictRead());
     else
     {
       $rseqid = 0;
@@ -9855,7 +9855,7 @@ class AiravataClient implements \Airavata\API\AiravataIf {
         $this->input_->readMessageEnd();
         throw $x;
       }
-      $result = new \Airavata\API\Airavata_getAllGatewayComputeResources_result();
+      $result = new \Airavata\API\Airavata_getAllGatewayResourceProfiles_result();
       $result->read($this->input_);
       $this->input_->readMessageEnd();
     }
@@ -9874,7 +9874,7 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     if ($result->ae !== null) {
       throw $result->ae;
     }
-    throw new \Exception("getAllGatewayComputeResources failed: unknown result");
+    throw new \Exception("getAllGatewayResourceProfiles failed: unknown result");
   }
 
   public function updateGatewayComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayID, $computeResourceId, \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $computeResourcePreference)
@@ -44904,7 +44904,7 @@ class Airavata_getAllGatewayDataStoragePreferences_result {
 
 }
 
-class Airavata_getAllGatewayComputeResources_args {
+class Airavata_getAllGatewayResourceProfiles_args {
   static $_TSPEC;
 
   /**
@@ -44930,7 +44930,7 @@ class Airavata_getAllGatewayComputeResources_args {
   }
 
   public function getName() {
-    return 'Airavata_getAllGatewayComputeResources_args';
+    return 'Airavata_getAllGatewayResourceProfiles_args';
   }
 
   public function read($input)
@@ -44968,7 +44968,7 @@ class Airavata_getAllGatewayComputeResources_args {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('Airavata_getAllGatewayComputeResources_args');
+    $xfer += $output->writeStructBegin('Airavata_getAllGatewayResourceProfiles_args');
     if ($this->authzToken !== null) {
       if (!is_object($this->authzToken)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
@@ -44984,7 +44984,7 @@ class Airavata_getAllGatewayComputeResources_args {
 
 }
 
-class Airavata_getAllGatewayComputeResources_result {
+class Airavata_getAllGatewayResourceProfiles_result {
   static $_TSPEC;
 
   /**
@@ -45062,7 +45062,7 @@ class Airavata_getAllGatewayComputeResources_result {
   }
 
   public function getName() {
-    return 'Airavata_getAllGatewayComputeResources_result';
+    return 'Airavata_getAllGatewayResourceProfiles_result';
   }
 
   public function read($input)
@@ -45142,7 +45142,7 @@ class Airavata_getAllGatewayComputeResources_result {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('Airavata_getAllGatewayComputeResources_result');
+    $xfer += $output->writeStructBegin('Airavata_getAllGatewayResourceProfiles_result');
     if ($this->success !== null) {
       if (!is_array($this->success)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);

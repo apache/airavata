@@ -41,6 +41,7 @@ public class GatewayProfileResource extends AppCatAbstractResource {
     private String gatewayID;
     private Timestamp createdTime;
     private Timestamp updatedTime;
+    private String credentialStoreToken;
 
     public Timestamp getCreatedTime() {
         return createdTime;
@@ -56,6 +57,14 @@ public class GatewayProfileResource extends AppCatAbstractResource {
 
     public void setUpdatedTime(Timestamp updatedTime) {
         this.updatedTime = updatedTime;
+    }
+
+    public String getCredentialStoreToken() {
+        return credentialStoreToken;
+    }
+
+    public void setCredentialStoreToken(String credentialStoreToken) {
+        this.credentialStoreToken = credentialStoreToken;
     }
 
     public void remove(Object identifier) throws AppCatalogException {
@@ -266,11 +275,13 @@ public class GatewayProfileResource extends AppCatAbstractResource {
             em.getTransaction().begin();
             if (existingGatewayProfile != null) {
                 existingGatewayProfile.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+                existingGatewayProfile.setCredentialStoreToken(credentialStoreToken);
                 em.merge(existingGatewayProfile);
             } else {
                 GatewayProfile gatewayProfile = new GatewayProfile();
                 gatewayProfile.setGatewayID(gatewayID);
                 gatewayProfile.setCreationTime(AiravataUtils.getCurrentTimestamp());
+                gatewayProfile.setCredentialStoreToken(credentialStoreToken);
                 em.persist(gatewayProfile);
             }
             em.getTransaction().commit();

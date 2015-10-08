@@ -2014,7 +2014,7 @@ class Iface:
     """
     pass
 
-  def getAllGatewayComputeResources(self, authzToken):
+  def getAllGatewayResourceProfiles(self, authzToken):
     """
     Fetch all gateway profiles registered
 
@@ -7910,7 +7910,7 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllGatewayDataStoragePreferences failed: unknown result");
 
-  def getAllGatewayComputeResources(self, authzToken):
+  def getAllGatewayResourceProfiles(self, authzToken):
     """
     Fetch all gateway profiles registered
 
@@ -7918,18 +7918,18 @@ class Client(Iface):
     Parameters:
      - authzToken
     """
-    self.send_getAllGatewayComputeResources(authzToken)
-    return self.recv_getAllGatewayComputeResources()
+    self.send_getAllGatewayResourceProfiles(authzToken)
+    return self.recv_getAllGatewayResourceProfiles()
 
-  def send_getAllGatewayComputeResources(self, authzToken):
-    self._oprot.writeMessageBegin('getAllGatewayComputeResources', TMessageType.CALL, self._seqid)
-    args = getAllGatewayComputeResources_args()
+  def send_getAllGatewayResourceProfiles(self, authzToken):
+    self._oprot.writeMessageBegin('getAllGatewayResourceProfiles', TMessageType.CALL, self._seqid)
+    args = getAllGatewayResourceProfiles_args()
     args.authzToken = authzToken
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_getAllGatewayComputeResources(self):
+  def recv_getAllGatewayResourceProfiles(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -7937,7 +7937,7 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = getAllGatewayComputeResources_result()
+    result = getAllGatewayResourceProfiles_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
@@ -7950,7 +7950,7 @@ class Client(Iface):
       raise result.ase
     if result.ae is not None:
       raise result.ae
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllGatewayComputeResources failed: unknown result");
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllGatewayResourceProfiles failed: unknown result");
 
   def updateGatewayComputeResourcePreference(self, authzToken, gatewayID, computeResourceId, computeResourcePreference):
     """
@@ -8558,7 +8558,7 @@ class Processor(Iface, TProcessor):
     self._processMap["getGatewayDataStoragePreference"] = Processor.process_getGatewayDataStoragePreference
     self._processMap["getAllGatewayComputeResourcePreferences"] = Processor.process_getAllGatewayComputeResourcePreferences
     self._processMap["getAllGatewayDataStoragePreferences"] = Processor.process_getAllGatewayDataStoragePreferences
-    self._processMap["getAllGatewayComputeResources"] = Processor.process_getAllGatewayComputeResources
+    self._processMap["getAllGatewayResourceProfiles"] = Processor.process_getAllGatewayResourceProfiles
     self._processMap["updateGatewayComputeResourcePreference"] = Processor.process_updateGatewayComputeResourcePreference
     self._processMap["updateGatewayDataStoragePreference"] = Processor.process_updateGatewayDataStoragePreference
     self._processMap["deleteGatewayComputeResourcePreference"] = Processor.process_deleteGatewayComputeResourcePreference
@@ -10818,13 +10818,13 @@ class Processor(Iface, TProcessor):
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_getAllGatewayComputeResources(self, seqid, iprot, oprot):
-    args = getAllGatewayComputeResources_args()
+  def process_getAllGatewayResourceProfiles(self, seqid, iprot, oprot):
+    args = getAllGatewayResourceProfiles_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = getAllGatewayComputeResources_result()
+    result = getAllGatewayResourceProfiles_result()
     try:
-      result.success = self._handler.getAllGatewayComputeResources(args.authzToken)
+      result.success = self._handler.getAllGatewayResourceProfiles(args.authzToken)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -10833,7 +10833,7 @@ class Processor(Iface, TProcessor):
       result.ase = ase
     except apache.airavata.api.error.ttypes.AuthorizationException, ae:
       result.ae = ae
-    oprot.writeMessageBegin("getAllGatewayComputeResources", TMessageType.REPLY, seqid)
+    oprot.writeMessageBegin("getAllGatewayResourceProfiles", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -35401,7 +35401,7 @@ class getAllGatewayDataStoragePreferences_result:
   def __ne__(self, other):
     return not (self == other)
 
-class getAllGatewayComputeResources_args:
+class getAllGatewayResourceProfiles_args:
   """
   Attributes:
    - authzToken
@@ -35439,7 +35439,7 @@ class getAllGatewayComputeResources_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('getAllGatewayComputeResources_args')
+    oprot.writeStructBegin('getAllGatewayResourceProfiles_args')
     if self.authzToken is not None:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
@@ -35469,7 +35469,7 @@ class getAllGatewayComputeResources_args:
   def __ne__(self, other):
     return not (self == other)
 
-class getAllGatewayComputeResources_result:
+class getAllGatewayResourceProfiles_result:
   """
   Attributes:
    - success
@@ -35547,7 +35547,7 @@ class getAllGatewayComputeResources_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('getAllGatewayComputeResources_result')
+    oprot.writeStructBegin('getAllGatewayResourceProfiles_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))

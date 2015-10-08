@@ -190,7 +190,7 @@ public class ComputeResourceRegister {
 
             loginNamesWithResourceIds = getLoginNamesWithResourceIDs();
 
-            List<GatewayResourceProfile> allGatewayComputeResources = airavata.getAllGatewayComputeResources(authzToken);
+            List<GatewayResourceProfile> allGatewayComputeResources = airavata.getAllGatewayResourceProfiles(authzToken);
             for (GatewayResourceProfile gatewayResourceProfile : allGatewayComputeResources) {
                 for (String resourceId : loginNamesWithResourceIds.keySet()) {
                     String loginUserName = loginNamesWithResourceIds.get(resourceId);
