@@ -38,7 +38,7 @@ public class CancelExperiments {
     public static final int THRIFT_SERVER_PORT = 8930;
     private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
-    private static final String DEFAULT_GATEWAY = "default.registry.gateway";
+    private static final String DEFAULT_GATEWAY = "default";
     private static Airavata.Client client;
 
 
@@ -60,8 +60,7 @@ public class CancelExperiments {
     public static void terminateExperiment(Airavata.Client client, String expId)
             throws TException {
         try {
-        	String tokenId = "-0bbb-403b-a88a-42b6dbe198e9";
-            client.terminateExperiment(new AuthzToken(""), expId, tokenId);
+            client.terminateExperiment(new AuthzToken(""), expId, DEFAULT_GATEWAY);
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new ExperimentNotFoundException(e);

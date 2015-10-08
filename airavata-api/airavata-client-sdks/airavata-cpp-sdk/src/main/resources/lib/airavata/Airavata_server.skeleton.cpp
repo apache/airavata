@@ -640,15 +640,6 @@ class AiravataHandler : virtual public AiravataIf {
    * @param airavataExperimentId
    *    The identifier for the requested experiment. This is returned during the create experiment step.
    * 
-   * @param airavataCredStoreToken:
-   *   A requirement to execute experiments within Airavata is to first register the targeted remote computational account
-   *     credentials with Airavata Credential Store. The administrative API (related to credential store) will return a
-   *     generated token associated with the registered credentials. The client has to security posses this token id and is
-   *     required to pass it to Airavata Server for all execution requests.
-   *   Note: At this point only the credential store token is required so the string is directly passed here. In future if
-   *     if more security credentials are enables, then the structure ExecutionSecurityParameters should be used.
-   *   Note: This parameter is not persisted within Airavata Registry for security reasons.
-   * 
    * @return
    *   This method call does not have a return value.
    * 
@@ -678,9 +669,9 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * @param authzToken
    * @param airavataExperimentId
-   * @param airavataCredStoreToken
+   * @param gatewayId
    */
-  void launchExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& airavataCredStoreToken) {
+  void launchExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId) {
     // Your implementation goes here
     printf("launchExperiment\n");
   }
@@ -793,9 +784,9 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * @param authzToken
    * @param airavataExperimentId
-   * @param tokenId
+   * @param gatewayId
    */
-  void terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& tokenId) {
+  void terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId) {
     // Your implementation goes here
     printf("terminateExperiment\n");
   }

@@ -536,7 +536,7 @@ public class CreateLaunchExperimentUS3 {
     public static void launchExperiment (Airavata.Client client, String expId)
             throws TException{
         try {
-            client.launchExperiment(new AuthzToken(""), expId, "testToken");
+            client.launchExperiment(new AuthzToken(""), expId, DEFAULT_GATEWAY);
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new ExperimentNotFoundException(e);

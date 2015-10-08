@@ -667,15 +667,6 @@ service Airavata {
    * @param airavataExperimentId
    *    The identifier for the requested experiment. This is returned during the create experiment step.
    *
-   * @param airavataCredStoreToken:
-   *   A requirement to execute experiments within Airavata is to first register the targeted remote computational account
-   *     credentials with Airavata Credential Store. The administrative API (related to credential store) will return a
-   *     generated token associated with the registered credentials. The client has to security posses this token id and is
-   *     required to pass it to Airavata Server for all execution requests.
-   *   Note: At this point only the credential store token is required so the string is directly passed here. In future if 
-   *     if more security credentials are enables, then the structure ExecutionSecurityParameters should be used.
-   *   Note: This parameter is not persisted within Airavata Registry for security reasons.
-   *
    * @return
    *   This method call does not have a return value.
    *
@@ -704,8 +695,8 @@ service Airavata {
    *
   */
   void launchExperiment(1: required security_model.AuthzToken authzToken,
-                        2: required string airavataExperimentId
-                        3: required string airavataCredStoreToken)
+                        2: required string airavataExperimentId,
+                        3: required string gatewayId)
     throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.ExperimentNotFoundException enf,
             3: airavata_errors.AiravataClientException ace,
@@ -838,7 +829,7 @@ service Airavata {
   */
   void terminateExperiment(1: required security_model.AuthzToken authzToken,
                            2: string airavataExperimentId,
-                           3: string tokenId)
+                           3: string gatewayId)
     throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.ExperimentNotFoundException enf,
             3: airavata_errors.AiravataClientException ace,

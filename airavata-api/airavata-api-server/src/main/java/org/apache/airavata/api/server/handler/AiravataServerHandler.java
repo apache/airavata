@@ -1590,14 +1590,6 @@ public class AiravataServerHandler implements Airavata.Iface {
      *
      *
      * @param airavataExperimentId   The identifier for the requested experiment. This is returned during the create experiment step.
-     * @param airavataCredStoreToken :
-     *                               A requirement to execute experiments within Airavata is to first register the targeted remote computational account
-     *                               credentials with Airavata Credential Store. The administrative API (related to credential store) will return a
-     *                               generated token associated with the registered credentials. The client has to security posses this token id and is
-     *                               required to pass it to Airavata Server for all execution requests.
-     *                               Note: At this point only the credential store token is required so the string is directly passed here. In future if
-     *                               if more security credentials are enables, then the structure ExecutionSecurityParameters should be used.
-     *                               Note: This parameter is not persisted within Airavata Registry for security reasons.
      * @return This method call does not have a return value.
      * @throws org.apache.airavata.model.error.InvalidRequestException
      *          For any incorrect forming of the request itself.
@@ -1621,13 +1613,17 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public void launchExperiment(AuthzToken authzToken, final String airavataExperimentId, String airavataCredStoreToken)
+    public void launchExperiment(AuthzToken authzToken, final String airavataExperimentId, String gatewayId)
             throws AuthorizationException, TException {
     	try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
 			if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)) {
                 logger.error(airavataExperimentId, "Error while launching experiment, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
+            if (!experimentCatalog.isExist(ExperimentCatalogModelType.GATEWAY, gatewayId)) {
+                logger.error(airavataExperimentId, "Error while launching experiment, gatewayId {} doesn't exist.", gatewayId);
+                throw new ExperimentNotFoundException("Requested gateway id " + gatewayId + " does not exist in the system..");
             }
         } catch (RegistryException e1) {
             logger.error(airavataExperimentId, "Error while instantiate the registry instance", e1);
@@ -1639,7 +1635,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     	ExperimentModel experiment = getExperimentInternal(airavataExperimentId);
     	OrchestratorService.Client orchestratorClient = getOrchestratorClient();
     	if (orchestratorClient.validateExperiment(airavataExperimentId)) {
-    		orchestratorClient.launchExperiment(airavataExperimentId, airavataCredStoreToken);
+    		orchestratorClient.launchExperiment(airavataExperimentId, gatewayId);
     	}else {
             logger.error(airavataExperimentId, "Couldn't identify experiment type, experiment {} is neither single application nor workflow.", airavataExperimentId);
             throw new InvalidRequestException("Experiment '" + airavataExperimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getExecutionId());
@@ -1766,7 +1762,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public void terminateExperiment(AuthzToken authzToken, String airavataExperimentId, String tokenId) throws InvalidRequestException,
+    public void terminateExperiment(AuthzToken authzToken, String airavataExperimentId, String gatewayId) throws InvalidRequestException,
             ExperimentNotFoundException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!(experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId))){
@@ -1774,7 +1770,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
             Client client = getOrchestratorClient();
-            client.terminateExperiment(airavataExperimentId, tokenId);
+            client.terminateExperiment(airavataExperimentId, gatewayId);
         } catch (RegistryException e) {
             logger.error(airavataExperimentId, "Error while cancelling the experiment...", e);
             AiravataSystemException exception = new AiravataSystemException();

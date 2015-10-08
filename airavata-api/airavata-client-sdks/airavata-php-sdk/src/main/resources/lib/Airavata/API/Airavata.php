@@ -704,15 +704,6 @@ interface AiravataIf {
    * @param airavataExperimentId
    *    The identifier for the requested experiment. This is returned during the create experiment step.
    * 
-   * @param airavataCredStoreToken:
-   *   A requirement to execute experiments within Airavata is to first register the targeted remote computational account
-   *     credentials with Airavata Credential Store. The administrative API (related to credential store) will return a
-   *     generated token associated with the registered credentials. The client has to security posses this token id and is
-   *     required to pass it to Airavata Server for all execution requests.
-   *   Note: At this point only the credential store token is required so the string is directly passed here. In future if
-   *     if more security credentials are enables, then the structure ExecutionSecurityParameters should be used.
-   *   Note: This parameter is not persisted within Airavata Registry for security reasons.
-   * 
    * @return
    *   This method call does not have a return value.
    * 
@@ -742,14 +733,14 @@ interface AiravataIf {
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $airavataExperimentId
-   * @param string $airavataCredStoreToken
+   * @param string $gatewayId
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\ExperimentNotFoundException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function launchExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $airavataExperimentId, $airavataCredStoreToken);
+  public function launchExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $airavataExperimentId, $gatewayId);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $airavataExperimentId
@@ -901,14 +892,14 @@ interface AiravataIf {
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $airavataExperimentId
-   * @param string $tokenId
+   * @param string $gatewayId
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\ExperimentNotFoundException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function terminateExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $airavataExperimentId, $tokenId);
+  public function terminateExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $airavataExperimentId, $gatewayId);
   /**
    * Register a Application Module.
    * 
@@ -4701,18 +4692,18 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("validateExperiment failed: unknown result");
   }
 
-  public function launchExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $airavataExperimentId, $airavataCredStoreToken)
+  public function launchExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $airavataExperimentId, $gatewayId)
   {
-    $this->send_launchExperiment($authzToken, $airavataExperimentId, $airavataCredStoreToken);
+    $this->send_launchExperiment($authzToken, $airavataExperimentId, $gatewayId);
     $this->recv_launchExperiment();
   }
 
-  public function send_launchExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $airavataExperimentId, $airavataCredStoreToken)
+  public function send_launchExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $airavataExperimentId, $gatewayId)
   {
     $args = new \Airavata\API\Airavata_launchExperiment_args();
     $args->authzToken = $authzToken;
     $args->airavataExperimentId = $airavataExperimentId;
-    $args->airavataCredStoreToken = $airavataCredStoreToken;
+    $args->gatewayId = $gatewayId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -5169,18 +5160,18 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("cloneExperiment failed: unknown result");
   }
 
-  public function terminateExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $airavataExperimentId, $tokenId)
+  public function terminateExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $airavataExperimentId, $gatewayId)
   {
-    $this->send_terminateExperiment($authzToken, $airavataExperimentId, $tokenId);
+    $this->send_terminateExperiment($authzToken, $airavataExperimentId, $gatewayId);
     $this->recv_terminateExperiment();
   }
 
-  public function send_terminateExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $airavataExperimentId, $tokenId)
+  public function send_terminateExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $airavataExperimentId, $gatewayId)
   {
     $args = new \Airavata\API\Airavata_terminateExperiment_args();
     $args->authzToken = $authzToken;
     $args->airavataExperimentId = $airavataExperimentId;
-    $args->tokenId = $tokenId;
+    $args->gatewayId = $gatewayId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -20955,7 +20946,7 @@ class Airavata_launchExperiment_args {
   /**
    * @var string
    */
-  public $airavataCredStoreToken = null;
+  public $gatewayId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -20970,7 +20961,7 @@ class Airavata_launchExperiment_args {
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'airavataCredStoreToken',
+          'var' => 'gatewayId',
           'type' => TType::STRING,
           ),
         );
@@ -20982,8 +20973,8 @@ class Airavata_launchExperiment_args {
       if (isset($vals['airavataExperimentId'])) {
         $this->airavataExperimentId = $vals['airavataExperimentId'];
       }
-      if (isset($vals['airavataCredStoreToken'])) {
-        $this->airavataCredStoreToken = $vals['airavataCredStoreToken'];
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
       }
     }
   }
@@ -21024,7 +21015,7 @@ class Airavata_launchExperiment_args {
           break;
         case 3:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->airavataCredStoreToken);
+            $xfer += $input->readString($this->gatewayId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -21055,9 +21046,9 @@ class Airavata_launchExperiment_args {
       $xfer += $output->writeString($this->airavataExperimentId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->airavataCredStoreToken !== null) {
-      $xfer += $output->writeFieldBegin('airavataCredStoreToken', TType::STRING, 3);
-      $xfer += $output->writeString($this->airavataCredStoreToken);
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -23224,7 +23215,7 @@ class Airavata_terminateExperiment_args {
   /**
    * @var string
    */
-  public $tokenId = null;
+  public $gatewayId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -23239,7 +23230,7 @@ class Airavata_terminateExperiment_args {
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'tokenId',
+          'var' => 'gatewayId',
           'type' => TType::STRING,
           ),
         );
@@ -23251,8 +23242,8 @@ class Airavata_terminateExperiment_args {
       if (isset($vals['airavataExperimentId'])) {
         $this->airavataExperimentId = $vals['airavataExperimentId'];
       }
-      if (isset($vals['tokenId'])) {
-        $this->tokenId = $vals['tokenId'];
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
       }
     }
   }
@@ -23293,7 +23284,7 @@ class Airavata_terminateExperiment_args {
           break;
         case 3:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->tokenId);
+            $xfer += $input->readString($this->gatewayId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -23324,9 +23315,9 @@ class Airavata_terminateExperiment_args {
       $xfer += $output->writeString($this->airavataExperimentId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->tokenId !== null) {
-      $xfer += $output->writeFieldBegin('tokenId', TType::STRING, 3);
-      $xfer += $output->writeString($this->tokenId);
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

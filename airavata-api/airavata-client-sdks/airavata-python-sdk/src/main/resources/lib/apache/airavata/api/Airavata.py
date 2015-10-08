@@ -627,22 +627,13 @@ class Iface:
     """
     pass
 
-  def launchExperiment(self, authzToken, airavataExperimentId, airavataCredStoreToken):
+  def launchExperiment(self, authzToken, airavataExperimentId, gatewayId):
     """
     Launch a previously created and configured experiment. Airavata Server will then start processing the request and appropriate
       notifications and intermediate and output data will be subsequently available for this experiment.
 
     @param airavataExperimentId
        The identifier for the requested experiment. This is returned during the create experiment step.
-
-    @param airavataCredStoreToken:
-      A requirement to execute experiments within Airavata is to first register the targeted remote computational account
-        credentials with Airavata Credential Store. The administrative API (related to credential store) will return a
-        generated token associated with the registered credentials. The client has to security posses this token id and is
-        required to pass it to Airavata Server for all execution requests.
-      Note: At this point only the credential store token is required so the string is directly passed here. In future if
-        if more security credentials are enables, then the structure ExecutionSecurityParameters should be used.
-      Note: This parameter is not persisted within Airavata Registry for security reasons.
 
     @return
       This method call does not have a return value.
@@ -674,7 +665,7 @@ class Iface:
     Parameters:
      - authzToken
      - airavataExperimentId
-     - airavataCredStoreToken
+     - gatewayId
     """
     pass
 
@@ -765,7 +756,7 @@ class Iface:
     """
     pass
 
-  def terminateExperiment(self, authzToken, airavataExperimentId, tokenId):
+  def terminateExperiment(self, authzToken, airavataExperimentId, gatewayId):
     """
     Terminate a running experiment.
 
@@ -802,7 +793,7 @@ class Iface:
     Parameters:
      - authzToken
      - airavataExperimentId
-     - tokenId
+     - gatewayId
     """
     pass
 
@@ -3865,22 +3856,13 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "validateExperiment failed: unknown result");
 
-  def launchExperiment(self, authzToken, airavataExperimentId, airavataCredStoreToken):
+  def launchExperiment(self, authzToken, airavataExperimentId, gatewayId):
     """
     Launch a previously created and configured experiment. Airavata Server will then start processing the request and appropriate
       notifications and intermediate and output data will be subsequently available for this experiment.
 
     @param airavataExperimentId
        The identifier for the requested experiment. This is returned during the create experiment step.
-
-    @param airavataCredStoreToken:
-      A requirement to execute experiments within Airavata is to first register the targeted remote computational account
-        credentials with Airavata Credential Store. The administrative API (related to credential store) will return a
-        generated token associated with the registered credentials. The client has to security posses this token id and is
-        required to pass it to Airavata Server for all execution requests.
-      Note: At this point only the credential store token is required so the string is directly passed here. In future if
-        if more security credentials are enables, then the structure ExecutionSecurityParameters should be used.
-      Note: This parameter is not persisted within Airavata Registry for security reasons.
 
     @return
       This method call does not have a return value.
@@ -3912,17 +3894,17 @@ class Client(Iface):
     Parameters:
      - authzToken
      - airavataExperimentId
-     - airavataCredStoreToken
+     - gatewayId
     """
-    self.send_launchExperiment(authzToken, airavataExperimentId, airavataCredStoreToken)
+    self.send_launchExperiment(authzToken, airavataExperimentId, gatewayId)
     self.recv_launchExperiment()
 
-  def send_launchExperiment(self, authzToken, airavataExperimentId, airavataCredStoreToken):
+  def send_launchExperiment(self, authzToken, airavataExperimentId, gatewayId):
     self._oprot.writeMessageBegin('launchExperiment', TMessageType.CALL, self._seqid)
     args = launchExperiment_args()
     args.authzToken = authzToken
     args.airavataExperimentId = airavataExperimentId
-    args.airavataCredStoreToken = airavataCredStoreToken
+    args.gatewayId = gatewayId
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -4248,7 +4230,7 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "cloneExperiment failed: unknown result");
 
-  def terminateExperiment(self, authzToken, airavataExperimentId, tokenId):
+  def terminateExperiment(self, authzToken, airavataExperimentId, gatewayId):
     """
     Terminate a running experiment.
 
@@ -4285,17 +4267,17 @@ class Client(Iface):
     Parameters:
      - authzToken
      - airavataExperimentId
-     - tokenId
+     - gatewayId
     """
-    self.send_terminateExperiment(authzToken, airavataExperimentId, tokenId)
+    self.send_terminateExperiment(authzToken, airavataExperimentId, gatewayId)
     self.recv_terminateExperiment()
 
-  def send_terminateExperiment(self, authzToken, airavataExperimentId, tokenId):
+  def send_terminateExperiment(self, authzToken, airavataExperimentId, gatewayId):
     self._oprot.writeMessageBegin('terminateExperiment', TMessageType.CALL, self._seqid)
     args = terminateExperiment_args()
     args.authzToken = authzToken
     args.airavataExperimentId = airavataExperimentId
-    args.tokenId = tokenId
+    args.gatewayId = gatewayId
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -9246,7 +9228,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = launchExperiment_result()
     try:
-      self._handler.launchExperiment(args.authzToken, args.airavataExperimentId, args.airavataCredStoreToken)
+      self._handler.launchExperiment(args.authzToken, args.airavataExperimentId, args.gatewayId)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.ExperimentNotFoundException, enf:
@@ -9400,7 +9382,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = terminateExperiment_result()
     try:
-      self._handler.terminateExperiment(args.authzToken, args.airavataExperimentId, args.tokenId)
+      self._handler.terminateExperiment(args.authzToken, args.airavataExperimentId, args.gatewayId)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.ExperimentNotFoundException, enf:
@@ -18380,20 +18362,20 @@ class launchExperiment_args:
   Attributes:
    - authzToken
    - airavataExperimentId
-   - airavataCredStoreToken
+   - gatewayId
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
     (2, TType.STRING, 'airavataExperimentId', None, None, ), # 2
-    (3, TType.STRING, 'airavataCredStoreToken', None, None, ), # 3
+    (3, TType.STRING, 'gatewayId', None, None, ), # 3
   )
 
-  def __init__(self, authzToken=None, airavataExperimentId=None, airavataCredStoreToken=None,):
+  def __init__(self, authzToken=None, airavataExperimentId=None, gatewayId=None,):
     self.authzToken = authzToken
     self.airavataExperimentId = airavataExperimentId
-    self.airavataCredStoreToken = airavataCredStoreToken
+    self.gatewayId = gatewayId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -18417,7 +18399,7 @@ class launchExperiment_args:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
-          self.airavataCredStoreToken = iprot.readString();
+          self.gatewayId = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -18438,9 +18420,9 @@ class launchExperiment_args:
       oprot.writeFieldBegin('airavataExperimentId', TType.STRING, 2)
       oprot.writeString(self.airavataExperimentId)
       oprot.writeFieldEnd()
-    if self.airavataCredStoreToken is not None:
-      oprot.writeFieldBegin('airavataCredStoreToken', TType.STRING, 3)
-      oprot.writeString(self.airavataCredStoreToken)
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
+      oprot.writeString(self.gatewayId)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -18450,8 +18432,8 @@ class launchExperiment_args:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
     if self.airavataExperimentId is None:
       raise TProtocol.TProtocolException(message='Required field airavataExperimentId is unset!')
-    if self.airavataCredStoreToken is None:
-      raise TProtocol.TProtocolException(message='Required field airavataCredStoreToken is unset!')
+    if self.gatewayId is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     return
 
 
@@ -18459,7 +18441,7 @@ class launchExperiment_args:
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
     value = (value * 31) ^ hash(self.airavataExperimentId)
-    value = (value * 31) ^ hash(self.airavataCredStoreToken)
+    value = (value * 31) ^ hash(self.gatewayId)
     return value
 
   def __repr__(self):
@@ -19952,20 +19934,20 @@ class terminateExperiment_args:
   Attributes:
    - authzToken
    - airavataExperimentId
-   - tokenId
+   - gatewayId
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
     (2, TType.STRING, 'airavataExperimentId', None, None, ), # 2
-    (3, TType.STRING, 'tokenId', None, None, ), # 3
+    (3, TType.STRING, 'gatewayId', None, None, ), # 3
   )
 
-  def __init__(self, authzToken=None, airavataExperimentId=None, tokenId=None,):
+  def __init__(self, authzToken=None, airavataExperimentId=None, gatewayId=None,):
     self.authzToken = authzToken
     self.airavataExperimentId = airavataExperimentId
-    self.tokenId = tokenId
+    self.gatewayId = gatewayId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -19989,7 +19971,7 @@ class terminateExperiment_args:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
-          self.tokenId = iprot.readString();
+          self.gatewayId = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -20010,9 +19992,9 @@ class terminateExperiment_args:
       oprot.writeFieldBegin('airavataExperimentId', TType.STRING, 2)
       oprot.writeString(self.airavataExperimentId)
       oprot.writeFieldEnd()
-    if self.tokenId is not None:
-      oprot.writeFieldBegin('tokenId', TType.STRING, 3)
-      oprot.writeString(self.tokenId)
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
+      oprot.writeString(self.gatewayId)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -20027,7 +20009,7 @@ class terminateExperiment_args:
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
     value = (value * 31) ^ hash(self.airavataExperimentId)
-    value = (value * 31) ^ hash(self.tokenId)
+    value = (value * 31) ^ hash(self.gatewayId)
     return value
 
   def __repr__(self):
