@@ -40,6 +40,7 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentD
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
@@ -144,7 +145,13 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().getComputeResourcePreference(gatewayId, experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
             String token = computeResourcePreference.getResourceSpecificCredentialStoreToken();
             if (token == null || token.isEmpty()){
-                log.error("You have not configured resource specific credential store token. Please provide the correct token at compute resource preference.");
+                // try with gateway profile level token
+                GatewayResourceProfile gatewayProfile = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
+                token = gatewayProfile.getCredentialStoreToken();
+            }
+            // still the token is empty, then we fail the experiment
+            if (token == null || token.isEmpty()){
+                log.error("You have not configured credential store token at gateway profile or compute resource preference. Please provide the correct token at gateway profile or compute resource preference.");
                 return false;
             }
             String experimentNodePath = GFacUtils.getExperimentNodePath (experimentId);
