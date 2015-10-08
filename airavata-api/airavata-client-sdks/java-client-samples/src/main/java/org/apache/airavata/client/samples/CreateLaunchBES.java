@@ -162,8 +162,7 @@ public class CreateLaunchBES {
     public static void launchExperiment(Airavata.Client client, String expId)
             throws TException {
         try {
-            String tokenId = "-0bbb-403b-a88a-42b6dbe198e9";
-            client.launchExperiment(new AuthzToken(""), expId, tokenId);
+            client.launchExperiment(new AuthzToken(""), expId, DEFAULT_GATEWAY);
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new ExperimentNotFoundException(e);

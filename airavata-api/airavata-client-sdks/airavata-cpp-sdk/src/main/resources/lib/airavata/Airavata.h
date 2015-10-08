@@ -527,15 +527,6 @@ class AiravataIf {
    * @param airavataExperimentId
    *    The identifier for the requested experiment. This is returned during the create experiment step.
    * 
-   * @param airavataCredStoreToken:
-   *   A requirement to execute experiments within Airavata is to first register the targeted remote computational account
-   *     credentials with Airavata Credential Store. The administrative API (related to credential store) will return a
-   *     generated token associated with the registered credentials. The client has to security posses this token id and is
-   *     required to pass it to Airavata Server for all execution requests.
-   *   Note: At this point only the credential store token is required so the string is directly passed here. In future if
-   *     if more security credentials are enables, then the structure ExecutionSecurityParameters should be used.
-   *   Note: This parameter is not persisted within Airavata Registry for security reasons.
-   * 
    * @return
    *   This method call does not have a return value.
    * 
@@ -565,9 +556,9 @@ class AiravataIf {
    * 
    * @param authzToken
    * @param airavataExperimentId
-   * @param airavataCredStoreToken
+   * @param gatewayId
    */
-  virtual void launchExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& airavataCredStoreToken) = 0;
+  virtual void launchExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId) = 0;
   virtual void getExperimentStatus( ::apache::airavata::model::status::ExperimentStatus& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) = 0;
   virtual void getExperimentOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) = 0;
   virtual void getIntermediateOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) = 0;
@@ -654,9 +645,9 @@ class AiravataIf {
    * 
    * @param authzToken
    * @param airavataExperimentId
-   * @param tokenId
+   * @param gatewayId
    */
-  virtual void terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& tokenId) = 0;
+  virtual void terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId) = 0;
 
   /**
    * Register a Application Module.
@@ -1846,7 +1837,7 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  void launchExperiment(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataExperimentId */, const std::string& /* airavataCredStoreToken */) {
+  void launchExperiment(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataExperimentId */, const std::string& /* gatewayId */) {
     return;
   }
   void getExperimentStatus( ::apache::airavata::model::status::ExperimentStatus& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataExperimentId */) {
@@ -1867,7 +1858,7 @@ class AiravataNull : virtual public AiravataIf {
   void cloneExperiment(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* existingExperimentID */, const std::string& /* newExperimentName */) {
     return;
   }
-  void terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataExperimentId */, const std::string& /* tokenId */) {
+  void terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataExperimentId */, const std::string& /* gatewayId */) {
     return;
   }
   void registerApplicationModule(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& /* applicationModule */) {
@@ -7278,19 +7269,19 @@ class Airavata_launchExperiment_args {
 
   Airavata_launchExperiment_args(const Airavata_launchExperiment_args&);
   Airavata_launchExperiment_args& operator=(const Airavata_launchExperiment_args&);
-  Airavata_launchExperiment_args() : airavataExperimentId(), airavataCredStoreToken() {
+  Airavata_launchExperiment_args() : airavataExperimentId(), gatewayId() {
   }
 
   virtual ~Airavata_launchExperiment_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string airavataExperimentId;
-  std::string airavataCredStoreToken;
+  std::string gatewayId;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
   void __set_airavataExperimentId(const std::string& val);
 
-  void __set_airavataCredStoreToken(const std::string& val);
+  void __set_gatewayId(const std::string& val);
 
   bool operator == (const Airavata_launchExperiment_args & rhs) const
   {
@@ -7298,7 +7289,7 @@ class Airavata_launchExperiment_args {
       return false;
     if (!(airavataExperimentId == rhs.airavataExperimentId))
       return false;
-    if (!(airavataCredStoreToken == rhs.airavataCredStoreToken))
+    if (!(gatewayId == rhs.gatewayId))
       return false;
     return true;
   }
@@ -7325,7 +7316,7 @@ class Airavata_launchExperiment_pargs {
   virtual ~Airavata_launchExperiment_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* airavataExperimentId;
-  const std::string* airavataCredStoreToken;
+  const std::string* gatewayId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -8401,9 +8392,9 @@ class Airavata_cloneExperiment_presult {
 };
 
 typedef struct _Airavata_terminateExperiment_args__isset {
-  _Airavata_terminateExperiment_args__isset() : airavataExperimentId(false), tokenId(false) {}
+  _Airavata_terminateExperiment_args__isset() : airavataExperimentId(false), gatewayId(false) {}
   bool airavataExperimentId :1;
-  bool tokenId :1;
+  bool gatewayId :1;
 } _Airavata_terminateExperiment_args__isset;
 
 class Airavata_terminateExperiment_args {
@@ -8414,13 +8405,13 @@ class Airavata_terminateExperiment_args {
 
   Airavata_terminateExperiment_args(const Airavata_terminateExperiment_args&);
   Airavata_terminateExperiment_args& operator=(const Airavata_terminateExperiment_args&);
-  Airavata_terminateExperiment_args() : airavataExperimentId(), tokenId() {
+  Airavata_terminateExperiment_args() : airavataExperimentId(), gatewayId() {
   }
 
   virtual ~Airavata_terminateExperiment_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string airavataExperimentId;
-  std::string tokenId;
+  std::string gatewayId;
 
   _Airavata_terminateExperiment_args__isset __isset;
 
@@ -8428,7 +8419,7 @@ class Airavata_terminateExperiment_args {
 
   void __set_airavataExperimentId(const std::string& val);
 
-  void __set_tokenId(const std::string& val);
+  void __set_gatewayId(const std::string& val);
 
   bool operator == (const Airavata_terminateExperiment_args & rhs) const
   {
@@ -8436,7 +8427,7 @@ class Airavata_terminateExperiment_args {
       return false;
     if (!(airavataExperimentId == rhs.airavataExperimentId))
       return false;
-    if (!(tokenId == rhs.tokenId))
+    if (!(gatewayId == rhs.gatewayId))
       return false;
     return true;
   }
@@ -8463,7 +8454,7 @@ class Airavata_terminateExperiment_pargs {
   virtual ~Airavata_terminateExperiment_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* airavataExperimentId;
-  const std::string* tokenId;
+  const std::string* gatewayId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -21598,8 +21589,8 @@ class AiravataClient : virtual public AiravataIf {
   bool validateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void send_validateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   bool recv_validateExperiment();
-  void launchExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& airavataCredStoreToken);
-  void send_launchExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& airavataCredStoreToken);
+  void launchExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId);
+  void send_launchExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId);
   void recv_launchExperiment();
   void getExperimentStatus( ::apache::airavata::model::status::ExperimentStatus& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void send_getExperimentStatus(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
@@ -21619,8 +21610,8 @@ class AiravataClient : virtual public AiravataIf {
   void cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName);
   void send_cloneExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName);
   void recv_cloneExperiment(std::string& _return);
-  void terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& tokenId);
-  void send_terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& tokenId);
+  void terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId);
+  void send_terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId);
   void recv_terminateExperiment();
   void registerApplicationModule(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule);
   void send_registerApplicationModule(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule);
@@ -22474,13 +22465,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->validateExperiment(authzToken, airavataExperimentId);
   }
 
-  void launchExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& airavataCredStoreToken) {
+  void launchExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->launchExperiment(authzToken, airavataExperimentId, airavataCredStoreToken);
+      ifaces_[i]->launchExperiment(authzToken, airavataExperimentId, gatewayId);
     }
-    ifaces_[i]->launchExperiment(authzToken, airavataExperimentId, airavataCredStoreToken);
+    ifaces_[i]->launchExperiment(authzToken, airavataExperimentId, gatewayId);
   }
 
   void getExperimentStatus( ::apache::airavata::model::status::ExperimentStatus& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
@@ -22543,13 +22534,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& tokenId) {
+  void terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->terminateExperiment(authzToken, airavataExperimentId, tokenId);
+      ifaces_[i]->terminateExperiment(authzToken, airavataExperimentId, gatewayId);
     }
-    ifaces_[i]->terminateExperiment(authzToken, airavataExperimentId, tokenId);
+    ifaces_[i]->terminateExperiment(authzToken, airavataExperimentId, gatewayId);
   }
 
   void registerApplicationModule(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) {

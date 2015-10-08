@@ -53,7 +53,7 @@ import java.util.Map;
 public class CreateLaunchExperiment {
 
     //FIXME: Read from a config file
-    public static final String THRIFT_SERVER_HOST = "gw56.iu.xsede.org";
+    public static final String THRIFT_SERVER_HOST = "gw119.iu.xsede.org";
     public static final int THRIFT_SERVER_PORT = 8930;
 //	public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
 //	public static final int THRIFT_SERVER_PORT = 9930;
@@ -98,7 +98,7 @@ public class CreateLaunchExperiment {
 //            System.out.println(jobId);
 //            System.out.println(jobStatus.getJobState().toString());
 //        }
-        createAndLaunchExp();
+//        createAndLaunchExp();
     }
 
     private static String fsdResourceId;
@@ -1452,8 +1452,7 @@ public class CreateLaunchExperiment {
     public static void launchExperiment(Airavata.Client client, String expId)
             throws TException {
         try {
-            String tokenId = "47507a08-1579-4883-be03-3c8e3b7da061";
-            client.launchExperiment(new AuthzToken(""), expId, tokenId);
+            client.launchExperiment(new AuthzToken(""), expId, DEFAULT_GATEWAY);
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new ExperimentNotFoundException(e);

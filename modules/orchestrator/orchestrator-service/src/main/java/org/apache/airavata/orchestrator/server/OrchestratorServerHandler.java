@@ -39,6 +39,7 @@ import org.apache.airavata.messaging.core.impl.RabbitMQStatusConsumer;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
@@ -132,7 +133,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	 * 
 	 * @param experimentId
 	 */
-	public boolean launchExperiment(String experimentId, String token) throws TException {
+	public boolean launchExperiment(String experimentId, String gatewayId) throws TException {
         ExperimentModel experiment = null;
         try {
             experiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
@@ -140,21 +141,13 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 log.error(experimentId, "Error retrieving the Experiment by the given experimentID: {} ", experimentId);
                 return false;
             }
-            CredentialReader credentialReader = GFacUtils.getCredentialReader();
-            String gatewayId = null;
-            if (credentialReader != null) {
-                try {
-                    gatewayId = credentialReader.getGatewayID(token);
-                } catch (Exception e) {
-                    log.error(e.getLocalizedMessage());
-                }
+            ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().getComputeResourcePreference(gatewayId, experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
+            String token = computeResourcePreference.getResourceSpecificCredentialStoreToken();
+            if (token == null || token.isEmpty()){
+                log.error("You have not configured resource specific credential store token. Please provide the correct token at compute resource preference.");
+                return false;
             }
-            if (gatewayId == null) {
-                gatewayId = ServerSettings.getDefaultUserGateway();
-                log.info("Couldn't identify the gateway Id using the credential token, Use default gateway Id");
-//                throw new AiravataException("Couldn't identify the gateway Id using the credential token");
-            }
-	        String experimentNodePath = GFacUtils.getExperimentNodePath (experimentId);
+            String experimentNodePath = GFacUtils.getExperimentNodePath (experimentId);
 	        ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentNodePath);
 	        String experimentCancelNode = ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
 	        ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
@@ -170,7 +163,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	            MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
 	            messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
 	            publisher.publish(messageContext);
-                OrchestratorServerThreadPoolExecutor.getCachedThreadPool().execute(new SingleAppExperimentRunner(experimentId, token));
+                OrchestratorServerThreadPoolExecutor.getCachedThreadPool().execute(new SingleAppExperimentRunner(experimentId, token, gatewayId));
             } else if (executionType == ExperimentType.WORKFLOW) {
                 //its a workflow execution experiment
                 log.debug(experimentId, "Launching workflow experiment {}.", experimentId);
@@ -213,7 +206,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		return false;
 	}
 
-	/**
+    /**
 	 * This can be used to cancel a running experiment and store the status to
 	 * terminated in registry
 	 * 
@@ -221,10 +214,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	 * @return
 	 * @throws TException
 	 */
-	public boolean terminateExperiment(String experimentId, String tokenId) throws TException {
+	public boolean terminateExperiment(String experimentId, String gatewayId) throws TException {
         log.info(experimentId, "Experiment: {} is cancelling  !!!!!", experimentId);
 		try {
-			return validateStatesAndCancel(experimentId, tokenId);
+			return validateStatesAndCancel(experimentId, gatewayId);
 		} catch (Exception e) {
 			log.error("expId : " + experimentId + " :- Error while cancelling experiment", e);
 			return false;
@@ -316,7 +309,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		return selectedModuleId;
 	}
 
-    private boolean validateStatesAndCancel(String experimentId, String tokenId) throws Exception {
+    private boolean validateStatesAndCancel(String experimentId, String gatewayId) throws Exception {
 	    String expCancelNodePath = ZKPaths.makePath(ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE,
 			    experimentId), ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
 	    Stat stat = curatorClient.checkExists().forPath(expCancelNodePath);
@@ -353,9 +346,11 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
         String experimentId;
         String airavataCredStoreToken;
-        public SingleAppExperimentRunner(String experimentId,String airavataCredStoreToken){
+        String gatewayId;
+        public SingleAppExperimentRunner(String experimentId,String airavataCredStoreToken, String gatewayId){
             this.experimentId = experimentId;
             this.airavataCredStoreToken = airavataCredStoreToken;
+            this.gatewayId = gatewayId;
         }
         @Override
         public void run() {
@@ -370,19 +365,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             try {
                 List<String> processIds = experimentCatalog.getIds(ExperimentCatalogModelType.PROCESS, AbstractExpCatResource.ProcessConstants.EXPERIMENT_ID, experimentId);
                 for (String processId : processIds) {
-                    String gatewayId = null;
-                    CredentialReader credentialReader = GFacUtils.getCredentialReader();
-                    if (credentialReader != null) {
-                        try {
-                            gatewayId = credentialReader.getGatewayID(airavataCredStoreToken);
-                        } catch (Exception e) {
-                            log.error(e.getLocalizedMessage());
-                        }
-                    }
-                    if (gatewayId == null || gatewayId.isEmpty()) {
-                        gatewayId = ServerSettings.getDefaultUserGateway();
-                    }
-
                     launchProcess(processId, airavataCredStoreToken);
                 }
 

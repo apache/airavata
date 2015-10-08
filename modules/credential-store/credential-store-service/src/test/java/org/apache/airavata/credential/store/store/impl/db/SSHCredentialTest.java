@@ -38,11 +38,11 @@ import java.io.IOException;
 public class SSHCredentialTest {
 
     public static void main(String[] args) {
-        String jdbcURL = "jdbc:mysql://gw85.iu.xsede.org:3306/airavata_dev";
+        String jdbcURL = "jdbc:mysql://gw85.iu.xsede.org:3306/airavata_gw119";
         String jdbcDriver = "com.mysql.jdbc.Driver";
         String userName = "gtaDevUser";
         String password = "gtaDevPWD";
-        String gatewayId = "sdsc";
+        String gatewayId = "phasta";
         String privateKeyPath = "/Users/chathuri/Desktop/ssh_gw111/id_rsa";
         String pubKeyPath = "/Users/chathuri/Desktop/ssh_gw111/id_rsa.pub";
 
@@ -53,7 +53,7 @@ public class SSHCredentialTest {
             sshCredential.setGateway(gatewayId);
             String token = TokenGenerator.generateToken(gatewayId, null);
             sshCredential.setToken(token);
-            sshCredential.setPortalUserName("kenneth");
+            sshCredential.setPortalUserName("phasta");
             FileInputStream privateKeyStream = new FileInputStream(privateKeyPath);
             File filePri = new File(privateKeyPath);
             byte[] bFilePri = new byte[(int) filePri.length()];
@@ -66,7 +66,7 @@ public class SSHCredentialTest {
             pubKeyStream.close();
             sshCredential.setPrivateKey(bFilePri);
             sshCredential.setPublicKey(bFilePub);
-            sshCredential.setPassphrase("");
+            sshCredential.setPassphrase("ultrascan");
             writer.writeCredentials(sshCredential);
             System.out.println(token);
         } catch (ClassNotFoundException e) {

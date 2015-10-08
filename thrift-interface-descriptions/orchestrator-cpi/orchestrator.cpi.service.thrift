@@ -42,7 +42,7 @@ service OrchestratorService {
      * @return sucess/failure
      *
     **/
-  bool launchExperiment (1: required string experimentId, 2: required string airavataCredStoreToken),
+  bool launchExperiment (1: required string experimentId, 2: required string gatewayId),
 
     /**
      * In order to run single applications users should create an associating 
@@ -74,5 +74,5 @@ service OrchestratorService {
      * @return sucess/failure
      *
     **/
-  bool terminateExperiment (1: required string experimentId, 2: required string tokenId)
+  bool terminateExperiment (1: required string experimentId, 2: required string gatewayId)
 }
