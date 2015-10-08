@@ -274,7 +274,13 @@ public class RabbitMQProcessLaunchConsumer {
 
     public void sendAck(long deliveryTag){
         try {
-            channel.basicAck(deliveryTag,false);
+            if (channel.isOpen()){
+                channel.basicAck(deliveryTag,false);
+            }else {
+                channel = connection.createChannel();
+                channel.basicQos(prefetchCount);
+                channel.basicAck(deliveryTag, false);
+            }
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
