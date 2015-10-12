@@ -484,6 +484,73 @@ class EnvironmentSetupTaskModel:
 class JobSubmissionTaskModel:
   """
   Attributes:
+   - jobSubmissionProtocol
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I32, 'jobSubmissionProtocol', None, None, ), # 1
+  )
+
+  def __init__(self, jobSubmissionProtocol=None,):
+    self.jobSubmissionProtocol = jobSubmissionProtocol
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I32:
+          self.jobSubmissionProtocol = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('JobSubmissionTaskModel')
+    if self.jobSubmissionProtocol is not None:
+      oprot.writeFieldBegin('jobSubmissionProtocol', TType.I32, 1)
+      oprot.writeI32(self.jobSubmissionProtocol)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.jobSubmissionProtocol is None:
+      raise TProtocol.TProtocolException(message='Required field jobSubmissionProtocol is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.jobSubmissionProtocol)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class MonitorTaskModel:
+  """
+  Attributes:
    - monitorMode
   """
 
@@ -518,7 +585,7 @@ class JobSubmissionTaskModel:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('JobSubmissionTaskModel')
+    oprot.writeStructBegin('MonitorTaskModel')
     if self.monitorMode is not None:
       oprot.writeFieldBegin('monitorMode', TType.I32, 1)
       oprot.writeI32(self.monitorMode)

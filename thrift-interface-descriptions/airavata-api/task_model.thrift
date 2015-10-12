@@ -92,5 +92,9 @@ struct EnvironmentSetupTaskModel {
 
 
 struct JobSubmissionTaskModel {
+	1: required compute_resource_model.JobSubmissionProtocol jobSubmissionProtocol
+}
+
+struct MonitorTaskModel {
 	1: required compute_resource_model.MonitorMode monitorMode
 }
