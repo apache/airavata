@@ -67,12 +67,19 @@ struct TaskModel {
  *   A friendly description of the task, usally used to communicate information to users.
  *
 */
+
+enum DataStageType {
+	INPUT,
+	OUPUT
+
+}
 struct DataStagingTaskModel {
     1: required string source,
     2: required string destination,
-    3: optional i64 transferStartTime,
-    4: optional i64 transferEndTime,
-    5: optional string transferRate
+    3: required DataStageType type,
+    4: optional i64 transferStartTime,
+    5: optional i64 transferEndTime,
+    6: optional string transferRate
 }
 
 /**
@@ -81,4 +88,9 @@ struct DataStagingTaskModel {
 struct EnvironmentSetupTaskModel {
 	1: required string location,
 	2: required compute_resource_model.SecurityProtocol protocol
+}
+
+
+struct JobSubmissionTaskModel {
+	1: required compute_resource_model.MonitorMode monitorMode
 }

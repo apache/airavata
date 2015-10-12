@@ -22,6 +22,7 @@
 package org.apache.airavata.common.utils;
 
 import org.apache.airavata.model.task.DataStagingTaskModel;
+import org.apache.airavata.model.task.EnvironmentSetupTaskModel;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TDeserializer;
@@ -44,7 +45,9 @@ public class ThriftUtils {
 				ThriftUtils.createThriftFromBytes(taskModel.getSubTaskModel(), dataStagingTaskModel);
 				return dataStagingTaskModel;
 			case ENV_SETUP:
-				// TODO return Environment Setup task model
+                EnvironmentSetupTaskModel environmentSetupTaskModel = new EnvironmentSetupTaskModel();
+                ThriftUtils.createThriftFromBytes(taskModel.getSubTaskModel(), environmentSetupTaskModel);
+                return environmentSetupTaskModel;
 			case JOB_SUBMISSION:
 				// TODO return Job Submission task model
 			case MONITORING:
