@@ -9,6 +9,7 @@
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import apache.airavata.model.commons.ttypes
 import apache.airavata.model.status.ttypes
+import apache.airavata.model.appcatalog.computeresource.ttypes
 
 
 from thrift.transport import TTransport
@@ -352,6 +353,91 @@ class DataStagingTaskModel:
     value = (value * 31) ^ hash(self.transferStartTime)
     value = (value * 31) ^ hash(self.transferEndTime)
     value = (value * 31) ^ hash(self.transferRate)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class EnvironmentSetupTaskModel:
+  """
+  EnvironmentSetupTaskModel: A structure holding the environment creation task details
+
+
+  Attributes:
+   - location
+   - protocol
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'location', None, None, ), # 1
+    (2, TType.I32, 'protocol', None, None, ), # 2
+  )
+
+  def __init__(self, location=None, protocol=None,):
+    self.location = location
+    self.protocol = protocol
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.location = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I32:
+          self.protocol = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('EnvironmentSetupTaskModel')
+    if self.location is not None:
+      oprot.writeFieldBegin('location', TType.STRING, 1)
+      oprot.writeString(self.location)
+      oprot.writeFieldEnd()
+    if self.protocol is not None:
+      oprot.writeFieldBegin('protocol', TType.I32, 2)
+      oprot.writeI32(self.protocol)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.location is None:
+      raise TProtocol.TProtocolException(message='Required field location is unset!')
+    if self.protocol is None:
+      raise TProtocol.TProtocolException(message='Required field protocol is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.location)
+    value = (value * 31) ^ hash(self.protocol)
     return value
 
   def __repr__(self):

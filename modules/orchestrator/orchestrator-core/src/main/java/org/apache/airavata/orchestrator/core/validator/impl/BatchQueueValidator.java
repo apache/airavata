@@ -82,7 +82,13 @@ public class BatchQueueValidator implements JobMetadataValidator {
                 validatorResult.setResult(false);
                 validatorResultList.add(validatorResult);
             }
-            ComputeResourceDescription computeResource = appCatalog.getComputeResource().getComputeResource(processModel.getResourceSchedule().getResourceHostId());
+            ComputeResourceDescription computeResource;
+            if (processModel == null){
+                computeResource = appCatalog.getComputeResource().getComputeResource(experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
+            }else {
+                computeResource = appCatalog.getComputeResource().getComputeResource(processModel.getResourceSchedule().getResourceHostId());
+
+            }
             List<BatchQueue> batchQueues = computeResource.getBatchQueues();
 
             if (batchQueues != null && !batchQueues.isEmpty()) {

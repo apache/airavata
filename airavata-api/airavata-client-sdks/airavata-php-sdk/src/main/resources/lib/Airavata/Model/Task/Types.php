@@ -488,4 +488,106 @@ class DataStagingTaskModel {
 
 }
 
+/**
+ * EnvironmentSetupTaskModel: A structure holding the environment creation task details
+ * 
+ */
+class EnvironmentSetupTaskModel {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $location = null;
+  /**
+   * @var int
+   */
+  public $protocol = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'location',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'protocol',
+          'type' => TType::I32,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['location'])) {
+        $this->location = $vals['location'];
+      }
+      if (isset($vals['protocol'])) {
+        $this->protocol = $vals['protocol'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'EnvironmentSetupTaskModel';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->location);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->protocol);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('EnvironmentSetupTaskModel');
+    if ($this->location !== null) {
+      $xfer += $output->writeFieldBegin('location', TType::STRING, 1);
+      $xfer += $output->writeString($this->location);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->protocol !== null) {
+      $xfer += $output->writeFieldBegin('protocol', TType::I32, 2);
+      $xfer += $output->writeI32($this->protocol);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 

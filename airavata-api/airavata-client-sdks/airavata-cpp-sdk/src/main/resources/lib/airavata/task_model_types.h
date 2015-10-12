@@ -34,6 +34,7 @@
 #include <thrift/cxxfunctional.h>
 #include "airavata_commons_types.h"
 #include "status_models_types.h"
+#include "compute_resource_model_types.h"
 
 
 namespace apache { namespace airavata { namespace model { namespace task {
@@ -53,6 +54,8 @@ extern const std::map<int, const char*> _TaskTypes_VALUES_TO_NAMES;
 class TaskModel;
 
 class DataStagingTaskModel;
+
+class EnvironmentSetupTaskModel;
 
 typedef struct _TaskModel__isset {
   _TaskModel__isset() : taskDetail(false), subTaskModel(false), taskError(false) {}
@@ -215,6 +218,48 @@ class DataStagingTaskModel {
 };
 
 void swap(DataStagingTaskModel &a, DataStagingTaskModel &b);
+
+
+class EnvironmentSetupTaskModel {
+ public:
+
+  static const char* ascii_fingerprint; // = "D6FD826D949221396F4FFC3ECCD3D192";
+  static const uint8_t binary_fingerprint[16]; // = {0xD6,0xFD,0x82,0x6D,0x94,0x92,0x21,0x39,0x6F,0x4F,0xFC,0x3E,0xCC,0xD3,0xD1,0x92};
+
+  EnvironmentSetupTaskModel(const EnvironmentSetupTaskModel&);
+  EnvironmentSetupTaskModel& operator=(const EnvironmentSetupTaskModel&);
+  EnvironmentSetupTaskModel() : location(), protocol(( ::apache::airavata::model::appcatalog::computeresource::SecurityProtocol::type)0) {
+  }
+
+  virtual ~EnvironmentSetupTaskModel() throw();
+  std::string location;
+   ::apache::airavata::model::appcatalog::computeresource::SecurityProtocol::type protocol;
+
+  void __set_location(const std::string& val);
+
+  void __set_protocol(const  ::apache::airavata::model::appcatalog::computeresource::SecurityProtocol::type val);
+
+  bool operator == (const EnvironmentSetupTaskModel & rhs) const
+  {
+    if (!(location == rhs.location))
+      return false;
+    if (!(protocol == rhs.protocol))
+      return false;
+    return true;
+  }
+  bool operator != (const EnvironmentSetupTaskModel &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const EnvironmentSetupTaskModel & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const EnvironmentSetupTaskModel& obj);
+};
+
+void swap(EnvironmentSetupTaskModel &a, EnvironmentSetupTaskModel &b);
 
 }}}} // namespace
 
