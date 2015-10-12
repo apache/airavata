@@ -47,6 +47,27 @@ class TaskTypes:
     "MONITORING": 4,
   }
 
+class DataStageType:
+  """
+  DataStagingTaskModel: A structure holding the data staging task details.
+
+  Source and Destination locations includes standard representation of protocol, host, port and path
+    A friendly description of the task, usally used to communicate information to users.
+
+  """
+  INPUT = 0
+  OUPUT = 1
+
+  _VALUES_TO_NAMES = {
+    0: "INPUT",
+    1: "OUPUT",
+  }
+
+  _NAMES_TO_VALUES = {
+    "INPUT": 0,
+    "OUPUT": 1,
+  }
+
 
 class TaskModel:
   """
@@ -241,15 +262,10 @@ class TaskModel:
 
 class DataStagingTaskModel:
   """
-  DataStagingTaskModel: A structure holding the data staging task details.
-
-  Source and Destination locations includes standard representation of protocol, host, port and path
-    A friendly description of the task, usally used to communicate information to users.
-
-
   Attributes:
    - source
    - destination
+   - type
    - transferStartTime
    - transferEndTime
    - transferRate
@@ -259,14 +275,16 @@ class DataStagingTaskModel:
     None, # 0
     (1, TType.STRING, 'source', None, None, ), # 1
     (2, TType.STRING, 'destination', None, None, ), # 2
-    (3, TType.I64, 'transferStartTime', None, None, ), # 3
-    (4, TType.I64, 'transferEndTime', None, None, ), # 4
-    (5, TType.STRING, 'transferRate', None, None, ), # 5
+    (3, TType.I32, 'type', None, None, ), # 3
+    (4, TType.I64, 'transferStartTime', None, None, ), # 4
+    (5, TType.I64, 'transferEndTime', None, None, ), # 5
+    (6, TType.STRING, 'transferRate', None, None, ), # 6
   )
 
-  def __init__(self, source=None, destination=None, transferStartTime=None, transferEndTime=None, transferRate=None,):
+  def __init__(self, source=None, destination=None, type=None, transferStartTime=None, transferEndTime=None, transferRate=None,):
     self.source = source
     self.destination = destination
+    self.type = type
     self.transferStartTime = transferStartTime
     self.transferEndTime = transferEndTime
     self.transferRate = transferRate
@@ -291,16 +309,21 @@ class DataStagingTaskModel:
         else:
           iprot.skip(ftype)
       elif fid == 3:
-        if ftype == TType.I64:
-          self.transferStartTime = iprot.readI64();
+        if ftype == TType.I32:
+          self.type = iprot.readI32();
         else:
           iprot.skip(ftype)
       elif fid == 4:
         if ftype == TType.I64:
-          self.transferEndTime = iprot.readI64();
+          self.transferStartTime = iprot.readI64();
         else:
           iprot.skip(ftype)
       elif fid == 5:
+        if ftype == TType.I64:
+          self.transferEndTime = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
         if ftype == TType.STRING:
           self.transferRate = iprot.readString();
         else:
@@ -323,16 +346,20 @@ class DataStagingTaskModel:
       oprot.writeFieldBegin('destination', TType.STRING, 2)
       oprot.writeString(self.destination)
       oprot.writeFieldEnd()
+    if self.type is not None:
+      oprot.writeFieldBegin('type', TType.I32, 3)
+      oprot.writeI32(self.type)
+      oprot.writeFieldEnd()
     if self.transferStartTime is not None:
-      oprot.writeFieldBegin('transferStartTime', TType.I64, 3)
+      oprot.writeFieldBegin('transferStartTime', TType.I64, 4)
       oprot.writeI64(self.transferStartTime)
       oprot.writeFieldEnd()
     if self.transferEndTime is not None:
-      oprot.writeFieldBegin('transferEndTime', TType.I64, 4)
+      oprot.writeFieldBegin('transferEndTime', TType.I64, 5)
       oprot.writeI64(self.transferEndTime)
       oprot.writeFieldEnd()
     if self.transferRate is not None:
-      oprot.writeFieldBegin('transferRate', TType.STRING, 5)
+      oprot.writeFieldBegin('transferRate', TType.STRING, 6)
       oprot.writeString(self.transferRate)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -343,6 +370,8 @@ class DataStagingTaskModel:
       raise TProtocol.TProtocolException(message='Required field source is unset!')
     if self.destination is None:
       raise TProtocol.TProtocolException(message='Required field destination is unset!')
+    if self.type is None:
+      raise TProtocol.TProtocolException(message='Required field type is unset!')
     return
 
 
@@ -350,6 +379,7 @@ class DataStagingTaskModel:
     value = 17
     value = (value * 31) ^ hash(self.source)
     value = (value * 31) ^ hash(self.destination)
+    value = (value * 31) ^ hash(self.type)
     value = (value * 31) ^ hash(self.transferStartTime)
     value = (value * 31) ^ hash(self.transferEndTime)
     value = (value * 31) ^ hash(self.transferRate)
@@ -438,6 +468,73 @@ class EnvironmentSetupTaskModel:
     value = 17
     value = (value * 31) ^ hash(self.location)
     value = (value * 31) ^ hash(self.protocol)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class JobSubmissionTaskModel:
+  """
+  Attributes:
+   - monitorMode
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I32, 'monitorMode', None, None, ), # 1
+  )
+
+  def __init__(self, monitorMode=None,):
+    self.monitorMode = monitorMode
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I32:
+          self.monitorMode = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('JobSubmissionTaskModel')
+    if self.monitorMode is not None:
+      oprot.writeFieldBegin('monitorMode', TType.I32, 1)
+      oprot.writeI32(self.monitorMode)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.monitorMode is None:
+      raise TProtocol.TProtocolException(message='Required field monitorMode is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.monitorMode)
     return value
 
   def __repr__(self):
