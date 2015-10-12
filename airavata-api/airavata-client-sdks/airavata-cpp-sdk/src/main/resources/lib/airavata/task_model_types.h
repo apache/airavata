@@ -51,24 +51,11 @@ struct TaskTypes {
 
 extern const std::map<int, const char*> _TaskTypes_VALUES_TO_NAMES;
 
-struct DataStageType {
-  enum type {
-    INPUT = 0,
-    OUPUT = 1
-  };
-};
-
-extern const std::map<int, const char*> _DataStageType_VALUES_TO_NAMES;
-
 class TaskModel;
 
 class DataStagingTaskModel;
 
 class EnvironmentSetupTaskModel;
-
-class JobSubmissionTaskModel;
-
-class MonitorTaskModel;
 
 typedef struct _TaskModel__isset {
   _TaskModel__isset() : taskDetail(false), subTaskModel(false), taskError(false) {}
@@ -171,18 +158,17 @@ typedef struct _DataStagingTaskModel__isset {
 class DataStagingTaskModel {
  public:
 
-  static const char* ascii_fingerprint; // = "68560D7ABF8515154C93E0A04DD9CF55";
-  static const uint8_t binary_fingerprint[16]; // = {0x68,0x56,0x0D,0x7A,0xBF,0x85,0x15,0x15,0x4C,0x93,0xE0,0xA0,0x4D,0xD9,0xCF,0x55};
+  static const char* ascii_fingerprint; // = "3224DD8D1EC3134AB6350703A4B92D60";
+  static const uint8_t binary_fingerprint[16]; // = {0x32,0x24,0xDD,0x8D,0x1E,0xC3,0x13,0x4A,0xB6,0x35,0x07,0x03,0xA4,0xB9,0x2D,0x60};
 
   DataStagingTaskModel(const DataStagingTaskModel&);
   DataStagingTaskModel& operator=(const DataStagingTaskModel&);
-  DataStagingTaskModel() : source(), destination(), type((DataStageType::type)0), transferStartTime(0), transferEndTime(0), transferRate() {
+  DataStagingTaskModel() : source(), destination(), transferStartTime(0), transferEndTime(0), transferRate() {
   }
 
   virtual ~DataStagingTaskModel() throw();
   std::string source;
   std::string destination;
-  DataStageType::type type;
   int64_t transferStartTime;
   int64_t transferEndTime;
   std::string transferRate;
@@ -192,8 +178,6 @@ class DataStagingTaskModel {
   void __set_source(const std::string& val);
 
   void __set_destination(const std::string& val);
-
-  void __set_type(const DataStageType::type val);
 
   void __set_transferStartTime(const int64_t val);
 
@@ -206,8 +190,6 @@ class DataStagingTaskModel {
     if (!(source == rhs.source))
       return false;
     if (!(destination == rhs.destination))
-      return false;
-    if (!(type == rhs.type))
       return false;
     if (__isset.transferStartTime != rhs.__isset.transferStartTime)
       return false;
@@ -278,98 +260,6 @@ class EnvironmentSetupTaskModel {
 };
 
 void swap(EnvironmentSetupTaskModel &a, EnvironmentSetupTaskModel &b);
-
-typedef struct _JobSubmissionTaskModel__isset {
-  _JobSubmissionTaskModel__isset() : wallTime(false) {}
-  bool wallTime :1;
-} _JobSubmissionTaskModel__isset;
-
-class JobSubmissionTaskModel {
- public:
-
-  static const char* ascii_fingerprint; // = "AEF3E1D4E4ADDD8D31BD954A62F3809C";
-  static const uint8_t binary_fingerprint[16]; // = {0xAE,0xF3,0xE1,0xD4,0xE4,0xAD,0xDD,0x8D,0x31,0xBD,0x95,0x4A,0x62,0xF3,0x80,0x9C};
-
-  JobSubmissionTaskModel(const JobSubmissionTaskModel&);
-  JobSubmissionTaskModel& operator=(const JobSubmissionTaskModel&);
-  JobSubmissionTaskModel() : jobSubmissionProtocol(( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)0), monitorMode(( ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type)0), wallTime(0) {
-  }
-
-  virtual ~JobSubmissionTaskModel() throw();
-   ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type jobSubmissionProtocol;
-   ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type monitorMode;
-  int32_t wallTime;
-
-  _JobSubmissionTaskModel__isset __isset;
-
-  void __set_jobSubmissionProtocol(const  ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type val);
-
-  void __set_monitorMode(const  ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type val);
-
-  void __set_wallTime(const int32_t val);
-
-  bool operator == (const JobSubmissionTaskModel & rhs) const
-  {
-    if (!(jobSubmissionProtocol == rhs.jobSubmissionProtocol))
-      return false;
-    if (!(monitorMode == rhs.monitorMode))
-      return false;
-    if (__isset.wallTime != rhs.__isset.wallTime)
-      return false;
-    else if (__isset.wallTime && !(wallTime == rhs.wallTime))
-      return false;
-    return true;
-  }
-  bool operator != (const JobSubmissionTaskModel &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const JobSubmissionTaskModel & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const JobSubmissionTaskModel& obj);
-};
-
-void swap(JobSubmissionTaskModel &a, JobSubmissionTaskModel &b);
-
-
-class MonitorTaskModel {
- public:
-
-  static const char* ascii_fingerprint; // = "8BBB3D0C3B370CB38F2D1340BB79F0AA";
-  static const uint8_t binary_fingerprint[16]; // = {0x8B,0xBB,0x3D,0x0C,0x3B,0x37,0x0C,0xB3,0x8F,0x2D,0x13,0x40,0xBB,0x79,0xF0,0xAA};
-
-  MonitorTaskModel(const MonitorTaskModel&);
-  MonitorTaskModel& operator=(const MonitorTaskModel&);
-  MonitorTaskModel() : monitorMode(( ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type)0) {
-  }
-
-  virtual ~MonitorTaskModel() throw();
-   ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type monitorMode;
-
-  void __set_monitorMode(const  ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type val);
-
-  bool operator == (const MonitorTaskModel & rhs) const
-  {
-    if (!(monitorMode == rhs.monitorMode))
-      return false;
-    return true;
-  }
-  bool operator != (const MonitorTaskModel &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const MonitorTaskModel & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const MonitorTaskModel& obj);
-};
-
-void swap(MonitorTaskModel &a, MonitorTaskModel &b);
 
 }}}} // namespace
 

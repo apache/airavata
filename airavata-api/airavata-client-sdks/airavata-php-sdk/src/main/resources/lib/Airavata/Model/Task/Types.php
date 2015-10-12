@@ -37,22 +37,6 @@ final class TaskTypes {
 }
 
 /**
- * DataStagingTaskModel: A structure holding the data staging task details.
- * 
- * Source and Destination locations includes standard representation of protocol, host, port and path
- *   A friendly description of the task, usally used to communicate information to users.
- * 
- */
-final class DataStageType {
-  const INPUT = 0;
-  const OUPUT = 1;
-  static public $__names = array(
-    0 => 'INPUT',
-    1 => 'OUPUT',
-  );
-}
-
-/**
  * TaskModel: A structure holding the generic task details.
  * 
  * taskDetail:
@@ -330,6 +314,13 @@ class TaskModel {
 
 }
 
+/**
+ * DataStagingTaskModel: A structure holding the data staging task details.
+ * 
+ * Source and Destination locations includes standard representation of protocol, host, port and path
+ *   A friendly description of the task, usally used to communicate information to users.
+ * 
+ */
 class DataStagingTaskModel {
   static $_TSPEC;
 
@@ -341,10 +332,6 @@ class DataStagingTaskModel {
    * @var string
    */
   public $destination = null;
-  /**
-   * @var int
-   */
-  public $type = null;
   /**
    * @var int
    */
@@ -370,18 +357,14 @@ class DataStagingTaskModel {
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'type',
-          'type' => TType::I32,
-          ),
-        4 => array(
           'var' => 'transferStartTime',
           'type' => TType::I64,
           ),
-        5 => array(
+        4 => array(
           'var' => 'transferEndTime',
           'type' => TType::I64,
           ),
-        6 => array(
+        5 => array(
           'var' => 'transferRate',
           'type' => TType::STRING,
           ),
@@ -393,9 +376,6 @@ class DataStagingTaskModel {
       }
       if (isset($vals['destination'])) {
         $this->destination = $vals['destination'];
-      }
-      if (isset($vals['type'])) {
-        $this->type = $vals['type'];
       }
       if (isset($vals['transferStartTime'])) {
         $this->transferStartTime = $vals['transferStartTime'];
@@ -443,27 +423,20 @@ class DataStagingTaskModel {
           }
           break;
         case 3:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->type);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 4:
           if ($ftype == TType::I64) {
             $xfer += $input->readI64($this->transferStartTime);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 5:
+        case 4:
           if ($ftype == TType::I64) {
             $xfer += $input->readI64($this->transferEndTime);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 6:
+        case 5:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->transferRate);
           } else {
@@ -493,23 +466,18 @@ class DataStagingTaskModel {
       $xfer += $output->writeString($this->destination);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->type !== null) {
-      $xfer += $output->writeFieldBegin('type', TType::I32, 3);
-      $xfer += $output->writeI32($this->type);
-      $xfer += $output->writeFieldEnd();
-    }
     if ($this->transferStartTime !== null) {
-      $xfer += $output->writeFieldBegin('transferStartTime', TType::I64, 4);
+      $xfer += $output->writeFieldBegin('transferStartTime', TType::I64, 3);
       $xfer += $output->writeI64($this->transferStartTime);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->transferEndTime !== null) {
-      $xfer += $output->writeFieldBegin('transferEndTime', TType::I64, 5);
+      $xfer += $output->writeFieldBegin('transferEndTime', TType::I64, 4);
       $xfer += $output->writeI64($this->transferEndTime);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->transferRate !== null) {
-      $xfer += $output->writeFieldBegin('transferRate', TType::STRING, 6);
+      $xfer += $output->writeFieldBegin('transferRate', TType::STRING, 5);
       $xfer += $output->writeString($this->transferRate);
       $xfer += $output->writeFieldEnd();
     }
@@ -613,202 +581,6 @@ class EnvironmentSetupTaskModel {
     if ($this->protocol !== null) {
       $xfer += $output->writeFieldBegin('protocol', TType::I32, 2);
       $xfer += $output->writeI32($this->protocol);
-      $xfer += $output->writeFieldEnd();
-    }
-    $xfer += $output->writeFieldStop();
-    $xfer += $output->writeStructEnd();
-    return $xfer;
-  }
-
-}
-
-class JobSubmissionTaskModel {
-  static $_TSPEC;
-
-  /**
-   * @var int
-   */
-  public $jobSubmissionProtocol = null;
-  /**
-   * @var int
-   */
-  public $monitorMode = null;
-  /**
-   * @var int
-   */
-  public $wallTime = null;
-
-  public function __construct($vals=null) {
-    if (!isset(self::$_TSPEC)) {
-      self::$_TSPEC = array(
-        1 => array(
-          'var' => 'jobSubmissionProtocol',
-          'type' => TType::I32,
-          ),
-        2 => array(
-          'var' => 'monitorMode',
-          'type' => TType::I32,
-          ),
-        3 => array(
-          'var' => 'wallTime',
-          'type' => TType::I32,
-          ),
-        );
-    }
-    if (is_array($vals)) {
-      if (isset($vals['jobSubmissionProtocol'])) {
-        $this->jobSubmissionProtocol = $vals['jobSubmissionProtocol'];
-      }
-      if (isset($vals['monitorMode'])) {
-        $this->monitorMode = $vals['monitorMode'];
-      }
-      if (isset($vals['wallTime'])) {
-        $this->wallTime = $vals['wallTime'];
-      }
-    }
-  }
-
-  public function getName() {
-    return 'JobSubmissionTaskModel';
-  }
-
-  public function read($input)
-  {
-    $xfer = 0;
-    $fname = null;
-    $ftype = 0;
-    $fid = 0;
-    $xfer += $input->readStructBegin($fname);
-    while (true)
-    {
-      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
-      if ($ftype == TType::STOP) {
-        break;
-      }
-      switch ($fid)
-      {
-        case 1:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->jobSubmissionProtocol);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 2:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->monitorMode);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 3:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->wallTime);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        default:
-          $xfer += $input->skip($ftype);
-          break;
-      }
-      $xfer += $input->readFieldEnd();
-    }
-    $xfer += $input->readStructEnd();
-    return $xfer;
-  }
-
-  public function write($output) {
-    $xfer = 0;
-    $xfer += $output->writeStructBegin('JobSubmissionTaskModel');
-    if ($this->jobSubmissionProtocol !== null) {
-      $xfer += $output->writeFieldBegin('jobSubmissionProtocol', TType::I32, 1);
-      $xfer += $output->writeI32($this->jobSubmissionProtocol);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->monitorMode !== null) {
-      $xfer += $output->writeFieldBegin('monitorMode', TType::I32, 2);
-      $xfer += $output->writeI32($this->monitorMode);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->wallTime !== null) {
-      $xfer += $output->writeFieldBegin('wallTime', TType::I32, 3);
-      $xfer += $output->writeI32($this->wallTime);
-      $xfer += $output->writeFieldEnd();
-    }
-    $xfer += $output->writeFieldStop();
-    $xfer += $output->writeStructEnd();
-    return $xfer;
-  }
-
-}
-
-class MonitorTaskModel {
-  static $_TSPEC;
-
-  /**
-   * @var int
-   */
-  public $monitorMode = null;
-
-  public function __construct($vals=null) {
-    if (!isset(self::$_TSPEC)) {
-      self::$_TSPEC = array(
-        1 => array(
-          'var' => 'monitorMode',
-          'type' => TType::I32,
-          ),
-        );
-    }
-    if (is_array($vals)) {
-      if (isset($vals['monitorMode'])) {
-        $this->monitorMode = $vals['monitorMode'];
-      }
-    }
-  }
-
-  public function getName() {
-    return 'MonitorTaskModel';
-  }
-
-  public function read($input)
-  {
-    $xfer = 0;
-    $fname = null;
-    $ftype = 0;
-    $fid = 0;
-    $xfer += $input->readStructBegin($fname);
-    while (true)
-    {
-      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
-      if ($ftype == TType::STOP) {
-        break;
-      }
-      switch ($fid)
-      {
-        case 1:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->monitorMode);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        default:
-          $xfer += $input->skip($ftype);
-          break;
-      }
-      $xfer += $input->readFieldEnd();
-    }
-    $xfer += $input->readStructEnd();
-    return $xfer;
-  }
-
-  public function write($output) {
-    $xfer = 0;
-    $xfer += $output->writeStructBegin('MonitorTaskModel');
-    if ($this->monitorMode !== null) {
-      $xfer += $output->writeFieldBegin('monitorMode', TType::I32, 1);
-      $xfer += $output->writeI32($this->monitorMode);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
