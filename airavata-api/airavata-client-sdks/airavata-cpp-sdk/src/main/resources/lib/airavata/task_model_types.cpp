@@ -504,4 +504,119 @@ std::ostream& operator<<(std::ostream& out, const DataStagingTaskModel& obj) {
   return out;
 }
 
+
+EnvironmentSetupTaskModel::~EnvironmentSetupTaskModel() throw() {
+}
+
+
+void EnvironmentSetupTaskModel::__set_location(const std::string& val) {
+  this->location = val;
+}
+
+void EnvironmentSetupTaskModel::__set_protocol(const  ::apache::airavata::model::appcatalog::computeresource::SecurityProtocol::type val) {
+  this->protocol = val;
+}
+
+const char* EnvironmentSetupTaskModel::ascii_fingerprint = "D6FD826D949221396F4FFC3ECCD3D192";
+const uint8_t EnvironmentSetupTaskModel::binary_fingerprint[16] = {0xD6,0xFD,0x82,0x6D,0x94,0x92,0x21,0x39,0x6F,0x4F,0xFC,0x3E,0xCC,0xD3,0xD1,0x92};
+
+uint32_t EnvironmentSetupTaskModel::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_location = false;
+  bool isset_protocol = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->location);
+          isset_location = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast5;
+          xfer += iprot->readI32(ecast5);
+          this->protocol = ( ::apache::airavata::model::appcatalog::computeresource::SecurityProtocol::type)ecast5;
+          isset_protocol = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_location)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_protocol)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t EnvironmentSetupTaskModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("EnvironmentSetupTaskModel");
+
+  xfer += oprot->writeFieldBegin("location", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->location);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("protocol", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeI32((int32_t)this->protocol);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+void swap(EnvironmentSetupTaskModel &a, EnvironmentSetupTaskModel &b) {
+  using ::std::swap;
+  swap(a.location, b.location);
+  swap(a.protocol, b.protocol);
+}
+
+EnvironmentSetupTaskModel::EnvironmentSetupTaskModel(const EnvironmentSetupTaskModel& other6) {
+  location = other6.location;
+  protocol = other6.protocol;
+}
+EnvironmentSetupTaskModel& EnvironmentSetupTaskModel::operator=(const EnvironmentSetupTaskModel& other7) {
+  location = other7.location;
+  protocol = other7.protocol;
+  return *this;
+}
+std::ostream& operator<<(std::ostream& out, const EnvironmentSetupTaskModel& obj) {
+  using apache::thrift::to_string;
+  out << "EnvironmentSetupTaskModel(";
+  out << "location=" << to_string(obj.location);
+  out << ", " << "protocol=" << to_string(obj.protocol);
+  out << ")";
+  return out;
+}
+
 }}}} // namespace

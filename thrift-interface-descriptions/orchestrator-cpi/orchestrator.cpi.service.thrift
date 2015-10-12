@@ -24,6 +24,7 @@
 */
 
 include "../airavata-api/airavata_errors.thrift"
+include "../airavata-api/process_model.thrift"
 namespace java org.apache.airavata.orchestrator.cpi
 
 const string ORCHESTRATOR_CPI_VERSION = "0.16.0"
@@ -64,8 +65,9 @@ service OrchestratorService {
      * @return sucess/failure
      *
     **/
-  bool validateExperiment(1: required string experimentId)
-  throws (1: airavata_errors.LaunchValidationException lve)
+  bool validateExperiment(1: required string experimentId) throws (1: airavata_errors.LaunchValidationException lve)
+
+  bool validateProcess(1: required string experimentId, 2: required list<process_model.ProcessModel> processes) throws (1: airavata_errors.LaunchValidationException lve)
     /**
      *
      * Terminate the running experiment.

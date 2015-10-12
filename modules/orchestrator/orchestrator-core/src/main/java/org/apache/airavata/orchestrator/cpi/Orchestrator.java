@@ -35,19 +35,31 @@ public interface Orchestrator {
     /**
      * This method can be used to run all custom validators plugged in to the orchestrator and make
      * sure the experiment is ready to launch and if its not this will return false
+     *
      * @param experiment
-     * @param processModel
-     * @return boolean if the experiments are valids after executing all the validators return true otherwise it iwll return false
+     * @return boolean if the experiment is valid after executing all the validators return true otherwise it will return false
      * @throws OrchestratorException
      */
-     ValidationResults validateExperiment(ExperimentModel experiment, ProcessModel processModel) throws OrchestratorException,LaunchValidationException;
+    ValidationResults validateExperiment(ExperimentModel experiment) throws OrchestratorException, LaunchValidationException;
+
+    /**
+     * This method can be used to run all custom validators plugged in to the orchestrator and make
+     * sure the experiment is ready to launch and if its not this will return false
+     *
+     * @param experiment
+     * @param processModel
+     * @return boolean if the process is valid after executing all the validators return true otherwise it will return false
+     * @throws OrchestratorException
+     */
+    ValidationResults validateProcess(ExperimentModel experiment, ProcessModel processModel) throws OrchestratorException, LaunchValidationException;
+
     /**
      * After creating the experiment Data user have the
      * experimentID as the handler to the experiment, during the launchProcess
      * We just have to give the experimentID
      *
      * @param processModel - Process model created for this process.
-     * @param tokenId - token id for this request.
+     * @param tokenId      - token id for this request.
      * @return launchProcess status
      * @throws OrchestratorException
      */

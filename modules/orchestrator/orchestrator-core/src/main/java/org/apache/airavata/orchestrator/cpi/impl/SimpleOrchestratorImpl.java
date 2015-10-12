@@ -20,12 +20,16 @@
 */
 package org.apache.airavata.orchestrator.cpi.impl;
 
+import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.error.ValidatorResult;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.experiment.*;
+import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.impl.GFACPassiveJobSubmitter;
@@ -75,7 +79,66 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         }
     }
 
-    public ValidationResults validateExperiment(ExperimentModel experiment, ProcessModel processModel) throws OrchestratorException,LaunchValidationException {
+    public ValidationResults validateExperiment(ExperimentModel experiment) throws OrchestratorException,LaunchValidationException {
+        org.apache.airavata.model.error.ValidationResults validationResults = new org.apache.airavata.model.error.ValidationResults();
+        validationResults.setValidationState(true); // initially making it to success, if atleast one failed them simply mark it failed.
+        String errorMsg = "Validation Errors : ";
+        if (this.orchestratorConfiguration.isEnableValidation()) {
+            List<String> validatorClasses = this.orchestratorContext.getOrchestratorConfiguration().getValidatorClasses();
+            for (String validator : validatorClasses) {
+                try {
+                    Class<? extends JobMetadataValidator> vClass = Class.forName(validator.trim()).asSubclass(JobMetadataValidator.class);
+                    JobMetadataValidator jobMetadataValidator = vClass.newInstance();
+                    validationResults = jobMetadataValidator.validate(experiment, null);
+                    if (validationResults.isValidationState()) {
+                        logger.info("Validation of " + validator + " is SUCCESSFUL");
+                    } else {
+                        List<ValidatorResult> validationResultList = validationResults.getValidationResultList();
+                        for (ValidatorResult result : validationResultList){
+                            if (!result.isResult()){
+                                String validationError = result.getErrorDetails();
+                                if (validationError != null){
+                                    errorMsg += validationError + " ";
+                                }
+                            }
+                        }
+                        logger.error("Validation of " + validator + " for experiment Id " + experiment.getExperimentId() + " is FAILED:[error]. " + errorMsg);
+                        validationResults.setValidationState(false);
+                        try {
+                            ErrorModel details = new ErrorModel();
+                            details.setActualErrorMessage(errorMsg);
+                            details.setCreationTime(Calendar.getInstance().getTimeInMillis());
+                            orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.EXPERIMENT_ERROR, details,
+                                    experiment.getExperimentId());
+                        } catch (RegistryException e) {
+                            logger.error("Error while saving error details to registry", e);
+                        }
+                        break;
+                    }
+                } catch (ClassNotFoundException e) {
+                    logger.error("Error loading the validation class: ", validator, e);
+                    validationResults.setValidationState(false);
+                } catch (InstantiationException e) {
+                    logger.error("Error loading the validation class: ", validator, e);
+                    validationResults.setValidationState(false);
+                } catch (IllegalAccessException e) {
+                    logger.error("Error loading the validation class: ", validator, e);
+                    validationResults.setValidationState(false);
+                }
+            }
+        }
+        if(validationResults.isValidationState()){
+            return validationResults;
+        }else {
+            //atleast one validation has failed, so we throw an exception
+            LaunchValidationException launchValidationException = new LaunchValidationException();
+            launchValidationException.setValidationResult(validationResults);
+            launchValidationException.setErrorMessage("Validation failed refer the validationResults list for detail error. Validation errors : " + errorMsg);
+            throw launchValidationException;
+        }
+    }
+
+    public ValidationResults validateProcess(ExperimentModel experiment, ProcessModel processModel) throws OrchestratorException,LaunchValidationException {
         org.apache.airavata.model.error.ValidationResults validationResults = new org.apache.airavata.model.error.ValidationResults();
         validationResults.setValidationState(true); // initially making it to success, if atleast one failed them simply mark it failed.
         String errorMsg = "Validation Errors : ";
@@ -134,6 +197,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         }
     }
 
+
     public void cancelExperiment(ExperimentModel experiment, ProcessModel processModel, String tokenId)
             throws OrchestratorException {
         // FIXME
@@ -191,6 +255,39 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             throw new OrchestratorException("Error during creating process");
         }
         return processModels;
+    }
+
+    public List<TaskModel> createTasks (String experimentId, String processId) throws OrchestratorException {
+        List<TaskModel> taskModels = new ArrayList<TaskModel>();
+        try {
+            ExperimentCatalog experimentCatalog = orchestratorContext.getRegistry().getExperimentCatalog();
+            AppCatalog appCatalog = orchestratorContext.getRegistry().getAppCatalog();
+            ExperimentModel experimentModel = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            ProcessModel processModel = (ProcessModel)experimentCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
+            boolean autoSchedule = experimentModel.getUserConfigurationData().isAiravataAutoSchedule();
+            ComputationalResourceSchedulingModel resourceSchedule = processModel.getResourceSchedule();
+            String userGivenQueueName = resourceSchedule.getQueueName();
+            int userGivenWallTime = resourceSchedule.getWallTimeLimit();
+            String resourceHostId = resourceSchedule.getResourceHostId();
+            if (resourceHostId == null){
+                throw new OrchestratorException("Compute Resource Id cannot be null at this point");
+            }
+            ComputeResourceDescription computeResource = appCatalog.getComputeResource().getComputeResource(resourceHostId);
+            List<BatchQueue> definedBatchQueues = computeResource.getBatchQueues();
+            for (BatchQueue batchQueue : definedBatchQueues){
+                if (batchQueue.getQueueName().equals(userGivenQueueName)){
+                    int maxRunTime = batchQueue.getMaxRunTime();
+                    if (maxRunTime < userGivenWallTime){
+                        // need to create more job submissions
+                    }
+                }
+            }
+
+
+        } catch (Exception e) {
+            throw new OrchestratorException("Error during creating process");
+        }
+        return taskModels;
     }
 
 }
