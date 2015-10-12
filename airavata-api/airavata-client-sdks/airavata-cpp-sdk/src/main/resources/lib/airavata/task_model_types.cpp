@@ -659,14 +659,106 @@ JobSubmissionTaskModel::~JobSubmissionTaskModel() throw() {
 }
 
 
-void JobSubmissionTaskModel::__set_monitorMode(const  ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type val) {
-  this->monitorMode = val;
+void JobSubmissionTaskModel::__set_jobSubmissionProtocol(const  ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type val) {
+  this->jobSubmissionProtocol = val;
 }
 
 const char* JobSubmissionTaskModel::ascii_fingerprint = "8BBB3D0C3B370CB38F2D1340BB79F0AA";
 const uint8_t JobSubmissionTaskModel::binary_fingerprint[16] = {0x8B,0xBB,0x3D,0x0C,0x3B,0x37,0x0C,0xB3,0x8F,0x2D,0x13,0x40,0xBB,0x79,0xF0,0xAA};
 
 uint32_t JobSubmissionTaskModel::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_jobSubmissionProtocol = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast9;
+          xfer += iprot->readI32(ecast9);
+          this->jobSubmissionProtocol = ( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)ecast9;
+          isset_jobSubmissionProtocol = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_jobSubmissionProtocol)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t JobSubmissionTaskModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("JobSubmissionTaskModel");
+
+  xfer += oprot->writeFieldBegin("jobSubmissionProtocol", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32((int32_t)this->jobSubmissionProtocol);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+void swap(JobSubmissionTaskModel &a, JobSubmissionTaskModel &b) {
+  using ::std::swap;
+  swap(a.jobSubmissionProtocol, b.jobSubmissionProtocol);
+}
+
+JobSubmissionTaskModel::JobSubmissionTaskModel(const JobSubmissionTaskModel& other10) {
+  jobSubmissionProtocol = other10.jobSubmissionProtocol;
+}
+JobSubmissionTaskModel& JobSubmissionTaskModel::operator=(const JobSubmissionTaskModel& other11) {
+  jobSubmissionProtocol = other11.jobSubmissionProtocol;
+  return *this;
+}
+std::ostream& operator<<(std::ostream& out, const JobSubmissionTaskModel& obj) {
+  using apache::thrift::to_string;
+  out << "JobSubmissionTaskModel(";
+  out << "jobSubmissionProtocol=" << to_string(obj.jobSubmissionProtocol);
+  out << ")";
+  return out;
+}
+
+
+MonitorTaskModel::~MonitorTaskModel() throw() {
+}
+
+
+void MonitorTaskModel::__set_monitorMode(const  ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type val) {
+  this->monitorMode = val;
+}
+
+const char* MonitorTaskModel::ascii_fingerprint = "8BBB3D0C3B370CB38F2D1340BB79F0AA";
+const uint8_t MonitorTaskModel::binary_fingerprint[16] = {0x8B,0xBB,0x3D,0x0C,0x3B,0x37,0x0C,0xB3,0x8F,0x2D,0x13,0x40,0xBB,0x79,0xF0,0xAA};
+
+uint32_t MonitorTaskModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -689,9 +781,9 @@ uint32_t JobSubmissionTaskModel::read(::apache::thrift::protocol::TProtocol* ipr
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast9;
-          xfer += iprot->readI32(ecast9);
-          this->monitorMode = ( ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type)ecast9;
+          int32_t ecast12;
+          xfer += iprot->readI32(ecast12);
+          this->monitorMode = ( ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type)ecast12;
           isset_monitorMode = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -711,10 +803,10 @@ uint32_t JobSubmissionTaskModel::read(::apache::thrift::protocol::TProtocol* ipr
   return xfer;
 }
 
-uint32_t JobSubmissionTaskModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t MonitorTaskModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("JobSubmissionTaskModel");
+  xfer += oprot->writeStructBegin("MonitorTaskModel");
 
   xfer += oprot->writeFieldBegin("monitorMode", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32((int32_t)this->monitorMode);
@@ -726,21 +818,21 @@ uint32_t JobSubmissionTaskModel::write(::apache::thrift::protocol::TProtocol* op
   return xfer;
 }
 
-void swap(JobSubmissionTaskModel &a, JobSubmissionTaskModel &b) {
+void swap(MonitorTaskModel &a, MonitorTaskModel &b) {
   using ::std::swap;
   swap(a.monitorMode, b.monitorMode);
 }
 
-JobSubmissionTaskModel::JobSubmissionTaskModel(const JobSubmissionTaskModel& other10) {
-  monitorMode = other10.monitorMode;
+MonitorTaskModel::MonitorTaskModel(const MonitorTaskModel& other13) {
+  monitorMode = other13.monitorMode;
 }
-JobSubmissionTaskModel& JobSubmissionTaskModel::operator=(const JobSubmissionTaskModel& other11) {
-  monitorMode = other11.monitorMode;
+MonitorTaskModel& MonitorTaskModel::operator=(const MonitorTaskModel& other14) {
+  monitorMode = other14.monitorMode;
   return *this;
 }
-std::ostream& operator<<(std::ostream& out, const JobSubmissionTaskModel& obj) {
+std::ostream& operator<<(std::ostream& out, const MonitorTaskModel& obj) {
   using apache::thrift::to_string;
-  out << "JobSubmissionTaskModel(";
+  out << "MonitorTaskModel(";
   out << "monitorMode=" << to_string(obj.monitorMode);
   out << ")";
   return out;
