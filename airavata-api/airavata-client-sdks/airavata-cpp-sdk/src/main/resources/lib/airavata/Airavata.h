@@ -422,6 +422,20 @@ class AiravataIf {
   virtual void createExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment) = 0;
 
   /**
+   * If the experiment is not already launched experiment can be deleted.
+   * 
+   * @param authzToken
+   * @param experiementId
+   * 
+   * @return boolean identifier for the success or failure of the deletion operation
+   * 
+   * 
+   * @param authzToken
+   * @param experimentId
+   */
+  virtual bool deleteExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& experimentId) = 0;
+
+  /**
    * Fetch previously created experiment metadata.
    * 
    * @param airavataExperimentId
@@ -1820,6 +1834,10 @@ class AiravataNull : virtual public AiravataIf {
   }
   void createExperiment(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const  ::apache::airavata::model::experiment::ExperimentModel& /* experiment */) {
     return;
+  }
+  bool deleteExperiment(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* experimentId */) {
+    bool _return = false;
+    return _return;
   }
   void getExperiment( ::apache::airavata::model::experiment::ExperimentModel& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataExperimentId */) {
     return;
@@ -6528,6 +6546,158 @@ class Airavata_createExperiment_presult {
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
   friend std::ostream& operator<<(std::ostream& out, const Airavata_createExperiment_presult& obj);
+};
+
+
+class Airavata_deleteExperiment_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "5C8C4FD14D732E7EC3E0A61A8C24C7FF";
+  static const uint8_t binary_fingerprint[16]; // = {0x5C,0x8C,0x4F,0xD1,0x4D,0x73,0x2E,0x7E,0xC3,0xE0,0xA6,0x1A,0x8C,0x24,0xC7,0xFF};
+
+  Airavata_deleteExperiment_args(const Airavata_deleteExperiment_args&);
+  Airavata_deleteExperiment_args& operator=(const Airavata_deleteExperiment_args&);
+  Airavata_deleteExperiment_args() : experimentId() {
+  }
+
+  virtual ~Airavata_deleteExperiment_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string experimentId;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_experimentId(const std::string& val);
+
+  bool operator == (const Airavata_deleteExperiment_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(experimentId == rhs.experimentId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteExperiment_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteExperiment_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_deleteExperiment_args& obj);
+};
+
+
+class Airavata_deleteExperiment_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "5C8C4FD14D732E7EC3E0A61A8C24C7FF";
+  static const uint8_t binary_fingerprint[16]; // = {0x5C,0x8C,0x4F,0xD1,0x4D,0x73,0x2E,0x7E,0xC3,0xE0,0xA6,0x1A,0x8C,0x24,0xC7,0xFF};
+
+
+  virtual ~Airavata_deleteExperiment_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* experimentId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_deleteExperiment_pargs& obj);
+};
+
+typedef struct _Airavata_deleteExperiment_result__isset {
+  _Airavata_deleteExperiment_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_deleteExperiment_result__isset;
+
+class Airavata_deleteExperiment_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "C0679679E26638BE0A41545C2E17B17A";
+  static const uint8_t binary_fingerprint[16]; // = {0xC0,0x67,0x96,0x79,0xE2,0x66,0x38,0xBE,0x0A,0x41,0x54,0x5C,0x2E,0x17,0xB1,0x7A};
+
+  Airavata_deleteExperiment_result(const Airavata_deleteExperiment_result&);
+  Airavata_deleteExperiment_result& operator=(const Airavata_deleteExperiment_result&);
+  Airavata_deleteExperiment_result() : success(0) {
+  }
+
+  virtual ~Airavata_deleteExperiment_result() throw();
+  bool success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_deleteExperiment_result__isset __isset;
+
+  void __set_success(const bool val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_deleteExperiment_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteExperiment_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteExperiment_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_deleteExperiment_result& obj);
+};
+
+typedef struct _Airavata_deleteExperiment_presult__isset {
+  _Airavata_deleteExperiment_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_deleteExperiment_presult__isset;
+
+class Airavata_deleteExperiment_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "C0679679E26638BE0A41545C2E17B17A";
+  static const uint8_t binary_fingerprint[16]; // = {0xC0,0x67,0x96,0x79,0xE2,0x66,0x38,0xBE,0x0A,0x41,0x54,0x5C,0x2E,0x17,0xB1,0x7A};
+
+
+  virtual ~Airavata_deleteExperiment_presult() throw();
+  bool* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_deleteExperiment_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_deleteExperiment_presult& obj);
 };
 
 
@@ -21574,6 +21744,9 @@ class AiravataClient : virtual public AiravataIf {
   void createExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment);
   void send_createExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment);
   void recv_createExperiment(std::string& _return);
+  bool deleteExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& experimentId);
+  void send_deleteExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& experimentId);
+  bool recv_deleteExperiment();
   void getExperiment( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void send_getExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void recv_getExperiment( ::apache::airavata::model::experiment::ExperimentModel& _return);
@@ -21904,6 +22077,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_getExperimentsInProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getUserExperiments(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_createExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_deleteExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateExperimentConfiguration(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -22030,6 +22204,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["getExperimentsInProject"] = &AiravataProcessor::process_getExperimentsInProject;
     processMap_["getUserExperiments"] = &AiravataProcessor::process_getUserExperiments;
     processMap_["createExperiment"] = &AiravataProcessor::process_createExperiment;
+    processMap_["deleteExperiment"] = &AiravataProcessor::process_deleteExperiment;
     processMap_["getExperiment"] = &AiravataProcessor::process_getExperiment;
     processMap_["updateExperiment"] = &AiravataProcessor::process_updateExperiment;
     processMap_["updateExperimentConfiguration"] = &AiravataProcessor::process_updateExperimentConfiguration;
@@ -22417,6 +22592,15 @@ class AiravataMultiface : virtual public AiravataIf {
     }
     ifaces_[i]->createExperiment(_return, authzToken, gatewayId, experiment);
     return;
+  }
+
+  bool deleteExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& experimentId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->deleteExperiment(authzToken, experimentId);
+    }
+    return ifaces_[i]->deleteExperiment(authzToken, experimentId);
   }
 
   void getExperiment( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
