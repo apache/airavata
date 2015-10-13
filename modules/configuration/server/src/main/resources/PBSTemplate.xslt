@@ -41,6 +41,11 @@
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
+    <xsl:when test="ns:jobSubmitterCommand = 'ccmrun'">
+#PBS -l gres=ccm
+    </xsl:when>
+    </xsl:choose>
+    <xsl:choose>
     <xsl:when test="ns:standardOutFile != ''">
 #PBS -o <xsl:value-of select="ns:standardOutFile"/>
     </xsl:when>

@@ -21,12 +21,23 @@
 package org.apache.airavata.orchestrator.core.utils;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.*;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.core.context.ProcessContext;
+import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.gatewayprofile.DataStoragePreference;
+import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
+import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
+import org.apache.airavata.registry.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.GwyResourceProfile;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,4 +59,146 @@ public class OrchestratorUtils {
         }
         return orchestratorConfiguration;
     }
+
+    public static JobSubmissionProtocol getPreferredJobSubmissionProtocol(OrchestratorContext context, ProcessModel model, String gatewayId) throws RegistryException {
+        try {
+            GwyResourceProfile gatewayProfile = context.getRegistry().getAppCatalog().getGatewayProfile();
+            String resourceHostId = model.getComputeResourceId();
+            ComputeResourcePreference preference = gatewayProfile.getComputeResourcePreference(gatewayId
+                    , resourceHostId);
+            return preference.getPreferredJobSubmissionProtocol();
+        } catch (AppCatalogException e) {
+            logger.error("Error occurred while initializing app catalog", e);
+            throw new RegistryException("Error occurred while initializing app catalog", e);
+        }
+    }
+
+    public static ComputeResourcePreference getComputeResourcePreference(OrchestratorContext context, ProcessModel processModel, String gatewayId) throws RegistryException {
+        try {
+            GwyResourceProfile gatewayProfile = context.getRegistry().getAppCatalog().getGatewayProfile();
+            String resourceHostId = processModel.getComputeResourceId();
+            return gatewayProfile.getComputeResourcePreference(gatewayId, resourceHostId);
+        } catch (AppCatalogException e) {
+            logger.error("Error occurred while initializing app catalog", e);
+            throw new RegistryException("Error occurred while initializing app catalog", e);
+        }
+    }
+
+    public static DataStoragePreference getDateStoragePreference(OrchestratorContext context, ProcessModel processModel, String gatewayId) throws RegistryException {
+        try {
+            GwyResourceProfile gatewayProfile = context.getRegistry().getAppCatalog().getGatewayProfile();
+            String resourceHostId = processModel.getComputeResourceId();
+            return gatewayProfile.getDataStoragePreference(gatewayId, resourceHostId);
+        } catch (AppCatalogException e) {
+            logger.error("Error occurred while initializing app catalog", e);
+            throw new RegistryException("Error occurred while initializing app catalog", e);
+        }
+    }
+
+    public static JobSubmissionInterface getPreferredJobSubmissionInterface(OrchestratorContext context, ProcessModel processModel, String gatewayId) throws RegistryException {
+        try {
+            String resourceHostId = processModel.getComputeResourceId();
+            ComputeResourcePreference resourcePreference = getComputeResourcePreference(context, processModel, gatewayId);
+            JobSubmissionProtocol preferredJobSubmissionProtocol = resourcePreference.getPreferredJobSubmissionProtocol();
+            ComputeResourceDescription resourceDescription = context.getRegistry().getAppCatalog().getComputeResource().getComputeResource(resourceHostId);
+            List<JobSubmissionInterface> jobSubmissionInterfaces = resourceDescription.getJobSubmissionInterfaces();
+            Map<JobSubmissionProtocol, List<JobSubmissionInterface>> orderedInterfaces = new HashMap<>();
+            List<JobSubmissionInterface> interfaces = new ArrayList<>();
+            if (jobSubmissionInterfaces != null && !jobSubmissionInterfaces.isEmpty()) {
+                for (JobSubmissionInterface submissionInterface : jobSubmissionInterfaces){
+
+                    if (preferredJobSubmissionProtocol != null){
+                        if (preferredJobSubmissionProtocol.toString().equals(submissionInterface.getJobSubmissionProtocol().toString())){
+                            if (orderedInterfaces.containsKey(submissionInterface.getJobSubmissionProtocol())){
+                                List<JobSubmissionInterface> interfaceList = orderedInterfaces.get(submissionInterface.getJobSubmissionProtocol());
+                                interfaceList.add(submissionInterface);
+                            }else {
+                                interfaces.add(submissionInterface);
+                                orderedInterfaces.put(submissionInterface.getJobSubmissionProtocol(), interfaces);
+                            }
+                        }
+                    }else {
+                        Collections.sort(jobSubmissionInterfaces, new Comparator<JobSubmissionInterface>() {
+                            @Override
+                            public int compare(JobSubmissionInterface jobSubmissionInterface, JobSubmissionInterface jobSubmissionInterface2) {
+                                return jobSubmissionInterface.getPriorityOrder() - jobSubmissionInterface2.getPriorityOrder();
+                            }
+                        });
+                    }
+                }
+                interfaces = orderedInterfaces.get(preferredJobSubmissionProtocol);
+                Collections.sort(interfaces, new Comparator<JobSubmissionInterface>() {
+                    @Override
+                    public int compare(JobSubmissionInterface jobSubmissionInterface, JobSubmissionInterface jobSubmissionInterface2) {
+                        return jobSubmissionInterface.getPriorityOrder() - jobSubmissionInterface2.getPriorityOrder();
+                    }
+                });
+            } else {
+                throw new RegistryException("Compute resource should have at least one job submission interface defined...");
+            }
+            return interfaces.get(0);
+        } catch (AppCatalogException e) {
+            throw new RegistryException("Error occurred while retrieving data from app catalog", e);
+        }
+    }
+
+    public static SecurityProtocol getSecurityProtocol(OrchestratorContext context, ProcessModel processModel, String gatewayId) throws RegistryException{
+        try {
+            JobSubmissionProtocol submissionProtocol = getPreferredJobSubmissionProtocol(context, processModel, gatewayId);
+            JobSubmissionInterface jobSubmissionInterface = getPreferredJobSubmissionInterface(context, processModel, gatewayId);
+            if (submissionProtocol == JobSubmissionProtocol.SSH ) {
+                SSHJobSubmission sshJobSubmission = getSSHJobSubmission(context, jobSubmissionInterface.getJobSubmissionInterfaceId());
+                if (sshJobSubmission != null) {
+                    return sshJobSubmission.getSecurityProtocol();
+                }
+            } else if (submissionProtocol == JobSubmissionProtocol.LOCAL) {
+                LOCALSubmission localJobSubmission = getLocalJobSubmission(context, jobSubmissionInterface.getJobSubmissionInterfaceId());
+                if (localJobSubmission != null) {
+                    return localJobSubmission.getSecurityProtocol();
+                }
+            } else if (submissionProtocol == JobSubmissionProtocol.SSH_FORK){
+                SSHJobSubmission sshJobSubmission = getSSHJobSubmission(context, jobSubmissionInterface.getJobSubmissionInterfaceId());
+                if (sshJobSubmission != null) {
+                    return sshJobSubmission.getSecurityProtocol();
+                }
+            }
+        } catch (RegistryException e) {
+            logger.error("Error occurred while retrieving security protocol", e);
+        }
+        return null;
+    }
+
+    public static LOCALSubmission getLocalJobSubmission(OrchestratorContext context, String submissionId) throws RegistryException {
+        try {
+            AppCatalog appCatalog = context.getRegistry().getAppCatalog();
+            return appCatalog.getComputeResource().getLocalJobSubmission(submissionId);
+        } catch (Exception e) {
+            String errorMsg = "Error while retrieving local job submission with submission id : " + submissionId;
+            logger.error(errorMsg, e);
+            throw new RegistryException(errorMsg, e);
+        }
+    }
+
+    public static UnicoreJobSubmission getUnicoreJobSubmission(OrchestratorContext context, String submissionId) throws RegistryException {
+        try {
+            AppCatalog appCatalog = context.getRegistry().getAppCatalog();
+            return appCatalog.getComputeResource().getUNICOREJobSubmission(submissionId);
+        } catch (Exception e) {
+            String errorMsg = "Error while retrieving UNICORE job submission with submission id : " + submissionId;
+            logger.error(errorMsg, e);
+            throw new RegistryException(errorMsg, e);
+        }
+    }
+
+    public static SSHJobSubmission getSSHJobSubmission(OrchestratorContext context, String submissionId) throws RegistryException {
+        try {
+            AppCatalog appCatalog = context.getRegistry().getAppCatalog();
+            return appCatalog.getComputeResource().getSSHJobSubmission(submissionId);
+        } catch (Exception e) {
+            String errorMsg = "Error while retrieving SSH job submission with submission id : " + submissionId;
+            logger.error(errorMsg, e);
+            throw new RegistryException(errorMsg, e);
+        }
+    }
+
 }

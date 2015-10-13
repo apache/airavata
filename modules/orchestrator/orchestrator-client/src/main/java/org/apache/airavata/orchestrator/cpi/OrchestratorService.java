@@ -88,8 +88,9 @@ public class OrchestratorService {
      * 
      * @param processId
      * @param airavataCredStoreToken
+     * @param gatewayId
      */
-    public boolean launchProcess(String processId, String airavataCredStoreToken) throws org.apache.thrift.TException;
+    public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId) throws org.apache.thrift.TException;
 
     /**
      *  *
@@ -128,7 +129,7 @@ public class OrchestratorService {
 
     public void launchExperiment(String experimentId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void launchProcess(String processId, String airavataCredStoreToken, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void launchProcess(String processId, String airavataCredStoreToken, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void validateExperiment(String experimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -204,17 +205,18 @@ public class OrchestratorService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "launchExperiment failed: unknown result");
     }
 
-    public boolean launchProcess(String processId, String airavataCredStoreToken) throws org.apache.thrift.TException
+    public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId) throws org.apache.thrift.TException
     {
-      send_launchProcess(processId, airavataCredStoreToken);
+      send_launchProcess(processId, airavataCredStoreToken, gatewayId);
       return recv_launchProcess();
     }
 
-    public void send_launchProcess(String processId, String airavataCredStoreToken) throws org.apache.thrift.TException
+    public void send_launchProcess(String processId, String airavataCredStoreToken, String gatewayId) throws org.apache.thrift.TException
     {
       launchProcess_args args = new launchProcess_args();
       args.setProcessId(processId);
       args.setAiravataCredStoreToken(airavataCredStoreToken);
+      args.setGatewayId(gatewayId);
       sendBase("launchProcess", args);
     }
 
@@ -387,9 +389,9 @@ public class OrchestratorService {
       }
     }
 
-    public void launchProcess(String processId, String airavataCredStoreToken, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void launchProcess(String processId, String airavataCredStoreToken, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      launchProcess_call method_call = new launchProcess_call(processId, airavataCredStoreToken, resultHandler, this, ___protocolFactory, ___transport);
+      launchProcess_call method_call = new launchProcess_call(processId, airavataCredStoreToken, gatewayId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -397,10 +399,12 @@ public class OrchestratorService {
     public static class launchProcess_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String processId;
       private String airavataCredStoreToken;
-      public launchProcess_call(String processId, String airavataCredStoreToken, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private String gatewayId;
+      public launchProcess_call(String processId, String airavataCredStoreToken, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.processId = processId;
         this.airavataCredStoreToken = airavataCredStoreToken;
+        this.gatewayId = gatewayId;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -408,6 +412,7 @@ public class OrchestratorService {
         launchProcess_args args = new launchProcess_args();
         args.setProcessId(processId);
         args.setAiravataCredStoreToken(airavataCredStoreToken);
+        args.setGatewayId(gatewayId);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -602,7 +607,7 @@ public class OrchestratorService {
 
       public launchProcess_result getResult(I iface, launchProcess_args args) throws org.apache.thrift.TException {
         launchProcess_result result = new launchProcess_result();
-        result.success = iface.launchProcess(args.processId, args.airavataCredStoreToken);
+        result.success = iface.launchProcess(args.processId, args.airavataCredStoreToken, args.gatewayId);
         result.setSuccessIsSet(true);
         return result;
       }
@@ -852,7 +857,7 @@ public class OrchestratorService {
       }
 
       public void start(I iface, launchProcess_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
-        iface.launchProcess(args.processId, args.airavataCredStoreToken,resultHandler);
+        iface.launchProcess(args.processId, args.airavataCredStoreToken, args.gatewayId,resultHandler);
       }
     }
 
@@ -2456,6 +2461,7 @@ public class OrchestratorService {
 
     private static final org.apache.thrift.protocol.TField PROCESS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("processId", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField AIRAVATA_CRED_STORE_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("airavataCredStoreToken", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2465,11 +2471,13 @@ public class OrchestratorService {
 
     public String processId; // required
     public String airavataCredStoreToken; // required
+    public String gatewayId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       PROCESS_ID((short)1, "processId"),
-      AIRAVATA_CRED_STORE_TOKEN((short)2, "airavataCredStoreToken");
+      AIRAVATA_CRED_STORE_TOKEN((short)2, "airavataCredStoreToken"),
+      GATEWAY_ID((short)3, "gatewayId");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -2488,6 +2496,8 @@ public class OrchestratorService {
             return PROCESS_ID;
           case 2: // AIRAVATA_CRED_STORE_TOKEN
             return AIRAVATA_CRED_STORE_TOKEN;
+          case 3: // GATEWAY_ID
+            return GATEWAY_ID;
           default:
             return null;
         }
@@ -2535,6 +2545,8 @@ public class OrchestratorService {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.AIRAVATA_CRED_STORE_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("airavataCredStoreToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(launchProcess_args.class, metaDataMap);
     }
@@ -2544,11 +2556,13 @@ public class OrchestratorService {
 
     public launchProcess_args(
       String processId,
-      String airavataCredStoreToken)
+      String airavataCredStoreToken,
+      String gatewayId)
     {
       this();
       this.processId = processId;
       this.airavataCredStoreToken = airavataCredStoreToken;
+      this.gatewayId = gatewayId;
     }
 
     /**
@@ -2561,6 +2575,9 @@ public class OrchestratorService {
       if (other.isSetAiravataCredStoreToken()) {
         this.airavataCredStoreToken = other.airavataCredStoreToken;
       }
+      if (other.isSetGatewayId()) {
+        this.gatewayId = other.gatewayId;
+      }
     }
 
     public launchProcess_args deepCopy() {
@@ -2571,6 +2588,7 @@ public class OrchestratorService {
     public void clear() {
       this.processId = null;
       this.airavataCredStoreToken = null;
+      this.gatewayId = null;
     }
 
     public String getProcessId() {
@@ -2621,6 +2639,30 @@ public class OrchestratorService {
       }
     }
 
+    public String getGatewayId() {
+      return this.gatewayId;
+    }
+
+    public launchProcess_args setGatewayId(String gatewayId) {
+      this.gatewayId = gatewayId;
+      return this;
+    }
+
+    public void unsetGatewayId() {
+      this.gatewayId = null;
+    }
+
+    /** Returns true if field gatewayId is set (has been assigned a value) and false otherwise */
+    public boolean isSetGatewayId() {
+      return this.gatewayId != null;
+    }
+
+    public void setGatewayIdIsSet(boolean value) {
+      if (!value) {
+        this.gatewayId = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case PROCESS_ID:
@@ -2639,6 +2681,14 @@ public class OrchestratorService {
         }
         break;
 
+      case GATEWAY_ID:
+        if (value == null) {
+          unsetGatewayId();
+        } else {
+          setGatewayId((String)value);
+        }
+        break;
+
       }
     }
 
@@ -2649,6 +2699,9 @@ public class OrchestratorService {
 
       case AIRAVATA_CRED_STORE_TOKEN:
         return getAiravataCredStoreToken();
+
+      case GATEWAY_ID:
+        return getGatewayId();
 
       }
       throw new IllegalStateException();
@@ -2665,6 +2718,8 @@ public class OrchestratorService {
         return isSetProcessId();
       case AIRAVATA_CRED_STORE_TOKEN:
         return isSetAiravataCredStoreToken();
+      case GATEWAY_ID:
+        return isSetGatewayId();
       }
       throw new IllegalStateException();
     }
@@ -2700,6 +2755,15 @@ public class OrchestratorService {
           return false;
       }
 
+      boolean this_present_gatewayId = true && this.isSetGatewayId();
+      boolean that_present_gatewayId = true && that.isSetGatewayId();
+      if (this_present_gatewayId || that_present_gatewayId) {
+        if (!(this_present_gatewayId && that_present_gatewayId))
+          return false;
+        if (!this.gatewayId.equals(that.gatewayId))
+          return false;
+      }
+
       return true;
     }
 
@@ -2716,6 +2780,11 @@ public class OrchestratorService {
       list.add(present_airavataCredStoreToken);
       if (present_airavataCredStoreToken)
         list.add(airavataCredStoreToken);
+
+      boolean present_gatewayId = true && (isSetGatewayId());
+      list.add(present_gatewayId);
+      if (present_gatewayId)
+        list.add(gatewayId);
 
       return list.hashCode();
     }
@@ -2744,6 +2813,16 @@ public class OrchestratorService {
       }
       if (isSetAiravataCredStoreToken()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.airavataCredStoreToken, other.airavataCredStoreToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetGatewayId()).compareTo(other.isSetGatewayId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetGatewayId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -2783,6 +2862,14 @@ public class OrchestratorService {
         sb.append(this.airavataCredStoreToken);
       }
       first = false;
+      if (!first) sb.append(", ");
+      sb.append("gatewayId:");
+      if (this.gatewayId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.gatewayId);
+      }
+      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -2794,6 +2881,9 @@ public class OrchestratorService {
       }
       if (airavataCredStoreToken == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'airavataCredStoreToken' was not present! Struct: " + toString());
+      }
+      if (gatewayId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
     }
@@ -2848,6 +2938,14 @@ public class OrchestratorService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 3: // GATEWAY_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.gatewayId = iprot.readString();
+                struct.setGatewayIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -2873,6 +2971,11 @@ public class OrchestratorService {
           oprot.writeString(struct.airavataCredStoreToken);
           oprot.writeFieldEnd();
         }
+        if (struct.gatewayId != null) {
+          oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
+          oprot.writeString(struct.gatewayId);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -2892,6 +2995,7 @@ public class OrchestratorService {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         oprot.writeString(struct.processId);
         oprot.writeString(struct.airavataCredStoreToken);
+        oprot.writeString(struct.gatewayId);
       }
 
       @Override
@@ -2901,6 +3005,8 @@ public class OrchestratorService {
         struct.setProcessIdIsSet(true);
         struct.airavataCredStoreToken = iprot.readString();
         struct.setAiravataCredStoreTokenIsSet(true);
+        struct.gatewayId = iprot.readString();
+        struct.setGatewayIdIsSet(true);
       }
     }
 

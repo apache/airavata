@@ -55,7 +55,7 @@ service OrchestratorService {
      * @return sucess/failure
      *
     **/
-  bool launchProcess (1: required string processId, 2: required string airavataCredStoreToken),
+  bool launchProcess (1: required string processId, 2: required string airavataCredStoreToken, 3: required string gatewayId),
 
     /**
      *

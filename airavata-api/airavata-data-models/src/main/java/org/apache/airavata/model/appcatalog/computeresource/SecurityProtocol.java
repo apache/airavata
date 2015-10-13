@@ -47,7 +47,8 @@ public enum SecurityProtocol implements org.apache.thrift.TEnum {
   SSH_KEYS(1),
   GSI(2),
   KERBEROS(3),
-  OAUTH(4);
+  OAUTH(4),
+  LOCAL(5);
 
   private final int value;
 
@@ -78,6 +79,8 @@ public enum SecurityProtocol implements org.apache.thrift.TEnum {
         return KERBEROS;
       case 4:
         return OAUTH;
+      case 5:
+        return LOCAL;
       default:
         return null;
     }

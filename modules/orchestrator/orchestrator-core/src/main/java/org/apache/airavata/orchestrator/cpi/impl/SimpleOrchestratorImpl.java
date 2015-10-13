@@ -20,8 +20,21 @@
 */
 package org.apache.airavata.orchestrator.cpi.impl;
 
-import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.gfac.core.GFacException;
+import org.apache.airavata.gfac.core.GFacUtils;
+import org.apache.airavata.gfac.core.cluster.ServerInfo;
+import org.apache.airavata.gfac.core.context.ProcessContext;
+import org.apache.airavata.gfac.core.context.TaskContext;
+import org.apache.airavata.gfac.core.task.Task;
+import org.apache.airavata.gfac.core.task.TaskException;
+import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.gatewayprofile.DataStoragePreference;
+import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.error.ValidationResults;
@@ -29,20 +42,27 @@ import org.apache.airavata.model.error.ValidatorResult;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.task.TaskModel;
+import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.model.status.ProcessStatus;
+import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.status.TaskStatus;
+import org.apache.airavata.model.task.*;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.impl.GFACPassiveJobSubmitter;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
+import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 public class SimpleOrchestratorImpl extends AbstractOrchestrator{
@@ -234,7 +254,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
 
     }
 
-    public List<ProcessModel> createProcesses (String experimentId) throws OrchestratorException {
+    public List<ProcessModel> createProcesses (String experimentId, String gatewayId) throws OrchestratorException {
         List<ProcessModel> processModels = new ArrayList<ProcessModel>();
         try {
             Registry registry = orchestratorContext.getRegistry();
@@ -257,13 +277,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         return processModels;
     }
 
-    public List<TaskModel> createTasks (String experimentId, String processId) throws OrchestratorException {
-        List<TaskModel> taskModels = new ArrayList<TaskModel>();
+    public void createAndSaveTasks (String gatewayId, ExperimentModel experimentModel, ProcessModel processModel) throws OrchestratorException {
         try {
             ExperimentCatalog experimentCatalog = orchestratorContext.getRegistry().getExperimentCatalog();
             AppCatalog appCatalog = orchestratorContext.getRegistry().getAppCatalog();
-            ExperimentModel experimentModel = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
-            ProcessModel processModel = (ProcessModel)experimentCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
             boolean autoSchedule = experimentModel.getUserConfigurationData().isAiravataAutoSchedule();
             ComputationalResourceSchedulingModel resourceSchedule = processModel.getResourceSchedule();
             String userGivenQueueName = resourceSchedule.getQueueName();
@@ -273,21 +290,123 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 throw new OrchestratorException("Compute Resource Id cannot be null at this point");
             }
             ComputeResourceDescription computeResource = appCatalog.getComputeResource().getComputeResource(resourceHostId);
-            List<BatchQueue> definedBatchQueues = computeResource.getBatchQueues();
-            for (BatchQueue batchQueue : definedBatchQueues){
-                if (batchQueue.getQueueName().equals(userGivenQueueName)){
-                    int maxRunTime = batchQueue.getMaxRunTime();
-                    if (maxRunTime < userGivenWallTime){
-                        // need to create more job submissions
+
+            createAndSaveEnvSetupTask(gatewayId, processModel, experimentCatalog);
+            createAndSaveDataStagingTasks(processModel);
+            if (autoSchedule){
+                List<BatchQueue> definedBatchQueues = computeResource.getBatchQueues();
+                for (BatchQueue batchQueue : definedBatchQueues){
+                    if (batchQueue.getQueueName().equals(userGivenQueueName)){
+                        int maxRunTime = batchQueue.getMaxRunTime();
+                        if (maxRunTime < userGivenWallTime){
+                            // need to create more job submissions
+                            int i = (int)maxRunTime / userGivenWallTime;
+                            for (int k=0; k < i; i++){
+                                createAndSaveJobSubmissionTask(processModel);
+                            }
+                        }else {
+                            createAndSaveJobSubmissionTask(processModel);
+                        }
                     }
                 }
             }
-
-
         } catch (Exception e) {
             throw new OrchestratorException("Error during creating process");
         }
-        return taskModels;
     }
+
+    private void createAndSaveEnvSetupTask(String gatewayId, ProcessModel processModel, ExperimentCatalog experimentCatalog) throws RegistryException, TException {
+        TaskModel envSetupTask = new TaskModel();
+        envSetupTask.setTaskType(TaskTypes.ENV_SETUP);
+        envSetupTask.setTaskStatus(new TaskStatus(TaskState.CREATED));
+        envSetupTask.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
+        envSetupTask.setParentProcessId(processModel.getProcessId());
+        EnvironmentSetupTaskModel envSetupSubModel = new EnvironmentSetupTaskModel();
+        envSetupSubModel.setProtocol(OrchestratorUtils.getSecurityProtocol(orchestratorContext, processModel, gatewayId));
+        ComputeResourcePreference computeResourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
+        String scratchLocation = computeResourcePreference.getScratchLocation();
+        String workingDir = scratchLocation + File.separator + processModel.getProcessId();
+        envSetupSubModel.setLocation(workingDir);
+        byte[] envSetupSub = ThriftUtils.serializeThriftObject(envSetupSubModel);
+        envSetupTask.setSubTaskModel(envSetupSub);
+        String envSetupTaskId = (String)experimentCatalog.add(ExpCatChildDataType.TASK, envSetupTask, processModel.getProcessId());
+        envSetupTask.setTaskId(envSetupTaskId);
+    }
+
+    public void createAndSaveDataStagingTasks (ProcessModel processModel) throws RegistryException{
+        List<InputDataObjectType> processInputs = processModel.getProcessInputs();
+        sortByInputOrder(processInputs);
+        if (processInputs != null) {
+            for (InputDataObjectType processInput : processInputs) {
+                DataType type = processInput.getType();
+                switch (type) {
+                    case STDERR:
+                        break;
+                    case STDOUT:
+                        break;
+                    case URI:
+                        try {
+                            TaskModel inputDataStagingTask = getInputDataStagingTask(processModel, processInput);
+                            orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, inputDataStagingTask,
+                                    processModel.getProcessId());
+                        } catch (TException e) {
+                            throw new RegistryException("Error while serializing data staging sub task model");
+                        }
+                        break;
+                    default:
+                        // nothing to do
+                        break;
+                }
+            }
+        }
+    }
+
+    private void createAndSaveJobSubmissionTask(ProcessModel processModel) throws TException, RegistryException {
+        TaskModel taskModel = new TaskModel();
+        taskModel.setParentProcessId(processModel.getProcessId());
+        taskModel.setCreationTime(new Date().getTime());
+        taskModel.setLastUpdateTime(taskModel.getCreationTime());
+        TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
+        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        taskModel.setTaskStatus(taskStatus);
+        taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
+        JobSubmissionTaskModel submissionSubTask = new JobSubmissionTaskModel();
+        submissionSubTask.setMonitorMode(MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR);
+        byte[] bytes = ThriftUtils.serializeThriftObject(submissionSubTask);
+        taskModel.setSubTaskModel(bytes);
+        orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, taskModel,
+                processModel.getProcessId());
+    }
+
+    private void sortByInputOrder(List<InputDataObjectType> processInputs) {
+        Collections.sort(processInputs, new Comparator<InputDataObjectType>() {
+            @Override
+            public int compare(InputDataObjectType inputDT_1, InputDataObjectType inputDT_2) {
+                return inputDT_1.getInputOrder() - inputDT_2.getInputOrder();
+            }
+        });
+    }
+
+    private TaskModel getInputDataStagingTask(ProcessModel processModel, InputDataObjectType processInput) throws RegistryException, TException {
+        // create new task model for this task
+        TaskModel taskModel = new TaskModel();
+        taskModel.setParentProcessId(processModel.getProcessId());
+        taskModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
+        taskModel.setLastUpdateTime(taskModel.getCreationTime());
+        TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
+        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        taskModel.setTaskStatus(taskStatus);
+        taskModel.setTaskType(TaskTypes.DATA_STAGING);
+        // create data staging sub task model
+        DataStagingTaskModel submodel = new DataStagingTaskModel();
+        submodel.setType(DataStageType.INPUT);
+        submodel.setSource(processInput.getValue());
+        // We don't know destination location at this time, data staging task will set this.
+        // because destination is required field we set dummy destination
+        submodel.setDestination("dummy://temp/file/location");
+        taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
+        return taskModel;
+    }
+
 
 }

@@ -31,6 +31,7 @@ public class OrchestratorContext {
     private OrchestratorConfiguration orchestratorConfiguration;
     private Registry registry;
     private Publisher publisher;
+    private String gatewayId;
 
     public Publisher getPublisher() {
         return publisher;
@@ -55,4 +56,11 @@ public class OrchestratorContext {
         this.registry = registry;
     }
 
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
 }
