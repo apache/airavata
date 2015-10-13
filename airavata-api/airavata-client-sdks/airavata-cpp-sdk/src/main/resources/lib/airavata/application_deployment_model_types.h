@@ -42,7 +42,9 @@ struct ApplicationParallelismType {
     SERIAL = 0,
     MPI = 1,
     OPENMP = 2,
-    OPENMP_MPI = 3
+    OPENMP_MPI = 3,
+    CCM = 4,
+    CRAY_MPI = 5
   };
 };
 
