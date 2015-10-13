@@ -39,12 +39,16 @@ class ApplicationParallelismType:
   MPI = 1
   OPENMP = 2
   OPENMP_MPI = 3
+  CCM = 4
+  CRAY_MPI = 5
 
   _VALUES_TO_NAMES = {
     0: "SERIAL",
     1: "MPI",
     2: "OPENMP",
     3: "OPENMP_MPI",
+    4: "CCM",
+    5: "CRAY_MPI",
   }
 
   _NAMES_TO_VALUES = {
@@ -52,6 +56,8 @@ class ApplicationParallelismType:
     "MPI": 1,
     "OPENMP": 2,
     "OPENMP_MPI": 3,
+    "CCM": 4,
+    "CRAY_MPI": 5,
   }
 
 
