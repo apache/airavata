@@ -68,6 +68,8 @@ class EnvironmentSetupTaskModel;
 
 class JobSubmissionTaskModel;
 
+class MonitorTaskModel;
+
 typedef struct _TaskModel__isset {
   _TaskModel__isset() : taskDetail(false), subTaskModel(false), taskError(false) {}
   bool taskDetail :1;
@@ -286,17 +288,17 @@ class JobSubmissionTaskModel {
 
   JobSubmissionTaskModel(const JobSubmissionTaskModel&);
   JobSubmissionTaskModel& operator=(const JobSubmissionTaskModel&);
-  JobSubmissionTaskModel() : monitorMode(( ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type)0) {
+  JobSubmissionTaskModel() : jobSubmissionProtocol(( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)0) {
   }
 
   virtual ~JobSubmissionTaskModel() throw();
-   ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type monitorMode;
+   ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type jobSubmissionProtocol;
 
-  void __set_monitorMode(const  ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type val);
+  void __set_jobSubmissionProtocol(const  ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type val);
 
   bool operator == (const JobSubmissionTaskModel & rhs) const
   {
-    if (!(monitorMode == rhs.monitorMode))
+    if (!(jobSubmissionProtocol == rhs.jobSubmissionProtocol))
       return false;
     return true;
   }
@@ -313,6 +315,43 @@ class JobSubmissionTaskModel {
 };
 
 void swap(JobSubmissionTaskModel &a, JobSubmissionTaskModel &b);
+
+
+class MonitorTaskModel {
+ public:
+
+  static const char* ascii_fingerprint; // = "8BBB3D0C3B370CB38F2D1340BB79F0AA";
+  static const uint8_t binary_fingerprint[16]; // = {0x8B,0xBB,0x3D,0x0C,0x3B,0x37,0x0C,0xB3,0x8F,0x2D,0x13,0x40,0xBB,0x79,0xF0,0xAA};
+
+  MonitorTaskModel(const MonitorTaskModel&);
+  MonitorTaskModel& operator=(const MonitorTaskModel&);
+  MonitorTaskModel() : monitorMode(( ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type)0) {
+  }
+
+  virtual ~MonitorTaskModel() throw();
+   ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type monitorMode;
+
+  void __set_monitorMode(const  ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type val);
+
+  bool operator == (const MonitorTaskModel & rhs) const
+  {
+    if (!(monitorMode == rhs.monitorMode))
+      return false;
+    return true;
+  }
+  bool operator != (const MonitorTaskModel &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const MonitorTaskModel & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const MonitorTaskModel& obj);
+};
+
+void swap(MonitorTaskModel &a, MonitorTaskModel &b);
 
 }}}} // namespace
 
