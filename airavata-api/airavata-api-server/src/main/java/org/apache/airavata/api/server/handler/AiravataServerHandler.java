@@ -1190,6 +1190,40 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
+     * If the experiment is not already launched experiment can be deleted.
+     * @param authzToken
+     * @param experimentId
+     * @return
+     * @throws InvalidRequestException
+     * @throws AiravataClientException
+     * @throws AiravataSystemException
+     * @throws AuthorizationException
+     * @throws TException
+     */
+    @Override
+    public boolean deleteExperiment(AuthzToken authzToken, String experimentId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, experimentId)){
+                throw new ExperimentNotFoundException("Requested experiment id " + experimentId + " does not exist in the system..");
+            }
+            ExperimentModel experimentModel = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            if(!(experimentModel.getExperimentStatus().getState() == ExperimentState.CREATED)){
+                logger.error("Error while deleting the experiment");
+                throw new ExperimentCatalogException("Experiment is not in CREATED state. Hence cannot deleted. ID:"+ experimentId);
+            }
+            experimentCatalog.remove(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            return true;
+        } catch (Exception e) {
+            logger.error("Error while deleting the experiment", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while deleting the experiment. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
      * Fetch previously created experiment metadata.
      *
      * @param airavataExperimentId The identifier for the requested experiment. This is returned during the create experiment step.
