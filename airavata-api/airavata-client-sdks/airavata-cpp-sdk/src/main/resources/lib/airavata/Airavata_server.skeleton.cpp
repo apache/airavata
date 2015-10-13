@@ -518,6 +518,23 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * If the experiment is not already launched experiment can be deleted.
+   * 
+   * @param authzToken
+   * @param experiementId
+   * 
+   * @return boolean identifier for the success or failure of the deletion operation
+   * 
+   * 
+   * @param authzToken
+   * @param experimentId
+   */
+  bool deleteExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& experimentId) {
+    // Your implementation goes here
+    printf("deleteExperiment\n");
+  }
+
+  /**
    * Fetch previously created experiment metadata.
    * 
    * @param airavataExperimentId

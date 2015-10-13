@@ -545,6 +545,25 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
+
+
+/**
+  * If the experiment is not already launched experiment can be deleted.
+  *
+  * @param authzToken
+  * @param experiementId
+  *
+  * @return boolean identifier for the success or failure of the deletion operation
+  *
+ */
+  bool deleteExperiment(1: required security_model.AuthzToken authzToken,
+                          2: required string experimentId)
+    throws (1: airavata_errors.InvalidRequestException ire,
+            2: airavata_errors.AiravataClientException ace,
+            3: airavata_errors.AiravataSystemException ase,
+            4: airavata_errors.AuthorizationException ae)
+
+
   /**
    * Fetch previously created experiment metadata.
    *
