@@ -34,15 +34,19 @@ int _kApplicationParallelismTypeValues[] = {
   ApplicationParallelismType::SERIAL,
   ApplicationParallelismType::MPI,
   ApplicationParallelismType::OPENMP,
-  ApplicationParallelismType::OPENMP_MPI
+  ApplicationParallelismType::OPENMP_MPI,
+  ApplicationParallelismType::CCM,
+  ApplicationParallelismType::CRAY_MPI
 };
 const char* _kApplicationParallelismTypeNames[] = {
   "SERIAL",
   "MPI",
   "OPENMP",
-  "OPENMP_MPI"
+  "OPENMP_MPI",
+  "CCM",
+  "CRAY_MPI"
 };
-const std::map<int, const char*> _ApplicationParallelismType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(4, _kApplicationParallelismTypeValues, _kApplicationParallelismTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _ApplicationParallelismType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kApplicationParallelismTypeValues, _kApplicationParallelismTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 
 SetEnvPaths::~SetEnvPaths() throw() {
