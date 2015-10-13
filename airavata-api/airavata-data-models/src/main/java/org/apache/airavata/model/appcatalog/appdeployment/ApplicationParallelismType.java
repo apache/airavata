@@ -48,7 +48,9 @@ public enum ApplicationParallelismType implements org.apache.thrift.TEnum {
   SERIAL(0),
   MPI(1),
   OPENMP(2),
-  OPENMP_MPI(3);
+  OPENMP_MPI(3),
+  CCM(4),
+  CRAY_MPI(5);
 
   private final int value;
 
@@ -77,6 +79,10 @@ public enum ApplicationParallelismType implements org.apache.thrift.TEnum {
         return OPENMP;
       case 3:
         return OPENMP_MPI;
+      case 4:
+        return CCM;
+      case 5:
+        return CRAY_MPI;
       default:
         return null;
     }

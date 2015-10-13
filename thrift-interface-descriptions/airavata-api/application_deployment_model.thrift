@@ -88,7 +88,9 @@ enum ApplicationParallelismType {
     SERIAL,
     MPI,
     OPENMP,
-    OPENMP_MPI
+    OPENMP_MPI,
+    CCM,
+    CRAY_MPI
 }
 /**
  * Application Deployment Description
