@@ -173,7 +173,8 @@ enum SecurityProtocol {
     SSH_KEYS,
     GSI,
     KERBEROS,
-    OAUTH
+    OAUTH,
+    LOCAL
 }
 
 /**
@@ -293,7 +294,8 @@ struct UnicoreDataMovement {
 */
 struct LOCALSubmission {
     1: required string jobSubmissionInterfaceId = airavata_commons.DEFAULT_ID,
-    2: required ResourceJobManager resourceJobManager
+    2: required SecurityProtocol securityProtocol,
+    3: required ResourceJobManager resourceJobManager
 }
 
 /**

@@ -137,8 +137,12 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	public boolean launchExperiment(String experimentId, String gatewayId) throws TException {
         ExperimentModel experiment = null;
         try {
-            List<ProcessModel> processes = orchestrator.createProcesses(experimentId);
+
+            List<ProcessModel> processes = orchestrator.createProcesses(experimentId, gatewayId);
             experiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            for (ProcessModel processModel : processes){
+                orchestrator.createAndSaveTasks(gatewayId, experiment, processModel);
+            }
             if (experiment == null) {
                 log.error(experimentId, "Error retrieving the Experiment by the given experimentID: {} ", experimentId);
                 return false;
@@ -268,7 +272,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	}
 
 	@Override
-	public boolean launchProcess(String processId, String airavataCredStoreToken) throws TException {
+	public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId) throws TException {
 		try {
 			ProcessModel processModel = (ProcessModel) experimentCatalog.get(
 					ExperimentCatalogModelType.PROCESS, processId);
@@ -392,7 +396,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             try {
                 List<String> processIds = experimentCatalog.getIds(ExperimentCatalogModelType.PROCESS, AbstractExpCatResource.ProcessConstants.EXPERIMENT_ID, experimentId);
                 for (String processId : processIds) {
-                    launchProcess(processId, airavataCredStoreToken);
+                    launchProcess(processId, airavataCredStoreToken, gatewayId);
                 }
 
             } catch (Exception e) {
