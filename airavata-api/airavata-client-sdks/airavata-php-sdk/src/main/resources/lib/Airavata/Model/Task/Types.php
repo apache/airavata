@@ -628,6 +628,81 @@ class JobSubmissionTaskModel {
   /**
    * @var int
    */
+  public $jobSubmissionProtocol = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'jobSubmissionProtocol',
+          'type' => TType::I32,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['jobSubmissionProtocol'])) {
+        $this->jobSubmissionProtocol = $vals['jobSubmissionProtocol'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'JobSubmissionTaskModel';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->jobSubmissionProtocol);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('JobSubmissionTaskModel');
+    if ($this->jobSubmissionProtocol !== null) {
+      $xfer += $output->writeFieldBegin('jobSubmissionProtocol', TType::I32, 1);
+      $xfer += $output->writeI32($this->jobSubmissionProtocol);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class MonitorTaskModel {
+  static $_TSPEC;
+
+  /**
+   * @var int
+   */
   public $monitorMode = null;
 
   public function __construct($vals=null) {
@@ -647,7 +722,7 @@ class JobSubmissionTaskModel {
   }
 
   public function getName() {
-    return 'JobSubmissionTaskModel';
+    return 'MonitorTaskModel';
   }
 
   public function read($input)
@@ -684,7 +759,7 @@ class JobSubmissionTaskModel {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('JobSubmissionTaskModel');
+    $xfer += $output->writeStructBegin('MonitorTaskModel');
     if ($this->monitorMode !== null) {
       $xfer += $output->writeFieldBegin('monitorMode', TType::I32, 1);
       $xfer += $output->writeI32($this->monitorMode);
