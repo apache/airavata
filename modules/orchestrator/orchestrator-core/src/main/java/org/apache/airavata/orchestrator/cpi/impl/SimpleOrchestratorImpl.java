@@ -371,7 +371,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         taskModel.setTaskStatus(taskStatus);
         taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
         JobSubmissionTaskModel submissionSubTask = new JobSubmissionTaskModel();
-        submissionSubTask.setMonitorMode(MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR);
+//        submissionSubTask.setMonitorMode(MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR);
         byte[] bytes = ThriftUtils.serializeThriftObject(submissionSubTask);
         taskModel.setSubTaskModel(bytes);
         orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, taskModel,
