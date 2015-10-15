@@ -302,10 +302,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                             // need to create more job submissions
                             int i = (int)maxRunTime / userGivenWallTime;
                             for (int k=0; k < i; i++){
-                                createAndSaveJobSubmissionTask(processModel);
+                                createAndSaveJobSubmissionTask(gatewayId, processModel);
                             }
                         }else {
-                            createAndSaveJobSubmissionTask(processModel);
+                            createAndSaveJobSubmissionTask(gatewayId, processModel);
                         }
                     }
                 }
@@ -361,7 +361,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         }
     }
 
-    private void createAndSaveJobSubmissionTask(ProcessModel processModel) throws TException, RegistryException {
+    private void createAndSaveJobSubmissionTask(String gatewayId, ProcessModel processModel) throws TException, RegistryException {
         TaskModel taskModel = new TaskModel();
         taskModel.setParentProcessId(processModel.getProcessId());
         taskModel.setCreationTime(new Date().getTime());
@@ -371,7 +371,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         taskModel.setTaskStatus(taskStatus);
         taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
         JobSubmissionTaskModel submissionSubTask = new JobSubmissionTaskModel();
-//        submissionSubTask.setMonitorMode(MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR);
+        submissionSubTask.setMonitorMode(MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR);
+        submissionSubTask.setJobSubmissionProtocol(
+                OrchestratorUtils.getPreferredJobSubmissionProtocol(orchestratorContext, processModel, gatewayId));
         byte[] bytes = ThriftUtils.serializeThriftObject(submissionSubTask);
         taskModel.setSubTaskModel(bytes);
         orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, taskModel,
