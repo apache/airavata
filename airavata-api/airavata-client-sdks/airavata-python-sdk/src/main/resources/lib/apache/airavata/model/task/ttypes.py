@@ -485,15 +485,18 @@ class JobSubmissionTaskModel:
   """
   Attributes:
    - jobSubmissionProtocol
+   - monitorMode
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.I32, 'jobSubmissionProtocol', None, None, ), # 1
+    (2, TType.I32, 'monitorMode', None, None, ), # 2
   )
 
-  def __init__(self, jobSubmissionProtocol=None,):
+  def __init__(self, jobSubmissionProtocol=None, monitorMode=None,):
     self.jobSubmissionProtocol = jobSubmissionProtocol
+    self.monitorMode = monitorMode
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -507,6 +510,11 @@ class JobSubmissionTaskModel:
       if fid == 1:
         if ftype == TType.I32:
           self.jobSubmissionProtocol = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I32:
+          self.monitorMode = iprot.readI32();
         else:
           iprot.skip(ftype)
       else:
@@ -523,18 +531,25 @@ class JobSubmissionTaskModel:
       oprot.writeFieldBegin('jobSubmissionProtocol', TType.I32, 1)
       oprot.writeI32(self.jobSubmissionProtocol)
       oprot.writeFieldEnd()
+    if self.monitorMode is not None:
+      oprot.writeFieldBegin('monitorMode', TType.I32, 2)
+      oprot.writeI32(self.monitorMode)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
     if self.jobSubmissionProtocol is None:
       raise TProtocol.TProtocolException(message='Required field jobSubmissionProtocol is unset!')
+    if self.monitorMode is None:
+      raise TProtocol.TProtocolException(message='Required field monitorMode is unset!')
     return
 
 
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.jobSubmissionProtocol)
+    value = (value * 31) ^ hash(self.monitorMode)
     return value
 
   def __repr__(self):

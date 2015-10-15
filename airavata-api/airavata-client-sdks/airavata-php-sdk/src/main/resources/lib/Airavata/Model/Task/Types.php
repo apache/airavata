@@ -629,6 +629,10 @@ class JobSubmissionTaskModel {
    * @var int
    */
   public $jobSubmissionProtocol = null;
+  /**
+   * @var int
+   */
+  public $monitorMode = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -637,11 +641,18 @@ class JobSubmissionTaskModel {
           'var' => 'jobSubmissionProtocol',
           'type' => TType::I32,
           ),
+        2 => array(
+          'var' => 'monitorMode',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
       if (isset($vals['jobSubmissionProtocol'])) {
         $this->jobSubmissionProtocol = $vals['jobSubmissionProtocol'];
+      }
+      if (isset($vals['monitorMode'])) {
+        $this->monitorMode = $vals['monitorMode'];
       }
     }
   }
@@ -672,6 +683,13 @@ class JobSubmissionTaskModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->monitorMode);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -688,6 +706,11 @@ class JobSubmissionTaskModel {
     if ($this->jobSubmissionProtocol !== null) {
       $xfer += $output->writeFieldBegin('jobSubmissionProtocol', TType::I32, 1);
       $xfer += $output->writeI32($this->jobSubmissionProtocol);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->monitorMode !== null) {
+      $xfer += $output->writeFieldBegin('monitorMode', TType::I32, 2);
+      $xfer += $output->writeI32($this->monitorMode);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

@@ -283,22 +283,27 @@ void swap(EnvironmentSetupTaskModel &a, EnvironmentSetupTaskModel &b);
 class JobSubmissionTaskModel {
  public:
 
-  static const char* ascii_fingerprint; // = "8BBB3D0C3B370CB38F2D1340BB79F0AA";
-  static const uint8_t binary_fingerprint[16]; // = {0x8B,0xBB,0x3D,0x0C,0x3B,0x37,0x0C,0xB3,0x8F,0x2D,0x13,0x40,0xBB,0x79,0xF0,0xAA};
+  static const char* ascii_fingerprint; // = "69EF77542FBF7A8DD68310C9FF3B44BD";
+  static const uint8_t binary_fingerprint[16]; // = {0x69,0xEF,0x77,0x54,0x2F,0xBF,0x7A,0x8D,0xD6,0x83,0x10,0xC9,0xFF,0x3B,0x44,0xBD};
 
   JobSubmissionTaskModel(const JobSubmissionTaskModel&);
   JobSubmissionTaskModel& operator=(const JobSubmissionTaskModel&);
-  JobSubmissionTaskModel() : jobSubmissionProtocol(( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)0) {
+  JobSubmissionTaskModel() : jobSubmissionProtocol(( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)0), monitorMode(( ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type)0) {
   }
 
   virtual ~JobSubmissionTaskModel() throw();
    ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type jobSubmissionProtocol;
+   ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type monitorMode;
 
   void __set_jobSubmissionProtocol(const  ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type val);
+
+  void __set_monitorMode(const  ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type val);
 
   bool operator == (const JobSubmissionTaskModel & rhs) const
   {
     if (!(jobSubmissionProtocol == rhs.jobSubmissionProtocol))
+      return false;
+    if (!(monitorMode == rhs.monitorMode))
       return false;
     return true;
   }
