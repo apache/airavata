@@ -32,10 +32,6 @@ import org.apache.airavata.gfac.core.monitor.EmailParser;
 import org.apache.airavata.gfac.core.monitor.JobMonitor;
 import org.apache.airavata.gfac.core.monitor.JobStatusResult;
 import org.apache.airavata.gfac.impl.GFacWorker;
-import org.apache.airavata.gfac.monitor.email.parser.LSFEmailParser;
-import org.apache.airavata.gfac.monitor.email.parser.PBSEmailParser;
-import org.apache.airavata.gfac.monitor.email.parser.SLURMEmailParser;
-import org.apache.airavata.gfac.monitor.email.parser.UGEEmailParser;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
@@ -52,7 +48,6 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.search.FlagTerm;
 import javax.mail.search.SearchTerm;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -124,6 +119,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 	public void monitor(String jobId, ProcessContext processContext) {
 		log.info("[EJM]: Added monitor Id : " + jobId + " to email based monitor map");
 		jobMonitorMap.put(jobId, processContext);
+        processContext.setPauseTaskExecution(true);
 	}
 
 	@Override

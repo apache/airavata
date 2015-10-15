@@ -38,12 +38,14 @@ import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
+import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +65,6 @@ public class ProcessContext {
 	private String inputDir;
 	private String outputDir;
 	private String localWorkingDir;
-	private List<TaskContext> taskChain;
 	private GatewayResourceProfile gatewayResourceProfile;
 	private ComputeResourceDescription computeResourceDescription;
 	private ApplicationDeploymentDescription applicationDeploymentDescription;
@@ -81,6 +82,13 @@ public class ProcessContext {
 	private boolean handOver;
 	private boolean cancel;
     private ServerInfo serverInfo;
+    private List<String> taskExecutionOrder;
+    private List<TaskModel> taskList;
+    private Map<String, TaskModel> taskMap;
+    private String currentExecutingTaskId; // TaskId of current executing task.
+    private boolean pauseTaskExecution = false;  // Task can pause task execution by setting this value
+    private boolean complete = false; // all tasks executed?
+    private boolean recovery = false; // is process in recovery mode?
 
     /**
 	 * Note: process context property use lazy loading approach. In runtime you will see some properties as null
@@ -160,14 +168,6 @@ public class ProcessContext {
 
 	public void setWorkingDir(String workingDir) {
 		this.workingDir = workingDir;
-	}
-
-	public List<TaskContext> getTaskChain() {
-		return taskChain;
-	}
-
-	public void setTaskChain(List<TaskContext> taskChain) {
-		this.taskChain = taskChain;
 	}
 
 	public GatewayResourceProfile getGatewayResourceProfile() {
@@ -279,6 +279,44 @@ public class ProcessContext {
 		this.dataMovementProtocol = dataMovementProtocol;
 	}
 
+    public String getTaskDag() {
+        return getProcessModel().getTaskDag();
+    }
+
+    public List<TaskModel> getTaskList() {
+        if (taskList == null) {
+            synchronized (TaskModel.class){
+                if (taskList == null) {
+                    taskList = getProcessModel().getTasks();
+                }
+            }
+        }
+        return taskList;
+    }
+
+
+    public List<String> getTaskExecutionOrder() {
+        return taskExecutionOrder;
+    }
+
+    public void setTaskExecutionOrder(List<String> taskExecutionOrder) {
+        this.taskExecutionOrder = taskExecutionOrder;
+    }
+
+    public Map<String, TaskModel> getTaskMap() {
+        if (taskMap == null) {
+            synchronized (TaskModel.class) {
+                if (taskMap == null) {
+                    taskMap = new HashMap<>();
+                    for (TaskModel taskModel : getTaskList()) {
+                        taskMap.put(taskModel.getTaskId(), taskModel);
+                    }
+                }
+            }
+        }
+        return taskMap;
+    }
+
 	public JobModel getJobModel() {
 		if (jobModel == null) {
 			jobModel = new JobModel();
@@ -375,5 +413,37 @@ public class ProcessContext {
 
     public ServerInfo getServerInfo() {
         return serverInfo;
+    }
+
+    public String getCurrentExecutingTaskId() {
+        return currentExecutingTaskId;
+    }
+
+    public void setCurrentExecutingTaskId(String currentExecutingTaskId) {
+        this.currentExecutingTaskId = currentExecutingTaskId;
+    }
+
+    public boolean isPauseTaskExecution() {
+        return pauseTaskExecution;
+    }
+
+    public void setPauseTaskExecution(boolean pauseTaskExecution) {
+        this.pauseTaskExecution = pauseTaskExecution;
+    }
+
+    public boolean isComplete() {
+        return complete;
+    }
+
+    public void setComplete(boolean complete) {
+        this.complete = complete;
+    }
+
+    public boolean isRecovery() {
+        return recovery;
+    }
+
+    public void setRecovery(boolean recovery) {
+        this.recovery = recovery;
     }
 }
