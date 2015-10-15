@@ -275,6 +275,7 @@ public class GSISSHAbstractCluster implements Cluster {
         // with the error thrown in qsub command
         //
         String outputifAvailable = getOutputifAvailable(standardOutReader,"Error reading output of job submission",jobManagerConfiguration.getBaseSubmitCommand());
+        log.info("Job Submission SSH Command Output: " + outputifAvailable);
         OutputParser outputParser = jobManagerConfiguration.getParser();
         return  outputParser.parseJobSubmission(outputifAvailable);
     }
