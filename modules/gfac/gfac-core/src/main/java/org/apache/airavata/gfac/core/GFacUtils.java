@@ -966,7 +966,8 @@ public class GFacUtils {
 
     public static List<String> parseTaskDag(String taskDag) {
         // TODO - parse taskDag and create taskId list
-        List<String> taskIds = new ArrayList<>();
-        return taskIds;
+        String[] tasks = taskDag.split(",");
+        return Arrays.asList(tasks);
     }
+
 }
