@@ -164,7 +164,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             existingDep.setAppDes(updatedDeployment.getAppDeploymentDescription());
             existingDep.setExecutablePath(updatedDeployment.getExecutablePath());
             if (updatedDeployment.getParallelism() != null){
-                deploymentResource.setParallelism(updatedDeployment.getParallelism().toString());
+                existingDep.setParallelism(updatedDeployment.getParallelism().toString());
             }
 
             existingDep.save();
