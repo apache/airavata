@@ -486,17 +486,20 @@ class JobSubmissionTaskModel:
   Attributes:
    - jobSubmissionProtocol
    - monitorMode
+   - wallTime
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.I32, 'jobSubmissionProtocol', None, None, ), # 1
     (2, TType.I32, 'monitorMode', None, None, ), # 2
+    (3, TType.I32, 'wallTime', None, None, ), # 3
   )
 
-  def __init__(self, jobSubmissionProtocol=None, monitorMode=None,):
+  def __init__(self, jobSubmissionProtocol=None, monitorMode=None, wallTime=None,):
     self.jobSubmissionProtocol = jobSubmissionProtocol
     self.monitorMode = monitorMode
+    self.wallTime = wallTime
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -517,6 +520,11 @@ class JobSubmissionTaskModel:
           self.monitorMode = iprot.readI32();
         else:
           iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I32:
+          self.wallTime = iprot.readI32();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -535,6 +543,10 @@ class JobSubmissionTaskModel:
       oprot.writeFieldBegin('monitorMode', TType.I32, 2)
       oprot.writeI32(self.monitorMode)
       oprot.writeFieldEnd()
+    if self.wallTime is not None:
+      oprot.writeFieldBegin('wallTime', TType.I32, 3)
+      oprot.writeI32(self.wallTime)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -550,6 +562,7 @@ class JobSubmissionTaskModel:
     value = 17
     value = (value * 31) ^ hash(self.jobSubmissionProtocol)
     value = (value * 31) ^ hash(self.monitorMode)
+    value = (value * 31) ^ hash(self.wallTime)
     return value
 
   def __repr__(self):

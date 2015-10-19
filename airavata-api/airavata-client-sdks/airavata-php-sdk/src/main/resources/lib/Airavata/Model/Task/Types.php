@@ -633,6 +633,10 @@ class JobSubmissionTaskModel {
    * @var int
    */
   public $monitorMode = null;
+  /**
+   * @var int
+   */
+  public $wallTime = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -645,6 +649,10 @@ class JobSubmissionTaskModel {
           'var' => 'monitorMode',
           'type' => TType::I32,
           ),
+        3 => array(
+          'var' => 'wallTime',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -653,6 +661,9 @@ class JobSubmissionTaskModel {
       }
       if (isset($vals['monitorMode'])) {
         $this->monitorMode = $vals['monitorMode'];
+      }
+      if (isset($vals['wallTime'])) {
+        $this->wallTime = $vals['wallTime'];
       }
     }
   }
@@ -690,6 +701,13 @@ class JobSubmissionTaskModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 3:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->wallTime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -711,6 +729,11 @@ class JobSubmissionTaskModel {
     if ($this->monitorMode !== null) {
       $xfer += $output->writeFieldBegin('monitorMode', TType::I32, 2);
       $xfer += $output->writeI32($this->monitorMode);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->wallTime !== null) {
+      $xfer += $output->writeFieldBegin('wallTime', TType::I32, 3);
+      $xfer += $output->writeI32($this->wallTime);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
