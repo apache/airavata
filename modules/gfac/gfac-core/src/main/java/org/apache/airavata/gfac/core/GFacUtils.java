@@ -41,12 +41,14 @@ import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.*;
+import org.apache.airavata.model.task.JobSubmissionTaskModel;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.commons.io.FileUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.ZKPaths;
+import org.apache.thrift.TException;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
@@ -403,7 +405,7 @@ public class GFacUtils {
         return ZKPaths.makePath(ZkConstants.ZOOKEEPER_SERVERS_NODE, ZkConstants.ZOOKEEPER_GFAC_SERVER_NODE);
     }
 
-    public static JobDescriptor createJobDescriptor(ProcessContext processContext) throws GFacException, AppCatalogException, ApplicationSettingsException {
+    public static JobDescriptor createJobDescriptor(ProcessContext processContext, TaskContext taskContext) throws GFacException, AppCatalogException, ApplicationSettingsException {
         JobDescriptor jobDescriptor = new JobDescriptor();
         String emailIds = null;
         ProcessModel processModel = processContext.getProcessModel();
@@ -513,6 +515,15 @@ public class GFacUtils {
         jobDescriptor.setShellName("/bin/bash");
         jobDescriptor.setAllEnvExport(true);
         jobDescriptor.setOwner(processContext.getRemoteCluster().getServerInfo().getUserName());
+        // get walltime
+        try {
+            JobSubmissionTaskModel jobSubmissionTaskModel = ((JobSubmissionTaskModel) taskContext.getSubTaskModel());
+            if (jobSubmissionTaskModel.getWallTime() > 0) {
+                jobDescriptor.setMaxWallTime(jobSubmissionTaskModel.getWallTime() + "");
+            }
+        } catch (TException e) {
+            log.error("Error while getting job submissiont sub task model", e);
+        }
 
         ComputationalResourceSchedulingModel scheduling = processModel.getResourceSchedule();
         if (scheduling != null) {
@@ -535,7 +546,9 @@ public class GFacUtils {
                 jobDescriptor.setProcessesPerNode(ppn);
                 jobDescriptor.setCPUCount(totalCPUCount);
             }
-            if (scheduling.getWallTimeLimit() > 0) {
+            // max wall time may be set before this level if jobsubmission task has wall time configured to this job,
+            // if so we ignore scheduling configuration.
+            if (scheduling.getWallTimeLimit() > 0 && jobDescriptor.getMaxWallTime() != null) {
                 jobDescriptor.setMaxWallTime(String.valueOf(scheduling.getWallTimeLimit()));
                 if (resourceJobManager != null) {
                     if (resourceJobManager.getResourceJobManagerType().equals(ResourceJobManagerType.LSF)) {
