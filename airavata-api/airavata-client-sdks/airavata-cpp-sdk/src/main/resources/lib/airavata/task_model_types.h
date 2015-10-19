@@ -279,31 +279,44 @@ class EnvironmentSetupTaskModel {
 
 void swap(EnvironmentSetupTaskModel &a, EnvironmentSetupTaskModel &b);
 
+typedef struct _JobSubmissionTaskModel__isset {
+  _JobSubmissionTaskModel__isset() : wallTime(false) {}
+  bool wallTime :1;
+} _JobSubmissionTaskModel__isset;
 
 class JobSubmissionTaskModel {
  public:
 
-  static const char* ascii_fingerprint; // = "69EF77542FBF7A8DD68310C9FF3B44BD";
-  static const uint8_t binary_fingerprint[16]; // = {0x69,0xEF,0x77,0x54,0x2F,0xBF,0x7A,0x8D,0xD6,0x83,0x10,0xC9,0xFF,0x3B,0x44,0xBD};
+  static const char* ascii_fingerprint; // = "AEF3E1D4E4ADDD8D31BD954A62F3809C";
+  static const uint8_t binary_fingerprint[16]; // = {0xAE,0xF3,0xE1,0xD4,0xE4,0xAD,0xDD,0x8D,0x31,0xBD,0x95,0x4A,0x62,0xF3,0x80,0x9C};
 
   JobSubmissionTaskModel(const JobSubmissionTaskModel&);
   JobSubmissionTaskModel& operator=(const JobSubmissionTaskModel&);
-  JobSubmissionTaskModel() : jobSubmissionProtocol(( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)0), monitorMode(( ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type)0) {
+  JobSubmissionTaskModel() : jobSubmissionProtocol(( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)0), monitorMode(( ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type)0), wallTime(0) {
   }
 
   virtual ~JobSubmissionTaskModel() throw();
    ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type jobSubmissionProtocol;
    ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type monitorMode;
+  int32_t wallTime;
+
+  _JobSubmissionTaskModel__isset __isset;
 
   void __set_jobSubmissionProtocol(const  ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type val);
 
   void __set_monitorMode(const  ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type val);
+
+  void __set_wallTime(const int32_t val);
 
   bool operator == (const JobSubmissionTaskModel & rhs) const
   {
     if (!(jobSubmissionProtocol == rhs.jobSubmissionProtocol))
       return false;
     if (!(monitorMode == rhs.monitorMode))
+      return false;
+    if (__isset.wallTime != rhs.__isset.wallTime)
+      return false;
+    else if (__isset.wallTime && !(wallTime == rhs.wallTime))
       return false;
     return true;
   }

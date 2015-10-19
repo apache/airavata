@@ -667,8 +667,13 @@ void JobSubmissionTaskModel::__set_monitorMode(const  ::apache::airavata::model:
   this->monitorMode = val;
 }
 
-const char* JobSubmissionTaskModel::ascii_fingerprint = "69EF77542FBF7A8DD68310C9FF3B44BD";
-const uint8_t JobSubmissionTaskModel::binary_fingerprint[16] = {0x69,0xEF,0x77,0x54,0x2F,0xBF,0x7A,0x8D,0xD6,0x83,0x10,0xC9,0xFF,0x3B,0x44,0xBD};
+void JobSubmissionTaskModel::__set_wallTime(const int32_t val) {
+  this->wallTime = val;
+__isset.wallTime = true;
+}
+
+const char* JobSubmissionTaskModel::ascii_fingerprint = "AEF3E1D4E4ADDD8D31BD954A62F3809C";
+const uint8_t JobSubmissionTaskModel::binary_fingerprint[16] = {0xAE,0xF3,0xE1,0xD4,0xE4,0xAD,0xDD,0x8D,0x31,0xBD,0x95,0x4A,0x62,0xF3,0x80,0x9C};
 
 uint32_t JobSubmissionTaskModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -712,6 +717,14 @@ uint32_t JobSubmissionTaskModel::read(::apache::thrift::protocol::TProtocol* ipr
           xfer += iprot->skip(ftype);
         }
         break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->wallTime);
+          this->__isset.wallTime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -741,6 +754,11 @@ uint32_t JobSubmissionTaskModel::write(::apache::thrift::protocol::TProtocol* op
   xfer += oprot->writeI32((int32_t)this->monitorMode);
   xfer += oprot->writeFieldEnd();
 
+  if (this->__isset.wallTime) {
+    xfer += oprot->writeFieldBegin("wallTime", ::apache::thrift::protocol::T_I32, 3);
+    xfer += oprot->writeI32(this->wallTime);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
@@ -751,15 +769,21 @@ void swap(JobSubmissionTaskModel &a, JobSubmissionTaskModel &b) {
   using ::std::swap;
   swap(a.jobSubmissionProtocol, b.jobSubmissionProtocol);
   swap(a.monitorMode, b.monitorMode);
+  swap(a.wallTime, b.wallTime);
+  swap(a.__isset, b.__isset);
 }
 
 JobSubmissionTaskModel::JobSubmissionTaskModel(const JobSubmissionTaskModel& other11) {
   jobSubmissionProtocol = other11.jobSubmissionProtocol;
   monitorMode = other11.monitorMode;
+  wallTime = other11.wallTime;
+  __isset = other11.__isset;
 }
 JobSubmissionTaskModel& JobSubmissionTaskModel::operator=(const JobSubmissionTaskModel& other12) {
   jobSubmissionProtocol = other12.jobSubmissionProtocol;
   monitorMode = other12.monitorMode;
+  wallTime = other12.wallTime;
+  __isset = other12.__isset;
   return *this;
 }
 std::ostream& operator<<(std::ostream& out, const JobSubmissionTaskModel& obj) {
@@ -767,6 +791,7 @@ std::ostream& operator<<(std::ostream& out, const JobSubmissionTaskModel& obj) {
   out << "JobSubmissionTaskModel(";
   out << "jobSubmissionProtocol=" << to_string(obj.jobSubmissionProtocol);
   out << ", " << "monitorMode=" << to_string(obj.monitorMode);
+  out << ", " << "wallTime="; (obj.__isset.wallTime ? (out << to_string(obj.wallTime)) : (out << "<null>"));
   out << ")";
   return out;
 }

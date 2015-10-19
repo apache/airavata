@@ -93,7 +93,8 @@ struct EnvironmentSetupTaskModel {
 
 struct JobSubmissionTaskModel {
 	1: required compute_resource_model.JobSubmissionProtocol jobSubmissionProtocol,
-	2: required compute_resource_model.MonitorMode monitorMode
+	2: required compute_resource_model.MonitorMode monitorMode,
+	3: optional i32 wallTime
 }
 
 struct MonitorTaskModel {
