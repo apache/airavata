@@ -141,7 +141,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             List<ProcessModel> processes = orchestrator.createProcesses(experimentId, gatewayId);
             experiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
             for (ProcessModel processModel : processes){
-                orchestrator.createAndSaveTasks(gatewayId, experiment, processModel);
+                String taskDag = orchestrator.createAndSaveTasks(gatewayId, experiment, processModel);
+                processModel.setTaskDag(taskDag);
+                experimentCatalog.update(ExperimentCatalogModelType.PROCESS,processModel, processModel.getProcessId());
             }
             if (experiment == null) {
                 log.error(experimentId, "Error retrieving the Experiment by the given experimentID: {} ", experimentId);
