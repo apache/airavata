@@ -856,6 +856,11 @@ void ExperimentSummaryModel::__set_executionId(const std::string& val) {
 __isset.executionId = true;
 }
 
+void ExperimentSummaryModel::__set_resourceHostId(const std::string& val) {
+  this->resourceHostId = val;
+__isset.resourceHostId = true;
+}
+
 void ExperimentSummaryModel::__set_experimentStatus(const std::string& val) {
   this->experimentStatus = val;
 __isset.experimentStatus = true;
@@ -866,8 +871,8 @@ void ExperimentSummaryModel::__set_statusUpdateTime(const int64_t val) {
 __isset.statusUpdateTime = true;
 }
 
-const char* ExperimentSummaryModel::ascii_fingerprint = "8BEDAEBF98A604CE59206E919CE20121";
-const uint8_t ExperimentSummaryModel::binary_fingerprint[16] = {0x8B,0xED,0xAE,0xBF,0x98,0xA6,0x04,0xCE,0x59,0x20,0x6E,0x91,0x9C,0xE2,0x01,0x21};
+const char* ExperimentSummaryModel::ascii_fingerprint = "16B269FDA6B229DCFC1FD83A8EF8D961";
+const uint8_t ExperimentSummaryModel::binary_fingerprint[16] = {0x16,0xB2,0x69,0xFD,0xA6,0xB2,0x29,0xDC,0xFC,0x1F,0xD8,0x3A,0x8E,0xF8,0xD9,0x61};
 
 uint32_t ExperimentSummaryModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -960,13 +965,21 @@ uint32_t ExperimentSummaryModel::read(::apache::thrift::protocol::TProtocol* ipr
         break;
       case 9:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->resourceHostId);
+          this->__isset.resourceHostId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 10:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->experimentStatus);
           this->__isset.experimentStatus = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 10:
+      case 12:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->statusUpdateTime);
           this->__isset.statusUpdateTime = true;
@@ -1036,13 +1049,18 @@ uint32_t ExperimentSummaryModel::write(::apache::thrift::protocol::TProtocol* op
     xfer += oprot->writeString(this->executionId);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.resourceHostId) {
+    xfer += oprot->writeFieldBegin("resourceHostId", ::apache::thrift::protocol::T_STRING, 9);
+    xfer += oprot->writeString(this->resourceHostId);
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.experimentStatus) {
-    xfer += oprot->writeFieldBegin("experimentStatus", ::apache::thrift::protocol::T_STRING, 9);
+    xfer += oprot->writeFieldBegin("experimentStatus", ::apache::thrift::protocol::T_STRING, 10);
     xfer += oprot->writeString(this->experimentStatus);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.statusUpdateTime) {
-    xfer += oprot->writeFieldBegin("statusUpdateTime", ::apache::thrift::protocol::T_I64, 10);
+    xfer += oprot->writeFieldBegin("statusUpdateTime", ::apache::thrift::protocol::T_I64, 12);
     xfer += oprot->writeI64(this->statusUpdateTime);
     xfer += oprot->writeFieldEnd();
   }
@@ -1062,6 +1080,7 @@ void swap(ExperimentSummaryModel &a, ExperimentSummaryModel &b) {
   swap(a.name, b.name);
   swap(a.description, b.description);
   swap(a.executionId, b.executionId);
+  swap(a.resourceHostId, b.resourceHostId);
   swap(a.experimentStatus, b.experimentStatus);
   swap(a.statusUpdateTime, b.statusUpdateTime);
   swap(a.__isset, b.__isset);
@@ -1076,6 +1095,7 @@ ExperimentSummaryModel::ExperimentSummaryModel(const ExperimentSummaryModel& oth
   name = other29.name;
   description = other29.description;
   executionId = other29.executionId;
+  resourceHostId = other29.resourceHostId;
   experimentStatus = other29.experimentStatus;
   statusUpdateTime = other29.statusUpdateTime;
   __isset = other29.__isset;
@@ -1089,6 +1109,7 @@ ExperimentSummaryModel& ExperimentSummaryModel::operator=(const ExperimentSummar
   name = other30.name;
   description = other30.description;
   executionId = other30.executionId;
+  resourceHostId = other30.resourceHostId;
   experimentStatus = other30.experimentStatus;
   statusUpdateTime = other30.statusUpdateTime;
   __isset = other30.__isset;
@@ -1105,6 +1126,7 @@ std::ostream& operator<<(std::ostream& out, const ExperimentSummaryModel& obj) {
   out << ", " << "name=" << to_string(obj.name);
   out << ", " << "description="; (obj.__isset.description ? (out << to_string(obj.description)) : (out << "<null>"));
   out << ", " << "executionId="; (obj.__isset.executionId ? (out << to_string(obj.executionId)) : (out << "<null>"));
+  out << ", " << "resourceHostId="; (obj.__isset.resourceHostId ? (out << to_string(obj.resourceHostId)) : (out << "<null>"));
   out << ", " << "experimentStatus="; (obj.__isset.experimentStatus ? (out << to_string(obj.experimentStatus)) : (out << "<null>"));
   out << ", " << "statusUpdateTime="; (obj.__isset.statusUpdateTime ? (out << to_string(obj.statusUpdateTime)) : (out << "<null>"));
   out << ")";
@@ -1170,8 +1192,8 @@ void ExperimentStatistics::__set_runningExperiments(const std::vector<Experiment
 __isset.runningExperiments = true;
 }
 
-const char* ExperimentStatistics::ascii_fingerprint = "053DB8287C3622EF3F365114D97877EA";
-const uint8_t ExperimentStatistics::binary_fingerprint[16] = {0x05,0x3D,0xB8,0x28,0x7C,0x36,0x22,0xEF,0x3F,0x36,0x51,0x14,0xD9,0x78,0x77,0xEA};
+const char* ExperimentStatistics::ascii_fingerprint = "79CB3C5E2ABF10953FD942125C519FED";
+const uint8_t ExperimentStatistics::binary_fingerprint[16] = {0x79,0xCB,0x3C,0x5E,0x2A,0xBF,0x10,0x95,0x3F,0xD9,0x42,0x12,0x5C,0x51,0x9F,0xED};
 
 uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot) {
 

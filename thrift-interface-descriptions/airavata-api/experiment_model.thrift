@@ -102,8 +102,9 @@ struct ExperimentSummaryModel {
     6: required string name,
     7: optional string description,
     8: optional string executionId,
-    9: optional string experimentStatus,
-   10: optional i64 statusUpdateTime
+    9: optional string resourceHostId,
+   10: optional string experimentStatus,
+   12: optional i64 statusUpdateTime
 }
 
 struct ExperimentStatistics {
