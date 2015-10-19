@@ -562,6 +562,7 @@ class ExperimentSummaryModel:
    - name
    - description
    - executionId
+   - resourceHostId
    - experimentStatus
    - statusUpdateTime
   """
@@ -576,11 +577,13 @@ class ExperimentSummaryModel:
     (6, TType.STRING, 'name', None, None, ), # 6
     (7, TType.STRING, 'description', None, None, ), # 7
     (8, TType.STRING, 'executionId', None, None, ), # 8
-    (9, TType.STRING, 'experimentStatus', None, None, ), # 9
-    (10, TType.I64, 'statusUpdateTime', None, None, ), # 10
+    (9, TType.STRING, 'resourceHostId', None, None, ), # 9
+    (10, TType.STRING, 'experimentStatus', None, None, ), # 10
+    None, # 11
+    (12, TType.I64, 'statusUpdateTime', None, None, ), # 12
   )
 
-  def __init__(self, experimentId=None, projectId=None, gatewayId=None, creationTime=None, userName=None, name=None, description=None, executionId=None, experimentStatus=None, statusUpdateTime=None,):
+  def __init__(self, experimentId=None, projectId=None, gatewayId=None, creationTime=None, userName=None, name=None, description=None, executionId=None, resourceHostId=None, experimentStatus=None, statusUpdateTime=None,):
     self.experimentId = experimentId
     self.projectId = projectId
     self.gatewayId = gatewayId
@@ -589,6 +592,7 @@ class ExperimentSummaryModel:
     self.name = name
     self.description = description
     self.executionId = executionId
+    self.resourceHostId = resourceHostId
     self.experimentStatus = experimentStatus
     self.statusUpdateTime = statusUpdateTime
 
@@ -643,10 +647,15 @@ class ExperimentSummaryModel:
           iprot.skip(ftype)
       elif fid == 9:
         if ftype == TType.STRING:
-          self.experimentStatus = iprot.readString();
+          self.resourceHostId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 10:
+        if ftype == TType.STRING:
+          self.experimentStatus = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 12:
         if ftype == TType.I64:
           self.statusUpdateTime = iprot.readI64();
         else:
@@ -693,12 +702,16 @@ class ExperimentSummaryModel:
       oprot.writeFieldBegin('executionId', TType.STRING, 8)
       oprot.writeString(self.executionId)
       oprot.writeFieldEnd()
+    if self.resourceHostId is not None:
+      oprot.writeFieldBegin('resourceHostId', TType.STRING, 9)
+      oprot.writeString(self.resourceHostId)
+      oprot.writeFieldEnd()
     if self.experimentStatus is not None:
-      oprot.writeFieldBegin('experimentStatus', TType.STRING, 9)
+      oprot.writeFieldBegin('experimentStatus', TType.STRING, 10)
       oprot.writeString(self.experimentStatus)
       oprot.writeFieldEnd()
     if self.statusUpdateTime is not None:
-      oprot.writeFieldBegin('statusUpdateTime', TType.I64, 10)
+      oprot.writeFieldBegin('statusUpdateTime', TType.I64, 12)
       oprot.writeI64(self.statusUpdateTime)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -728,6 +741,7 @@ class ExperimentSummaryModel:
     value = (value * 31) ^ hash(self.name)
     value = (value * 31) ^ hash(self.description)
     value = (value * 31) ^ hash(self.executionId)
+    value = (value * 31) ^ hash(self.resourceHostId)
     value = (value * 31) ^ hash(self.experimentStatus)
     value = (value * 31) ^ hash(self.statusUpdateTime)
     return value

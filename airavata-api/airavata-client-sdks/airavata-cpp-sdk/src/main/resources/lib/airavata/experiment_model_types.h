@@ -315,10 +315,11 @@ class ExperimentModel {
 void swap(ExperimentModel &a, ExperimentModel &b);
 
 typedef struct _ExperimentSummaryModel__isset {
-  _ExperimentSummaryModel__isset() : creationTime(false), description(false), executionId(false), experimentStatus(false), statusUpdateTime(false) {}
+  _ExperimentSummaryModel__isset() : creationTime(false), description(false), executionId(false), resourceHostId(false), experimentStatus(false), statusUpdateTime(false) {}
   bool creationTime :1;
   bool description :1;
   bool executionId :1;
+  bool resourceHostId :1;
   bool experimentStatus :1;
   bool statusUpdateTime :1;
 } _ExperimentSummaryModel__isset;
@@ -326,12 +327,12 @@ typedef struct _ExperimentSummaryModel__isset {
 class ExperimentSummaryModel {
  public:
 
-  static const char* ascii_fingerprint; // = "8BEDAEBF98A604CE59206E919CE20121";
-  static const uint8_t binary_fingerprint[16]; // = {0x8B,0xED,0xAE,0xBF,0x98,0xA6,0x04,0xCE,0x59,0x20,0x6E,0x91,0x9C,0xE2,0x01,0x21};
+  static const char* ascii_fingerprint; // = "16B269FDA6B229DCFC1FD83A8EF8D961";
+  static const uint8_t binary_fingerprint[16]; // = {0x16,0xB2,0x69,0xFD,0xA6,0xB2,0x29,0xDC,0xFC,0x1F,0xD8,0x3A,0x8E,0xF8,0xD9,0x61};
 
   ExperimentSummaryModel(const ExperimentSummaryModel&);
   ExperimentSummaryModel& operator=(const ExperimentSummaryModel&);
-  ExperimentSummaryModel() : experimentId(), projectId(), gatewayId(), creationTime(0), userName(), name(), description(), executionId(), experimentStatus(), statusUpdateTime(0) {
+  ExperimentSummaryModel() : experimentId(), projectId(), gatewayId(), creationTime(0), userName(), name(), description(), executionId(), resourceHostId(), experimentStatus(), statusUpdateTime(0) {
   }
 
   virtual ~ExperimentSummaryModel() throw();
@@ -343,6 +344,7 @@ class ExperimentSummaryModel {
   std::string name;
   std::string description;
   std::string executionId;
+  std::string resourceHostId;
   std::string experimentStatus;
   int64_t statusUpdateTime;
 
@@ -363,6 +365,8 @@ class ExperimentSummaryModel {
   void __set_description(const std::string& val);
 
   void __set_executionId(const std::string& val);
+
+  void __set_resourceHostId(const std::string& val);
 
   void __set_experimentStatus(const std::string& val);
 
@@ -391,6 +395,10 @@ class ExperimentSummaryModel {
     if (__isset.executionId != rhs.__isset.executionId)
       return false;
     else if (__isset.executionId && !(executionId == rhs.executionId))
+      return false;
+    if (__isset.resourceHostId != rhs.__isset.resourceHostId)
+      return false;
+    else if (__isset.resourceHostId && !(resourceHostId == rhs.resourceHostId))
       return false;
     if (__isset.experimentStatus != rhs.__isset.experimentStatus)
       return false;
@@ -429,8 +437,8 @@ typedef struct _ExperimentStatistics__isset {
 class ExperimentStatistics {
  public:
 
-  static const char* ascii_fingerprint; // = "053DB8287C3622EF3F365114D97877EA";
-  static const uint8_t binary_fingerprint[16]; // = {0x05,0x3D,0xB8,0x28,0x7C,0x36,0x22,0xEF,0x3F,0x36,0x51,0x14,0xD9,0x78,0x77,0xEA};
+  static const char* ascii_fingerprint; // = "79CB3C5E2ABF10953FD942125C519FED";
+  static const uint8_t binary_fingerprint[16]; // = {0x79,0xCB,0x3C,0x5E,0x2A,0xBF,0x10,0x95,0x3F,0xD9,0x42,0x12,0x5C,0x51,0x9F,0xED};
 
   ExperimentStatistics(const ExperimentStatistics&);
   ExperimentStatistics& operator=(const ExperimentStatistics&);

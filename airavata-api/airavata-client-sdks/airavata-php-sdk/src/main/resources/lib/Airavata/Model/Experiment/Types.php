@@ -883,6 +883,10 @@ class ExperimentSummaryModel {
   /**
    * @var string
    */
+  public $resourceHostId = null;
+  /**
+   * @var string
+   */
   public $experimentStatus = null;
   /**
    * @var int
@@ -925,10 +929,14 @@ class ExperimentSummaryModel {
           'type' => TType::STRING,
           ),
         9 => array(
-          'var' => 'experimentStatus',
+          'var' => 'resourceHostId',
           'type' => TType::STRING,
           ),
         10 => array(
+          'var' => 'experimentStatus',
+          'type' => TType::STRING,
+          ),
+        12 => array(
           'var' => 'statusUpdateTime',
           'type' => TType::I64,
           ),
@@ -958,6 +966,9 @@ class ExperimentSummaryModel {
       }
       if (isset($vals['executionId'])) {
         $this->executionId = $vals['executionId'];
+      }
+      if (isset($vals['resourceHostId'])) {
+        $this->resourceHostId = $vals['resourceHostId'];
       }
       if (isset($vals['experimentStatus'])) {
         $this->experimentStatus = $vals['experimentStatus'];
@@ -1045,12 +1056,19 @@ class ExperimentSummaryModel {
           break;
         case 9:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->experimentStatus);
+            $xfer += $input->readString($this->resourceHostId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 10:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->experimentStatus);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 12:
           if ($ftype == TType::I64) {
             $xfer += $input->readI64($this->statusUpdateTime);
           } else {
@@ -1110,13 +1128,18 @@ class ExperimentSummaryModel {
       $xfer += $output->writeString($this->executionId);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->resourceHostId !== null) {
+      $xfer += $output->writeFieldBegin('resourceHostId', TType::STRING, 9);
+      $xfer += $output->writeString($this->resourceHostId);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->experimentStatus !== null) {
-      $xfer += $output->writeFieldBegin('experimentStatus', TType::STRING, 9);
+      $xfer += $output->writeFieldBegin('experimentStatus', TType::STRING, 10);
       $xfer += $output->writeString($this->experimentStatus);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->statusUpdateTime !== null) {
-      $xfer += $output->writeFieldBegin('statusUpdateTime', TType::I64, 10);
+      $xfer += $output->writeFieldBegin('statusUpdateTime', TType::I64, 12);
       $xfer += $output->writeI64($this->statusUpdateTime);
       $xfer += $output->writeFieldEnd();
     }
