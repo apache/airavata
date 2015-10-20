@@ -46,6 +46,16 @@ const char* _kTaskTypesNames[] = {
 };
 const std::map<int, const char*> _TaskTypes_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(5, _kTaskTypesValues, _kTaskTypesNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
+int _kDataStageTypeValues[] = {
+  DataStageType::INPUT,
+  DataStageType::OUPUT
+};
+const char* _kDataStageTypeNames[] = {
+  "INPUT",
+  "OUPUT"
+};
+const std::map<int, const char*> _DataStageType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kDataStageTypeValues, _kDataStageTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
 
 TaskModel::~TaskModel() throw() {
 }
@@ -335,6 +345,10 @@ void DataStagingTaskModel::__set_destination(const std::string& val) {
   this->destination = val;
 }
 
+void DataStagingTaskModel::__set_type(const DataStageType::type val) {
+  this->type = val;
+}
+
 void DataStagingTaskModel::__set_transferStartTime(const int64_t val) {
   this->transferStartTime = val;
 __isset.transferStartTime = true;
@@ -350,8 +364,8 @@ void DataStagingTaskModel::__set_transferRate(const std::string& val) {
 __isset.transferRate = true;
 }
 
-const char* DataStagingTaskModel::ascii_fingerprint = "3224DD8D1EC3134AB6350703A4B92D60";
-const uint8_t DataStagingTaskModel::binary_fingerprint[16] = {0x32,0x24,0xDD,0x8D,0x1E,0xC3,0x13,0x4A,0xB6,0x35,0x07,0x03,0xA4,0xB9,0x2D,0x60};
+const char* DataStagingTaskModel::ascii_fingerprint = "68560D7ABF8515154C93E0A04DD9CF55";
+const uint8_t DataStagingTaskModel::binary_fingerprint[16] = {0x68,0x56,0x0D,0x7A,0xBF,0x85,0x15,0x15,0x4C,0x93,0xE0,0xA0,0x4D,0xD9,0xCF,0x55};
 
 uint32_t DataStagingTaskModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -366,6 +380,7 @@ uint32_t DataStagingTaskModel::read(::apache::thrift::protocol::TProtocol* iprot
 
   bool isset_source = false;
   bool isset_destination = false;
+  bool isset_type = false;
 
   while (true)
   {
@@ -392,6 +407,16 @@ uint32_t DataStagingTaskModel::read(::apache::thrift::protocol::TProtocol* iprot
         }
         break;
       case 3:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast3;
+          xfer += iprot->readI32(ecast3);
+          this->type = (DataStageType::type)ecast3;
+          isset_type = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->transferStartTime);
           this->__isset.transferStartTime = true;
@@ -399,7 +424,7 @@ uint32_t DataStagingTaskModel::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->transferEndTime);
           this->__isset.transferEndTime = true;
@@ -407,7 +432,7 @@ uint32_t DataStagingTaskModel::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
-      case 5:
+      case 6:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->transferRate);
           this->__isset.transferRate = true;
@@ -428,6 +453,8 @@ uint32_t DataStagingTaskModel::read(::apache::thrift::protocol::TProtocol* iprot
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_destination)
     throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_type)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
@@ -444,18 +471,22 @@ uint32_t DataStagingTaskModel::write(::apache::thrift::protocol::TProtocol* opro
   xfer += oprot->writeString(this->destination);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("type", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32((int32_t)this->type);
+  xfer += oprot->writeFieldEnd();
+
   if (this->__isset.transferStartTime) {
-    xfer += oprot->writeFieldBegin("transferStartTime", ::apache::thrift::protocol::T_I64, 3);
+    xfer += oprot->writeFieldBegin("transferStartTime", ::apache::thrift::protocol::T_I64, 4);
     xfer += oprot->writeI64(this->transferStartTime);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.transferEndTime) {
-    xfer += oprot->writeFieldBegin("transferEndTime", ::apache::thrift::protocol::T_I64, 4);
+    xfer += oprot->writeFieldBegin("transferEndTime", ::apache::thrift::protocol::T_I64, 5);
     xfer += oprot->writeI64(this->transferEndTime);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.transferRate) {
-    xfer += oprot->writeFieldBegin("transferRate", ::apache::thrift::protocol::T_STRING, 5);
+    xfer += oprot->writeFieldBegin("transferRate", ::apache::thrift::protocol::T_STRING, 6);
     xfer += oprot->writeString(this->transferRate);
     xfer += oprot->writeFieldEnd();
   }
@@ -469,27 +500,30 @@ void swap(DataStagingTaskModel &a, DataStagingTaskModel &b) {
   using ::std::swap;
   swap(a.source, b.source);
   swap(a.destination, b.destination);
+  swap(a.type, b.type);
   swap(a.transferStartTime, b.transferStartTime);
   swap(a.transferEndTime, b.transferEndTime);
   swap(a.transferRate, b.transferRate);
   swap(a.__isset, b.__isset);
 }
 
-DataStagingTaskModel::DataStagingTaskModel(const DataStagingTaskModel& other3) {
-  source = other3.source;
-  destination = other3.destination;
-  transferStartTime = other3.transferStartTime;
-  transferEndTime = other3.transferEndTime;
-  transferRate = other3.transferRate;
-  __isset = other3.__isset;
-}
-DataStagingTaskModel& DataStagingTaskModel::operator=(const DataStagingTaskModel& other4) {
+DataStagingTaskModel::DataStagingTaskModel(const DataStagingTaskModel& other4) {
   source = other4.source;
   destination = other4.destination;
+  type = other4.type;
   transferStartTime = other4.transferStartTime;
   transferEndTime = other4.transferEndTime;
   transferRate = other4.transferRate;
   __isset = other4.__isset;
+}
+DataStagingTaskModel& DataStagingTaskModel::operator=(const DataStagingTaskModel& other5) {
+  source = other5.source;
+  destination = other5.destination;
+  type = other5.type;
+  transferStartTime = other5.transferStartTime;
+  transferEndTime = other5.transferEndTime;
+  transferRate = other5.transferRate;
+  __isset = other5.__isset;
   return *this;
 }
 std::ostream& operator<<(std::ostream& out, const DataStagingTaskModel& obj) {
@@ -497,6 +531,7 @@ std::ostream& operator<<(std::ostream& out, const DataStagingTaskModel& obj) {
   out << "DataStagingTaskModel(";
   out << "source=" << to_string(obj.source);
   out << ", " << "destination=" << to_string(obj.destination);
+  out << ", " << "type=" << to_string(obj.type);
   out << ", " << "transferStartTime="; (obj.__isset.transferStartTime ? (out << to_string(obj.transferStartTime)) : (out << "<null>"));
   out << ", " << "transferEndTime="; (obj.__isset.transferEndTime ? (out << to_string(obj.transferEndTime)) : (out << "<null>"));
   out << ", " << "transferRate="; (obj.__isset.transferRate ? (out << to_string(obj.transferRate)) : (out << "<null>"));
@@ -552,9 +587,9 @@ uint32_t EnvironmentSetupTaskModel::read(::apache::thrift::protocol::TProtocol* 
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast5;
-          xfer += iprot->readI32(ecast5);
-          this->protocol = ( ::apache::airavata::model::appcatalog::computeresource::SecurityProtocol::type)ecast5;
+          int32_t ecast6;
+          xfer += iprot->readI32(ecast6);
+          this->protocol = ( ::apache::airavata::model::appcatalog::computeresource::SecurityProtocol::type)ecast6;
           isset_protocol = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -601,13 +636,13 @@ void swap(EnvironmentSetupTaskModel &a, EnvironmentSetupTaskModel &b) {
   swap(a.protocol, b.protocol);
 }
 
-EnvironmentSetupTaskModel::EnvironmentSetupTaskModel(const EnvironmentSetupTaskModel& other6) {
-  location = other6.location;
-  protocol = other6.protocol;
-}
-EnvironmentSetupTaskModel& EnvironmentSetupTaskModel::operator=(const EnvironmentSetupTaskModel& other7) {
+EnvironmentSetupTaskModel::EnvironmentSetupTaskModel(const EnvironmentSetupTaskModel& other7) {
   location = other7.location;
   protocol = other7.protocol;
+}
+EnvironmentSetupTaskModel& EnvironmentSetupTaskModel::operator=(const EnvironmentSetupTaskModel& other8) {
+  location = other8.location;
+  protocol = other8.protocol;
   return *this;
 }
 std::ostream& operator<<(std::ostream& out, const EnvironmentSetupTaskModel& obj) {
@@ -615,6 +650,240 @@ std::ostream& operator<<(std::ostream& out, const EnvironmentSetupTaskModel& obj
   out << "EnvironmentSetupTaskModel(";
   out << "location=" << to_string(obj.location);
   out << ", " << "protocol=" << to_string(obj.protocol);
+  out << ")";
+  return out;
+}
+
+
+JobSubmissionTaskModel::~JobSubmissionTaskModel() throw() {
+}
+
+
+void JobSubmissionTaskModel::__set_jobSubmissionProtocol(const  ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type val) {
+  this->jobSubmissionProtocol = val;
+}
+
+void JobSubmissionTaskModel::__set_monitorMode(const  ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type val) {
+  this->monitorMode = val;
+}
+
+void JobSubmissionTaskModel::__set_wallTime(const int32_t val) {
+  this->wallTime = val;
+__isset.wallTime = true;
+}
+
+const char* JobSubmissionTaskModel::ascii_fingerprint = "AEF3E1D4E4ADDD8D31BD954A62F3809C";
+const uint8_t JobSubmissionTaskModel::binary_fingerprint[16] = {0xAE,0xF3,0xE1,0xD4,0xE4,0xAD,0xDD,0x8D,0x31,0xBD,0x95,0x4A,0x62,0xF3,0x80,0x9C};
+
+uint32_t JobSubmissionTaskModel::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_jobSubmissionProtocol = false;
+  bool isset_monitorMode = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast9;
+          xfer += iprot->readI32(ecast9);
+          this->jobSubmissionProtocol = ( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)ecast9;
+          isset_jobSubmissionProtocol = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast10;
+          xfer += iprot->readI32(ecast10);
+          this->monitorMode = ( ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type)ecast10;
+          isset_monitorMode = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->wallTime);
+          this->__isset.wallTime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_jobSubmissionProtocol)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_monitorMode)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t JobSubmissionTaskModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("JobSubmissionTaskModel");
+
+  xfer += oprot->writeFieldBegin("jobSubmissionProtocol", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32((int32_t)this->jobSubmissionProtocol);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("monitorMode", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeI32((int32_t)this->monitorMode);
+  xfer += oprot->writeFieldEnd();
+
+  if (this->__isset.wallTime) {
+    xfer += oprot->writeFieldBegin("wallTime", ::apache::thrift::protocol::T_I32, 3);
+    xfer += oprot->writeI32(this->wallTime);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+void swap(JobSubmissionTaskModel &a, JobSubmissionTaskModel &b) {
+  using ::std::swap;
+  swap(a.jobSubmissionProtocol, b.jobSubmissionProtocol);
+  swap(a.monitorMode, b.monitorMode);
+  swap(a.wallTime, b.wallTime);
+  swap(a.__isset, b.__isset);
+}
+
+JobSubmissionTaskModel::JobSubmissionTaskModel(const JobSubmissionTaskModel& other11) {
+  jobSubmissionProtocol = other11.jobSubmissionProtocol;
+  monitorMode = other11.monitorMode;
+  wallTime = other11.wallTime;
+  __isset = other11.__isset;
+}
+JobSubmissionTaskModel& JobSubmissionTaskModel::operator=(const JobSubmissionTaskModel& other12) {
+  jobSubmissionProtocol = other12.jobSubmissionProtocol;
+  monitorMode = other12.monitorMode;
+  wallTime = other12.wallTime;
+  __isset = other12.__isset;
+  return *this;
+}
+std::ostream& operator<<(std::ostream& out, const JobSubmissionTaskModel& obj) {
+  using apache::thrift::to_string;
+  out << "JobSubmissionTaskModel(";
+  out << "jobSubmissionProtocol=" << to_string(obj.jobSubmissionProtocol);
+  out << ", " << "monitorMode=" << to_string(obj.monitorMode);
+  out << ", " << "wallTime="; (obj.__isset.wallTime ? (out << to_string(obj.wallTime)) : (out << "<null>"));
+  out << ")";
+  return out;
+}
+
+
+MonitorTaskModel::~MonitorTaskModel() throw() {
+}
+
+
+void MonitorTaskModel::__set_monitorMode(const  ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type val) {
+  this->monitorMode = val;
+}
+
+const char* MonitorTaskModel::ascii_fingerprint = "8BBB3D0C3B370CB38F2D1340BB79F0AA";
+const uint8_t MonitorTaskModel::binary_fingerprint[16] = {0x8B,0xBB,0x3D,0x0C,0x3B,0x37,0x0C,0xB3,0x8F,0x2D,0x13,0x40,0xBB,0x79,0xF0,0xAA};
+
+uint32_t MonitorTaskModel::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_monitorMode = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast13;
+          xfer += iprot->readI32(ecast13);
+          this->monitorMode = ( ::apache::airavata::model::appcatalog::computeresource::MonitorMode::type)ecast13;
+          isset_monitorMode = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_monitorMode)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t MonitorTaskModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("MonitorTaskModel");
+
+  xfer += oprot->writeFieldBegin("monitorMode", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32((int32_t)this->monitorMode);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+void swap(MonitorTaskModel &a, MonitorTaskModel &b) {
+  using ::std::swap;
+  swap(a.monitorMode, b.monitorMode);
+}
+
+MonitorTaskModel::MonitorTaskModel(const MonitorTaskModel& other14) {
+  monitorMode = other14.monitorMode;
+}
+MonitorTaskModel& MonitorTaskModel::operator=(const MonitorTaskModel& other15) {
+  monitorMode = other15.monitorMode;
+  return *this;
+}
+std::ostream& operator<<(std::ostream& out, const MonitorTaskModel& obj) {
+  using apache::thrift::to_string;
+  out << "MonitorTaskModel(";
+  out << "monitorMode=" << to_string(obj.monitorMode);
   out << ")";
   return out;
 }
