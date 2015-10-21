@@ -20,7 +20,9 @@
 */
 package org.apache.airavata.orchestrator.cpi.impl;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.model.appcatalog.computeresource.*;
@@ -388,11 +390,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             for (OutputDataObjectType processOutput : processOutputs) {
                 DataType type = processOutput.getType();
                 switch (type) {
-                    case STDERR:
-                        break;
-                    case STDOUT:
-                        break;
-                    case URI:
+                    case URI: case STDOUT : case STDERR:
                         try {
                             TaskModel outputDataStagingTask = getOutputDataStagingTask(processModel, processOutput, gatewayId);
                             String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, outputDataStagingTask,
@@ -400,7 +398,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                             outputDataStagingTask.setTaskId(taskId);
                             dataStagingTaskIds.add(outputDataStagingTask.getTaskId());
                         } catch (TException e) {
-                            throw new RegistryException("Error while serializing data staging sub task model");
+                            throw new RegistryException("Error while serializing data staging sub task model", e);
+                        } catch (ApplicationSettingsException e) {
+                            throw new RegistryException("Error while reading airavata server properties", e);
                         }
                         break;
                     default:
@@ -485,7 +485,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         return taskModel;
     }
 
-    private TaskModel getOutputDataStagingTask(ProcessModel processModel, OutputDataObjectType processOutput, String gatewayId) throws RegistryException, TException {
+    private TaskModel getOutputDataStagingTask(ProcessModel processModel, OutputDataObjectType processOutput, String gatewayId) throws RegistryException, TException, ApplicationSettingsException {
         try {
 
             // create new task model for this task
@@ -497,11 +497,15 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             taskModel.setTaskStatus(taskStatus);
             taskModel.setTaskType(TaskTypes.DATA_STAGING);
-            // create data staging sub task model
+            // We assume output location is set at data storage preference
             DataStoragePreference dataStoragePreference = OrchestratorUtils.getDateStoragePreference(orchestratorContext, processModel, gatewayId);
             ComputeResourcePreference computeResourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
             ComputeResourceDescription computeResource = orchestratorContext.getRegistry().getAppCatalog().getComputeResource().getComputeResource(processModel.getComputeResourceId());
-            String remoteOutputDir = dataStoragePreference.getFileSystemRootLocation();
+            // FIXME : need to fix once we start saving data storage preferences
+            String remoteOutputDir = ServerSettings.getRemoteDataLocation();
+            if (dataStoragePreference != null){
+                remoteOutputDir = dataStoragePreference.getFileSystemRootLocation();
+            }
             remoteOutputDir = remoteOutputDir.endsWith("/") ? remoteOutputDir : remoteOutputDir + "/";
             DataStagingTaskModel submodel = new DataStagingTaskModel();
             submodel.setType(DataStageType.OUPUT);
@@ -523,6 +527,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             return taskModel;
         } catch (AppCatalogException | TaskException e) {
            throw new RegistryException("Error occurred while retrieving data movement from app catalog", e);
+        } catch (ApplicationSettingsException e) {
+            throw new ApplicationSettingsException("Error occurred while reading airavata-server.properties", e);
         }
     }
 
