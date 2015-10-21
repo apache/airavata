@@ -286,7 +286,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             ComputeResourceDescription computeResource = appCatalog.getComputeResource().getComputeResource(resourceHostId);
 
             List<String> taskIdList = createAndSaveEnvSetupTask(gatewayId, processModel, experimentCatalog);
-            taskIdList.addAll(createAndSaveDataStagingTasks(processModel, gatewayId));
+            taskIdList.addAll(createAndSaveInputDataStagingTasks(processModel));
 
             if (autoSchedule) {
                 List<BatchQueue> definedBatchQueues = computeResource.getBatchQueues();
@@ -311,7 +311,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             } else {
                 taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId, processModel, userGivenWallTime));
             }
-
+            taskIdList.addAll(createAndSaveOutputDataStagingTasks(processModel, gatewayId));
             return getTaskDag(taskIdList);
         } catch (Exception e) {
             throw new OrchestratorException("Error during creating process");
@@ -354,10 +354,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         return envTaskIds;
     }
 
-    public List<String> createAndSaveDataStagingTasks (ProcessModel processModel, String gatewayId) throws RegistryException {
+    public List<String> createAndSaveInputDataStagingTasks(ProcessModel processModel) throws RegistryException {
         List<String> dataStagingTaskIds = new ArrayList<>();
         List<InputDataObjectType> processInputs = processModel.getProcessInputs();
-        List<OutputDataObjectType> processOutputs = processModel.getProcessOutputs();
 
         sortByInputOrder(processInputs);
         if (processInputs != null) {
@@ -385,6 +384,12 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 }
             }
         }
+        return dataStagingTaskIds;
+    }
+
+    public List<String> createAndSaveOutputDataStagingTasks(ProcessModel processModel, String gatewayId) throws RegistryException {
+        List<String> dataStagingTaskIds = new ArrayList<>();
+        List<OutputDataObjectType> processOutputs = processModel.getProcessOutputs();
 
         if (processOutputs != null) {
             for (OutputDataObjectType processOutput : processOutputs) {
@@ -409,7 +414,6 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 }
             }
         }
-
         return dataStagingTaskIds;
     }
 
