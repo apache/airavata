@@ -444,7 +444,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         TaskStatus monitorTaskStatus = new TaskStatus(TaskState.CREATED);
         monitorTaskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         monitorTaskModel.setTaskStatus(monitorTaskStatus);
-        taskModel.setTaskType(TaskTypes.MONITORING);
+        monitorTaskModel.setTaskType(TaskTypes.MONITORING);
         MonitorTaskModel monitorSubTaskModel = new MonitorTaskModel();
         monitorSubTaskModel.setMonitorMode(MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR);
         monitorTaskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(monitorSubTaskModel));
