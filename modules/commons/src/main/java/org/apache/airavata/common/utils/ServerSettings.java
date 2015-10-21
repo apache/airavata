@@ -382,7 +382,7 @@ public class ServerSettings extends ApplicationSettings {
     }
 
     public static String getRemoteDataLocation() throws ApplicationSettingsException {
-        return getSetting(LOCAL_DATA_DIR);
+        return getSetting(REMOTE_DATA_DIR);
     }
 
     public static String getClientHostName() throws ApplicationSettingsException {
