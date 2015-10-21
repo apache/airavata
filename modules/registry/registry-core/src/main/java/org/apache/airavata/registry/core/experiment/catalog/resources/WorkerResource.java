@@ -719,7 +719,7 @@ public class WorkerResource extends AbstractExpCatResource {
                 query += "e.state='" + expState.toString() + "' AND ";
             }
             query += "e.creationTime > '" + fromTime + "' " + "AND e.creationTime <'" + toTime + "' AND ";
-            query += "e." + ExperimentConstants.GATEWAY_ID + "= '" + gatewayId + "'";
+            query += "e." + ExperimentConstants.GATEWAY_ID + "= '" + gatewayId + "' ORDER BY e.creationTime DESC";
 
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
