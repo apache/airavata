@@ -480,6 +480,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         DataStagingTaskModel submodel = new DataStagingTaskModel();
         submodel.setType(DataStageType.INPUT);
         submodel.setSource(processInput.getValue());
+        submodel.setProcessInput(processInput);
         // We don't know destination location at this time, data staging task will set this.
         // because destination is required field we set dummy destination
         submodel.setDestination("dummy://temp/file/location");
@@ -507,6 +508,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             remoteOutputDir = remoteOutputDir.endsWith("/") ? remoteOutputDir : remoteOutputDir + "/";
             DataStagingTaskModel submodel = new DataStagingTaskModel();
             submodel.setType(DataStageType.OUPUT);
+            submodel.setProcessOutput(processOutput);
             URI source = null;
             try {
                 DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(orchestratorContext, processModel, gatewayId);

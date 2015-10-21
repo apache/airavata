@@ -36,8 +36,6 @@ public class ServerSettings extends ApplicationSettings {
     private static final String DEFAULT_USER_PASSWORD = "default.registry.password";
     private static final String DEFAULT_USER_GATEWAY = "default.registry.gateway";
     private static final String LOCAL_DATA_DIR = "local.data.dir";
-    private static final String REMOTE_DATA_DIR = "remote.data.dir";
-    private static final String CLIENT_HOST_NAME = "client.host.name";
 
     public static final String IP = "ip";
 
@@ -379,13 +377,5 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String getLocalDataLocation() {
         return getSetting(LOCAL_DATA_DIR, System.getProperty("java.io.tmpdir"));
-    }
-
-    public static String getRemoteDataLocation() throws ApplicationSettingsException {
-        return getSetting(REMOTE_DATA_DIR);
-    }
-
-    public static String getClientHostName() throws ApplicationSettingsException {
-        return getSetting(CLIENT_HOST_NAME);
     }
 }

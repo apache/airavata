@@ -364,8 +364,18 @@ void DataStagingTaskModel::__set_transferRate(const std::string& val) {
 __isset.transferRate = true;
 }
 
-const char* DataStagingTaskModel::ascii_fingerprint = "68560D7ABF8515154C93E0A04DD9CF55";
-const uint8_t DataStagingTaskModel::binary_fingerprint[16] = {0x68,0x56,0x0D,0x7A,0xBF,0x85,0x15,0x15,0x4C,0x93,0xE0,0xA0,0x4D,0xD9,0xCF,0x55};
+void DataStagingTaskModel::__set_processInput(const  ::apache::airavata::model::application::io::InputDataObjectType& val) {
+  this->processInput = val;
+__isset.processInput = true;
+}
+
+void DataStagingTaskModel::__set_processOutput(const  ::apache::airavata::model::application::io::OutputDataObjectType& val) {
+  this->processOutput = val;
+__isset.processOutput = true;
+}
+
+const char* DataStagingTaskModel::ascii_fingerprint = "4A4BD6E9E8FE06F3A30D5B74D322C61E";
+const uint8_t DataStagingTaskModel::binary_fingerprint[16] = {0x4A,0x4B,0xD6,0xE9,0xE8,0xFE,0x06,0xF3,0xA3,0x0D,0x5B,0x74,0xD3,0x22,0xC6,0x1E};
 
 uint32_t DataStagingTaskModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -440,6 +450,22 @@ uint32_t DataStagingTaskModel::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
+      case 7:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->processInput.read(iprot);
+          this->__isset.processInput = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 8:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->processOutput.read(iprot);
+          this->__isset.processOutput = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -490,6 +516,16 @@ uint32_t DataStagingTaskModel::write(::apache::thrift::protocol::TProtocol* opro
     xfer += oprot->writeString(this->transferRate);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.processInput) {
+    xfer += oprot->writeFieldBegin("processInput", ::apache::thrift::protocol::T_STRUCT, 7);
+    xfer += this->processInput.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.processOutput) {
+    xfer += oprot->writeFieldBegin("processOutput", ::apache::thrift::protocol::T_STRUCT, 8);
+    xfer += this->processOutput.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
@@ -504,6 +540,8 @@ void swap(DataStagingTaskModel &a, DataStagingTaskModel &b) {
   swap(a.transferStartTime, b.transferStartTime);
   swap(a.transferEndTime, b.transferEndTime);
   swap(a.transferRate, b.transferRate);
+  swap(a.processInput, b.processInput);
+  swap(a.processOutput, b.processOutput);
   swap(a.__isset, b.__isset);
 }
 
@@ -514,6 +552,8 @@ DataStagingTaskModel::DataStagingTaskModel(const DataStagingTaskModel& other4) {
   transferStartTime = other4.transferStartTime;
   transferEndTime = other4.transferEndTime;
   transferRate = other4.transferRate;
+  processInput = other4.processInput;
+  processOutput = other4.processOutput;
   __isset = other4.__isset;
 }
 DataStagingTaskModel& DataStagingTaskModel::operator=(const DataStagingTaskModel& other5) {
@@ -523,6 +563,8 @@ DataStagingTaskModel& DataStagingTaskModel::operator=(const DataStagingTaskModel
   transferStartTime = other5.transferStartTime;
   transferEndTime = other5.transferEndTime;
   transferRate = other5.transferRate;
+  processInput = other5.processInput;
+  processOutput = other5.processOutput;
   __isset = other5.__isset;
   return *this;
 }
@@ -535,6 +577,8 @@ std::ostream& operator<<(std::ostream& out, const DataStagingTaskModel& obj) {
   out << ", " << "transferStartTime="; (obj.__isset.transferStartTime ? (out << to_string(obj.transferStartTime)) : (out << "<null>"));
   out << ", " << "transferEndTime="; (obj.__isset.transferEndTime ? (out << to_string(obj.transferEndTime)) : (out << "<null>"));
   out << ", " << "transferRate="; (obj.__isset.transferRate ? (out << to_string(obj.transferRate)) : (out << "<null>"));
+  out << ", " << "processInput="; (obj.__isset.processInput ? (out << to_string(obj.processInput)) : (out << "<null>"));
+  out << ", " << "processOutput="; (obj.__isset.processOutput ? (out << to_string(obj.processOutput)) : (out << "<null>"));
   out << ")";
   return out;
 }

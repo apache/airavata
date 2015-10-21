@@ -35,6 +35,7 @@
 #include "airavata_commons_types.h"
 #include "status_models_types.h"
 #include "compute_resource_model_types.h"
+#include "application_io_models_types.h"
 
 
 namespace apache { namespace airavata { namespace model { namespace task {
@@ -162,17 +163,19 @@ class TaskModel {
 void swap(TaskModel &a, TaskModel &b);
 
 typedef struct _DataStagingTaskModel__isset {
-  _DataStagingTaskModel__isset() : transferStartTime(false), transferEndTime(false), transferRate(false) {}
+  _DataStagingTaskModel__isset() : transferStartTime(false), transferEndTime(false), transferRate(false), processInput(false), processOutput(false) {}
   bool transferStartTime :1;
   bool transferEndTime :1;
   bool transferRate :1;
+  bool processInput :1;
+  bool processOutput :1;
 } _DataStagingTaskModel__isset;
 
 class DataStagingTaskModel {
  public:
 
-  static const char* ascii_fingerprint; // = "68560D7ABF8515154C93E0A04DD9CF55";
-  static const uint8_t binary_fingerprint[16]; // = {0x68,0x56,0x0D,0x7A,0xBF,0x85,0x15,0x15,0x4C,0x93,0xE0,0xA0,0x4D,0xD9,0xCF,0x55};
+  static const char* ascii_fingerprint; // = "4A4BD6E9E8FE06F3A30D5B74D322C61E";
+  static const uint8_t binary_fingerprint[16]; // = {0x4A,0x4B,0xD6,0xE9,0xE8,0xFE,0x06,0xF3,0xA3,0x0D,0x5B,0x74,0xD3,0x22,0xC6,0x1E};
 
   DataStagingTaskModel(const DataStagingTaskModel&);
   DataStagingTaskModel& operator=(const DataStagingTaskModel&);
@@ -186,6 +189,8 @@ class DataStagingTaskModel {
   int64_t transferStartTime;
   int64_t transferEndTime;
   std::string transferRate;
+   ::apache::airavata::model::application::io::InputDataObjectType processInput;
+   ::apache::airavata::model::application::io::OutputDataObjectType processOutput;
 
   _DataStagingTaskModel__isset __isset;
 
@@ -200,6 +205,10 @@ class DataStagingTaskModel {
   void __set_transferEndTime(const int64_t val);
 
   void __set_transferRate(const std::string& val);
+
+  void __set_processInput(const  ::apache::airavata::model::application::io::InputDataObjectType& val);
+
+  void __set_processOutput(const  ::apache::airavata::model::application::io::OutputDataObjectType& val);
 
   bool operator == (const DataStagingTaskModel & rhs) const
   {
@@ -220,6 +229,14 @@ class DataStagingTaskModel {
     if (__isset.transferRate != rhs.__isset.transferRate)
       return false;
     else if (__isset.transferRate && !(transferRate == rhs.transferRate))
+      return false;
+    if (__isset.processInput != rhs.__isset.processInput)
+      return false;
+    else if (__isset.processInput && !(processInput == rhs.processInput))
+      return false;
+    if (__isset.processOutput != rhs.__isset.processOutput)
+      return false;
+    else if (__isset.processOutput && !(processOutput == rhs.processOutput))
       return false;
     return true;
   }
