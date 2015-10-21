@@ -404,8 +404,6 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                             dataStagingTaskIds.add(outputDataStagingTask.getTaskId());
                         } catch (TException e) {
                             throw new RegistryException("Error while serializing data staging sub task model", e);
-                        } catch (ApplicationSettingsException e) {
-                            throw new RegistryException("Error while reading airavata server properties", e);
                         }
                         break;
                     default:
@@ -489,7 +487,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         return taskModel;
     }
 
-    private TaskModel getOutputDataStagingTask(ProcessModel processModel, OutputDataObjectType processOutput, String gatewayId) throws RegistryException, TException, ApplicationSettingsException {
+    private TaskModel getOutputDataStagingTask(ProcessModel processModel, OutputDataObjectType processOutput, String gatewayId) throws RegistryException, TException {
         try {
 
             // create new task model for this task
@@ -505,11 +503,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             DataStoragePreference dataStoragePreference = OrchestratorUtils.getDateStoragePreference(orchestratorContext, processModel, gatewayId);
             ComputeResourcePreference computeResourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
             ComputeResourceDescription computeResource = orchestratorContext.getRegistry().getAppCatalog().getComputeResource().getComputeResource(processModel.getComputeResourceId());
-            // FIXME : need to fix once we start saving data storage preferences
-            String remoteOutputDir = ServerSettings.getRemoteDataLocation();
-            if (dataStoragePreference != null){
-                remoteOutputDir = dataStoragePreference.getFileSystemRootLocation();
-            }
+            String remoteOutputDir = computeResourcePreference.getScratchLocation() + File.separator + processModel.getProcessId();
             remoteOutputDir = remoteOutputDir.endsWith("/") ? remoteOutputDir : remoteOutputDir + "/";
             DataStagingTaskModel submodel = new DataStagingTaskModel();
             submodel.setType(DataStageType.OUPUT);
@@ -531,8 +525,6 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             return taskModel;
         } catch (AppCatalogException | TaskException e) {
            throw new RegistryException("Error occurred while retrieving data movement from app catalog", e);
-        } catch (ApplicationSettingsException e) {
-            throw new ApplicationSettingsException("Error occurred while reading airavata-server.properties", e);
         }
     }
 
