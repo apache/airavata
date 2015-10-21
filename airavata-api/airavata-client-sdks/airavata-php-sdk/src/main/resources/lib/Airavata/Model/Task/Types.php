@@ -357,6 +357,14 @@ class DataStagingTaskModel {
    * @var string
    */
   public $transferRate = null;
+  /**
+   * @var \Airavata\Model\Application\Io\InputDataObjectType
+   */
+  public $processInput = null;
+  /**
+   * @var \Airavata\Model\Application\Io\OutputDataObjectType
+   */
+  public $processOutput = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -385,6 +393,16 @@ class DataStagingTaskModel {
           'var' => 'transferRate',
           'type' => TType::STRING,
           ),
+        7 => array(
+          'var' => 'processInput',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Application\Io\InputDataObjectType',
+          ),
+        8 => array(
+          'var' => 'processOutput',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Application\Io\OutputDataObjectType',
+          ),
         );
     }
     if (is_array($vals)) {
@@ -405,6 +423,12 @@ class DataStagingTaskModel {
       }
       if (isset($vals['transferRate'])) {
         $this->transferRate = $vals['transferRate'];
+      }
+      if (isset($vals['processInput'])) {
+        $this->processInput = $vals['processInput'];
+      }
+      if (isset($vals['processOutput'])) {
+        $this->processOutput = $vals['processOutput'];
       }
     }
   }
@@ -470,6 +494,22 @@ class DataStagingTaskModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 7:
+          if ($ftype == TType::STRUCT) {
+            $this->processInput = new \Airavata\Model\Application\Io\InputDataObjectType();
+            $xfer += $this->processInput->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 8:
+          if ($ftype == TType::STRUCT) {
+            $this->processOutput = new \Airavata\Model\Application\Io\OutputDataObjectType();
+            $xfer += $this->processOutput->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -511,6 +551,22 @@ class DataStagingTaskModel {
     if ($this->transferRate !== null) {
       $xfer += $output->writeFieldBegin('transferRate', TType::STRING, 6);
       $xfer += $output->writeString($this->transferRate);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->processInput !== null) {
+      if (!is_object($this->processInput)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('processInput', TType::STRUCT, 7);
+      $xfer += $this->processInput->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->processOutput !== null) {
+      if (!is_object($this->processOutput)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('processOutput', TType::STRUCT, 8);
+      $xfer += $this->processOutput->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

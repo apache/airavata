@@ -10,6 +10,7 @@ from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import apache.airavata.model.commons.ttypes
 import apache.airavata.model.status.ttypes
 import apache.airavata.model.appcatalog.computeresource.ttypes
+import apache.airavata.model.application.io.ttypes
 
 
 from thrift.transport import TTransport
@@ -269,6 +270,8 @@ class DataStagingTaskModel:
    - transferStartTime
    - transferEndTime
    - transferRate
+   - processInput
+   - processOutput
   """
 
   thrift_spec = (
@@ -279,15 +282,19 @@ class DataStagingTaskModel:
     (4, TType.I64, 'transferStartTime', None, None, ), # 4
     (5, TType.I64, 'transferEndTime', None, None, ), # 5
     (6, TType.STRING, 'transferRate', None, None, ), # 6
+    (7, TType.STRUCT, 'processInput', (apache.airavata.model.application.io.ttypes.InputDataObjectType, apache.airavata.model.application.io.ttypes.InputDataObjectType.thrift_spec), None, ), # 7
+    (8, TType.STRUCT, 'processOutput', (apache.airavata.model.application.io.ttypes.OutputDataObjectType, apache.airavata.model.application.io.ttypes.OutputDataObjectType.thrift_spec), None, ), # 8
   )
 
-  def __init__(self, source=None, destination=None, type=None, transferStartTime=None, transferEndTime=None, transferRate=None,):
+  def __init__(self, source=None, destination=None, type=None, transferStartTime=None, transferEndTime=None, transferRate=None, processInput=None, processOutput=None,):
     self.source = source
     self.destination = destination
     self.type = type
     self.transferStartTime = transferStartTime
     self.transferEndTime = transferEndTime
     self.transferRate = transferRate
+    self.processInput = processInput
+    self.processOutput = processOutput
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -328,6 +335,18 @@ class DataStagingTaskModel:
           self.transferRate = iprot.readString();
         else:
           iprot.skip(ftype)
+      elif fid == 7:
+        if ftype == TType.STRUCT:
+          self.processInput = apache.airavata.model.application.io.ttypes.InputDataObjectType()
+          self.processInput.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.STRUCT:
+          self.processOutput = apache.airavata.model.application.io.ttypes.OutputDataObjectType()
+          self.processOutput.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -362,6 +381,14 @@ class DataStagingTaskModel:
       oprot.writeFieldBegin('transferRate', TType.STRING, 6)
       oprot.writeString(self.transferRate)
       oprot.writeFieldEnd()
+    if self.processInput is not None:
+      oprot.writeFieldBegin('processInput', TType.STRUCT, 7)
+      self.processInput.write(oprot)
+      oprot.writeFieldEnd()
+    if self.processOutput is not None:
+      oprot.writeFieldBegin('processOutput', TType.STRUCT, 8)
+      self.processOutput.write(oprot)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -383,6 +410,8 @@ class DataStagingTaskModel:
     value = (value * 31) ^ hash(self.transferStartTime)
     value = (value * 31) ^ hash(self.transferEndTime)
     value = (value * 31) ^ hash(self.transferRate)
+    value = (value * 31) ^ hash(self.processInput)
+    value = (value * 31) ^ hash(self.processOutput)
     return value
 
   def __repr__(self):

@@ -21,6 +21,7 @@
 include "airavata_commons.thrift"
 include "status_models.thrift"
 include "compute_resource_model.thrift"
+include "application_io_models.thrift"
 
 namespace java org.apache.airavata.model.task
 namespace php Airavata.Model.Task
@@ -79,7 +80,9 @@ struct DataStagingTaskModel {
     3: required DataStageType type,
     4: optional i64 transferStartTime,
     5: optional i64 transferEndTime,
-    6: optional string transferRate
+    6: optional string transferRate,
+    7: optional  application_io_models.InputDataObjectType processInput,
+    8: optional application_io_models.OutputDataObjectType processOutput
 }
 
 /**

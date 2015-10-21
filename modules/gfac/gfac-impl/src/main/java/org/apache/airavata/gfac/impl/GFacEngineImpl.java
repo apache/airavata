@@ -220,12 +220,14 @@ public class GFacEngineImpl implements GFacEngine {
                             status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                             processContext.setProcessStatus(status);
                             GFacUtils.saveAndPublishProcessStatus(processContext);
+                            taskContext.setProcessInput(subTaskModel.getProcessInput());
                             inputDataStaging(taskContext, processContext.isRecovery());
                         } else {
                             status = new ProcessStatus(ProcessState.OUTPUT_DATA_STAGING);
                             status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                             processContext.setProcessStatus(status);
                             GFacUtils.saveAndPublishProcessStatus(processContext);
+                            taskContext.setProcessOutput(subTaskModel.getProcessOutput());
                             outputDataStaging(taskContext, processContext.isRecovery());
                         }
                         // checkpoint
