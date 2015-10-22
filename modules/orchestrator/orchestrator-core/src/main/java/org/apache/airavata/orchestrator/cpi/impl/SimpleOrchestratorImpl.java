@@ -286,7 +286,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             ComputeResourceDescription computeResource = appCatalog.getComputeResource().getComputeResource(resourceHostId);
 
             List<String> taskIdList = createAndSaveEnvSetupTask(gatewayId, processModel, experimentCatalog);
-            taskIdList.addAll(createAndSaveInputDataStagingTasks(processModel));
+            taskIdList.addAll(createAndSaveInputDataStagingTasks(processModel, gatewayId));
 
             if (autoSchedule) {
                 List<BatchQueue> definedBatchQueues = computeResource.getBatchQueues();
@@ -354,7 +354,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         return envTaskIds;
     }
 
-    public List<String> createAndSaveInputDataStagingTasks(ProcessModel processModel) throws RegistryException {
+    public List<String> createAndSaveInputDataStagingTasks(ProcessModel processModel, String gatewayId) throws RegistryException {
         List<String> dataStagingTaskIds = new ArrayList<>();
         List<InputDataObjectType> processInputs = processModel.getProcessInputs();
 
@@ -369,12 +369,12 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                         break;
                     case URI:
                         try {
-                            TaskModel inputDataStagingTask = getInputDataStagingTask(processModel, processInput);
+                            TaskModel inputDataStagingTask = getInputDataStagingTask(processModel, processInput, gatewayId);
                             String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, inputDataStagingTask,
                                     processModel.getProcessId());
                             inputDataStagingTask.setTaskId(taskId);
                             dataStagingTaskIds.add(inputDataStagingTask.getTaskId());
-                        } catch (TException e) {
+                        } catch (TException | AppCatalogException | TaskException e) {
                             throw new RegistryException("Error while serializing data staging sub task model");
                         }
                         break;
@@ -390,12 +390,36 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     public List<String> createAndSaveOutputDataStagingTasks(ProcessModel processModel, String gatewayId) throws RegistryException {
         List<String> dataStagingTaskIds = new ArrayList<>();
         List<OutputDataObjectType> processOutputs = processModel.getProcessOutputs();
-
+        String appName = OrchestratorUtils.getApplicationInterfaceName(orchestratorContext, processModel);
         if (processOutputs != null) {
             for (OutputDataObjectType processOutput : processOutputs) {
                 DataType type = processOutput.getType();
                 switch (type) {
-                    case URI: case STDOUT : case STDERR:
+                    case STDOUT :
+                        processOutput.setValue(appName + ".stdout");
+                        try {
+                            TaskModel outputDataStagingTask = getOutputDataStagingTask(processModel, processOutput, gatewayId);
+                            String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, outputDataStagingTask,
+                                    processModel.getProcessId());
+                            outputDataStagingTask.setTaskId(taskId);
+                            dataStagingTaskIds.add(outputDataStagingTask.getTaskId());
+                        } catch (TException e) {
+                            throw new RegistryException("Error while serializing data staging sub task model", e);
+                        }
+                        break;
+                    case STDERR:
+                        processOutput.setValue(appName + ".stderr");
+                        try {
+                            TaskModel outputDataStagingTask = getOutputDataStagingTask(processModel, processOutput, gatewayId);
+                            String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, outputDataStagingTask,
+                                    processModel.getProcessId());
+                            outputDataStagingTask.setTaskId(taskId);
+                            dataStagingTaskIds.add(outputDataStagingTask.getTaskId());
+                        } catch (TException e) {
+                            throw new RegistryException("Error while serializing data staging sub task model", e);
+                        }
+                        break;
+                    case URI:
                         try {
                             TaskModel outputDataStagingTask = getOutputDataStagingTask(processModel, processOutput, gatewayId);
                             String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, outputDataStagingTask,
@@ -466,7 +490,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         });
     }
 
-    private TaskModel getInputDataStagingTask(ProcessModel processModel, InputDataObjectType processInput) throws RegistryException, TException {
+    private TaskModel getInputDataStagingTask(ProcessModel processModel, InputDataObjectType processInput, String gatewayId) throws RegistryException, TException, AppCatalogException, TaskException {
         // create new task model for this task
         TaskModel taskModel = new TaskModel();
         taskModel.setParentProcessId(processModel.getProcessId());
@@ -478,12 +502,22 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         taskModel.setTaskType(TaskTypes.DATA_STAGING);
         // create data staging sub task model
         DataStagingTaskModel submodel = new DataStagingTaskModel();
+        ComputeResourcePreference computeResourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
+        ComputeResourceDescription computeResource = orchestratorContext.getRegistry().getAppCatalog().getComputeResource().getComputeResource(processModel.getComputeResourceId());
+        String remoteOutputDir = computeResourcePreference.getScratchLocation() + File.separator + processModel.getProcessId();
+        remoteOutputDir = remoteOutputDir.endsWith("/") ? remoteOutputDir : remoteOutputDir + "/";
+        URI destination = null;
+        try {
+            DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(orchestratorContext, processModel, gatewayId);
+            destination = new URI(dataMovementProtocol.name(), computeResource.getHostName(),
+                    computeResourcePreference.getLoginUserName(), OrchestratorUtils.getDataMovementPort(orchestratorContext, processModel, gatewayId), remoteOutputDir , null, null);
+        } catch (URISyntaxException e) {
+            throw new TaskException("Error while constructing destination file URI");
+        }
         submodel.setType(DataStageType.INPUT);
         submodel.setSource(processInput.getValue());
         submodel.setProcessInput(processInput);
-        // We don't know destination location at this time, data staging task will set this.
-        // because destination is required field we set dummy destination
-        submodel.setDestination("dummy://temp/file/location");
+        submodel.setDestination(destination.toString());
         taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
         return taskModel;
     }
@@ -500,8 +534,6 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             taskModel.setTaskStatus(taskStatus);
             taskModel.setTaskType(TaskTypes.DATA_STAGING);
-            // We assume output location is set at data storage preference
-            DataStoragePreference dataStoragePreference = OrchestratorUtils.getDateStoragePreference(orchestratorContext, processModel, gatewayId);
             ComputeResourcePreference computeResourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
             ComputeResourceDescription computeResource = orchestratorContext.getRegistry().getAppCatalog().getComputeResource().getComputeResource(processModel.getComputeResourceId());
             String remoteOutputDir = computeResourcePreference.getScratchLocation() + File.separator + processModel.getProcessId();
