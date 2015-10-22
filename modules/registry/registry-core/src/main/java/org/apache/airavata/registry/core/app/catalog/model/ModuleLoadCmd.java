@@ -37,7 +37,7 @@ public class ModuleLoadCmd implements Serializable {
     @Column(name = "APP_DEPLOYMENT_ID")
     private String appDeploymentId;
 
-    @Column(name = "ORDER")
+    @Column(name = "COMMAND_ORDER")
     private Integer order;
 
     @ManyToOne(cascade= CascadeType.MERGE)
