@@ -43,7 +43,7 @@ public class PreJobCommand implements Serializable {
     @Column(name = "COMMAND")
     private String command;
 
-    @Column(name = "ORDER")
+    @Column(name = "COMMAND_ORDER")
     private Integer order;
 
     @ManyToOne(cascade= CascadeType.MERGE)

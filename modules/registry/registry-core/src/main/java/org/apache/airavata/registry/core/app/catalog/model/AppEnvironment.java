@@ -38,7 +38,7 @@ public class AppEnvironment implements Serializable {
     @Column(name = "VALUE")
     private String value;
 
-    @Column(name = "ORDER")
+    @Column(name = "ENV_ORDER")
     private Integer order;
 
     @ManyToOne(cascade= CascadeType.MERGE)
