@@ -43,6 +43,9 @@ public class PostJobCommand implements Serializable {
     @Column(name = "COMMAND")
     private String command;
 
+    @Column(name = "ORDER")
+    private Integer order;
+
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "APPDEPLOYMENT_ID")
     private ApplicationDeployment deployment;
@@ -69,5 +72,13 @@ public class PostJobCommand implements Serializable {
 
     public void setDeployment(ApplicationDeployment deployment) {
         this.deployment = deployment;
+    }
+
+    public Integer getOrder() {
+        return order;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
     }
 }

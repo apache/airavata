@@ -574,6 +574,7 @@ public class AppCatalogJPAUtils {
         if (o != null) {
             resource.setAppDeploymentId(o.getDeploymentId());
             resource.setCommand(o.getCommand());
+            resource.setOrder(o.getOrder());
             resource.setAppDeploymentResource((AppDeploymentResource) createApplicationDeployment(o.getApplicationDeployment()));
         }
         return resource;
@@ -584,6 +585,7 @@ public class AppCatalogJPAUtils {
         if (o != null){
             resource.setAppDeploymentId(o.getDeploymentId());
             resource.setCommand(o.getCommand());
+            resource.setOrder(o.getOrder());
             resource.setAppDeploymentResource((AppDeploymentResource) createApplicationDeployment(o.getDeployment()));
         }
         return resource;
@@ -756,6 +758,7 @@ public class AppCatalogJPAUtils {
             resource.setDeploymentId(o.getDeploymentID());
             resource.setName(o.getName());
             resource.setValue(o.getValue());
+            resource.setOrder(o.getOrder());
             resource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
         }
         return resource;
@@ -912,6 +915,7 @@ public class AppCatalogJPAUtils {
         if (o != null){
             moduleLoadCmdResource.setCmd(o.getCmd());
             moduleLoadCmdResource.setAppDeploymentId(o.getAppDeploymentId());
+            moduleLoadCmdResource.setOrder(o.getOrder());
             moduleLoadCmdResource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
         }
         return moduleLoadCmdResource;

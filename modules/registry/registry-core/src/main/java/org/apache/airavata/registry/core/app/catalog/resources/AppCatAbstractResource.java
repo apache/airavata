@@ -375,6 +375,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
     public final class ModuleLoadCmdConstants {
         public static final String CMD = "cmd";
         public static final String APP_DEPLOYMENT_ID = "appDeploymentId";
+        public static final String ORDER = "order";
     }
 
     // Workflow Table

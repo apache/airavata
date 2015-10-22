@@ -32,16 +32,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PreJobCommandResource extends AppCatAbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(PreJobCommandResource.class);
 
     private String appDeploymentId;
     private String command;
+    private Integer order;
 
     private AppDeploymentResource appDeploymentResource;
 
@@ -121,7 +119,7 @@ public class PreJobCommandResource extends AppCatAbstractResource {
     }
 
     public List<AppCatalogResource> get(String fieldName, Object value) throws AppCatalogException {
-        List<AppCatalogResource> gsiSSHPreJobResources = new ArrayList<AppCatalogResource>();
+        List<AppCatalogResource> preJobCommandResources = new ArrayList<AppCatalogResource>();
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
@@ -129,8 +127,8 @@ public class PreJobCommandResource extends AppCatAbstractResource {
             Query q;
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(PRE_JOBCOMMAND);
             List results;
-            if (fieldName.equals(PreJobCommandConstants.DEPLOYMENT_ID)) {
-                generator.setParameter(PreJobCommandConstants.DEPLOYMENT_ID, value);
+            if (fieldName.equals(PreJobCommandConstants.DEPLOYMENT_ID) || fieldName.equals(PreJobCommandConstants.COMMAND)) {
+                generator.setParameter(fieldName, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
@@ -139,27 +137,16 @@ public class PreJobCommandResource extends AppCatAbstractResource {
                         PreJobCommandResource preJobCommandResource =
                                 (PreJobCommandResource) AppCatalogJPAUtils.getResource(
                                         AppCatalogResourceType.PRE_JOBCOMMAND, preJobCommand);
-                        gsiSSHPreJobResources.add(preJobCommandResource);
+                        preJobCommandResources.add(preJobCommandResource);
                     }
-                }
-            } else if (fieldName.equals(PreJobCommandConstants.COMMAND)) {
-                generator.setParameter(PreJobCommandConstants.COMMAND, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        PreJobCommand preJobCommand = (PreJobCommand) result;
-                        PreJobCommandResource preJobCommandResource =
-                                (PreJobCommandResource) AppCatalogJPAUtils.getResource(
-                                        AppCatalogResourceType.PRE_JOBCOMMAND, preJobCommand);
-                        gsiSSHPreJobResources.add(preJobCommandResource);
-                    }
+                    Collections.sort(preJobCommandResources,
+                            (o1, o2) -> ((PreJobCommandResource) o1).getOrder() - ((PreJobCommandResource) o2).getOrder());
                 }
             } else {
                 em.getTransaction().commit();
                 em.close();
-                logger.error("Unsupported field name for GSISSH Pre Job Command Resource.", new IllegalArgumentException());
-                throw new IllegalArgumentException("Unsupported field name for GSISSH Pre Job Command Resource.");
+                logger.error("Unsupported field name for Pre Job Command Resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported field name for Pre Job Command Resource.");
             }
             em.getTransaction().commit();
             em.close();
@@ -174,7 +161,7 @@ public class PreJobCommandResource extends AppCatAbstractResource {
                 em.close();
             }
         }
-        return gsiSSHPreJobResources;
+        return preJobCommandResources;
     }
 
     @Override
@@ -242,22 +229,24 @@ public class PreJobCommandResource extends AppCatAbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            PreJobCommand existingGSIsshPreJobCommand = em.find(PreJobCommand.class,
+            PreJobCommand existingPreJobCommand = em.find(PreJobCommand.class,
                     new PreJobCommandPK(appDeploymentId, command));
             em.close();
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             ApplicationDeployment deployment = em.find(ApplicationDeployment.class, appDeploymentId);
-            if (existingGSIsshPreJobCommand !=  null){
-                existingGSIsshPreJobCommand.setDeploymentId(appDeploymentId);
-                existingGSIsshPreJobCommand.setCommand(command);
-                existingGSIsshPreJobCommand.setApplicationDeployment(deployment);
-                em.merge(existingGSIsshPreJobCommand);
+            if (existingPreJobCommand !=  null){
+                existingPreJobCommand.setDeploymentId(appDeploymentId);
+                existingPreJobCommand.setCommand(command);
+                existingPreJobCommand.setApplicationDeployment(deployment);
+                existingPreJobCommand.setOrder(order);
+                em.merge(existingPreJobCommand);
             }else {
                 PreJobCommand preJobCommand = new PreJobCommand();
                 preJobCommand.setDeploymentId(appDeploymentId);
                 preJobCommand.setCommand(command);
+                preJobCommand.setOrder(order);
                 preJobCommand.setApplicationDeployment(deployment);
                 em.persist(preJobCommand);
             }
@@ -329,5 +318,13 @@ public class PreJobCommandResource extends AppCatAbstractResource {
 
     public void setAppDeploymentResource(AppDeploymentResource appDeploymentResource) {
         this.appDeploymentResource = appDeploymentResource;
+    }
+
+    public Integer getOrder() {
+        return order;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
     }
 }

@@ -34,16 +34,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AppEnvironmentResource extends AppCatAbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(AppEnvironmentResource.class);
     private String deploymentId;
     private String name;
     private String value;
+    private Integer order;
     private AppDeploymentResource appDeploymentResource;
 
     public String getDeploymentId() {
@@ -76,6 +74,14 @@ public class AppEnvironmentResource extends AppCatAbstractResource {
 
     public void setAppDeploymentResource(AppDeploymentResource appDeploymentResource) {
         this.appDeploymentResource = appDeploymentResource;
+    }
+
+    public Integer getOrder() {
+        return order;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
     }
 
     @Override
@@ -160,8 +166,8 @@ public class AppEnvironmentResource extends AppCatAbstractResource {
             Query q;
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APP_ENVIRONMENT);
             List results;
-            if (fieldName.equals(AppEnvironmentConstants.DEPLOYMENT_ID)) {
-                generator.setParameter(AppEnvironmentConstants.DEPLOYMENT_ID, value);
+            if (fieldName.equals(AppEnvironmentConstants.DEPLOYMENT_ID) || fieldName.equals(AppEnvironmentConstants.NAME)) {
+                generator.setParameter(fieldName, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
@@ -171,20 +177,10 @@ public class AppEnvironmentResource extends AppCatAbstractResource {
                                 (AppEnvironmentResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APP_ENVIRONMENT, appEnvironment);
                         appEnvironmentList.add(resource);
                     }
+                    Collections.sort(appEnvironmentList,
+                            (o1, o2) -> ((AppEnvironmentResource) o1).getOrder() - ((AppEnvironmentResource) o2).getOrder());
                 }
-            } else if (fieldName.equals(AppEnvironmentConstants.NAME)) {
-                generator.setParameter(AppEnvironmentConstants.NAME, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        AppEnvironment appEnvironment = (AppEnvironment) result;
-                        AppEnvironmentResource resource =
-                                (AppEnvironmentResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APP_ENVIRONMENT, appEnvironment);
-                        appEnvironmentList.add(resource);
-                    }
-                }
-            }else {
+            } else {
                 em.getTransaction().commit();
                 em.close();
                 logger.error("Unsupported field name for App Environment resource.", new IllegalArgumentException());

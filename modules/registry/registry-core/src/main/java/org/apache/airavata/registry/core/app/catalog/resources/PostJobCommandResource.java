@@ -32,16 +32,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PostJobCommandResource extends AppCatAbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(PostJobCommandResource.class);
 
     private String appDeploymentId;
     private String command;
+    private Integer order;
 
     private AppDeploymentResource appDeploymentResource;
 
@@ -121,7 +119,7 @@ public class PostJobCommandResource extends AppCatAbstractResource {
     }
 
     public List<AppCatalogResource> get(String fieldName, Object value) throws AppCatalogException {
-        List<AppCatalogResource> gsiSSHPostJobCommandResources = new ArrayList<AppCatalogResource>();
+        List<AppCatalogResource> postJobCommandResources = new ArrayList<AppCatalogResource>();
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
@@ -129,8 +127,8 @@ public class PostJobCommandResource extends AppCatAbstractResource {
             Query q;
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(POST_JOBCOMMAND);
             List results;
-            if (fieldName.equals(PostJobCommandConstants.DEPLOYMENT_ID)) {
-                generator.setParameter(PostJobCommandConstants.DEPLOYMENT_ID, value);
+            if (fieldName.equals(PostJobCommandConstants.DEPLOYMENT_ID) || fieldName.equals(PostJobCommandConstants.COMMAND)) {
+                generator.setParameter(fieldName, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
@@ -139,27 +137,16 @@ public class PostJobCommandResource extends AppCatAbstractResource {
                         PostJobCommandResource postJobCommandResource =
                                 (PostJobCommandResource) AppCatalogJPAUtils.getResource(
                                         AppCatalogResourceType.POST_JOBCOMMAND, postJobCommand);
-                        gsiSSHPostJobCommandResources.add(postJobCommandResource);
+                        postJobCommandResources.add(postJobCommandResource);
                     }
-                }
-            } else if (fieldName.equals(PostJobCommandConstants.COMMAND)) {
-                generator.setParameter(PostJobCommandConstants.COMMAND, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        PostJobCommand postJobCommand = (PostJobCommand) result;
-                        PostJobCommandResource postJobCommandResource =
-                                (PostJobCommandResource) AppCatalogJPAUtils.getResource(
-                                        AppCatalogResourceType.POST_JOBCOMMAND, postJobCommand);
-                        gsiSSHPostJobCommandResources.add(postJobCommandResource);
-                    }
+                    Collections.sort(postJobCommandResources,
+                            (o1, o2) -> ((PostJobCommandResource) o1).getOrder() - ((PostJobCommandResource) o2).getOrder());
                 }
             } else {
                 em.getTransaction().commit();
                 em.close();
-                logger.error("Unsupported field name for GSISSH Post Job Command Resource.", new IllegalArgumentException());
-                throw new IllegalArgumentException("Unsupported field name for GSISSH Post Job Command Resource.");
+                logger.error("Unsupported field name for Post Job Command Resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported field name for Post Job Command Resource.");
             }
             em.getTransaction().commit();
             em.close();
@@ -174,7 +161,7 @@ public class PostJobCommandResource extends AppCatAbstractResource {
                 em.close();
             }
         }
-        return gsiSSHPostJobCommandResources;
+        return postJobCommandResources;
     }
 
     @Override
@@ -252,12 +239,14 @@ public class PostJobCommandResource extends AppCatAbstractResource {
             if (existingPostJobCommand !=  null){
                 existingPostJobCommand.setDeploymentId(appDeploymentId);
                 existingPostJobCommand.setCommand(command);
+                existingPostJobCommand.setOrder(order);
                 existingPostJobCommand.setDeployment(deployment);
                 em.merge(existingPostJobCommand);
             }else {
                 PostJobCommand postJobCommand = new PostJobCommand();
                 postJobCommand.setDeploymentId(appDeploymentId);
                 postJobCommand.setCommand(command);
+                postJobCommand.setOrder(order);
                 postJobCommand.setDeployment(deployment);
                 em.persist(postJobCommand);
             }
@@ -329,5 +318,13 @@ public class PostJobCommandResource extends AppCatAbstractResource {
 
     public void setAppDeploymentResource(AppDeploymentResource appDeploymentResource) {
         this.appDeploymentResource = appDeploymentResource;
+    }
+
+    public Integer getOrder() {
+        return order;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
     }
 }
