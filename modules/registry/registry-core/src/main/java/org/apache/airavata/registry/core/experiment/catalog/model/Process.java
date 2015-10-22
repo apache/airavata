@@ -107,6 +107,7 @@ public class Process {
         this.applicationInterfaceId = applicationInterfaceId;
     }
 
+    @Lob
     @Column(name = "TASK_DAG")
     public String getTaskDag() {
         return taskDag;
