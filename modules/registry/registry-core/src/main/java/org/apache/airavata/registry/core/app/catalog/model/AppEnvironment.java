@@ -38,6 +38,9 @@ public class AppEnvironment implements Serializable {
     @Column(name = "VALUE")
     private String value;
 
+    @Column(name = "ORDER")
+    private Integer order;
+
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "DEPLOYMENT_ID")
     private ApplicationDeployment applicationDeployment;
@@ -72,5 +75,13 @@ public class AppEnvironment implements Serializable {
 
     public void setApplicationDeployment(ApplicationDeployment applicationDeployment) {
         this.applicationDeployment = applicationDeployment;
+    }
+
+    public Integer getOrder() {
+        return order;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
     }
 }

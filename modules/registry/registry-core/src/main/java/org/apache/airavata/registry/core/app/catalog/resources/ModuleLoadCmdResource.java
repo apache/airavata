@@ -34,15 +34,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ModuleLoadCmdResource extends AppCatAbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(ModuleLoadCmdResource.class);
     private String cmd;
     private String appDeploymentId;
+    private Integer order;
     private AppDeploymentResource appDeploymentResource;
 
     @Override
@@ -133,6 +131,8 @@ public class ModuleLoadCmdResource extends AppCatAbstractResource {
                     ModuleLoadCmdResource moduleLoadCmdResource = (ModuleLoadCmdResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.MODULE_LOAD_CMD, moduleLoadCmd);
                     moduleLoadCmdResources.add(moduleLoadCmdResource);
                 }
+                Collections.sort(moduleLoadCmdResources,
+                        (o1, o2) -> ((ModuleLoadCmdResource)o1).getOrder()- ((ModuleLoadCmdResource)o2).getOrder());
             } else {
                 em.getTransaction().commit();
                 em.close();
@@ -222,6 +222,7 @@ public class ModuleLoadCmdResource extends AppCatAbstractResource {
             }
             moduleLoadCmd.setCmd(getCmd());
             moduleLoadCmd.setAppDeploymentId(getAppDeploymentId());
+            moduleLoadCmd.setOrder(order);
             ApplicationDeployment applicationDeployment = em.find(ApplicationDeployment.class, getAppDeploymentId());
             moduleLoadCmd.setApplicationDeployment(applicationDeployment);
             if (existingModuleLoadCmd == null) {
@@ -294,6 +295,14 @@ public class ModuleLoadCmdResource extends AppCatAbstractResource {
 
     public void setAppDeploymentResource(AppDeploymentResource appDeploymentResource) {
         this.appDeploymentResource=appDeploymentResource;
+    }
+
+    public Integer getOrder() {
+        return order;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
     }
 }
 
