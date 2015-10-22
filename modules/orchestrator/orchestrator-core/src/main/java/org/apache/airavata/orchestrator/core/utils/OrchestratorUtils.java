@@ -26,6 +26,7 @@ import java.util.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.context.ProcessContext;
+import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
@@ -38,10 +39,8 @@ import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.registry.core.app.catalog.model.*;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.AppCatalog;
-import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.GwyResourceProfile;
-import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.*;
+import org.apache.airavata.registry.cpi.ApplicationInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +73,16 @@ public class OrchestratorUtils {
         } catch (AppCatalogException e) {
             logger.error("Error occurred while initializing app catalog", e);
             throw new RegistryException("Error occurred while initializing app catalog", e);
+        }
+    }
+
+    public static String getApplicationInterfaceName(OrchestratorContext context, ProcessModel model) throws RegistryException {
+        try {
+            ApplicationInterface applicationInterface = context.getRegistry().getAppCatalog().getApplicationInterface();
+            ApplicationInterfaceDescription appInterface = applicationInterface.getApplicationInterface(model.getApplicationInterfaceId());
+            return appInterface.getApplicationName();
+        } catch (AppCatalogException e) {
+            throw new RegistryException("Error while retrieving application interface", e);
         }
     }
 
