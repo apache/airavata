@@ -59,7 +59,7 @@ final class ApplicationParallelismType {
  * value:
  *   Value of the environment variable to set
  * 
- * envOrder:
+ * envPathOrder:
  *   The order of the setting of the env variables when there are multiple env variables
  */
 class SetEnvPaths {

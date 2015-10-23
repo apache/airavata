@@ -34,7 +34,8 @@ public enum ExperimentSearchFields implements org.apache.thrift.TEnum {
   APPLICATION_ID(2),
   FROM_DATE(3),
   TO_DATE(4),
-  STATUS(5);
+  STATUS(5),
+  PROJECT_ID(6);
 
   private final int value;
 
@@ -67,6 +68,8 @@ public enum ExperimentSearchFields implements org.apache.thrift.TEnum {
         return TO_DATE;
       case 5:
         return STATUS;
+      case 6:
+        return PROJECT_ID;
       default:
         return null;
     }

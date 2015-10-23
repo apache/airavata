@@ -56,7 +56,8 @@ struct ExperimentSearchFields {
     APPLICATION_ID = 2,
     FROM_DATE = 3,
     TO_DATE = 4,
-    STATUS = 5
+    STATUS = 5,
+    PROJECT_ID = 6
   };
 };
 

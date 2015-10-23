@@ -39,7 +39,8 @@ enum ExperimentSearchFields {
     APPLICATION_ID,
     FROM_DATE,
     TO_DATE,
-    STATUS
+    STATUS,
+    PROJECT_ID
 }
 /**
  * A structure holding the experiment configuration.
