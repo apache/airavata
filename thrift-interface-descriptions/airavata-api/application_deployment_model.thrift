@@ -40,10 +40,28 @@ namespace py apache.airavata.model.appcatalog.appdeployment
  *
  * value:
  *   Value of the environment variable to set
+ *
+ * envPathOrder:
+ *   The order of the setting of the env variables when there are multiple env variables
 */
 struct SetEnvPaths {
     1: required string name,
-    2: required string value
+    2: required string value,
+    3: optional i32 envPathOrder
+}
+
+/**
+ * Job commands to be used in Pre Job, Post Job and Module Load Commands
+ *
+ * command:
+ *   The actual command in string format
+ *
+ * commandOrder:
+ *   Order of the command in the multiple command situation
+*/
+struct CommandObject {
+    1: required string command,
+    2: optional i32 commandOrder
 }
 
 /**
@@ -126,10 +144,10 @@ struct ApplicationDeploymentDescription {
     4: required string executablePath,
     5: required ApplicationParallelismType parallelism = ApplicationParallelismType.SERIAL,
 	6: optional string appDeploymentDescription,
-	7: optional list<string> moduleLoadCmds,
+	7: optional list<CommandObject> moduleLoadCmds,
 	8: optional list<SetEnvPaths> libPrependPaths,
 	9: optional list<SetEnvPaths> libAppendPaths,
 	10: optional list<SetEnvPaths> setEnvironment,
-	11: optional list<string> preJobCommands,
-	12: optional list<string> postJobCommands,
+	11: optional list<CommandObject> preJobCommands,
+	12: optional list<CommandObject> postJobCommands,
 }

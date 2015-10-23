@@ -25,6 +25,7 @@ import org.apache.airavata.app.catalog.util.Initialize;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
+import org.apache.airavata.model.appcatalog.appdeployment.CommandObject;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.registry.core.app.catalog.resources.AppCatAbstractResource;
@@ -85,8 +86,14 @@ public class AppDeploymentTest {
         description.setComputeHostId(hostId);
         description.setExecutablePath("/home/a/b/c");
         description.setAppDeploymentDescription("test app deployment");
-        description.addToModuleLoadCmds("cmd1");
-        description.addToModuleLoadCmds("cmd2");
+        CommandObject cmd1 = new CommandObject();
+        cmd1.setCommand("cmd1");
+        cmd1.setCommandOrder(1);
+        CommandObject cmd2 = new CommandObject();
+        cmd1.setCommand("cmd1");
+        cmd1.setCommandOrder(1);
+        description.addToModuleLoadCmds(cmd1);
+        description.addToModuleLoadCmds(cmd2);
 
         List<SetEnvPaths> libPrepandPaths = new ArrayList<SetEnvPaths>();
         libPrepandPaths.add(createSetEnvPath("name1", "val1"));

@@ -33,6 +33,7 @@ import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
+import org.apache.airavata.model.appcatalog.appdeployment.CommandObject;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.application.io.DataType;
@@ -801,24 +802,31 @@ public class GFacUtils {
         } else {
             log.error("Task scheduling cannot be null at this point..");
         }
+
         ApplicationDeploymentDescription appDepDescription = processContext.getApplicationDeploymentDescription();
-        List<String> moduleCmds = appDepDescription.getModuleLoadCmds();
+        List<CommandObject> moduleCmds = appDepDescription.getModuleLoadCmds();
         if (moduleCmds != null) {
-            for (String moduleCmd : moduleCmds) {
-                jobDescriptor.addModuleLoadCommands(moduleCmd);
+            Collections.sort(moduleCmds,
+                    (o1, o2) -> ((CommandObject) o1).getCommandOrder() - ((CommandObject) o2).getCommandOrder());
+            for (CommandObject moduleCmd : moduleCmds) {
+                jobDescriptor.addModuleLoadCommands(moduleCmd.getCommand());
             }
         }
-        List<String> preJobCommands = appDepDescription.getPreJobCommands();
+        List<CommandObject> preJobCommands = appDepDescription.getPreJobCommands();
         if (preJobCommands != null) {
-            for (String preJobCommand : preJobCommands) {
-                jobDescriptor.addPreJobCommand(parseCommand(preJobCommand, processContext));
+            Collections.sort(moduleCmds,
+                    (o1, o2) -> ((CommandObject) o1).getCommandOrder() - ((CommandObject) o2).getCommandOrder());
+            for (CommandObject preJobCommand : preJobCommands) {
+                jobDescriptor.addPreJobCommand(parseCommand(preJobCommand.getCommand(), processContext));
             }
         }
 
-        List<String> postJobCommands = appDepDescription.getPostJobCommands();
+        List<CommandObject> postJobCommands = appDepDescription.getPostJobCommands();
         if (postJobCommands != null) {
-            for (String postJobCommand : postJobCommands) {
-                jobDescriptor.addPostJobCommand(parseCommand(postJobCommand, processContext));
+            Collections.sort(moduleCmds,
+                    (o1, o2) -> ((CommandObject) o1).getCommandOrder() - ((CommandObject) o2).getCommandOrder());
+            for (CommandObject postJobCommand : postJobCommands) {
+                jobDescriptor.addPostJobCommand(parseCommand(postJobCommand.getCommand(), processContext));
             }
         }
 

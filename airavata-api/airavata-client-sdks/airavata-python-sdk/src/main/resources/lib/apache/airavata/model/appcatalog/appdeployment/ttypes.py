@@ -71,20 +71,26 @@ class SetEnvPaths:
   value:
     Value of the environment variable to set
 
+  envOrder:
+    The order of the setting of the env variables when there are multiple env variables
+
   Attributes:
    - name
    - value
+   - envPathOrder
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'name', None, None, ), # 1
     (2, TType.STRING, 'value', None, None, ), # 2
+    (3, TType.I32, 'envPathOrder', None, None, ), # 3
   )
 
-  def __init__(self, name=None, value=None,):
+  def __init__(self, name=None, value=None, envPathOrder=None,):
     self.name = name
     self.value = value
+    self.envPathOrder = envPathOrder
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -105,6 +111,11 @@ class SetEnvPaths:
           self.value = iprot.readString();
         else:
           iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I32:
+          self.envPathOrder = iprot.readI32();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -123,6 +134,10 @@ class SetEnvPaths:
       oprot.writeFieldBegin('value', TType.STRING, 2)
       oprot.writeString(self.value)
       oprot.writeFieldEnd()
+    if self.envPathOrder is not None:
+      oprot.writeFieldBegin('envPathOrder', TType.I32, 3)
+      oprot.writeI32(self.envPathOrder)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -138,6 +153,95 @@ class SetEnvPaths:
     value = 17
     value = (value * 31) ^ hash(self.name)
     value = (value * 31) ^ hash(self.value)
+    value = (value * 31) ^ hash(self.envPathOrder)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class CommandObject:
+  """
+  Job commands to be used in Pre Job, Post Job and Module Load Commands
+
+  command:
+    The actual command in string format
+
+  commandOrder:
+    Order of the command in the multiple command situation
+
+  Attributes:
+   - command
+   - commandOrder
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'command', None, None, ), # 1
+    (2, TType.I32, 'commandOrder', None, None, ), # 2
+  )
+
+  def __init__(self, command=None, commandOrder=None,):
+    self.command = command
+    self.commandOrder = commandOrder
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.command = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I32:
+          self.commandOrder = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('CommandObject')
+    if self.command is not None:
+      oprot.writeFieldBegin('command', TType.STRING, 1)
+      oprot.writeString(self.command)
+      oprot.writeFieldEnd()
+    if self.commandOrder is not None:
+      oprot.writeFieldBegin('commandOrder', TType.I32, 2)
+      oprot.writeI32(self.commandOrder)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.command is None:
+      raise TProtocol.TProtocolException(message='Required field command is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.command)
+    value = (value * 31) ^ hash(self.commandOrder)
     return value
 
   def __repr__(self):
@@ -323,12 +427,12 @@ class ApplicationDeploymentDescription:
     (4, TType.STRING, 'executablePath', None, None, ), # 4
     (5, TType.I32, 'parallelism', None,     0, ), # 5
     (6, TType.STRING, 'appDeploymentDescription', None, None, ), # 6
-    (7, TType.LIST, 'moduleLoadCmds', (TType.STRING,None), None, ), # 7
+    (7, TType.LIST, 'moduleLoadCmds', (TType.STRUCT,(CommandObject, CommandObject.thrift_spec)), None, ), # 7
     (8, TType.LIST, 'libPrependPaths', (TType.STRUCT,(SetEnvPaths, SetEnvPaths.thrift_spec)), None, ), # 8
     (9, TType.LIST, 'libAppendPaths', (TType.STRUCT,(SetEnvPaths, SetEnvPaths.thrift_spec)), None, ), # 9
     (10, TType.LIST, 'setEnvironment', (TType.STRUCT,(SetEnvPaths, SetEnvPaths.thrift_spec)), None, ), # 10
-    (11, TType.LIST, 'preJobCommands', (TType.STRING,None), None, ), # 11
-    (12, TType.LIST, 'postJobCommands', (TType.STRING,None), None, ), # 12
+    (11, TType.LIST, 'preJobCommands', (TType.STRUCT,(CommandObject, CommandObject.thrift_spec)), None, ), # 11
+    (12, TType.LIST, 'postJobCommands', (TType.STRUCT,(CommandObject, CommandObject.thrift_spec)), None, ), # 12
   )
 
   def __init__(self, appDeploymentId=thrift_spec[1][4], appModuleId=None, computeHostId=None, executablePath=None, parallelism=thrift_spec[5][4], appDeploymentDescription=None, moduleLoadCmds=None, libPrependPaths=None, libAppendPaths=None, setEnvironment=None, preJobCommands=None, postJobCommands=None,):
@@ -389,7 +493,8 @@ class ApplicationDeploymentDescription:
           self.moduleLoadCmds = []
           (_etype3, _size0) = iprot.readListBegin()
           for _i4 in xrange(_size0):
-            _elem5 = iprot.readString();
+            _elem5 = CommandObject()
+            _elem5.read(iprot)
             self.moduleLoadCmds.append(_elem5)
           iprot.readListEnd()
         else:
@@ -432,7 +537,8 @@ class ApplicationDeploymentDescription:
           self.preJobCommands = []
           (_etype27, _size24) = iprot.readListBegin()
           for _i28 in xrange(_size24):
-            _elem29 = iprot.readString();
+            _elem29 = CommandObject()
+            _elem29.read(iprot)
             self.preJobCommands.append(_elem29)
           iprot.readListEnd()
         else:
@@ -442,7 +548,8 @@ class ApplicationDeploymentDescription:
           self.postJobCommands = []
           (_etype33, _size30) = iprot.readListBegin()
           for _i34 in xrange(_size30):
-            _elem35 = iprot.readString();
+            _elem35 = CommandObject()
+            _elem35.read(iprot)
             self.postJobCommands.append(_elem35)
           iprot.readListEnd()
         else:
@@ -483,9 +590,9 @@ class ApplicationDeploymentDescription:
       oprot.writeFieldEnd()
     if self.moduleLoadCmds is not None:
       oprot.writeFieldBegin('moduleLoadCmds', TType.LIST, 7)
-      oprot.writeListBegin(TType.STRING, len(self.moduleLoadCmds))
+      oprot.writeListBegin(TType.STRUCT, len(self.moduleLoadCmds))
       for iter36 in self.moduleLoadCmds:
-        oprot.writeString(iter36)
+        iter36.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.libPrependPaths is not None:
@@ -511,16 +618,16 @@ class ApplicationDeploymentDescription:
       oprot.writeFieldEnd()
     if self.preJobCommands is not None:
       oprot.writeFieldBegin('preJobCommands', TType.LIST, 11)
-      oprot.writeListBegin(TType.STRING, len(self.preJobCommands))
+      oprot.writeListBegin(TType.STRUCT, len(self.preJobCommands))
       for iter40 in self.preJobCommands:
-        oprot.writeString(iter40)
+        iter40.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.postJobCommands is not None:
       oprot.writeFieldBegin('postJobCommands', TType.LIST, 12)
-      oprot.writeListBegin(TType.STRING, len(self.postJobCommands))
+      oprot.writeListBegin(TType.STRUCT, len(self.postJobCommands))
       for iter41 in self.postJobCommands:
-        oprot.writeString(iter41)
+        iter41.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()

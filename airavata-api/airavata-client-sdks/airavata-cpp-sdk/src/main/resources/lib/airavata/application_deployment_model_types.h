@@ -52,35 +52,50 @@ extern const std::map<int, const char*> _ApplicationParallelismType_VALUES_TO_NA
 
 class SetEnvPaths;
 
+class CommandObject;
+
 class ApplicationModule;
 
 class ApplicationDeploymentDescription;
 
+typedef struct _SetEnvPaths__isset {
+  _SetEnvPaths__isset() : envPathOrder(false) {}
+  bool envPathOrder :1;
+} _SetEnvPaths__isset;
 
 class SetEnvPaths {
  public:
 
-  static const char* ascii_fingerprint; // = "07A9615F837F7D0A952B595DD3020972";
-  static const uint8_t binary_fingerprint[16]; // = {0x07,0xA9,0x61,0x5F,0x83,0x7F,0x7D,0x0A,0x95,0x2B,0x59,0x5D,0xD3,0x02,0x09,0x72};
+  static const char* ascii_fingerprint; // = "CB1522D43F7EFF4C4CDE94ADBC65FF84";
+  static const uint8_t binary_fingerprint[16]; // = {0xCB,0x15,0x22,0xD4,0x3F,0x7E,0xFF,0x4C,0x4C,0xDE,0x94,0xAD,0xBC,0x65,0xFF,0x84};
 
   SetEnvPaths(const SetEnvPaths&);
   SetEnvPaths& operator=(const SetEnvPaths&);
-  SetEnvPaths() : name(), value() {
+  SetEnvPaths() : name(), value(), envPathOrder(0) {
   }
 
   virtual ~SetEnvPaths() throw();
   std::string name;
   std::string value;
+  int32_t envPathOrder;
+
+  _SetEnvPaths__isset __isset;
 
   void __set_name(const std::string& val);
 
   void __set_value(const std::string& val);
+
+  void __set_envPathOrder(const int32_t val);
 
   bool operator == (const SetEnvPaths & rhs) const
   {
     if (!(name == rhs.name))
       return false;
     if (!(value == rhs.value))
+      return false;
+    if (__isset.envPathOrder != rhs.__isset.envPathOrder)
+      return false;
+    else if (__isset.envPathOrder && !(envPathOrder == rhs.envPathOrder))
       return false;
     return true;
   }
@@ -97,6 +112,56 @@ class SetEnvPaths {
 };
 
 void swap(SetEnvPaths &a, SetEnvPaths &b);
+
+typedef struct _CommandObject__isset {
+  _CommandObject__isset() : commandOrder(false) {}
+  bool commandOrder :1;
+} _CommandObject__isset;
+
+class CommandObject {
+ public:
+
+  static const char* ascii_fingerprint; // = "18B162B1D15D8D46509D3911A9F1C2AA";
+  static const uint8_t binary_fingerprint[16]; // = {0x18,0xB1,0x62,0xB1,0xD1,0x5D,0x8D,0x46,0x50,0x9D,0x39,0x11,0xA9,0xF1,0xC2,0xAA};
+
+  CommandObject(const CommandObject&);
+  CommandObject& operator=(const CommandObject&);
+  CommandObject() : command(), commandOrder(0) {
+  }
+
+  virtual ~CommandObject() throw();
+  std::string command;
+  int32_t commandOrder;
+
+  _CommandObject__isset __isset;
+
+  void __set_command(const std::string& val);
+
+  void __set_commandOrder(const int32_t val);
+
+  bool operator == (const CommandObject & rhs) const
+  {
+    if (!(command == rhs.command))
+      return false;
+    if (__isset.commandOrder != rhs.__isset.commandOrder)
+      return false;
+    else if (__isset.commandOrder && !(commandOrder == rhs.commandOrder))
+      return false;
+    return true;
+  }
+  bool operator != (const CommandObject &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const CommandObject & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const CommandObject& obj);
+};
+
+void swap(CommandObject &a, CommandObject &b);
 
 typedef struct _ApplicationModule__isset {
   _ApplicationModule__isset() : appModuleVersion(false), appModuleDescription(false) {}
@@ -175,8 +240,8 @@ typedef struct _ApplicationDeploymentDescription__isset {
 class ApplicationDeploymentDescription {
  public:
 
-  static const char* ascii_fingerprint; // = "3B2F93AE9F0E6A621AF867419ADD9E5A";
-  static const uint8_t binary_fingerprint[16]; // = {0x3B,0x2F,0x93,0xAE,0x9F,0x0E,0x6A,0x62,0x1A,0xF8,0x67,0x41,0x9A,0xDD,0x9E,0x5A};
+  static const char* ascii_fingerprint; // = "248366FE9C58B4F98F9D84DE1237486F";
+  static const uint8_t binary_fingerprint[16]; // = {0x24,0x83,0x66,0xFE,0x9C,0x58,0xB4,0xF9,0x8F,0x9D,0x84,0xDE,0x12,0x37,0x48,0x6F};
 
   ApplicationDeploymentDescription(const ApplicationDeploymentDescription&);
   ApplicationDeploymentDescription& operator=(const ApplicationDeploymentDescription&);
@@ -192,12 +257,12 @@ class ApplicationDeploymentDescription {
   std::string executablePath;
   ApplicationParallelismType::type parallelism;
   std::string appDeploymentDescription;
-  std::vector<std::string>  moduleLoadCmds;
+  std::vector<CommandObject>  moduleLoadCmds;
   std::vector<SetEnvPaths>  libPrependPaths;
   std::vector<SetEnvPaths>  libAppendPaths;
   std::vector<SetEnvPaths>  setEnvironment;
-  std::vector<std::string>  preJobCommands;
-  std::vector<std::string>  postJobCommands;
+  std::vector<CommandObject>  preJobCommands;
+  std::vector<CommandObject>  postJobCommands;
 
   _ApplicationDeploymentDescription__isset __isset;
 
@@ -213,7 +278,7 @@ class ApplicationDeploymentDescription {
 
   void __set_appDeploymentDescription(const std::string& val);
 
-  void __set_moduleLoadCmds(const std::vector<std::string> & val);
+  void __set_moduleLoadCmds(const std::vector<CommandObject> & val);
 
   void __set_libPrependPaths(const std::vector<SetEnvPaths> & val);
 
@@ -221,9 +286,9 @@ class ApplicationDeploymentDescription {
 
   void __set_setEnvironment(const std::vector<SetEnvPaths> & val);
 
-  void __set_preJobCommands(const std::vector<std::string> & val);
+  void __set_preJobCommands(const std::vector<CommandObject> & val);
 
-  void __set_postJobCommands(const std::vector<std::string> & val);
+  void __set_postJobCommands(const std::vector<CommandObject> & val);
 
   bool operator == (const ApplicationDeploymentDescription & rhs) const
   {

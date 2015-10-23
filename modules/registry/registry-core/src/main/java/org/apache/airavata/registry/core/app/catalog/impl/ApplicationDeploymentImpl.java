@@ -23,6 +23,7 @@ package org.apache.airavata.registry.core.app.catalog.impl;
 
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
+import org.apache.airavata.model.appcatalog.appdeployment.CommandObject;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
@@ -70,38 +71,35 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             deploymentResource.save();
             deploymentDescription.setAppDeploymentId(deploymentResource.getDeploymentId());
 
-            List<String> moduleLoadCmds = deploymentDescription.getModuleLoadCmds();
+            List<CommandObject> moduleLoadCmds = deploymentDescription.getModuleLoadCmds();
             if (moduleLoadCmds != null && !moduleLoadCmds.isEmpty()){
-                int i=0;
-                for (String cmd : moduleLoadCmds){
-                    i++;
+                for (CommandObject cmd : moduleLoadCmds){
                     ModuleLoadCmdResource cmdResource = new ModuleLoadCmdResource();
                     cmdResource.setAppDeploymentId(deploymentDescription.getAppDeploymentId());
-                    cmdResource.setOrder(i);
-                    cmdResource.setCmd(cmd);
+                    cmdResource.setOrder(cmd.getCommandOrder());
+                    cmdResource.setCmd(cmd.getCommand());
                     cmdResource.save();
                 }
             }
 
-            List<String> preJobCommands = deploymentDescription.getPreJobCommands();
+            List<CommandObject> preJobCommands = deploymentDescription.getPreJobCommands();
             if (preJobCommands != null && !preJobCommands.isEmpty()){
-                int i=0;
-                for (String cmd : preJobCommands){
-                    i++;
+                for (CommandObject cmd : preJobCommands){
                     PreJobCommandResource cmdResource = new PreJobCommandResource();
                     cmdResource.setAppDeploymentId(deploymentDescription.getAppDeploymentId());
-                    cmdResource.setCommand(cmd);
-                    cmdResource.setOrder(i);
+                    cmdResource.setCommand(cmd.getCommand());
+                    cmdResource.setOrder(cmd.getCommandOrder());
                     cmdResource.save();
                 }
             }
 
-            List<String> postJobCommands = deploymentDescription.getPostJobCommands();
+            List<CommandObject> postJobCommands = deploymentDescription.getPostJobCommands();
             if (postJobCommands != null && !postJobCommands.isEmpty()){
-                for (String cmd : postJobCommands){
+                for (CommandObject cmd : postJobCommands){
                     PostJobCommandResource cmdResource = new PostJobCommandResource();
                     cmdResource.setAppDeploymentId(deploymentDescription.getAppDeploymentId());
-                    cmdResource.setCommand(cmd);
+                    cmdResource.setCommand(cmd.getCommand());
+                    cmdResource.setOrder(cmd.getCommandOrder());
                     cmdResource.save();
                 }
             }
@@ -131,15 +129,13 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             }
             List<SetEnvPaths> setEnvironment = deploymentDescription.getSetEnvironment();
             if (setEnvironment != null && !setEnvironment.isEmpty()){
-                int i=0;
                 for (SetEnvPaths path : setEnvironment){
-                    i++;
                     AppEnvironmentResource environmentResource = new AppEnvironmentResource();
                     environmentResource.setAppDeploymentResource(deploymentResource);
                     environmentResource.setName(path.getName());
                     environmentResource.setValue(path.getValue());
                     environmentResource.setDeploymentId(deploymentResource.getDeploymentId());
-                    environmentResource.setOrder(i);
+                    environmentResource.setOrder(path.getEnvPathOrder());
                     environmentResource.save();
                 }
             }
@@ -183,21 +179,19 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             Map<String, String> ids = new HashMap<String, String>();
             ids.put(AppCatAbstractResource.ModuleLoadCmdConstants.APP_DEPLOYMENT_ID, deploymentId);
             cmdResource.remove(ids);
-            List<String> moduleLoadCmds = updatedDeployment.getModuleLoadCmds();
+            List<CommandObject> moduleLoadCmds = updatedDeployment.getModuleLoadCmds();
             if (moduleLoadCmds != null && !moduleLoadCmds.isEmpty()){
-                int i=0;
-                for (String cmd : moduleLoadCmds){
-                    i++;
+                for (CommandObject cmd : moduleLoadCmds){
                     ids = new HashMap<String, String>();
                     ids.put(AppCatAbstractResource.ModuleLoadCmdConstants.APP_DEPLOYMENT_ID, deploymentId);
-                    ids.put(AppCatAbstractResource.ModuleLoadCmdConstants.CMD, cmd);
+                    ids.put(AppCatAbstractResource.ModuleLoadCmdConstants.CMD, cmd.getCommand());
                     if (cmdResource.isExists(ids)){
                         cmdResource = (ModuleLoadCmdResource)cmdResource.get(ids);
                     }
-                    cmdResource.setCmd(cmd);
+                    cmdResource.setCmd(cmd.getCommand());
                     cmdResource.setAppDeploymentResource(existingDep);
                     cmdResource.setAppDeploymentId(deploymentId);
-                    cmdResource.setOrder(i);
+                    cmdResource.setOrder(cmd.getCommandOrder());
                     cmdResource.save();
                 }
             }
@@ -206,21 +200,19 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             ids = new HashMap<String, String>();
             ids.put(AppCatAbstractResource.PreJobCommandConstants.DEPLOYMENT_ID, deploymentId);
             preJobCommandResource.remove(ids);
-            List<String> preJobCommands = updatedDeployment.getPreJobCommands();
+            List<CommandObject> preJobCommands = updatedDeployment.getPreJobCommands();
             if (preJobCommands != null && !preJobCommands.isEmpty()){
-                int i=0;
-                for (String cmd : preJobCommands){
-                    i++;
+                for (CommandObject cmd : preJobCommands){
                     ids = new HashMap<String, String>();
                     ids.put(AppCatAbstractResource.PreJobCommandConstants.DEPLOYMENT_ID, deploymentId);
-                    ids.put(AppCatAbstractResource.PreJobCommandConstants.COMMAND, cmd);
+                    ids.put(AppCatAbstractResource.PreJobCommandConstants.COMMAND, cmd.getCommand());
                     if (preJobCommandResource.isExists(ids)){
                         preJobCommandResource = (PreJobCommandResource)preJobCommandResource.get(ids);
                     }
-                    preJobCommandResource.setCommand(cmd);
+                    preJobCommandResource.setCommand(cmd.getCommand());
                     preJobCommandResource.setAppDeploymentResource(existingDep);
                     preJobCommandResource.setAppDeploymentId(deploymentId);
-                    preJobCommandResource.setOrder(i);
+                    preJobCommandResource.setOrder(cmd.getCommandOrder());
                     preJobCommandResource.save();
                 }
             }
@@ -229,16 +221,17 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             ids = new HashMap<String, String>();
             ids.put(AppCatAbstractResource.PostJobCommandConstants.DEPLOYMENT_ID, deploymentId);
             postJobCommandResource.remove(ids);
-            List<String> postJobCommands = updatedDeployment.getPostJobCommands();
+            List<CommandObject> postJobCommands = updatedDeployment.getPostJobCommands();
             if (postJobCommands != null && !postJobCommands.isEmpty()){
-                for (String cmd : postJobCommands){
+                for (CommandObject cmd : postJobCommands){
                     ids = new HashMap<String, String>();
                     ids.put(AppCatAbstractResource.PostJobCommandConstants.DEPLOYMENT_ID, deploymentId);
-                    ids.put(AppCatAbstractResource.PostJobCommandConstants.COMMAND, cmd);
+                    ids.put(AppCatAbstractResource.PostJobCommandConstants.COMMAND, cmd.getCommand());
                     if (postJobCommandResource.isExists(ids)){
                         postJobCommandResource = (PostJobCommandResource)postJobCommandResource.get(ids);
                     }
-                    postJobCommandResource.setCommand(cmd);
+                    postJobCommandResource.setCommand(cmd.getCommand());
+                    postJobCommandResource.setOrder(cmd.getCommandOrder());
                     postJobCommandResource.setAppDeploymentResource(existingDep);
                     postJobCommandResource.setAppDeploymentId(deploymentId);
                     postJobCommandResource.save();
@@ -296,7 +289,6 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             ids.put(AppCatAbstractResource.AppEnvironmentConstants.DEPLOYMENT_ID, deploymentId);
             environmentResource.remove(ids);
             if (setEnvironment != null && !setEnvironment.isEmpty()){
-                int i=0;
                 for (SetEnvPaths path : setEnvironment){
                     ids = new HashMap<String, String>();
                     ids.put(AppCatAbstractResource.AppEnvironmentConstants.DEPLOYMENT_ID, deploymentId);
@@ -308,7 +300,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
                     environmentResource.setName(path.getName());
                     environmentResource.setValue(path.getValue());
                     environmentResource.setDeploymentId(deploymentId);
-                    environmentResource.setOrder(i);
+                    environmentResource.setOrder(path.getEnvPathOrder());
                     environmentResource.save();
                 }
             }

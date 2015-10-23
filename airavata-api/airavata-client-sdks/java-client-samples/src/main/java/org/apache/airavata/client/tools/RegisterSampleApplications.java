@@ -25,6 +25,7 @@ import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.client.samples.CreateLaunchExperiment;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
+import org.apache.airavata.model.appcatalog.appdeployment.CommandObject;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
@@ -1110,8 +1111,9 @@ public class RegisterSampleApplications {
             System.out.println("Echo on stampede deployment Id " + echoAppDeployId);
 
             //Register Amber
-            List<String> moduleLoadCMDs = new ArrayList<String>();
-            moduleLoadCMDs.add("module load amber");
+            List<CommandObject> moduleLoadCMDs = new ArrayList<>();
+            CommandObject cmd = new CommandObject("module load amber");
+            moduleLoadCMDs.add(cmd);
             ApplicationDeploymentDescription amberStampedeDeployment = RegisterSampleApplicationsUtils.createApplicationDeployment(amberModuleId, stampedeResourceId,
                     "/opt/apps/intel13/mvapich2_1_9/amber/12.0/bin/sander.MPI -O", ApplicationParallelismType.MPI,
                     amberDescription, moduleLoadCMDs, null, null);
@@ -1133,8 +1135,8 @@ public class RegisterSampleApplications {
             System.out.println("GROMACS on stampede deployment Id " + gromacsAppDeployId);
 
             //Register LAMMPS
-            List<String> preJobCommands = new ArrayList<String>();
-            preJobCommands.add("cp /home1/00421/ccguser/apps/ds_lammps/data/* $workingDir");
+            List<CommandObject> preJobCommands = new ArrayList();
+            preJobCommands.add(new CommandObject("cp /home1/00421/ccguser/apps/ds_lammps/data/* $workingDir"));
             String lammpsAppDeployId = airavataClient.registerApplicationDeployment(new AuthzToken(""), DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(lammpsModuleId, stampedeResourceId,
                             "~/apps/ds_lammps/bin/lmp_stampede", ApplicationParallelismType.MPI,
@@ -1142,8 +1144,8 @@ public class RegisterSampleApplications {
             System.out.println("LAMMPS on stampede deployment Id " + lammpsAppDeployId);
 
             //Register NWChem
-            List<String> nwChemModuleCmds = new ArrayList<String>();
-            nwChemModuleCmds.add("module load nwchem");
+            List<CommandObject> nwChemModuleCmds = new ArrayList();
+            nwChemModuleCmds.add(new CommandObject("module load nwchem"));
             String nwChemAppDeployId = airavataClient.registerApplicationDeployment(new AuthzToken(""), DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(nwChemModuleId, stampedeResourceId,
                             "nwchem", ApplicationParallelismType.MPI,
@@ -1165,10 +1167,10 @@ public class RegisterSampleApplications {
             System.out.println("WRF on stampede deployment Id " + wrfAppDeployId);
 
 
-            List<String> monteXModuleCmds = new ArrayList<String>();
+            List<CommandObject> monteXModuleCmds = new ArrayList();
 //            monteXModuleCmds.add("module load globus");
 //            monteXModuleCmds.add("module load uberftp");
-            monteXModuleCmds.add("module load fftw3");
+            monteXModuleCmds.add(new CommandObject("module load fftw3"));
 
             String monteXAppDeployId = airavataClient.registerApplicationDeployment(new AuthzToken(""), DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(monteXModuleId, stampedeResourceId,
@@ -1192,8 +1194,8 @@ public class RegisterSampleApplications {
             System.out.println("Echo on trestles deployment Id " + echoAppDeployId);
 
             //Register Amber
-            List<String> moduleLoadCMDs = new ArrayList<String>();
-            moduleLoadCMDs.add("module load amber");
+            List<CommandObject> moduleLoadCMDs = new ArrayList();
+            moduleLoadCMDs.add(new CommandObject("module load amber"));
             String amberAppDeployId = airavataClient.registerApplicationDeployment(new AuthzToken(""), DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(amberModuleId, trestlesResourceId,
                             "/opt/amber/bin/sander.MPI -O", ApplicationParallelismType.MPI,
@@ -1215,8 +1217,8 @@ public class RegisterSampleApplications {
             System.out.println("LAMMPS on trestles deployment Id " + lammpsAppDeployId);
 
             //Register GAMESS
-            List<String> moduleLoadCmd = new ArrayList<String>();
-            moduleLoadCmd.add("module load gamess");
+            List<CommandObject> moduleLoadCmd = new ArrayList();
+            moduleLoadCmd.add(new CommandObject("module load gamess"));
             String gamessAppDeployId = airavataClient.registerApplicationDeployment(new AuthzToken(""), DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(gamessModuleId, trestlesResourceId,
                             "/opt/gamess/rungms", ApplicationParallelismType.MPI,
@@ -1224,8 +1226,8 @@ public class RegisterSampleApplications {
             System.out.println("Gamess on trestles deployment Id " + gamessAppDeployId);
 
 
-            List<String> gaussianMouldes = new ArrayList<String>();
-            gaussianMouldes.add("module load gaussian");
+            List<CommandObject> gaussianMouldes = new ArrayList();
+            gaussianMouldes.add(new CommandObject("module load gaussian"));
             String gaussianAppDeployId = airavataClient.registerApplicationDeployment(new AuthzToken(""), DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(gaussianModuleId, trestlesResourceId,
                             "g09", ApplicationParallelismType.OPENMP, gaussianDescription, gaussianMouldes , null, null));
@@ -1246,8 +1248,8 @@ public class RegisterSampleApplications {
                             "/home/lg11w/executables/echo.sh", ApplicationParallelismType.SERIAL,
                             echoDescription, null, null, null));
 
-            List<String> moduleLoadCmd = new ArrayList<String>();
-            moduleLoadCmd.add("module load LAMMPS/28Jun14-base");
+            List<CommandObject> moduleLoadCmd = new ArrayList();
+            moduleLoadCmd.add(new CommandObject("module load LAMMPS/28Jun14-base"));
             //Register Echo
 
             String lammpsDeployId = airavataClient.registerApplicationDeployment(new AuthzToken(""), DEFAULT_GATEWAY,
@@ -1273,9 +1275,9 @@ public class RegisterSampleApplications {
             System.out.println("Echo on bigredII deployment Id " + echoAppDeployId);
 
             //Register Amber
-            List<String> amberModuleLoadCMDsBr2 = new ArrayList<String>();
-            amberModuleLoadCMDsBr2.add("module load amber/gnu/mpi/12");
-            amberModuleLoadCMDsBr2.add("module swap PrgEnv-cray PrgEnv-gnu");
+            List<CommandObject> amberModuleLoadCMDsBr2 = new ArrayList();
+            amberModuleLoadCMDsBr2.add(new CommandObject("module load amber/gnu/mpi/12"));
+            amberModuleLoadCMDsBr2.add(new CommandObject("module swap PrgEnv-cray PrgEnv-gnu"));
             String amberAppDeployId = airavataClient.registerApplicationDeployment(new AuthzToken(""), DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(amberModuleId, bigredResourceId,
                             "/N/soft/cle4/amber/gnu/mpi/12/amber12/bin/sander.MPI -O", ApplicationParallelismType.MPI,
@@ -1485,11 +1487,11 @@ public class RegisterSampleApplications {
             System.out.println("#### Registering Application Deployments on Alamo #### \n");
 
             //Register Ultrascan on Alamo
-            List<String> ultrascanMouldes = new ArrayList<String>();
-            ultrascanMouldes.add("module load intel/2015/64");
-            ultrascanMouldes.add("module load openmpi/intel/1.8.4");
-            ultrascanMouldes.add("module load qt4/4.8.6");
-            ultrascanMouldes.add("module load ultrascan3/3.3");
+            List<CommandObject> ultrascanMouldes = new ArrayList();
+            ultrascanMouldes.add(new CommandObject("module load intel/2015/64"));
+            ultrascanMouldes.add(new CommandObject("module load openmpi/intel/1.8.4"));
+            ultrascanMouldes.add(new CommandObject("module load qt4/4.8.6"));
+            ultrascanMouldes.add(new CommandObject("module load ultrascan3/3.3"));
 
             String ultrascanAppDeployId = airavataClient.registerApplicationDeployment(new AuthzToken(""), DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId, alamoResourceId,

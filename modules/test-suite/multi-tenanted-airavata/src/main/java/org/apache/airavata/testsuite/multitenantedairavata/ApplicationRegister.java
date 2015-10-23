@@ -25,6 +25,7 @@ import org.apache.airavata.api.Airavata;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
+import org.apache.airavata.model.appcatalog.appdeployment.CommandObject;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
@@ -116,8 +117,11 @@ public class ApplicationRegister {
                     applicationInterfaceListPerGateway.put(amberInterfaceId, gateway.getGatewayId());
 
                     // add amber deployment
-                    List<String> moduleLoadCMDs = new ArrayList<String>();
-                    moduleLoadCMDs.add("module load amber");
+                    List<CommandObject> moduleLoadCMDs = new ArrayList();
+                    CommandObject cmd  = new CommandObject();
+                    cmd.setCommand("module load amber");
+                    cmd.setCommandOrder(0);
+                    moduleLoadCMDs.add(cmd);
                     ApplicationDeploymentDescription amberStampedeDeployment = createApplicationDeployment(amberModuleId, stampedeResourceId,
                             "/opt/apps/intel13/mvapich2_1_9/amber/12.0/bin/sander.MPI -O", ApplicationParallelismType.MPI,
                             TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION, moduleLoadCMDs, null, null);
@@ -128,9 +132,18 @@ public class ApplicationRegister {
                                     "/opt/amber/bin/sander.MPI -O", ApplicationParallelismType.MPI,
                                     TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION, moduleLoadCMDs, null, null));
 
-                    List<String> amberModuleLoadCMDsBr2 = new ArrayList<String>();
-                    amberModuleLoadCMDsBr2.add("module load amber/gnu/mpi/12");
-                    amberModuleLoadCMDsBr2.add("module swap PrgEnv-cray PrgEnv-gnu");
+                    List<CommandObject> amberModuleLoadCMDsBr2 = new ArrayList<>();
+                    cmd  = new CommandObject();
+                    cmd.setCommand("module load amber/gnu/mpi/12");
+                    cmd.setCommandOrder(0);
+                    amberModuleLoadCMDsBr2.add(cmd);
+
+                    cmd  = new CommandObject();
+                    cmd.setCommand("module swap PrgEnv-cray PrgEnv-gnu");
+                    cmd.setCommandOrder(1);
+                    amberModuleLoadCMDsBr2.add(cmd);
+                    amberModuleLoadCMDsBr2.add(cmd);
+
                     String amberBr2AppDeployId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(),
                             createApplicationDeployment(amberModuleId, br2ResourceId,
                                     "/N/soft/cle4/amber/gnu/mpi/12/amber12/bin/sander.MPI -O", ApplicationParallelismType.MPI,
@@ -180,11 +193,16 @@ public class ApplicationRegister {
                                 "/home/us3/gordon/bin/us_mpi_analysis", ApplicationParallelismType.MPI,
                                 TestFrameworkConstants.AppcatalogConstants.ULTRASCAN_DESCRIPTION, null, null, null));
 
-                List<String> alamoModules = new ArrayList<>();
-                alamoModules.add("module load intel/2015/64");
-                alamoModules.add("module load openmpi/intel/1.8.4");
-                alamoModules.add("module load qt4/4.8.6");
-                alamoModules.add("module load ultrascan3/3.3");
+                List<CommandObject> alamoModules = new ArrayList<>();
+                CommandObject cmd = new CommandObject("module load intel/2015/64");
+                alamoModules.add(cmd);
+                cmd = new CommandObject("module load openmpi/intel/1.8.4");
+                alamoModules.add(cmd);
+                cmd = new CommandObject("module load qt4/4.8.6");
+                alamoModules.add(cmd);
+                cmd = new CommandObject("module load ultrascan3/3.3");
+                alamoModules.add(cmd);
+
                 String ultrascanAlamoAppId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(),
                         createApplicationDeployment(ultrascanModuleId,alamoResourceId,
                                 "/home/us3/bin/us_mpi_analysis", ApplicationParallelismType.OPENMP,
@@ -348,9 +366,9 @@ public class ApplicationRegister {
                                                                                String executablePath,
                                                                                ApplicationParallelismType parallelism,
                                                                                String appDeploymentDescription,
-                                                                               List<String> moduleLoadCmds,
-                                                                               List<String> preJobCmds,
-                                                                               List<String> postJobCmds) {
+                                                                               List<CommandObject> moduleLoadCmds,
+                                                                               List<CommandObject> preJobCmds,
+                                                                               List<CommandObject> postJobCmds) {
         ApplicationDeploymentDescription deployment = new ApplicationDeploymentDescription();
         deployment.setAppDeploymentDescription(appDeploymentDescription);
         deployment.setAppModuleId(appModuleId);
