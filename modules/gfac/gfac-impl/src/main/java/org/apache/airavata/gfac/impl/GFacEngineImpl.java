@@ -184,11 +184,11 @@ public class GFacEngineImpl implements GFacEngine {
             }
 
             TaskModel taskModel = taskMap.get(taskId);
+            processContext.setCurrentExecutingTaskModel(taskModel);
             TaskTypes taskType = taskModel.getTaskType();
             TaskContext taskContext = getTaskContext(processContext);
             taskContext.setTaskModel(taskModel);
             ProcessStatus status = null;
-            processContext.setCurrentExecutingTaskId(taskId);
             switch (taskType) {
                 case ENV_SETUP:
                     status = new ProcessStatus(ProcessState.CONFIGURING_WORKSPACE);
@@ -276,7 +276,7 @@ public class GFacEngineImpl implements GFacEngine {
             }
 
             if (processContext.isPauseTaskExecution()) {
-                return;   // If any task put processContext to wait, the same task should continue processContext execution.
+                return;   // If any task put processContext to wait, the same task must continue processContext execution.
             }
 
         }
@@ -285,7 +285,6 @@ public class GFacEngineImpl implements GFacEngine {
 
     private void executeJobMonitoring(TaskContext taskContext, boolean recovery) throws GFacException {
         ProcessContext processContext = taskContext.getParentProcessContext();
-        ProcessStatus status;
         TaskStatus taskStatus;
         JobMonitor monitorService = null;
         try {
@@ -297,7 +296,9 @@ public class GFacEngineImpl implements GFacEngine {
             MonitorTaskModel monitorTaskModel = ((MonitorTaskModel) taskContext.getSubTaskModel());
             monitorService = Factory.getMonitorService(monitorTaskModel.getMonitorMode());
             if (!monitorService.isMonitoring(processContext.getJobModel().getJobId())) {
-                monitorService.monitor(processContext.getJobModel().getJobId(), processContext);
+                monitorService.monitor(processContext.getJobModel().getJobId(), taskContext);
+            } else {
+                log.warn("Jobid: {}, already in monitoring map", processContext.getJobModel().getJobId());
             }
         } catch (AiravataException | TException e) {
             taskStatus = new TaskStatus(TaskState.FAILED);
@@ -315,6 +316,10 @@ public class GFacEngineImpl implements GFacEngine {
             errorModel.setActualErrorMessage(errorMsg);
             GFacUtils.saveTaskError(taskContext, errorModel);
             throw new GFacException(e);
+        }
+        if (processContext.isPauseTaskExecution()) {
+            // we won't update task status to complete, job monitor will update task status to complete after it complete monitoring for this job id.
+            return;
         }
         taskStatus = new TaskStatus(TaskState.COMPLETED);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
@@ -432,10 +437,23 @@ public class GFacEngineImpl implements GFacEngine {
         return false;
     }
 
-
     @Override
-    public void recoverProcess(ProcessContext processContext, String recoverTaskId) throws GFacException {
+    public void recoverProcess(ProcessContext processContext) throws GFacException {
         processContext.setRecovery(true);
+        String taskDag = processContext.getProcessModel().getTaskDag();
+        List<String> taskExecutionOrder = GFacUtils.parseTaskDag(taskDag);
+        processContext.setTaskExecutionOrder(taskExecutionOrder);
+        Map<String, TaskModel> taskMap = processContext.getTaskMap();
+        String recoverTaskId = null;
+        for (String taskId : taskExecutionOrder) {
+            TaskModel taskModel = taskMap.get(taskId);
+            TaskState state = taskModel.getTaskStatus().getState();
+            if (state == TaskState.CREATED || state == TaskState.EXECUTING) {
+                recoverTaskId = taskId;
+                break;
+            }
+        }
+
         continueProcess(processContext, recoverTaskId);
     }
 

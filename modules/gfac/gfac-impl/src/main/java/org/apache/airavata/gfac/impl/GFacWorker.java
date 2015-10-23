@@ -208,7 +208,7 @@ public class GFacWorker implements Runnable {
             }
         }
 
-        engine.recoverProcess(processContext, recoverTaskId);
+        engine.recoverProcess(processContext);
         if (processContext.isInterrupted()) {
             return;
         }
