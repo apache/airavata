@@ -259,18 +259,11 @@ public class GFacEngineImpl implements GFacEngine {
                     break;
 
                 case MONITORING:
-                    JobMonitor monitorService = null;
-                    try {
-                        MonitorTaskModel monitorTaskModel = ((MonitorTaskModel) taskContext.getSubTaskModel());
-                        status = new ProcessStatus(ProcessState.MONITORING);
-                        status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                        processContext.setProcessStatus(status);
-                        GFacUtils.saveAndPublishProcessStatus(processContext);
-                        monitorService = Factory.getMonitorService(monitorTaskModel.getMonitorMode());
-                        monitorService.monitor(processContext.getJobModel().getJobId(), processContext);
-                    } catch (AiravataException | TException e) {
-                        throw new GFacException(e);
-                    }
+                    status = new ProcessStatus(ProcessState.MONITORING);
+                    status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                    processContext.setProcessStatus(status);
+                    GFacUtils.saveAndPublishProcessStatus(processContext);
+                    executeJobMonitoring(taskContext, processContext.isRecovery());
                     break;
 
                 case ENV_CLEANUP:
@@ -290,22 +283,70 @@ public class GFacEngineImpl implements GFacEngine {
         processContext.setComplete(true);
     }
 
-    private boolean executeJobSubmission(TaskContext taskContext, boolean recovery) throws GFacException {
+    private void executeJobMonitoring(TaskContext taskContext, boolean recovery) throws GFacException {
+        ProcessContext processContext = taskContext.getParentProcessContext();
+        ProcessStatus status;
         TaskStatus taskStatus;
+        JobMonitor monitorService = null;
+        try {
+            taskStatus = new TaskStatus(TaskState.EXECUTING);
+            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            taskContext.setTaskStatus(taskStatus);
+            GFacUtils.saveAndPublishTaskStatus(taskContext);
+
+            MonitorTaskModel monitorTaskModel = ((MonitorTaskModel) taskContext.getSubTaskModel());
+            monitorService = Factory.getMonitorService(monitorTaskModel.getMonitorMode());
+            if (!monitorService.isMonitoring(processContext.getJobModel().getJobId())) {
+                monitorService.monitor(processContext.getJobModel().getJobId(), processContext);
+            }
+        } catch (AiravataException | TException e) {
+            taskStatus = new TaskStatus(TaskState.FAILED);
+            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            taskStatus.setReason("Couldn't handover jobId {} to monitor service, monitor service type {}");
+            taskContext.setTaskStatus(taskStatus);
+            GFacUtils.saveAndPublishTaskStatus(taskContext);
+
+            String errorMsg = new StringBuilder("expId: ").append(processContext.getExperimentId()).append(", processId: ")
+                    .append(processContext.getProcessId()).append(", taskId: ").append(taskContext.getTaskId())
+                    .append(", type: ").append(taskContext.getTaskType().name()).append(" :- Input staging failed. Reason: ")
+                    .append(taskStatus.getReason()).toString();
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setUserFriendlyMessage("Error while staging output data");
+            errorModel.setActualErrorMessage(errorMsg);
+            GFacUtils.saveTaskError(taskContext, errorModel);
+            throw new GFacException(e);
+        }
+        taskStatus = new TaskStatus(TaskState.COMPLETED);
+        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        taskStatus.setReason("Successfully handed over job id to job monitor service.");
+        taskContext.setTaskStatus(taskStatus);
+        GFacUtils.saveAndPublishTaskStatus(taskContext);
+    }
+
+    private boolean executeJobSubmission(TaskContext taskContext, boolean recovery) throws GFacException {
+        TaskStatus taskStatus = new TaskStatus(TaskState.EXECUTING);
+        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        taskContext.setTaskStatus(taskStatus);
+        GFacUtils.saveAndPublishTaskStatus(taskContext);
         try {
             JobSubmissionTaskModel jobSubmissionTaskModel = ((JobSubmissionTaskModel) taskContext.getSubTaskModel());
             JobSubmissionTask jobSubmissionTask = Factory.getJobSubmissionTask(jobSubmissionTaskModel.getJobSubmissionProtocol());
 
             ProcessContext processContext = taskContext.getParentProcessContext();
             taskStatus = executeTask(taskContext, jobSubmissionTask, recovery);
+            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            taskContext.setTaskStatus(taskStatus);
+            GFacUtils.saveAndPublishTaskStatus(taskContext);
+
             if (taskStatus.getState() == TaskState.FAILED) {
                 log.error("expId: {}, processId: {}, taskId: {} type: {},:- Job submission task failed, " +
                         "reason:" + " {}", taskContext.getParentProcessContext().getExperimentId(), taskContext
                         .getParentProcessContext().getProcessId(), taskContext.getTaskId(), jobSubmissionTask.getType
                         ().name(), taskStatus.getReason());
-                String errorMsg = "expId: {}, processId: {}, taskId: {} type: {},:- Job submission task failed, " +
-                        "reason:" + " {}" + processContext.getExperimentId() + processContext.getProcessId() +
-                        taskContext.getTaskId() + jobSubmissionTask.getType().name() + taskStatus.getReason();
+                String errorMsg = new StringBuilder("expId: ").append(processContext.getExperimentId()).append(", processId: ")
+                        .append(processContext.getProcessId()).append(", taskId: ").append(taskContext.getTaskId())
+                        .append(", type: ").append(taskContext.getTaskType().name()).append(" :- Job submission task failed. Reason: ")
+                        .append(taskStatus.getReason()).toString();
                 ErrorModel errorModel = new ErrorModel();
                 errorModel.setUserFriendlyMessage("Job submission task failed");
                 errorModel.setActualErrorMessage(errorMsg);
@@ -343,8 +384,11 @@ public class GFacEngineImpl implements GFacEngine {
                         "reason:" + " {}", taskContext.getParentProcessContext().getExperimentId(), taskContext
                         .getParentProcessContext().getProcessId(), taskContext.getTaskId(), envSetupTask.getType
                         ().name(), taskStatus.getReason());
-                String errorMsg = "expId: {}, processId: {}, taskId: {} type: {},:- Input staging failed, " +
-                        "reason:" + " {}" + taskContext.getExperimentId() + taskContext.getProcessId() + taskContext.getTaskId() + envSetupTask.getType().name() + taskStatus.getReason();
+                ProcessContext processContext = taskContext.getParentProcessContext();
+                String errorMsg = new StringBuilder("expId: ").append(processContext.getExperimentId()).append(", processId: ")
+                        .append(processContext.getProcessId()).append(", taskId: ").append(taskContext.getTaskId())
+                        .append(", type: ").append(taskContext.getTaskType().name()).append(" :- Environment Setup failed. Reason: ")
+                        .append(taskStatus.getReason()).toString();
                 ErrorModel errorModel = new ErrorModel();
                 errorModel.setUserFriendlyMessage("Error while environment setup");
                 errorModel.setActualErrorMessage(errorMsg);
@@ -358,18 +402,27 @@ public class GFacEngineImpl implements GFacEngine {
     }
 
     private boolean inputDataStaging(TaskContext taskContext, boolean recover) throws GFacException {
-        TaskStatus taskStatus;// execute process inputs
+        TaskStatus taskStatus = new TaskStatus(TaskState.EXECUTING);
+        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        taskContext.setTaskStatus(taskStatus);
+        GFacUtils.saveAndPublishTaskStatus(taskContext);
+
         ProcessContext processContext = taskContext.getParentProcessContext();
         Task dMoveTask = Factory.getDataMovementTask(processContext.getDataMovementProtocol());
         taskStatus = executeTask(taskContext, dMoveTask, false);
+        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        taskContext.setTaskStatus(taskStatus);
+        GFacUtils.saveAndPublishTaskStatus(taskContext);
+
         if (taskStatus.getState() == TaskState.FAILED) {
             log.error("expId: {}, processId: {}, taskId: {} type: {},:- Input statging failed, " +
                     "reason:" + " {}", taskContext.getParentProcessContext().getExperimentId(), taskContext
                     .getParentProcessContext().getProcessId(), taskContext.getTaskId(), dMoveTask.getType
                     ().name(), taskStatus.getReason());
-            String errorMsg = "expId: {}, processId: {}, taskId: {} type: {},:- Input staging failed, " +
-                    "reason:" + " {}" + processContext.getExperimentId() + processContext.getProcessId() +
-                    taskContext.getTaskId() + dMoveTask.getType().name() + taskStatus.getReason();
+            String errorMsg = new StringBuilder("expId: ").append(processContext.getExperimentId()).append(", processId: ")
+                    .append(processContext.getProcessId()).append(", taskId: ").append(taskContext.getTaskId())
+                    .append(", type: ").append(taskContext.getTaskType().name()).append(" :- Input staging failed. Reason: ")
+                    .append(taskStatus.getReason()).toString();
             ErrorModel errorModel = new ErrorModel();
             errorModel.setUserFriendlyMessage("Error while staging input data");
             errorModel.setActualErrorMessage(errorMsg);
@@ -430,18 +483,28 @@ public class GFacEngineImpl implements GFacEngine {
      * @throws GFacException
      */
     private boolean outputDataStaging(TaskContext taskContext, boolean recovery) throws GFacException {
+        TaskStatus taskStatus = new TaskStatus(TaskState.EXECUTING);
+        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        taskContext.setTaskStatus(taskStatus);
+        GFacUtils.saveAndPublishTaskStatus(taskContext);
+
         ProcessContext processContext = taskContext.getParentProcessContext();
         Task dMoveTask = Factory.getDataMovementTask(processContext.getDataMovementProtocol());
-        TaskStatus taskStatus = executeTask(taskContext, dMoveTask, recovery);
+        taskStatus = executeTask(taskContext, dMoveTask, recovery);
+        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        taskContext.setTaskStatus(taskStatus);
+        GFacUtils.saveAndPublishTaskStatus(taskContext);
+
         if (taskStatus.getState() == TaskState.FAILED) {
             log.error("expId: {}, processId: {}, taskId: {} type: {},:- output staging failed, " +
                     "reason:" + " {}", taskContext.getParentProcessContext().getExperimentId(), taskContext
                     .getParentProcessContext().getProcessId(), taskContext.getTaskId(), dMoveTask.getType
                     ().name(), taskStatus.getReason());
 
-            String errorMsg = "expId: {}, processId: {}, taskId: {} type: {},:- output staging failed, " +
-                    "reason:" + " {}" + processContext.getExperimentId() + processContext.getProcessId() +
-                    taskContext.getTaskId() + dMoveTask.getType().name() + taskStatus.getReason();
+            String errorMsg = new StringBuilder("expId: ").append(processContext.getExperimentId()).append(", processId: ")
+                    .append(processContext.getProcessId()).append(", taskId: ").append(taskContext.getTaskId())
+                    .append(", type: ").append(taskContext.getTaskType().name()).append(" :- Output staging failed. Reason: ")
+                    .append(taskStatus.getReason()).toString();
             ErrorModel errorModel = new ErrorModel();
             errorModel.setUserFriendlyMessage("Error while staging output data");
             errorModel.setActualErrorMessage(errorMsg);

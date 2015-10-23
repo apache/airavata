@@ -134,6 +134,11 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 		}
 	}
 
+    @Override
+    public boolean isMonitoring(String jobId) {
+        return jobMonitorMap.containsKey(jobId);
+    }
+
     private JobStatusResult parse(Message message) throws MessagingException, AiravataException {
         Address fromAddress = message.getFrom()[0];
         String addressStr = fromAddress.toString();

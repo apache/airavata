@@ -196,6 +196,7 @@ public class GFacWorker implements Runnable {
 
         String taskDag = processContext.getProcessModel().getTaskDag();
         List<String> taskExecutionOrder = GFacUtils.parseTaskDag(taskDag);
+        processContext.setTaskExecutionOrder(taskExecutionOrder);
         Map<String, TaskModel> taskMap = processContext.getTaskMap();
         String recoverTaskId = null;
         for (String taskId : taskExecutionOrder) {

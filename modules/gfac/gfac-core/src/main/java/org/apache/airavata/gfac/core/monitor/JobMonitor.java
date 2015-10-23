@@ -35,4 +35,9 @@ public interface JobMonitor {
 	 * Stop monitoring for given jobId
 	 */
 	void stopMonitor(String jobId, boolean runOutFlow);
+
+    /**
+     * Return <code>true</code> if jobId is already monitoring by this Monitor, <code>false</code> if not
+     */
+    boolean isMonitoring(String jobId);
 }
