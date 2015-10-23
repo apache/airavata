@@ -58,6 +58,9 @@ final class ApplicationParallelismType {
  * 
  * value:
  *   Value of the environment variable to set
+ * 
+ * envOrder:
+ *   The order of the setting of the env variables when there are multiple env variables
  */
 class SetEnvPaths {
   static $_TSPEC;
@@ -70,6 +73,10 @@ class SetEnvPaths {
    * @var string
    */
   public $value = null;
+  /**
+   * @var int
+   */
+  public $envPathOrder = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -82,6 +89,10 @@ class SetEnvPaths {
           'var' => 'value',
           'type' => TType::STRING,
           ),
+        3 => array(
+          'var' => 'envPathOrder',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -90,6 +101,9 @@ class SetEnvPaths {
       }
       if (isset($vals['value'])) {
         $this->value = $vals['value'];
+      }
+      if (isset($vals['envPathOrder'])) {
+        $this->envPathOrder = $vals['envPathOrder'];
       }
     }
   }
@@ -127,6 +141,13 @@ class SetEnvPaths {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 3:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->envPathOrder);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -148,6 +169,118 @@ class SetEnvPaths {
     if ($this->value !== null) {
       $xfer += $output->writeFieldBegin('value', TType::STRING, 2);
       $xfer += $output->writeString($this->value);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->envPathOrder !== null) {
+      $xfer += $output->writeFieldBegin('envPathOrder', TType::I32, 3);
+      $xfer += $output->writeI32($this->envPathOrder);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+/**
+ * Job commands to be used in Pre Job, Post Job and Module Load Commands
+ * 
+ * command:
+ *   The actual command in string format
+ * 
+ * commandOrder:
+ *   Order of the command in the multiple command situation
+ */
+class CommandObject {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $command = null;
+  /**
+   * @var int
+   */
+  public $commandOrder = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'command',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'commandOrder',
+          'type' => TType::I32,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['command'])) {
+        $this->command = $vals['command'];
+      }
+      if (isset($vals['commandOrder'])) {
+        $this->commandOrder = $vals['commandOrder'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'CommandObject';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->command);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->commandOrder);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('CommandObject');
+    if ($this->command !== null) {
+      $xfer += $output->writeFieldBegin('command', TType::STRING, 1);
+      $xfer += $output->writeString($this->command);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->commandOrder !== null) {
+      $xfer += $output->writeFieldBegin('commandOrder', TType::I32, 2);
+      $xfer += $output->writeI32($this->commandOrder);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -370,7 +503,7 @@ class ApplicationDeploymentDescription {
    */
   public $appDeploymentDescription = null;
   /**
-   * @var string[]
+   * @var \Airavata\Model\AppCatalog\AppDeployment\CommandObject[]
    */
   public $moduleLoadCmds = null;
   /**
@@ -386,11 +519,11 @@ class ApplicationDeploymentDescription {
    */
   public $setEnvironment = null;
   /**
-   * @var string[]
+   * @var \Airavata\Model\AppCatalog\AppDeployment\CommandObject[]
    */
   public $preJobCommands = null;
   /**
-   * @var string[]
+   * @var \Airavata\Model\AppCatalog\AppDeployment\CommandObject[]
    */
   public $postJobCommands = null;
 
@@ -424,9 +557,10 @@ class ApplicationDeploymentDescription {
         7 => array(
           'var' => 'moduleLoadCmds',
           'type' => TType::LST,
-          'etype' => TType::STRING,
+          'etype' => TType::STRUCT,
           'elem' => array(
-            'type' => TType::STRING,
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\AppCatalog\AppDeployment\CommandObject',
             ),
           ),
         8 => array(
@@ -459,17 +593,19 @@ class ApplicationDeploymentDescription {
         11 => array(
           'var' => 'preJobCommands',
           'type' => TType::LST,
-          'etype' => TType::STRING,
+          'etype' => TType::STRUCT,
           'elem' => array(
-            'type' => TType::STRING,
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\AppCatalog\AppDeployment\CommandObject',
             ),
           ),
         12 => array(
           'var' => 'postJobCommands',
           'type' => TType::LST,
-          'etype' => TType::STRING,
+          'etype' => TType::STRUCT,
           'elem' => array(
-            'type' => TType::STRING,
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\AppCatalog\AppDeployment\CommandObject',
             ),
           ),
         );
@@ -584,7 +720,8 @@ class ApplicationDeploymentDescription {
             for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
             {
               $elem5 = null;
-              $xfer += $input->readString($elem5);
+              $elem5 = new \Airavata\Model\AppCatalog\AppDeployment\CommandObject();
+              $xfer += $elem5->read($input);
               $this->moduleLoadCmds []= $elem5;
             }
             $xfer += $input->readListEnd();
@@ -655,7 +792,8 @@ class ApplicationDeploymentDescription {
             for ($_i28 = 0; $_i28 < $_size24; ++$_i28)
             {
               $elem29 = null;
-              $xfer += $input->readString($elem29);
+              $elem29 = new \Airavata\Model\AppCatalog\AppDeployment\CommandObject();
+              $xfer += $elem29->read($input);
               $this->preJobCommands []= $elem29;
             }
             $xfer += $input->readListEnd();
@@ -672,7 +810,8 @@ class ApplicationDeploymentDescription {
             for ($_i34 = 0; $_i34 < $_size30; ++$_i34)
             {
               $elem35 = null;
-              $xfer += $input->readString($elem35);
+              $elem35 = new \Airavata\Model\AppCatalog\AppDeployment\CommandObject();
+              $xfer += $elem35->read($input);
               $this->postJobCommands []= $elem35;
             }
             $xfer += $input->readListEnd();
@@ -729,11 +868,11 @@ class ApplicationDeploymentDescription {
       }
       $xfer += $output->writeFieldBegin('moduleLoadCmds', TType::LST, 7);
       {
-        $output->writeListBegin(TType::STRING, count($this->moduleLoadCmds));
+        $output->writeListBegin(TType::STRUCT, count($this->moduleLoadCmds));
         {
           foreach ($this->moduleLoadCmds as $iter36)
           {
-            $xfer += $output->writeString($iter36);
+            $xfer += $iter36->write($output);
           }
         }
         $output->writeListEnd();
@@ -797,11 +936,11 @@ class ApplicationDeploymentDescription {
       }
       $xfer += $output->writeFieldBegin('preJobCommands', TType::LST, 11);
       {
-        $output->writeListBegin(TType::STRING, count($this->preJobCommands));
+        $output->writeListBegin(TType::STRUCT, count($this->preJobCommands));
         {
           foreach ($this->preJobCommands as $iter40)
           {
-            $xfer += $output->writeString($iter40);
+            $xfer += $iter40->write($output);
           }
         }
         $output->writeListEnd();
@@ -814,11 +953,11 @@ class ApplicationDeploymentDescription {
       }
       $xfer += $output->writeFieldBegin('postJobCommands', TType::LST, 12);
       {
-        $output->writeListBegin(TType::STRING, count($this->postJobCommands));
+        $output->writeListBegin(TType::STRUCT, count($this->postJobCommands));
         {
           foreach ($this->postJobCommands as $iter41)
           {
-            $xfer += $output->writeString($iter41);
+            $xfer += $iter41->write($output);
           }
         }
         $output->writeListEnd();

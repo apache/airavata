@@ -22,10 +22,7 @@
 package org.apache.airavata.registry.core.app.catalog.util;
 
 import org.apache.airavata.model.Workflow;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
-import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
+import org.apache.airavata.model.appcatalog.appdeployment.*;
 import org.apache.airavata.model.appcatalog.appinterface.*;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
@@ -643,7 +640,8 @@ public class AppCatalogThriftConversion {
         List<AppCatalogResource> moduleLoadCmds = cmdResource.get(AppCatAbstractResource.ModuleLoadCmdConstants.APP_DEPLOYMENT_ID, resource.getDeploymentId());
         if (moduleLoadCmds != null && !moduleLoadCmds.isEmpty()){
             for (AppCatalogResource moduleLoadCmd : moduleLoadCmds){
-                description.addToModuleLoadCmds(((ModuleLoadCmdResource) moduleLoadCmd).getCmd());
+                description.addToModuleLoadCmds(getCommandObject(((ModuleLoadCmdResource) moduleLoadCmd).getCmd(),
+                        ((ModuleLoadCmdResource) moduleLoadCmd).getOrder()));
             }
         }
         LibraryPrepandPathResource prepandPathResource = new LibraryPrepandPathResource();
@@ -667,17 +665,26 @@ public class AppCatalogThriftConversion {
         List<AppCatalogResource> preJobCommands = preJobCommandResource.get(AppCatAbstractResource.PreJobCommandConstants.DEPLOYMENT_ID, resource.getDeploymentId());
         if (preJobCommands != null && !preJobCommands.isEmpty()){
             for (AppCatalogResource prejobCommand : preJobCommands){
-                description.addToPreJobCommands(((PreJobCommandResource) prejobCommand).getCommand());
+                description.addToPreJobCommands(getCommandObject(((PreJobCommandResource) prejobCommand).getCommand(),
+                        ((PreJobCommandResource) prejobCommand).getOrder()));
             }
         }
         PostJobCommandResource postJobCommandResource = new PostJobCommandResource();
         List<AppCatalogResource> postJobCommands = postJobCommandResource.get(AppCatAbstractResource.PostJobCommandConstants.DEPLOYMENT_ID, resource.getDeploymentId());
         if (postJobCommands != null && !postJobCommands.isEmpty()){
             for (AppCatalogResource postjobCommand : postJobCommands){
-                description.addToPostJobCommands(((PostJobCommandResource) postjobCommand).getCommand());
+                description.addToPostJobCommands(getCommandObject(((PostJobCommandResource) postjobCommand).getCommand(),
+                        ((PostJobCommandResource) postjobCommand).getOrder()));
             }
         }
         return description;
+    }
+
+    private static CommandObject getCommandObject(String command, int commandOrder){
+        CommandObject commandObject = new CommandObject();
+        commandObject.setCommand(command);
+        commandObject.setCommandOrder(commandOrder);
+        return commandObject;
     }
 
     public static List<ApplicationDeploymentDescription> getAppDepDescList (List<AppCatalogResource> resources) throws AppCatalogException {
@@ -701,6 +708,7 @@ public class AppCatalogThriftConversion {
         }else if (resource instanceof AppEnvironmentResource){
             envPaths.setName(((AppEnvironmentResource) resource).getName());
             envPaths.setValue(((AppEnvironmentResource) resource).getValue());
+            envPaths.setEnvPathOrder(((AppEnvironmentResource) resource).getOrder());
             return envPaths;
         }else {
             return null;

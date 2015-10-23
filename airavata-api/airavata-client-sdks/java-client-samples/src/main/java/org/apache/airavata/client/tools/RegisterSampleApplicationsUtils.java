@@ -24,6 +24,7 @@ package org.apache.airavata.client.tools;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
+import org.apache.airavata.model.appcatalog.appdeployment.CommandObject;
 import org.apache.airavata.model.appcatalog.appinterface.*;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
@@ -60,9 +61,9 @@ public class RegisterSampleApplicationsUtils {
                                                                                String executablePath,
                                                                                ApplicationParallelismType parallelism,
                                                                                String appDeploymentDescription,
-                                                                               List<String> moduleLoadCmds,
-                                                                               List<String> preJobCmds,
-                                                                               List<String> postJobCmds) {
+                                                                               List<CommandObject> moduleLoadCmds,
+                                                                               List<CommandObject> preJobCmds,
+                                                                               List<CommandObject> postJobCmds) {
         ApplicationDeploymentDescription deployment = new ApplicationDeploymentDescription();
 //		deployment.setIsEmpty(false);
         deployment.setAppDeploymentDescription(appDeploymentDescription);
