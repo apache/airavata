@@ -1296,7 +1296,9 @@ public class ExperimentRegistry {
                         fil.put(AbstractExpCatResource.ExperimentConstants.EXPERIMENT_NAME, filters.get(field));
                     } else if (field.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
                         fil.put(AbstractExpCatResource.ExperimentConstants.USER_NAME, filters.get(field));
-                    }else if (field.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID)) {
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
+                        fil.put(AbstractExpCatResource.ExperimentConstants.PROJECT_ID, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID)) {
                         fil.put(AbstractExpCatResource.ExperimentConstants.GATEWAY_ID, filters.get(field));
                     } else if (field.equals(Constants.FieldConstants.ExperimentConstants.DESCRIPTION)) {
                         fil.put(AbstractExpCatResource.ExperimentConstants.DESCRIPTION, filters.get(field));
