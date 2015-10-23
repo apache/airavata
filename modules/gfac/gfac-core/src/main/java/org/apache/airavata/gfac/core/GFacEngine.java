@@ -29,7 +29,7 @@ public interface GFacEngine {
 
 	public void executeProcess(ProcessContext processContext) throws GFacException ;
 
-    public void recoverProcess(ProcessContext processContext, String taskId) throws GFacException;
+    public void recoverProcess(ProcessContext processContext) throws GFacException;
 
 	public void continueProcess(ProcessContext processContext, String taskId) throws GFacException ;
 

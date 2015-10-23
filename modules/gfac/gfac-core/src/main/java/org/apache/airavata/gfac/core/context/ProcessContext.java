@@ -85,10 +85,10 @@ public class ProcessContext {
     private List<String> taskExecutionOrder;
     private List<TaskModel> taskList;
     private Map<String, TaskModel> taskMap;
-    private String currentExecutingTaskId; // TaskId of current executing task.
     private boolean pauseTaskExecution = false;  // Task can pause task execution by setting this value
     private boolean complete = false; // all tasks executed?
     private boolean recovery = false; // is process in recovery mode?
+    private TaskModel currentExecutingTaskModel; // current execution task model in case we pause process execution we need this to continue process exectuion again
 
     /**
 	 * Note: process context property use lazy loading approach. In runtime you will see some properties as null
@@ -416,11 +416,10 @@ public class ProcessContext {
     }
 
     public String getCurrentExecutingTaskId() {
-        return currentExecutingTaskId;
-    }
-
-    public void setCurrentExecutingTaskId(String currentExecutingTaskId) {
-        this.currentExecutingTaskId = currentExecutingTaskId;
+        if (currentExecutingTaskModel != null) {
+            return currentExecutingTaskModel.getTaskId();
+        }
+        return null;
     }
 
     public boolean isPauseTaskExecution() {
@@ -445,5 +444,13 @@ public class ProcessContext {
 
     public void setRecovery(boolean recovery) {
         this.recovery = recovery;
+    }
+
+    public TaskModel getCurrentExecutingTaskModel() {
+        return currentExecutingTaskModel;
+    }
+
+    public void setCurrentExecutingTaskModel(TaskModel currentExecutingTaskModel) {
+        this.currentExecutingTaskModel = currentExecutingTaskModel;
     }
 }
