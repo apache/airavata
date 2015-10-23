@@ -42,6 +42,7 @@ class ExperimentSearchFields:
   FROM_DATE = 3
   TO_DATE = 4
   STATUS = 5
+  PROJECT_ID = 6
 
   _VALUES_TO_NAMES = {
     0: "EXPERIMENT_NAME",
@@ -50,6 +51,7 @@ class ExperimentSearchFields:
     3: "FROM_DATE",
     4: "TO_DATE",
     5: "STATUS",
+    6: "PROJECT_ID",
   }
 
   _NAMES_TO_VALUES = {
@@ -59,6 +61,7 @@ class ExperimentSearchFields:
     "FROM_DATE": 3,
     "TO_DATE": 4,
     "STATUS": 5,
+    "PROJECT_ID": 6,
   }
 
 

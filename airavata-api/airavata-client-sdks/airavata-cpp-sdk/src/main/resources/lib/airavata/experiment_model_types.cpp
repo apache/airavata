@@ -46,7 +46,8 @@ int _kExperimentSearchFieldsValues[] = {
   ExperimentSearchFields::APPLICATION_ID,
   ExperimentSearchFields::FROM_DATE,
   ExperimentSearchFields::TO_DATE,
-  ExperimentSearchFields::STATUS
+  ExperimentSearchFields::STATUS,
+  ExperimentSearchFields::PROJECT_ID
 };
 const char* _kExperimentSearchFieldsNames[] = {
   "EXPERIMENT_NAME",
@@ -54,9 +55,10 @@ const char* _kExperimentSearchFieldsNames[] = {
   "APPLICATION_ID",
   "FROM_DATE",
   "TO_DATE",
-  "STATUS"
+  "STATUS",
+  "PROJECT_ID"
 };
-const std::map<int, const char*> _ExperimentSearchFields_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kExperimentSearchFieldsValues, _kExperimentSearchFieldsNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _ExperimentSearchFields_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(7, _kExperimentSearchFieldsValues, _kExperimentSearchFieldsNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 
 UserConfigurationDataModel::~UserConfigurationDataModel() throw() {

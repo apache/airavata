@@ -33,6 +33,7 @@ final class ExperimentSearchFields {
   const FROM_DATE = 3;
   const TO_DATE = 4;
   const STATUS = 5;
+  const PROJECT_ID = 6;
   static public $__names = array(
     0 => 'EXPERIMENT_NAME',
     1 => 'EXPERIMENT_DESC',
@@ -40,6 +41,7 @@ final class ExperimentSearchFields {
     3 => 'FROM_DATE',
     4 => 'TO_DATE',
     5 => 'STATUS',
+    6 => 'PROJECT_ID',
   );
 }
 
