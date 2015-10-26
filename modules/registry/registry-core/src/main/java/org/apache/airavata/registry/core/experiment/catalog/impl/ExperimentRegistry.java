@@ -1226,8 +1226,9 @@ public class ExperimentRegistry {
 		                if (latestSR == null) {
 			                latestSR = jobSR;
 		                } else {
-			                latestSR = (jobSR.getTimeOfStateChange().after(latestSR.getTimeOfStateChange()) ? jobSR :
-					                latestSR);
+                            if (jobSR.getTimeOfStateChange().after(latestSR.getTimeOfStateChange()) || jobSR.getTimeOfStateChange().equals(latestSR.getTimeOfStateChange())){
+                                latestSR = jobSR;
+                            }
 		                }
 	                }
 	                if (latestSR != null) {
