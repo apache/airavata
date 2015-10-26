@@ -706,9 +706,12 @@ public class AppCatalogThriftConversion {
             envPaths.setValue(((LibraryApendPathResource) resource).getValue());
             return envPaths;
         }else if (resource instanceof AppEnvironmentResource){
-            envPaths.setName(((AppEnvironmentResource) resource).getName());
-            envPaths.setValue(((AppEnvironmentResource) resource).getValue());
-            envPaths.setEnvPathOrder(((AppEnvironmentResource) resource).getOrder());
+            AppEnvironmentResource environmentResource = (AppEnvironmentResource) resource;
+            envPaths.setName(environmentResource.getName());
+            envPaths.setValue(environmentResource.getValue());
+            if (environmentResource.getOrder() != null){
+                envPaths.setEnvPathOrder(environmentResource.getOrder());
+            }
             return envPaths;
         }else {
             return null;

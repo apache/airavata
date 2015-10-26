@@ -90,22 +90,22 @@ public class AppDeploymentTest {
         cmd1.setCommand("cmd1");
         cmd1.setCommandOrder(1);
         CommandObject cmd2 = new CommandObject();
-        cmd1.setCommand("cmd1");
-        cmd1.setCommandOrder(1);
+        cmd2.setCommand("cmd1");
+        cmd2.setCommandOrder(1);
         description.addToModuleLoadCmds(cmd1);
         description.addToModuleLoadCmds(cmd2);
 
         List<SetEnvPaths> libPrepandPaths = new ArrayList<SetEnvPaths>();
-        libPrepandPaths.add(createSetEnvPath("name1", "val1"));
-        libPrepandPaths.add(createSetEnvPath("name2", "val2"));
+        libPrepandPaths.add(createSetEnvPath("name1", "val1", 1));
+        libPrepandPaths.add(createSetEnvPath("name2", "val2", 2));
         description.setLibPrependPaths(libPrepandPaths);
         List<SetEnvPaths> libApendPaths = new ArrayList<SetEnvPaths>();
-        libApendPaths.add(createSetEnvPath("name3", "val3"));
-        libApendPaths.add(createSetEnvPath("name4", "val4"));
+        libApendPaths.add(createSetEnvPath("name3", "val3", 1));
+        libApendPaths.add(createSetEnvPath("name4", "val4", 2));
         description.setLibAppendPaths(libApendPaths);
         List<SetEnvPaths> appEvns = new ArrayList<SetEnvPaths>();
-        appEvns.add(createSetEnvPath("name5", "val5"));
-        appEvns.add(createSetEnvPath("name6", "val6"));
+        appEvns.add(createSetEnvPath("name5", "val5", 1));
+        appEvns.add(createSetEnvPath("name6", "val6", 2));
         description.setSetEnvironment(appEvns);
 
         String appDepId = appDep.addApplicationDeployment(description, ServerSettings.getDefaultUserGateway());
@@ -142,10 +142,11 @@ public class AppDeploymentTest {
         assertTrue("App interface saved successfully", app != null);
     }
 
-    public SetEnvPaths createSetEnvPath (String name, String val){
+    public SetEnvPaths createSetEnvPath (String name, String val, int order){
         SetEnvPaths setEnvPaths = new SetEnvPaths();
         setEnvPaths.setName(name);
         setEnvPaths.setValue(val);
+        setEnvPaths.setEnvPathOrder(order);
         return setEnvPaths;
 
     }

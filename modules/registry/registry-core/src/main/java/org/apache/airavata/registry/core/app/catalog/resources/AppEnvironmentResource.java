@@ -36,12 +36,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.*;
 
-public class AppEnvironmentResource extends AppCatAbstractResource {
+public class AppEnvironmentResource extends AppCatAbstractResource{
     private final static Logger logger = LoggerFactory.getLogger(AppEnvironmentResource.class);
     private String deploymentId;
     private String name;
     private String value;
-    private Integer order;
+    private Integer order = 0;
     private AppDeploymentResource appDeploymentResource;
 
     public String getDeploymentId() {
@@ -178,7 +178,17 @@ public class AppEnvironmentResource extends AppCatAbstractResource {
                         appEnvironmentList.add(resource);
                     }
                     Collections.sort(appEnvironmentList,
-                            (o1, o2) -> ((AppEnvironmentResource) o1).getOrder() - ((AppEnvironmentResource) o2).getOrder());
+                            (o1, o2) -> {
+                                AppEnvironmentResource order1 = (AppEnvironmentResource) o1;
+                                AppEnvironmentResource order2 = (AppEnvironmentResource) o2;
+                                if (order1.getOrder() == null){
+                                    return (order2.getOrder() == null) ? 0 : -1;
+                                }
+                                if (order2.getOrder() == null) {
+                                    return 1;
+                                }
+                                return order1.getOrder().compareTo(order2.getOrder());
+                            });
                 }
             } else {
                 em.getTransaction().commit();
@@ -233,12 +243,14 @@ public class AppEnvironmentResource extends AppCatAbstractResource {
             if (existigAppEnv !=  null){
                 existigAppEnv.setValue(value);
                 existigAppEnv.setApplicationDeployment(deployment);
+                existigAppEnv.setOrder(order);
                 em.merge(existigAppEnv);
             }else {
                 AppEnvironment appEnvironment = new AppEnvironment();
                 appEnvironment.setDeploymentID(deploymentId);
                 appEnvironment.setName(name);
                 appEnvironment.setValue(value);
+                appEnvironment.setOrder(order);
                 appEnvironment.setApplicationDeployment(deployment);
                 em.persist(appEnvironment);
             }
