@@ -37,6 +37,7 @@ import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.ExperimentState;
+import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Gateway;
@@ -53,7 +54,7 @@ import java.util.Map;
 public class CreateLaunchExperiment {
 
     //FIXME: Read from a config file
-    public static final String THRIFT_SERVER_HOST = "gw119.iu.xsede.org";
+    public static final String THRIFT_SERVER_HOST = "gw56.iu.xsede.org";
     public static final int THRIFT_SERVER_PORT = 8930;
 //	public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
 //	public static final int THRIFT_SERVER_PORT = 9930;
@@ -92,12 +93,12 @@ public class CreateLaunchExperiment {
         AuthzToken token = new AuthzToken("empty_token");
         System.out.println("API version is " + airavataClient.getAPIVersion(token));
 //        registerApplications(); // run this only the first time
-//        Map<String, JobStatus> jobStatuses = airavataClient.getJobStatuses(token, "SLM1-Echo-BR2_ae9573d1-cc1e-49e5-b59c-99ad10bd09ee");
-//        for (String jobId : jobStatuses.keySet()){
-//            JobStatus jobStatus = jobStatuses.get(jobId);
-//            System.out.println(jobId);
-//            System.out.println(jobStatus.getJobState().toString());
-//        }
+        Map<String, JobStatus> jobStatuses = airavataClient.getJobStatuses(token, "Test1_Nek_a706cdc7-8abf-4db2-b7c7-13679c714e90");
+        for (String jobId : jobStatuses.keySet()){
+            JobStatus jobStatus = jobStatuses.get(jobId);
+            System.out.println(jobId);
+            System.out.println(jobStatus.getJobState().toString());
+        }
 //        createAndLaunchExp();
     }
 
