@@ -22,7 +22,9 @@
 package org.apache.airavata.api.server.util;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.registry.core.app.catalog.resources.GatewayProfileResource;
 import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,6 +77,12 @@ public class AppCatalogInitUtil {
                 logger.info("New Database created for App Catalog");
             } else {
                 logger.info("Database already created for App Catalog!");
+            }
+            GatewayProfileResource gatewayProfileResource = new GatewayProfileResource();
+            if (!gatewayProfileResource.isExists(ServerSettings.getDefaultUserGateway())){
+                gatewayProfileResource.setGatewayID(ServerSettings.getDefaultUserGateway());
+                gatewayProfileResource.setCreatedTime(AiravataUtils.getCurrentTimestamp());
+                gatewayProfileResource.save();
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
