@@ -61,6 +61,11 @@
 <xsl:text>&#xa;</xsl:text>
     </xsl:when>
     </xsl:choose>
+    <xsl:choose>
+        <xsl:when test="ns:jobSubmitterCommand = 'ccmrun'">
+#PBS -l gres=ccm
+        </xsl:when>
+    </xsl:choose>
     <xsl:text>&#xa;</xsl:text>
 <xsl:for-each select="ns:exports/ns:name">
 <xsl:value-of select="."/>=<xsl:value-of select="./@value"/><xsl:text>&#xa;</xsl:text>
@@ -80,9 +85,10 @@ cd <xsl:text>   </xsl:text><xsl:value-of select="ns:workingDirectory"/><xsl:text
     </xsl:for-each>
     <xsl:text>&#xa;</xsl:text>
     <xsl:choose><xsl:when test="ns:jobSubmitterCommand != ''">
-<xsl:value-of select="ns:jobSubmitterCommand"/><xsl:text>   </xsl:text>
-<xsl:value-of select="ns:cpuCount"/><xsl:text>   </xsl:text>
-    </xsl:when></xsl:choose><xsl:value-of select="ns:executablePath"/><xsl:text>   </xsl:text>
+        <xsl:value-of select="ns:jobSubmitterCommand"/><xsl:text>   </xsl:text>
+        <xsl:choose><xsl:when test="ns:jobSubmitterCommand != 'ccmrun'">
+            <xsl:value-of select="ns:cpuCount"/> </xsl:when></xsl:choose><xsl:text>   </xsl:text>
+    </xsl:when></xsl:choose><xsl:value-of select="ns:executablePath"/><xsl:text>	</xsl:text>
 <xsl:for-each select="ns:inputs/ns:input">
       <xsl:value-of select="."/><xsl:text>   </xsl:text>
     </xsl:for-each>
