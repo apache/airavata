@@ -838,7 +838,11 @@ public class GFacUtils {
                     jobDescriptor.setJobSubmitter("ibrun");
                 }else if (appDepDescription.getComputeHostId().contains("bigred2")){
                     if (parallelism == ApplicationParallelismType.CRAY_MPI){
-                        jobDescriptor.setJobSubmitter("aprun -n");
+                        if (processModel.getApplicationInterfaceId().contains("Lammps")){
+                            jobDescriptor.setJobSubmitter("aprun -N 1 -n");
+                        }else {
+                            jobDescriptor.setJobSubmitter("aprun -n");
+                        }
                     }else if (parallelism == ApplicationParallelismType.CCM){
                         jobDescriptor.setJobSubmitter("ccmrun");
                     }else {
