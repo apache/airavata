@@ -347,7 +347,9 @@ public class BetterGfacImpl implements GFac {
             jobExecutionContext.setPreferredDataMovementProtocol(gatewayResourcePreferences.getPreferredDataMovementProtocol());
             if (gatewayResourcePreferences.getPreferredJobSubmissionProtocol() == null) {
                 jobExecutionContext.setPreferredDataMovementInterface(jobExecutionContext.getHostPrioritizedDataMovementInterfaces().get(0));
-                jobExecutionContext.setPreferredDataMovementProtocol(jobExecutionContext.getPreferredDataMovementInterface().getDataMovementProtocol());
+                if (jobExecutionContext.getPreferredDataMovementInterface() != null){
+                    jobExecutionContext.setPreferredDataMovementProtocol(jobExecutionContext.getPreferredDataMovementInterface().getDataMovementProtocol());
+                }
             } else {
                 // this check is to avoid NPE when job submission endpoints do
                 // not contain any data movement interfaces.
