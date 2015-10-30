@@ -318,7 +318,6 @@ CREATE TABLE JOB (
 CREATE TABLE JOB_STATUS (
   STATUS_ID varchar(255),
   JOB_ID varchar(255),
-  PROCESS_ID varchar(255),
   TASK_ID varchar(255),
   STATE varchar(255),
   TIME_OF_STATE_CHANGE timestamp DEFAULT '0000-00-00 00:00:00',

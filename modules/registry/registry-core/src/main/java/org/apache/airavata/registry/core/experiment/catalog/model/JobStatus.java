@@ -33,7 +33,6 @@ public class JobStatus {
     private final static Logger logger = LoggerFactory.getLogger(JobStatus.class);
     private String statusId;
     private String jobId;
-    private String processId;
     private String taskId;
     private String state;
     private Timestamp timeOfStateChange;
@@ -60,19 +59,10 @@ public class JobStatus {
         this.jobId = jobId;
     }
 
-    @Column(name = "PROCESS_ID")
-    public String getProcessId() {
-        return processId;
-    }
-
     @Id
     @Column(name = "TASK_ID")
     public String getTaskId() {
         return taskId;
-    }
-
-    public void setProcessId(String processId) {
-        this.processId = processId;
     }
 
     @Column(name = "STATE")
