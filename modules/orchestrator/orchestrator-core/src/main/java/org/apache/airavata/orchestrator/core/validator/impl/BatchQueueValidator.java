@@ -39,16 +39,12 @@ import java.util.List;
 public class BatchQueueValidator implements JobMetadataValidator {
     private final static Logger logger = LoggerFactory.getLogger(BatchQueueValidator.class);
 
-    private ExperimentCatalog experimentCatalog;
     private AppCatalog appCatalog;
 
     public BatchQueueValidator() {
         try {
-            this.experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             this.appCatalog = RegistryFactory.getAppCatalog();
-        } catch (RegistryException e) {
-            logger.error("Unable to initialize experimentCatalog", e);
-        } catch (AppCatalogException e) {
+        }  catch (AppCatalogException e) {
             logger.error("Unable to initialize Application Catalog", e);
         }
     }
@@ -77,9 +73,9 @@ public class BatchQueueValidator implements JobMetadataValidator {
             UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
             ComputationalResourceSchedulingModel computationalResourceScheduling = userConfigurationData.getComputationalResourceScheduling();
             if (userConfigurationData.isAiravataAutoSchedule()) {
-                logger.error("Auto-Schedule is not yet supported. Experiment will proceed with provided scheduling information");
+                logger.info("User enabled Auto-Schedule. Hence we don't do validation..");
                 ValidatorResult validatorResult = new ValidatorResult();
-                validatorResult.setResult(false);
+                validatorResult.setResult(true);
                 validatorResultList.add(validatorResult);
             }
             ComputeResourceDescription computeResource;

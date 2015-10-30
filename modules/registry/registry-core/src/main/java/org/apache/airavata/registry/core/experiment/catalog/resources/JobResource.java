@@ -252,7 +252,7 @@ public class JobResource extends AbstractExpCatResource {
                 case JOB_STATUS:
                     generator = new QueryGenerator(JOB_STATUS);
                     generator.setParameter(JobStatusConstants.JOB_ID, jobId);
-                    generator.setParameter(JobStatusConstants.PROCESS_ID, processId);
+                    generator.setParameter(JobStatusConstants.TASK_ID, taskId);
                     q = generator.selectQuery(em);
                     results = q.getResultList();
                     if (results.size() != 0) {
