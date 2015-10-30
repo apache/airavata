@@ -535,7 +535,7 @@ public class ExperimentRegistry {
     }
 
     public String addJobStatus(JobStatus jobStatus, CompositeIdentifier cis) throws RegistryException {
-        String processId = (String)cis.getTopLevelIdentifier();
+        String taskId = (String)cis.getTopLevelIdentifier();
         String jobID = (String)cis.getSecondLevelIdentifier();
         try {
             JobResource jobResource = new JobResource();
@@ -546,7 +546,7 @@ public class ExperimentRegistry {
             }
 	        status.setStatusId(getStatusID(jobID));
 	        status.setJobId(jobID);
-	        status.setProcessId(processId);
+	        status.setTaskId(taskId);
 	        status.setTimeOfStateChange(AiravataUtils.getTime(jobStatus.getTimeOfStateChange()));
 	        status.setState(jobStatus.getJobState().toString());
 	        status.setReason(jobStatus.getReason());
@@ -876,15 +876,15 @@ public class ExperimentRegistry {
     }
 
     public String updateJob(JobModel job, CompositeIdentifier cis) throws RegistryException {
-        String processId = (String) cis.getTopLevelIdentifier();
+        String taskId = (String) cis.getTopLevelIdentifier();
         String jobId = (String) cis.getSecondLevelIdentifier();
         try {
-	        ProcessResource processResource = new ProcessResource();
-	        processResource.setProcessId(processId);
-	        JobResource jobResource = processResource.getJob(jobId);
+	        TaskResource taskResource = new TaskResource();
+	        taskResource.setTaskId(taskId);
+	        JobResource jobResource = taskResource.getJob(jobId);
 	        jobResource.setJobId(jobId);
 	        jobResource.setTaskId(job.getTaskId());
-	        jobResource.setProcessId(processId);
+	        jobResource.setProcessId(job.getProcessId());
 	        jobResource.setJobDescription(job.getJobDescription());
 	        jobResource.setCreationTime(AiravataUtils.getTime(job.getCreationTime()));
 	        jobResource.setComputeResourceConsumed(job.getComputeResourceConsumed());
@@ -1104,12 +1104,12 @@ public class ExperimentRegistry {
     }
 
     public Object getJob(CompositeIdentifier cis, String fieldName) throws RegistryException {
-        String processId = (String) cis.getTopLevelIdentifier();
+        String taskId = (String) cis.getTopLevelIdentifier();
         String jobId = (String) cis.getSecondLevelIdentifier();
         try {
-	        ProcessResource processResource = new ProcessResource();
-	        processResource.setProcessId(processId);
-	        JobResource resource = processResource.getJob(jobId);
+	        TaskResource taskResource = new TaskResource();
+	        taskResource.setTaskId(taskId);
+	        JobResource resource = taskResource.getJob(jobId);
 	        if (fieldName == null) {
 		        return ThriftDataModelConversion.getJobModel(resource);
 	        } else if (fieldName.equals(Constants.FieldConstants.JobConstants.JOB_STATUS)) {
@@ -1238,7 +1238,32 @@ public class ExperimentRegistry {
 	                jobs.add(jobModel);
                 }
                 return jobs;
-            } else {
+            }else if (fieldName.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
+                TaskResource taskResource = new TaskResource();
+                taskResource.setTaskId((String) value);
+                List<JobResource> resources = taskResource.getJobList();
+                for (JobResource jobResource : resources) {
+                    JobModel jobModel = ThriftDataModelConversion.getJobModel(jobResource);
+                    List<ExperimentCatResource> jobStatuses = jobResource.get(ResourceType.JOB_STATUS);
+                    JobStatusResource latestSR = null;
+                    for (ExperimentCatResource jobStatuse : jobStatuses) {
+                        JobStatusResource jobSR = (JobStatusResource) jobStatuse;
+                        if (latestSR == null) {
+                            latestSR = jobSR;
+                        } else {
+                            latestSR = (jobSR.getTimeOfStateChange().after(latestSR.getTimeOfStateChange()) ? jobSR :
+                                    latestSR);
+                        }
+                    }
+                    if (latestSR != null) {
+                        JobStatus jobStatus = new JobStatus(JobState.valueOf(latestSR.getState()));
+                        jobStatus.setReason(latestSR.getReason());
+                        jobModel.setJobStatus(jobStatus);
+                    }
+                    jobs.add(jobModel);
+                }
+                return jobs;
+            }else {
                 logger.error("Unsupported field name to retrieve job list...");
             }
         } catch (Exception e) {

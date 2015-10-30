@@ -39,6 +39,7 @@ public class JobStatusResource extends AbstractExpCatResource {
     private String statusId;
     private String jobId;
     private String processId;
+    private String taskId;
     private String state;
     private Timestamp timeOfStateChange;
     private String reason;
@@ -91,6 +92,14 @@ public class JobStatusResource extends AbstractExpCatResource {
         this.reason = reason;
     }
 
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+
     public ExperimentCatResource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for task status data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
@@ -126,7 +135,7 @@ public class JobStatusResource extends AbstractExpCatResource {
             JobStatusPK jobStatusPK = new JobStatusPK();
             jobStatusPK.setJobId(jobId);
             jobStatusPK.setStatusId(statusId);
-            jobStatusPK.setProcessId(processId);
+            jobStatusPK.setTaskId(taskId);
             JobStatus existingJobStatus = em.find(JobStatus.class, jobStatusPK);
             if (em.isOpen()) {
                 if (em.getTransaction().isActive()){
@@ -145,6 +154,7 @@ public class JobStatusResource extends AbstractExpCatResource {
             jobStatus.setStatusId(statusId);
             jobStatus.setJobId(jobId);
             jobStatus.setProcessId(processId);
+            jobStatus.setTaskId(taskId);
             jobStatus.setState(state);
             jobStatus.setReason(reason);
             if (existingJobStatus == null){

@@ -215,7 +215,7 @@ public class GFacUtils {
             }else {
                 jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
             }
-            CompositeIdentifier ids = new CompositeIdentifier(jobModel.getProcessId(), jobModel.getJobId());
+            CompositeIdentifier ids = new CompositeIdentifier(jobModel.getTaskId(), jobModel.getJobId());
 			experimentCatalog.add(ExpCatChildDataType.JOB_STATUS, jobStatus, ids);
             JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), jobModel.getTaskId(),
                     processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),

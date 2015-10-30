@@ -82,6 +82,7 @@ public class Constants {
         public final class JobConstants {
             public static final String JOB_ID = "jobId";
             public static final String PROCESS_ID = "processId";
+            public static final String TASK_ID = "taskId";
             public static final String JOB_STATUS = "taskStatus";
         }
     }
