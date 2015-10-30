@@ -38,7 +38,6 @@ public class JobStatusResource extends AbstractExpCatResource {
     private static final Logger logger = LoggerFactory.getLogger(JobStatusResource.class);
     private String statusId;
     private String jobId;
-    private String processId;
     private String taskId;
     private String state;
     private Timestamp timeOfStateChange;
@@ -58,14 +57,6 @@ public class JobStatusResource extends AbstractExpCatResource {
 
     public void setJobId(String jobId) {
         this.jobId = jobId;
-    }
-
-    public String getProcessId() {
-        return processId;
-    }
-
-    public void setProcessId(String processId) {
-        this.processId = processId;
     }
 
     public String getState() {
