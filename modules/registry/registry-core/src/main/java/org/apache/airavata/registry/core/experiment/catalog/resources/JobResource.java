@@ -296,7 +296,7 @@ public class JobResource extends AbstractExpCatResource {
             em = ExpCatResourceUtils.getEntityManager();
             JobPK jobPK = new JobPK();
             jobPK.setJobId(jobId);
-            jobPK.setProcessId(processId);
+            jobPK.setTaskId(taskId);
             Job existingJob = em.find(Job.class, jobPK);
             if (em.isOpen()) {
                 if (em.getTransaction().isActive()){

@@ -56,7 +56,6 @@ public class Job {
         this.jobId = jobId;
     }
 
-	@Id
 	@Column(name = "PROCESS_ID")
 	public String getProcessId() {
 		return processId;
@@ -66,6 +65,7 @@ public class Job {
 		this.processId = processId;
 	}
 
+    @Id
     @Column(name = "TASK_ID")
     public String getTaskId() {
         return taskId;
