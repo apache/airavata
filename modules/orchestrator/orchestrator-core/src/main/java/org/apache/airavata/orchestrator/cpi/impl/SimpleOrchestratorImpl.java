@@ -509,8 +509,11 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         URI destination = null;
         try {
             DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(orchestratorContext, processModel, gatewayId);
-            destination = new URI(dataMovementProtocol.name(), computeResource.getHostName(),
-                    computeResourcePreference.getLoginUserName(), OrchestratorUtils.getDataMovementPort(orchestratorContext, processModel, gatewayId), remoteOutputDir , null, null);
+            destination = new URI(dataMovementProtocol.name(),
+                    computeResourcePreference.getLoginUserName(),
+                    computeResource.getHostName(),
+                    OrchestratorUtils.getDataMovementPort(orchestratorContext, processModel, gatewayId),
+                    remoteOutputDir , null, null);
         } catch (URISyntaxException e) {
             throw new TaskException("Error while constructing destination file URI");
         }
@@ -544,8 +547,11 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             URI source = null;
             try {
                 DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(orchestratorContext, processModel, gatewayId);
-                source = new URI(dataMovementProtocol.name(), computeResource.getHostName(),
-                        computeResourcePreference.getLoginUserName(), OrchestratorUtils.getDataMovementPort(orchestratorContext, processModel, gatewayId), remoteOutputDir + processOutput.getValue(), null, null);
+                source = new URI(dataMovementProtocol.name(),
+                        computeResourcePreference.getLoginUserName(),
+                        computeResource.getHostName(),
+                        OrchestratorUtils.getDataMovementPort(orchestratorContext, processModel, gatewayId),
+                        remoteOutputDir + processOutput.getValue(), null, null);
             } catch (URISyntaxException e) {
                 throw new TaskException("Error while constructing source file URI");
             }
