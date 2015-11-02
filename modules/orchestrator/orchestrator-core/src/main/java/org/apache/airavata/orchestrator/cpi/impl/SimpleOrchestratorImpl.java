@@ -294,6 +294,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                     if (batchQueue.getQueueName().equals(userGivenQueueName)) {
                         int maxRunTime = batchQueue.getMaxRunTime();
                         if (maxRunTime < userGivenWallTime) {
+                            resourceSchedule.setWallTimeLimit(maxRunTime);
                             // need to create more job submissions
                             int numOfMaxWallTimeJobs = ((int) Math.floor(userGivenWallTime / maxRunTime));
                             for (int i = 1; i <= numOfMaxWallTimeJobs; i++) {
@@ -312,6 +313,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId, processModel, userGivenWallTime));
             }
             taskIdList.addAll(createAndSaveOutputDataStagingTasks(processModel, gatewayId));
+            // update process scheduling
+            experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processModel.getProcessId());
             return getTaskDag(taskIdList);
         } catch (Exception e) {
             throw new OrchestratorException("Error during creating process");
