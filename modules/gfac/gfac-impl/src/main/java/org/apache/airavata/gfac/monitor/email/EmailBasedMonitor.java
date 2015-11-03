@@ -28,18 +28,17 @@ import org.apache.airavata.gfac.core.GFacThreadPoolExecutor;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.config.ResourceConfig;
 import org.apache.airavata.gfac.core.context.ProcessContext;
+import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.monitor.EmailParser;
 import org.apache.airavata.gfac.core.monitor.JobMonitor;
 import org.apache.airavata.gfac.core.monitor.JobStatusResult;
 import org.apache.airavata.gfac.impl.GFacWorker;
-import org.apache.airavata.gfac.monitor.email.parser.LSFEmailParser;
-import org.apache.airavata.gfac.monitor.email.parser.PBSEmailParser;
-import org.apache.airavata.gfac.monitor.email.parser.SLURMEmailParser;
-import org.apache.airavata.gfac.monitor.email.parser.UGEEmailParser;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.status.TaskStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +51,6 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.search.FlagTerm;
 import javax.mail.search.SearchTerm;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -73,7 +71,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
     private Store store;
     private Folder emailFolder;
     private Properties properties;
-    private Map<String, ProcessContext> jobMonitorMap = new ConcurrentHashMap<>();
+    private Map<String, TaskContext> jobMonitorMap = new ConcurrentHashMap<>();
     private String host, emailAddress, password, storeProtocol, folderName ;
     private Date monitorStartDate;
     private Map<ResourceJobManagerType, EmailParser> emailParserMap = new HashMap<ResourceJobManagerType, EmailParser>();
@@ -121,22 +119,28 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 
 	}
 	@Override
-	public void monitor(String jobId, ProcessContext processContext) {
+	public void monitor(String jobId, TaskContext taskContext) {
 		log.info("[EJM]: Added monitor Id : " + jobId + " to email based monitor map");
-		jobMonitorMap.put(jobId, processContext);
+		jobMonitorMap.put(jobId, taskContext);
+        taskContext.getParentProcessContext().setPauseTaskExecution(true);
 	}
 
 	@Override
 	public void stopMonitor(String jobId, boolean runOutflow) {
-		ProcessContext processContext = jobMonitorMap.remove(jobId);
-		if (processContext != null && runOutflow) {
+		TaskContext taskContext = jobMonitorMap.remove(jobId);
+		if (taskContext != null && runOutflow) {
 			try {
-				GFacThreadPoolExecutor.getCachedThreadPool().execute(new GFacWorker(processContext));
+				GFacThreadPoolExecutor.getCachedThreadPool().execute(new GFacWorker(taskContext.getParentProcessContext()));
 			} catch (GFacException e) {
 				log.info("[EJM]: Error while running output tasks", e);
 			}
 		}
 	}
+
+    @Override
+    public boolean isMonitoring(String jobId) {
+        return jobMonitorMap.containsKey(jobId);
+    }
 
     private JobStatusResult parse(Message message) throws MessagingException, AiravataException {
         Address fromAddress = message.getFrom()[0];
@@ -237,12 +241,12 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
         for (Message message : searchMessages) {
             try {
                 JobStatusResult jobStatusResult = parse(message);
-                ProcessContext processContext = jobMonitorMap.get(jobStatusResult.getJobId());
-                if (processContext == null) {
-	                processContext = jobMonitorMap.get(jobStatusResult.getJobName());
+                TaskContext taskContext = jobMonitorMap.get(jobStatusResult.getJobId());
+                if (taskContext == null) {
+                    taskContext = jobMonitorMap.get(jobStatusResult.getJobName());
                 }
-                if (processContext != null) {
-                    process(jobStatusResult, processContext);
+                if (taskContext != null) {
+                    process(jobStatusResult, taskContext);
                     processedMessages.add(message);
                 } else {
                     // we can get JobExecutionContext null in multiple Gfac instances environment,
@@ -293,12 +297,12 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
         }
     }
 
-    private void process(JobStatusResult jobStatusResult, ProcessContext processContext){
+    private void process(JobStatusResult jobStatusResult, TaskContext taskContext){
         JobState resultState = jobStatusResult.getState();
 	    // TODO : update job state on process context
         boolean runOutflowTasks = false;
 	    JobStatus jobStatus = new JobStatus();
-	    JobModel jobModel = processContext.getJobModel();
+	    JobModel jobModel = taskContext.getParentProcessContext().getJobModel();
         String jobDetails = "JobName : " + jobStatusResult.getJobName() + ", JobId : " + jobStatusResult.getJobId();
         // TODO - Handle all other valid JobStates
         if (resultState == JobState.COMPLETE) {
@@ -339,18 +343,22 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 		    try {
 			    jobModel.setJobStatus(jobStatus);
 			    log.info("[EJM]: Publishing status changes to amqp. " + jobDetails);
-			    GFacUtils.saveJobStatus(processContext, jobModel);
+			    GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
 		    } catch (GFacException e) {
 			    log.error("expId: {}, processId: {}, taskId: {}, jobId: {} :- Error while save and publishing Job " +
-					    "status {}", processContext.getExperimentId(), processContext.getProcessId(), jobModel
-					    .getTaskId(), jobModel.getJobId(), jobStatus.getJobState());
+                        "status {}", taskContext.getExperimentId(), taskContext.getProcessId(), jobModel
+                        .getTaskId(), jobModel.getJobId(), jobStatus.getJobState());
 		    }
 	    }
 
         if (runOutflowTasks) {
             log.info("[EJM]: Calling Out Handler chain of " + jobDetails);
 	        try {
-		        GFacThreadPoolExecutor.getCachedThreadPool().execute(new GFacWorker(processContext));
+                TaskStatus taskStatus = new TaskStatus(TaskState.COMPLETED);
+                taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                taskStatus.setReason("Job monitoring completed with final state: " + TaskState.COMPLETED.name());
+                GFacUtils.saveAndPublishTaskStatus(taskContext);
+		        GFacThreadPoolExecutor.getCachedThreadPool().execute(new GFacWorker(taskContext.getParentProcessContext()));
 	        } catch (GFacException e) {
 		        log.info("[EJM]: Error while running output tasks", e);
 	        }

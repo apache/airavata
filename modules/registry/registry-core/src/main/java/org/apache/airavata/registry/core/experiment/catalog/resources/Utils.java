@@ -681,7 +681,7 @@ public class Utils {
         if (o != null){
             jobStatusResource.setJobId(o.getJobId());
 	        jobStatusResource.setStatusId(o.getStatusId());
-	        jobStatusResource.setProcessId(o.getProcessId());
+	        jobStatusResource.setTaskId(o.getTaskId());
 	        jobStatusResource.setState(o.getState());
             jobStatusResource.setTimeOfStateChange(o.getTimeOfStateChange());
             jobStatusResource.setReason(o.getReason());

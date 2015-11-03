@@ -38,7 +38,7 @@ public class JobStatusResource extends AbstractExpCatResource {
     private static final Logger logger = LoggerFactory.getLogger(JobStatusResource.class);
     private String statusId;
     private String jobId;
-    private String processId;
+    private String taskId;
     private String state;
     private Timestamp timeOfStateChange;
     private String reason;
@@ -57,14 +57,6 @@ public class JobStatusResource extends AbstractExpCatResource {
 
     public void setJobId(String jobId) {
         this.jobId = jobId;
-    }
-
-    public String getProcessId() {
-        return processId;
-    }
-
-    public void setProcessId(String processId) {
-        this.processId = processId;
     }
 
     public String getState() {
@@ -89,6 +81,14 @@ public class JobStatusResource extends AbstractExpCatResource {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     public ExperimentCatResource create(ResourceType type) throws RegistryException {
@@ -118,7 +118,7 @@ public class JobStatusResource extends AbstractExpCatResource {
     public void save() throws RegistryException{
         EntityManager em = null;
         try {
-            if(jobId == null || statusId == null || processId == null){
+            if(jobId == null || statusId == null || taskId == null){
                 throw new RegistryException("Does not have the job id or status id or task id");
             }
             em = ExpCatResourceUtils.getEntityManager();
@@ -126,7 +126,7 @@ public class JobStatusResource extends AbstractExpCatResource {
             JobStatusPK jobStatusPK = new JobStatusPK();
             jobStatusPK.setJobId(jobId);
             jobStatusPK.setStatusId(statusId);
-            jobStatusPK.setProcessId(processId);
+            jobStatusPK.setTaskId(taskId);
             JobStatus existingJobStatus = em.find(JobStatus.class, jobStatusPK);
             if (em.isOpen()) {
                 if (em.getTransaction().isActive()){
@@ -144,7 +144,7 @@ public class JobStatusResource extends AbstractExpCatResource {
             }
             jobStatus.setStatusId(statusId);
             jobStatus.setJobId(jobId);
-            jobStatus.setProcessId(processId);
+            jobStatus.setTaskId(taskId);
             jobStatus.setState(state);
             jobStatus.setReason(reason);
             if (existingJobStatus == null){

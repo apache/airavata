@@ -81,7 +81,8 @@ struct SecurityProtocol {
     SSH_KEYS = 1,
     GSI = 2,
     KERBEROS = 3,
-    OAUTH = 4
+    OAUTH = 4,
+    LOCAL = 5
   };
 };
 
@@ -483,25 +484,30 @@ void swap(UnicoreDataMovement &a, UnicoreDataMovement &b);
 class LOCALSubmission {
  public:
 
-  static const char* ascii_fingerprint; // = "A5A35C842CBE1CA9D6A13C5974C6FB8F";
-  static const uint8_t binary_fingerprint[16]; // = {0xA5,0xA3,0x5C,0x84,0x2C,0xBE,0x1C,0xA9,0xD6,0xA1,0x3C,0x59,0x74,0xC6,0xFB,0x8F};
+  static const char* ascii_fingerprint; // = "9237E82F3C6C8601C7B7AD6A6BBC347C";
+  static const uint8_t binary_fingerprint[16]; // = {0x92,0x37,0xE8,0x2F,0x3C,0x6C,0x86,0x01,0xC7,0xB7,0xAD,0x6A,0x6B,0xBC,0x34,0x7C};
 
   LOCALSubmission(const LOCALSubmission&);
   LOCALSubmission& operator=(const LOCALSubmission&);
-  LOCALSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS") {
+  LOCALSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0) {
   }
 
   virtual ~LOCALSubmission() throw();
   std::string jobSubmissionInterfaceId;
+  SecurityProtocol::type securityProtocol;
   ResourceJobManager resourceJobManager;
 
   void __set_jobSubmissionInterfaceId(const std::string& val);
+
+  void __set_securityProtocol(const SecurityProtocol::type val);
 
   void __set_resourceJobManager(const ResourceJobManager& val);
 
   bool operator == (const LOCALSubmission & rhs) const
   {
     if (!(jobSubmissionInterfaceId == rhs.jobSubmissionInterfaceId))
+      return false;
+    if (!(securityProtocol == rhs.securityProtocol))
       return false;
     if (!(resourceJobManager == rhs.resourceJobManager))
       return false;

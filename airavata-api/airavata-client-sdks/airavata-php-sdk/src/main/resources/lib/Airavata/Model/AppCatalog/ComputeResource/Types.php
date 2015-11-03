@@ -146,12 +146,14 @@ final class SecurityProtocol {
   const GSI = 2;
   const KERBEROS = 3;
   const OAUTH = 4;
+  const LOCAL = 5;
   static public $__names = array(
     0 => 'USERNAME_PASSWORD',
     1 => 'SSH_KEYS',
     2 => 'GSI',
     3 => 'KERBEROS',
     4 => 'OAUTH',
+    5 => 'LOCAL',
   );
 }
 
@@ -1145,6 +1147,10 @@ class LOCALSubmission {
    */
   public $jobSubmissionInterfaceId = "DO_NOT_SET_AT_CLIENTS";
   /**
+   * @var int
+   */
+  public $securityProtocol = null;
+  /**
    * @var \Airavata\Model\AppCatalog\ComputeResource\ResourceJobManager
    */
   public $resourceJobManager = null;
@@ -1157,6 +1163,10 @@ class LOCALSubmission {
           'type' => TType::STRING,
           ),
         2 => array(
+          'var' => 'securityProtocol',
+          'type' => TType::I32,
+          ),
+        3 => array(
           'var' => 'resourceJobManager',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\AppCatalog\ComputeResource\ResourceJobManager',
@@ -1166,6 +1176,9 @@ class LOCALSubmission {
     if (is_array($vals)) {
       if (isset($vals['jobSubmissionInterfaceId'])) {
         $this->jobSubmissionInterfaceId = $vals['jobSubmissionInterfaceId'];
+      }
+      if (isset($vals['securityProtocol'])) {
+        $this->securityProtocol = $vals['securityProtocol'];
       }
       if (isset($vals['resourceJobManager'])) {
         $this->resourceJobManager = $vals['resourceJobManager'];
@@ -1200,6 +1213,13 @@ class LOCALSubmission {
           }
           break;
         case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->securityProtocol);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
           if ($ftype == TType::STRUCT) {
             $this->resourceJobManager = new \Airavata\Model\AppCatalog\ComputeResource\ResourceJobManager();
             $xfer += $this->resourceJobManager->read($input);
@@ -1225,11 +1245,16 @@ class LOCALSubmission {
       $xfer += $output->writeString($this->jobSubmissionInterfaceId);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->securityProtocol !== null) {
+      $xfer += $output->writeFieldBegin('securityProtocol', TType::I32, 2);
+      $xfer += $output->writeI32($this->securityProtocol);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->resourceJobManager !== null) {
       if (!is_object($this->resourceJobManager)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('resourceJobManager', TType::STRUCT, 2);
+      $xfer += $output->writeFieldBegin('resourceJobManager', TType::STRUCT, 3);
       $xfer += $this->resourceJobManager->write($output);
       $xfer += $output->writeFieldEnd();
     }

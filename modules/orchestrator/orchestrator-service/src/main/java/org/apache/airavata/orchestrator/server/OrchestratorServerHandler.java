@@ -137,9 +137,21 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	public boolean launchExperiment(String experimentId, String gatewayId) throws TException {
         ExperimentModel experiment = null;
         try {
+
+            List<ProcessModel> processes = orchestrator.createProcesses(experimentId, gatewayId);
             experiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            for (ProcessModel processModel : processes){
+                String taskDag = orchestrator.createAndSaveTasks(gatewayId, experiment, processModel);
+                processModel.setTaskDag(taskDag);
+                experimentCatalog.update(ExperimentCatalogModelType.PROCESS,processModel, processModel.getProcessId());
+            }
             if (experiment == null) {
                 log.error(experimentId, "Error retrieving the Experiment by the given experimentID: {} ", experimentId);
+                return false;
+            }
+
+            if (!validateProcess(experimentId, processes)) {
+                log.error("Validating process fails for given experiment Id : {}", experimentId);
                 return false;
             }
             ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().getComputeResourcePreference(gatewayId, experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
@@ -196,13 +208,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	 */
 	public boolean validateExperiment(String experimentId) throws TException, LaunchValidationException {
 		try {
-            List<ProcessModel> processes = orchestrator.createProcesses(experimentId);
             ExperimentModel experimentModel = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
-			if (processes != null && !processes.isEmpty()){
-                for (ProcessModel process : processes) {
-                    return orchestrator.validateExperiment(experimentModel,process).isSetValidationState();
-                }
-            }
+            return orchestrator.validateExperiment(experimentModel).isValidationState();
 		} catch (OrchestratorException e) {
             log.error(experimentId, "Error while validating experiment", e);
 			throw new TException(e);
@@ -210,8 +217,27 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             log.error(experimentId, "Error while validating experiment", e);
 			throw new TException(e);
 		}
-		return false;
 	}
+
+    @Override
+    public boolean validateProcess(String experimentId, List<ProcessModel> processes) throws LaunchValidationException, TException {
+        try {
+            ExperimentModel experimentModel = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            for (ProcessModel processModel : processes){
+                boolean state = orchestrator.validateProcess(experimentModel, processModel).isSetValidationState();
+                if (!state){
+                    return false;
+                }
+            }
+            return true;
+        } catch (OrchestratorException e) {
+            log.error(experimentId, "Error while validating process", e);
+            throw new TException(e);
+        } catch (RegistryException e) {
+            log.error(experimentId, "Error while validating process", e);
+            throw new TException(e);
+        }
+    }
 
     /**
 	 * This can be used to cancel a running experiment and store the status to
@@ -248,7 +274,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	}
 
 	@Override
-	public boolean launchProcess(String processId, String airavataCredStoreToken) throws TException {
+	public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId) throws TException {
 		try {
 			ProcessModel processModel = (ProcessModel) experimentCatalog.get(
 					ExperimentCatalogModelType.PROCESS, processId);
@@ -372,7 +398,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             try {
                 List<String> processIds = experimentCatalog.getIds(ExperimentCatalogModelType.PROCESS, AbstractExpCatResource.ProcessConstants.EXPERIMENT_ID, experimentId);
                 for (String processId : processIds) {
-                    launchProcess(processId, airavataCredStoreToken);
+                    launchProcess(processId, airavataCredStoreToken, gatewayId);
                 }
 
             } catch (Exception e) {

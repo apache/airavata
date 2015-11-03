@@ -21,11 +21,7 @@
 package org.apache.airavata.gfac.core;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.AiravataZKUtils;
-import org.apache.airavata.common.utils.DBUtil;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.ZkConstants;
+import org.apache.airavata.common.utils.*;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.gfac.core.context.ProcessContext;
@@ -46,6 +42,7 @@ import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.*;
+import org.apache.airavata.model.task.JobSubmissionTaskModel;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.core.experiment.catalog.model.ProcessOutput;
 import org.apache.airavata.registry.cpi.*;
@@ -53,6 +50,7 @@ import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.commons.io.FileUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.ZKPaths;
+import org.apache.thrift.TException;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
@@ -87,7 +85,6 @@ public class GFacUtils {
     private GFacUtils() {
     }
 
-
     /**
      * Read data from inputStream and convert it to String.
      *
@@ -118,21 +115,6 @@ public class GFacUtils {
         }
     }
 
-//	/**
-//	 * This returns true if the give job is finished
-//	 * otherwise false
-//	 *
-//	 * @param job
-//	 * @return
-//	 */
-//	public static boolean isJobFinished(JobDescriptor job) {
-//		if (org.apache.airavata.gfac.core.cluster.JobStatus.C.toString().equals(job.getStatus())) {
-//			return true;
-//		} else {
-//			return false;
-//		}
-//	}
-
     /**
      * This will read
      *
@@ -158,17 +140,6 @@ public class GFacUtils {
             return hours + ":" + minutes;
         }
     }
-
-//	public static boolean isSynchronousMode(
-//			JobExecutionContext jobExecutionContext) {
-//		GFacConfiguration gFacConfiguration = jobExecutionContext
-//				.getGFacConfiguration();
-//		if (ExecutionMode.ASYNCHRONOUS.equals(gFacConfiguration
-//				.getExecutionMode())) {
-//			return false;
-//		}
-//		return true;
-//	}
 
     public static String readFileToString(String file)
             throws FileNotFoundException, IOException {
@@ -247,7 +218,7 @@ public class GFacUtils {
             }else {
                 jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
             }
-            CompositeIdentifier ids = new CompositeIdentifier(jobModel.getProcessId(), jobModel.getJobId());
+            CompositeIdentifier ids = new CompositeIdentifier(jobModel.getTaskId(), jobModel.getJobId());
 			experimentCatalog.add(ExpCatChildDataType.JOB_STATUS, jobStatus, ids);
             JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), jobModel.getTaskId(),
                     processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
@@ -315,225 +286,6 @@ public class GFacUtils {
                     + e.getLocalizedMessage(), e);
         }
     }
-
-/*    public static void saveExperimentStatus(ProcessContext processContext,
-                                         ExperimentState state) throws GFacException {
-        try {
-            // first we save job jobModel to the registry for sa and then save the job status.
-            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-            ExperimentStatus status = new ExperimentStatus();
-            status.setState(state);
-            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_STATUS, status, processContext.getProcessModel().getExperimentId());
-            ExperimentStatusChangeEvent experimentStatusChangeEvent = new ExperimentStatusChangeEvent(state, processContext.getProcessModel().getExperimentId(), processContext.getGatewayId());
-
-            processContext.getLocalEventPublisher().publish(experimentStatusChangeEvent);
-        } catch (Exception e) {
-            throw new GFacException("Error persisting experiment status"
-                    + e.getLocalizedMessage(), e);
-        }
-    }*/
-
-//	public static void updateJobStatus(JobExecutionContext jobExecutionContext,
-//			JobDetails details, JobState state) throws GFacException {
-//		try {
-//			ExperimentCatalog experimentCatalog = jobExecutionContext.getExperimentCatalog();
-//			JobStatus status = new JobStatus();
-//			status.setJobState(state);
-//			status.setTimeOfStateChange(Calendar.getInstance()
-//					.getTimeInMillis());
-//			details.setJobStatus(status);
-//			experimentCatalog.update(
-//					ExperimentCatalogModelType.JOB_DETAIL,
-//					details, details.getJobID());
-//		} catch (Exception e) {
-//			throw new GFacException("Error persisting job status"
-//					+ e.getLocalizedMessage(), e);
-//		}
-//	}
-
-//	public static void saveErrorDetails(
-//			ProcessContext processContext, String errorMessage)
-//			throws GFacException {
-//		try {
-//			ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-//			ErrorModel details = new ErrorModel();
-//			details.setActualErrorMessage(errorMessage);
-//			details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-//			// FIXME : Save error model according to new data model
-////            experimentCatalog.add(ExpCatChildDataType.ERROR_DETAIL, details,
-////					jobExecutionContext.getTaskData().getTaskID());
-//		} catch (Exception e) {
-//			throw new GFacException("Error persisting job status"
-//					+ e.getLocalizedMessage(), e);
-//		}
-//	}
-
-    public static Map<String, Object> getInputParamMap(List<InputDataObjectType> experimentData) throws GFacException {
-        Map<String, Object> map = new HashMap<String, Object>();
-        for (InputDataObjectType objectType : experimentData) {
-            map.put(objectType.getName(), objectType);
-        }
-        return map;
-    }
-
-    public static Map<String, Object> getOuputParamMap(List<OutputDataObjectType> experimentData) throws GFacException {
-        Map<String, Object> map = new HashMap<String, Object>();
-        for (OutputDataObjectType objectType : experimentData) {
-            map.put(objectType.getName(), objectType);
-        }
-        return map;
-    }
-
-//	public static GfacExperimentState getZKExperimentState(CuratorFramework curatorClient,
-//			JobExecutionContext jobExecutionContext)
-//			throws Exception {
-//		String expState = AiravataZKUtils.getExpState(curatorClient, jobExecutionContext
-//				.getExperimentID());
-//        if (expState == null || expState.isEmpty()) {
-//            return GfacExperimentState.UNKNOWN;
-//        }
-//        return GfacExperimentState.findByValue(Integer.valueOf(expState));
-//    }
-//
-//	public static boolean createHandlerZnode(CuratorFramework curatorClient,
-//                                             JobExecutionContext jobExecutionContext, String className)
-//			throws Exception {
-//		String expState = AiravataZKUtils.getExpZnodeHandlerPath(
-//				jobExecutionContext.getExperimentID(), className);
-//		Stat exists = curatorClient.checkExists().forPath(expState);
-//		if (exists == null) {
-//			curatorClient.create().withMode(CreateMode.PERSISTENT).withACL(OPEN_ACL_UNSAFE).forPath(expState, new byte[0]);
-//			curatorClient.create().withMode(CreateMode.PERSISTENT).withACL(OPEN_ACL_UNSAFE)
-//					.forPath(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, new byte[0]);
-//		} else {
-//			exists = curatorClient.checkExists().forPath(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE);
-//			if (exists == null) {
-//				curatorClient.create().withMode(CreateMode.PERSISTENT).withACL(OPEN_ACL_UNSAFE)
-//						.forPath(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, new byte[0]);
-//			}
-//		}
-//
-//		exists = curatorClient.checkExists().forPath(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE);
-//		if (exists != null) {
-//			curatorClient.setData().withVersion(exists.getVersion())
-//					.forPath(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
-//							String.valueOf(GfacHandlerState.INVOKING.getValue()).getBytes());
-//		}
-//		return true;
-//	}
-
-//	public static boolean createHandlerZnode(CuratorFramework curatorClient,
-//                                             JobExecutionContext jobExecutionContext, String className,
-//                                             GfacHandlerState state) throws Exception {
-//		String expState = AiravataZKUtils.getExpZnodeHandlerPath(
-//				jobExecutionContext.getExperimentID(), className);
-//		Stat exists = curatorClient.checkExists().forPath(expState);
-//		if (exists == null) {
-//			curatorClient.create().withMode(CreateMode.PERSISTENT).withACL(OPEN_ACL_UNSAFE)
-//					.forPath(expState, new byte[0]);
-//			curatorClient.create().withMode(CreateMode.PERSISTENT).withACL(OPEN_ACL_UNSAFE)
-//					.forPath(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, new byte[0]);
-//		} else {
-//			exists = curatorClient.checkExists().forPath(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE);
-//			if (exists == null) {
-//				curatorClient.create().withMode(CreateMode.PERSISTENT).withACL(OPEN_ACL_UNSAFE)
-//						.forPath(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, new byte[0]);
-//			}
-//		}
-//
-//		exists = curatorClient.checkExists().forPath(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE);
-//		if (exists != null) {
-//			curatorClient.setData().withVersion(exists.getVersion())
-//					.forPath(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
-//							String.valueOf(state.getValue()).getBytes());
-//		}
-//		return true;
-//	}
-
-//	public static boolean updateHandlerState(CuratorFramework curatorClient,
-//                                             JobExecutionContext jobExecutionContext, String className,
-//                                             GfacHandlerState state) throws Exception {
-//		String handlerPath = AiravataZKUtils.getExpZnodeHandlerPath(
-//				jobExecutionContext.getExperimentID(), className);
-//		Stat exists = curatorClient.checkExists().forPath(handlerPath + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE);
-//		if (exists != null) {
-//			curatorClient.setData().withVersion(exists.getVersion())
-//					.forPath(handlerPath + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, String.valueOf(state.getValue()).getBytes());
-//		} else {
-//			createHandlerZnode(curatorClient, jobExecutionContext, className, state);
-//		}
-//		return false;
-//	}
-
-//	public static GfacHandlerState getHandlerState(CuratorFramework curatorClient,
-//                                                  JobExecutionContext jobExecutionContext, String className) {
-//		try {
-//			String handlerPath = AiravataZKUtils.getExpZnodeHandlerPath( jobExecutionContext.getExperimentID(), className);
-//			Stat exists = curatorClient.checkExists().forPath(handlerPath + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE);
-//			if (exists != null) {
-//				String stateVal = new String(curatorClient.getData().storingStatIn(exists)
-//						.forPath(handlerPath + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE));
-//				return GfacHandlerState.findByValue(Integer.valueOf(stateVal));
-//			}
-//			return GfacHandlerState.UNKNOWN; // if the node doesn't exist or any other error we
-//							// return false
-//		} catch (Exception e) {
-//			log.error("Error occured while getting zk node status", e);
-//			return null;
-//		}
-//	}
-
-//	// This method is dangerous because of moving the experiment data
-//	public static boolean createExperimentEntryForPassive(String experimentID,
-//														  String taskID, CuratorFramework curatorClient, String experimentNode,
-//														  String pickedChild, String tokenId, long deliveryTag) throws Exception {
-//		String experimentPath = experimentNode + File.separator + pickedChild;
-//		String newExperimentPath = experimentPath + File.separator + experimentID;
-//		Stat exists1 = curatorClient.checkExists().forPath(newExperimentPath);
-//		String oldExperimentPath = GFacUtils.findExperimentEntry(experimentID, curatorClient);
-//		if (oldExperimentPath == null) {  // this means this is a very new experiment
-//			// are going to create a new node
-//			log.info("This is a new Job, so creating all the experiment docs from the scratch");
-//			curatorClient.create().withMode(CreateMode.PERSISTENT).withACL(OPEN_ACL_UNSAFE).forPath(newExperimentPath, new byte[0]);
-//            String stateNodePath = curatorClient.create().withMode(CreateMode.PERSISTENT).withACL(OPEN_ACL_UNSAFE)
-//					.forPath(newExperimentPath + File.separator + "state",
-//							String .valueOf(GfacExperimentState.LAUNCHED.getValue()) .getBytes());
-//
-//			if(curatorClient.checkExists().forPath(stateNodePath)!=null) {
-//				log.info("Created the node: " + stateNodePath + " successfully !");
-//			}else {
-//				log.error("Error creating node: " + stateNodePath + " successfully !");
-//			}
-//			curatorClient.create().withMode(CreateMode.PERSISTENT).withACL(OPEN_ACL_UNSAFE)
-//					.forPath(newExperimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX, longToBytes(deliveryTag));
-//		} else {
-//			log.error("ExperimentID: " + experimentID + " taskID: " + taskID + " was running by some Gfac instance,but it failed");
-//            removeCancelDeliveryTagNode(oldExperimentPath, curatorClient); // remove previous cancel deliveryTagNode
-//            if(newExperimentPath.equals(oldExperimentPath)){
-//                log.info("Re-launch experiment came to the same GFac instance");
-//            }else {
-//				log.info("Re-launch experiment came to a new GFac instance so we are moving data to new gfac node");
-//				curatorClient.create().withMode(CreateMode.PERSISTENT).withACL(OPEN_ACL_UNSAFE).forPath(newExperimentPath,
-//						curatorClient.getData().storingStatIn(exists1).forPath(oldExperimentPath)); // recursively copy children
-//                copyChildren(curatorClient, oldExperimentPath, newExperimentPath, 2); // we need to copy children up to depth 2
-//				String oldDeliveryTag = oldExperimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX;
-//				Stat exists = curatorClient.checkExists().forPath(oldDeliveryTag);
-//				if(exists!=null) {
-//					curatorClient.create().withMode(CreateMode.PERSISTENT).withACL(OPEN_ACL_UNSAFE)
-//							.forPath(newExperimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX,
-//									curatorClient.getData().storingStatIn(exists).forPath(oldDeliveryTag));
-//					ZKPaths.deleteChildren(curatorClient.getZookeeperClient().getZooKeeper(), oldDeliveryTag, true);
-//				}
-//				// After all the files are successfully transfered we delete the // old experiment,otherwise we do
-//				// not delete a single file
-//				log.info("After a successful copying of experiment data for an old experiment we delete the old data");
-//				log.info("Deleting experiment data: " + oldExperimentPath);
-//				ZKPaths.deleteChildren(curatorClient.getZookeeperClient().getZooKeeper(), oldExperimentPath, true);
-//			}
-//		}
-//		return true;
-//	}
 
     private static void removeCancelDeliveryTagNode(String experimentPath, CuratorFramework curatorClient) throws Exception {
         Stat exists = curatorClient.checkExists().forPath(experimentPath + AiravataZKUtils.CANCEL_DELIVERY_TAG_POSTFIX);
@@ -656,7 +408,7 @@ public class GFacUtils {
         return ZKPaths.makePath(ZkConstants.ZOOKEEPER_SERVERS_NODE, ZkConstants.ZOOKEEPER_GFAC_SERVER_NODE);
     }
 
-    public static JobDescriptor createJobDescriptor(ProcessContext processContext) throws GFacException, AppCatalogException, ApplicationSettingsException {
+    public static JobDescriptor createJobDescriptor(ProcessContext processContext, TaskContext taskContext) throws GFacException, AppCatalogException, ApplicationSettingsException {
         JobDescriptor jobDescriptor = new JobDescriptor();
         String emailIds = null;
         ProcessModel processModel = processContext.getProcessModel();
@@ -766,6 +518,15 @@ public class GFacUtils {
         jobDescriptor.setShellName("/bin/bash");
         jobDescriptor.setAllEnvExport(true);
         jobDescriptor.setOwner(processContext.getRemoteCluster().getServerInfo().getUserName());
+        // get walltime
+        try {
+            JobSubmissionTaskModel jobSubmissionTaskModel = ((JobSubmissionTaskModel) taskContext.getSubTaskModel());
+            if (jobSubmissionTaskModel.getWallTime() > 0) {
+                jobDescriptor.setMaxWallTime(jobSubmissionTaskModel.getWallTime() + "");
+            }
+        } catch (TException e) {
+            log.error("Error while getting job submissiont sub task model", e);
+        }
 
         ComputationalResourceSchedulingModel scheduling = processModel.getResourceSchedule();
         if (scheduling != null) {
@@ -788,7 +549,9 @@ public class GFacUtils {
                 jobDescriptor.setProcessesPerNode(ppn);
                 jobDescriptor.setCPUCount(totalCPUCount);
             }
-            if (scheduling.getWallTimeLimit() > 0) {
+            // max wall time may be set before this level if jobsubmission task has wall time configured to this job,
+            // if so we ignore scheduling configuration.
+            if (scheduling.getWallTimeLimit() > 0 && jobDescriptor.getMaxWallTime() != null) {
                 jobDescriptor.setMaxWallTime(String.valueOf(scheduling.getWallTimeLimit()));
                 if (resourceJobManager != null) {
                     if (resourceJobManager.getResourceJobManagerType().equals(ResourceJobManagerType.LSF)) {
@@ -1220,4 +983,11 @@ public class GFacUtils {
         }
         return jobModel;
     }
+
+    public static List<String> parseTaskDag(String taskDag) {
+        // TODO - parse taskDag and create taskId list
+        String[] tasks = taskDag.split(",");
+        return Arrays.asList(tasks);
+    }
+
 }

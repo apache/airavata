@@ -9,6 +9,8 @@
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import apache.airavata.model.commons.ttypes
 import apache.airavata.model.status.ttypes
+import apache.airavata.model.appcatalog.computeresource.ttypes
+import apache.airavata.model.application.io.ttypes
 
 
 from thrift.transport import TTransport
@@ -44,6 +46,27 @@ class TaskTypes:
     "JOB_SUBMISSION": 2,
     "ENV_CLEANUP": 3,
     "MONITORING": 4,
+  }
+
+class DataStageType:
+  """
+  DataStagingTaskModel: A structure holding the data staging task details.
+
+  Source and Destination locations includes standard representation of protocol, host, port and path
+    A friendly description of the task, usally used to communicate information to users.
+
+  """
+  INPUT = 0
+  OUPUT = 1
+
+  _VALUES_TO_NAMES = {
+    0: "INPUT",
+    1: "OUPUT",
+  }
+
+  _NAMES_TO_VALUES = {
+    "INPUT": 0,
+    "OUPUT": 1,
   }
 
 
@@ -240,35 +263,38 @@ class TaskModel:
 
 class DataStagingTaskModel:
   """
-  DataStagingTaskModel: A structure holding the data staging task details.
-
-  Source and Destination locations includes standard representation of protocol, host, port and path
-    A friendly description of the task, usally used to communicate information to users.
-
-
   Attributes:
    - source
    - destination
+   - type
    - transferStartTime
    - transferEndTime
    - transferRate
+   - processInput
+   - processOutput
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'source', None, None, ), # 1
     (2, TType.STRING, 'destination', None, None, ), # 2
-    (3, TType.I64, 'transferStartTime', None, None, ), # 3
-    (4, TType.I64, 'transferEndTime', None, None, ), # 4
-    (5, TType.STRING, 'transferRate', None, None, ), # 5
+    (3, TType.I32, 'type', None, None, ), # 3
+    (4, TType.I64, 'transferStartTime', None, None, ), # 4
+    (5, TType.I64, 'transferEndTime', None, None, ), # 5
+    (6, TType.STRING, 'transferRate', None, None, ), # 6
+    (7, TType.STRUCT, 'processInput', (apache.airavata.model.application.io.ttypes.InputDataObjectType, apache.airavata.model.application.io.ttypes.InputDataObjectType.thrift_spec), None, ), # 7
+    (8, TType.STRUCT, 'processOutput', (apache.airavata.model.application.io.ttypes.OutputDataObjectType, apache.airavata.model.application.io.ttypes.OutputDataObjectType.thrift_spec), None, ), # 8
   )
 
-  def __init__(self, source=None, destination=None, transferStartTime=None, transferEndTime=None, transferRate=None,):
+  def __init__(self, source=None, destination=None, type=None, transferStartTime=None, transferEndTime=None, transferRate=None, processInput=None, processOutput=None,):
     self.source = source
     self.destination = destination
+    self.type = type
     self.transferStartTime = transferStartTime
     self.transferEndTime = transferEndTime
     self.transferRate = transferRate
+    self.processInput = processInput
+    self.processOutput = processOutput
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -290,18 +316,35 @@ class DataStagingTaskModel:
         else:
           iprot.skip(ftype)
       elif fid == 3:
-        if ftype == TType.I64:
-          self.transferStartTime = iprot.readI64();
+        if ftype == TType.I32:
+          self.type = iprot.readI32();
         else:
           iprot.skip(ftype)
       elif fid == 4:
         if ftype == TType.I64:
-          self.transferEndTime = iprot.readI64();
+          self.transferStartTime = iprot.readI64();
         else:
           iprot.skip(ftype)
       elif fid == 5:
+        if ftype == TType.I64:
+          self.transferEndTime = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
         if ftype == TType.STRING:
           self.transferRate = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 7:
+        if ftype == TType.STRUCT:
+          self.processInput = apache.airavata.model.application.io.ttypes.InputDataObjectType()
+          self.processInput.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.STRUCT:
+          self.processOutput = apache.airavata.model.application.io.ttypes.OutputDataObjectType()
+          self.processOutput.read(iprot)
         else:
           iprot.skip(ftype)
       else:
@@ -322,17 +365,29 @@ class DataStagingTaskModel:
       oprot.writeFieldBegin('destination', TType.STRING, 2)
       oprot.writeString(self.destination)
       oprot.writeFieldEnd()
+    if self.type is not None:
+      oprot.writeFieldBegin('type', TType.I32, 3)
+      oprot.writeI32(self.type)
+      oprot.writeFieldEnd()
     if self.transferStartTime is not None:
-      oprot.writeFieldBegin('transferStartTime', TType.I64, 3)
+      oprot.writeFieldBegin('transferStartTime', TType.I64, 4)
       oprot.writeI64(self.transferStartTime)
       oprot.writeFieldEnd()
     if self.transferEndTime is not None:
-      oprot.writeFieldBegin('transferEndTime', TType.I64, 4)
+      oprot.writeFieldBegin('transferEndTime', TType.I64, 5)
       oprot.writeI64(self.transferEndTime)
       oprot.writeFieldEnd()
     if self.transferRate is not None:
-      oprot.writeFieldBegin('transferRate', TType.STRING, 5)
+      oprot.writeFieldBegin('transferRate', TType.STRING, 6)
       oprot.writeString(self.transferRate)
+      oprot.writeFieldEnd()
+    if self.processInput is not None:
+      oprot.writeFieldBegin('processInput', TType.STRUCT, 7)
+      self.processInput.write(oprot)
+      oprot.writeFieldEnd()
+    if self.processOutput is not None:
+      oprot.writeFieldBegin('processOutput', TType.STRUCT, 8)
+      self.processOutput.write(oprot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -342,6 +397,8 @@ class DataStagingTaskModel:
       raise TProtocol.TProtocolException(message='Required field source is unset!')
     if self.destination is None:
       raise TProtocol.TProtocolException(message='Required field destination is unset!')
+    if self.type is None:
+      raise TProtocol.TProtocolException(message='Required field type is unset!')
     return
 
 
@@ -349,9 +406,259 @@ class DataStagingTaskModel:
     value = 17
     value = (value * 31) ^ hash(self.source)
     value = (value * 31) ^ hash(self.destination)
+    value = (value * 31) ^ hash(self.type)
     value = (value * 31) ^ hash(self.transferStartTime)
     value = (value * 31) ^ hash(self.transferEndTime)
     value = (value * 31) ^ hash(self.transferRate)
+    value = (value * 31) ^ hash(self.processInput)
+    value = (value * 31) ^ hash(self.processOutput)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class EnvironmentSetupTaskModel:
+  """
+  EnvironmentSetupTaskModel: A structure holding the environment creation task details
+
+
+  Attributes:
+   - location
+   - protocol
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'location', None, None, ), # 1
+    (2, TType.I32, 'protocol', None, None, ), # 2
+  )
+
+  def __init__(self, location=None, protocol=None,):
+    self.location = location
+    self.protocol = protocol
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.location = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I32:
+          self.protocol = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('EnvironmentSetupTaskModel')
+    if self.location is not None:
+      oprot.writeFieldBegin('location', TType.STRING, 1)
+      oprot.writeString(self.location)
+      oprot.writeFieldEnd()
+    if self.protocol is not None:
+      oprot.writeFieldBegin('protocol', TType.I32, 2)
+      oprot.writeI32(self.protocol)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.location is None:
+      raise TProtocol.TProtocolException(message='Required field location is unset!')
+    if self.protocol is None:
+      raise TProtocol.TProtocolException(message='Required field protocol is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.location)
+    value = (value * 31) ^ hash(self.protocol)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class JobSubmissionTaskModel:
+  """
+  Attributes:
+   - jobSubmissionProtocol
+   - monitorMode
+   - wallTime
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I32, 'jobSubmissionProtocol', None, None, ), # 1
+    (2, TType.I32, 'monitorMode', None, None, ), # 2
+    (3, TType.I32, 'wallTime', None, None, ), # 3
+  )
+
+  def __init__(self, jobSubmissionProtocol=None, monitorMode=None, wallTime=None,):
+    self.jobSubmissionProtocol = jobSubmissionProtocol
+    self.monitorMode = monitorMode
+    self.wallTime = wallTime
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I32:
+          self.jobSubmissionProtocol = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I32:
+          self.monitorMode = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I32:
+          self.wallTime = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('JobSubmissionTaskModel')
+    if self.jobSubmissionProtocol is not None:
+      oprot.writeFieldBegin('jobSubmissionProtocol', TType.I32, 1)
+      oprot.writeI32(self.jobSubmissionProtocol)
+      oprot.writeFieldEnd()
+    if self.monitorMode is not None:
+      oprot.writeFieldBegin('monitorMode', TType.I32, 2)
+      oprot.writeI32(self.monitorMode)
+      oprot.writeFieldEnd()
+    if self.wallTime is not None:
+      oprot.writeFieldBegin('wallTime', TType.I32, 3)
+      oprot.writeI32(self.wallTime)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.jobSubmissionProtocol is None:
+      raise TProtocol.TProtocolException(message='Required field jobSubmissionProtocol is unset!')
+    if self.monitorMode is None:
+      raise TProtocol.TProtocolException(message='Required field monitorMode is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.jobSubmissionProtocol)
+    value = (value * 31) ^ hash(self.monitorMode)
+    value = (value * 31) ^ hash(self.wallTime)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class MonitorTaskModel:
+  """
+  Attributes:
+   - monitorMode
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I32, 'monitorMode', None, None, ), # 1
+  )
+
+  def __init__(self, monitorMode=None,):
+    self.monitorMode = monitorMode
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I32:
+          self.monitorMode = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('MonitorTaskModel')
+    if self.monitorMode is not None:
+      oprot.writeFieldBegin('monitorMode', TType.I32, 1)
+      oprot.writeI32(self.monitorMode)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.monitorMode is None:
+      raise TProtocol.TProtocolException(message='Required field monitorMode is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.monitorMode)
     return value
 
   def __repr__(self):

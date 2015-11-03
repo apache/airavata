@@ -115,7 +115,10 @@ public class TaskResource extends AbstractExpCatResource {
                 TaskErrorResource taskErrorResource = new TaskErrorResource();
                 taskErrorResource.setTaskId(taskId);
                 return taskErrorResource;
-
+            case JOB:
+                JobResource jobResource = new JobResource();
+                jobResource.setTaskId(taskId);
+                return jobResource;
             default:
                 logger.error("Unsupported resource type for task data resource.", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
@@ -140,6 +143,13 @@ public class TaskResource extends AbstractExpCatResource {
                 case TASK_ERROR:
                     generator = new QueryGenerator(TASK_ERROR);
                     generator.setParameter(TaskErrorConstants.ERROR_ID, name);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
+                case JOB:
+                    generator = new QueryGenerator(JOB);
+                    generator.setParameter(JobConstants.JOB_ID, name);
+                    generator.setParameter(JobConstants.TASK_ID, taskId);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
@@ -206,6 +216,21 @@ public class TaskResource extends AbstractExpCatResource {
                         em.close();
                     }
                     return errorResource;
+                case JOB:
+                    generator = new QueryGenerator(JOB);
+                    generator.setParameter(JobConstants.JOB_ID, name);
+                    generator.setParameter(JobConstants.TASK_ID, taskId);
+                    q = generator.selectQuery(em);
+                    Job job = (Job) q.getSingleResult();
+                    JobResource jobResource = (JobResource) Utils.getResource(ResourceType.JOB, job);
+                    em.getTransaction().commit();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
+                    return jobResource;
                 default:
                     em.getTransaction().commit();
                     if (em.isOpen()) {
@@ -266,6 +291,20 @@ public class TaskResource extends AbstractExpCatResource {
                             TaskStatusResource taskStatusResource =
                                     (TaskStatusResource) Utils.getResource(ResourceType.TASK_STATUS, taskStatus);
                             resourceList.add(taskStatusResource);
+                        }
+                    }
+                    break;
+                case JOB:
+                    generator = new QueryGenerator(JOB);
+                    generator.setParameter(JobConstants.TASK_ID, taskId);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            Job job = (Job) result;
+                            JobResource jobResource =
+                                    (JobResource) Utils.getResource(ResourceType.JOB, job);
+                            resourceList.add(jobResource);
                         }
                     }
                     break;
@@ -396,5 +435,19 @@ public class TaskResource extends AbstractExpCatResource {
             }
             return max;
         }
+    }
+
+    public JobResource getJob(String jobId) throws RegistryException {
+        return (JobResource) get(ResourceType.JOB, jobId);
+    }
+
+    public List<JobResource> getJobList() throws RegistryException {
+        List<JobResource> jobResources = new ArrayList();
+        List<ExperimentCatResource> resources = get(ResourceType.JOB);
+        for (ExperimentCatResource resource : resources) {
+            JobResource jobResource = (JobResource) resource;
+            jobResources.add(jobResource);
+        }
+        return jobResources;
     }
 }

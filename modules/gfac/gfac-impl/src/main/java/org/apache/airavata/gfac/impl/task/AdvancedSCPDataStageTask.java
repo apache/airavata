@@ -91,7 +91,7 @@ public class AdvancedSCPDataStageTask implements Task {
 
     @Override
     public TaskStatus execute(TaskContext taskContext) {
-        TaskStatus status = new TaskStatus(TaskState.CREATED);
+        TaskStatus status = new TaskStatus(TaskState.EXECUTING);
         AuthenticationInfo authenticationInfo = null;
         DataStagingTaskModel subTaskModel = null;
         String localDataDir = null;

@@ -20,12 +20,14 @@
  */
 package org.apache.airavata.gfac.core.context;
 
+import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +38,7 @@ public class TaskContext {
 	private ProcessContext parentProcessContext;
     private InputDataObjectType processInput;
     private OutputDataObjectType processOutput;
+    private Object subTaskModel = null;
 
 	public TaskModel getTaskModel() {
 		return taskModel;
@@ -107,4 +110,11 @@ public class TaskContext {
 	public String getExperimentId() {
 		return parentProcessContext.getExperimentId();
 	}
+
+    public Object getSubTaskModel() throws TException {
+        if (subTaskModel == null) {
+            subTaskModel = ThriftUtils.getSubTaskModel(getTaskModel());
+        }
+        return subTaskModel;
+    }
 }

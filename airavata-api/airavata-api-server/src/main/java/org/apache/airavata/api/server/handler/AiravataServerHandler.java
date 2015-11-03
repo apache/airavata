@@ -56,6 +56,7 @@ import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
@@ -1570,11 +1571,17 @@ public class AiravataServerHandler implements Airavata.Iface {
             Map<String, JobStatus> jobStatus = new HashMap<String, JobStatus>();
             if (processModels != null && !processModels.isEmpty()){
                 for (Object process : processModels) {
-                    String processId =  ((ProcessModel)process).getProcessId();
-                    List<Object> jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.PROCESS_ID, processId);
-                    for (Object jobObject : jobs) {
-                        String jobID = ((JobModel)jobObject).getJobId();
-                        jobStatus.put(jobID, ((JobModel)jobObject).getJobStatus());
+                    ProcessModel processModel = (ProcessModel) process;
+                    List<TaskModel> tasks = processModel.getTasks();
+                    if (tasks != null && !tasks.isEmpty()){
+                      for (TaskModel task : tasks){
+                          String taskId =  task.getTaskId();
+                          List<Object> jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.TASK_ID, taskId);
+                          for (Object jobObject : jobs) {
+                              String jobID = ((JobModel)jobObject).getJobId();
+                              jobStatus.put(jobID, ((JobModel)jobObject).getJobStatus());
+                          }
+                      }
                     }
                 }
             }
@@ -1602,10 +1609,16 @@ public class AiravataServerHandler implements Airavata.Iface {
             List<JobModel> jobList = new ArrayList<>();
             if (processModels != null && !processModels.isEmpty()){
                 for (Object process : processModels) {
-                    String processId =  ((ProcessModel)process).getProcessId();
-                    List<Object> jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.PROCESS_ID, processId);
-                    for (Object jobObject : jobs) {
-                        jobList.add ((JobModel)jobObject);
+                    ProcessModel processModel = (ProcessModel) process;
+                    List<TaskModel> tasks = processModel.getTasks();
+                    if (tasks != null && !tasks.isEmpty()){
+                        for (TaskModel taskModel : tasks){
+                            String taskId =  taskModel.getTaskId();
+                            List<Object> jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.TASK_ID, taskId);
+                            for (Object jobObject : jobs) {
+                                jobList.add ((JobModel)jobObject);
+                            }
+                        }
                     }
                 }
             }
