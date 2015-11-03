@@ -100,6 +100,7 @@ public class ExperimentModelUtil {
             ComputationalResourceSchedulingModel scheduling = configData.getComputationalResourceScheduling();
             if (scheduling != null){
                 processModel.setResourceSchedule(scheduling);
+                processModel.setComputeResourceId(scheduling.getResourceHostId());
             }
         }
         return processModel;

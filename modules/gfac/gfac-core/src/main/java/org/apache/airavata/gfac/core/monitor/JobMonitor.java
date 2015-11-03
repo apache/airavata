@@ -20,19 +20,24 @@
  */
 package org.apache.airavata.gfac.core.monitor;
 
-import org.apache.airavata.gfac.core.context.ProcessContext;
+import org.apache.airavata.gfac.core.context.TaskContext;
 
 public interface JobMonitor {
 
 	/**
 	 * Start monitor jobId on remote computer resource.
 	 * @param jobId
-	 * @param processContext
+	 * @param taskContext
 	 */
-	void monitor(String jobId, ProcessContext processContext);
+	void monitor(String jobId, TaskContext taskContext);
 
 	/**
 	 * Stop monitoring for given jobId
 	 */
 	void stopMonitor(String jobId, boolean runOutFlow);
+
+    /**
+     * Return <code>true</code> if jobId is already monitoring by this Monitor, <code>false</code> if not
+     */
+    boolean isMonitoring(String jobId);
 }

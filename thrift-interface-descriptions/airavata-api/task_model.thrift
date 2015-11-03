@@ -20,6 +20,8 @@
 
 include "airavata_commons.thrift"
 include "status_models.thrift"
+include "compute_resource_model.thrift"
+include "application_io_models.thrift"
 
 namespace java org.apache.airavata.model.task
 namespace php Airavata.Model.Task
@@ -66,10 +68,38 @@ struct TaskModel {
  *   A friendly description of the task, usally used to communicate information to users.
  *
 */
+
+enum DataStageType {
+	INPUT,
+	OUPUT
+
+}
 struct DataStagingTaskModel {
     1: required string source,
     2: required string destination,
-    3: optional i64 transferStartTime,
-    4: optional i64 transferEndTime,
-    5: optional string transferRate
+    3: required DataStageType type,
+    4: optional i64 transferStartTime,
+    5: optional i64 transferEndTime,
+    6: optional string transferRate,
+    7: optional  application_io_models.InputDataObjectType processInput,
+    8: optional application_io_models.OutputDataObjectType processOutput
+}
+
+/**
+* EnvironmentSetupTaskModel: A structure holding the environment creation task details
+**/
+struct EnvironmentSetupTaskModel {
+	1: required string location,
+	2: required compute_resource_model.SecurityProtocol protocol
+}
+
+
+struct JobSubmissionTaskModel {
+	1: required compute_resource_model.JobSubmissionProtocol jobSubmissionProtocol,
+	2: required compute_resource_model.MonitorMode monitorMode,
+	3: optional i32 wallTime
+}
+
+struct MonitorTaskModel {
+	1: required compute_resource_model.MonitorMode monitorMode
 }
