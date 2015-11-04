@@ -18230,8 +18230,8 @@ class Airavata_deleteBatchQueue_presult {
 class Airavata_registerGatewayResourceProfile_args {
  public:
 
-  static const char* ascii_fingerprint; // = "1FB1A3296BE8D5645CC8A3903C0A6C79";
-  static const uint8_t binary_fingerprint[16]; // = {0x1F,0xB1,0xA3,0x29,0x6B,0xE8,0xD5,0x64,0x5C,0xC8,0xA3,0x90,0x3C,0x0A,0x6C,0x79};
+  static const char* ascii_fingerprint; // = "667FD33BAB329A430AE44DAC52FE58DD";
+  static const uint8_t binary_fingerprint[16]; // = {0x66,0x7F,0xD3,0x3B,0xAB,0x32,0x9A,0x43,0x0A,0xE4,0x4D,0xAC,0x52,0xFE,0x58,0xDD};
 
   Airavata_registerGatewayResourceProfile_args(const Airavata_registerGatewayResourceProfile_args&);
   Airavata_registerGatewayResourceProfile_args& operator=(const Airavata_registerGatewayResourceProfile_args&);
@@ -18270,8 +18270,8 @@ class Airavata_registerGatewayResourceProfile_args {
 class Airavata_registerGatewayResourceProfile_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "1FB1A3296BE8D5645CC8A3903C0A6C79";
-  static const uint8_t binary_fingerprint[16]; // = {0x1F,0xB1,0xA3,0x29,0x6B,0xE8,0xD5,0x64,0x5C,0xC8,0xA3,0x90,0x3C,0x0A,0x6C,0x79};
+  static const char* ascii_fingerprint; // = "667FD33BAB329A430AE44DAC52FE58DD";
+  static const uint8_t binary_fingerprint[16]; // = {0x66,0x7F,0xD3,0x3B,0xAB,0x32,0x9A,0x43,0x0A,0xE4,0x4D,0xAC,0x52,0xFE,0x58,0xDD};
 
 
   virtual ~Airavata_registerGatewayResourceProfile_pargs() throw();
@@ -18447,8 +18447,8 @@ typedef struct _Airavata_getGatewayResourceProfile_result__isset {
 class Airavata_getGatewayResourceProfile_result {
  public:
 
-  static const char* ascii_fingerprint; // = "0B5B802A477CC941D8C04C7A4E80FEBB";
-  static const uint8_t binary_fingerprint[16]; // = {0x0B,0x5B,0x80,0x2A,0x47,0x7C,0xC9,0x41,0xD8,0xC0,0x4C,0x7A,0x4E,0x80,0xFE,0xBB};
+  static const char* ascii_fingerprint; // = "C56B4114D8C2C1D8821722E4954571BD";
+  static const uint8_t binary_fingerprint[16]; // = {0xC5,0x6B,0x41,0x14,0xD8,0xC2,0xC1,0xD8,0x82,0x17,0x22,0xE4,0x95,0x45,0x71,0xBD};
 
   Airavata_getGatewayResourceProfile_result(const Airavata_getGatewayResourceProfile_result&);
   Airavata_getGatewayResourceProfile_result& operator=(const Airavata_getGatewayResourceProfile_result&);
@@ -18512,8 +18512,8 @@ typedef struct _Airavata_getGatewayResourceProfile_presult__isset {
 class Airavata_getGatewayResourceProfile_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "0B5B802A477CC941D8C04C7A4E80FEBB";
-  static const uint8_t binary_fingerprint[16]; // = {0x0B,0x5B,0x80,0x2A,0x47,0x7C,0xC9,0x41,0xD8,0xC0,0x4C,0x7A,0x4E,0x80,0xFE,0xBB};
+  static const char* ascii_fingerprint; // = "C56B4114D8C2C1D8821722E4954571BD";
+  static const uint8_t binary_fingerprint[16]; // = {0xC5,0x6B,0x41,0x14,0xD8,0xC2,0xC1,0xD8,0x82,0x17,0x22,0xE4,0x95,0x45,0x71,0xBD};
 
 
   virtual ~Airavata_getGatewayResourceProfile_presult() throw();
@@ -18534,8 +18534,8 @@ class Airavata_getGatewayResourceProfile_presult {
 class Airavata_updateGatewayResourceProfile_args {
  public:
 
-  static const char* ascii_fingerprint; // = "4A59189B36D11C49633BA2F74222F93A";
-  static const uint8_t binary_fingerprint[16]; // = {0x4A,0x59,0x18,0x9B,0x36,0xD1,0x1C,0x49,0x63,0x3B,0xA2,0xF7,0x42,0x22,0xF9,0x3A};
+  static const char* ascii_fingerprint; // = "B7831486081963A43B793189F5448F3C";
+  static const uint8_t binary_fingerprint[16]; // = {0xB7,0x83,0x14,0x86,0x08,0x19,0x63,0xA4,0x3B,0x79,0x31,0x89,0xF5,0x44,0x8F,0x3C};
 
   Airavata_updateGatewayResourceProfile_args(const Airavata_updateGatewayResourceProfile_args&);
   Airavata_updateGatewayResourceProfile_args& operator=(const Airavata_updateGatewayResourceProfile_args&);
@@ -18579,8 +18579,8 @@ class Airavata_updateGatewayResourceProfile_args {
 class Airavata_updateGatewayResourceProfile_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "4A59189B36D11C49633BA2F74222F93A";
-  static const uint8_t binary_fingerprint[16]; // = {0x4A,0x59,0x18,0x9B,0x36,0xD1,0x1C,0x49,0x63,0x3B,0xA2,0xF7,0x42,0x22,0xF9,0x3A};
+  static const char* ascii_fingerprint; // = "B7831486081963A43B793189F5448F3C";
+  static const uint8_t binary_fingerprint[16]; // = {0xB7,0x83,0x14,0x86,0x08,0x19,0x63,0xA4,0x3B,0x79,0x31,0x89,0xF5,0x44,0x8F,0x3C};
 
 
   virtual ~Airavata_updateGatewayResourceProfile_pargs() throw();
@@ -19851,8 +19851,8 @@ typedef struct _Airavata_getAllGatewayResourceProfiles_result__isset {
 class Airavata_getAllGatewayResourceProfiles_result {
  public:
 
-  static const char* ascii_fingerprint; // = "E4C23A3951BDEE94F5F54BB19B021761";
-  static const uint8_t binary_fingerprint[16]; // = {0xE4,0xC2,0x3A,0x39,0x51,0xBD,0xEE,0x94,0xF5,0xF5,0x4B,0xB1,0x9B,0x02,0x17,0x61};
+  static const char* ascii_fingerprint; // = "BD4F6278E47EC9154E06BC927A88FE7E";
+  static const uint8_t binary_fingerprint[16]; // = {0xBD,0x4F,0x62,0x78,0xE4,0x7E,0xC9,0x15,0x4E,0x06,0xBC,0x92,0x7A,0x88,0xFE,0x7E};
 
   Airavata_getAllGatewayResourceProfiles_result(const Airavata_getAllGatewayResourceProfiles_result&);
   Airavata_getAllGatewayResourceProfiles_result& operator=(const Airavata_getAllGatewayResourceProfiles_result&);
@@ -19916,8 +19916,8 @@ typedef struct _Airavata_getAllGatewayResourceProfiles_presult__isset {
 class Airavata_getAllGatewayResourceProfiles_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "E4C23A3951BDEE94F5F54BB19B021761";
-  static const uint8_t binary_fingerprint[16]; // = {0xE4,0xC2,0x3A,0x39,0x51,0xBD,0xEE,0x94,0xF5,0xF5,0x4B,0xB1,0x9B,0x02,0x17,0x61};
+  static const char* ascii_fingerprint; // = "BD4F6278E47EC9154E06BC927A88FE7E";
+  static const uint8_t binary_fingerprint[16]; // = {0xBD,0x4F,0x62,0x78,0xE4,0x7E,0xC9,0x15,0x4E,0x06,0xBC,0x92,0x7A,0x88,0xFE,0x7E};
 
 
   virtual ~Airavata_getAllGatewayResourceProfiles_presult() throw();
