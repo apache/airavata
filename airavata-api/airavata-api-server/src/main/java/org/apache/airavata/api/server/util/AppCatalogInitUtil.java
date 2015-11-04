@@ -82,6 +82,7 @@ public class AppCatalogInitUtil {
             if (!gatewayProfileResource.isExists(ServerSettings.getDefaultUserGateway())){
                 gatewayProfileResource.setGatewayID(ServerSettings.getDefaultUserGateway());
                 gatewayProfileResource.setCreatedTime(AiravataUtils.getCurrentTimestamp());
+                gatewayProfileResource.setDataStorageHost("localhost");
                 gatewayProfileResource.save();
             }
         } catch (Exception e) {

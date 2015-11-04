@@ -47,6 +47,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                 profileResource.setGatewayID(gatewayProfile.getGatewayID());
             }
             profileResource.setCredentialStoreToken(gatewayProfile.getCredentialStoreToken());
+            profileResource.setDataStorageHost(gatewayProfile.getDataStorageHostName());
 //            profileResource.setGatewayID(gatewayProfile.getGatewayID());
             profileResource.save();
             List<ComputeResourcePreference> computeResourcePreferences = gatewayProfile.getComputeResourcePreferences();
@@ -101,6 +102,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
             GatewayProfileResource profileResource = new GatewayProfileResource();
             GatewayProfileResource existingGP = (GatewayProfileResource)profileResource.get(gatewayId);
             existingGP.setCredentialStoreToken(updatedProfile.getCredentialStoreToken());
+            existingGP.setDataStorageHost(updatedProfile.getDataStorageHostName());
             existingGP.save();
 
             List<ComputeResourcePreference> computeResourcePreferences = updatedProfile.getComputeResourcePreferences();

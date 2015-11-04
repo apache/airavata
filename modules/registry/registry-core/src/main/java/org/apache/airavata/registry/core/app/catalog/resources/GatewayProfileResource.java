@@ -42,6 +42,7 @@ public class GatewayProfileResource extends AppCatAbstractResource {
     private Timestamp createdTime;
     private Timestamp updatedTime;
     private String credentialStoreToken;
+    private String dataStorageHost;
 
     public Timestamp getCreatedTime() {
         return createdTime;
@@ -61,6 +62,14 @@ public class GatewayProfileResource extends AppCatAbstractResource {
 
     public String getCredentialStoreToken() {
         return credentialStoreToken;
+    }
+
+    public String getDataStorageHost() {
+        return dataStorageHost;
+    }
+
+    public void setDataStorageHost(String dataStorageHost) {
+        this.dataStorageHost = dataStorageHost;
     }
 
     public void setCredentialStoreToken(String credentialStoreToken) {
@@ -276,12 +285,14 @@ public class GatewayProfileResource extends AppCatAbstractResource {
             if (existingGatewayProfile != null) {
                 existingGatewayProfile.setUpdateTime(AiravataUtils.getCurrentTimestamp());
                 existingGatewayProfile.setCredentialStoreToken(credentialStoreToken);
+                existingGatewayProfile.setDataStorageHost(dataStorageHost);
                 em.merge(existingGatewayProfile);
             } else {
                 GatewayProfile gatewayProfile = new GatewayProfile();
                 gatewayProfile.setGatewayID(gatewayID);
                 gatewayProfile.setCreationTime(AiravataUtils.getCurrentTimestamp());
                 gatewayProfile.setCredentialStoreToken(credentialStoreToken);
+                gatewayProfile.setDataStorageHost(dataStorageHost);
                 em.persist(gatewayProfile);
             }
             em.getTransaction().commit();
