@@ -551,7 +551,7 @@ public class GFacUtils {
             }
             // max wall time may be set before this level if jobsubmission task has wall time configured to this job,
             // if so we ignore scheduling configuration.
-            if (scheduling.getWallTimeLimit() > 0 && jobDescriptor.getMaxWallTime() != null) {
+            if (scheduling.getWallTimeLimit() > 0 && jobDescriptor.getMaxWallTime() == null) {
                 jobDescriptor.setMaxWallTime(String.valueOf(scheduling.getWallTimeLimit()));
                 if (resourceJobManager != null) {
                     if (resourceJobManager.getResourceJobManagerType().equals(ResourceJobManagerType.LSF)) {
