@@ -20,12 +20,9 @@
  */
 package org.apache.airavata.gfac.core.context;
 
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ThriftUtils;
-import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
@@ -42,9 +39,8 @@ public class TaskContext {
     private InputDataObjectType processInput;
     private OutputDataObjectType processOutput;
     private Object subTaskModel = null;
-    private JobModel jobModel;
 
-    public TaskModel getTaskModel() {
+	public TaskModel getTaskModel() {
 		return taskModel;
 	}
 
@@ -120,23 +116,5 @@ public class TaskContext {
             subTaskModel = ThriftUtils.getSubTaskModel(getTaskModel());
         }
         return subTaskModel;
-    }
-
-    public RemoteCluster getRemoteCluster() {
-        return getParentProcessContext().getRemoteCluster();
-    }
-
-    public JobModel getJobModel() {
-        if (jobModel == null) {
-            jobModel = new JobModel();
-            jobModel.setProcessId(getProcessId());
-            jobModel.setWorkingDir(getWorkingDir());
-            jobModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
-        }
-        return jobModel;
-    }
-
-    public void setJobModel(JobModel jobModel) {
-        this.jobModel = jobModel;
     }
 }
