@@ -75,7 +75,6 @@ public class ProcessContext {
 	private String stderrLocation;
 	private JobSubmissionProtocol jobSubmissionProtocol;
 	private DataMovementProtocol dataMovementProtocol;
-	private JobModel jobModel;
 	private ComputeResourcePreference computeResourcePreference;
 	private MonitorMode monitorMode;
 	private ResourceJobManager resourceJobManager;
@@ -316,20 +315,6 @@ public class ProcessContext {
         }
         return taskMap;
     }
-
-	public JobModel getJobModel() {
-		if (jobModel == null) {
-			jobModel = new JobModel();
-			jobModel.setProcessId(processId);
-			jobModel.setWorkingDir(getWorkingDir());
-			jobModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
-		}
-		return jobModel;
-	}
-
-	public void setJobModel(JobModel jobModel) {
-		this.jobModel = jobModel;
-	}
 
 	public ComputeResourcePreference getComputeResourcePreference() {
 		return computeResourcePreference;
