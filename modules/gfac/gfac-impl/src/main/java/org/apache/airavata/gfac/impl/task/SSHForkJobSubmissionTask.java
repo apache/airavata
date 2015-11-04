@@ -60,9 +60,9 @@ public class SSHForkJobSubmissionTask implements JobSubmissionTask {
         TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
         try {
             ProcessContext processContext = taskContext.getParentProcessContext();
-            JobModel jobModel = taskContext.getJobModel();
+            JobModel jobModel = processContext.getJobModel();
             jobModel.setTaskId(taskContext.getTaskId());
-            RemoteCluster remoteCluster = taskContext.getRemoteCluster();
+            RemoteCluster remoteCluster = processContext.getRemoteCluster();
             JobDescriptor jobDescriptor = GFacUtils.createJobDescriptor(processContext, taskContext);
             jobModel.setJobName(jobDescriptor.getJobName());
             ResourceJobManager resourceJobManager = GFacUtils.getResourceJobManager(processContext);
@@ -75,7 +75,7 @@ public class SSHForkJobSubmissionTask implements JobSubmissionTask {
 	        if (jobFile != null && jobFile.exists()) {
                 jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
 	            JobSubmissionOutput jobSubmissionOutput = remoteCluster.submitBatchJob(jobFile.getPath(),
-			            taskContext.getWorkingDir());
+			            processContext.getWorkingDir());
 	            jobModel.setExitCode(jobSubmissionOutput.getExitCode());
 	            jobModel.setStdErr(jobSubmissionOutput.getStdErr());
 	            jobModel.setStdOut(jobSubmissionOutput.getStdOut());
@@ -84,8 +84,8 @@ public class SSHForkJobSubmissionTask implements JobSubmissionTask {
                     jobModel.setJobId(jobId);
                     GFacUtils.saveJobModel(processContext, jobModel);
                     jobStatus.setJobState(JobState.SUBMITTED);
-                    jobStatus.setReason("Successfully Submitted to "
-                            + processContext.getComputeResourceDescription().getHostName());
+                    jobStatus.setReason("Successfully Submitted to " + taskContext.getParentProcessContext()
+                            .getComputeResourceDescription().getHostName());
                     jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                     jobModel.setJobStatus(jobStatus);
                     GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
@@ -93,7 +93,7 @@ public class SSHForkJobSubmissionTask implements JobSubmissionTask {
                     taskStatus.setReason("Submitted job to compute resource");
                 }
                 if (jobId == null || jobId.isEmpty()) {
-                    String msg = "expId:" + taskContext.getExperimentId() + " Couldn't find " +
+                    String msg = "expId:" + processContext.getProcessModel().getExperimentId() + " Couldn't find " +
                             "remote jobId for JobName:" + jobModel.getJobName() + ", both submit and verify steps " +
                             "doesn't return a valid JobId. " + "Hence changing experiment state to Failed";
                     log.error(msg);

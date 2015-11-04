@@ -302,7 +302,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 	    // TODO : update job state on process context
         boolean runOutflowTasks = false;
 	    JobStatus jobStatus = new JobStatus();
-	    JobModel jobModel = taskContext.getJobModel();
+	    JobModel jobModel = taskContext.getParentProcessContext().getJobModel();
         String jobDetails = "JobName : " + jobStatusResult.getJobName() + ", JobId : " + jobStatusResult.getJobId();
         // TODO - Handle all other valid JobStates
         if (resultState == JobState.COMPLETE) {

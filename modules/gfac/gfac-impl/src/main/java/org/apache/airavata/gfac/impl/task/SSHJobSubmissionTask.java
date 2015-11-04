@@ -60,7 +60,7 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 	    TaskStatus taskStatus = new TaskStatus(TaskState.COMPLETED); // set to completed.
 	    try {
 		    ProcessContext processContext = taskContext.getParentProcessContext();
-		    JobModel jobModel = taskContext.getJobModel();
+		    JobModel jobModel = processContext.getJobModel();
 		    jobModel.setTaskId(taskContext.getTaskId());
 		    RemoteCluster remoteCluster = processContext.getRemoteCluster();
 		    JobDescriptor jobDescriptor = GFacUtils.createJobDescriptor(processContext,taskContext);
@@ -239,7 +239,8 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 
     @Override
     public TaskStatus recover(TaskContext taskContext) {
-            JobModel jobModel = taskContext.getJobModel();
+            ProcessContext processContext = taskContext.getParentProcessContext();
+            JobModel jobModel = processContext.getJobModel();
             // original job failed before submitting
             if (jobModel == null || jobModel.getJobId() == null ){
                 return execute(taskContext);
@@ -256,8 +257,9 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 
 	@Override
 	public JobStatus cancel(TaskContext taskcontext) throws TaskException {
-		RemoteCluster remoteCluster = taskcontext.getRemoteCluster();
-		JobModel jobModel = taskcontext.getJobModel();
+		ProcessContext processContext = taskcontext.getParentProcessContext();
+		RemoteCluster remoteCluster = processContext.getRemoteCluster();
+		JobModel jobModel = processContext.getJobModel();
 		int retryCount = 0;
 		if (jobModel != null) {
 			try {

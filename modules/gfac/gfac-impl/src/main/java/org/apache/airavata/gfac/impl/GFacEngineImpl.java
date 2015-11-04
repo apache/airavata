@@ -136,6 +136,13 @@ public class GFacEngineImpl implements GFacEngine {
                         processContext.getProcessId());
             }
 
+            List<Object> jobModels = expCatalog.get(ExperimentCatalogModelType.JOB, "processId", processId);
+            if (jobModels != null && !jobModels.isEmpty()) {
+                if (jobModels.size() > 1) {
+                    log.warn("Process has more than one job model, take first one");
+                }
+                processContext.setJobModel(((JobModel) jobModels.get(0)));
+            }
             return processContext;
         } catch (AppCatalogException e) {
             throw new GFacException("App catalog access exception ", e);
@@ -288,10 +295,10 @@ public class GFacEngineImpl implements GFacEngine {
 
             MonitorTaskModel monitorTaskModel = ((MonitorTaskModel) taskContext.getSubTaskModel());
             monitorService = Factory.getMonitorService(monitorTaskModel.getMonitorMode());
-            if (!monitorService.isMonitoring(taskContext.getJobModel().getJobId())) {
-                monitorService.monitor(taskContext.getJobModel().getJobId(), taskContext);
+            if (!monitorService.isMonitoring(processContext.getJobModel().getJobId())) {
+                monitorService.monitor(processContext.getJobModel().getJobId(), taskContext);
             } else {
-                log.warn("Jobid: {}, already in monitoring map", taskContext.getJobModel().getJobId());
+                log.warn("Jobid: {}, already in monitoring map", processContext.getJobModel().getJobId());
             }
         } catch (AiravataException | TException e) {
             taskStatus = new TaskStatus(TaskState.FAILED);
@@ -300,8 +307,8 @@ public class GFacEngineImpl implements GFacEngine {
             taskContext.setTaskStatus(taskStatus);
             GFacUtils.saveAndPublishTaskStatus(taskContext);
 
-            String errorMsg = new StringBuilder("expId: ").append(taskContext.getExperimentId()).append(", processId: ")
-                    .append(taskContext.getProcessId()).append(", taskId: ").append(taskContext.getTaskId())
+            String errorMsg = new StringBuilder("expId: ").append(processContext.getExperimentId()).append(", processId: ")
+                    .append(processContext.getProcessId()).append(", taskId: ").append(taskContext.getTaskId())
                     .append(", type: ").append(taskContext.getTaskType().name()).append(" :- Input staging failed. Reason: ")
                     .append(taskStatus.getReason()).toString();
             ErrorModel errorModel = new ErrorModel();
@@ -550,12 +557,13 @@ public class GFacEngineImpl implements GFacEngine {
 
             if (oldJobStatus != null && oldJobStatus.getJobState() == JobState.QUEUED) {
                 JobMonitor monitorService = Factory.getMonitorService(taskContext.getParentProcessContext().getMonitorMode());
-                monitorService.stopMonitor(taskContext.getJobModel().getJobId(), true);
+                monitorService.stopMonitor(taskContext.getParentProcessContext().getJobModel().getJobId(), true);
                 JobStatus newJobStatus = new JobStatus(JobState.CANCELED);
                 newJobStatus.setReason("Job cancelled");
                 newJobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                taskContext.getJobModel().setJobStatus(newJobStatus);
-                GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), taskContext.getJobModel());
+                taskContext.getParentProcessContext().getJobModel().setJobStatus(newJobStatus);
+                GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), taskContext.getParentProcessContext()
+                        .getJobModel());
             }
         } catch (TaskException e) {
             throw new GFacException("Error while cancelling job");
