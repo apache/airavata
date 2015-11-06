@@ -463,52 +463,56 @@ public class GFacUtils {
 
         List<String> inputValues = new ArrayList<String>();
         List<InputDataObjectType> processInputs = processModel.getProcessInputs();
+        if (processInputs != null) {
 
-        // sort the inputs first and then build the command ListR
-        Comparator<InputDataObjectType> inputOrderComparator = new Comparator<InputDataObjectType>() {
-            @Override
-            public int compare(InputDataObjectType inputDataObjectType, InputDataObjectType t1) {
-                return inputDataObjectType.getInputOrder() - t1.getInputOrder();
+            // sort the inputs first and then build the command ListR
+            Comparator<InputDataObjectType> inputOrderComparator = new Comparator<InputDataObjectType>() {
+                @Override
+                public int compare(InputDataObjectType inputDataObjectType, InputDataObjectType t1) {
+                    return inputDataObjectType.getInputOrder() - t1.getInputOrder();
+                }
+            };
+            Set<InputDataObjectType> sortedInputSet = new TreeSet<InputDataObjectType>(inputOrderComparator);
+            for (InputDataObjectType input : processInputs) {
+                sortedInputSet.add(input);
             }
-        };
-        Set<InputDataObjectType> sortedInputSet = new TreeSet<InputDataObjectType>(inputOrderComparator);
-        for (InputDataObjectType input : processInputs) {
-            sortedInputSet.add(input);
-        }
-        for (InputDataObjectType inputDataObjectType : sortedInputSet) {
-            if (!inputDataObjectType.isRequiredToAddedToCommandLine()) {
-                continue;
-            }
-            if (inputDataObjectType.getApplicationArgument() != null
-                    && !inputDataObjectType.getApplicationArgument().equals("")) {
-                inputValues.add(inputDataObjectType.getApplicationArgument());
-            }
-
-            if (inputDataObjectType.getValue() != null
-                    && !inputDataObjectType.getValue().equals("")) {
-                if (inputDataObjectType.getType() == DataType.URI) {
-                    // set only the relative path
-                    String filePath = inputDataObjectType.getValue();
-                    filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
-                    inputValues.add(filePath);
-                } else {
-                    inputValues.add(inputDataObjectType.getValue());
+            for (InputDataObjectType inputDataObjectType : sortedInputSet) {
+                if (!inputDataObjectType.isRequiredToAddedToCommandLine()) {
+                    continue;
+                }
+                if (inputDataObjectType.getApplicationArgument() != null
+                        && !inputDataObjectType.getApplicationArgument().equals("")) {
+                    inputValues.add(inputDataObjectType.getApplicationArgument());
                 }
 
+                if (inputDataObjectType.getValue() != null
+                        && !inputDataObjectType.getValue().equals("")) {
+                    if (inputDataObjectType.getType() == DataType.URI) {
+                        // set only the relative path
+                        String filePath = inputDataObjectType.getValue();
+                        filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
+                        inputValues.add(filePath);
+                    } else {
+                        inputValues.add(inputDataObjectType.getValue());
+                    }
+
+                }
             }
         }
 
         List<OutputDataObjectType> processOutputs = processModel.getProcessOutputs();
-        for (OutputDataObjectType output : processOutputs) {
-            if (output.getApplicationArgument() != null
-                    && !output.getApplicationArgument().equals("")) {
-                inputValues.add(output.getApplicationArgument());
-            }
-            if (output.getValue() != null && !output.getValue().equals("") && output.isRequiredToAddedToCommandLine()) {
-                if (output.getType() == DataType.URI) {
-                    String filePath = output.getValue();
-                    filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
-                    inputValues.add(filePath);
+        if (processOutputs != null) {
+            for (OutputDataObjectType output : processOutputs) {
+                if (output.getApplicationArgument() != null
+                        && !output.getApplicationArgument().equals("")) {
+                    inputValues.add(output.getApplicationArgument());
+                }
+                if (output.getValue() != null && !output.getValue().equals("") && output.isRequiredToAddedToCommandLine()) {
+                    if (output.getType() == DataType.URI) {
+                        String filePath = output.getValue();
+                        filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
+                        inputValues.add(filePath);
+                    }
                 }
             }
         }
