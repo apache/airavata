@@ -167,7 +167,8 @@ public class SSHForkJobSubmissionTask implements JobSubmissionTask {
 
     @Override
     public TaskStatus recover(TaskContext taskContext) {
-        return null;
+        //TODO implement recovery scenario instead of calling execute.
+        return execute(taskContext);
     }
 
 	@Override
