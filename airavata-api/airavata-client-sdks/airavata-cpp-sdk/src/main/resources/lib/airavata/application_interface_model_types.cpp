@@ -63,8 +63,8 @@ void ApplicationInterfaceDescription::__set_applicationOutputs(const std::vector
 __isset.applicationOutputs = true;
 }
 
-const char* ApplicationInterfaceDescription::ascii_fingerprint = "C21011258B830B950ECA4A73DCB61630";
-const uint8_t ApplicationInterfaceDescription::binary_fingerprint[16] = {0xC2,0x10,0x11,0x25,0x8B,0x83,0x0B,0x95,0x0E,0xCA,0x4A,0x73,0xDC,0xB6,0x16,0x30};
+const char* ApplicationInterfaceDescription::ascii_fingerprint = "D41488A7C34E28C6E04EA596F09A1F6C";
+const uint8_t ApplicationInterfaceDescription::binary_fingerprint[16] = {0xD4,0x14,0x88,0xA7,0xC3,0x4E,0x28,0xC6,0xE0,0x4E,0xA5,0x96,0xF0,0x9A,0x1F,0x6C};
 
 uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProtocol* iprot) {
 

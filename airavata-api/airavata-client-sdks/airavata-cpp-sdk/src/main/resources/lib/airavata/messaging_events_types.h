@@ -410,8 +410,8 @@ void swap(ProcessStatusChangeRequestEvent &a, ProcessStatusChangeRequestEvent &b
 class TaskOutputChangeEvent {
  public:
 
-  static const char* ascii_fingerprint; // = "C7C71D05D69F7D8C4A11C9E432FF5A51";
-  static const uint8_t binary_fingerprint[16]; // = {0xC7,0xC7,0x1D,0x05,0xD6,0x9F,0x7D,0x8C,0x4A,0x11,0xC9,0xE4,0x32,0xFF,0x5A,0x51};
+  static const char* ascii_fingerprint; // = "F6BCBBEBA795DA1C58927D3662D702D3";
+  static const uint8_t binary_fingerprint[16]; // = {0xF6,0xBC,0xBB,0xEB,0xA7,0x95,0xDA,0x1C,0x58,0x92,0x7D,0x36,0x62,0xD7,0x02,0xD3};
 
   TaskOutputChangeEvent(const TaskOutputChangeEvent&);
   TaskOutputChangeEvent& operator=(const TaskOutputChangeEvent&);

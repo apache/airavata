@@ -412,8 +412,13 @@ void OutputDataObjectType::__set_searchQuery(const std::string& val) {
 __isset.searchQuery = true;
 }
 
-const char* OutputDataObjectType::ascii_fingerprint = "3259D81CA906AEEBC4D76ED47386A18B";
-const uint8_t OutputDataObjectType::binary_fingerprint[16] = {0x32,0x59,0xD8,0x1C,0xA9,0x06,0xAE,0xEB,0xC4,0xD7,0x6E,0xD4,0x73,0x86,0xA1,0x8B};
+void OutputDataObjectType::__set_outputStreaming(const bool val) {
+  this->outputStreaming = val;
+__isset.outputStreaming = true;
+}
+
+const char* OutputDataObjectType::ascii_fingerprint = "459855F041A05E27C2DC8D53D68E6DA5";
+const uint8_t OutputDataObjectType::binary_fingerprint[16] = {0x45,0x98,0x55,0xF0,0x41,0xA0,0x5E,0x27,0xC2,0xDC,0x8D,0x53,0xD6,0x8E,0x6D,0xA5};
 
 uint32_t OutputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -510,6 +515,14 @@ uint32_t OutputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
+      case 10:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->outputStreaming);
+          this->__isset.outputStreaming = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -573,6 +586,11 @@ uint32_t OutputDataObjectType::write(::apache::thrift::protocol::TProtocol* opro
     xfer += oprot->writeString(this->searchQuery);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.outputStreaming) {
+    xfer += oprot->writeFieldBegin("outputStreaming", ::apache::thrift::protocol::T_BOOL, 10);
+    xfer += oprot->writeBool(this->outputStreaming);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
@@ -590,6 +608,7 @@ void swap(OutputDataObjectType &a, OutputDataObjectType &b) {
   swap(a.dataMovement, b.dataMovement);
   swap(a.location, b.location);
   swap(a.searchQuery, b.searchQuery);
+  swap(a.outputStreaming, b.outputStreaming);
   swap(a.__isset, b.__isset);
 }
 
@@ -603,6 +622,7 @@ OutputDataObjectType::OutputDataObjectType(const OutputDataObjectType& other4) {
   dataMovement = other4.dataMovement;
   location = other4.location;
   searchQuery = other4.searchQuery;
+  outputStreaming = other4.outputStreaming;
   __isset = other4.__isset;
 }
 OutputDataObjectType& OutputDataObjectType::operator=(const OutputDataObjectType& other5) {
@@ -615,6 +635,7 @@ OutputDataObjectType& OutputDataObjectType::operator=(const OutputDataObjectType
   dataMovement = other5.dataMovement;
   location = other5.location;
   searchQuery = other5.searchQuery;
+  outputStreaming = other5.outputStreaming;
   __isset = other5.__isset;
   return *this;
 }
@@ -630,6 +651,7 @@ std::ostream& operator<<(std::ostream& out, const OutputDataObjectType& obj) {
   out << ", " << "dataMovement="; (obj.__isset.dataMovement ? (out << to_string(obj.dataMovement)) : (out << "<null>"));
   out << ", " << "location="; (obj.__isset.location ? (out << to_string(obj.location)) : (out << "<null>"));
   out << ", " << "searchQuery="; (obj.__isset.searchQuery ? (out << to_string(obj.searchQuery)) : (out << "<null>"));
+  out << ", " << "outputStreaming="; (obj.__isset.outputStreaming ? (out << to_string(obj.outputStreaming)) : (out << "<null>"));
   out << ")";
   return out;
 }
