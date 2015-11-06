@@ -131,6 +131,7 @@ public class AdvancedSCPDataStageTask implements Task {
                 status.setState(TaskState.FAILED);
                 status.setReason("Invalid task invocation, Support " + ProcessState.INPUT_DATA_STAGING.name() + " and " +
                         "" + ProcessState.OUTPUT_DATA_STAGING.name() + " process phases. found " + processState.name());
+                return status;
             }
 
             // use rsync instead of scp if source and destination host and user name is same.

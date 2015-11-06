@@ -843,6 +843,7 @@ public class AppCatalogJPAUtils {
             resource.setDataNameLocation(o.getDataNameLocation());
             resource.setSearchQuery(o.getSearchQuery());
             resource.setAppArgument(o.getApplicationArgument());
+            resource.setOutputStreaming(o.isOutputStreaming());
             resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));
         }
         return resource;

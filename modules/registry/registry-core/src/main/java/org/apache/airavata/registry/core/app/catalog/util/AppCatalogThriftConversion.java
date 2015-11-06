@@ -623,6 +623,7 @@ public class AppCatalogThriftConversion {
         outputDataObjectType.setLocation(output.getDataNameLocation());
         outputDataObjectType.setSearchQuery(output.getSearchQuery());
         outputDataObjectType.setApplicationArgument(output.getAppArgument());
+        outputDataObjectType.setOutputStreaming(output.isOutputStreaming());
         return outputDataObjectType;
     }
 

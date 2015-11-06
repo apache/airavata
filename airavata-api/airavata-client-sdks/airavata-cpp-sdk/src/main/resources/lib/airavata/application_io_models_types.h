@@ -177,7 +177,7 @@ class InputDataObjectType {
 void swap(InputDataObjectType &a, InputDataObjectType &b);
 
 typedef struct _OutputDataObjectType__isset {
-  _OutputDataObjectType__isset() : value(false), type(false), applicationArgument(false), isRequired(false), requiredToAddedToCommandLine(false), dataMovement(false), location(false), searchQuery(false) {}
+  _OutputDataObjectType__isset() : value(false), type(false), applicationArgument(false), isRequired(false), requiredToAddedToCommandLine(false), dataMovement(false), location(false), searchQuery(false), outputStreaming(false) {}
   bool value :1;
   bool type :1;
   bool applicationArgument :1;
@@ -186,17 +186,18 @@ typedef struct _OutputDataObjectType__isset {
   bool dataMovement :1;
   bool location :1;
   bool searchQuery :1;
+  bool outputStreaming :1;
 } _OutputDataObjectType__isset;
 
 class OutputDataObjectType {
  public:
 
-  static const char* ascii_fingerprint; // = "3259D81CA906AEEBC4D76ED47386A18B";
-  static const uint8_t binary_fingerprint[16]; // = {0x32,0x59,0xD8,0x1C,0xA9,0x06,0xAE,0xEB,0xC4,0xD7,0x6E,0xD4,0x73,0x86,0xA1,0x8B};
+  static const char* ascii_fingerprint; // = "459855F041A05E27C2DC8D53D68E6DA5";
+  static const uint8_t binary_fingerprint[16]; // = {0x45,0x98,0x55,0xF0,0x41,0xA0,0x5E,0x27,0xC2,0xDC,0x8D,0x53,0xD6,0x8E,0x6D,0xA5};
 
   OutputDataObjectType(const OutputDataObjectType&);
   OutputDataObjectType& operator=(const OutputDataObjectType&);
-  OutputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), isRequired(0), requiredToAddedToCommandLine(0), dataMovement(0), location(), searchQuery() {
+  OutputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), isRequired(0), requiredToAddedToCommandLine(0), dataMovement(0), location(), searchQuery(), outputStreaming(0) {
   }
 
   virtual ~OutputDataObjectType() throw();
@@ -209,6 +210,7 @@ class OutputDataObjectType {
   bool dataMovement;
   std::string location;
   std::string searchQuery;
+  bool outputStreaming;
 
   _OutputDataObjectType__isset __isset;
 
@@ -229,6 +231,8 @@ class OutputDataObjectType {
   void __set_location(const std::string& val);
 
   void __set_searchQuery(const std::string& val);
+
+  void __set_outputStreaming(const bool val);
 
   bool operator == (const OutputDataObjectType & rhs) const
   {
@@ -265,6 +269,10 @@ class OutputDataObjectType {
     if (__isset.searchQuery != rhs.__isset.searchQuery)
       return false;
     else if (__isset.searchQuery && !(searchQuery == rhs.searchQuery))
+      return false;
+    if (__isset.outputStreaming != rhs.__isset.outputStreaming)
+      return false;
+    else if (__isset.outputStreaming && !(outputStreaming == rhs.outputStreaming))
       return false;
     return true;
   }

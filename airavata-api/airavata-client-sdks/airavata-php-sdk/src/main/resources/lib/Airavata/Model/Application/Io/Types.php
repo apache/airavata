@@ -434,6 +434,10 @@ class OutputDataObjectType {
    * @var string
    */
   public $searchQuery = null;
+  /**
+   * @var bool
+   */
+  public $outputStreaming = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -474,6 +478,10 @@ class OutputDataObjectType {
           'var' => 'searchQuery',
           'type' => TType::STRING,
           ),
+        10 => array(
+          'var' => 'outputStreaming',
+          'type' => TType::BOOL,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -503,6 +511,9 @@ class OutputDataObjectType {
       }
       if (isset($vals['searchQuery'])) {
         $this->searchQuery = $vals['searchQuery'];
+      }
+      if (isset($vals['outputStreaming'])) {
+        $this->outputStreaming = $vals['outputStreaming'];
       }
     }
   }
@@ -589,6 +600,13 @@ class OutputDataObjectType {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 10:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->outputStreaming);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -645,6 +663,11 @@ class OutputDataObjectType {
     if ($this->searchQuery !== null) {
       $xfer += $output->writeFieldBegin('searchQuery', TType::STRING, 9);
       $xfer += $output->writeString($this->searchQuery);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->outputStreaming !== null) {
+      $xfer += $output->writeFieldBegin('outputStreaming', TType::BOOL, 10);
+      $xfer += $output->writeBool($this->outputStreaming);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

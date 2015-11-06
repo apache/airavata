@@ -374,8 +374,8 @@ void DataStagingTaskModel::__set_processOutput(const  ::apache::airavata::model:
 __isset.processOutput = true;
 }
 
-const char* DataStagingTaskModel::ascii_fingerprint = "4A4BD6E9E8FE06F3A30D5B74D322C61E";
-const uint8_t DataStagingTaskModel::binary_fingerprint[16] = {0x4A,0x4B,0xD6,0xE9,0xE8,0xFE,0x06,0xF3,0xA3,0x0D,0x5B,0x74,0xD3,0x22,0xC6,0x1E};
+const char* DataStagingTaskModel::ascii_fingerprint = "ACF0A091382F299B453E77765150F8C9";
+const uint8_t DataStagingTaskModel::binary_fingerprint[16] = {0xAC,0xF0,0xA0,0x91,0x38,0x2F,0x29,0x9B,0x45,0x3E,0x77,0x76,0x51,0x50,0xF8,0xC9};
 
 uint32_t DataStagingTaskModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 

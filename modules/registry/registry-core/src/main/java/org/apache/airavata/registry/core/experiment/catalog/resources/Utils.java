@@ -460,6 +460,7 @@ public class Utils {
             outputResource.setDataMovement(o.getDataMovement());
             outputResource.setLocation(o.getLocation());
             outputResource.setSearchQuery(o.getSearchQuery());
+            outputResource.setOutputStreaming(o.isOutputStreaming());
         }
         return outputResource;
     }
@@ -580,6 +581,7 @@ public class Utils {
             outputResource.setDataMovement(o.getDataMovement());
             outputResource.setLocation(o.getLocation());
             outputResource.setSearchQuery(o.getSearchQuery());
+            outputResource.setOutputStreaming(o.isOutputStreaming());
         }
         return outputResource;
     }

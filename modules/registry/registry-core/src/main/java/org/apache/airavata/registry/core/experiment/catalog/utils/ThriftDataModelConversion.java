@@ -201,6 +201,7 @@ public class ThriftDataModelConversion {
                 dataObjectType.setDataMovement(outputResource.getDataMovement());
                 dataObjectType.setLocation(outputResource.getLocation());
                 dataObjectType.setSearchQuery(outputResource.getSearchQuery());
+                dataObjectType.setOutputStreaming(outputResource.isOutputStreaming());
                 return dataObjectType;
             }else if (object instanceof ProcessOutputResource) {
                 ProcessOutputResource outputResource = (ProcessOutputResource) object;
@@ -213,6 +214,7 @@ public class ThriftDataModelConversion {
                 dataObjectType.setDataMovement(outputResource.getDataMovement());
                 dataObjectType.setLocation(outputResource.getLocation());
                 dataObjectType.setSearchQuery(outputResource.getSearchQuery());
+                dataObjectType.setOutputStreaming(outputResource.isOutputStreaming());
                 return dataObjectType;
             } else {
                 return null;

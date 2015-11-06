@@ -113,5 +113,6 @@ struct OutputDataObjectType {
     6: optional bool requiredToAddedToCommandLine,
     7: optional bool dataMovement,
     8: optional string location,
-    9: optional string searchQuery
+    9: optional string searchQuery,
+    10: optional bool outputStreaming
 }

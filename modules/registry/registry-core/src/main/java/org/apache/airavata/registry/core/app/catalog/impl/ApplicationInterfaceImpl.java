@@ -127,6 +127,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     outputResource.setDataNameLocation(output.getLocation());
                     outputResource.setAppArgument(output.getApplicationArgument());
                     outputResource.setSearchQuery(output.getSearchQuery());
+                    outputResource.setOutputStreaming(output.isOutputStreaming());
                     outputResource.save();
                 }
             }
@@ -262,6 +263,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     outputResource.setDataNameLocation(output.getLocation());
                     outputResource.setAppArgument(output.getApplicationArgument());
                     outputResource.setSearchQuery(output.getSearchQuery());
+                    outputResource.setOutputStreaming(output.isOutputStreaming());
                     outputResource.save();
                 }
             }
