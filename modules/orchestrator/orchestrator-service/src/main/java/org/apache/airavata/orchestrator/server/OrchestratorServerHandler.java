@@ -154,7 +154,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 log.error("Validating process fails for given experiment Id : {}", experimentId);
                 return false;
             }
-            ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().getComputeResourcePreference(gatewayId, experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
+            ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().
+					getComputeResourcePreference(gatewayId,
+							experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
             String token = computeResourcePreference.getResourceSpecificCredentialStoreToken();
             if (token == null || token.isEmpty()){
                 // try with gateway profile level token
