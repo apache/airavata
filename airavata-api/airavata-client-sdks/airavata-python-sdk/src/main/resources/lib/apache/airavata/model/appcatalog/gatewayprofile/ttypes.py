@@ -347,6 +347,7 @@ class GatewayResourceProfile:
 
   Attributes:
    - gatewayID
+   - dataStorageHostName
    - credentialStoreToken
    - computeResourcePreferences
    - dataStoragePreferences
@@ -355,13 +356,15 @@ class GatewayResourceProfile:
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'gatewayID', None, None, ), # 1
-    (2, TType.STRING, 'credentialStoreToken', None, None, ), # 2
-    (3, TType.LIST, 'computeResourcePreferences', (TType.STRUCT,(ComputeResourcePreference, ComputeResourcePreference.thrift_spec)), None, ), # 3
-    (4, TType.LIST, 'dataStoragePreferences', (TType.STRUCT,(DataStoragePreference, DataStoragePreference.thrift_spec)), None, ), # 4
+    (2, TType.STRING, 'dataStorageHostName', None, None, ), # 2
+    (3, TType.STRING, 'credentialStoreToken', None, None, ), # 3
+    (4, TType.LIST, 'computeResourcePreferences', (TType.STRUCT,(ComputeResourcePreference, ComputeResourcePreference.thrift_spec)), None, ), # 4
+    (5, TType.LIST, 'dataStoragePreferences', (TType.STRUCT,(DataStoragePreference, DataStoragePreference.thrift_spec)), None, ), # 5
   )
 
-  def __init__(self, gatewayID=None, credentialStoreToken=None, computeResourcePreferences=None, dataStoragePreferences=None,):
+  def __init__(self, gatewayID=None, dataStorageHostName=None, credentialStoreToken=None, computeResourcePreferences=None, dataStoragePreferences=None,):
     self.gatewayID = gatewayID
+    self.dataStorageHostName = dataStorageHostName
     self.credentialStoreToken = credentialStoreToken
     self.computeResourcePreferences = computeResourcePreferences
     self.dataStoragePreferences = dataStoragePreferences
@@ -382,10 +385,15 @@ class GatewayResourceProfile:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.credentialStoreToken = iprot.readString();
+          self.dataStorageHostName = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 3:
+        if ftype == TType.STRING:
+          self.credentialStoreToken = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
         if ftype == TType.LIST:
           self.computeResourcePreferences = []
           (_etype3, _size0) = iprot.readListBegin()
@@ -396,7 +404,7 @@ class GatewayResourceProfile:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 4:
+      elif fid == 5:
         if ftype == TType.LIST:
           self.dataStoragePreferences = []
           (_etype9, _size6) = iprot.readListBegin()
@@ -421,19 +429,23 @@ class GatewayResourceProfile:
       oprot.writeFieldBegin('gatewayID', TType.STRING, 1)
       oprot.writeString(self.gatewayID)
       oprot.writeFieldEnd()
+    if self.dataStorageHostName is not None:
+      oprot.writeFieldBegin('dataStorageHostName', TType.STRING, 2)
+      oprot.writeString(self.dataStorageHostName)
+      oprot.writeFieldEnd()
     if self.credentialStoreToken is not None:
-      oprot.writeFieldBegin('credentialStoreToken', TType.STRING, 2)
+      oprot.writeFieldBegin('credentialStoreToken', TType.STRING, 3)
       oprot.writeString(self.credentialStoreToken)
       oprot.writeFieldEnd()
     if self.computeResourcePreferences is not None:
-      oprot.writeFieldBegin('computeResourcePreferences', TType.LIST, 3)
+      oprot.writeFieldBegin('computeResourcePreferences', TType.LIST, 4)
       oprot.writeListBegin(TType.STRUCT, len(self.computeResourcePreferences))
       for iter12 in self.computeResourcePreferences:
         iter12.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.dataStoragePreferences is not None:
-      oprot.writeFieldBegin('dataStoragePreferences', TType.LIST, 4)
+      oprot.writeFieldBegin('dataStoragePreferences', TType.LIST, 5)
       oprot.writeListBegin(TType.STRUCT, len(self.dataStoragePreferences))
       for iter13 in self.dataStoragePreferences:
         iter13.write(oprot)
@@ -445,12 +457,15 @@ class GatewayResourceProfile:
   def validate(self):
     if self.gatewayID is None:
       raise TProtocol.TProtocolException(message='Required field gatewayID is unset!')
+    if self.dataStorageHostName is None:
+      raise TProtocol.TProtocolException(message='Required field dataStorageHostName is unset!')
     return
 
 
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.gatewayID)
+    value = (value * 31) ^ hash(self.dataStorageHostName)
     value = (value * 31) ^ hash(self.credentialStoreToken)
     value = (value * 31) ^ hash(self.computeResourcePreferences)
     value = (value * 31) ^ hash(self.dataStoragePreferences)

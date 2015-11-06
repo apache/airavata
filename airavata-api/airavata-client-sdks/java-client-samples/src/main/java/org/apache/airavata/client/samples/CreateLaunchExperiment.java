@@ -55,7 +55,7 @@ public class CreateLaunchExperiment {
 
     //FIXME: Read from a config file
     public static final String THRIFT_SERVER_HOST = "gw56.iu.xsede.org";
-    public static final int THRIFT_SERVER_PORT = 8930;
+    public static final int THRIFT_SERVER_PORT = 10930;
 //	public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
 //	public static final int THRIFT_SERVER_PORT = 9930;
 
@@ -93,7 +93,7 @@ public class CreateLaunchExperiment {
         AuthzToken token = new AuthzToken("empty_token");
         System.out.println("API version is " + airavataClient.getAPIVersion(token));
 //        registerApplications(); // run this only the first time
-        Map<String, JobStatus> jobStatuses = airavataClient.getJobStatuses(token, "Test1_Nek_a706cdc7-8abf-4db2-b7c7-13679c714e90");
+        Map<String, JobStatus> jobStatuses = airavataClient.getJobStatuses(token, "Cloneofamber_1ca82c71-b173-4f86-832d-a94b86319edf");
         for (String jobId : jobStatuses.keySet()){
             JobStatus jobStatus = jobStatuses.get(jobId);
             System.out.println(jobId);

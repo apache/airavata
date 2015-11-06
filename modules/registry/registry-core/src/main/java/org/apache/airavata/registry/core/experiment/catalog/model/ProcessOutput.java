@@ -42,6 +42,7 @@ public class ProcessOutput {
     private String location;
     private String searchQuery;
     private Process process;
+    private boolean outputStreaming;
 
     @Id
     @Column(name = "PROCESS_ID")
@@ -136,7 +137,16 @@ public class ProcessOutput {
         this.searchQuery = searchQuery;
     }
 
-//    @Override
+    @Column(name = "OUTPUT_STREAMING")
+    public boolean isOutputStreaming() {
+        return outputStreaming;
+    }
+
+    public void setOutputStreaming(boolean outputStreaming) {
+        this.outputStreaming = outputStreaming;
+    }
+
+    //    @Override
 //    public boolean equals(Object o) {
 //        if (this == o) return true;
 //        if (o == null || getClass() != o.getClass()) return false;

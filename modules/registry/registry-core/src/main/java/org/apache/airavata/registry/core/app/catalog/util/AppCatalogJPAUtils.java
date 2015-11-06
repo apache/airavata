@@ -843,6 +843,7 @@ public class AppCatalogJPAUtils {
             resource.setDataNameLocation(o.getDataNameLocation());
             resource.setSearchQuery(o.getSearchQuery());
             resource.setAppArgument(o.getApplicationArgument());
+            resource.setOutputStreaming(o.isOutputStreaming());
             resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));
         }
         return resource;
@@ -871,6 +872,7 @@ public class AppCatalogJPAUtils {
             resource.setGatewayID(o.getGatewayID());
             resource.setCreatedTime(o.getCreationTime());
             resource.setCredentialStoreToken(o.getCredentialStoreToken());
+            resource.setDataStorageHost(o.getDataStorageHost());
             if (o.getUpdateTime() != null){
                 resource.setUpdatedTime(o.getUpdateTime());
             }
