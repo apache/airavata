@@ -623,6 +623,7 @@ public class AppCatalogThriftConversion {
         outputDataObjectType.setLocation(output.getDataNameLocation());
         outputDataObjectType.setSearchQuery(output.getSearchQuery());
         outputDataObjectType.setApplicationArgument(output.getAppArgument());
+        outputDataObjectType.setOutputStreaming(output.isOutputStreaming());
         return outputDataObjectType;
     }
 
@@ -817,6 +818,7 @@ public class AppCatalogThriftConversion {
         GatewayResourceProfile gatewayProfile = new GatewayResourceProfile();
         gatewayProfile.setGatewayID(gw.getGatewayID());
         gatewayProfile.setCredentialStoreToken(gw.getCredentialStoreToken());
+        gatewayProfile.setDataStorageHostName(gw.getDataStorageHost());
         gatewayProfile.setComputeResourcePreferences(preferences);
         gatewayProfile.setDataStoragePreferences(storagePreferences);
         return gatewayProfile;

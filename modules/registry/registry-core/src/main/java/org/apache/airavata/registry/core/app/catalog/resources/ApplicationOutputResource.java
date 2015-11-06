@@ -50,6 +50,7 @@ public class ApplicationOutputResource extends AppCatAbstractResource {
     private boolean requiredToCMD;
     private String searchQuery;
     private String appArgument;
+    private boolean outputStreaming;
 
     private AppInterfaceResource appInterfaceResource;
 
@@ -296,6 +297,7 @@ public class ApplicationOutputResource extends AppCatAbstractResource {
             applicationOutput.setDataNameLocation(dataNameLocation);
             applicationOutput.setSearchQuery(searchQuery);
             applicationOutput.setApplicationArgument(appArgument);
+            applicationOutput.setOutputStreaming(outputStreaming);
             em.merge(applicationOutput);
             em.getTransaction().commit();
             em.close();
@@ -429,5 +431,13 @@ public class ApplicationOutputResource extends AppCatAbstractResource {
 
     public void setAppArgument(String appArgument) {
         this.appArgument = appArgument;
+    }
+
+    public boolean isOutputStreaming() {
+        return outputStreaming;
+    }
+
+    public void setOutputStreaming(boolean outputStreaming) {
+        this.outputStreaming = outputStreaming;
     }
 }

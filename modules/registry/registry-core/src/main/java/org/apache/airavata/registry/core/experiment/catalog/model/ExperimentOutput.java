@@ -37,10 +37,12 @@ public class ExperimentOutput {
     private String applicationArgument;
     private boolean isRequired;
     private boolean requiredToAddedToCmd;
+    private boolean outputStreaming;
     private boolean dataMovement;
     private String location;
     private String searchQuery;
     private Experiment experiment;
+
 
     @Id
     @Column(name = "EXPERIMENT_ID")
@@ -93,6 +95,15 @@ public class ExperimentOutput {
     @Column(name = "IS_REQUIRED")
     public boolean getIsRequired() {
         return isRequired;
+    }
+
+    @Column(name = "OUTPUT_STREAMING")
+    public boolean isOutputStreaming(){
+        return outputStreaming;
+    }
+
+    public void setOutputStreaming(boolean outputStreaming) {
+        this.outputStreaming = outputStreaming;
     }
 
     public void setIsRequired(boolean isRequired) {

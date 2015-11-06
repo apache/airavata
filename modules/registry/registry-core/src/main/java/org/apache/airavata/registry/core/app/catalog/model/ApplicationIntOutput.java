@@ -51,6 +51,8 @@ public class ApplicationIntOutput implements Serializable {
     private String searchQuery;
     @Column(name = "APP_ARGUMENT")
     private String applicationArgument;
+    @Column(name = "OUTPUT_STREAMING")
+    private boolean outputStreaming;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "INTERFACE_ID")
@@ -142,5 +144,13 @@ public class ApplicationIntOutput implements Serializable {
 
     public void setApplicationArgument(String applicationArgument) {
         this.applicationArgument = applicationArgument;
+    }
+
+    public boolean isOutputStreaming() {
+        return outputStreaming;
+    }
+
+    public void setOutputStreaming(boolean outputStreaming) {
+        this.outputStreaming = outputStreaming;
     }
 }

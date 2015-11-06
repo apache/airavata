@@ -193,6 +193,7 @@ public class ExperimentRegistry {
                 resource.setDataMovement(output.isDataMovement());
                 resource.setLocation(output.getLocation());
                 resource.setSearchQuery(output.getSearchQuery());
+                resource.setOutputStreaming(output.isOutputStreaming());
                 resource.save();
             }
         } catch (Exception e) {
@@ -367,6 +368,7 @@ public class ExperimentRegistry {
                 resource.setDataMovement(output.isDataMovement());
                 resource.setLocation(output.getLocation());
                 resource.setSearchQuery(output.getSearchQuery());
+                resource.setOutputStreaming(output.isOutputStreaming());
                 resource.save();
             }
             return processID;
@@ -657,6 +659,7 @@ public class ExperimentRegistry {
                         resource.setLocation(output.getLocation());
                         resource.setApplicationArgument(output.getApplicationArgument());
                         resource.setSearchQuery(output.getSearchQuery());
+                        resource.setOutputStreaming(output.isOutputStreaming());
                         resource.save();
                     }
                 }
@@ -823,6 +826,7 @@ public class ExperimentRegistry {
                         resource.setLocation(output.getLocation());
                         resource.setApplicationArgument(output.getApplicationArgument());
                         resource.setSearchQuery(output.getSearchQuery());
+                        resource.setOutputStreaming(output.isOutputStreaming());
                         resource.save();
                     }
                 }

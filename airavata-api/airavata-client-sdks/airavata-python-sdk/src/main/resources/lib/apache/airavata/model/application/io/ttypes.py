@@ -308,6 +308,7 @@ class OutputDataObjectType:
    - dataMovement
    - location
    - searchQuery
+   - outputStreaming
   """
 
   thrift_spec = (
@@ -321,9 +322,10 @@ class OutputDataObjectType:
     (7, TType.BOOL, 'dataMovement', None, None, ), # 7
     (8, TType.STRING, 'location', None, None, ), # 8
     (9, TType.STRING, 'searchQuery', None, None, ), # 9
+    (10, TType.BOOL, 'outputStreaming', None, None, ), # 10
   )
 
-  def __init__(self, name=None, value=None, type=None, applicationArgument=None, isRequired=None, requiredToAddedToCommandLine=None, dataMovement=None, location=None, searchQuery=None,):
+  def __init__(self, name=None, value=None, type=None, applicationArgument=None, isRequired=None, requiredToAddedToCommandLine=None, dataMovement=None, location=None, searchQuery=None, outputStreaming=None,):
     self.name = name
     self.value = value
     self.type = type
@@ -333,6 +335,7 @@ class OutputDataObjectType:
     self.dataMovement = dataMovement
     self.location = location
     self.searchQuery = searchQuery
+    self.outputStreaming = outputStreaming
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -388,6 +391,11 @@ class OutputDataObjectType:
           self.searchQuery = iprot.readString();
         else:
           iprot.skip(ftype)
+      elif fid == 10:
+        if ftype == TType.BOOL:
+          self.outputStreaming = iprot.readBool();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -434,6 +442,10 @@ class OutputDataObjectType:
       oprot.writeFieldBegin('searchQuery', TType.STRING, 9)
       oprot.writeString(self.searchQuery)
       oprot.writeFieldEnd()
+    if self.outputStreaming is not None:
+      oprot.writeFieldBegin('outputStreaming', TType.BOOL, 10)
+      oprot.writeBool(self.outputStreaming)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -454,6 +466,7 @@ class OutputDataObjectType:
     value = (value * 31) ^ hash(self.dataMovement)
     value = (value * 31) ^ hash(self.location)
     value = (value * 31) ^ hash(self.searchQuery)
+    value = (value * 31) ^ hash(self.outputStreaming)
     return value
 
   def __repr__(self):
