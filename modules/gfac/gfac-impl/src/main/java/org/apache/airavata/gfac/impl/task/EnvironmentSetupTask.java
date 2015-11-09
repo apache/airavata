@@ -34,9 +34,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-public class SSHEnvironmentSetupTask implements Task {
+public class EnvironmentSetupTask implements Task {
 
-	private static final Logger log = LoggerFactory.getLogger(SSHEnvironmentSetupTask.class);
+	private static final Logger log = LoggerFactory.getLogger(EnvironmentSetupTask.class);
 	@Override
 	public void init(Map<String, String> propertyMap) throws TaskException {
 

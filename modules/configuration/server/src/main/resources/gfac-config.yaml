@@ -20,7 +20,7 @@
 
 jobSubmitters:
   - submissionProtocol: SSH
-    taskClass: org.apache.airavata.gfac.impl.task.SSHJobSubmissionTask
+    taskClass: org.apache.airavata.gfac.impl.task.DefaultJobSubmissionTask
 #   properties:
 #     - userName: airavata
 #       passPhrase: airavata
@@ -29,10 +29,11 @@ jobSubmitters:
 #       hostName: remote.client.hostName
 
   - submissionProtocol: SSH_FORK
-    taskClass: org.apache.airavata.gfac.impl.task.SSHForkJobSubmissionTask
+    taskClass: org.apache.airavata.gfac.impl.task.ForkJobSubmissionTask
 
   - submissionProtocol: LOCAL
-    taskClass: org.apache.airavata.gfac.impl.task.LocalJobSubmissionTask
+    taskClass: org.apache.airavata.gfac.impl.task.DefaultJobSubmissionTask
+
 
 # Following job subbmitters are not yet implemented.
 
@@ -47,14 +48,14 @@ commonTasks:
 
 fileTransferTasks:
   - transferProtocol: SCP
-    taskClass: org.apache.airavata.gfac.impl.task.SCPDataStageTask
+    taskClass: org.apache.airavata.gfac.impl.task.DataStageTask
 
 # If your client doen't run the same instance where airavata server is running then you need to comment above
 # SCPDataStageTask and uncomment AdvancedSCPDataStageTask. To work with AdvancedSCPDataStageTask, you either need to
 # provide ssh keys or password.
 
 #  - transferProtocol: SCP
-#    taskClass: org.apache.airavata.gfac.impl.task.AdvancedSCPDataStageTask
+#    taskClass: org.apache.airavata.gfac.impl.task.SCPDataStageTask
 #    properties:
 #     - userName: airavata
 #       passPhrase: airavata

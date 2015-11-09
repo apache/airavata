@@ -35,7 +35,7 @@ import org.apache.airavata.gfac.core.monitor.JobMonitor;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
-import org.apache.airavata.gfac.impl.task.SSHEnvironmentSetupTask;
+import org.apache.airavata.gfac.impl.task.EnvironmentSetupTask;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
@@ -356,7 +356,7 @@ public class GFacEngineImpl implements GFacEngine {
             EnvironmentSetupTaskModel subTaskModel = (EnvironmentSetupTaskModel) taskContext.getSubTaskModel();
             Task envSetupTask = null;
             if (subTaskModel.getProtocol() == SecurityProtocol.SSH_KEYS) {
-                envSetupTask = new SSHEnvironmentSetupTask();
+                envSetupTask = new EnvironmentSetupTask();
             } else {
                 throw new GFacException("Unsupported security protocol, Airavata doesn't support " +
                         subTaskModel.getProtocol().name() + " protocol yet.");

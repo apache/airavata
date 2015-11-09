@@ -55,6 +55,6 @@ public class LocalCommandOutput implements CommandOutput {
 
     @Override
     public int getExitCode() {
-        return 0;
+        return process.exitValue();
     }
 }
