@@ -177,6 +177,7 @@ final class JobSubmissionProtocol {
   const UNICORE = 3;
   const CLOUD = 4;
   const SSH_FORK = 5;
+  const LOCAL_FORK = 6;
   static public $__names = array(
     0 => 'LOCAL',
     1 => 'SSH',
@@ -184,6 +185,7 @@ final class JobSubmissionProtocol {
     3 => 'UNICORE',
     4 => 'CLOUD',
     5 => 'SSH_FORK',
+    6 => 'LOCAL_FORK',
   );
 }
 

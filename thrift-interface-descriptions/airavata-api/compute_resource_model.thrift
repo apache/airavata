@@ -196,7 +196,8 @@ enum JobSubmissionProtocol {
     GLOBUS,
     UNICORE,
     CLOUD,
-    SSH_FORK
+    SSH_FORK,
+    LOCAL_FORK
 }
 
 /**

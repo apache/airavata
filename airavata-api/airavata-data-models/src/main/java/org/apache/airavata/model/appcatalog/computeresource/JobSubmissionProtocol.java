@@ -47,7 +47,8 @@ public enum JobSubmissionProtocol implements org.apache.thrift.TEnum {
   GLOBUS(2),
   UNICORE(3),
   CLOUD(4),
-  SSH_FORK(5);
+  SSH_FORK(5),
+  LOCAL_FORK(6);
 
   private final int value;
 
@@ -80,6 +81,8 @@ public enum JobSubmissionProtocol implements org.apache.thrift.TEnum {
         return CLOUD;
       case 5:
         return SSH_FORK;
+      case 6:
+        return LOCAL_FORK;
       default:
         return null;
     }
