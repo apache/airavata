@@ -51,7 +51,7 @@ fileTransferTasks:
     taskClass: org.apache.airavata.gfac.impl.task.DataStageTask
 
 # If your client doen't run the same instance where airavata server is running then you need to comment above
-# SCPDataStageTask and uncomment AdvancedSCPDataStageTask. To work with AdvancedSCPDataStageTask, you either need to
+# DataStageTask and uncomment SCPDataStageTask. To work with SCPDataStageTask, you either need to
 # provide ssh keys or password.
 
 #  - transferProtocol: SCP
