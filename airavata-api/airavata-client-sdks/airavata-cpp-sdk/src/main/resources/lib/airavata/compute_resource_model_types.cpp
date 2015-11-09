@@ -106,7 +106,8 @@ int _kJobSubmissionProtocolValues[] = {
   JobSubmissionProtocol::GLOBUS,
   JobSubmissionProtocol::UNICORE,
   JobSubmissionProtocol::CLOUD,
-  JobSubmissionProtocol::SSH_FORK
+  JobSubmissionProtocol::SSH_FORK,
+  JobSubmissionProtocol::LOCAL_FORK
 };
 const char* _kJobSubmissionProtocolNames[] = {
   "LOCAL",
@@ -114,9 +115,10 @@ const char* _kJobSubmissionProtocolNames[] = {
   "GLOBUS",
   "UNICORE",
   "CLOUD",
-  "SSH_FORK"
+  "SSH_FORK",
+  "LOCAL_FORK"
 };
-const std::map<int, const char*> _JobSubmissionProtocol_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kJobSubmissionProtocolValues, _kJobSubmissionProtocolNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _JobSubmissionProtocol_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(7, _kJobSubmissionProtocolValues, _kJobSubmissionProtocolNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kMonitorModeValues[] = {
   MonitorMode::POLL_JOB_MANAGER,

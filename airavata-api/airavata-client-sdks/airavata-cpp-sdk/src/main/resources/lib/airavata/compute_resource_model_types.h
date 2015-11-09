@@ -95,7 +95,8 @@ struct JobSubmissionProtocol {
     GLOBUS = 2,
     UNICORE = 3,
     CLOUD = 4,
-    SSH_FORK = 5
+    SSH_FORK = 5,
+    LOCAL_FORK = 6
   };
 };
 

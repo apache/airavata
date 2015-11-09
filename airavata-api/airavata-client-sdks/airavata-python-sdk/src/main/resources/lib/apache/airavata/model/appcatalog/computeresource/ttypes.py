@@ -213,6 +213,7 @@ class JobSubmissionProtocol:
   UNICORE = 3
   CLOUD = 4
   SSH_FORK = 5
+  LOCAL_FORK = 6
 
   _VALUES_TO_NAMES = {
     0: "LOCAL",
@@ -221,6 +222,7 @@ class JobSubmissionProtocol:
     3: "UNICORE",
     4: "CLOUD",
     5: "SSH_FORK",
+    6: "LOCAL_FORK",
   }
 
   _NAMES_TO_VALUES = {
@@ -230,6 +232,7 @@ class JobSubmissionProtocol:
     "UNICORE": 3,
     "CLOUD": 4,
     "SSH_FORK": 5,
+    "LOCAL_FORK": 6,
   }
 
 class MonitorMode:
