@@ -210,7 +210,8 @@ public abstract class Factory {
 		JobSubmissionProtocol jobSubmissionProtocol = processContext.getJobSubmissionProtocol();
         if (remoteCluster == null) {
             JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
-            if (jobSubmissionProtocol == JobSubmissionProtocol.LOCAL) {
+            if (jobSubmissionProtocol == JobSubmissionProtocol.LOCAL ||
+                    jobSubmissionProtocol == JobSubmissionProtocol.LOCAL_FORK) {
                 remoteCluster = new LocalRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration, null);
             } else if (jobSubmissionProtocol == JobSubmissionProtocol.SSH ||
                     jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK) {
