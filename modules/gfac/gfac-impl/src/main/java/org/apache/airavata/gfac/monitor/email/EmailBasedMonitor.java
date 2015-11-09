@@ -166,6 +166,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 
     @Override
     public void run() {
+        boolean quite = false;
 
 	    while (!stopMonitoring && !ServerSettings.isStopAllThreads()) {
 		    try {
@@ -178,9 +179,13 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 			    while (!(stopMonitoring || ServerSettings.isStopAllThreads())) {
 				    Thread.sleep(ServerSettings.getEmailMonitorPeriod());// sleep a bit - get a rest till job finishes
 				    if (jobMonitorMap.isEmpty()) {
-					    log.info("[EJM]: Job Monitor Map is empty, no need to retrieve emails");
+                        if (!quite) {
+                            log.info("[EJM]: Job Monitor Map is empty, no need to retrieve emails");
+                        }
+                        quite = true;
 					    continue;
 				    } else {
+                        quite = false;
 					    log.info("[EJM]: " + jobMonitorMap.size() + " job/s in job monitor map");
 				    }
 				    if (!store.isConnected()) {
