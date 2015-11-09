@@ -83,7 +83,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	@Override
 	public JobSubmissionOutput submitBatchJob(String jobScriptFilePath, String workingDirectory) throws SSHApiException {
 		JobSubmissionOutput jsoutput = new JobSubmissionOutput();
-		scpTo(jobScriptFilePath, workingDirectory); // scp script file to working directory
+		copyTo(jobScriptFilePath, workingDirectory); // scp script file to working directory
 		RawCommandInfo submitCommand = jobManagerConfiguration.getSubmitCommand(workingDirectory, jobScriptFilePath);
 		submitCommand.setRawCommand("cd " + workingDirectory + "; " + submitCommand.getRawCommand());
 		StandardOutReader reader = new StandardOutReader();
@@ -97,7 +97,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	}
 
 	@Override
-	public void scpTo(String localFile, String remoteFile) throws SSHApiException {
+	public void copyTo(String localFile, String remoteFile) throws SSHApiException {
 		int retry = 3;
 		while (retry > 0) {
 			try {
@@ -128,7 +128,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	}
 
 	@Override
-	public void scpFrom(String remoteFile, String localFile) throws SSHApiException {
+	public void copyFrom(String remoteFile, String localFile) throws SSHApiException {
 		int retry = 3;
 		while(retry>0) {
 			try {
