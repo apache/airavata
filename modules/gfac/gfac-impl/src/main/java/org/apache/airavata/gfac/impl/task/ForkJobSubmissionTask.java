@@ -48,8 +48,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-public class SSHForkJobSubmissionTask implements JobSubmissionTask {
-    private static final Logger log = LoggerFactory.getLogger(SSHForkJobSubmissionTask.class);
+public class ForkJobSubmissionTask implements JobSubmissionTask {
+    private static final Logger log = LoggerFactory.getLogger(ForkJobSubmissionTask.class);
     @Override
     public void init(Map<String, String> propertyMap) throws TaskException {
 
