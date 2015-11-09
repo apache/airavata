@@ -51,7 +51,7 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 * @param remoteFile remote file location, this can be a directory too
 	 * @throws SSHApiException throws exception during error
 	 */
-	public void scpTo(String localFile, String remoteFile) throws SSHApiException;
+	public void copyTo(String localFile, String remoteFile) throws SSHApiException;
 
 	/**
 	 * This will copy a remote file in path rFile to local file lFile
@@ -59,7 +59,7 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 * @param remoteFile      remote file path, this has to be a full qualified path
 	 * @param localFile This is the local file to copy, this can be a directory too
 	 */
-	public void scpFrom(String remoteFile, String localFile) throws SSHApiException;
+	public void copyFrom(String remoteFile, String localFile) throws SSHApiException;
 
 	/**
 	 * This wil copy source remote file to target remote file.

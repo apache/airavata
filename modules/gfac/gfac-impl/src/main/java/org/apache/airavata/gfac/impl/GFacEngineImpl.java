@@ -343,21 +343,7 @@ public class GFacEngineImpl implements GFacEngine {
             taskContext.setTaskStatus(taskStatus);
             GFacUtils.saveAndPublishTaskStatus(taskContext);
 
-            if (taskStatus.getState() == TaskState.FAILED) {
-                log.error("expId: {}, processId: {}, taskId: {} type: {},:- Job submission task failed, " +
-                        "reason:" + " {}", taskContext.getParentProcessContext().getExperimentId(), taskContext
-                        .getParentProcessContext().getProcessId(), taskContext.getTaskId(), jobSubmissionTask.getType
-                        ().name(), taskStatus.getReason());
-                String errorMsg = new StringBuilder("expId: ").append(processContext.getExperimentId()).append(", processId: ")
-                        .append(processContext.getProcessId()).append(", taskId: ").append(taskContext.getTaskId())
-                        .append(", type: ").append(taskContext.getTaskType().name()).append(" :- Job submission task failed. Reason: ")
-                        .append(taskStatus.getReason()).toString();
-                ErrorModel errorModel = new ErrorModel();
-                errorModel.setUserFriendlyMessage("Job submission task failed");
-                errorModel.setActualErrorMessage(errorMsg);
-                GFacUtils.saveTaskError(taskContext, errorModel);
-                throw new GFacException("Job submission task failed");
-            }
+            checkFailures(taskContext, taskStatus, jobSubmissionTask);
             return false;
         } catch (TException e) {
             throw new GFacException(e);
@@ -419,13 +405,18 @@ public class GFacEngineImpl implements GFacEngine {
         taskContext.setTaskStatus(taskStatus);
         GFacUtils.saveAndPublishTaskStatus(taskContext);
 
+        checkFailures(taskContext, taskStatus, dMoveTask);
+        return false;
+    }
+
+    private void checkFailures(TaskContext taskContext, TaskStatus taskStatus, Task dMoveTask) throws GFacException {
         if (taskStatus.getState() == TaskState.FAILED) {
             log.error("expId: {}, processId: {}, taskId: {} type: {},:- Input statging failed, " +
                     "reason:" + " {}", taskContext.getParentProcessContext().getExperimentId(), taskContext
                     .getParentProcessContext().getProcessId(), taskContext.getTaskId(), dMoveTask.getType
                     ().name(), taskStatus.getReason());
-            String errorMsg = new StringBuilder("expId: ").append(processContext.getExperimentId()).append(", processId: ")
-                    .append(processContext.getProcessId()).append(", taskId: ").append(taskContext.getTaskId())
+            String errorMsg = new StringBuilder("expId: ").append(taskContext.getParentProcessContext().getExperimentId()).append(", processId: ")
+                    .append(taskContext.getParentProcessContext().getProcessId()).append(", taskId: ").append(taskContext.getTaskId())
                     .append(", type: ").append(taskContext.getTaskType().name()).append(" :- Input staging failed. Reason: ")
                     .append(taskStatus.getReason()).toString();
             ErrorModel errorModel = new ErrorModel();
@@ -434,7 +425,6 @@ public class GFacEngineImpl implements GFacEngine {
             GFacUtils.saveTaskError(taskContext, errorModel);
             throw new GFacException("Error while staging input data");
         }
-        return false;
     }
 
     @Override
