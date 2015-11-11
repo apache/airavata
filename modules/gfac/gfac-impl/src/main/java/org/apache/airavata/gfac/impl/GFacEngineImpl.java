@@ -35,6 +35,7 @@ import org.apache.airavata.gfac.core.monitor.JobMonitor;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
+import org.apache.airavata.gfac.impl.task.DataStreamingTask;
 import org.apache.airavata.gfac.impl.task.EnvironmentSetupTask;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.*;
@@ -275,6 +276,19 @@ public class GFacEngineImpl implements GFacEngine {
 
             }
 
+            List<OutputDataObjectType> processOutputs = processContext.getProcessModel().getProcessOutputs();
+            if (processOutputs != null && !processOutputs.isEmpty()){
+                for (OutputDataObjectType output : processOutputs){
+                    if (output.isOutputStreaming()){
+                        status = new ProcessStatus(ProcessState.EXECUTING);
+                        status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                        processContext.setProcessStatus(status);
+                        GFacUtils.saveAndPublishProcessStatus(processContext);
+                        executeDataStreaming(taskContext, processContext.isRecovery());
+                    }
+                }
+            }
+
             if (processContext.isPauseTaskExecution()) {
                 return;   // If any task put processContext to wait, the same task must continue processContext execution.
             }
@@ -342,10 +356,25 @@ public class GFacEngineImpl implements GFacEngine {
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             taskContext.setTaskStatus(taskStatus);
             GFacUtils.saveAndPublishTaskStatus(taskContext);
-
             checkFailures(taskContext, taskStatus, jobSubmissionTask);
             return false;
         } catch (TException e) {
+            throw new GFacException(e);
+        }
+    }
+
+    private void executeDataStreaming(TaskContext taskContext, boolean recovery) throws GFacException {
+        TaskStatus taskStatus = new TaskStatus(TaskState.EXECUTING);
+        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        taskContext.setTaskStatus(taskStatus);
+        GFacUtils.saveAndPublishTaskStatus(taskContext);
+        try {
+            DataStreamingTask dataStreamingTask = new DataStreamingTask();
+            taskStatus = executeTask(taskContext, dataStreamingTask, recovery);
+            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            taskContext.setTaskStatus(taskStatus);
+            GFacUtils.saveAndPublishTaskStatus(taskContext);
+        } catch (Exception e) {
             throw new GFacException(e);
         }
     }
