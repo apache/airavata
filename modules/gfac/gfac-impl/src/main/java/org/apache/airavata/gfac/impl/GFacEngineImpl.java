@@ -289,7 +289,7 @@ public class GFacEngineImpl implements GFacEngine {
                                                 .add(ExpCatChildDataType.TASK, streamingTaskModel, processContext.getProcessId());
                                         streamingTaskModel.setTaskId(streamTaskId);
                                         streamingTaskContext.setTaskModel(streamingTaskModel);
-                                        executeDataStreaming(taskContext, processContext.isRecovery());
+                                        executeDataStreaming(streamingTaskContext, processContext.isRecovery());
                                     }
                                 } catch (URISyntaxException | TException | RegistryException e) {
                                     log.error("Error while streaming output " + output.getValue());
