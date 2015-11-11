@@ -321,7 +321,6 @@ public class GFacEngineImpl implements GFacEngine {
                                         streamingTaskModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
                                         streamingTaskModel.setParentProcessId(processContext.getProcessId());
                                         TaskContext streamingTaskContext = getTaskContext(processContext);
-                                        streamingTaskContext.setTaskStatus(new TaskStatus(TaskState.CREATED));
                                         DataStagingTaskModel submodel = new DataStagingTaskModel();
                                         submodel.setType(DataStageType.OUPUT);
                                         submodel.setProcessOutput(output);
