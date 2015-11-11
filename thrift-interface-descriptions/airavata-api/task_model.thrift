@@ -37,7 +37,8 @@ enum TaskTypes {
     DATA_STAGING,
     JOB_SUBMISSION,
     ENV_CLEANUP,
-    MONITORING
+    MONITORING,
+    OUTPUT_FETCHING
 }
 
 /**
