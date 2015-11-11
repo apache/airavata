@@ -262,7 +262,7 @@ public class SCPDataStageTask implements Task {
         StringBuilder sb = new StringBuilder("rsync -cr ");
         sb.append(sourceURI.getPath()).append(" ").append(destinationURI.getPath());
         CommandInfo commandInfo = new RawCommandInfo(sb.toString());
-        taskContext.getParentProcessContext().getRemoteCluster().execute(commandInfo);
+        taskContext.getParentProcessContext().getDataMovementRemoteCluster().execute(commandInfo);
     }
 
     private void inputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI
@@ -270,7 +270,7 @@ public class SCPDataStageTask implements Task {
         /**
          * scp third party file transfer 'to' compute resource.
          */
-        taskContext.getParentProcessContext().getRemoteCluster().scpThirdParty(sourceURI.getPath(),
+        taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
                 destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.TO);
     }
 
@@ -280,7 +280,7 @@ public class SCPDataStageTask implements Task {
         /**
          * scp third party file transfer 'from' comute resource.
          */
-        taskContext.getParentProcessContext().getRemoteCluster().scpThirdParty(sourceURI.getPath(),
+        taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
                 destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.FROM);
         // update output locations
         GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());
