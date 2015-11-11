@@ -128,7 +128,8 @@ public class GFacEngineImpl implements GFacEngine {
             expCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processId);
             processModel.setProcessOutputs(applicationOutputs);
             processContext.setResourceJobManager(getResourceJobManager(processContext));
-            processContext.setRemoteCluster(Factory.getRemoteCluster(processContext));
+            processContext.setJobSubmissionRemoteCluster(Factory.getJobSubmissionRemoteCluster(processContext));
+            processContext.setDataMovementRemoteCluster(Factory.getDataMovementRemoteCluster(processContext));
 
             String inputPath = ServerSettings.getLocalDataLocation();
             if (inputPath != null) {
