@@ -472,10 +472,6 @@ void GatewayResourceProfile::__set_gatewayID(const std::string& val) {
   this->gatewayID = val;
 }
 
-void GatewayResourceProfile::__set_dataStorageHostName(const std::string& val) {
-  this->dataStorageHostName = val;
-}
-
 void GatewayResourceProfile::__set_credentialStoreToken(const std::string& val) {
   this->credentialStoreToken = val;
 __isset.credentialStoreToken = true;
@@ -491,8 +487,8 @@ void GatewayResourceProfile::__set_dataStoragePreferences(const std::vector<Data
 __isset.dataStoragePreferences = true;
 }
 
-const char* GatewayResourceProfile::ascii_fingerprint = "37EFF83E3A15E60FB3772FDFEAD90A88";
-const uint8_t GatewayResourceProfile::binary_fingerprint[16] = {0x37,0xEF,0xF8,0x3E,0x3A,0x15,0xE6,0x0F,0xB3,0x77,0x2F,0xDF,0xEA,0xD9,0x0A,0x88};
+const char* GatewayResourceProfile::ascii_fingerprint = "A4BF6D60A7DE5979505C0E7F00278F12";
+const uint8_t GatewayResourceProfile::binary_fingerprint[16] = {0xA4,0xBF,0x6D,0x60,0xA7,0xDE,0x59,0x79,0x50,0x5C,0x0E,0x7F,0x00,0x27,0x8F,0x12};
 
 uint32_t GatewayResourceProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -506,7 +502,6 @@ uint32_t GatewayResourceProfile::read(::apache::thrift::protocol::TProtocol* ipr
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_gatewayID = false;
-  bool isset_dataStorageHostName = false;
 
   while (true)
   {
@@ -526,21 +521,13 @@ uint32_t GatewayResourceProfile::read(::apache::thrift::protocol::TProtocol* ipr
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->dataStorageHostName);
-          isset_dataStorageHostName = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 3:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->credentialStoreToken);
           this->__isset.credentialStoreToken = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->computeResourcePreferences.clear();
@@ -560,7 +547,7 @@ uint32_t GatewayResourceProfile::read(::apache::thrift::protocol::TProtocol* ipr
           xfer += iprot->skip(ftype);
         }
         break;
-      case 5:
+      case 4:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->dataStoragePreferences.clear();
@@ -591,8 +578,6 @@ uint32_t GatewayResourceProfile::read(::apache::thrift::protocol::TProtocol* ipr
 
   if (!isset_gatewayID)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_dataStorageHostName)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
@@ -605,17 +590,13 @@ uint32_t GatewayResourceProfile::write(::apache::thrift::protocol::TProtocol* op
   xfer += oprot->writeString(this->gatewayID);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("dataStorageHostName", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->dataStorageHostName);
-  xfer += oprot->writeFieldEnd();
-
   if (this->__isset.credentialStoreToken) {
-    xfer += oprot->writeFieldBegin("credentialStoreToken", ::apache::thrift::protocol::T_STRING, 3);
+    xfer += oprot->writeFieldBegin("credentialStoreToken", ::apache::thrift::protocol::T_STRING, 2);
     xfer += oprot->writeString(this->credentialStoreToken);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.computeResourcePreferences) {
-    xfer += oprot->writeFieldBegin("computeResourcePreferences", ::apache::thrift::protocol::T_LIST, 4);
+    xfer += oprot->writeFieldBegin("computeResourcePreferences", ::apache::thrift::protocol::T_LIST, 3);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->computeResourcePreferences.size()));
       std::vector<ComputeResourcePreference> ::const_iterator _iter16;
@@ -628,7 +609,7 @@ uint32_t GatewayResourceProfile::write(::apache::thrift::protocol::TProtocol* op
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.dataStoragePreferences) {
-    xfer += oprot->writeFieldBegin("dataStoragePreferences", ::apache::thrift::protocol::T_LIST, 5);
+    xfer += oprot->writeFieldBegin("dataStoragePreferences", ::apache::thrift::protocol::T_LIST, 4);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->dataStoragePreferences.size()));
       std::vector<DataStoragePreference> ::const_iterator _iter17;
@@ -649,7 +630,6 @@ uint32_t GatewayResourceProfile::write(::apache::thrift::protocol::TProtocol* op
 void swap(GatewayResourceProfile &a, GatewayResourceProfile &b) {
   using ::std::swap;
   swap(a.gatewayID, b.gatewayID);
-  swap(a.dataStorageHostName, b.dataStorageHostName);
   swap(a.credentialStoreToken, b.credentialStoreToken);
   swap(a.computeResourcePreferences, b.computeResourcePreferences);
   swap(a.dataStoragePreferences, b.dataStoragePreferences);
@@ -658,7 +638,6 @@ void swap(GatewayResourceProfile &a, GatewayResourceProfile &b) {
 
 GatewayResourceProfile::GatewayResourceProfile(const GatewayResourceProfile& other18) {
   gatewayID = other18.gatewayID;
-  dataStorageHostName = other18.dataStorageHostName;
   credentialStoreToken = other18.credentialStoreToken;
   computeResourcePreferences = other18.computeResourcePreferences;
   dataStoragePreferences = other18.dataStoragePreferences;
@@ -666,7 +645,6 @@ GatewayResourceProfile::GatewayResourceProfile(const GatewayResourceProfile& oth
 }
 GatewayResourceProfile& GatewayResourceProfile::operator=(const GatewayResourceProfile& other19) {
   gatewayID = other19.gatewayID;
-  dataStorageHostName = other19.dataStorageHostName;
   credentialStoreToken = other19.credentialStoreToken;
   computeResourcePreferences = other19.computeResourcePreferences;
   dataStoragePreferences = other19.dataStoragePreferences;
@@ -677,7 +655,6 @@ std::ostream& operator<<(std::ostream& out, const GatewayResourceProfile& obj) {
   using apache::thrift::to_string;
   out << "GatewayResourceProfile(";
   out << "gatewayID=" << to_string(obj.gatewayID);
-  out << ", " << "dataStorageHostName=" << to_string(obj.dataStorageHostName);
   out << ", " << "credentialStoreToken="; (obj.__isset.credentialStoreToken ? (out << to_string(obj.credentialStoreToken)) : (out << "<null>"));
   out << ", " << "computeResourcePreferences="; (obj.__isset.computeResourcePreferences ? (out << to_string(obj.computeResourcePreferences)) : (out << "<null>"));
   out << ", " << "dataStoragePreferences="; (obj.__isset.dataStoragePreferences ? (out << to_string(obj.dataStoragePreferences)) : (out << "<null>"));
