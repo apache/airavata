@@ -31,6 +31,7 @@ class TaskTypes:
   JOB_SUBMISSION = 2
   ENV_CLEANUP = 3
   MONITORING = 4
+  OUTPUT_FETCHING = 5
 
   _VALUES_TO_NAMES = {
     0: "ENV_SETUP",
@@ -38,6 +39,7 @@ class TaskTypes:
     2: "JOB_SUBMISSION",
     3: "ENV_CLEANUP",
     4: "MONITORING",
+    5: "OUTPUT_FETCHING",
   }
 
   _NAMES_TO_VALUES = {
@@ -46,6 +48,7 @@ class TaskTypes:
     "JOB_SUBMISSION": 2,
     "ENV_CLEANUP": 3,
     "MONITORING": 4,
+    "OUTPUT_FETCHING": 5,
   }
 
 class DataStageType:
