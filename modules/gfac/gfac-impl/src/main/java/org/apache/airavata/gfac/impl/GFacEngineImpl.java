@@ -280,12 +280,34 @@ public class GFacEngineImpl implements GFacEngine {
             List<OutputDataObjectType> processOutputs = processContext.getProcessModel().getProcessOutputs();
             if (processOutputs != null && !processOutputs.isEmpty()){
                 for (OutputDataObjectType output : processOutputs){
-                    if (output.isOutputStreaming()){
-                        status = new ProcessStatus(ProcessState.EXECUTING);
-                        status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                        processContext.setProcessStatus(status);
-                        GFacUtils.saveAndPublishProcessStatus(processContext);
-                        executeDataStreaming(taskContext, processContext.isRecovery());
+                    try {
+                        if (output.isOutputStreaming()){
+                            TaskModel streamingTaskModel = new TaskModel();
+                            streamingTaskModel.setTaskType(TaskTypes.OUTPUT_FETCHING);
+                            streamingTaskModel.setTaskStatus(new TaskStatus(TaskState.CREATED));
+                            streamingTaskModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
+                            streamingTaskModel.setParentProcessId(processContext.getProcessId());
+                            TaskContext streamingTaskContext = getTaskContext(processContext);
+                            streamingTaskContext.setTaskStatus(new TaskStatus(TaskState.CREATED));
+                            DataStagingTaskModel submodel = new DataStagingTaskModel();
+                            submodel.setType(DataStageType.OUPUT);
+                            submodel.setProcessOutput(output);
+                            URI source = new URI(processContext.getDataMovementProtocol().name(),
+                                    processContext.getComputeResourcePreference().getLoginUserName(),
+                                    processContext.getComputeResourceDescription().getHostName(),
+                                    22,
+                                    processContext.getWorkingDir() + output.getValue(), null, null);
+                            submodel.setSource(source.getPath());
+                            submodel.setDestination("dummy://temp/file/location");
+                            streamingTaskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
+                            String streamTaskId = (String) processContext.getExperimentCatalog()
+                                    .add(ExpCatChildDataType.TASK, streamingTaskModel, processContext.getProcessId());
+                            streamingTaskModel.setTaskId(streamTaskId);
+                            streamingTaskContext.setTaskModel(streamingTaskModel);
+                            executeDataStreaming(taskContext, processContext.isRecovery());
+                        }
+                    } catch (URISyntaxException | TException | RegistryException e) {
+                        log.error("Error while streaming output " + output.getValue());
                     }
                 }
             }
