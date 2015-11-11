@@ -69,7 +69,8 @@ public class ProcessContext {
 	private ComputeResourceDescription computeResourceDescription;
 	private ApplicationDeploymentDescription applicationDeploymentDescription;
 	private ApplicationInterfaceDescription applicationInterfaceDescription;
-	private RemoteCluster remoteCluster;
+	private RemoteCluster jobSubmissionRemoteCluster;
+	private RemoteCluster dataMovementRemoteCluster;
 	private Map<String, String> sshProperties;
 	private String stdoutLocation;
 	private String stderrLocation;
@@ -178,12 +179,20 @@ public class ProcessContext {
 		this.gatewayResourceProfile = gatewayResourceProfile;
 	}
 
-	public RemoteCluster getRemoteCluster() {
-		return remoteCluster;
+	public RemoteCluster getJobSubmissionRemoteCluster() {
+		return jobSubmissionRemoteCluster;
 	}
 
-	public void setRemoteCluster(RemoteCluster remoteCluster) {
-		this.remoteCluster = remoteCluster;
+	public void setJobSubmissionRemoteCluster(RemoteCluster jobSubmissoinRemoteCluster) {
+		this.jobSubmissionRemoteCluster = jobSubmissoinRemoteCluster;
+	}
+
+	public RemoteCluster getDataMovementRemoteCluster() {
+		return dataMovementRemoteCluster;
+	}
+
+	public void setDataMovementRemoteCluster(RemoteCluster dataMovementRemoteCluster) {
+		this.dataMovementRemoteCluster = dataMovementRemoteCluster;
 	}
 
 	public Map<String, String> getSshProperties() {
