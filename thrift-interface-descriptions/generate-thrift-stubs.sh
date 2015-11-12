@@ -204,6 +204,8 @@ generate_php_stubs() {
 
     # Using thrift Java generator, generate the java classes based on Airavata API. This
     #   The airavata_api.thrift includes rest of data models.
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${AIRAVATA_API_IDL_DIR}/airavata_data_models.thrift || fail unable to generate PHP thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${AIRAVATA_API_IDL_DIR}/app_catalog_models.thrift  || fail unable to generate PHP thrift classes
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${AIRAVATA_API_IDL_DIR}/airavata_api.thrift || fail unable to generate PHP thrift classes
 
     #$THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${AIRAVATA_API_IDL_DIR}/workflow_api.thrift || fail unable to generate PHP thrift classes for WorkflowAPI
