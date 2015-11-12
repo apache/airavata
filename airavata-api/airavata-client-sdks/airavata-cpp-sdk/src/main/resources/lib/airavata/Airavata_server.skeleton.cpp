@@ -1258,6 +1258,96 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * Register a Storage Resource.
+   * 
+   * @param storageResourceDescription
+   *    Storge Resource Object created from the datamodel.
+   * 
+   * @return storageResourceId
+   *   Returns a server-side generated airavata storage resource globally unique identifier.
+   * 
+   * 
+   * @param authzToken
+   * @param storageResourceDescription
+   */
+  void registerStorageResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& storageResourceDescription) {
+    // Your implementation goes here
+    printf("registerStorageResource\n");
+  }
+
+  /**
+   * Fetch the given Storage Resource.
+   * 
+   * @param storageResourceId
+   *   The identifier for the requested storage resource
+   * 
+   * @return storageResourceDescription
+   *    Storage Resource Object created from the datamodel..
+   * 
+   * 
+   * @param authzToken
+   * @param storageResourceId
+   */
+  void getStorageResource( ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& storageResourceId) {
+    // Your implementation goes here
+    printf("getStorageResource\n");
+  }
+
+  /**
+   * Fetch all registered Storage Resources.
+   * 
+   * @return A map of registered compute resource id's and thier corresponding hostnames.
+   *    Compute Resource Object created from the datamodel..
+   * 
+   * 
+   * @param authzToken
+   */
+  void getAllStorageResourceNames(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
+    // Your implementation goes here
+    printf("getAllStorageResourceNames\n");
+  }
+
+  /**
+   * Update a Compute Resource.
+   * 
+   * @param storageResourceId
+   *   The identifier for the requested compute resource to be updated.
+   * 
+   * @param storageResourceDescription
+   *    Storage Resource Object created from the datamodel.
+   * 
+   * @return status
+   *   Returns a success/failure of the update.
+   * 
+   * 
+   * @param authzToken
+   * @param storageResourceId
+   * @param storageResourceDescription
+   */
+  bool updateStorageResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& storageResourceId, const  ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& storageResourceDescription) {
+    // Your implementation goes here
+    printf("updateStorageResource\n");
+  }
+
+  /**
+   * Delete a Storage Resource.
+   * 
+   * @param storageResourceId
+   *   The identifier for the requested compute resource to be deleted.
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param authzToken
+   * @param storageResourceId
+   */
+  bool deleteStorageResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& storageResourceId) {
+    // Your implementation goes here
+    printf("deleteStorageResource\n");
+  }
+
+  /**
    * Add a Local Job Submission details to a compute resource
    *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
    * 

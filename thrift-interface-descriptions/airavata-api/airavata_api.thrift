@@ -31,6 +31,7 @@ include "job_model.thrift"
 include "experiment_model.thrift"
 include "workspace_model.thrift"
 include "compute_resource_model.thrift"
+include "storage_resource_model.thrift"
 include "scheduling_model.thrift"
 include "application_io_models.thrift"
 include "application_deployment_model.thrift"
@@ -1301,6 +1302,95 @@ service Airavata {
    *
   */
   bool deleteComputeResource(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId)
+         	throws (1: airavata_errors.InvalidRequestException ire,
+                   2: airavata_errors.AiravataClientException ace,
+                   3: airavata_errors.AiravataSystemException ase,
+                   4: airavata_errors.AuthorizationException ae)
+
+/*
+ * Storage Resource
+ *
+*/
+
+  /**
+   * Register a Storage Resource.
+   *
+   * @param storageResourceDescription
+   *    Storge Resource Object created from the datamodel.
+   *
+   * @return storageResourceId
+   *   Returns a server-side generated airavata storage resource globally unique identifier.
+   *
+  */
+  string registerStorageResource(1: required security_model.AuthzToken authzToken,
+                                 2: required storage_resource_model.StorageResourceDescription storageResourceDescription)
+    	throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
+
+  /**
+   * Fetch the given Storage Resource.
+   *
+   * @param storageResourceId
+   *   The identifier for the requested storage resource
+   *
+   * @return storageResourceDescription
+   *    Storage Resource Object created from the datamodel..
+   *
+  */
+  storage_resource_model.StorageResourceDescription getStorageResource(1: required security_model.AuthzToken authzToken,
+                2: required string storageResourceId)
+      	throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.AiravataClientException ace,
+                3: airavata_errors.AiravataSystemException ase,
+                4: airavata_errors.AuthorizationException ae)
+
+  /**
+   * Fetch all registered Storage Resources.
+   *
+   * @return A map of registered compute resource id's and thier corresponding hostnames.
+   *    Compute Resource Object created from the datamodel..
+   *
+  */
+  map<string, string> getAllStorageResourceNames(1: required security_model.AuthzToken authzToken)
+      	throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.AiravataClientException ace,
+                3: airavata_errors.AiravataSystemException ase,
+                4: airavata_errors.AuthorizationException ae)
+
+  /**
+   * Update a Compute Resource.
+   *
+   * @param storageResourceId
+   *   The identifier for the requested compute resource to be updated.
+   *
+   * @param storageResourceDescription
+   *    Storage Resource Object created from the datamodel.
+   *
+   * @return status
+   *   Returns a success/failure of the update.
+   *
+  */
+  bool updateStorageResource(1: required security_model.AuthzToken authzToken,
+            2: required string storageResourceId,
+            3: required storage_resource_model.StorageResourceDescription storageResourceDescription)
+      	throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.AiravataClientException ace,
+                3: airavata_errors.AiravataSystemException ase,
+                4: airavata_errors.AuthorizationException ae)
+
+  /**
+   * Delete a Storage Resource.
+   *
+   * @param storageResourceId
+   *   The identifier for the requested compute resource to be deleted.
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+  */
+  bool deleteStorageResource(1: required security_model.AuthzToken authzToken, 2: required string storageResourceId)
          	throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase,

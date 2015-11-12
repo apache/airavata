@@ -1037,6 +1037,81 @@ class AiravataIf {
   virtual bool deleteComputeResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId) = 0;
 
   /**
+   * Register a Storage Resource.
+   * 
+   * @param storageResourceDescription
+   *    Storge Resource Object created from the datamodel.
+   * 
+   * @return storageResourceId
+   *   Returns a server-side generated airavata storage resource globally unique identifier.
+   * 
+   * 
+   * @param authzToken
+   * @param storageResourceDescription
+   */
+  virtual void registerStorageResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& storageResourceDescription) = 0;
+
+  /**
+   * Fetch the given Storage Resource.
+   * 
+   * @param storageResourceId
+   *   The identifier for the requested storage resource
+   * 
+   * @return storageResourceDescription
+   *    Storage Resource Object created from the datamodel..
+   * 
+   * 
+   * @param authzToken
+   * @param storageResourceId
+   */
+  virtual void getStorageResource( ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& storageResourceId) = 0;
+
+  /**
+   * Fetch all registered Storage Resources.
+   * 
+   * @return A map of registered compute resource id's and thier corresponding hostnames.
+   *    Compute Resource Object created from the datamodel..
+   * 
+   * 
+   * @param authzToken
+   */
+  virtual void getAllStorageResourceNames(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) = 0;
+
+  /**
+   * Update a Compute Resource.
+   * 
+   * @param storageResourceId
+   *   The identifier for the requested compute resource to be updated.
+   * 
+   * @param storageResourceDescription
+   *    Storage Resource Object created from the datamodel.
+   * 
+   * @return status
+   *   Returns a success/failure of the update.
+   * 
+   * 
+   * @param authzToken
+   * @param storageResourceId
+   * @param storageResourceDescription
+   */
+  virtual bool updateStorageResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& storageResourceId, const  ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& storageResourceDescription) = 0;
+
+  /**
+   * Delete a Storage Resource.
+   * 
+   * @param storageResourceId
+   *   The identifier for the requested compute resource to be deleted.
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param authzToken
+   * @param storageResourceId
+   */
+  virtual bool deleteStorageResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& storageResourceId) = 0;
+
+  /**
    * Add a Local Job Submission details to a compute resource
    *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
    * 
@@ -1959,6 +2034,23 @@ class AiravataNull : virtual public AiravataIf {
     return _return;
   }
   bool deleteComputeResource(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* computeResourceId */) {
+    bool _return = false;
+    return _return;
+  }
+  void registerStorageResource(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& /* storageResourceDescription */) {
+    return;
+  }
+  void getStorageResource( ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* storageResourceId */) {
+    return;
+  }
+  void getAllStorageResourceNames(std::map<std::string, std::string> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */) {
+    return;
+  }
+  bool updateStorageResource(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* storageResourceId */, const  ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& /* storageResourceDescription */) {
+    bool _return = false;
+    return _return;
+  }
+  bool deleteStorageResource(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* storageResourceId */) {
     bool _return = false;
     return _return;
   }
@@ -12563,6 +12655,766 @@ class Airavata_deleteComputeResource_presult {
 };
 
 
+class Airavata_registerStorageResource_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "EF56E8419C80FD46274C317B7D7F26CE";
+  static const uint8_t binary_fingerprint[16]; // = {0xEF,0x56,0xE8,0x41,0x9C,0x80,0xFD,0x46,0x27,0x4C,0x31,0x7B,0x7D,0x7F,0x26,0xCE};
+
+  Airavata_registerStorageResource_args(const Airavata_registerStorageResource_args&);
+  Airavata_registerStorageResource_args& operator=(const Airavata_registerStorageResource_args&);
+  Airavata_registerStorageResource_args() {
+  }
+
+  virtual ~Airavata_registerStorageResource_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+   ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription storageResourceDescription;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_storageResourceDescription(const  ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& val);
+
+  bool operator == (const Airavata_registerStorageResource_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(storageResourceDescription == rhs.storageResourceDescription))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_registerStorageResource_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_registerStorageResource_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_registerStorageResource_args& obj);
+};
+
+
+class Airavata_registerStorageResource_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "EF56E8419C80FD46274C317B7D7F26CE";
+  static const uint8_t binary_fingerprint[16]; // = {0xEF,0x56,0xE8,0x41,0x9C,0x80,0xFD,0x46,0x27,0x4C,0x31,0x7B,0x7D,0x7F,0x26,0xCE};
+
+
+  virtual ~Airavata_registerStorageResource_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const  ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription* storageResourceDescription;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_registerStorageResource_pargs& obj);
+};
+
+typedef struct _Airavata_registerStorageResource_result__isset {
+  _Airavata_registerStorageResource_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_registerStorageResource_result__isset;
+
+class Airavata_registerStorageResource_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "21BF57A9FE5AAA661540804D4FB9F023";
+  static const uint8_t binary_fingerprint[16]; // = {0x21,0xBF,0x57,0xA9,0xFE,0x5A,0xAA,0x66,0x15,0x40,0x80,0x4D,0x4F,0xB9,0xF0,0x23};
+
+  Airavata_registerStorageResource_result(const Airavata_registerStorageResource_result&);
+  Airavata_registerStorageResource_result& operator=(const Airavata_registerStorageResource_result&);
+  Airavata_registerStorageResource_result() : success() {
+  }
+
+  virtual ~Airavata_registerStorageResource_result() throw();
+  std::string success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_registerStorageResource_result__isset __isset;
+
+  void __set_success(const std::string& val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_registerStorageResource_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_registerStorageResource_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_registerStorageResource_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_registerStorageResource_result& obj);
+};
+
+typedef struct _Airavata_registerStorageResource_presult__isset {
+  _Airavata_registerStorageResource_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_registerStorageResource_presult__isset;
+
+class Airavata_registerStorageResource_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "21BF57A9FE5AAA661540804D4FB9F023";
+  static const uint8_t binary_fingerprint[16]; // = {0x21,0xBF,0x57,0xA9,0xFE,0x5A,0xAA,0x66,0x15,0x40,0x80,0x4D,0x4F,0xB9,0xF0,0x23};
+
+
+  virtual ~Airavata_registerStorageResource_presult() throw();
+  std::string* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_registerStorageResource_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_registerStorageResource_presult& obj);
+};
+
+
+class Airavata_getStorageResource_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "5C8C4FD14D732E7EC3E0A61A8C24C7FF";
+  static const uint8_t binary_fingerprint[16]; // = {0x5C,0x8C,0x4F,0xD1,0x4D,0x73,0x2E,0x7E,0xC3,0xE0,0xA6,0x1A,0x8C,0x24,0xC7,0xFF};
+
+  Airavata_getStorageResource_args(const Airavata_getStorageResource_args&);
+  Airavata_getStorageResource_args& operator=(const Airavata_getStorageResource_args&);
+  Airavata_getStorageResource_args() : storageResourceId() {
+  }
+
+  virtual ~Airavata_getStorageResource_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string storageResourceId;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_storageResourceId(const std::string& val);
+
+  bool operator == (const Airavata_getStorageResource_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(storageResourceId == rhs.storageResourceId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getStorageResource_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getStorageResource_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getStorageResource_args& obj);
+};
+
+
+class Airavata_getStorageResource_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "5C8C4FD14D732E7EC3E0A61A8C24C7FF";
+  static const uint8_t binary_fingerprint[16]; // = {0x5C,0x8C,0x4F,0xD1,0x4D,0x73,0x2E,0x7E,0xC3,0xE0,0xA6,0x1A,0x8C,0x24,0xC7,0xFF};
+
+
+  virtual ~Airavata_getStorageResource_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* storageResourceId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getStorageResource_pargs& obj);
+};
+
+typedef struct _Airavata_getStorageResource_result__isset {
+  _Airavata_getStorageResource_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getStorageResource_result__isset;
+
+class Airavata_getStorageResource_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "7B9C798338B1B8D554A30DA14AAF0846";
+  static const uint8_t binary_fingerprint[16]; // = {0x7B,0x9C,0x79,0x83,0x38,0xB1,0xB8,0xD5,0x54,0xA3,0x0D,0xA1,0x4A,0xAF,0x08,0x46};
+
+  Airavata_getStorageResource_result(const Airavata_getStorageResource_result&);
+  Airavata_getStorageResource_result& operator=(const Airavata_getStorageResource_result&);
+  Airavata_getStorageResource_result() {
+  }
+
+  virtual ~Airavata_getStorageResource_result() throw();
+   ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getStorageResource_result__isset __isset;
+
+  void __set_success(const  ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_getStorageResource_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getStorageResource_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getStorageResource_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getStorageResource_result& obj);
+};
+
+typedef struct _Airavata_getStorageResource_presult__isset {
+  _Airavata_getStorageResource_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getStorageResource_presult__isset;
+
+class Airavata_getStorageResource_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "7B9C798338B1B8D554A30DA14AAF0846";
+  static const uint8_t binary_fingerprint[16]; // = {0x7B,0x9C,0x79,0x83,0x38,0xB1,0xB8,0xD5,0x54,0xA3,0x0D,0xA1,0x4A,0xAF,0x08,0x46};
+
+
+  virtual ~Airavata_getStorageResource_presult() throw();
+   ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getStorageResource_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getStorageResource_presult& obj);
+};
+
+
+class Airavata_getAllStorageResourceNames_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "75A7E945AEBB96C8FA8998CBCEB31C27";
+  static const uint8_t binary_fingerprint[16]; // = {0x75,0xA7,0xE9,0x45,0xAE,0xBB,0x96,0xC8,0xFA,0x89,0x98,0xCB,0xCE,0xB3,0x1C,0x27};
+
+  Airavata_getAllStorageResourceNames_args(const Airavata_getAllStorageResourceNames_args&);
+  Airavata_getAllStorageResourceNames_args& operator=(const Airavata_getAllStorageResourceNames_args&);
+  Airavata_getAllStorageResourceNames_args() {
+  }
+
+  virtual ~Airavata_getAllStorageResourceNames_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  bool operator == (const Airavata_getAllStorageResourceNames_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllStorageResourceNames_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllStorageResourceNames_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllStorageResourceNames_args& obj);
+};
+
+
+class Airavata_getAllStorageResourceNames_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "75A7E945AEBB96C8FA8998CBCEB31C27";
+  static const uint8_t binary_fingerprint[16]; // = {0x75,0xA7,0xE9,0x45,0xAE,0xBB,0x96,0xC8,0xFA,0x89,0x98,0xCB,0xCE,0xB3,0x1C,0x27};
+
+
+  virtual ~Airavata_getAllStorageResourceNames_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllStorageResourceNames_pargs& obj);
+};
+
+typedef struct _Airavata_getAllStorageResourceNames_result__isset {
+  _Airavata_getAllStorageResourceNames_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getAllStorageResourceNames_result__isset;
+
+class Airavata_getAllStorageResourceNames_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "4D83E75749C4DBB6AB6F160CB4AC1423";
+  static const uint8_t binary_fingerprint[16]; // = {0x4D,0x83,0xE7,0x57,0x49,0xC4,0xDB,0xB6,0xAB,0x6F,0x16,0x0C,0xB4,0xAC,0x14,0x23};
+
+  Airavata_getAllStorageResourceNames_result(const Airavata_getAllStorageResourceNames_result&);
+  Airavata_getAllStorageResourceNames_result& operator=(const Airavata_getAllStorageResourceNames_result&);
+  Airavata_getAllStorageResourceNames_result() {
+  }
+
+  virtual ~Airavata_getAllStorageResourceNames_result() throw();
+  std::map<std::string, std::string>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getAllStorageResourceNames_result__isset __isset;
+
+  void __set_success(const std::map<std::string, std::string> & val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_getAllStorageResourceNames_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllStorageResourceNames_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllStorageResourceNames_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllStorageResourceNames_result& obj);
+};
+
+typedef struct _Airavata_getAllStorageResourceNames_presult__isset {
+  _Airavata_getAllStorageResourceNames_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getAllStorageResourceNames_presult__isset;
+
+class Airavata_getAllStorageResourceNames_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "4D83E75749C4DBB6AB6F160CB4AC1423";
+  static const uint8_t binary_fingerprint[16]; // = {0x4D,0x83,0xE7,0x57,0x49,0xC4,0xDB,0xB6,0xAB,0x6F,0x16,0x0C,0xB4,0xAC,0x14,0x23};
+
+
+  virtual ~Airavata_getAllStorageResourceNames_presult() throw();
+  std::map<std::string, std::string> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getAllStorageResourceNames_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllStorageResourceNames_presult& obj);
+};
+
+
+class Airavata_updateStorageResource_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "DADA6DB6ACB2438186445ED0D3585D3D";
+  static const uint8_t binary_fingerprint[16]; // = {0xDA,0xDA,0x6D,0xB6,0xAC,0xB2,0x43,0x81,0x86,0x44,0x5E,0xD0,0xD3,0x58,0x5D,0x3D};
+
+  Airavata_updateStorageResource_args(const Airavata_updateStorageResource_args&);
+  Airavata_updateStorageResource_args& operator=(const Airavata_updateStorageResource_args&);
+  Airavata_updateStorageResource_args() : storageResourceId() {
+  }
+
+  virtual ~Airavata_updateStorageResource_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string storageResourceId;
+   ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription storageResourceDescription;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_storageResourceId(const std::string& val);
+
+  void __set_storageResourceDescription(const  ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& val);
+
+  bool operator == (const Airavata_updateStorageResource_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(storageResourceId == rhs.storageResourceId))
+      return false;
+    if (!(storageResourceDescription == rhs.storageResourceDescription))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateStorageResource_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateStorageResource_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_updateStorageResource_args& obj);
+};
+
+
+class Airavata_updateStorageResource_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "DADA6DB6ACB2438186445ED0D3585D3D";
+  static const uint8_t binary_fingerprint[16]; // = {0xDA,0xDA,0x6D,0xB6,0xAC,0xB2,0x43,0x81,0x86,0x44,0x5E,0xD0,0xD3,0x58,0x5D,0x3D};
+
+
+  virtual ~Airavata_updateStorageResource_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* storageResourceId;
+  const  ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription* storageResourceDescription;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_updateStorageResource_pargs& obj);
+};
+
+typedef struct _Airavata_updateStorageResource_result__isset {
+  _Airavata_updateStorageResource_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_updateStorageResource_result__isset;
+
+class Airavata_updateStorageResource_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "C0679679E26638BE0A41545C2E17B17A";
+  static const uint8_t binary_fingerprint[16]; // = {0xC0,0x67,0x96,0x79,0xE2,0x66,0x38,0xBE,0x0A,0x41,0x54,0x5C,0x2E,0x17,0xB1,0x7A};
+
+  Airavata_updateStorageResource_result(const Airavata_updateStorageResource_result&);
+  Airavata_updateStorageResource_result& operator=(const Airavata_updateStorageResource_result&);
+  Airavata_updateStorageResource_result() : success(0) {
+  }
+
+  virtual ~Airavata_updateStorageResource_result() throw();
+  bool success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_updateStorageResource_result__isset __isset;
+
+  void __set_success(const bool val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_updateStorageResource_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateStorageResource_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateStorageResource_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_updateStorageResource_result& obj);
+};
+
+typedef struct _Airavata_updateStorageResource_presult__isset {
+  _Airavata_updateStorageResource_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_updateStorageResource_presult__isset;
+
+class Airavata_updateStorageResource_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "C0679679E26638BE0A41545C2E17B17A";
+  static const uint8_t binary_fingerprint[16]; // = {0xC0,0x67,0x96,0x79,0xE2,0x66,0x38,0xBE,0x0A,0x41,0x54,0x5C,0x2E,0x17,0xB1,0x7A};
+
+
+  virtual ~Airavata_updateStorageResource_presult() throw();
+  bool* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_updateStorageResource_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_updateStorageResource_presult& obj);
+};
+
+
+class Airavata_deleteStorageResource_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "5C8C4FD14D732E7EC3E0A61A8C24C7FF";
+  static const uint8_t binary_fingerprint[16]; // = {0x5C,0x8C,0x4F,0xD1,0x4D,0x73,0x2E,0x7E,0xC3,0xE0,0xA6,0x1A,0x8C,0x24,0xC7,0xFF};
+
+  Airavata_deleteStorageResource_args(const Airavata_deleteStorageResource_args&);
+  Airavata_deleteStorageResource_args& operator=(const Airavata_deleteStorageResource_args&);
+  Airavata_deleteStorageResource_args() : storageResourceId() {
+  }
+
+  virtual ~Airavata_deleteStorageResource_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string storageResourceId;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_storageResourceId(const std::string& val);
+
+  bool operator == (const Airavata_deleteStorageResource_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(storageResourceId == rhs.storageResourceId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteStorageResource_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteStorageResource_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_deleteStorageResource_args& obj);
+};
+
+
+class Airavata_deleteStorageResource_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "5C8C4FD14D732E7EC3E0A61A8C24C7FF";
+  static const uint8_t binary_fingerprint[16]; // = {0x5C,0x8C,0x4F,0xD1,0x4D,0x73,0x2E,0x7E,0xC3,0xE0,0xA6,0x1A,0x8C,0x24,0xC7,0xFF};
+
+
+  virtual ~Airavata_deleteStorageResource_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* storageResourceId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_deleteStorageResource_pargs& obj);
+};
+
+typedef struct _Airavata_deleteStorageResource_result__isset {
+  _Airavata_deleteStorageResource_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_deleteStorageResource_result__isset;
+
+class Airavata_deleteStorageResource_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "C0679679E26638BE0A41545C2E17B17A";
+  static const uint8_t binary_fingerprint[16]; // = {0xC0,0x67,0x96,0x79,0xE2,0x66,0x38,0xBE,0x0A,0x41,0x54,0x5C,0x2E,0x17,0xB1,0x7A};
+
+  Airavata_deleteStorageResource_result(const Airavata_deleteStorageResource_result&);
+  Airavata_deleteStorageResource_result& operator=(const Airavata_deleteStorageResource_result&);
+  Airavata_deleteStorageResource_result() : success(0) {
+  }
+
+  virtual ~Airavata_deleteStorageResource_result() throw();
+  bool success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_deleteStorageResource_result__isset __isset;
+
+  void __set_success(const bool val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_deleteStorageResource_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteStorageResource_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteStorageResource_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_deleteStorageResource_result& obj);
+};
+
+typedef struct _Airavata_deleteStorageResource_presult__isset {
+  _Airavata_deleteStorageResource_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_deleteStorageResource_presult__isset;
+
+class Airavata_deleteStorageResource_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "C0679679E26638BE0A41545C2E17B17A";
+  static const uint8_t binary_fingerprint[16]; // = {0xC0,0x67,0x96,0x79,0xE2,0x66,0x38,0xBE,0x0A,0x41,0x54,0x5C,0x2E,0x17,0xB1,0x7A};
+
+
+  virtual ~Airavata_deleteStorageResource_presult() throw();
+  bool* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_deleteStorageResource_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_deleteStorageResource_presult& obj);
+};
+
+
 class Airavata_addLocalSubmissionDetails_args {
  public:
 
@@ -21861,6 +22713,21 @@ class AiravataClient : virtual public AiravataIf {
   bool deleteComputeResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId);
   void send_deleteComputeResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId);
   bool recv_deleteComputeResource();
+  void registerStorageResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& storageResourceDescription);
+  void send_registerStorageResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& storageResourceDescription);
+  void recv_registerStorageResource(std::string& _return);
+  void getStorageResource( ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& storageResourceId);
+  void send_getStorageResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& storageResourceId);
+  void recv_getStorageResource( ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& _return);
+  void getAllStorageResourceNames(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken);
+  void send_getAllStorageResourceNames(const  ::apache::airavata::model::security::AuthzToken& authzToken);
+  void recv_getAllStorageResourceNames(std::map<std::string, std::string> & _return);
+  bool updateStorageResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& storageResourceId, const  ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& storageResourceDescription);
+  void send_updateStorageResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& storageResourceId, const  ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& storageResourceDescription);
+  bool recv_updateStorageResource();
+  bool deleteStorageResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& storageResourceId);
+  void send_deleteStorageResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& storageResourceId);
+  bool recv_deleteStorageResource();
   void addLocalSubmissionDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission);
   void send_addLocalSubmissionDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission);
   void recv_addLocalSubmissionDetails(std::string& _return);
@@ -22116,6 +22983,11 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_getAllComputeResourceNames(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateComputeResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteComputeResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_registerStorageResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getStorageResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAllStorageResourceNames(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_updateStorageResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_deleteStorageResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_addLocalSubmissionDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateLocalSubmissionDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getLocalJobSubmission(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -22243,6 +23115,11 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["getAllComputeResourceNames"] = &AiravataProcessor::process_getAllComputeResourceNames;
     processMap_["updateComputeResource"] = &AiravataProcessor::process_updateComputeResource;
     processMap_["deleteComputeResource"] = &AiravataProcessor::process_deleteComputeResource;
+    processMap_["registerStorageResource"] = &AiravataProcessor::process_registerStorageResource;
+    processMap_["getStorageResource"] = &AiravataProcessor::process_getStorageResource;
+    processMap_["getAllStorageResourceNames"] = &AiravataProcessor::process_getAllStorageResourceNames;
+    processMap_["updateStorageResource"] = &AiravataProcessor::process_updateStorageResource;
+    processMap_["deleteStorageResource"] = &AiravataProcessor::process_deleteStorageResource;
     processMap_["addLocalSubmissionDetails"] = &AiravataProcessor::process_addLocalSubmissionDetails;
     processMap_["updateLocalSubmissionDetails"] = &AiravataProcessor::process_updateLocalSubmissionDetails;
     processMap_["getLocalJobSubmission"] = &AiravataProcessor::process_getLocalJobSubmission;
@@ -22967,6 +23844,54 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->deleteComputeResource(authzToken, computeResourceId);
     }
     return ifaces_[i]->deleteComputeResource(authzToken, computeResourceId);
+  }
+
+  void registerStorageResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& storageResourceDescription) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->registerStorageResource(_return, authzToken, storageResourceDescription);
+    }
+    ifaces_[i]->registerStorageResource(_return, authzToken, storageResourceDescription);
+    return;
+  }
+
+  void getStorageResource( ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& storageResourceId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getStorageResource(_return, authzToken, storageResourceId);
+    }
+    ifaces_[i]->getStorageResource(_return, authzToken, storageResourceId);
+    return;
+  }
+
+  void getAllStorageResourceNames(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getAllStorageResourceNames(_return, authzToken);
+    }
+    ifaces_[i]->getAllStorageResourceNames(_return, authzToken);
+    return;
+  }
+
+  bool updateStorageResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& storageResourceId, const  ::apache::airavata::model::appcatalog::storageresource::StorageResourceDescription& storageResourceDescription) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->updateStorageResource(authzToken, storageResourceId, storageResourceDescription);
+    }
+    return ifaces_[i]->updateStorageResource(authzToken, storageResourceId, storageResourceDescription);
+  }
+
+  bool deleteStorageResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& storageResourceId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->deleteStorageResource(authzToken, storageResourceId);
+    }
+    return ifaces_[i]->deleteStorageResource(authzToken, storageResourceId);
   }
 
   void addLocalSubmissionDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission) {

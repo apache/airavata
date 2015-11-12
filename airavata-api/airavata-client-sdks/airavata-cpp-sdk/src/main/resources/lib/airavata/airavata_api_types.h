@@ -39,6 +39,7 @@
 #include "experiment_model_types.h"
 #include "workspace_model_types.h"
 #include "compute_resource_model_types.h"
+#include "storage_resource_model_types.h"
 #include "scheduling_model_types.h"
 #include "application_io_models_types.h"
 #include "application_deployment_model_types.h"
