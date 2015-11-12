@@ -14,6 +14,7 @@ import apache.airavata.model.job.ttypes
 import apache.airavata.model.experiment.ttypes
 import apache.airavata.model.workspace.ttypes
 import apache.airavata.model.appcatalog.computeresource.ttypes
+import apache.airavata.model.appcatalog.storageresource.ttypes
 import apache.airavata.model.scheduling.ttypes
 import apache.airavata.model.application.io.ttypes
 import apache.airavata.model.appcatalog.appdeployment.ttypes
