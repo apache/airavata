@@ -43,6 +43,7 @@ import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.DataStoragePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.error.*;
@@ -2470,6 +2471,71 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage("Error while deleting compute resource. More info : " + e.getMessage());
             throw exception;
         }
+    }
+
+    /**
+     * Register a Storage Resource.
+     *
+     * @param authzToken
+     * @param storageResourceDescription Storge Resource Object created from the datamodel.
+     * @return storageResourceId
+     * Returns a server-side generated airavata storage resource globally unique identifier.
+     */
+    @Override
+    public String registerStorageResource(AuthzToken authzToken, StorageResourceDescription storageResourceDescription) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        return null;
+    }
+
+    /**
+     * Fetch the given Storage Resource.
+     *
+     * @param authzToken
+     * @param storageResourceId The identifier for the requested storage resource
+     * @return storageResourceDescription
+     * Storage Resource Object created from the datamodel..
+     */
+    @Override
+    public StorageResourceDescription getStorageResource(AuthzToken authzToken, String storageResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        return null;
+    }
+
+    /**
+     * Fetch all registered Storage Resources.
+     *
+     * @param authzToken
+     * @return A map of registered compute resource id's and thier corresponding hostnames.
+     * Compute Resource Object created from the datamodel..
+     */
+    @Override
+    public Map<String, String> getAllStorageResourceNames(AuthzToken authzToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        return null;
+    }
+
+    /**
+     * Update a Compute Resource.
+     *
+     * @param authzToken
+     * @param storageResourceId          The identifier for the requested compute resource to be updated.
+     * @param storageResourceDescription Storage Resource Object created from the datamodel.
+     * @return status
+     * Returns a success/failure of the update.
+     */
+    @Override
+    public boolean updateStorageResource(AuthzToken authzToken, String storageResourceId, StorageResourceDescription storageResourceDescription) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        return false;
+    }
+
+    /**
+     * Delete a Storage Resource.
+     *
+     * @param authzToken
+     * @param storageResourceId The identifier for the requested compute resource to be deleted.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean deleteStorageResource(AuthzToken authzToken, String storageResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        return false;
     }
 
     /**
