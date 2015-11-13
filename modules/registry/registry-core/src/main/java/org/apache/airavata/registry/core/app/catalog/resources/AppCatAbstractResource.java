@@ -24,6 +24,7 @@ package org.apache.airavata.registry.core.app.catalog.resources;
 public abstract class AppCatAbstractResource implements AppCatalogResource {
     // table names
 	public static final String COMPUTE_RESOURCE = "ComputeResource";
+    public static final String STORAGE_RESOURCE = "StorageResource";
 	public static final String HOST_ALIAS = "HostAlias";
     public static final String HOST_IPADDRESS = "HostIPAddress";
     public static final String GSISSH_SUBMISSION = "GSISSHSubmission";
@@ -78,6 +79,13 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
 		public static final String RESOURCE_ID = "resourceId";
 		public static final String HOST_NAME = "hostName";
 	}
+
+    // Storage Resource Table
+    public final class StorageResourceConstants {
+        public static final String RESOURCE_DESCRIPTION = "resourceDescription";
+        public static final String RESOURCE_ID = "resourceId";
+        public static final String HOST_NAME = "hostName";
+    }
 
     // Host Alias Table
     public final class HostAliasConstants {

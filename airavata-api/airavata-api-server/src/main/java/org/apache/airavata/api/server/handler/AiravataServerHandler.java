@@ -2483,7 +2483,16 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public String registerStorageResource(AuthzToken authzToken, StorageResourceDescription storageResourceDescription) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            return appCatalog.getStorageResource().addStorageResource(storageResourceDescription);
+        } catch (AppCatalogException e) {
+            logger.error("Error while saving storage resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while saving storage resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -2496,7 +2505,16 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public StorageResourceDescription getStorageResource(AuthzToken authzToken, String storageResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            return appCatalog.getStorageResource().getStorageResource(storageResourceId);
+        } catch (AppCatalogException e) {
+            logger.error(storageResourceId, "Error while retrieving storage resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving storage resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -2508,7 +2526,16 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public Map<String, String> getAllStorageResourceNames(AuthzToken authzToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            return appCatalog.getStorageResource().getAllStorageResourceIdList();
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving storage resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving storage resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -2522,7 +2549,17 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public boolean updateStorageResource(AuthzToken authzToken, String storageResourceId, StorageResourceDescription storageResourceDescription) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        return false;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            appCatalog.getStorageResource().updateStorageResource(storageResourceId, storageResourceDescription);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(storageResourceId, "Error while updating storage resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updaing storage resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -2535,7 +2572,17 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public boolean deleteStorageResource(AuthzToken authzToken, String storageResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        return false;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            appCatalog.getStorageResource().removeStorageResource(storageResourceId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(storageResourceId, "Error while deleting storage resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while deleting storage resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
