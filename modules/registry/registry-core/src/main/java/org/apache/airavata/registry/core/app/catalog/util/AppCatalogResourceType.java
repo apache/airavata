@@ -23,6 +23,7 @@ package org.apache.airavata.registry.core.app.catalog.util;
 
 public enum AppCatalogResourceType {
 	COMPUTE_RESOURCE,
+    STORAGE_RESOURCE,
     HOST_ALIAS,
     HOST_IPADDRESS,
     GSISSH_SUBMISSION,

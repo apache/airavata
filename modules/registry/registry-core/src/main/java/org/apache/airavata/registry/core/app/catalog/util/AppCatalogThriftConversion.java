@@ -36,6 +36,7 @@ import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.DataStoragePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -51,6 +52,15 @@ public class AppCatalogThriftConversion {
         resource.setResourceDescription(description.getResourceDescription());
         resource.setResourceId(description.getComputeResourceId());
         resource.setMaxMemoryPerNode(description.getMaxMemoryPerNode());
+        resource.setEnabled(description.isEnabled());
+        return resource;
+    }
+
+    public static StorageResourceResource getStorageResource (StorageResourceDescription description){
+        StorageResourceResource resource = new StorageResourceResource();
+        resource.setHostName(description.getHostName());
+        resource.setResourceDescription(description.getStorageResourceDescription());
+        resource.setResourceId(description.getStorageResourceId());
         resource.setEnabled(description.isEnabled());
         return resource;
     }
@@ -103,10 +113,27 @@ public class AppCatalogThriftConversion {
         return description;
     }
 
+    public static StorageResourceDescription getStorageDescription (StorageResourceResource resource) throws AppCatalogException {
+        StorageResourceDescription description = new StorageResourceDescription();
+        description.setStorageResourceId(resource.getResourceId());
+        description.setHostName(resource.getHostName());
+        description.setStorageResourceDescription(resource.getResourceDescription());
+        description.setEnabled(resource.isEnabled());
+        return description;
+    }
+
     public static  List<ComputeResourceDescription> getComputeDescriptionList (List<AppCatalogResource> resources) throws AppCatalogException {
         List<ComputeResourceDescription> list = new ArrayList<ComputeResourceDescription>();
         for (AppCatalogResource resource : resources){
             list.add(getComputeHostDescription((ComputeResourceResource)resource));
+        }
+        return list;
+    }
+
+    public static  List<StorageResourceDescription> getStorageDescriptionList (List<AppCatalogResource> resources) throws AppCatalogException {
+        List<StorageResourceDescription> list = new ArrayList<StorageResourceDescription>();
+        for (AppCatalogResource resource : resources){
+            list.add(getStorageDescription((StorageResourceResource) resource));
         }
         return list;
     }
