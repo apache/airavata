@@ -36,6 +36,7 @@
 #include "status_models_types.h"
 #include "compute_resource_model_types.h"
 #include "application_io_models_types.h"
+#include "job_model_types.h"
 
 
 namespace apache { namespace airavata { namespace model { namespace task {
@@ -72,17 +73,18 @@ class JobSubmissionTaskModel;
 class MonitorTaskModel;
 
 typedef struct _TaskModel__isset {
-  _TaskModel__isset() : taskDetail(false), subTaskModel(false), taskError(false) {}
+  _TaskModel__isset() : taskDetail(false), subTaskModel(false), taskError(false), jobs(false) {}
   bool taskDetail :1;
   bool subTaskModel :1;
   bool taskError :1;
+  bool jobs :1;
 } _TaskModel__isset;
 
 class TaskModel {
  public:
 
-  static const char* ascii_fingerprint; // = "CE3A1BEFC350140F2B4D2EF1424A7C4F";
-  static const uint8_t binary_fingerprint[16]; // = {0xCE,0x3A,0x1B,0xEF,0xC3,0x50,0x14,0x0F,0x2B,0x4D,0x2E,0xF1,0x42,0x4A,0x7C,0x4F};
+  static const char* ascii_fingerprint; // = "BA52131C9C867CBF7281F29EDD7DDB6F";
+  static const uint8_t binary_fingerprint[16]; // = {0xBA,0x52,0x13,0x1C,0x9C,0x86,0x7C,0xBF,0x72,0x81,0xF2,0x9E,0xDD,0x7D,0xDB,0x6F};
 
   TaskModel(const TaskModel&);
   TaskModel& operator=(const TaskModel&);
@@ -99,6 +101,7 @@ class TaskModel {
   std::string taskDetail;
   std::string subTaskModel;
    ::apache::airavata::model::commons::ErrorModel taskError;
+  std::vector< ::apache::airavata::model::job::JobModel>  jobs;
 
   _TaskModel__isset __isset;
 
@@ -119,6 +122,8 @@ class TaskModel {
   void __set_subTaskModel(const std::string& val);
 
   void __set_taskError(const  ::apache::airavata::model::commons::ErrorModel& val);
+
+  void __set_jobs(const std::vector< ::apache::airavata::model::job::JobModel> & val);
 
   bool operator == (const TaskModel & rhs) const
   {
@@ -145,6 +150,10 @@ class TaskModel {
     if (__isset.taskError != rhs.__isset.taskError)
       return false;
     else if (__isset.taskError && !(taskError == rhs.taskError))
+      return false;
+    if (__isset.jobs != rhs.__isset.jobs)
+      return false;
+    else if (__isset.jobs && !(jobs == rhs.jobs))
       return false;
     return true;
   }

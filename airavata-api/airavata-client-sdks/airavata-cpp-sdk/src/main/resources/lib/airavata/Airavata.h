@@ -474,6 +474,45 @@ class AiravataIf {
   virtual void getExperiment( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) = 0;
 
   /**
+   * Fetch the completed nested tree structue of previously created experiment metadata which includes processes ->
+   * tasks -> jobs information.
+   * 
+   * @param airavataExperimentId
+   *    The identifier for the requested experiment. This is returned during the create experiment step.
+   * 
+   * @return experimentMetada
+   *   This method will return the previously stored experiment metadata.
+   * 
+   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *    For any incorrect forming of the request itself.
+   * 
+   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataClientException
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   * 
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *         gateway registration steps and retry this request.
+   * 
+   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *         For now this is a place holder.
+   * 
+   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *         is implemented, the authorization will be more substantial.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *       rather an Airavata Administrator will be notified to take corrective action.
+   * 
+   * 
+   * @param authzToken
+   * @param airavataExperimentId
+   */
+  virtual void getDetailedExperimentTree( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) = 0;
+
+  /**
    * Configure a previously created experiment with required inputs, scheduling and other quality of service
    *   parameters. This method only updates the experiment object within the registry. The experiment has to be launched
    *   to make it actionable by the server.
@@ -1840,6 +1879,9 @@ class AiravataNull : virtual public AiravataIf {
     return _return;
   }
   void getExperiment( ::apache::airavata::model::experiment::ExperimentModel& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataExperimentId */) {
+    return;
+  }
+  void getDetailedExperimentTree( ::apache::airavata::model::experiment::ExperimentModel& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataExperimentId */) {
     return;
   }
   void updateExperiment(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataExperimentId */, const  ::apache::airavata::model::experiment::ExperimentModel& /* experiment */) {
@@ -6130,8 +6172,8 @@ typedef struct _Airavata_getExperimentsInProject_result__isset {
 class Airavata_getExperimentsInProject_result {
  public:
 
-  static const char* ascii_fingerprint; // = "4A43F862B4395ECBB8FAF5A2B8AD5719";
-  static const uint8_t binary_fingerprint[16]; // = {0x4A,0x43,0xF8,0x62,0xB4,0x39,0x5E,0xCB,0xB8,0xFA,0xF5,0xA2,0xB8,0xAD,0x57,0x19};
+  static const char* ascii_fingerprint; // = "B8784F6CD390EB041E2F35FF8F2F5DF8";
+  static const uint8_t binary_fingerprint[16]; // = {0xB8,0x78,0x4F,0x6C,0xD3,0x90,0xEB,0x04,0x1E,0x2F,0x35,0xFF,0x8F,0x2F,0x5D,0xF8};
 
   Airavata_getExperimentsInProject_result(const Airavata_getExperimentsInProject_result&);
   Airavata_getExperimentsInProject_result& operator=(const Airavata_getExperimentsInProject_result&);
@@ -6201,8 +6243,8 @@ typedef struct _Airavata_getExperimentsInProject_presult__isset {
 class Airavata_getExperimentsInProject_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "4A43F862B4395ECBB8FAF5A2B8AD5719";
-  static const uint8_t binary_fingerprint[16]; // = {0x4A,0x43,0xF8,0x62,0xB4,0x39,0x5E,0xCB,0xB8,0xFA,0xF5,0xA2,0xB8,0xAD,0x57,0x19};
+  static const char* ascii_fingerprint; // = "B8784F6CD390EB041E2F35FF8F2F5DF8";
+  static const uint8_t binary_fingerprint[16]; // = {0xB8,0x78,0x4F,0x6C,0xD3,0x90,0xEB,0x04,0x1E,0x2F,0x35,0xFF,0x8F,0x2F,0x5D,0xF8};
 
 
   virtual ~Airavata_getExperimentsInProject_presult() throw();
@@ -6307,8 +6349,8 @@ typedef struct _Airavata_getUserExperiments_result__isset {
 class Airavata_getUserExperiments_result {
  public:
 
-  static const char* ascii_fingerprint; // = "564D61ED145B7790C97978C1EC67EB22";
-  static const uint8_t binary_fingerprint[16]; // = {0x56,0x4D,0x61,0xED,0x14,0x5B,0x77,0x90,0xC9,0x79,0x78,0xC1,0xEC,0x67,0xEB,0x22};
+  static const char* ascii_fingerprint; // = "84E19C1C4E5B827947AAA2E898184043";
+  static const uint8_t binary_fingerprint[16]; // = {0x84,0xE1,0x9C,0x1C,0x4E,0x5B,0x82,0x79,0x47,0xAA,0xA2,0xE8,0x98,0x18,0x40,0x43};
 
   Airavata_getUserExperiments_result(const Airavata_getUserExperiments_result&);
   Airavata_getUserExperiments_result& operator=(const Airavata_getUserExperiments_result&);
@@ -6372,8 +6414,8 @@ typedef struct _Airavata_getUserExperiments_presult__isset {
 class Airavata_getUserExperiments_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "564D61ED145B7790C97978C1EC67EB22";
-  static const uint8_t binary_fingerprint[16]; // = {0x56,0x4D,0x61,0xED,0x14,0x5B,0x77,0x90,0xC9,0x79,0x78,0xC1,0xEC,0x67,0xEB,0x22};
+  static const char* ascii_fingerprint; // = "84E19C1C4E5B827947AAA2E898184043";
+  static const uint8_t binary_fingerprint[16]; // = {0x84,0xE1,0x9C,0x1C,0x4E,0x5B,0x82,0x79,0x47,0xAA,0xA2,0xE8,0x98,0x18,0x40,0x43};
 
 
   virtual ~Airavata_getUserExperiments_presult() throw();
@@ -6394,8 +6436,8 @@ class Airavata_getUserExperiments_presult {
 class Airavata_createExperiment_args {
  public:
 
-  static const char* ascii_fingerprint; // = "9A4BE74079A0E2FB7F9DE44451A9128E";
-  static const uint8_t binary_fingerprint[16]; // = {0x9A,0x4B,0xE7,0x40,0x79,0xA0,0xE2,0xFB,0x7F,0x9D,0xE4,0x44,0x51,0xA9,0x12,0x8E};
+  static const char* ascii_fingerprint; // = "AF8D8506603C5450CFF6943D2A1CC541";
+  static const uint8_t binary_fingerprint[16]; // = {0xAF,0x8D,0x85,0x06,0x60,0x3C,0x54,0x50,0xCF,0xF6,0x94,0x3D,0x2A,0x1C,0xC5,0x41};
 
   Airavata_createExperiment_args(const Airavata_createExperiment_args&);
   Airavata_createExperiment_args& operator=(const Airavata_createExperiment_args&);
@@ -6439,8 +6481,8 @@ class Airavata_createExperiment_args {
 class Airavata_createExperiment_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "9A4BE74079A0E2FB7F9DE44451A9128E";
-  static const uint8_t binary_fingerprint[16]; // = {0x9A,0x4B,0xE7,0x40,0x79,0xA0,0xE2,0xFB,0x7F,0x9D,0xE4,0x44,0x51,0xA9,0x12,0x8E};
+  static const char* ascii_fingerprint; // = "AF8D8506603C5450CFF6943D2A1CC541";
+  static const uint8_t binary_fingerprint[16]; // = {0xAF,0x8D,0x85,0x06,0x60,0x3C,0x54,0x50,0xCF,0xF6,0x94,0x3D,0x2A,0x1C,0xC5,0x41};
 
 
   virtual ~Airavata_createExperiment_pargs() throw();
@@ -6770,8 +6812,8 @@ typedef struct _Airavata_getExperiment_result__isset {
 class Airavata_getExperiment_result {
  public:
 
-  static const char* ascii_fingerprint; // = "0AC3160B80BF5C1F1AA64595E360CB5D";
-  static const uint8_t binary_fingerprint[16]; // = {0x0A,0xC3,0x16,0x0B,0x80,0xBF,0x5C,0x1F,0x1A,0xA6,0x45,0x95,0xE3,0x60,0xCB,0x5D};
+  static const char* ascii_fingerprint; // = "97507E675D509FA1DF7A743F62A5860C";
+  static const uint8_t binary_fingerprint[16]; // = {0x97,0x50,0x7E,0x67,0x5D,0x50,0x9F,0xA1,0xDF,0x7A,0x74,0x3F,0x62,0xA5,0x86,0x0C};
 
   Airavata_getExperiment_result(const Airavata_getExperiment_result&);
   Airavata_getExperiment_result& operator=(const Airavata_getExperiment_result&);
@@ -6841,8 +6883,8 @@ typedef struct _Airavata_getExperiment_presult__isset {
 class Airavata_getExperiment_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "0AC3160B80BF5C1F1AA64595E360CB5D";
-  static const uint8_t binary_fingerprint[16]; // = {0x0A,0xC3,0x16,0x0B,0x80,0xBF,0x5C,0x1F,0x1A,0xA6,0x45,0x95,0xE3,0x60,0xCB,0x5D};
+  static const char* ascii_fingerprint; // = "97507E675D509FA1DF7A743F62A5860C";
+  static const uint8_t binary_fingerprint[16]; // = {0x97,0x50,0x7E,0x67,0x5D,0x50,0x9F,0xA1,0xDF,0x7A,0x74,0x3F,0x62,0xA5,0x86,0x0C};
 
 
   virtual ~Airavata_getExperiment_presult() throw();
@@ -6861,11 +6903,171 @@ class Airavata_getExperiment_presult {
 };
 
 
+class Airavata_getDetailedExperimentTree_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "5C8C4FD14D732E7EC3E0A61A8C24C7FF";
+  static const uint8_t binary_fingerprint[16]; // = {0x5C,0x8C,0x4F,0xD1,0x4D,0x73,0x2E,0x7E,0xC3,0xE0,0xA6,0x1A,0x8C,0x24,0xC7,0xFF};
+
+  Airavata_getDetailedExperimentTree_args(const Airavata_getDetailedExperimentTree_args&);
+  Airavata_getDetailedExperimentTree_args& operator=(const Airavata_getDetailedExperimentTree_args&);
+  Airavata_getDetailedExperimentTree_args() : airavataExperimentId() {
+  }
+
+  virtual ~Airavata_getDetailedExperimentTree_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string airavataExperimentId;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_airavataExperimentId(const std::string& val);
+
+  bool operator == (const Airavata_getDetailedExperimentTree_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(airavataExperimentId == rhs.airavataExperimentId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getDetailedExperimentTree_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getDetailedExperimentTree_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getDetailedExperimentTree_args& obj);
+};
+
+
+class Airavata_getDetailedExperimentTree_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "5C8C4FD14D732E7EC3E0A61A8C24C7FF";
+  static const uint8_t binary_fingerprint[16]; // = {0x5C,0x8C,0x4F,0xD1,0x4D,0x73,0x2E,0x7E,0xC3,0xE0,0xA6,0x1A,0x8C,0x24,0xC7,0xFF};
+
+
+  virtual ~Airavata_getDetailedExperimentTree_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* airavataExperimentId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getDetailedExperimentTree_pargs& obj);
+};
+
+typedef struct _Airavata_getDetailedExperimentTree_result__isset {
+  _Airavata_getDetailedExperimentTree_result__isset() : success(false), ire(false), enf(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool enf :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getDetailedExperimentTree_result__isset;
+
+class Airavata_getDetailedExperimentTree_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "97507E675D509FA1DF7A743F62A5860C";
+  static const uint8_t binary_fingerprint[16]; // = {0x97,0x50,0x7E,0x67,0x5D,0x50,0x9F,0xA1,0xDF,0x7A,0x74,0x3F,0x62,0xA5,0x86,0x0C};
+
+  Airavata_getDetailedExperimentTree_result(const Airavata_getDetailedExperimentTree_result&);
+  Airavata_getDetailedExperimentTree_result& operator=(const Airavata_getDetailedExperimentTree_result&);
+  Airavata_getDetailedExperimentTree_result() {
+  }
+
+  virtual ~Airavata_getDetailedExperimentTree_result() throw();
+   ::apache::airavata::model::experiment::ExperimentModel success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getDetailedExperimentTree_result__isset __isset;
+
+  void __set_success(const  ::apache::airavata::model::experiment::ExperimentModel& val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_enf(const  ::apache::airavata::api::error::ExperimentNotFoundException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_getDetailedExperimentTree_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(enf == rhs.enf))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getDetailedExperimentTree_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getDetailedExperimentTree_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getDetailedExperimentTree_result& obj);
+};
+
+typedef struct _Airavata_getDetailedExperimentTree_presult__isset {
+  _Airavata_getDetailedExperimentTree_presult__isset() : success(false), ire(false), enf(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool enf :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getDetailedExperimentTree_presult__isset;
+
+class Airavata_getDetailedExperimentTree_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "97507E675D509FA1DF7A743F62A5860C";
+  static const uint8_t binary_fingerprint[16]; // = {0x97,0x50,0x7E,0x67,0x5D,0x50,0x9F,0xA1,0xDF,0x7A,0x74,0x3F,0x62,0xA5,0x86,0x0C};
+
+
+  virtual ~Airavata_getDetailedExperimentTree_presult() throw();
+   ::apache::airavata::model::experiment::ExperimentModel* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getDetailedExperimentTree_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_getDetailedExperimentTree_presult& obj);
+};
+
+
 class Airavata_updateExperiment_args {
  public:
 
-  static const char* ascii_fingerprint; // = "9A4BE74079A0E2FB7F9DE44451A9128E";
-  static const uint8_t binary_fingerprint[16]; // = {0x9A,0x4B,0xE7,0x40,0x79,0xA0,0xE2,0xFB,0x7F,0x9D,0xE4,0x44,0x51,0xA9,0x12,0x8E};
+  static const char* ascii_fingerprint; // = "AF8D8506603C5450CFF6943D2A1CC541";
+  static const uint8_t binary_fingerprint[16]; // = {0xAF,0x8D,0x85,0x06,0x60,0x3C,0x54,0x50,0xCF,0xF6,0x94,0x3D,0x2A,0x1C,0xC5,0x41};
 
   Airavata_updateExperiment_args(const Airavata_updateExperiment_args&);
   Airavata_updateExperiment_args& operator=(const Airavata_updateExperiment_args&);
@@ -6909,8 +7111,8 @@ class Airavata_updateExperiment_args {
 class Airavata_updateExperiment_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "9A4BE74079A0E2FB7F9DE44451A9128E";
-  static const uint8_t binary_fingerprint[16]; // = {0x9A,0x4B,0xE7,0x40,0x79,0xA0,0xE2,0xFB,0x7F,0x9D,0xE4,0x44,0x51,0xA9,0x12,0x8E};
+  static const char* ascii_fingerprint; // = "AF8D8506603C5450CFF6943D2A1CC541";
+  static const uint8_t binary_fingerprint[16]; // = {0xAF,0x8D,0x85,0x06,0x60,0x3C,0x54,0x50,0xCF,0xF6,0x94,0x3D,0x2A,0x1C,0xC5,0x41};
 
 
   virtual ~Airavata_updateExperiment_pargs() throw();
@@ -21750,6 +21952,9 @@ class AiravataClient : virtual public AiravataIf {
   void getExperiment( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void send_getExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void recv_getExperiment( ::apache::airavata::model::experiment::ExperimentModel& _return);
+  void getDetailedExperimentTree( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
+  void send_getDetailedExperimentTree(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
+  void recv_getDetailedExperimentTree( ::apache::airavata::model::experiment::ExperimentModel& _return);
   void updateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment);
   void send_updateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment);
   void recv_updateExperiment();
@@ -22079,6 +22284,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_createExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getDetailedExperimentTree(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateExperimentConfiguration(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateResourceScheduleing(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -22206,6 +22412,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["createExperiment"] = &AiravataProcessor::process_createExperiment;
     processMap_["deleteExperiment"] = &AiravataProcessor::process_deleteExperiment;
     processMap_["getExperiment"] = &AiravataProcessor::process_getExperiment;
+    processMap_["getDetailedExperimentTree"] = &AiravataProcessor::process_getDetailedExperimentTree;
     processMap_["updateExperiment"] = &AiravataProcessor::process_updateExperiment;
     processMap_["updateExperimentConfiguration"] = &AiravataProcessor::process_updateExperimentConfiguration;
     processMap_["updateResourceScheduleing"] = &AiravataProcessor::process_updateResourceScheduleing;
@@ -22610,6 +22817,16 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->getExperiment(_return, authzToken, airavataExperimentId);
     }
     ifaces_[i]->getExperiment(_return, authzToken, airavataExperimentId);
+    return;
+  }
+
+  void getDetailedExperimentTree( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getDetailedExperimentTree(_return, authzToken, airavataExperimentId);
+    }
+    ifaces_[i]->getDetailedExperimentTree(_return, authzToken, airavataExperimentId);
     return;
   }
 

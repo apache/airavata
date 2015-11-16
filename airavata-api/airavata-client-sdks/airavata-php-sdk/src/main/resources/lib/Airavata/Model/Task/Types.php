@@ -100,6 +100,10 @@ class TaskModel {
    * @var \Airavata\Model\Commons\ErrorModel
    */
   public $taskError = null;
+  /**
+   * @var \Airavata\Model\Job\JobModel[]
+   */
+  public $jobs = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -142,6 +146,15 @@ class TaskModel {
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Commons\ErrorModel',
           ),
+        10 => array(
+          'var' => 'jobs',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\Job\JobModel',
+            ),
+          ),
         );
     }
     if (is_array($vals)) {
@@ -171,6 +184,9 @@ class TaskModel {
       }
       if (isset($vals['taskError'])) {
         $this->taskError = $vals['taskError'];
+      }
+      if (isset($vals['jobs'])) {
+        $this->jobs = $vals['jobs'];
       }
     }
   }
@@ -259,6 +275,24 @@ class TaskModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 10:
+          if ($ftype == TType::LST) {
+            $this->jobs = array();
+            $_size0 = 0;
+            $_etype3 = 0;
+            $xfer += $input->readListBegin($_etype3, $_size0);
+            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            {
+              $elem5 = null;
+              $elem5 = new \Airavata\Model\Job\JobModel();
+              $xfer += $elem5->read($input);
+              $this->jobs []= $elem5;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -321,6 +355,23 @@ class TaskModel {
       }
       $xfer += $output->writeFieldBegin('taskError', TType::STRUCT, 9);
       $xfer += $this->taskError->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->jobs !== null) {
+      if (!is_array($this->jobs)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('jobs', TType::LST, 10);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->jobs));
+        {
+          foreach ($this->jobs as $iter6)
+          {
+            $xfer += $iter6->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

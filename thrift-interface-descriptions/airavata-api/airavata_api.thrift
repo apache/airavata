@@ -605,6 +605,50 @@ service Airavata {
             4: airavata_errors.AiravataSystemException ase,
             5: airavata_errors.AuthorizationException ae)
 
+
+  /**
+   * Fetch the completed nested tree structue of previously created experiment metadata which includes processes ->
+   * tasks -> jobs information.
+   *
+   * @param airavataExperimentId
+   *    The identifier for the requested experiment. This is returned during the create experiment step.
+   *
+   * @return experimentMetada
+   *   This method will return the previously stored experiment metadata.
+   *
+   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *    For any incorrect forming of the request itself.
+   *
+   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+   *
+   * @throws org.apache.airavata.model.error.AiravataClientException
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *         gateway registration steps and retry this request.
+   *
+   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *         For now this is a place holder.
+   *
+   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *         is implemented, the authorization will be more substantial.
+   *
+   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *       rather an Airavata Administrator will be notified to take corrective action.
+   *
+  */
+  experiment_model.ExperimentModel getDetailedExperimentTree(1: required security_model.AuthzToken authzToken,
+                                                   2: required string airavataExperimentId)
+      throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.ExperimentNotFoundException enf,
+              3: airavata_errors.AiravataClientException ace,
+              4: airavata_errors.AiravataSystemException ase,
+              5: airavata_errors.AuthorizationException ae)
+
+
   /**
    * Configure a previously created experiment with required inputs, scheduling and other quality of service
    *   parameters. This method only updates the experiment object within the registry. The experiment has to be launched

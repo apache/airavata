@@ -562,6 +562,47 @@ class Iface:
     """
     pass
 
+  def getDetailedExperimentTree(self, authzToken, airavataExperimentId):
+    """
+    Fetch the completed nested tree structue of previously created experiment metadata which includes processes ->
+    tasks -> jobs information.
+
+    @param airavataExperimentId
+       The identifier for the requested experiment. This is returned during the create experiment step.
+
+    @return experimentMetada
+      This method will return the previously stored experiment metadata.
+
+    @throws org.apache.airavata.model.error.InvalidRequestException
+       For any incorrect forming of the request itself.
+
+    @throws org.apache.airavata.model.error.ExperimentNotFoundException
+       If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+
+    @throws org.apache.airavata.model.error.AiravataClientException
+       The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+
+         UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+            step, then Airavata Registry will not have a provenance area setup. The client has to follow
+            gateway registration steps and retry this request.
+
+         AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+            For now this is a place holder.
+
+         INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+            is implemented, the authorization will be more substantial.
+
+    @throws org.apache.airavata.model.error.AiravataSystemException
+       This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+          rather an Airavata Administrator will be notified to take corrective action.
+
+
+    Parameters:
+     - authzToken
+     - airavataExperimentId
+    """
+    pass
+
   def updateExperiment(self, authzToken, airavataExperimentId, experiment):
     """
     Configure a previously created experiment with required inputs, scheduling and other quality of service
@@ -3718,6 +3759,82 @@ class Client(Iface):
     if result.ae is not None:
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getExperiment failed: unknown result");
+
+  def getDetailedExperimentTree(self, authzToken, airavataExperimentId):
+    """
+    Fetch the completed nested tree structue of previously created experiment metadata which includes processes ->
+    tasks -> jobs information.
+
+    @param airavataExperimentId
+       The identifier for the requested experiment. This is returned during the create experiment step.
+
+    @return experimentMetada
+      This method will return the previously stored experiment metadata.
+
+    @throws org.apache.airavata.model.error.InvalidRequestException
+       For any incorrect forming of the request itself.
+
+    @throws org.apache.airavata.model.error.ExperimentNotFoundException
+       If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+
+    @throws org.apache.airavata.model.error.AiravataClientException
+       The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+
+         UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+            step, then Airavata Registry will not have a provenance area setup. The client has to follow
+            gateway registration steps and retry this request.
+
+         AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+            For now this is a place holder.
+
+         INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+            is implemented, the authorization will be more substantial.
+
+    @throws org.apache.airavata.model.error.AiravataSystemException
+       This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+          rather an Airavata Administrator will be notified to take corrective action.
+
+
+    Parameters:
+     - authzToken
+     - airavataExperimentId
+    """
+    self.send_getDetailedExperimentTree(authzToken, airavataExperimentId)
+    return self.recv_getDetailedExperimentTree()
+
+  def send_getDetailedExperimentTree(self, authzToken, airavataExperimentId):
+    self._oprot.writeMessageBegin('getDetailedExperimentTree', TMessageType.CALL, self._seqid)
+    args = getDetailedExperimentTree_args()
+    args.authzToken = authzToken
+    args.airavataExperimentId = airavataExperimentId
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_getDetailedExperimentTree(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = getDetailedExperimentTree_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.enf is not None:
+      raise result.enf
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getDetailedExperimentTree failed: unknown result");
 
   def updateExperiment(self, authzToken, airavataExperimentId, experiment):
     """
@@ -8541,6 +8658,7 @@ class Processor(Iface, TProcessor):
     self._processMap["createExperiment"] = Processor.process_createExperiment
     self._processMap["deleteExperiment"] = Processor.process_deleteExperiment
     self._processMap["getExperiment"] = Processor.process_getExperiment
+    self._processMap["getDetailedExperimentTree"] = Processor.process_getDetailedExperimentTree
     self._processMap["updateExperiment"] = Processor.process_updateExperiment
     self._processMap["updateExperimentConfiguration"] = Processor.process_updateExperimentConfiguration
     self._processMap["updateResourceScheduleing"] = Processor.process_updateResourceScheduleing
@@ -9232,6 +9350,28 @@ class Processor(Iface, TProcessor):
     except apache.airavata.api.error.ttypes.AuthorizationException, ae:
       result.ae = ae
     oprot.writeMessageBegin("getExperiment", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_getDetailedExperimentTree(self, seqid, iprot, oprot):
+    args = getDetailedExperimentTree_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = getDetailedExperimentTree_result()
+    try:
+      result.success = self._handler.getDetailedExperimentTree(args.authzToken, args.airavataExperimentId)
+    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.ExperimentNotFoundException, enf:
+      result.enf = enf
+    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException, ae:
+      result.ae = ae
+    oprot.writeMessageBegin("getDetailedExperimentTree", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -17826,6 +17966,224 @@ class getExperiment_result:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('getExperiment_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.enf is not None:
+      oprot.writeFieldBegin('enf', TType.STRUCT, 2)
+      self.enf.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 3)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 4)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 5)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.enf)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getDetailedExperimentTree_args:
+  """
+  Attributes:
+   - authzToken
+   - airavataExperimentId
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'airavataExperimentId', None, None, ), # 2
+  )
+
+  def __init__(self, authzToken=None, airavataExperimentId=None,):
+    self.authzToken = authzToken
+    self.airavataExperimentId = airavataExperimentId
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.airavataExperimentId = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getDetailedExperimentTree_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.airavataExperimentId is not None:
+      oprot.writeFieldBegin('airavataExperimentId', TType.STRING, 2)
+      oprot.writeString(self.airavataExperimentId)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.airavataExperimentId is None:
+      raise TProtocol.TProtocolException(message='Required field airavataExperimentId is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.airavataExperimentId)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getDetailedExperimentTree_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - enf
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.STRUCT, 'success', (apache.airavata.model.experiment.ttypes.ExperimentModel, apache.airavata.model.experiment.ttypes.ExperimentModel.thrift_spec), None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'enf', (apache.airavata.api.error.ttypes.ExperimentNotFoundException, apache.airavata.api.error.ttypes.ExperimentNotFoundException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 4
+    (5, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 5
+  )
+
+  def __init__(self, success=None, ire=None, enf=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.enf = enf
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRUCT:
+          self.success = apache.airavata.model.experiment.ttypes.ExperimentModel()
+          self.success.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.enf = apache.airavata.api.error.ttypes.ExperimentNotFoundException()
+          self.enf.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getDetailedExperimentTree_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.STRUCT, 0)
       self.success.write(oprot)

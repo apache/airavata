@@ -36,6 +36,7 @@
 #include "scheduling_model_types.h"
 #include "airavata_commons_types.h"
 #include "status_models_types.h"
+#include "process_model_types.h"
 
 
 namespace apache { namespace airavata { namespace model { namespace experiment {
@@ -159,7 +160,7 @@ class UserConfigurationDataModel {
 void swap(UserConfigurationDataModel &a, UserConfigurationDataModel &b);
 
 typedef struct _ExperimentModel__isset {
-  _ExperimentModel__isset() : creationTime(false), description(false), executionId(false), gatewayExecutionId(false), enableEmailNotification(false), emailAddresses(false), userConfigurationData(false), experimentInputs(false), experimentOutputs(false), experimentStatus(false), errors(false) {}
+  _ExperimentModel__isset() : creationTime(false), description(false), executionId(false), gatewayExecutionId(false), enableEmailNotification(false), emailAddresses(false), userConfigurationData(false), experimentInputs(false), experimentOutputs(false), experimentStatus(false), errors(false), processes(false) {}
   bool creationTime :1;
   bool description :1;
   bool executionId :1;
@@ -171,13 +172,14 @@ typedef struct _ExperimentModel__isset {
   bool experimentOutputs :1;
   bool experimentStatus :1;
   bool errors :1;
+  bool processes :1;
 } _ExperimentModel__isset;
 
 class ExperimentModel {
  public:
 
-  static const char* ascii_fingerprint; // = "5B49E16C9D5CBD0AE0EC026061048743";
-  static const uint8_t binary_fingerprint[16]; // = {0x5B,0x49,0xE1,0x6C,0x9D,0x5C,0xBD,0x0A,0xE0,0xEC,0x02,0x60,0x61,0x04,0x87,0x43};
+  static const char* ascii_fingerprint; // = "4DF530DE68212F7F779CF0EF35D9EDC3";
+  static const uint8_t binary_fingerprint[16]; // = {0x4D,0xF5,0x30,0xDE,0x68,0x21,0x2F,0x7F,0x77,0x9C,0xF0,0xEF,0x35,0xD9,0xED,0xC3};
 
   ExperimentModel(const ExperimentModel&);
   ExperimentModel& operator=(const ExperimentModel&);
@@ -204,6 +206,7 @@ class ExperimentModel {
   std::vector< ::apache::airavata::model::application::io::OutputDataObjectType>  experimentOutputs;
    ::apache::airavata::model::status::ExperimentStatus experimentStatus;
   std::vector< ::apache::airavata::model::commons::ErrorModel>  errors;
+  std::vector< ::apache::airavata::model::process::ProcessModel>  processes;
 
   _ExperimentModel__isset __isset;
 
@@ -240,6 +243,8 @@ class ExperimentModel {
   void __set_experimentStatus(const  ::apache::airavata::model::status::ExperimentStatus& val);
 
   void __set_errors(const std::vector< ::apache::airavata::model::commons::ErrorModel> & val);
+
+  void __set_processes(const std::vector< ::apache::airavata::model::process::ProcessModel> & val);
 
   bool operator == (const ExperimentModel & rhs) const
   {
@@ -298,6 +303,10 @@ class ExperimentModel {
     if (__isset.errors != rhs.__isset.errors)
       return false;
     else if (__isset.errors && !(errors == rhs.errors))
+      return false;
+    if (__isset.processes != rhs.__isset.processes)
+      return false;
+    else if (__isset.processes && !(processes == rhs.processes))
       return false;
     return true;
   }
