@@ -576,6 +576,48 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * Fetch the completed nested tree structue of previously created experiment metadata which includes processes ->
+   * tasks -> jobs information.
+   * 
+   * @param airavataExperimentId
+   *    The identifier for the requested experiment. This is returned during the create experiment step.
+   * 
+   * @return experimentMetada
+   *   This method will return the previously stored experiment metadata.
+   * 
+   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *    For any incorrect forming of the request itself.
+   * 
+   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataClientException
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   * 
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *         gateway registration steps and retry this request.
+   * 
+   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *         For now this is a place holder.
+   * 
+   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *         is implemented, the authorization will be more substantial.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *       rather an Airavata Administrator will be notified to take corrective action.
+   * 
+   * 
+   * @param authzToken
+   * @param airavataExperimentId
+   */
+  void getDetailedExperimentTree( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
+    // Your implementation goes here
+    printf("getDetailedExperimentTree\n");
+  }
+
+  /**
    * Configure a previously created experiment with required inputs, scheduling and other quality of service
    *   parameters. This method only updates the experiment object within the registry. The experiment has to be launched
    *   to make it actionable by the server.
