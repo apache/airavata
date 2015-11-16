@@ -11,6 +11,7 @@ import apache.airavata.model.commons.ttypes
 import apache.airavata.model.status.ttypes
 import apache.airavata.model.appcatalog.computeresource.ttypes
 import apache.airavata.model.application.io.ttypes
+import apache.airavata.model.job.ttypes
 
 
 from thrift.transport import TTransport
@@ -90,6 +91,7 @@ class TaskModel:
    - taskDetail
    - subTaskModel
    - taskError
+   - jobs
   """
 
   thrift_spec = (
@@ -103,9 +105,10 @@ class TaskModel:
     (7, TType.STRING, 'taskDetail', None, None, ), # 7
     (8, TType.STRING, 'subTaskModel', None, None, ), # 8
     (9, TType.STRUCT, 'taskError', (apache.airavata.model.commons.ttypes.ErrorModel, apache.airavata.model.commons.ttypes.ErrorModel.thrift_spec), None, ), # 9
+    (10, TType.LIST, 'jobs', (TType.STRUCT,(apache.airavata.model.job.ttypes.JobModel, apache.airavata.model.job.ttypes.JobModel.thrift_spec)), None, ), # 10
   )
 
-  def __init__(self, taskId=thrift_spec[1][4], taskType=None, parentProcessId=None, creationTime=None, lastUpdateTime=None, taskStatus=None, taskDetail=None, subTaskModel=None, taskError=None,):
+  def __init__(self, taskId=thrift_spec[1][4], taskType=None, parentProcessId=None, creationTime=None, lastUpdateTime=None, taskStatus=None, taskDetail=None, subTaskModel=None, taskError=None, jobs=None,):
     self.taskId = taskId
     self.taskType = taskType
     self.parentProcessId = parentProcessId
@@ -115,6 +118,7 @@ class TaskModel:
     self.taskDetail = taskDetail
     self.subTaskModel = subTaskModel
     self.taskError = taskError
+    self.jobs = jobs
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -172,6 +176,17 @@ class TaskModel:
           self.taskError.read(iprot)
         else:
           iprot.skip(ftype)
+      elif fid == 10:
+        if ftype == TType.LIST:
+          self.jobs = []
+          (_etype3, _size0) = iprot.readListBegin()
+          for _i4 in xrange(_size0):
+            _elem5 = apache.airavata.model.job.ttypes.JobModel()
+            _elem5.read(iprot)
+            self.jobs.append(_elem5)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -218,6 +233,13 @@ class TaskModel:
       oprot.writeFieldBegin('taskError', TType.STRUCT, 9)
       self.taskError.write(oprot)
       oprot.writeFieldEnd()
+    if self.jobs is not None:
+      oprot.writeFieldBegin('jobs', TType.LIST, 10)
+      oprot.writeListBegin(TType.STRUCT, len(self.jobs))
+      for iter6 in self.jobs:
+        iter6.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -248,6 +270,7 @@ class TaskModel:
     value = (value * 31) ^ hash(self.taskDetail)
     value = (value * 31) ^ hash(self.subTaskModel)
     value = (value * 31) ^ hash(self.taskError)
+    value = (value * 31) ^ hash(self.jobs)
     return value
 
   def __repr__(self):

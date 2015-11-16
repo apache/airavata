@@ -22,6 +22,7 @@ include "airavata_commons.thrift"
 include "status_models.thrift"
 include "compute_resource_model.thrift"
 include "application_io_models.thrift"
+include "job_model.thrift"
 
 namespace java org.apache.airavata.model.task
 namespace php Airavata.Model.Task
@@ -58,7 +59,8 @@ struct TaskModel {
     6: required status_models.TaskStatus taskStatus,
     7: optional string taskDetail,
     8: optional binary subTaskModel,
-    9: optional airavata_commons.ErrorModel taskError
+    9: optional airavata_commons.ErrorModel taskError,
+    10: optional list<job_model.JobModel> jobs
 }
 
 /**

@@ -74,10 +74,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AiravataServerHandler implements Airavata.Iface {
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
@@ -1253,6 +1250,69 @@ public class AiravataServerHandler implements Airavata.Iface {
     public ExperimentModel getExperiment(AuthzToken authzToken, String airavataExperimentId) throws InvalidRequestException,
             ExperimentNotFoundException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         return getExperimentInternal(airavataExperimentId);
+    }
+
+    /**
+     * Fetch the completed nested tree structue of previously created experiment metadata which includes processes ->
+     * tasks -> jobs information.
+     *
+     * @param airavataExperimentId The identifier for the requested experiment. This is returned during the create experiment step.
+     * @return experimentMetada
+     * This method will return the previously stored experiment metadata.
+     * @throws org.apache.airavata.model.error.InvalidRequestException     For any incorrect forming of the request itself.
+     * @throws org.apache.airavata.model.error.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+     * @throws org.apache.airavata.model.error.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+     *                                                                   <p/>
+     *                                                                   UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+     *                                                                   step, then Airavata Registry will not have a provenance area setup. The client has to follow
+     *                                                                   gateway registration steps and retry this request.
+     *                                                                   <p/>
+     *                                                                   AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+     *                                                                   For now this is a place holder.
+     *                                                                   <p/>
+     *                                                                   INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+     *                                                                   is implemented, the authorization will be more substantial.
+     * @throws org.apache.airavata.model.error.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+     *                                                                   rather an Airavata Administrator will be notified to take corrective action.
+     */
+    @Override
+    @SecurityCheck
+    public ExperimentModel getDetailedExperimentTree(AuthzToken authzToken, String airavataExperimentId) throws InvalidRequestException,
+            ExperimentNotFoundException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            ExperimentModel experimentModel =  getExperimentInternal(airavataExperimentId);
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            List<Object> processObjects  = experimentCatalog.get(ExperimentCatalogModelType.PROCESS,
+                    Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentModel.getExperimentId());
+            List<ProcessModel> processList = new ArrayList<>();
+            if(processObjects != null){
+                processObjects.stream().forEach(p -> {
+                    //Process already has the task object
+                    ((ProcessModel)p).getTasks().stream().forEach(t->{
+                        try {
+                            List<Object> jobObjects = experimentCatalog.get(ExperimentCatalogModelType.JOB,
+                                    Constants.FieldConstants.JobConstants.TASK_ID, ((TaskModel)t).getTaskId());
+                            List<JobModel> jobList  = new ArrayList<JobModel>();
+                            if(jobObjects != null){
+                                jobObjects.stream().forEach(j -> jobList.add((JobModel)j));
+                                t.setJobs(jobList);
+                            }
+                        } catch (RegistryException e) {
+                            logger.error(e.getMessage(), e);
+                        }
+                    });
+                    processList.add((ProcessModel)p);
+                });
+                experimentModel.setProcesses(processList);
+            }
+            return experimentModel;
+        } catch (Exception e) {
+            logger.error("Error while retrieving the experiment", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving the experiment. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /*This private method wraps the logic of getExperiment method as this method is called internally in the API.*/
