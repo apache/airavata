@@ -71,8 +71,8 @@ struct ComputeResourcePreference {
     9: optional string resourceSpecificCredentialStoreToken
 }
 
-struct DataStoragePreference {
-    1: required string dataMovememtResourceId,
+struct StoragePreference {
+    1: required string storageResourceId,
     2: optional string loginUserName,
     3: optional string fileSystemRootLocation,
     4: optional string resourceSpecificCredentialStoreToken
@@ -95,5 +95,5 @@ struct GatewayResourceProfile {
     1: required string gatewayID,
     2: optional string credentialStoreToken,
     3: optional list<ComputeResourcePreference> computeResourcePreferences
-    4: optional list<DataStoragePreference> dataStoragePreferences
+    4: optional list<StoragePreference> storagePreferences
 }

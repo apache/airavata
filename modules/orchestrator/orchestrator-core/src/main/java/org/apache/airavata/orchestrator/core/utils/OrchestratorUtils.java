@@ -25,20 +25,17 @@ import java.util.*;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.DataStoragePreference;
+import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
-import org.apache.airavata.registry.core.app.catalog.model.*;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.ApplicationInterface;
 import org.slf4j.Logger;
@@ -110,11 +107,11 @@ public class OrchestratorUtils {
         }
     }
 
-    public static DataStoragePreference getDateStoragePreference(OrchestratorContext context, ProcessModel processModel, String gatewayId) throws RegistryException {
+    public static StoragePreference getStoragePreference(OrchestratorContext context, ProcessModel processModel, String gatewayId) throws RegistryException {
         try {
             GwyResourceProfile gatewayProfile = context.getRegistry().getAppCatalog().getGatewayProfile();
             String resourceHostId = processModel.getComputeResourceId();
-            return gatewayProfile.getDataStoragePreference(gatewayId, resourceHostId);
+            return gatewayProfile.getStoragePreference(gatewayId, resourceHostId);
         } catch (AppCatalogException e) {
             logger.error("Error occurred while initializing app catalog", e);
             throw new RegistryException("Error occurred while initializing app catalog", e);

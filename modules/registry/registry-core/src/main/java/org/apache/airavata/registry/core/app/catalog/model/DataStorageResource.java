@@ -27,7 +27,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "DATA_STORAGE_INTERFACE")
-@IdClass(DataStorageInterface_PK.class)
+@IdClass(StorageInterface_PK.class)
 public class DataStorageResource implements Serializable {
 	
 	@Id

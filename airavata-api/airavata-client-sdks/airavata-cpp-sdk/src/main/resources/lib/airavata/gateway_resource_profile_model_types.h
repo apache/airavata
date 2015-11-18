@@ -39,7 +39,7 @@ namespace apache { namespace airavata { namespace model { namespace appcatalog {
 
 class ComputeResourcePreference;
 
-class DataStoragePreference;
+class StoragePreference;
 
 class GatewayResourceProfile;
 
@@ -146,33 +146,33 @@ class ComputeResourcePreference {
 
 void swap(ComputeResourcePreference &a, ComputeResourcePreference &b);
 
-typedef struct _DataStoragePreference__isset {
-  _DataStoragePreference__isset() : loginUserName(false), fileSystemRootLocation(false), resourceSpecificCredentialStoreToken(false) {}
+typedef struct _StoragePreference__isset {
+  _StoragePreference__isset() : loginUserName(false), fileSystemRootLocation(false), resourceSpecificCredentialStoreToken(false) {}
   bool loginUserName :1;
   bool fileSystemRootLocation :1;
   bool resourceSpecificCredentialStoreToken :1;
-} _DataStoragePreference__isset;
+} _StoragePreference__isset;
 
-class DataStoragePreference {
+class StoragePreference {
  public:
 
   static const char* ascii_fingerprint; // = "6BA700CA2E5FC52A8DA5ADCF811DC8DA";
   static const uint8_t binary_fingerprint[16]; // = {0x6B,0xA7,0x00,0xCA,0x2E,0x5F,0xC5,0x2A,0x8D,0xA5,0xAD,0xCF,0x81,0x1D,0xC8,0xDA};
 
-  DataStoragePreference(const DataStoragePreference&);
-  DataStoragePreference& operator=(const DataStoragePreference&);
-  DataStoragePreference() : dataMovememtResourceId(), loginUserName(), fileSystemRootLocation(), resourceSpecificCredentialStoreToken() {
+  StoragePreference(const StoragePreference&);
+  StoragePreference& operator=(const StoragePreference&);
+  StoragePreference() : storageResourceId(), loginUserName(), fileSystemRootLocation(), resourceSpecificCredentialStoreToken() {
   }
 
-  virtual ~DataStoragePreference() throw();
-  std::string dataMovememtResourceId;
+  virtual ~StoragePreference() throw();
+  std::string storageResourceId;
   std::string loginUserName;
   std::string fileSystemRootLocation;
   std::string resourceSpecificCredentialStoreToken;
 
-  _DataStoragePreference__isset __isset;
+  _StoragePreference__isset __isset;
 
-  void __set_dataMovememtResourceId(const std::string& val);
+  void __set_storageResourceId(const std::string& val);
 
   void __set_loginUserName(const std::string& val);
 
@@ -180,9 +180,9 @@ class DataStoragePreference {
 
   void __set_resourceSpecificCredentialStoreToken(const std::string& val);
 
-  bool operator == (const DataStoragePreference & rhs) const
+  bool operator == (const StoragePreference & rhs) const
   {
-    if (!(dataMovememtResourceId == rhs.dataMovememtResourceId))
+    if (!(storageResourceId == rhs.storageResourceId))
       return false;
     if (__isset.loginUserName != rhs.__isset.loginUserName)
       return false;
@@ -198,25 +198,25 @@ class DataStoragePreference {
       return false;
     return true;
   }
-  bool operator != (const DataStoragePreference &rhs) const {
+  bool operator != (const StoragePreference &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DataStoragePreference & ) const;
+  bool operator < (const StoragePreference & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const DataStoragePreference& obj);
+  friend std::ostream& operator<<(std::ostream& out, const StoragePreference& obj);
 };
 
-void swap(DataStoragePreference &a, DataStoragePreference &b);
+void swap(StoragePreference &a, StoragePreference &b);
 
 typedef struct _GatewayResourceProfile__isset {
-  _GatewayResourceProfile__isset() : credentialStoreToken(false), computeResourcePreferences(false), dataStoragePreferences(false) {}
+  _GatewayResourceProfile__isset() : credentialStoreToken(false), computeResourcePreferences(false), storagePreferences(false) {}
   bool credentialStoreToken :1;
   bool computeResourcePreferences :1;
-  bool dataStoragePreferences :1;
+  bool storagePreferences :1;
 } _GatewayResourceProfile__isset;
 
 class GatewayResourceProfile {
@@ -234,7 +234,7 @@ class GatewayResourceProfile {
   std::string gatewayID;
   std::string credentialStoreToken;
   std::vector<ComputeResourcePreference>  computeResourcePreferences;
-  std::vector<DataStoragePreference>  dataStoragePreferences;
+  std::vector<StoragePreference>  storagePreferences;
 
   _GatewayResourceProfile__isset __isset;
 
@@ -244,7 +244,7 @@ class GatewayResourceProfile {
 
   void __set_computeResourcePreferences(const std::vector<ComputeResourcePreference> & val);
 
-  void __set_dataStoragePreferences(const std::vector<DataStoragePreference> & val);
+  void __set_storagePreferences(const std::vector<StoragePreference> & val);
 
   bool operator == (const GatewayResourceProfile & rhs) const
   {
@@ -258,9 +258,9 @@ class GatewayResourceProfile {
       return false;
     else if (__isset.computeResourcePreferences && !(computeResourcePreferences == rhs.computeResourcePreferences))
       return false;
-    if (__isset.dataStoragePreferences != rhs.__isset.dataStoragePreferences)
+    if (__isset.storagePreferences != rhs.__isset.storagePreferences)
       return false;
-    else if (__isset.dataStoragePreferences && !(dataStoragePreferences == rhs.dataStoragePreferences))
+    else if (__isset.storagePreferences && !(storagePreferences == rhs.storagePreferences))
       return false;
     return true;
   }

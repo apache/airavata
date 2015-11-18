@@ -40,7 +40,7 @@ import java.util.List;
 public class StorageResourceResource extends AppCatAbstractResource {
 	private final static Logger logger = LoggerFactory.getLogger(StorageResourceResource.class);
 	private String resourceDescription;
-	private String resourceId;
+	private String storageResourceId;
 	private String hostName;
     private Timestamp createdTime;
     private Timestamp updatedTime;
@@ -204,7 +204,7 @@ public class StorageResourceResource extends AppCatAbstractResource {
             List<?> results = q.getResultList();
             for (Object result : results) {
                 StorageResource storageResource = (StorageResource) result;
-				storageResourceResources.add(storageResource.getResourceId());
+				storageResourceResources.add(storageResource.getStorageResourceId());
             }
             em.getTransaction().commit();
             em.close();
@@ -238,7 +238,7 @@ public class StorageResourceResource extends AppCatAbstractResource {
 				for (Object result : results) {
 					StorageResource storageResource = (StorageResource) result;
 					StorageResourceResource storageResourceResource = (StorageResourceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.STORAGE_RESOURCE, storageResource);
-					storageResourceResourceIDs.add(storageResourceResource.getResourceId());
+					storageResourceResourceIDs.add(storageResourceResource.getStorageResourceId());
 				}
 			} else {
 				em.getTransaction().commit();
@@ -267,7 +267,7 @@ public class StorageResourceResource extends AppCatAbstractResource {
 		EntityManager em = null;
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
-			StorageResource existingStorageResource = em.find(StorageResource.class, resourceId);
+			StorageResource existingStorageResource = em.find(StorageResource.class, storageResourceId);
 			em.close();
 			StorageResource storageResource;
 			em = AppCatalogJPAUtils.getEntityManager();
@@ -279,8 +279,8 @@ public class StorageResourceResource extends AppCatAbstractResource {
 				storageResource = existingStorageResource;
                 storageResource.setUpdateTime(AiravataUtils.getCurrentTimestamp());
 			}
-			storageResource.setResourceDescription(getResourceDescription());
-			storageResource.setResourceId(getResourceId());
+			storageResource.setDescription(getResourceDescription());
+			storageResource.setStorageResourceId(getStorageResourceId());
 			storageResource.setHostName(getHostName());
             storageResource.setEnabled(isEnabled());
 			if (existingStorageResource == null) {
@@ -328,10 +328,6 @@ public class StorageResourceResource extends AppCatAbstractResource {
 		return resourceDescription;
 	}
 	
-	public String getResourceId() {
-		return resourceId;
-	}
-	
 	public String getHostName() {
 		return hostName;
 	}
@@ -340,11 +336,15 @@ public class StorageResourceResource extends AppCatAbstractResource {
 		this.resourceDescription=resourceDescription;
 	}
 	
-	public void setResourceId(String resourceId) {
-		this.resourceId=resourceId;
-	}
-	
 	public void setHostName(String hostName) {
 		this.hostName=hostName;
 	}
+
+    public String getStorageResourceId() {
+        return storageResourceId;
+    }
+
+    public void setStorageResourceId(String storageResourceId) {
+        this.storageResourceId = storageResourceId;
+    }
 }
