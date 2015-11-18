@@ -54,7 +54,7 @@
         <class>org.apache.airavata.registry.core.app.catalog.model.ComputeResourceFileSystem</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.JobSubmissionInterface</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.DataMovementInterface</class>
-        <class>org.apache.airavata.registry.core.app.catalog.model.DataStoragePreference</class>
+        <class>org.apache.airavata.registry.core.app.catalog.model.StoragePreference</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.ResourceJobManager</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.JobManagerCommand</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.LocalSubmission</class>

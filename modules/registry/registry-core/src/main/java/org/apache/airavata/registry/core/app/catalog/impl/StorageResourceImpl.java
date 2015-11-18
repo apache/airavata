@@ -46,7 +46,7 @@ public class StorageResourceImpl implements StorageResource {
 			StorageResourceDescription description) throws AppCatalogException {
 		//TODO remove existing one
         StorageResourceResource storageResourceResource = saveStorageResource(description);
-		return storageResourceResource.getResourceId();
+		return storageResourceResource.getStorageResourceId();
 	}
 
 	protected StorageResourceResource saveStorageResource(
@@ -176,7 +176,7 @@ public class StorageResourceImpl implements StorageResource {
             if (allStorageResources != null && !allStorageResources.isEmpty()){
                 for (AppCatalogResource sr : allStorageResources){
                     StorageResourceResource srr = (StorageResourceResource)allStorageResources;
-                    storageResourceMap.put(srr.getResourceId(), srr.getHostName());
+                    storageResourceMap.put(srr.getStorageResourceId(), srr.getHostName());
                 }
             }
             return storageResourceMap;
@@ -202,7 +202,7 @@ public class StorageResourceImpl implements StorageResource {
                 for (AppCatalogResource sr : allStorageResources){
                     StorageResourceResource srr = (StorageResourceResource)sr;
                     if(srr.isEnabled()) {
-                        storageResourceMap.put(srr.getResourceId(), srr.getHostName());
+                        storageResourceMap.put(srr.getStorageResourceId(), srr.getHostName());
                     }
                 }
             }

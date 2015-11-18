@@ -2138,9 +2138,9 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
-  bool addGatewayDataStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string gatewayID,
+  bool addGatewayStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string gatewayID,
               3: required string dataMoveId,
-              4: required gateway_resource_profile_model.DataStoragePreference dataStoragePreference)
+              4: required gateway_resource_profile_model.StoragePreference storagePreference)
     	throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.AiravataClientException ace,
               3: airavata_errors.AiravataSystemException ase,
@@ -2166,7 +2166,7 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
-  gateway_resource_profile_model.DataStoragePreference getGatewayDataStoragePreference(1: required security_model.AuthzToken authzToken,
+  gateway_resource_profile_model.StoragePreference getGatewayStoragePreference(1: required security_model.AuthzToken authzToken,
               2: required string gatewayID,
               3: required string dataMoveId)
     	throws (1: airavata_errors.InvalidRequestException ire,
@@ -2192,8 +2192,8 @@ service Airavata {
             4: airavata_errors.AuthorizationException ae)
 
 
-  list<gateway_resource_profile_model.DataStoragePreference>
-              getAllGatewayDataStoragePreferences(1: required security_model.AuthzToken authzToken, 2: required string gatewayID)
+  list<gateway_resource_profile_model.StoragePreference>
+              getAllGatewayStoragePreferences(1: required security_model.AuthzToken authzToken, 2: required string gatewayID)
     	throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.AiravataClientException ace,
               3: airavata_errors.AiravataSystemException ase,
@@ -2233,9 +2233,9 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
-  bool updateGatewayDataStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string gatewayID,
-              3: required string dataMoveId,
-              4: required gateway_resource_profile_model.DataStoragePreference dataStoragePreference)
+  bool updateGatewayStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string gatewayID,
+              3: required string storageId,
+              4: required gateway_resource_profile_model.StoragePreference storagePreference)
     	throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.AiravataClientException ace,
               3: airavata_errors.AiravataSystemException ase,
@@ -2261,8 +2261,8 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
-  bool deleteGatewayDataStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string gatewayID,
-              3: required string dataMoveId)
+  bool deleteGatewayStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string gatewayID,
+              3: required string storageId)
     	throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.AiravataClientException ace,
               3: airavata_errors.AiravataSystemException ase,

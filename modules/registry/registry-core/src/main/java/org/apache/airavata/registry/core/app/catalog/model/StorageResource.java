@@ -31,13 +31,10 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "STORAGE_RESOURCE")
 public class StorageResource implements Serializable {
-	
-	@Column(name = "RESOURCE_DESCRIPTION")
-	private String resourceDescription;
-	
-	@Id
-	@Column(name = "RESOURCE_ID")
-	private String resourceId;
+
+    @Id
+	@Column(name = "STORAGE_RESOURCE_ID")
+	private String storageResourceId;
 	
 	@Column(name = "HOST_NAME")
 	private String hostName;
@@ -50,6 +47,9 @@ public class StorageResource implements Serializable {
 
     @Column(name = "ENABLED")
     private boolean enabled;
+
+    @Column(name = "DESCRIPTION")
+    private String description;
 
     public Timestamp getCreationTime() {
         return creationTime;
@@ -67,15 +67,31 @@ public class StorageResource implements Serializable {
         this.updateTime = updateTime;
     }
 
-    public String getResourceDescription() {
-		return resourceDescription;
-	}
-	
-	public String getResourceId() {
-		return resourceId;
-	}
-	
-	public String getHostName() {
+    public String getStorageResourceId() {
+        return storageResourceId;
+    }
+
+    public void setStorageResourceId(String storageResourceId) {
+        this.storageResourceId = storageResourceId;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getHostName() {
 		return hostName;
 	}
 
@@ -86,14 +102,6 @@ public class StorageResource implements Serializable {
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
-	
-	public void setResourceDescription(String resourceDescription) {
-		this.resourceDescription=resourceDescription;
-	}
-	
-	public void setResourceId(String resourceId) {
-		this.resourceId=resourceId;
-	}
 	
 	public void setHostName(String hostName) {
 		this.hostName=hostName;

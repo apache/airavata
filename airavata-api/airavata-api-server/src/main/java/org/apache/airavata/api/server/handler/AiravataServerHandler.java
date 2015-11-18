@@ -41,8 +41,8 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.DataStoragePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -67,8 +67,6 @@ import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.core.experiment.catalog.model.*;
-import org.apache.airavata.registry.core.experiment.catalog.model.Process;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
@@ -3586,7 +3584,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public boolean addGatewayDataStoragePreference(AuthzToken authzToken, String gatewayID, String dataMoveId, DataStoragePreference dataStoragePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean addGatewayStoragePreference(AuthzToken authzToken, String gatewayID, String dataMoveId, StoragePreference dataStoragePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -3599,7 +3597,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
 //            gatewayProfile.removeGatewayResourceProfile(gatewayID);
-            profile.addToDataStoragePreferences(dataStoragePreference);
+            profile.addToStoragePreferences(dataStoragePreference);
             gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
             return true;
         } catch (AppCatalogException e) {
@@ -3656,7 +3654,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public DataStoragePreference getGatewayDataStoragePreference(AuthzToken authzToken, String gatewayID, String dataMoveId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public StoragePreference getGatewayStoragePreference(AuthzToken authzToken, String gatewayID, String dataMoveId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -3673,7 +3671,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw exception;
             }
 
-            return gatewayProfile.getDataStoragePreference(gatewayID, dataMoveId);
+            return gatewayProfile.getStoragePreference(gatewayID, dataMoveId);
         } catch (AppCatalogException e) {
             logger.error(gatewayID, "Error while reading gateway data storage preference...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -3712,7 +3710,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public List<DataStoragePreference> getAllGatewayDataStoragePreferences(AuthzToken authzToken, String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public List<StoragePreference> getAllGatewayStoragePreferences(AuthzToken authzToken, String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -3720,7 +3718,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             appCatalog = RegistryFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            return gatewayProfile.getGatewayProfile(gatewayID).getDataStoragePreferences();
+            return gatewayProfile.getGatewayProfile(gatewayID).getStoragePreferences();
         } catch (AppCatalogException e) {
             logger.error(gatewayID, "Error while reading gateway data storage preferences...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -3793,7 +3791,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public boolean updateGatewayDataStoragePreference(AuthzToken authzToken, String gatewayID, String dataMoveId, DataStoragePreference dataStoragePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean updateGatewayStoragePreference(AuthzToken authzToken, String gatewayID, String storageId, StoragePreference dataStoragePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -3802,19 +3800,19 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog = RegistryFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
             GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
-            List<DataStoragePreference> dataStoragePreferences = profile.getDataStoragePreferences();
-            DataStoragePreference preferenceToRemove = null;
-            for (DataStoragePreference preference : dataStoragePreferences) {
-                if (preference.getDataMovememtResourceId().equals(dataMoveId)){
+            List<StoragePreference> dataStoragePreferences = profile.getStoragePreferences();
+            StoragePreference preferenceToRemove = null;
+            for (StoragePreference preference : dataStoragePreferences) {
+                if (preference.getStorageResourceId().equals(storageId)){
                     preferenceToRemove=preference;
                     break;
                 }
             }
             if (preferenceToRemove!=null) {
-                profile.getDataStoragePreferences().remove(
+                profile.getStoragePreferences().remove(
                         preferenceToRemove);
             }
-            profile.getDataStoragePreferences().add(dataStoragePreference);
+            profile.getStoragePreferences().add(dataStoragePreference);
             gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
             return true;
         } catch (AppCatalogException e) {
@@ -3856,7 +3854,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public boolean deleteGatewayDataStoragePreference(AuthzToken authzToken, String gatewayID, String dataMoveId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean deleteGatewayStoragePreference(AuthzToken authzToken, String gatewayID, String storageId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -3864,7 +3862,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             appCatalog = RegistryFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            return gatewayProfile.removeDataStoragePreferenceFromGateway(gatewayID, dataMoveId);
+            return gatewayProfile.removeDataStoragePreferenceFromGateway(gatewayID, storageId);
         } catch (AppCatalogException e) {
             logger.error(gatewayID, "Error while reading gateway data storage preference...", e);
             AiravataSystemException exception = new AiravataSystemException();
