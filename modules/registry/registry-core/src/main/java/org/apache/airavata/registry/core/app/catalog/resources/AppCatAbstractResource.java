@@ -326,7 +326,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
     // Storage Resource Table
     public final class StorageResourceConstants {
         public static final String RESOURCE_DESCRIPTION = "resourceDescription";
-        public static final String RESOURCE_ID = "resourceId";
+        public static final String RESOURCE_ID = "storageResourceId";
         public static final String HOST_NAME = "hostName";
     }
 
