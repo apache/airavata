@@ -580,11 +580,21 @@ public class GFacEngineImpl implements GFacEngine {
 
     @Override
     public void cancelProcess(ProcessContext processContext) throws GFacException {
-        if (processContext.getProcessState() == ProcessState.MONITORING) {
-            // get job submission task and invoke cancel
-            JobSubmissionTask jobSubmissionTask = Factory.getJobSubmissionTask(processContext.getJobSubmissionProtocol());
-            TaskContext taskCtx = getJobSubmissionTaskContext(processContext);
-            executeCancel(taskCtx, jobSubmissionTask);
+        if (processContext != null) {
+            processContext.setCancel(true);
+            switch (processContext.getProcessState()) {
+                case MONITORING:
+                    // get job submission task and invoke cancel
+                    JobSubmissionTask jobSubmissionTask = Factory.getJobSubmissionTask(processContext.getJobSubmissionProtocol());
+                    TaskContext taskCtx = getJobSubmissionTaskContext(processContext);
+                    executeCancel(taskCtx, jobSubmissionTask);
+                    break;
+                case COMPLETED: case FAILED: case CANCELED : case CANCELLING:
+                    log.warn("Process cancel trigger for already {} process", processContext.getProcessState().name());
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
