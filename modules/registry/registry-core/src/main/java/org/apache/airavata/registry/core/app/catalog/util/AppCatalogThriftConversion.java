@@ -185,6 +185,13 @@ public class AppCatalogThriftConversion {
     	dmi.setPriorityOrder(resource.getPriorityOrder());
         return dmi;
     }
+
+    public static StorageInterfaceResource getStorageInterface(DataMovementInterface resource){
+        StorageInterfaceResource storageInterfaceResource = new StorageInterfaceResource();
+        storageInterfaceResource.setDataMovementInterfaceId(resource.getDataMovementInterfaceId());
+        storageInterfaceResource.setDataMovementProtocol(resource.getDataMovementProtocol().toString());
+        return storageInterfaceResource;
+    }
     
     public static List<JobSubmissionInterface> getJobSubmissionInterfaces(List<AppCatalogResource> resources){
     	List<JobSubmissionInterface> jobSubmissionInterfaces = new ArrayList<JobSubmissionInterface>();

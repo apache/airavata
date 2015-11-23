@@ -217,6 +217,11 @@ enum MonitorMode {
    FORK
 }
 
+enum DMType {
+    COMPUTE_RESOURCE,
+    STORAGE_RESOURCE
+}
+
 /**
  * Enumeration of data movement supported by Airavata
  *

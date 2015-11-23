@@ -152,7 +152,7 @@ public class ComputeResourceRegister {
         SCPDataMovement scpDataMovement = new SCPDataMovement();
         scpDataMovement.setSecurityProtocol(securityProtocol);
         scpDataMovement.setSshPort(portNumber);
-        airavata.addSCPDataMovementDetails(authzToken, computeResourceId, 1, scpDataMovement);
+        airavata.addSCPDataMovementDetails(authzToken, computeResourceId, DMType.COMPUTE_RESOURCE, 1, scpDataMovement);
 
         return computeResourceId;
     }

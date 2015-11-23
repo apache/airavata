@@ -109,16 +109,16 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  bool updateSSHJobSubmissionDetails(AuthzToken authzToken, string jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission)')
   print('  bool updateCloudJobSubmissionDetails(AuthzToken authzToken, string jobSubmissionInterfaceId, CloudJobSubmission sshJobSubmission)')
   print('  bool updateUnicoreJobSubmissionDetails(AuthzToken authzToken, string jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission)')
-  print('  string addLocalDataMovementDetails(AuthzToken authzToken, string computeResourceId, i32 priorityOrder, LOCALDataMovement localDataMovement)')
+  print('  string addLocalDataMovementDetails(AuthzToken authzToken, string resourceId, DMType dataMoveType, i32 priorityOrder, LOCALDataMovement localDataMovement)')
   print('  bool updateLocalDataMovementDetails(AuthzToken authzToken, string dataMovementInterfaceId, LOCALDataMovement localDataMovement)')
   print('  LOCALDataMovement getLocalDataMovement(AuthzToken authzToken, string dataMovementId)')
-  print('  string addSCPDataMovementDetails(AuthzToken authzToken, string computeResourceId, i32 priorityOrder, SCPDataMovement scpDataMovement)')
+  print('  string addSCPDataMovementDetails(AuthzToken authzToken, string resourceId, DMType dataMoveType, i32 priorityOrder, SCPDataMovement scpDataMovement)')
   print('  bool updateSCPDataMovementDetails(AuthzToken authzToken, string dataMovementInterfaceId, SCPDataMovement scpDataMovement)')
   print('  SCPDataMovement getSCPDataMovement(AuthzToken authzToken, string dataMovementId)')
-  print('  string addUnicoreDataMovementDetails(AuthzToken authzToken, string computeResourceId, i32 priorityOrder, UnicoreDataMovement unicoreDataMovement)')
+  print('  string addUnicoreDataMovementDetails(AuthzToken authzToken, string resourceId, DMType dataMoveType, i32 priorityOrder, UnicoreDataMovement unicoreDataMovement)')
   print('  bool updateUnicoreDataMovementDetails(AuthzToken authzToken, string dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement)')
   print('  UnicoreDataMovement getUnicoreDataMovement(AuthzToken authzToken, string dataMovementId)')
-  print('  string addGridFTPDataMovementDetails(AuthzToken authzToken, string computeResourceId, i32 priorityOrder, GridFTPDataMovement gridFTPDataMovement)')
+  print('  string addGridFTPDataMovementDetails(AuthzToken authzToken, string resourceId, DMType dataMoveType, i32 priorityOrder, GridFTPDataMovement gridFTPDataMovement)')
   print('  bool updateGridFTPDataMovementDetails(AuthzToken authzToken, string dataMovementInterfaceId, GridFTPDataMovement gridFTPDataMovement)')
   print('  GridFTPDataMovement getGridFTPDataMovement(AuthzToken authzToken, string dataMovementId)')
   print('  bool changeJobSubmissionPriority(AuthzToken authzToken, string jobSubmissionInterfaceId, i32 newPriorityOrder)')
@@ -721,10 +721,10 @@ elif cmd == 'updateUnicoreJobSubmissionDetails':
   pp.pprint(client.updateUnicoreJobSubmissionDetails(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'addLocalDataMovementDetails':
-  if len(args) != 4:
-    print('addLocalDataMovementDetails requires 4 args')
+  if len(args) != 5:
+    print('addLocalDataMovementDetails requires 5 args')
     sys.exit(1)
-  pp.pprint(client.addLocalDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
+  pp.pprint(client.addLocalDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),eval(args[4]),))
 
 elif cmd == 'updateLocalDataMovementDetails':
   if len(args) != 3:
@@ -739,10 +739,10 @@ elif cmd == 'getLocalDataMovement':
   pp.pprint(client.getLocalDataMovement(eval(args[0]),args[1],))
 
 elif cmd == 'addSCPDataMovementDetails':
-  if len(args) != 4:
-    print('addSCPDataMovementDetails requires 4 args')
+  if len(args) != 5:
+    print('addSCPDataMovementDetails requires 5 args')
     sys.exit(1)
-  pp.pprint(client.addSCPDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
+  pp.pprint(client.addSCPDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),eval(args[4]),))
 
 elif cmd == 'updateSCPDataMovementDetails':
   if len(args) != 3:
@@ -757,10 +757,10 @@ elif cmd == 'getSCPDataMovement':
   pp.pprint(client.getSCPDataMovement(eval(args[0]),args[1],))
 
 elif cmd == 'addUnicoreDataMovementDetails':
-  if len(args) != 4:
-    print('addUnicoreDataMovementDetails requires 4 args')
+  if len(args) != 5:
+    print('addUnicoreDataMovementDetails requires 5 args')
     sys.exit(1)
-  pp.pprint(client.addUnicoreDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
+  pp.pprint(client.addUnicoreDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),eval(args[4]),))
 
 elif cmd == 'updateUnicoreDataMovementDetails':
   if len(args) != 3:
@@ -775,10 +775,10 @@ elif cmd == 'getUnicoreDataMovement':
   pp.pprint(client.getUnicoreDataMovement(eval(args[0]),args[1],))
 
 elif cmd == 'addGridFTPDataMovementDetails':
-  if len(args) != 4:
-    print('addGridFTPDataMovementDetails requires 4 args')
+  if len(args) != 5:
+    print('addGridFTPDataMovementDetails requires 5 args')
     sys.exit(1)
-  pp.pprint(client.addGridFTPDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
+  pp.pprint(client.addGridFTPDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),eval(args[4]),))
 
 elif cmd == 'updateGridFTPDataMovementDetails':
   if len(args) != 3:

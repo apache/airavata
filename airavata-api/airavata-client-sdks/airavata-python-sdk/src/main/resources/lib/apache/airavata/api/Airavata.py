@@ -1625,7 +1625,7 @@ class Iface:
     """
     pass
 
-  def addLocalDataMovementDetails(self, authzToken, computeResourceId, priorityOrder, localDataMovement):
+  def addLocalDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, localDataMovement):
     """
     Add a Local data movement details to a compute resource
      App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
@@ -1645,7 +1645,8 @@ class Iface:
 
     Parameters:
      - authzToken
-     - computeResourceId
+     - resourceId
+     - dataMoveType
      - priorityOrder
      - localDataMovement
     """
@@ -1686,7 +1687,7 @@ class Iface:
     """
     pass
 
-  def addSCPDataMovementDetails(self, authzToken, computeResourceId, priorityOrder, scpDataMovement):
+  def addSCPDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, scpDataMovement):
     """
     Add a SCP data movement details to a compute resource
      App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
@@ -1706,7 +1707,8 @@ class Iface:
 
     Parameters:
      - authzToken
-     - computeResourceId
+     - resourceId
+     - dataMoveType
      - priorityOrder
      - scpDataMovement
     """
@@ -1748,11 +1750,12 @@ class Iface:
     """
     pass
 
-  def addUnicoreDataMovementDetails(self, authzToken, computeResourceId, priorityOrder, unicoreDataMovement):
+  def addUnicoreDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, unicoreDataMovement):
     """
     Parameters:
      - authzToken
-     - computeResourceId
+     - resourceId
+     - dataMoveType
      - priorityOrder
      - unicoreDataMovement
     """
@@ -1775,7 +1778,7 @@ class Iface:
     """
     pass
 
-  def addGridFTPDataMovementDetails(self, authzToken, computeResourceId, priorityOrder, gridFTPDataMovement):
+  def addGridFTPDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, gridFTPDataMovement):
     """
     Add a GridFTP data movement details to a compute resource
      App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
@@ -1795,7 +1798,8 @@ class Iface:
 
     Parameters:
      - authzToken
-     - computeResourceId
+     - resourceId
+     - dataMoveType
      - priorityOrder
      - gridFTPDataMovement
     """
@@ -6782,7 +6786,7 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "updateUnicoreJobSubmissionDetails failed: unknown result");
 
-  def addLocalDataMovementDetails(self, authzToken, computeResourceId, priorityOrder, localDataMovement):
+  def addLocalDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, localDataMovement):
     """
     Add a Local data movement details to a compute resource
      App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
@@ -6802,18 +6806,20 @@ class Client(Iface):
 
     Parameters:
      - authzToken
-     - computeResourceId
+     - resourceId
+     - dataMoveType
      - priorityOrder
      - localDataMovement
     """
-    self.send_addLocalDataMovementDetails(authzToken, computeResourceId, priorityOrder, localDataMovement)
+    self.send_addLocalDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, localDataMovement)
     return self.recv_addLocalDataMovementDetails()
 
-  def send_addLocalDataMovementDetails(self, authzToken, computeResourceId, priorityOrder, localDataMovement):
+  def send_addLocalDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, localDataMovement):
     self._oprot.writeMessageBegin('addLocalDataMovementDetails', TMessageType.CALL, self._seqid)
     args = addLocalDataMovementDetails_args()
     args.authzToken = authzToken
-    args.computeResourceId = computeResourceId
+    args.resourceId = resourceId
+    args.dataMoveType = dataMoveType
     args.priorityOrder = priorityOrder
     args.localDataMovement = localDataMovement
     args.write(self._oprot)
@@ -6945,7 +6951,7 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getLocalDataMovement failed: unknown result");
 
-  def addSCPDataMovementDetails(self, authzToken, computeResourceId, priorityOrder, scpDataMovement):
+  def addSCPDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, scpDataMovement):
     """
     Add a SCP data movement details to a compute resource
      App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
@@ -6965,18 +6971,20 @@ class Client(Iface):
 
     Parameters:
      - authzToken
-     - computeResourceId
+     - resourceId
+     - dataMoveType
      - priorityOrder
      - scpDataMovement
     """
-    self.send_addSCPDataMovementDetails(authzToken, computeResourceId, priorityOrder, scpDataMovement)
+    self.send_addSCPDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, scpDataMovement)
     return self.recv_addSCPDataMovementDetails()
 
-  def send_addSCPDataMovementDetails(self, authzToken, computeResourceId, priorityOrder, scpDataMovement):
+  def send_addSCPDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, scpDataMovement):
     self._oprot.writeMessageBegin('addSCPDataMovementDetails', TMessageType.CALL, self._seqid)
     args = addSCPDataMovementDetails_args()
     args.authzToken = authzToken
-    args.computeResourceId = computeResourceId
+    args.resourceId = resourceId
+    args.dataMoveType = dataMoveType
     args.priorityOrder = priorityOrder
     args.scpDataMovement = scpDataMovement
     args.write(self._oprot)
@@ -7109,22 +7117,24 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getSCPDataMovement failed: unknown result");
 
-  def addUnicoreDataMovementDetails(self, authzToken, computeResourceId, priorityOrder, unicoreDataMovement):
+  def addUnicoreDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, unicoreDataMovement):
     """
     Parameters:
      - authzToken
-     - computeResourceId
+     - resourceId
+     - dataMoveType
      - priorityOrder
      - unicoreDataMovement
     """
-    self.send_addUnicoreDataMovementDetails(authzToken, computeResourceId, priorityOrder, unicoreDataMovement)
+    self.send_addUnicoreDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, unicoreDataMovement)
     return self.recv_addUnicoreDataMovementDetails()
 
-  def send_addUnicoreDataMovementDetails(self, authzToken, computeResourceId, priorityOrder, unicoreDataMovement):
+  def send_addUnicoreDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, unicoreDataMovement):
     self._oprot.writeMessageBegin('addUnicoreDataMovementDetails', TMessageType.CALL, self._seqid)
     args = addUnicoreDataMovementDetails_args()
     args.authzToken = authzToken
-    args.computeResourceId = computeResourceId
+    args.resourceId = resourceId
+    args.dataMoveType = dataMoveType
     args.priorityOrder = priorityOrder
     args.unicoreDataMovement = unicoreDataMovement
     args.write(self._oprot)
@@ -7238,7 +7248,7 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getUnicoreDataMovement failed: unknown result");
 
-  def addGridFTPDataMovementDetails(self, authzToken, computeResourceId, priorityOrder, gridFTPDataMovement):
+  def addGridFTPDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, gridFTPDataMovement):
     """
     Add a GridFTP data movement details to a compute resource
      App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
@@ -7258,18 +7268,20 @@ class Client(Iface):
 
     Parameters:
      - authzToken
-     - computeResourceId
+     - resourceId
+     - dataMoveType
      - priorityOrder
      - gridFTPDataMovement
     """
-    self.send_addGridFTPDataMovementDetails(authzToken, computeResourceId, priorityOrder, gridFTPDataMovement)
+    self.send_addGridFTPDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, gridFTPDataMovement)
     return self.recv_addGridFTPDataMovementDetails()
 
-  def send_addGridFTPDataMovementDetails(self, authzToken, computeResourceId, priorityOrder, gridFTPDataMovement):
+  def send_addGridFTPDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, gridFTPDataMovement):
     self._oprot.writeMessageBegin('addGridFTPDataMovementDetails', TMessageType.CALL, self._seqid)
     args = addGridFTPDataMovementDetails_args()
     args.authzToken = authzToken
-    args.computeResourceId = computeResourceId
+    args.resourceId = resourceId
+    args.dataMoveType = dataMoveType
     args.priorityOrder = priorityOrder
     args.gridFTPDataMovement = gridFTPDataMovement
     args.write(self._oprot)
@@ -10830,7 +10842,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = addLocalDataMovementDetails_result()
     try:
-      result.success = self._handler.addLocalDataMovementDetails(args.authzToken, args.computeResourceId, args.priorityOrder, args.localDataMovement)
+      result.success = self._handler.addLocalDataMovementDetails(args.authzToken, args.resourceId, args.dataMoveType, args.priorityOrder, args.localDataMovement)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -10890,7 +10902,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = addSCPDataMovementDetails_result()
     try:
-      result.success = self._handler.addSCPDataMovementDetails(args.authzToken, args.computeResourceId, args.priorityOrder, args.scpDataMovement)
+      result.success = self._handler.addSCPDataMovementDetails(args.authzToken, args.resourceId, args.dataMoveType, args.priorityOrder, args.scpDataMovement)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -10950,7 +10962,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = addUnicoreDataMovementDetails_result()
     try:
-      result.success = self._handler.addUnicoreDataMovementDetails(args.authzToken, args.computeResourceId, args.priorityOrder, args.unicoreDataMovement)
+      result.success = self._handler.addUnicoreDataMovementDetails(args.authzToken, args.resourceId, args.dataMoveType, args.priorityOrder, args.unicoreDataMovement)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -11010,7 +11022,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = addGridFTPDataMovementDetails_result()
     try:
-      result.success = self._handler.addGridFTPDataMovementDetails(args.authzToken, args.computeResourceId, args.priorityOrder, args.gridFTPDataMovement)
+      result.success = self._handler.addGridFTPDataMovementDetails(args.authzToken, args.resourceId, args.dataMoveType, args.priorityOrder, args.gridFTPDataMovement)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -30386,7 +30398,8 @@ class addLocalDataMovementDetails_args:
   """
   Attributes:
    - authzToken
-   - computeResourceId
+   - resourceId
+   - dataMoveType
    - priorityOrder
    - localDataMovement
   """
@@ -30394,14 +30407,16 @@ class addLocalDataMovementDetails_args:
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRING, 'computeResourceId', None, None, ), # 2
-    (3, TType.I32, 'priorityOrder', None, None, ), # 3
-    (4, TType.STRUCT, 'localDataMovement', (apache.airavata.model.appcatalog.computeresource.ttypes.LOCALDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.LOCALDataMovement.thrift_spec), None, ), # 4
+    (2, TType.STRING, 'resourceId', None, None, ), # 2
+    (3, TType.I32, 'dataMoveType', None, None, ), # 3
+    (4, TType.I32, 'priorityOrder', None, None, ), # 4
+    (5, TType.STRUCT, 'localDataMovement', (apache.airavata.model.appcatalog.computeresource.ttypes.LOCALDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.LOCALDataMovement.thrift_spec), None, ), # 5
   )
 
-  def __init__(self, authzToken=None, computeResourceId=None, priorityOrder=None, localDataMovement=None,):
+  def __init__(self, authzToken=None, resourceId=None, dataMoveType=None, priorityOrder=None, localDataMovement=None,):
     self.authzToken = authzToken
-    self.computeResourceId = computeResourceId
+    self.resourceId = resourceId
+    self.dataMoveType = dataMoveType
     self.priorityOrder = priorityOrder
     self.localDataMovement = localDataMovement
 
@@ -30422,15 +30437,20 @@ class addLocalDataMovementDetails_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.computeResourceId = iprot.readString();
+          self.resourceId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.I32:
-          self.priorityOrder = iprot.readI32();
+          self.dataMoveType = iprot.readI32();
         else:
           iprot.skip(ftype)
       elif fid == 4:
+        if ftype == TType.I32:
+          self.priorityOrder = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
         if ftype == TType.STRUCT:
           self.localDataMovement = apache.airavata.model.appcatalog.computeresource.ttypes.LOCALDataMovement()
           self.localDataMovement.read(iprot)
@@ -30450,16 +30470,20 @@ class addLocalDataMovementDetails_args:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
       oprot.writeFieldEnd()
-    if self.computeResourceId is not None:
-      oprot.writeFieldBegin('computeResourceId', TType.STRING, 2)
-      oprot.writeString(self.computeResourceId)
+    if self.resourceId is not None:
+      oprot.writeFieldBegin('resourceId', TType.STRING, 2)
+      oprot.writeString(self.resourceId)
+      oprot.writeFieldEnd()
+    if self.dataMoveType is not None:
+      oprot.writeFieldBegin('dataMoveType', TType.I32, 3)
+      oprot.writeI32(self.dataMoveType)
       oprot.writeFieldEnd()
     if self.priorityOrder is not None:
-      oprot.writeFieldBegin('priorityOrder', TType.I32, 3)
+      oprot.writeFieldBegin('priorityOrder', TType.I32, 4)
       oprot.writeI32(self.priorityOrder)
       oprot.writeFieldEnd()
     if self.localDataMovement is not None:
-      oprot.writeFieldBegin('localDataMovement', TType.STRUCT, 4)
+      oprot.writeFieldBegin('localDataMovement', TType.STRUCT, 5)
       self.localDataMovement.write(oprot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -30468,8 +30492,10 @@ class addLocalDataMovementDetails_args:
   def validate(self):
     if self.authzToken is None:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
-    if self.computeResourceId is None:
-      raise TProtocol.TProtocolException(message='Required field computeResourceId is unset!')
+    if self.resourceId is None:
+      raise TProtocol.TProtocolException(message='Required field resourceId is unset!')
+    if self.dataMoveType is None:
+      raise TProtocol.TProtocolException(message='Required field dataMoveType is unset!')
     if self.priorityOrder is None:
       raise TProtocol.TProtocolException(message='Required field priorityOrder is unset!')
     if self.localDataMovement is None:
@@ -30480,7 +30506,8 @@ class addLocalDataMovementDetails_args:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
-    value = (value * 31) ^ hash(self.computeResourceId)
+    value = (value * 31) ^ hash(self.resourceId)
+    value = (value * 31) ^ hash(self.dataMoveType)
     value = (value * 31) ^ hash(self.priorityOrder)
     value = (value * 31) ^ hash(self.localDataMovement)
     return value
@@ -31043,7 +31070,8 @@ class addSCPDataMovementDetails_args:
   """
   Attributes:
    - authzToken
-   - computeResourceId
+   - resourceId
+   - dataMoveType
    - priorityOrder
    - scpDataMovement
   """
@@ -31051,14 +31079,16 @@ class addSCPDataMovementDetails_args:
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRING, 'computeResourceId', None, None, ), # 2
-    (3, TType.I32, 'priorityOrder', None, None, ), # 3
-    (4, TType.STRUCT, 'scpDataMovement', (apache.airavata.model.appcatalog.computeresource.ttypes.SCPDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.SCPDataMovement.thrift_spec), None, ), # 4
+    (2, TType.STRING, 'resourceId', None, None, ), # 2
+    (3, TType.I32, 'dataMoveType', None, None, ), # 3
+    (4, TType.I32, 'priorityOrder', None, None, ), # 4
+    (5, TType.STRUCT, 'scpDataMovement', (apache.airavata.model.appcatalog.computeresource.ttypes.SCPDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.SCPDataMovement.thrift_spec), None, ), # 5
   )
 
-  def __init__(self, authzToken=None, computeResourceId=None, priorityOrder=None, scpDataMovement=None,):
+  def __init__(self, authzToken=None, resourceId=None, dataMoveType=None, priorityOrder=None, scpDataMovement=None,):
     self.authzToken = authzToken
-    self.computeResourceId = computeResourceId
+    self.resourceId = resourceId
+    self.dataMoveType = dataMoveType
     self.priorityOrder = priorityOrder
     self.scpDataMovement = scpDataMovement
 
@@ -31079,15 +31109,20 @@ class addSCPDataMovementDetails_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.computeResourceId = iprot.readString();
+          self.resourceId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.I32:
-          self.priorityOrder = iprot.readI32();
+          self.dataMoveType = iprot.readI32();
         else:
           iprot.skip(ftype)
       elif fid == 4:
+        if ftype == TType.I32:
+          self.priorityOrder = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
         if ftype == TType.STRUCT:
           self.scpDataMovement = apache.airavata.model.appcatalog.computeresource.ttypes.SCPDataMovement()
           self.scpDataMovement.read(iprot)
@@ -31107,16 +31142,20 @@ class addSCPDataMovementDetails_args:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
       oprot.writeFieldEnd()
-    if self.computeResourceId is not None:
-      oprot.writeFieldBegin('computeResourceId', TType.STRING, 2)
-      oprot.writeString(self.computeResourceId)
+    if self.resourceId is not None:
+      oprot.writeFieldBegin('resourceId', TType.STRING, 2)
+      oprot.writeString(self.resourceId)
+      oprot.writeFieldEnd()
+    if self.dataMoveType is not None:
+      oprot.writeFieldBegin('dataMoveType', TType.I32, 3)
+      oprot.writeI32(self.dataMoveType)
       oprot.writeFieldEnd()
     if self.priorityOrder is not None:
-      oprot.writeFieldBegin('priorityOrder', TType.I32, 3)
+      oprot.writeFieldBegin('priorityOrder', TType.I32, 4)
       oprot.writeI32(self.priorityOrder)
       oprot.writeFieldEnd()
     if self.scpDataMovement is not None:
-      oprot.writeFieldBegin('scpDataMovement', TType.STRUCT, 4)
+      oprot.writeFieldBegin('scpDataMovement', TType.STRUCT, 5)
       self.scpDataMovement.write(oprot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -31125,8 +31164,10 @@ class addSCPDataMovementDetails_args:
   def validate(self):
     if self.authzToken is None:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
-    if self.computeResourceId is None:
-      raise TProtocol.TProtocolException(message='Required field computeResourceId is unset!')
+    if self.resourceId is None:
+      raise TProtocol.TProtocolException(message='Required field resourceId is unset!')
+    if self.dataMoveType is None:
+      raise TProtocol.TProtocolException(message='Required field dataMoveType is unset!')
     if self.priorityOrder is None:
       raise TProtocol.TProtocolException(message='Required field priorityOrder is unset!')
     if self.scpDataMovement is None:
@@ -31137,7 +31178,8 @@ class addSCPDataMovementDetails_args:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
-    value = (value * 31) ^ hash(self.computeResourceId)
+    value = (value * 31) ^ hash(self.resourceId)
+    value = (value * 31) ^ hash(self.dataMoveType)
     value = (value * 31) ^ hash(self.priorityOrder)
     value = (value * 31) ^ hash(self.scpDataMovement)
     return value
@@ -31700,7 +31742,8 @@ class addUnicoreDataMovementDetails_args:
   """
   Attributes:
    - authzToken
-   - computeResourceId
+   - resourceId
+   - dataMoveType
    - priorityOrder
    - unicoreDataMovement
   """
@@ -31708,14 +31751,16 @@ class addUnicoreDataMovementDetails_args:
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRING, 'computeResourceId', None, None, ), # 2
-    (3, TType.I32, 'priorityOrder', None, None, ), # 3
-    (4, TType.STRUCT, 'unicoreDataMovement', (apache.airavata.model.appcatalog.computeresource.ttypes.UnicoreDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.UnicoreDataMovement.thrift_spec), None, ), # 4
+    (2, TType.STRING, 'resourceId', None, None, ), # 2
+    (3, TType.I32, 'dataMoveType', None, None, ), # 3
+    (4, TType.I32, 'priorityOrder', None, None, ), # 4
+    (5, TType.STRUCT, 'unicoreDataMovement', (apache.airavata.model.appcatalog.computeresource.ttypes.UnicoreDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.UnicoreDataMovement.thrift_spec), None, ), # 5
   )
 
-  def __init__(self, authzToken=None, computeResourceId=None, priorityOrder=None, unicoreDataMovement=None,):
+  def __init__(self, authzToken=None, resourceId=None, dataMoveType=None, priorityOrder=None, unicoreDataMovement=None,):
     self.authzToken = authzToken
-    self.computeResourceId = computeResourceId
+    self.resourceId = resourceId
+    self.dataMoveType = dataMoveType
     self.priorityOrder = priorityOrder
     self.unicoreDataMovement = unicoreDataMovement
 
@@ -31736,15 +31781,20 @@ class addUnicoreDataMovementDetails_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.computeResourceId = iprot.readString();
+          self.resourceId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.I32:
-          self.priorityOrder = iprot.readI32();
+          self.dataMoveType = iprot.readI32();
         else:
           iprot.skip(ftype)
       elif fid == 4:
+        if ftype == TType.I32:
+          self.priorityOrder = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
         if ftype == TType.STRUCT:
           self.unicoreDataMovement = apache.airavata.model.appcatalog.computeresource.ttypes.UnicoreDataMovement()
           self.unicoreDataMovement.read(iprot)
@@ -31764,16 +31814,20 @@ class addUnicoreDataMovementDetails_args:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
       oprot.writeFieldEnd()
-    if self.computeResourceId is not None:
-      oprot.writeFieldBegin('computeResourceId', TType.STRING, 2)
-      oprot.writeString(self.computeResourceId)
+    if self.resourceId is not None:
+      oprot.writeFieldBegin('resourceId', TType.STRING, 2)
+      oprot.writeString(self.resourceId)
+      oprot.writeFieldEnd()
+    if self.dataMoveType is not None:
+      oprot.writeFieldBegin('dataMoveType', TType.I32, 3)
+      oprot.writeI32(self.dataMoveType)
       oprot.writeFieldEnd()
     if self.priorityOrder is not None:
-      oprot.writeFieldBegin('priorityOrder', TType.I32, 3)
+      oprot.writeFieldBegin('priorityOrder', TType.I32, 4)
       oprot.writeI32(self.priorityOrder)
       oprot.writeFieldEnd()
     if self.unicoreDataMovement is not None:
-      oprot.writeFieldBegin('unicoreDataMovement', TType.STRUCT, 4)
+      oprot.writeFieldBegin('unicoreDataMovement', TType.STRUCT, 5)
       self.unicoreDataMovement.write(oprot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -31782,8 +31836,10 @@ class addUnicoreDataMovementDetails_args:
   def validate(self):
     if self.authzToken is None:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
-    if self.computeResourceId is None:
-      raise TProtocol.TProtocolException(message='Required field computeResourceId is unset!')
+    if self.resourceId is None:
+      raise TProtocol.TProtocolException(message='Required field resourceId is unset!')
+    if self.dataMoveType is None:
+      raise TProtocol.TProtocolException(message='Required field dataMoveType is unset!')
     if self.priorityOrder is None:
       raise TProtocol.TProtocolException(message='Required field priorityOrder is unset!')
     if self.unicoreDataMovement is None:
@@ -31794,7 +31850,8 @@ class addUnicoreDataMovementDetails_args:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
-    value = (value * 31) ^ hash(self.computeResourceId)
+    value = (value * 31) ^ hash(self.resourceId)
+    value = (value * 31) ^ hash(self.dataMoveType)
     value = (value * 31) ^ hash(self.priorityOrder)
     value = (value * 31) ^ hash(self.unicoreDataMovement)
     return value
@@ -32357,7 +32414,8 @@ class addGridFTPDataMovementDetails_args:
   """
   Attributes:
    - authzToken
-   - computeResourceId
+   - resourceId
+   - dataMoveType
    - priorityOrder
    - gridFTPDataMovement
   """
@@ -32365,14 +32423,16 @@ class addGridFTPDataMovementDetails_args:
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRING, 'computeResourceId', None, None, ), # 2
-    (3, TType.I32, 'priorityOrder', None, None, ), # 3
-    (4, TType.STRUCT, 'gridFTPDataMovement', (apache.airavata.model.appcatalog.computeresource.ttypes.GridFTPDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.GridFTPDataMovement.thrift_spec), None, ), # 4
+    (2, TType.STRING, 'resourceId', None, None, ), # 2
+    (3, TType.I32, 'dataMoveType', None, None, ), # 3
+    (4, TType.I32, 'priorityOrder', None, None, ), # 4
+    (5, TType.STRUCT, 'gridFTPDataMovement', (apache.airavata.model.appcatalog.computeresource.ttypes.GridFTPDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.GridFTPDataMovement.thrift_spec), None, ), # 5
   )
 
-  def __init__(self, authzToken=None, computeResourceId=None, priorityOrder=None, gridFTPDataMovement=None,):
+  def __init__(self, authzToken=None, resourceId=None, dataMoveType=None, priorityOrder=None, gridFTPDataMovement=None,):
     self.authzToken = authzToken
-    self.computeResourceId = computeResourceId
+    self.resourceId = resourceId
+    self.dataMoveType = dataMoveType
     self.priorityOrder = priorityOrder
     self.gridFTPDataMovement = gridFTPDataMovement
 
@@ -32393,15 +32453,20 @@ class addGridFTPDataMovementDetails_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.computeResourceId = iprot.readString();
+          self.resourceId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.I32:
-          self.priorityOrder = iprot.readI32();
+          self.dataMoveType = iprot.readI32();
         else:
           iprot.skip(ftype)
       elif fid == 4:
+        if ftype == TType.I32:
+          self.priorityOrder = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
         if ftype == TType.STRUCT:
           self.gridFTPDataMovement = apache.airavata.model.appcatalog.computeresource.ttypes.GridFTPDataMovement()
           self.gridFTPDataMovement.read(iprot)
@@ -32421,16 +32486,20 @@ class addGridFTPDataMovementDetails_args:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
       oprot.writeFieldEnd()
-    if self.computeResourceId is not None:
-      oprot.writeFieldBegin('computeResourceId', TType.STRING, 2)
-      oprot.writeString(self.computeResourceId)
+    if self.resourceId is not None:
+      oprot.writeFieldBegin('resourceId', TType.STRING, 2)
+      oprot.writeString(self.resourceId)
+      oprot.writeFieldEnd()
+    if self.dataMoveType is not None:
+      oprot.writeFieldBegin('dataMoveType', TType.I32, 3)
+      oprot.writeI32(self.dataMoveType)
       oprot.writeFieldEnd()
     if self.priorityOrder is not None:
-      oprot.writeFieldBegin('priorityOrder', TType.I32, 3)
+      oprot.writeFieldBegin('priorityOrder', TType.I32, 4)
       oprot.writeI32(self.priorityOrder)
       oprot.writeFieldEnd()
     if self.gridFTPDataMovement is not None:
-      oprot.writeFieldBegin('gridFTPDataMovement', TType.STRUCT, 4)
+      oprot.writeFieldBegin('gridFTPDataMovement', TType.STRUCT, 5)
       self.gridFTPDataMovement.write(oprot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -32439,8 +32508,10 @@ class addGridFTPDataMovementDetails_args:
   def validate(self):
     if self.authzToken is None:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
-    if self.computeResourceId is None:
-      raise TProtocol.TProtocolException(message='Required field computeResourceId is unset!')
+    if self.resourceId is None:
+      raise TProtocol.TProtocolException(message='Required field resourceId is unset!')
+    if self.dataMoveType is None:
+      raise TProtocol.TProtocolException(message='Required field dataMoveType is unset!')
     if self.priorityOrder is None:
       raise TProtocol.TProtocolException(message='Required field priorityOrder is unset!')
     if self.gridFTPDataMovement is None:
@@ -32451,7 +32522,8 @@ class addGridFTPDataMovementDetails_args:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
-    value = (value * 31) ^ hash(self.computeResourceId)
+    value = (value * 31) ^ hash(self.resourceId)
+    value = (value * 31) ^ hash(self.dataMoveType)
     value = (value * 31) ^ hash(self.priorityOrder)
     value = (value * 31) ^ hash(self.gridFTPDataMovement)
     return value

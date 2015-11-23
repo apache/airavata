@@ -1971,7 +1971,8 @@ interface AiravataIf {
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
-   * @param string $computeResourceId
+   * @param string $resourceId
+   * @param int $dataMoveType
    * @param int $priorityOrder
    * @param \Airavata\Model\AppCatalog\ComputeResource\LOCALDataMovement $localDataMovement
    * @return string
@@ -1980,7 +1981,7 @@ interface AiravataIf {
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function addLocalDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\LOCALDataMovement $localDataMovement);
+  public function addLocalDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\LOCALDataMovement $localDataMovement);
   /**
    * Update the given Local data movement details
    * 
@@ -2045,7 +2046,8 @@ interface AiravataIf {
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
-   * @param string $computeResourceId
+   * @param string $resourceId
+   * @param int $dataMoveType
    * @param int $priorityOrder
    * @param \Airavata\Model\AppCatalog\ComputeResource\SCPDataMovement $scpDataMovement
    * @return string
@@ -2054,7 +2056,7 @@ interface AiravataIf {
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function addSCPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\SCPDataMovement $scpDataMovement);
+  public function addSCPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\SCPDataMovement $scpDataMovement);
   /**
    * Update the given scp data movement details
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
@@ -2104,7 +2106,8 @@ interface AiravataIf {
   public function getSCPDataMovement(\Airavata\Model\Security\AuthzToken $authzToken, $dataMovementId);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
-   * @param string $computeResourceId
+   * @param string $resourceId
+   * @param int $dataMoveType
    * @param int $priorityOrder
    * @param \Airavata\Model\AppCatalog\ComputeResource\UnicoreDataMovement $unicoreDataMovement
    * @return string
@@ -2113,7 +2116,7 @@ interface AiravataIf {
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function addUnicoreDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\UnicoreDataMovement $unicoreDataMovement);
+  public function addUnicoreDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\UnicoreDataMovement $unicoreDataMovement);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $dataMovementInterfaceId
@@ -2157,7 +2160,8 @@ interface AiravataIf {
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
-   * @param string $computeResourceId
+   * @param string $resourceId
+   * @param int $dataMoveType
    * @param int $priorityOrder
    * @param \Airavata\Model\AppCatalog\ComputeResource\GridFTPDataMovement $gridFTPDataMovement
    * @return string
@@ -2166,7 +2170,7 @@ interface AiravataIf {
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function addGridFTPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\GridFTPDataMovement $gridFTPDataMovement);
+  public function addGridFTPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\GridFTPDataMovement $gridFTPDataMovement);
   /**
    * Update the given GridFTP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
@@ -8314,17 +8318,18 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("updateUnicoreJobSubmissionDetails failed: unknown result");
   }
 
-  public function addLocalDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\LOCALDataMovement $localDataMovement)
+  public function addLocalDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\LOCALDataMovement $localDataMovement)
   {
-    $this->send_addLocalDataMovementDetails($authzToken, $computeResourceId, $priorityOrder, $localDataMovement);
+    $this->send_addLocalDataMovementDetails($authzToken, $resourceId, $dataMoveType, $priorityOrder, $localDataMovement);
     return $this->recv_addLocalDataMovementDetails();
   }
 
-  public function send_addLocalDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\LOCALDataMovement $localDataMovement)
+  public function send_addLocalDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\LOCALDataMovement $localDataMovement)
   {
     $args = new \Airavata\API\Airavata_addLocalDataMovementDetails_args();
     $args->authzToken = $authzToken;
-    $args->computeResourceId = $computeResourceId;
+    $args->resourceId = $resourceId;
+    $args->dataMoveType = $dataMoveType;
     $args->priorityOrder = $priorityOrder;
     $args->localDataMovement = $localDataMovement;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
@@ -8509,17 +8514,18 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getLocalDataMovement failed: unknown result");
   }
 
-  public function addSCPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\SCPDataMovement $scpDataMovement)
+  public function addSCPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\SCPDataMovement $scpDataMovement)
   {
-    $this->send_addSCPDataMovementDetails($authzToken, $computeResourceId, $priorityOrder, $scpDataMovement);
+    $this->send_addSCPDataMovementDetails($authzToken, $resourceId, $dataMoveType, $priorityOrder, $scpDataMovement);
     return $this->recv_addSCPDataMovementDetails();
   }
 
-  public function send_addSCPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\SCPDataMovement $scpDataMovement)
+  public function send_addSCPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\SCPDataMovement $scpDataMovement)
   {
     $args = new \Airavata\API\Airavata_addSCPDataMovementDetails_args();
     $args->authzToken = $authzToken;
-    $args->computeResourceId = $computeResourceId;
+    $args->resourceId = $resourceId;
+    $args->dataMoveType = $dataMoveType;
     $args->priorityOrder = $priorityOrder;
     $args->scpDataMovement = $scpDataMovement;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
@@ -8704,17 +8710,18 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getSCPDataMovement failed: unknown result");
   }
 
-  public function addUnicoreDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\UnicoreDataMovement $unicoreDataMovement)
+  public function addUnicoreDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\UnicoreDataMovement $unicoreDataMovement)
   {
-    $this->send_addUnicoreDataMovementDetails($authzToken, $computeResourceId, $priorityOrder, $unicoreDataMovement);
+    $this->send_addUnicoreDataMovementDetails($authzToken, $resourceId, $dataMoveType, $priorityOrder, $unicoreDataMovement);
     return $this->recv_addUnicoreDataMovementDetails();
   }
 
-  public function send_addUnicoreDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\UnicoreDataMovement $unicoreDataMovement)
+  public function send_addUnicoreDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\UnicoreDataMovement $unicoreDataMovement)
   {
     $args = new \Airavata\API\Airavata_addUnicoreDataMovementDetails_args();
     $args->authzToken = $authzToken;
-    $args->computeResourceId = $computeResourceId;
+    $args->resourceId = $resourceId;
+    $args->dataMoveType = $dataMoveType;
     $args->priorityOrder = $priorityOrder;
     $args->unicoreDataMovement = $unicoreDataMovement;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
@@ -8899,17 +8906,18 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getUnicoreDataMovement failed: unknown result");
   }
 
-  public function addGridFTPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\GridFTPDataMovement $gridFTPDataMovement)
+  public function addGridFTPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\GridFTPDataMovement $gridFTPDataMovement)
   {
-    $this->send_addGridFTPDataMovementDetails($authzToken, $computeResourceId, $priorityOrder, $gridFTPDataMovement);
+    $this->send_addGridFTPDataMovementDetails($authzToken, $resourceId, $dataMoveType, $priorityOrder, $gridFTPDataMovement);
     return $this->recv_addGridFTPDataMovementDetails();
   }
 
-  public function send_addGridFTPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\GridFTPDataMovement $gridFTPDataMovement)
+  public function send_addGridFTPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\GridFTPDataMovement $gridFTPDataMovement)
   {
     $args = new \Airavata\API\Airavata_addGridFTPDataMovementDetails_args();
     $args->authzToken = $authzToken;
-    $args->computeResourceId = $computeResourceId;
+    $args->resourceId = $resourceId;
+    $args->dataMoveType = $dataMoveType;
     $args->priorityOrder = $priorityOrder;
     $args->gridFTPDataMovement = $gridFTPDataMovement;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
@@ -37593,7 +37601,11 @@ class Airavata_addLocalDataMovementDetails_args {
   /**
    * @var string
    */
-  public $computeResourceId = null;
+  public $resourceId = null;
+  /**
+   * @var int
+   */
+  public $dataMoveType = null;
   /**
    * @var int
    */
@@ -37612,14 +37624,18 @@ class Airavata_addLocalDataMovementDetails_args {
           'class' => '\Airavata\Model\Security\AuthzToken',
           ),
         2 => array(
-          'var' => 'computeResourceId',
+          'var' => 'resourceId',
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'priorityOrder',
+          'var' => 'dataMoveType',
           'type' => TType::I32,
           ),
         4 => array(
+          'var' => 'priorityOrder',
+          'type' => TType::I32,
+          ),
+        5 => array(
           'var' => 'localDataMovement',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\AppCatalog\ComputeResource\LOCALDataMovement',
@@ -37630,8 +37646,11 @@ class Airavata_addLocalDataMovementDetails_args {
       if (isset($vals['authzToken'])) {
         $this->authzToken = $vals['authzToken'];
       }
-      if (isset($vals['computeResourceId'])) {
-        $this->computeResourceId = $vals['computeResourceId'];
+      if (isset($vals['resourceId'])) {
+        $this->resourceId = $vals['resourceId'];
+      }
+      if (isset($vals['dataMoveType'])) {
+        $this->dataMoveType = $vals['dataMoveType'];
       }
       if (isset($vals['priorityOrder'])) {
         $this->priorityOrder = $vals['priorityOrder'];
@@ -37671,19 +37690,26 @@ class Airavata_addLocalDataMovementDetails_args {
           break;
         case 2:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->computeResourceId);
+            $xfer += $input->readString($this->resourceId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 3:
           if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->priorityOrder);
+            $xfer += $input->readI32($this->dataMoveType);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 4:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->priorityOrder);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
           if ($ftype == TType::STRUCT) {
             $this->localDataMovement = new \Airavata\Model\AppCatalog\ComputeResource\LOCALDataMovement();
             $xfer += $this->localDataMovement->read($input);
@@ -37712,13 +37738,18 @@ class Airavata_addLocalDataMovementDetails_args {
       $xfer += $this->authzToken->write($output);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->computeResourceId !== null) {
-      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 2);
-      $xfer += $output->writeString($this->computeResourceId);
+    if ($this->resourceId !== null) {
+      $xfer += $output->writeFieldBegin('resourceId', TType::STRING, 2);
+      $xfer += $output->writeString($this->resourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->dataMoveType !== null) {
+      $xfer += $output->writeFieldBegin('dataMoveType', TType::I32, 3);
+      $xfer += $output->writeI32($this->dataMoveType);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->priorityOrder !== null) {
-      $xfer += $output->writeFieldBegin('priorityOrder', TType::I32, 3);
+      $xfer += $output->writeFieldBegin('priorityOrder', TType::I32, 4);
       $xfer += $output->writeI32($this->priorityOrder);
       $xfer += $output->writeFieldEnd();
     }
@@ -37726,7 +37757,7 @@ class Airavata_addLocalDataMovementDetails_args {
       if (!is_object($this->localDataMovement)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('localDataMovement', TType::STRUCT, 4);
+      $xfer += $output->writeFieldBegin('localDataMovement', TType::STRUCT, 5);
       $xfer += $this->localDataMovement->write($output);
       $xfer += $output->writeFieldEnd();
     }
@@ -38511,7 +38542,11 @@ class Airavata_addSCPDataMovementDetails_args {
   /**
    * @var string
    */
-  public $computeResourceId = null;
+  public $resourceId = null;
+  /**
+   * @var int
+   */
+  public $dataMoveType = null;
   /**
    * @var int
    */
@@ -38530,14 +38565,18 @@ class Airavata_addSCPDataMovementDetails_args {
           'class' => '\Airavata\Model\Security\AuthzToken',
           ),
         2 => array(
-          'var' => 'computeResourceId',
+          'var' => 'resourceId',
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'priorityOrder',
+          'var' => 'dataMoveType',
           'type' => TType::I32,
           ),
         4 => array(
+          'var' => 'priorityOrder',
+          'type' => TType::I32,
+          ),
+        5 => array(
           'var' => 'scpDataMovement',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\AppCatalog\ComputeResource\SCPDataMovement',
@@ -38548,8 +38587,11 @@ class Airavata_addSCPDataMovementDetails_args {
       if (isset($vals['authzToken'])) {
         $this->authzToken = $vals['authzToken'];
       }
-      if (isset($vals['computeResourceId'])) {
-        $this->computeResourceId = $vals['computeResourceId'];
+      if (isset($vals['resourceId'])) {
+        $this->resourceId = $vals['resourceId'];
+      }
+      if (isset($vals['dataMoveType'])) {
+        $this->dataMoveType = $vals['dataMoveType'];
       }
       if (isset($vals['priorityOrder'])) {
         $this->priorityOrder = $vals['priorityOrder'];
@@ -38589,19 +38631,26 @@ class Airavata_addSCPDataMovementDetails_args {
           break;
         case 2:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->computeResourceId);
+            $xfer += $input->readString($this->resourceId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 3:
           if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->priorityOrder);
+            $xfer += $input->readI32($this->dataMoveType);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 4:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->priorityOrder);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
           if ($ftype == TType::STRUCT) {
             $this->scpDataMovement = new \Airavata\Model\AppCatalog\ComputeResource\SCPDataMovement();
             $xfer += $this->scpDataMovement->read($input);
@@ -38630,13 +38679,18 @@ class Airavata_addSCPDataMovementDetails_args {
       $xfer += $this->authzToken->write($output);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->computeResourceId !== null) {
-      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 2);
-      $xfer += $output->writeString($this->computeResourceId);
+    if ($this->resourceId !== null) {
+      $xfer += $output->writeFieldBegin('resourceId', TType::STRING, 2);
+      $xfer += $output->writeString($this->resourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->dataMoveType !== null) {
+      $xfer += $output->writeFieldBegin('dataMoveType', TType::I32, 3);
+      $xfer += $output->writeI32($this->dataMoveType);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->priorityOrder !== null) {
-      $xfer += $output->writeFieldBegin('priorityOrder', TType::I32, 3);
+      $xfer += $output->writeFieldBegin('priorityOrder', TType::I32, 4);
       $xfer += $output->writeI32($this->priorityOrder);
       $xfer += $output->writeFieldEnd();
     }
@@ -38644,7 +38698,7 @@ class Airavata_addSCPDataMovementDetails_args {
       if (!is_object($this->scpDataMovement)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('scpDataMovement', TType::STRUCT, 4);
+      $xfer += $output->writeFieldBegin('scpDataMovement', TType::STRUCT, 5);
       $xfer += $this->scpDataMovement->write($output);
       $xfer += $output->writeFieldEnd();
     }
@@ -39429,7 +39483,11 @@ class Airavata_addUnicoreDataMovementDetails_args {
   /**
    * @var string
    */
-  public $computeResourceId = null;
+  public $resourceId = null;
+  /**
+   * @var int
+   */
+  public $dataMoveType = null;
   /**
    * @var int
    */
@@ -39448,14 +39506,18 @@ class Airavata_addUnicoreDataMovementDetails_args {
           'class' => '\Airavata\Model\Security\AuthzToken',
           ),
         2 => array(
-          'var' => 'computeResourceId',
+          'var' => 'resourceId',
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'priorityOrder',
+          'var' => 'dataMoveType',
           'type' => TType::I32,
           ),
         4 => array(
+          'var' => 'priorityOrder',
+          'type' => TType::I32,
+          ),
+        5 => array(
           'var' => 'unicoreDataMovement',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\AppCatalog\ComputeResource\UnicoreDataMovement',
@@ -39466,8 +39528,11 @@ class Airavata_addUnicoreDataMovementDetails_args {
       if (isset($vals['authzToken'])) {
         $this->authzToken = $vals['authzToken'];
       }
-      if (isset($vals['computeResourceId'])) {
-        $this->computeResourceId = $vals['computeResourceId'];
+      if (isset($vals['resourceId'])) {
+        $this->resourceId = $vals['resourceId'];
+      }
+      if (isset($vals['dataMoveType'])) {
+        $this->dataMoveType = $vals['dataMoveType'];
       }
       if (isset($vals['priorityOrder'])) {
         $this->priorityOrder = $vals['priorityOrder'];
@@ -39507,19 +39572,26 @@ class Airavata_addUnicoreDataMovementDetails_args {
           break;
         case 2:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->computeResourceId);
+            $xfer += $input->readString($this->resourceId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 3:
           if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->priorityOrder);
+            $xfer += $input->readI32($this->dataMoveType);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 4:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->priorityOrder);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
           if ($ftype == TType::STRUCT) {
             $this->unicoreDataMovement = new \Airavata\Model\AppCatalog\ComputeResource\UnicoreDataMovement();
             $xfer += $this->unicoreDataMovement->read($input);
@@ -39548,13 +39620,18 @@ class Airavata_addUnicoreDataMovementDetails_args {
       $xfer += $this->authzToken->write($output);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->computeResourceId !== null) {
-      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 2);
-      $xfer += $output->writeString($this->computeResourceId);
+    if ($this->resourceId !== null) {
+      $xfer += $output->writeFieldBegin('resourceId', TType::STRING, 2);
+      $xfer += $output->writeString($this->resourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->dataMoveType !== null) {
+      $xfer += $output->writeFieldBegin('dataMoveType', TType::I32, 3);
+      $xfer += $output->writeI32($this->dataMoveType);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->priorityOrder !== null) {
-      $xfer += $output->writeFieldBegin('priorityOrder', TType::I32, 3);
+      $xfer += $output->writeFieldBegin('priorityOrder', TType::I32, 4);
       $xfer += $output->writeI32($this->priorityOrder);
       $xfer += $output->writeFieldEnd();
     }
@@ -39562,7 +39639,7 @@ class Airavata_addUnicoreDataMovementDetails_args {
       if (!is_object($this->unicoreDataMovement)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('unicoreDataMovement', TType::STRUCT, 4);
+      $xfer += $output->writeFieldBegin('unicoreDataMovement', TType::STRUCT, 5);
       $xfer += $this->unicoreDataMovement->write($output);
       $xfer += $output->writeFieldEnd();
     }
@@ -40347,7 +40424,11 @@ class Airavata_addGridFTPDataMovementDetails_args {
   /**
    * @var string
    */
-  public $computeResourceId = null;
+  public $resourceId = null;
+  /**
+   * @var int
+   */
+  public $dataMoveType = null;
   /**
    * @var int
    */
@@ -40366,14 +40447,18 @@ class Airavata_addGridFTPDataMovementDetails_args {
           'class' => '\Airavata\Model\Security\AuthzToken',
           ),
         2 => array(
-          'var' => 'computeResourceId',
+          'var' => 'resourceId',
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'priorityOrder',
+          'var' => 'dataMoveType',
           'type' => TType::I32,
           ),
         4 => array(
+          'var' => 'priorityOrder',
+          'type' => TType::I32,
+          ),
+        5 => array(
           'var' => 'gridFTPDataMovement',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\AppCatalog\ComputeResource\GridFTPDataMovement',
@@ -40384,8 +40469,11 @@ class Airavata_addGridFTPDataMovementDetails_args {
       if (isset($vals['authzToken'])) {
         $this->authzToken = $vals['authzToken'];
       }
-      if (isset($vals['computeResourceId'])) {
-        $this->computeResourceId = $vals['computeResourceId'];
+      if (isset($vals['resourceId'])) {
+        $this->resourceId = $vals['resourceId'];
+      }
+      if (isset($vals['dataMoveType'])) {
+        $this->dataMoveType = $vals['dataMoveType'];
       }
       if (isset($vals['priorityOrder'])) {
         $this->priorityOrder = $vals['priorityOrder'];
@@ -40425,19 +40513,26 @@ class Airavata_addGridFTPDataMovementDetails_args {
           break;
         case 2:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->computeResourceId);
+            $xfer += $input->readString($this->resourceId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 3:
           if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->priorityOrder);
+            $xfer += $input->readI32($this->dataMoveType);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 4:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->priorityOrder);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
           if ($ftype == TType::STRUCT) {
             $this->gridFTPDataMovement = new \Airavata\Model\AppCatalog\ComputeResource\GridFTPDataMovement();
             $xfer += $this->gridFTPDataMovement->read($input);
@@ -40466,13 +40561,18 @@ class Airavata_addGridFTPDataMovementDetails_args {
       $xfer += $this->authzToken->write($output);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->computeResourceId !== null) {
-      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 2);
-      $xfer += $output->writeString($this->computeResourceId);
+    if ($this->resourceId !== null) {
+      $xfer += $output->writeFieldBegin('resourceId', TType::STRING, 2);
+      $xfer += $output->writeString($this->resourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->dataMoveType !== null) {
+      $xfer += $output->writeFieldBegin('dataMoveType', TType::I32, 3);
+      $xfer += $output->writeI32($this->dataMoveType);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->priorityOrder !== null) {
-      $xfer += $output->writeFieldBegin('priorityOrder', TType::I32, 3);
+      $xfer += $output->writeFieldBegin('priorityOrder', TType::I32, 4);
       $xfer += $output->writeI32($this->priorityOrder);
       $xfer += $output->writeFieldEnd();
     }
@@ -40480,7 +40580,7 @@ class Airavata_addGridFTPDataMovementDetails_args {
       if (!is_object($this->gridFTPDataMovement)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('gridFTPDataMovement', TType::STRUCT, 4);
+      $xfer += $output->writeFieldBegin('gridFTPDataMovement', TType::STRUCT, 5);
       $xfer += $this->gridFTPDataMovement->write($output);
       $xfer += $output->writeFieldEnd();
     }

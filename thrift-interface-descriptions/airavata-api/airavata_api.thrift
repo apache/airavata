@@ -1717,9 +1717,10 @@ service Airavata {
    *
   */
   string addLocalDataMovementDetails(1: required security_model.AuthzToken authzToken,
-            2: required string computeResourceId,
-            3: required i32 priorityOrder,
-            4: required compute_resource_model.LOCALDataMovement localDataMovement)
+            2: required string resourceId,
+            3: required compute_resource_model.DMType dataMoveType,
+            4: required i32 priorityOrder,
+            5: required compute_resource_model.LOCALDataMovement localDataMovement)
   	throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.AiravataClientException ace,
             3: airavata_errors.AiravataSystemException ase,
@@ -1777,9 +1778,11 @@ service Airavata {
    *   Returns the unique job submission id.
    *
   */
-  string addSCPDataMovementDetails(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId,
-            3: required i32 priorityOrder,
-            4: required compute_resource_model.SCPDataMovement scpDataMovement)
+  string addSCPDataMovementDetails(1: required security_model.AuthzToken authzToken,
+            2: required string resourceId,
+            3: required compute_resource_model.DMType dataMoveType,
+            4: required i32 priorityOrder,
+            5: required compute_resource_model.SCPDataMovement scpDataMovement)
   	throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.AiravataClientException ace,
             3: airavata_errors.AiravataSystemException ase,
@@ -1799,7 +1802,8 @@ service Airavata {
    *   Returns a success/failure of the update.
    *
   */
-  bool updateSCPDataMovementDetails(1: required security_model.AuthzToken authzToken, 2: required string dataMovementInterfaceId,
+  bool updateSCPDataMovementDetails(1: required security_model.AuthzToken authzToken,
+            2: required string dataMovementInterfaceId,
             3: required compute_resource_model.SCPDataMovement scpDataMovement)
   	throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.AiravataClientException ace,
@@ -1819,9 +1823,11 @@ service Airavata {
                             4: airavata_errors.AuthorizationException ae)
 
 
- string addUnicoreDataMovementDetails(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId,
-              3: required i32 priorityOrder,
-              4: required compute_resource_model.UnicoreDataMovement unicoreDataMovement)
+ string addUnicoreDataMovementDetails(1: required security_model.AuthzToken authzToken,
+              2: required string resourceId,
+              3: required compute_resource_model.DMType dataMoveType,
+              4: required i32 priorityOrder,
+              5: required compute_resource_model.UnicoreDataMovement unicoreDataMovement)
     	throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.AiravataClientException ace,
               3: airavata_errors.AiravataSystemException ase,
@@ -1858,9 +1864,11 @@ service Airavata {
    *   Returns the unique job submission id.
    *
   */
-  string addGridFTPDataMovementDetails(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId,
-            3: required i32 priorityOrder,
-            4: required compute_resource_model.GridFTPDataMovement gridFTPDataMovement)
+  string addGridFTPDataMovementDetails(1: required security_model.AuthzToken authzToken,
+            2: required string resourceId,
+            3: required compute_resource_model.DMType dataMoveType,
+            4: required i32 priorityOrder,
+            5: required compute_resource_model.GridFTPDataMovement gridFTPDataMovement)
   	throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.AiravataClientException ace,
             3: airavata_errors.AiravataSystemException ase,

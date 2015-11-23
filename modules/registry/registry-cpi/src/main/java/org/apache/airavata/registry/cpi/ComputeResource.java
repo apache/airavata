@@ -99,9 +99,9 @@ public interface ComputeResource {
 
     /**
      * This will add a SCPDataMovement protocol to the database
-     * @param computeResourceId compute resource id
+     * @param resourceId compute resource id
      */
-    String addDataMovementProtocol (String computeResourceId, DataMovementInterface dataMovementInterface) throws AppCatalogException;
+    String addDataMovementProtocol (String resourceId, DMType dmType, DataMovementInterface dataMovementInterface) throws AppCatalogException;
 
     /**
      * This method will add a GridFTP Data movement to the database

@@ -282,7 +282,7 @@ public class RegisterUS3Application {
 		SCPDataMovement scpDataMovement = new SCPDataMovement();
 		scpDataMovement.setSecurityProtocol(securityProtocol);
 		scpDataMovement.setSshPort(portNumber);
-		airavataClient.addSCPDataMovementDetails(new AuthzToken(""), computeResourceId, 1, scpDataMovement);
+		airavataClient.addSCPDataMovementDetails(new AuthzToken(""), computeResourceId, DMType.COMPUTE_RESOURCE, 1, scpDataMovement);
 
 		return computeResourceId;
 	}
@@ -310,7 +310,7 @@ public class RegisterUS3Application {
 		SCPDataMovement scpDataMovement = new SCPDataMovement();
 		scpDataMovement.setSecurityProtocol(securityProtocol);
 		scpDataMovement.setSshPort(portNumber);
-		airavataClient.addSCPDataMovementDetails(new AuthzToken(""), computeResourceId, 1, scpDataMovement);
+		airavataClient.addSCPDataMovementDetails(new AuthzToken(""), computeResourceId, DMType.COMPUTE_RESOURCE, 1, scpDataMovement);
 
 		return computeResourceId;
 	}

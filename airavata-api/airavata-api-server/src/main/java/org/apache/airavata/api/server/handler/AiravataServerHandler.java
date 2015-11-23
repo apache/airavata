@@ -2954,7 +2954,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Add a Local data moevement details to a compute resource
      * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
      *
-     * @param computeResourceId The identifier of the compute resource to which JobSubmission protocol to be added
+     * @param resourceId The identifier of the compute resource to which JobSubmission protocol to be added
      * @param priorityOrder     Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
      * @param localDataMovement The LOCALDataMovement object to be added to the resource.
      * @return status
@@ -2962,19 +2962,19 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public String addLocalDataMovementDetails(AuthzToken authzToken, String computeResourceId, int priorityOrder,
+    public String addLocalDataMovementDetails(AuthzToken authzToken, String resourceId, DMType dmType, int priorityOrder,
                                               LOCALDataMovement localDataMovement) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             appCatalog = RegistryFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
-            return addDataMovementInterface(computeResource, computeResourceId,
+            return addDataMovementInterface(computeResource, resourceId,dmType,
             		computeResource.addLocalDataMovement(localDataMovement), DataMovementProtocol.LOCAL, priorityOrder);
         } catch (AppCatalogException e) {
-            logger.error(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
+            logger.error(resourceId, "Error while adding data movement interface to resource resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while adding data movement interface to resource compute resource. More info : " + e.getMessage());
+            exception.setMessage("Error while adding data movement interface to resource. More info : " + e.getMessage());
             throw exception;
         }
     }
@@ -3023,21 +3023,21 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     private String addDataMovementInterface(ComputeResource computeResource,
-			String computeResourceId, String dataMovementInterfaceId,
+			String computeResourceId, DMType dmType, String dataMovementInterfaceId,
 			DataMovementProtocol protocolType, int priorityOrder)
 			throws AppCatalogException {
 		DataMovementInterface dataMovementInterface = new DataMovementInterface();
 		dataMovementInterface.setDataMovementInterfaceId(dataMovementInterfaceId);
 		dataMovementInterface.setPriorityOrder(priorityOrder);
 		dataMovementInterface.setDataMovementProtocol(protocolType);
-		return computeResource.addDataMovementProtocol(computeResourceId,dataMovementInterface);
+		return computeResource.addDataMovementProtocol(computeResourceId, dmType, dataMovementInterface);
 	}
 
     /**
      * Add a SCP data moevement details to a compute resource
      * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
      *
-     * @param computeResourceId The identifier of the compute resource to which JobSubmission protocol to be added
+     * @param resourceId The identifier of the compute resource to which JobSubmission protocol to be added
      * @param priorityOrder     Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
      * @param scpDataMovement   The SCPDataMovement object to be added to the resource.
      * @return status
@@ -3045,15 +3045,15 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public String addSCPDataMovementDetails(AuthzToken authzToken, String computeResourceId, int priorityOrder, SCPDataMovement scpDataMovement)
+    public String addSCPDataMovementDetails(AuthzToken authzToken, String resourceId, DMType dmType, int priorityOrder, SCPDataMovement scpDataMovement)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             appCatalog = RegistryFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
-            return addDataMovementInterface(computeResource, computeResourceId,
+            return addDataMovementInterface(computeResource, resourceId,dmType,
             		computeResource.addScpDataMovement(scpDataMovement), DataMovementProtocol.SCP, priorityOrder);
         } catch (AppCatalogException e) {
-            logger.error(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
+            logger.error(resourceId, "Error while adding data movement interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding data movement interface to resource compute resource. More info : " + e.getMessage());
@@ -3107,15 +3107,15 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public String addUnicoreDataMovementDetails(AuthzToken authzToken, String computeResourceId, int priorityOrder, UnicoreDataMovement unicoreDataMovement)
+    public String addUnicoreDataMovementDetails(AuthzToken authzToken, String resourceId, DMType dmType, int priorityOrder, UnicoreDataMovement unicoreDataMovement)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
-            return addDataMovementInterface(computeResource, computeResourceId,
+            return addDataMovementInterface(computeResource, resourceId,dmType,
                     computeResource.addUnicoreDataMovement(unicoreDataMovement), DataMovementProtocol.UNICORE_STORAGE_SERVICE, priorityOrder);
         } catch (AppCatalogException e) {
-            logger.error(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
+            logger.error(resourceId, "Error while adding data movement interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding data movement interface to resource compute resource. More info : " + e.getMessage());
@@ -3170,13 +3170,13 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public String addGridFTPDataMovementDetails(AuthzToken authzToken, String computeResourceId, int priorityOrder,
+    public String addGridFTPDataMovementDetails(AuthzToken authzToken, String computeResourceId, DMType dmType, int priorityOrder,
                                                 GridFTPDataMovement gridFTPDataMovement) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             appCatalog = RegistryFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
-            return addDataMovementInterface(computeResource, computeResourceId,
+            return addDataMovementInterface(computeResource, computeResourceId,dmType,
             		computeResource.addGridFTPDataMovement(gridFTPDataMovement), DataMovementProtocol.GridFTP, priorityOrder);
         } catch (AppCatalogException e) {
             logger.error(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
