@@ -182,6 +182,15 @@ final class MonitorMode {
   );
 }
 
+final class DMType {
+  const COMPUTE_RESOURCE = 0;
+  const STORAGE_RESOURCE = 1;
+  static public $__names = array(
+    0 => 'COMPUTE_RESOURCE',
+    1 => 'STORAGE_RESOURCE',
+  );
+}
+
 /**
  * Provider name
  * 
