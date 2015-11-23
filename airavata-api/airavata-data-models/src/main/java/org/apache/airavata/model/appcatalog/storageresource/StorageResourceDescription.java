@@ -88,7 +88,7 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
   private String hostName; // required
   private String storageResourceDescription; // optional
   private boolean enabled; // optional
-  private List<org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface> dataMovementInterfaces; // optional
+  private List<org.apache.airavata.model.data.movement.DataMovementInterface> dataMovementInterfaces; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -177,7 +177,7 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.DATA_MOVEMENT_INTERFACES, new org.apache.thrift.meta_data.FieldMetaData("dataMovementInterfaces", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface.class))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.data.movement.DataMovementInterface.class))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(StorageResourceDescription.class, metaDataMap);
   }
@@ -212,9 +212,9 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
     }
     this.enabled = other.enabled;
     if (other.isSetDataMovementInterfaces()) {
-      List<org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface> __this__dataMovementInterfaces = new ArrayList<org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface>(other.dataMovementInterfaces.size());
-      for (org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface other_element : other.dataMovementInterfaces) {
-        __this__dataMovementInterfaces.add(new org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface(other_element));
+      List<org.apache.airavata.model.data.movement.DataMovementInterface> __this__dataMovementInterfaces = new ArrayList<org.apache.airavata.model.data.movement.DataMovementInterface>(other.dataMovementInterfaces.size());
+      for (org.apache.airavata.model.data.movement.DataMovementInterface other_element : other.dataMovementInterfaces) {
+        __this__dataMovementInterfaces.add(new org.apache.airavata.model.data.movement.DataMovementInterface(other_element));
       }
       this.dataMovementInterfaces = __this__dataMovementInterfaces;
     }
@@ -330,22 +330,22 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
     return (this.dataMovementInterfaces == null) ? 0 : this.dataMovementInterfaces.size();
   }
 
-  public java.util.Iterator<org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface> getDataMovementInterfacesIterator() {
+  public java.util.Iterator<org.apache.airavata.model.data.movement.DataMovementInterface> getDataMovementInterfacesIterator() {
     return (this.dataMovementInterfaces == null) ? null : this.dataMovementInterfaces.iterator();
   }
 
-  public void addToDataMovementInterfaces(org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface elem) {
+  public void addToDataMovementInterfaces(org.apache.airavata.model.data.movement.DataMovementInterface elem) {
     if (this.dataMovementInterfaces == null) {
-      this.dataMovementInterfaces = new ArrayList<org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface>();
+      this.dataMovementInterfaces = new ArrayList<org.apache.airavata.model.data.movement.DataMovementInterface>();
     }
     this.dataMovementInterfaces.add(elem);
   }
 
-  public List<org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface> getDataMovementInterfaces() {
+  public List<org.apache.airavata.model.data.movement.DataMovementInterface> getDataMovementInterfaces() {
     return this.dataMovementInterfaces;
   }
 
-  public void setDataMovementInterfaces(List<org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface> dataMovementInterfaces) {
+  public void setDataMovementInterfaces(List<org.apache.airavata.model.data.movement.DataMovementInterface> dataMovementInterfaces) {
     this.dataMovementInterfaces = dataMovementInterfaces;
   }
 
@@ -402,7 +402,7 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
       if (value == null) {
         unsetDataMovementInterfaces();
       } else {
-        setDataMovementInterfaces((List<org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface>)value);
+        setDataMovementInterfaces((List<org.apache.airavata.model.data.movement.DataMovementInterface>)value);
       }
       break;
 
@@ -752,11 +752,11 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                struct.dataMovementInterfaces = new ArrayList<org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface>(_list0.size);
-                org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface _elem1;
+                struct.dataMovementInterfaces = new ArrayList<org.apache.airavata.model.data.movement.DataMovementInterface>(_list0.size);
+                org.apache.airavata.model.data.movement.DataMovementInterface _elem1;
                 for (int _i2 = 0; _i2 < _list0.size; ++_i2)
                 {
-                  _elem1 = new org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface();
+                  _elem1 = new org.apache.airavata.model.data.movement.DataMovementInterface();
                   _elem1.read(iprot);
                   struct.dataMovementInterfaces.add(_elem1);
                 }
@@ -807,7 +807,7 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
           oprot.writeFieldBegin(DATA_MOVEMENT_INTERFACES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.dataMovementInterfaces.size()));
-            for (org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface _iter3 : struct.dataMovementInterfaces)
+            for (org.apache.airavata.model.data.movement.DataMovementInterface _iter3 : struct.dataMovementInterfaces)
             {
               _iter3.write(oprot);
             }
@@ -855,7 +855,7 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
       if (struct.isSetDataMovementInterfaces()) {
         {
           oprot.writeI32(struct.dataMovementInterfaces.size());
-          for (org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface _iter4 : struct.dataMovementInterfaces)
+          for (org.apache.airavata.model.data.movement.DataMovementInterface _iter4 : struct.dataMovementInterfaces)
           {
             _iter4.write(oprot);
           }
@@ -882,11 +882,11 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
       if (incoming.get(2)) {
         {
           org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.dataMovementInterfaces = new ArrayList<org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface>(_list5.size);
-          org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface _elem6;
+          struct.dataMovementInterfaces = new ArrayList<org.apache.airavata.model.data.movement.DataMovementInterface>(_list5.size);
+          org.apache.airavata.model.data.movement.DataMovementInterface _elem6;
           for (int _i7 = 0; _i7 < _list5.size; ++_i7)
           {
-            _elem6 = new org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface();
+            _elem6 = new org.apache.airavata.model.data.movement.DataMovementInterface();
             _elem6.read(iprot);
             struct.dataMovementInterfaces.add(_elem6);
           }

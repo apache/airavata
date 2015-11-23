@@ -67,6 +67,7 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
   private static final org.apache.thrift.protocol.TField THROTTLE_RESOURCES_FIELD_DESC = new org.apache.thrift.protocol.TField("throttleResources", org.apache.thrift.protocol.TType.BOOL, (short)5);
   private static final org.apache.thrift.protocol.TField USER_DN_FIELD_DESC = new org.apache.thrift.protocol.TField("userDN", org.apache.thrift.protocol.TType.STRING, (short)6);
   private static final org.apache.thrift.protocol.TField GENERATE_CERT_FIELD_DESC = new org.apache.thrift.protocol.TField("generateCert", org.apache.thrift.protocol.TType.BOOL, (short)7);
+  private static final org.apache.thrift.protocol.TField STORAGE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("storageId", org.apache.thrift.protocol.TType.STRING, (short)8);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -81,6 +82,7 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
   private boolean throttleResources; // optional
   private String userDN; // optional
   private boolean generateCert; // optional
+  private String storageId; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -90,7 +92,8 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     COMPUTATIONAL_RESOURCE_SCHEDULING((short)4, "computationalResourceScheduling"),
     THROTTLE_RESOURCES((short)5, "throttleResources"),
     USER_DN((short)6, "userDN"),
-    GENERATE_CERT((short)7, "generateCert");
+    GENERATE_CERT((short)7, "generateCert"),
+    STORAGE_ID((short)8, "storageId");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -119,6 +122,8 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
           return USER_DN;
         case 7: // GENERATE_CERT
           return GENERATE_CERT;
+        case 8: // STORAGE_ID
+          return STORAGE_ID;
         default:
           return null;
       }
@@ -165,7 +170,7 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
   private static final int __THROTTLERESOURCES_ISSET_ID = 3;
   private static final int __GENERATECERT_ISSET_ID = 4;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.SHARE_EXPERIMENT_PUBLICLY,_Fields.COMPUTATIONAL_RESOURCE_SCHEDULING,_Fields.THROTTLE_RESOURCES,_Fields.USER_DN,_Fields.GENERATE_CERT};
+  private static final _Fields optionals[] = {_Fields.SHARE_EXPERIMENT_PUBLICLY,_Fields.COMPUTATIONAL_RESOURCE_SCHEDULING,_Fields.THROTTLE_RESOURCES,_Fields.USER_DN,_Fields.GENERATE_CERT,_Fields.STORAGE_ID};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -183,6 +188,8 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.GENERATE_CERT, new org.apache.thrift.meta_data.FieldMetaData("generateCert", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+    tmpMap.put(_Fields.STORAGE_ID, new org.apache.thrift.meta_data.FieldMetaData("storageId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(UserConfigurationDataModel.class, metaDataMap);
   }
@@ -227,6 +234,9 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       this.userDN = other.userDN;
     }
     this.generateCert = other.generateCert;
+    if (other.isSetStorageId()) {
+      this.storageId = other.storageId;
+    }
   }
 
   public UserConfigurationDataModel deepCopy() {
@@ -247,6 +257,7 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     this.userDN = null;
     this.generateCert = false;
 
+    this.storageId = null;
   }
 
   public boolean isAiravataAutoSchedule() {
@@ -405,6 +416,29 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __GENERATECERT_ISSET_ID, value);
   }
 
+  public String getStorageId() {
+    return this.storageId;
+  }
+
+  public void setStorageId(String storageId) {
+    this.storageId = storageId;
+  }
+
+  public void unsetStorageId() {
+    this.storageId = null;
+  }
+
+  /** Returns true if field storageId is set (has been assigned a value) and false otherwise */
+  public boolean isSetStorageId() {
+    return this.storageId != null;
+  }
+
+  public void setStorageIdIsSet(boolean value) {
+    if (!value) {
+      this.storageId = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case AIRAVATA_AUTO_SCHEDULE:
@@ -463,6 +497,14 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       }
       break;
 
+    case STORAGE_ID:
+      if (value == null) {
+        unsetStorageId();
+      } else {
+        setStorageId((String)value);
+      }
+      break;
+
     }
   }
 
@@ -489,6 +531,9 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     case GENERATE_CERT:
       return Boolean.valueOf(isGenerateCert());
 
+    case STORAGE_ID:
+      return getStorageId();
+
     }
     throw new IllegalStateException();
   }
@@ -514,6 +559,8 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       return isSetUserDN();
     case GENERATE_CERT:
       return isSetGenerateCert();
+    case STORAGE_ID:
+      return isSetStorageId();
     }
     throw new IllegalStateException();
   }
@@ -594,6 +641,15 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
         return false;
     }
 
+    boolean this_present_storageId = true && this.isSetStorageId();
+    boolean that_present_storageId = true && that.isSetStorageId();
+    if (this_present_storageId || that_present_storageId) {
+      if (!(this_present_storageId && that_present_storageId))
+        return false;
+      if (!this.storageId.equals(that.storageId))
+        return false;
+    }
+
     return true;
   }
 
@@ -635,6 +691,11 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     list.add(present_generateCert);
     if (present_generateCert)
       list.add(generateCert);
+
+    boolean present_storageId = true && (isSetStorageId());
+    list.add(present_storageId);
+    if (present_storageId)
+      list.add(storageId);
 
     return list.hashCode();
   }
@@ -717,6 +778,16 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetStorageId()).compareTo(other.isSetStorageId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetStorageId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.storageId, other.storageId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -780,6 +851,16 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       if (!first) sb.append(", ");
       sb.append("generateCert:");
       sb.append(this.generateCert);
+      first = false;
+    }
+    if (isSetStorageId()) {
+      if (!first) sb.append(", ");
+      sb.append("storageId:");
+      if (this.storageId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.storageId);
+      }
       first = false;
     }
     sb.append(")");
@@ -895,6 +976,14 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 8: // STORAGE_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.storageId = iprot.readString();
+              struct.setStorageIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -943,6 +1032,13 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
         oprot.writeBool(struct.generateCert);
         oprot.writeFieldEnd();
       }
+      if (struct.storageId != null) {
+        if (struct.isSetStorageId()) {
+          oprot.writeFieldBegin(STORAGE_ID_FIELD_DESC);
+          oprot.writeString(struct.storageId);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -978,7 +1074,10 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       if (struct.isSetGenerateCert()) {
         optionals.set(4);
       }
-      oprot.writeBitSet(optionals, 5);
+      if (struct.isSetStorageId()) {
+        optionals.set(5);
+      }
+      oprot.writeBitSet(optionals, 6);
       if (struct.isSetShareExperimentPublicly()) {
         oprot.writeBool(struct.shareExperimentPublicly);
       }
@@ -994,6 +1093,9 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       if (struct.isSetGenerateCert()) {
         oprot.writeBool(struct.generateCert);
       }
+      if (struct.isSetStorageId()) {
+        oprot.writeString(struct.storageId);
+      }
     }
 
     @Override
@@ -1003,7 +1105,7 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       struct.setAiravataAutoScheduleIsSet(true);
       struct.overrideManualScheduledParams = iprot.readBool();
       struct.setOverrideManualScheduledParamsIsSet(true);
-      BitSet incoming = iprot.readBitSet(5);
+      BitSet incoming = iprot.readBitSet(6);
       if (incoming.get(0)) {
         struct.shareExperimentPublicly = iprot.readBool();
         struct.setShareExperimentPubliclyIsSet(true);
@@ -1024,6 +1126,10 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       if (incoming.get(4)) {
         struct.generateCert = iprot.readBool();
         struct.setGenerateCertIsSet(true);
+      }
+      if (incoming.get(5)) {
+        struct.storageId = iprot.readString();
+        struct.setStorageIdIsSet(true);
       }
     }
   }

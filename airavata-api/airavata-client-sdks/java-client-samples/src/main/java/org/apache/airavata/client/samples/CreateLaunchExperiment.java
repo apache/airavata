@@ -30,6 +30,7 @@ import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
+import org.apache.airavata.model.data.movement.SecurityProtocol;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentSummaryModel;

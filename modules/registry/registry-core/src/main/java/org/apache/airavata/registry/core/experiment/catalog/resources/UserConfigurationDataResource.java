@@ -49,6 +49,7 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
     private Integer wallTimeLimit;
     private Integer totalPhysicalMemory;
     private String staticWorkingDir;
+    private String storageId;
 
     public String getExperimentId() {
         return experimentId;
@@ -104,6 +105,14 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
 
     public void setWallTimeLimit(Integer wallTimeLimit) {
         this.wallTimeLimit = wallTimeLimit;
+    }
+
+    public String getStorageId() {
+        return storageId;
+    }
+
+    public void setStorageId(String storageId) {
+        this.storageId = storageId;
     }
 
     public Integer getTotalPhysicalMemory() {

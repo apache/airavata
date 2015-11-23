@@ -21,9 +21,9 @@
 package org.apache.airavata.gfac.core.config;
 
 import org.apache.airavata.gfac.core.GFacException;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;

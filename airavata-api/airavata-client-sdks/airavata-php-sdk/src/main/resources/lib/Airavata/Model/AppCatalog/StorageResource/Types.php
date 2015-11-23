@@ -54,7 +54,7 @@ class StorageResourceDescription {
    */
   public $enabled = null;
   /**
-   * @var \Airavata\Model\AppCatalog\ComputeResource\DataMovementInterface[]
+   * @var \Airavata\Model\Data\Movement\DataMovementInterface[]
    */
   public $dataMovementInterfaces = null;
 
@@ -83,7 +83,7 @@ class StorageResourceDescription {
           'etype' => TType::STRUCT,
           'elem' => array(
             'type' => TType::STRUCT,
-            'class' => '\Airavata\Model\AppCatalog\ComputeResource\DataMovementInterface',
+            'class' => '\Airavata\Model\Data\Movement\DataMovementInterface',
             ),
           ),
         );
@@ -163,7 +163,7 @@ class StorageResourceDescription {
             for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
             {
               $elem5 = null;
-              $elem5 = new \Airavata\Model\AppCatalog\ComputeResource\DataMovementInterface();
+              $elem5 = new \Airavata\Model\Data\Movement\DataMovementInterface();
               $xfer += $elem5->read($input);
               $this->dataMovementInterfaces []= $elem5;
             }

@@ -21,20 +21,39 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package org.apache.airavata.model.appcatalog.computeresource;
+package org.apache.airavata.model.data.movement;
 
 
 import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
-public enum DMType implements org.apache.thrift.TEnum {
-  COMPUTE_RESOURCE(0),
-  STORAGE_RESOURCE(1);
+/**
+ * Enumeration of data movement supported by Airavata
+ * 
+ * SCP:
+ *  Job manager supporting the Portal Batch System (PBS) protocol. Some examples include TORQUE, PBSPro, Grid Engine.
+ * 
+ * SFTP:
+ *  The Simple Linux Utility for Resource Management is a open source workload manager.
+ * 
+ * GridFTP:
+ *  Globus File Transfer Protocol
+ * 
+ * UNICORE_STORAGE_SERVICE:
+ *  Storage Service Provided by Unicore
+ * 
+ */
+public enum DataMovementProtocol implements org.apache.thrift.TEnum {
+  LOCAL(0),
+  SCP(1),
+  SFTP(2),
+  GridFTP(3),
+  UNICORE_STORAGE_SERVICE(4);
 
   private final int value;
 
-  private DMType(int value) {
+  private DataMovementProtocol(int value) {
     this.value = value;
   }
 
@@ -49,12 +68,18 @@ public enum DMType implements org.apache.thrift.TEnum {
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static DMType findByValue(int value) { 
+  public static DataMovementProtocol findByValue(int value) { 
     switch (value) {
       case 0:
-        return COMPUTE_RESOURCE;
+        return LOCAL;
       case 1:
-        return STORAGE_RESOURCE;
+        return SCP;
+      case 2:
+        return SFTP;
+      case 3:
+        return GridFTP;
+      case 4:
+        return UNICORE_STORAGE_SERVICE;
       default:
         return null;
     }

@@ -21,38 +21,20 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package org.apache.airavata.model.appcatalog.computeresource;
+package org.apache.airavata.model.data.movement;
 
 
 import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
-/**
- * Enumeration of security authentication and authorization mechanisms supported by Airavata. This enumeration just
- *  describes the supported mechanism. The corresponding security credentials are registered with Airavata Credential
- *  store.
- * 
- * USERNAME_PASSWORD:
- *  A User Name.
- * 
- * SSH_KEYS:
- *  SSH Keys
- * 
- * FIXME: Change GSI to a more precise generic security protocol - X509
- * 
- */
-public enum SecurityProtocol implements org.apache.thrift.TEnum {
-  USERNAME_PASSWORD(0),
-  SSH_KEYS(1),
-  GSI(2),
-  KERBEROS(3),
-  OAUTH(4),
-  LOCAL(5);
+public enum DMType implements org.apache.thrift.TEnum {
+  COMPUTE_RESOURCE(0),
+  STORAGE_RESOURCE(1);
 
   private final int value;
 
-  private SecurityProtocol(int value) {
+  private DMType(int value) {
     this.value = value;
   }
 
@@ -67,20 +49,12 @@ public enum SecurityProtocol implements org.apache.thrift.TEnum {
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static SecurityProtocol findByValue(int value) { 
+  public static DMType findByValue(int value) { 
     switch (value) {
       case 0:
-        return USERNAME_PASSWORD;
+        return COMPUTE_RESOURCE;
       case 1:
-        return SSH_KEYS;
-      case 2:
-        return GSI;
-      case 3:
-        return KERBEROS;
-      case 4:
-        return OAUTH;
-      case 5:
-        return LOCAL;
+        return STORAGE_RESOURCE;
       default:
         return null;
     }

@@ -8,6 +8,7 @@
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import apache.airavata.model.appcatalog.computeresource.ttypes
+import apache.airavata.model.data.movement.ttypes
 
 
 from thrift.transport import TTransport

@@ -31,13 +31,10 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelism
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
-import org.apache.airavata.model.appcatalog.computeresource.LOCALDataMovement;
 import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
-import org.apache.airavata.model.appcatalog.computeresource.SCPDataMovement;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.error.AiravataClientException;

@@ -8,7 +8,7 @@
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import apache.airavata.model.commons.ttypes
-import apache.airavata.model.appcatalog.computeresource.ttypes
+import apache.airavata.model.data.movement.ttypes
 
 
 from thrift.transport import TTransport
@@ -52,7 +52,7 @@ class StorageResourceDescription:
     (2, TType.STRING, 'hostName', None, None, ), # 2
     (3, TType.STRING, 'storageResourceDescription', None, None, ), # 3
     (4, TType.BOOL, 'enabled', None, None, ), # 4
-    (5, TType.LIST, 'dataMovementInterfaces', (TType.STRUCT,(apache.airavata.model.appcatalog.computeresource.ttypes.DataMovementInterface, apache.airavata.model.appcatalog.computeresource.ttypes.DataMovementInterface.thrift_spec)), None, ), # 5
+    (5, TType.LIST, 'dataMovementInterfaces', (TType.STRUCT,(apache.airavata.model.data.movement.ttypes.DataMovementInterface, apache.airavata.model.data.movement.ttypes.DataMovementInterface.thrift_spec)), None, ), # 5
   )
 
   def __init__(self, storageResourceId=thrift_spec[1][4], hostName=None, storageResourceDescription=None, enabled=None, dataMovementInterfaces=None,):
@@ -96,7 +96,7 @@ class StorageResourceDescription:
           self.dataMovementInterfaces = []
           (_etype3, _size0) = iprot.readListBegin()
           for _i4 in xrange(_size0):
-            _elem5 = apache.airavata.model.appcatalog.computeresource.ttypes.DataMovementInterface()
+            _elem5 = apache.airavata.model.data.movement.ttypes.DataMovementInterface()
             _elem5.read(iprot)
             self.dataMovementInterfaces.append(_elem5)
           iprot.readListEnd()

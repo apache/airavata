@@ -33,6 +33,7 @@
 
 #include <thrift/cxxfunctional.h>
 #include "compute_resource_model_types.h"
+#include "data_movement_models_types.h"
 
 
 namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace gatewayprofile {
@@ -62,7 +63,7 @@ class ComputeResourcePreference {
 
   ComputeResourcePreference(const ComputeResourcePreference&);
   ComputeResourcePreference& operator=(const ComputeResourcePreference&);
-  ComputeResourcePreference() : computeResourceId(), overridebyAiravata(true), loginUserName(), preferredJobSubmissionProtocol(( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)0), preferredDataMovementProtocol(( ::apache::airavata::model::appcatalog::computeresource::DataMovementProtocol::type)0), preferredBatchQueue(), scratchLocation(), allocationProjectNumber(), resourceSpecificCredentialStoreToken() {
+  ComputeResourcePreference() : computeResourceId(), overridebyAiravata(true), loginUserName(), preferredJobSubmissionProtocol(( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)0), preferredDataMovementProtocol(( ::apache::airavata::model::data::movement::DataMovementProtocol::type)0), preferredBatchQueue(), scratchLocation(), allocationProjectNumber(), resourceSpecificCredentialStoreToken() {
   }
 
   virtual ~ComputeResourcePreference() throw();
@@ -70,7 +71,7 @@ class ComputeResourcePreference {
   bool overridebyAiravata;
   std::string loginUserName;
    ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type preferredJobSubmissionProtocol;
-   ::apache::airavata::model::appcatalog::computeresource::DataMovementProtocol::type preferredDataMovementProtocol;
+   ::apache::airavata::model::data::movement::DataMovementProtocol::type preferredDataMovementProtocol;
   std::string preferredBatchQueue;
   std::string scratchLocation;
   std::string allocationProjectNumber;
@@ -86,7 +87,7 @@ class ComputeResourcePreference {
 
   void __set_preferredJobSubmissionProtocol(const  ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type val);
 
-  void __set_preferredDataMovementProtocol(const  ::apache::airavata::model::appcatalog::computeresource::DataMovementProtocol::type val);
+  void __set_preferredDataMovementProtocol(const  ::apache::airavata::model::data::movement::DataMovementProtocol::type val);
 
   void __set_preferredBatchQueue(const std::string& val);
 

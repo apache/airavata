@@ -35,6 +35,7 @@
 #include "airavata_commons_types.h"
 #include "status_models_types.h"
 #include "compute_resource_model_types.h"
+#include "data_movement_models_types.h"
 #include "application_io_models_types.h"
 #include "job_model_types.h"
 
@@ -273,16 +274,16 @@ class EnvironmentSetupTaskModel {
 
   EnvironmentSetupTaskModel(const EnvironmentSetupTaskModel&);
   EnvironmentSetupTaskModel& operator=(const EnvironmentSetupTaskModel&);
-  EnvironmentSetupTaskModel() : location(), protocol(( ::apache::airavata::model::appcatalog::computeresource::SecurityProtocol::type)0) {
+  EnvironmentSetupTaskModel() : location(), protocol(( ::apache::airavata::model::data::movement::SecurityProtocol::type)0) {
   }
 
   virtual ~EnvironmentSetupTaskModel() throw();
   std::string location;
-   ::apache::airavata::model::appcatalog::computeresource::SecurityProtocol::type protocol;
+   ::apache::airavata::model::data::movement::SecurityProtocol::type protocol;
 
   void __set_location(const std::string& val);
 
-  void __set_protocol(const  ::apache::airavata::model::appcatalog::computeresource::SecurityProtocol::type val);
+  void __set_protocol(const  ::apache::airavata::model::data::movement::SecurityProtocol::type val);
 
   bool operator == (const EnvironmentSetupTaskModel & rhs) const
   {

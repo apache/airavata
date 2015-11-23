@@ -2095,12 +2095,12 @@ class Iface:
     """
     pass
 
-  def addGatewayStoragePreference(self, authzToken, gatewayID, dataMoveId, storagePreference):
+  def addGatewayStoragePreference(self, authzToken, gatewayID, storageResourceId, storagePreference):
     """
     Parameters:
      - authzToken
      - gatewayID
-     - dataMoveId
+     - storageResourceId
      - storagePreference
     """
     pass
@@ -2126,12 +2126,12 @@ class Iface:
     """
     pass
 
-  def getGatewayStoragePreference(self, authzToken, gatewayID, dataMoveId):
+  def getGatewayStoragePreference(self, authzToken, gatewayID, storageResourceId):
     """
     Parameters:
      - authzToken
      - gatewayID
-     - dataMoveId
+     - storageResourceId
     """
     pass
 
@@ -8205,23 +8205,23 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "addGatewayComputeResourcePreference failed: unknown result");
 
-  def addGatewayStoragePreference(self, authzToken, gatewayID, dataMoveId, storagePreference):
+  def addGatewayStoragePreference(self, authzToken, gatewayID, storageResourceId, storagePreference):
     """
     Parameters:
      - authzToken
      - gatewayID
-     - dataMoveId
+     - storageResourceId
      - storagePreference
     """
-    self.send_addGatewayStoragePreference(authzToken, gatewayID, dataMoveId, storagePreference)
+    self.send_addGatewayStoragePreference(authzToken, gatewayID, storageResourceId, storagePreference)
     return self.recv_addGatewayStoragePreference()
 
-  def send_addGatewayStoragePreference(self, authzToken, gatewayID, dataMoveId, storagePreference):
+  def send_addGatewayStoragePreference(self, authzToken, gatewayID, storageResourceId, storagePreference):
     self._oprot.writeMessageBegin('addGatewayStoragePreference', TMessageType.CALL, self._seqid)
     args = addGatewayStoragePreference_args()
     args.authzToken = authzToken
     args.gatewayID = gatewayID
-    args.dataMoveId = dataMoveId
+    args.storageResourceId = storageResourceId
     args.storagePreference = storagePreference
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
@@ -8305,22 +8305,22 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getGatewayComputeResourcePreference failed: unknown result");
 
-  def getGatewayStoragePreference(self, authzToken, gatewayID, dataMoveId):
+  def getGatewayStoragePreference(self, authzToken, gatewayID, storageResourceId):
     """
     Parameters:
      - authzToken
      - gatewayID
-     - dataMoveId
+     - storageResourceId
     """
-    self.send_getGatewayStoragePreference(authzToken, gatewayID, dataMoveId)
+    self.send_getGatewayStoragePreference(authzToken, gatewayID, storageResourceId)
     return self.recv_getGatewayStoragePreference()
 
-  def send_getGatewayStoragePreference(self, authzToken, gatewayID, dataMoveId):
+  def send_getGatewayStoragePreference(self, authzToken, gatewayID, storageResourceId):
     self._oprot.writeMessageBegin('getGatewayStoragePreference', TMessageType.CALL, self._seqid)
     args = getGatewayStoragePreference_args()
     args.authzToken = authzToken
     args.gatewayID = gatewayID
-    args.dataMoveId = dataMoveId
+    args.storageResourceId = storageResourceId
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -11402,7 +11402,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = addGatewayStoragePreference_result()
     try:
-      result.success = self._handler.addGatewayStoragePreference(args.authzToken, args.gatewayID, args.dataMoveId, args.storagePreference)
+      result.success = self._handler.addGatewayStoragePreference(args.authzToken, args.gatewayID, args.storageResourceId, args.storagePreference)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -11442,7 +11442,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = getGatewayStoragePreference_result()
     try:
-      result.success = self._handler.getGatewayStoragePreference(args.authzToken, args.gatewayID, args.dataMoveId)
+      result.success = self._handler.getGatewayStoragePreference(args.authzToken, args.gatewayID, args.storageResourceId)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -30410,7 +30410,7 @@ class addLocalDataMovementDetails_args:
     (2, TType.STRING, 'resourceId', None, None, ), # 2
     (3, TType.I32, 'dataMoveType', None, None, ), # 3
     (4, TType.I32, 'priorityOrder', None, None, ), # 4
-    (5, TType.STRUCT, 'localDataMovement', (apache.airavata.model.appcatalog.computeresource.ttypes.LOCALDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.LOCALDataMovement.thrift_spec), None, ), # 5
+    (5, TType.STRUCT, 'localDataMovement', (apache.airavata.model.data.movement.ttypes.LOCALDataMovement, apache.airavata.model.data.movement.ttypes.LOCALDataMovement.thrift_spec), None, ), # 5
   )
 
   def __init__(self, authzToken=None, resourceId=None, dataMoveType=None, priorityOrder=None, localDataMovement=None,):
@@ -30452,7 +30452,7 @@ class addLocalDataMovementDetails_args:
           iprot.skip(ftype)
       elif fid == 5:
         if ftype == TType.STRUCT:
-          self.localDataMovement = apache.airavata.model.appcatalog.computeresource.ttypes.LOCALDataMovement()
+          self.localDataMovement = apache.airavata.model.data.movement.ttypes.LOCALDataMovement()
           self.localDataMovement.read(iprot)
         else:
           iprot.skip(ftype)
@@ -30655,7 +30655,7 @@ class updateLocalDataMovementDetails_args:
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
     (2, TType.STRING, 'dataMovementInterfaceId', None, None, ), # 2
-    (3, TType.STRUCT, 'localDataMovement', (apache.airavata.model.appcatalog.computeresource.ttypes.LOCALDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.LOCALDataMovement.thrift_spec), None, ), # 3
+    (3, TType.STRUCT, 'localDataMovement', (apache.airavata.model.data.movement.ttypes.LOCALDataMovement, apache.airavata.model.data.movement.ttypes.LOCALDataMovement.thrift_spec), None, ), # 3
   )
 
   def __init__(self, authzToken=None, dataMovementInterfaceId=None, localDataMovement=None,):
@@ -30685,7 +30685,7 @@ class updateLocalDataMovementDetails_args:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRUCT:
-          self.localDataMovement = apache.airavata.model.appcatalog.computeresource.ttypes.LOCALDataMovement()
+          self.localDataMovement = apache.airavata.model.data.movement.ttypes.LOCALDataMovement()
           self.localDataMovement.read(iprot)
         else:
           iprot.skip(ftype)
@@ -30956,7 +30956,7 @@ class getLocalDataMovement_result:
   """
 
   thrift_spec = (
-    (0, TType.STRUCT, 'success', (apache.airavata.model.appcatalog.computeresource.ttypes.LOCALDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.LOCALDataMovement.thrift_spec), None, ), # 0
+    (0, TType.STRUCT, 'success', (apache.airavata.model.data.movement.ttypes.LOCALDataMovement, apache.airavata.model.data.movement.ttypes.LOCALDataMovement.thrift_spec), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -30981,7 +30981,7 @@ class getLocalDataMovement_result:
         break
       if fid == 0:
         if ftype == TType.STRUCT:
-          self.success = apache.airavata.model.appcatalog.computeresource.ttypes.LOCALDataMovement()
+          self.success = apache.airavata.model.data.movement.ttypes.LOCALDataMovement()
           self.success.read(iprot)
         else:
           iprot.skip(ftype)
@@ -31082,7 +31082,7 @@ class addSCPDataMovementDetails_args:
     (2, TType.STRING, 'resourceId', None, None, ), # 2
     (3, TType.I32, 'dataMoveType', None, None, ), # 3
     (4, TType.I32, 'priorityOrder', None, None, ), # 4
-    (5, TType.STRUCT, 'scpDataMovement', (apache.airavata.model.appcatalog.computeresource.ttypes.SCPDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.SCPDataMovement.thrift_spec), None, ), # 5
+    (5, TType.STRUCT, 'scpDataMovement', (apache.airavata.model.data.movement.ttypes.SCPDataMovement, apache.airavata.model.data.movement.ttypes.SCPDataMovement.thrift_spec), None, ), # 5
   )
 
   def __init__(self, authzToken=None, resourceId=None, dataMoveType=None, priorityOrder=None, scpDataMovement=None,):
@@ -31124,7 +31124,7 @@ class addSCPDataMovementDetails_args:
           iprot.skip(ftype)
       elif fid == 5:
         if ftype == TType.STRUCT:
-          self.scpDataMovement = apache.airavata.model.appcatalog.computeresource.ttypes.SCPDataMovement()
+          self.scpDataMovement = apache.airavata.model.data.movement.ttypes.SCPDataMovement()
           self.scpDataMovement.read(iprot)
         else:
           iprot.skip(ftype)
@@ -31327,7 +31327,7 @@ class updateSCPDataMovementDetails_args:
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
     (2, TType.STRING, 'dataMovementInterfaceId', None, None, ), # 2
-    (3, TType.STRUCT, 'scpDataMovement', (apache.airavata.model.appcatalog.computeresource.ttypes.SCPDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.SCPDataMovement.thrift_spec), None, ), # 3
+    (3, TType.STRUCT, 'scpDataMovement', (apache.airavata.model.data.movement.ttypes.SCPDataMovement, apache.airavata.model.data.movement.ttypes.SCPDataMovement.thrift_spec), None, ), # 3
   )
 
   def __init__(self, authzToken=None, dataMovementInterfaceId=None, scpDataMovement=None,):
@@ -31357,7 +31357,7 @@ class updateSCPDataMovementDetails_args:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRUCT:
-          self.scpDataMovement = apache.airavata.model.appcatalog.computeresource.ttypes.SCPDataMovement()
+          self.scpDataMovement = apache.airavata.model.data.movement.ttypes.SCPDataMovement()
           self.scpDataMovement.read(iprot)
         else:
           iprot.skip(ftype)
@@ -31628,7 +31628,7 @@ class getSCPDataMovement_result:
   """
 
   thrift_spec = (
-    (0, TType.STRUCT, 'success', (apache.airavata.model.appcatalog.computeresource.ttypes.SCPDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.SCPDataMovement.thrift_spec), None, ), # 0
+    (0, TType.STRUCT, 'success', (apache.airavata.model.data.movement.ttypes.SCPDataMovement, apache.airavata.model.data.movement.ttypes.SCPDataMovement.thrift_spec), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -31653,7 +31653,7 @@ class getSCPDataMovement_result:
         break
       if fid == 0:
         if ftype == TType.STRUCT:
-          self.success = apache.airavata.model.appcatalog.computeresource.ttypes.SCPDataMovement()
+          self.success = apache.airavata.model.data.movement.ttypes.SCPDataMovement()
           self.success.read(iprot)
         else:
           iprot.skip(ftype)
@@ -31754,7 +31754,7 @@ class addUnicoreDataMovementDetails_args:
     (2, TType.STRING, 'resourceId', None, None, ), # 2
     (3, TType.I32, 'dataMoveType', None, None, ), # 3
     (4, TType.I32, 'priorityOrder', None, None, ), # 4
-    (5, TType.STRUCT, 'unicoreDataMovement', (apache.airavata.model.appcatalog.computeresource.ttypes.UnicoreDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.UnicoreDataMovement.thrift_spec), None, ), # 5
+    (5, TType.STRUCT, 'unicoreDataMovement', (apache.airavata.model.data.movement.ttypes.UnicoreDataMovement, apache.airavata.model.data.movement.ttypes.UnicoreDataMovement.thrift_spec), None, ), # 5
   )
 
   def __init__(self, authzToken=None, resourceId=None, dataMoveType=None, priorityOrder=None, unicoreDataMovement=None,):
@@ -31796,7 +31796,7 @@ class addUnicoreDataMovementDetails_args:
           iprot.skip(ftype)
       elif fid == 5:
         if ftype == TType.STRUCT:
-          self.unicoreDataMovement = apache.airavata.model.appcatalog.computeresource.ttypes.UnicoreDataMovement()
+          self.unicoreDataMovement = apache.airavata.model.data.movement.ttypes.UnicoreDataMovement()
           self.unicoreDataMovement.read(iprot)
         else:
           iprot.skip(ftype)
@@ -31999,7 +31999,7 @@ class updateUnicoreDataMovementDetails_args:
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
     (2, TType.STRING, 'dataMovementInterfaceId', None, None, ), # 2
-    (3, TType.STRUCT, 'unicoreDataMovement', (apache.airavata.model.appcatalog.computeresource.ttypes.UnicoreDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.UnicoreDataMovement.thrift_spec), None, ), # 3
+    (3, TType.STRUCT, 'unicoreDataMovement', (apache.airavata.model.data.movement.ttypes.UnicoreDataMovement, apache.airavata.model.data.movement.ttypes.UnicoreDataMovement.thrift_spec), None, ), # 3
   )
 
   def __init__(self, authzToken=None, dataMovementInterfaceId=None, unicoreDataMovement=None,):
@@ -32029,7 +32029,7 @@ class updateUnicoreDataMovementDetails_args:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRUCT:
-          self.unicoreDataMovement = apache.airavata.model.appcatalog.computeresource.ttypes.UnicoreDataMovement()
+          self.unicoreDataMovement = apache.airavata.model.data.movement.ttypes.UnicoreDataMovement()
           self.unicoreDataMovement.read(iprot)
         else:
           iprot.skip(ftype)
@@ -32300,7 +32300,7 @@ class getUnicoreDataMovement_result:
   """
 
   thrift_spec = (
-    (0, TType.STRUCT, 'success', (apache.airavata.model.appcatalog.computeresource.ttypes.UnicoreDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.UnicoreDataMovement.thrift_spec), None, ), # 0
+    (0, TType.STRUCT, 'success', (apache.airavata.model.data.movement.ttypes.UnicoreDataMovement, apache.airavata.model.data.movement.ttypes.UnicoreDataMovement.thrift_spec), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -32325,7 +32325,7 @@ class getUnicoreDataMovement_result:
         break
       if fid == 0:
         if ftype == TType.STRUCT:
-          self.success = apache.airavata.model.appcatalog.computeresource.ttypes.UnicoreDataMovement()
+          self.success = apache.airavata.model.data.movement.ttypes.UnicoreDataMovement()
           self.success.read(iprot)
         else:
           iprot.skip(ftype)
@@ -32426,7 +32426,7 @@ class addGridFTPDataMovementDetails_args:
     (2, TType.STRING, 'resourceId', None, None, ), # 2
     (3, TType.I32, 'dataMoveType', None, None, ), # 3
     (4, TType.I32, 'priorityOrder', None, None, ), # 4
-    (5, TType.STRUCT, 'gridFTPDataMovement', (apache.airavata.model.appcatalog.computeresource.ttypes.GridFTPDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.GridFTPDataMovement.thrift_spec), None, ), # 5
+    (5, TType.STRUCT, 'gridFTPDataMovement', (apache.airavata.model.data.movement.ttypes.GridFTPDataMovement, apache.airavata.model.data.movement.ttypes.GridFTPDataMovement.thrift_spec), None, ), # 5
   )
 
   def __init__(self, authzToken=None, resourceId=None, dataMoveType=None, priorityOrder=None, gridFTPDataMovement=None,):
@@ -32468,7 +32468,7 @@ class addGridFTPDataMovementDetails_args:
           iprot.skip(ftype)
       elif fid == 5:
         if ftype == TType.STRUCT:
-          self.gridFTPDataMovement = apache.airavata.model.appcatalog.computeresource.ttypes.GridFTPDataMovement()
+          self.gridFTPDataMovement = apache.airavata.model.data.movement.ttypes.GridFTPDataMovement()
           self.gridFTPDataMovement.read(iprot)
         else:
           iprot.skip(ftype)
@@ -32671,7 +32671,7 @@ class updateGridFTPDataMovementDetails_args:
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
     (2, TType.STRING, 'dataMovementInterfaceId', None, None, ), # 2
-    (3, TType.STRUCT, 'gridFTPDataMovement', (apache.airavata.model.appcatalog.computeresource.ttypes.GridFTPDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.GridFTPDataMovement.thrift_spec), None, ), # 3
+    (3, TType.STRUCT, 'gridFTPDataMovement', (apache.airavata.model.data.movement.ttypes.GridFTPDataMovement, apache.airavata.model.data.movement.ttypes.GridFTPDataMovement.thrift_spec), None, ), # 3
   )
 
   def __init__(self, authzToken=None, dataMovementInterfaceId=None, gridFTPDataMovement=None,):
@@ -32701,7 +32701,7 @@ class updateGridFTPDataMovementDetails_args:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRUCT:
-          self.gridFTPDataMovement = apache.airavata.model.appcatalog.computeresource.ttypes.GridFTPDataMovement()
+          self.gridFTPDataMovement = apache.airavata.model.data.movement.ttypes.GridFTPDataMovement()
           self.gridFTPDataMovement.read(iprot)
         else:
           iprot.skip(ftype)
@@ -32972,7 +32972,7 @@ class getGridFTPDataMovement_result:
   """
 
   thrift_spec = (
-    (0, TType.STRUCT, 'success', (apache.airavata.model.appcatalog.computeresource.ttypes.GridFTPDataMovement, apache.airavata.model.appcatalog.computeresource.ttypes.GridFTPDataMovement.thrift_spec), None, ), # 0
+    (0, TType.STRUCT, 'success', (apache.airavata.model.data.movement.ttypes.GridFTPDataMovement, apache.airavata.model.data.movement.ttypes.GridFTPDataMovement.thrift_spec), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -32997,7 +32997,7 @@ class getGridFTPDataMovement_result:
         break
       if fid == 0:
         if ftype == TType.STRUCT:
-          self.success = apache.airavata.model.appcatalog.computeresource.ttypes.GridFTPDataMovement()
+          self.success = apache.airavata.model.data.movement.ttypes.GridFTPDataMovement()
           self.success.read(iprot)
         else:
           iprot.skip(ftype)
@@ -36497,7 +36497,7 @@ class addGatewayStoragePreference_args:
   Attributes:
    - authzToken
    - gatewayID
-   - dataMoveId
+   - storageResourceId
    - storagePreference
   """
 
@@ -36505,14 +36505,14 @@ class addGatewayStoragePreference_args:
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
     (2, TType.STRING, 'gatewayID', None, None, ), # 2
-    (3, TType.STRING, 'dataMoveId', None, None, ), # 3
+    (3, TType.STRING, 'storageResourceId', None, None, ), # 3
     (4, TType.STRUCT, 'storagePreference', (apache.airavata.model.appcatalog.gatewayprofile.ttypes.StoragePreference, apache.airavata.model.appcatalog.gatewayprofile.ttypes.StoragePreference.thrift_spec), None, ), # 4
   )
 
-  def __init__(self, authzToken=None, gatewayID=None, dataMoveId=None, storagePreference=None,):
+  def __init__(self, authzToken=None, gatewayID=None, storageResourceId=None, storagePreference=None,):
     self.authzToken = authzToken
     self.gatewayID = gatewayID
-    self.dataMoveId = dataMoveId
+    self.storageResourceId = storageResourceId
     self.storagePreference = storagePreference
 
   def read(self, iprot):
@@ -36537,7 +36537,7 @@ class addGatewayStoragePreference_args:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
-          self.dataMoveId = iprot.readString();
+          self.storageResourceId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 4:
@@ -36564,9 +36564,9 @@ class addGatewayStoragePreference_args:
       oprot.writeFieldBegin('gatewayID', TType.STRING, 2)
       oprot.writeString(self.gatewayID)
       oprot.writeFieldEnd()
-    if self.dataMoveId is not None:
-      oprot.writeFieldBegin('dataMoveId', TType.STRING, 3)
-      oprot.writeString(self.dataMoveId)
+    if self.storageResourceId is not None:
+      oprot.writeFieldBegin('storageResourceId', TType.STRING, 3)
+      oprot.writeString(self.storageResourceId)
       oprot.writeFieldEnd()
     if self.storagePreference is not None:
       oprot.writeFieldBegin('storagePreference', TType.STRUCT, 4)
@@ -36580,8 +36580,8 @@ class addGatewayStoragePreference_args:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
     if self.gatewayID is None:
       raise TProtocol.TProtocolException(message='Required field gatewayID is unset!')
-    if self.dataMoveId is None:
-      raise TProtocol.TProtocolException(message='Required field dataMoveId is unset!')
+    if self.storageResourceId is None:
+      raise TProtocol.TProtocolException(message='Required field storageResourceId is unset!')
     if self.storagePreference is None:
       raise TProtocol.TProtocolException(message='Required field storagePreference is unset!')
     return
@@ -36591,7 +36591,7 @@ class addGatewayStoragePreference_args:
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
     value = (value * 31) ^ hash(self.gatewayID)
-    value = (value * 31) ^ hash(self.dataMoveId)
+    value = (value * 31) ^ hash(self.storageResourceId)
     value = (value * 31) ^ hash(self.storagePreference)
     return value
 
@@ -36950,20 +36950,20 @@ class getGatewayStoragePreference_args:
   Attributes:
    - authzToken
    - gatewayID
-   - dataMoveId
+   - storageResourceId
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
     (2, TType.STRING, 'gatewayID', None, None, ), # 2
-    (3, TType.STRING, 'dataMoveId', None, None, ), # 3
+    (3, TType.STRING, 'storageResourceId', None, None, ), # 3
   )
 
-  def __init__(self, authzToken=None, gatewayID=None, dataMoveId=None,):
+  def __init__(self, authzToken=None, gatewayID=None, storageResourceId=None,):
     self.authzToken = authzToken
     self.gatewayID = gatewayID
-    self.dataMoveId = dataMoveId
+    self.storageResourceId = storageResourceId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -36987,7 +36987,7 @@ class getGatewayStoragePreference_args:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
-          self.dataMoveId = iprot.readString();
+          self.storageResourceId = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -37008,9 +37008,9 @@ class getGatewayStoragePreference_args:
       oprot.writeFieldBegin('gatewayID', TType.STRING, 2)
       oprot.writeString(self.gatewayID)
       oprot.writeFieldEnd()
-    if self.dataMoveId is not None:
-      oprot.writeFieldBegin('dataMoveId', TType.STRING, 3)
-      oprot.writeString(self.dataMoveId)
+    if self.storageResourceId is not None:
+      oprot.writeFieldBegin('storageResourceId', TType.STRING, 3)
+      oprot.writeString(self.storageResourceId)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -37020,8 +37020,8 @@ class getGatewayStoragePreference_args:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
     if self.gatewayID is None:
       raise TProtocol.TProtocolException(message='Required field gatewayID is unset!')
-    if self.dataMoveId is None:
-      raise TProtocol.TProtocolException(message='Required field dataMoveId is unset!')
+    if self.storageResourceId is None:
+      raise TProtocol.TProtocolException(message='Required field storageResourceId is unset!')
     return
 
 
@@ -37029,7 +37029,7 @@ class getGatewayStoragePreference_args:
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
     value = (value * 31) ^ hash(self.gatewayID)
-    value = (value * 31) ^ hash(self.dataMoveId)
+    value = (value * 31) ^ hash(self.storageResourceId)
     return value
 
   def __repr__(self):

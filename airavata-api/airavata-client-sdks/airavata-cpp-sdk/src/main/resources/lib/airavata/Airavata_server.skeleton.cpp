@@ -1678,7 +1678,7 @@ class AiravataHandler : virtual public AiravataIf {
    * @param priorityOrder
    * @param localDataMovement
    */
-  void addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) {
+  void addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement) {
     // Your implementation goes here
     printf("addLocalDataMovementDetails\n");
   }
@@ -1700,7 +1700,7 @@ class AiravataHandler : virtual public AiravataIf {
    * @param dataMovementInterfaceId
    * @param localDataMovement
    */
-  bool updateLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) {
+  bool updateLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement) {
     // Your implementation goes here
     printf("updateLocalDataMovementDetails\n");
   }
@@ -1715,7 +1715,7 @@ class AiravataHandler : virtual public AiravataIf {
    * @param authzToken
    * @param dataMovementId
    */
-  void getLocalDataMovement( ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId) {
+  void getLocalDataMovement( ::apache::airavata::model::data::movement::LOCALDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId) {
     // Your implementation goes here
     printf("getLocalDataMovement\n");
   }
@@ -1743,7 +1743,7 @@ class AiravataHandler : virtual public AiravataIf {
    * @param priorityOrder
    * @param scpDataMovement
    */
-  void addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) {
+  void addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement) {
     // Your implementation goes here
     printf("addSCPDataMovementDetails\n");
   }
@@ -1766,7 +1766,7 @@ class AiravataHandler : virtual public AiravataIf {
    * @param dataMovementInterfaceId
    * @param scpDataMovement
    */
-  bool updateSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) {
+  bool updateSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement) {
     // Your implementation goes here
     printf("updateSCPDataMovementDetails\n");
   }
@@ -1781,22 +1781,22 @@ class AiravataHandler : virtual public AiravataIf {
    * @param authzToken
    * @param dataMovementId
    */
-  void getSCPDataMovement( ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId) {
+  void getSCPDataMovement( ::apache::airavata::model::data::movement::SCPDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId) {
     // Your implementation goes here
     printf("getSCPDataMovement\n");
   }
 
-  void addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& unicoreDataMovement) {
+  void addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement) {
     // Your implementation goes here
     printf("addUnicoreDataMovementDetails\n");
   }
 
-  bool updateUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& unicoreDataMovement) {
+  bool updateUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement) {
     // Your implementation goes here
     printf("updateUnicoreDataMovementDetails\n");
   }
 
-  void getUnicoreDataMovement( ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId) {
+  void getUnicoreDataMovement( ::apache::airavata::model::data::movement::UnicoreDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId) {
     // Your implementation goes here
     printf("getUnicoreDataMovement\n");
   }
@@ -1824,7 +1824,7 @@ class AiravataHandler : virtual public AiravataIf {
    * @param priorityOrder
    * @param gridFTPDataMovement
    */
-  void addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) {
+  void addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement) {
     // Your implementation goes here
     printf("addGridFTPDataMovementDetails\n");
   }
@@ -1847,7 +1847,7 @@ class AiravataHandler : virtual public AiravataIf {
    * @param dataMovementInterfaceId
    * @param gridFTPDataMovement
    */
-  bool updateGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) {
+  bool updateGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement) {
     // Your implementation goes here
     printf("updateGridFTPDataMovementDetails\n");
   }
@@ -1862,7 +1862,7 @@ class AiravataHandler : virtual public AiravataIf {
    * @param authzToken
    * @param dataMovementId
    */
-  void getGridFTPDataMovement( ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId) {
+  void getGridFTPDataMovement( ::apache::airavata::model::data::movement::GridFTPDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId) {
     // Your implementation goes here
     printf("getGridFTPDataMovement\n");
   }
@@ -2115,7 +2115,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("addGatewayComputeResourcePreference\n");
   }
 
-  bool addGatewayStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& dataMoveId, const  ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference& storagePreference) {
+  bool addGatewayStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& storageResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference& storagePreference) {
     // Your implementation goes here
     printf("addGatewayStoragePreference\n");
   }
@@ -2142,7 +2142,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getGatewayComputeResourcePreference\n");
   }
 
-  void getGatewayStoragePreference( ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& dataMoveId) {
+  void getGatewayStoragePreference( ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& storageResourceId) {
     // Your implementation goes here
     printf("getGatewayStoragePreference\n");
   }

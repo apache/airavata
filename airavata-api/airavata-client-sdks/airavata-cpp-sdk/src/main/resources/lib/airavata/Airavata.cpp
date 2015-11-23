@@ -26870,7 +26870,7 @@ uint32_t Airavata_addLocalDataMovementDetails_args::read(::apache::thrift::proto
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast332;
           xfer += iprot->readI32(ecast332);
-          this->dataMoveType = ( ::apache::airavata::model::appcatalog::computeresource::DMType::type)ecast332;
+          this->dataMoveType = ( ::apache::airavata::model::data::movement::DMType::type)ecast332;
           isset_dataMoveType = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -27812,7 +27812,7 @@ uint32_t Airavata_addSCPDataMovementDetails_args::read(::apache::thrift::protoco
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast333;
           xfer += iprot->readI32(ecast333);
-          this->dataMoveType = ( ::apache::airavata::model::appcatalog::computeresource::DMType::type)ecast333;
+          this->dataMoveType = ( ::apache::airavata::model::data::movement::DMType::type)ecast333;
           isset_dataMoveType = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -28754,7 +28754,7 @@ uint32_t Airavata_addUnicoreDataMovementDetails_args::read(::apache::thrift::pro
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast334;
           xfer += iprot->readI32(ecast334);
-          this->dataMoveType = ( ::apache::airavata::model::appcatalog::computeresource::DMType::type)ecast334;
+          this->dataMoveType = ( ::apache::airavata::model::data::movement::DMType::type)ecast334;
           isset_dataMoveType = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -29696,7 +29696,7 @@ uint32_t Airavata_addGridFTPDataMovementDetails_args::read(::apache::thrift::pro
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast335;
           xfer += iprot->readI32(ecast335);
-          this->dataMoveType = ( ::apache::airavata::model::appcatalog::computeresource::DMType::type)ecast335;
+          this->dataMoveType = ( ::apache::airavata::model::data::movement::DMType::type)ecast335;
           isset_dataMoveType = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -35451,7 +35451,7 @@ uint32_t Airavata_addGatewayStoragePreference_args::read(::apache::thrift::proto
 
   bool isset_authzToken = false;
   bool isset_gatewayID = false;
-  bool isset_dataMoveId = false;
+  bool isset_storageResourceId = false;
   bool isset_storagePreference = false;
 
   while (true)
@@ -35480,8 +35480,8 @@ uint32_t Airavata_addGatewayStoragePreference_args::read(::apache::thrift::proto
         break;
       case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->dataMoveId);
-          isset_dataMoveId = true;
+          xfer += iprot->readString(this->storageResourceId);
+          isset_storageResourceId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -35507,7 +35507,7 @@ uint32_t Airavata_addGatewayStoragePreference_args::read(::apache::thrift::proto
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_gatewayID)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_dataMoveId)
+  if (!isset_storageResourceId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_storagePreference)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -35527,8 +35527,8 @@ uint32_t Airavata_addGatewayStoragePreference_args::write(::apache::thrift::prot
   xfer += oprot->writeString(this->gatewayID);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("dataMoveId", ::apache::thrift::protocol::T_STRING, 3);
-  xfer += oprot->writeString(this->dataMoveId);
+  xfer += oprot->writeFieldBegin("storageResourceId", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString(this->storageResourceId);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("storagePreference", ::apache::thrift::protocol::T_STRUCT, 4);
@@ -35559,8 +35559,8 @@ uint32_t Airavata_addGatewayStoragePreference_pargs::write(::apache::thrift::pro
   xfer += oprot->writeString((*(this->gatewayID)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("dataMoveId", ::apache::thrift::protocol::T_STRING, 3);
-  xfer += oprot->writeString((*(this->dataMoveId)));
+  xfer += oprot->writeFieldBegin("storageResourceId", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString((*(this->storageResourceId)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("storagePreference", ::apache::thrift::protocol::T_STRUCT, 4);
@@ -36084,7 +36084,7 @@ uint32_t Airavata_getGatewayStoragePreference_args::read(::apache::thrift::proto
 
   bool isset_authzToken = false;
   bool isset_gatewayID = false;
-  bool isset_dataMoveId = false;
+  bool isset_storageResourceId = false;
 
   while (true)
   {
@@ -36112,8 +36112,8 @@ uint32_t Airavata_getGatewayStoragePreference_args::read(::apache::thrift::proto
         break;
       case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->dataMoveId);
-          isset_dataMoveId = true;
+          xfer += iprot->readString(this->storageResourceId);
+          isset_storageResourceId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -36131,7 +36131,7 @@ uint32_t Airavata_getGatewayStoragePreference_args::read(::apache::thrift::proto
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_gatewayID)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_dataMoveId)
+  if (!isset_storageResourceId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -36149,8 +36149,8 @@ uint32_t Airavata_getGatewayStoragePreference_args::write(::apache::thrift::prot
   xfer += oprot->writeString(this->gatewayID);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("dataMoveId", ::apache::thrift::protocol::T_STRING, 3);
-  xfer += oprot->writeString(this->dataMoveId);
+  xfer += oprot->writeFieldBegin("storageResourceId", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString(this->storageResourceId);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -36177,8 +36177,8 @@ uint32_t Airavata_getGatewayStoragePreference_pargs::write(::apache::thrift::pro
   xfer += oprot->writeString((*(this->gatewayID)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("dataMoveId", ::apache::thrift::protocol::T_STRING, 3);
-  xfer += oprot->writeString((*(this->dataMoveId)));
+  xfer += oprot->writeFieldBegin("storageResourceId", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString((*(this->storageResourceId)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -46720,13 +46720,13 @@ bool AiravataClient::recv_updateUnicoreJobSubmissionDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateUnicoreJobSubmissionDetails failed: unknown result");
 }
 
-void AiravataClient::addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement)
+void AiravataClient::addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement)
 {
   send_addLocalDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, localDataMovement);
   recv_addLocalDataMovementDetails(_return);
 }
 
-void AiravataClient::send_addLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement)
+void AiravataClient::send_addLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("addLocalDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -46794,13 +46794,13 @@ void AiravataClient::recv_addLocalDataMovementDetails(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addLocalDataMovementDetails failed: unknown result");
 }
 
-bool AiravataClient::updateLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement)
+bool AiravataClient::updateLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement)
 {
   send_updateLocalDataMovementDetails(authzToken, dataMovementInterfaceId, localDataMovement);
   return recv_updateLocalDataMovementDetails();
 }
 
-void AiravataClient::send_updateLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement)
+void AiravataClient::send_updateLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateLocalDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -46866,7 +46866,7 @@ bool AiravataClient::recv_updateLocalDataMovementDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateLocalDataMovementDetails failed: unknown result");
 }
 
-void AiravataClient::getLocalDataMovement( ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId)
+void AiravataClient::getLocalDataMovement( ::apache::airavata::model::data::movement::LOCALDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId)
 {
   send_getLocalDataMovement(authzToken, dataMovementId);
   recv_getLocalDataMovement(_return);
@@ -46887,7 +46887,7 @@ void AiravataClient::send_getLocalDataMovement(const  ::apache::airavata::model:
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getLocalDataMovement( ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& _return)
+void AiravataClient::recv_getLocalDataMovement( ::apache::airavata::model::data::movement::LOCALDataMovement& _return)
 {
 
   int32_t rseqid = 0;
@@ -46937,13 +46937,13 @@ void AiravataClient::recv_getLocalDataMovement( ::apache::airavata::model::appca
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getLocalDataMovement failed: unknown result");
 }
 
-void AiravataClient::addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement)
+void AiravataClient::addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement)
 {
   send_addSCPDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, scpDataMovement);
   recv_addSCPDataMovementDetails(_return);
 }
 
-void AiravataClient::send_addSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement)
+void AiravataClient::send_addSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("addSCPDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -47011,13 +47011,13 @@ void AiravataClient::recv_addSCPDataMovementDetails(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addSCPDataMovementDetails failed: unknown result");
 }
 
-bool AiravataClient::updateSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement)
+bool AiravataClient::updateSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement)
 {
   send_updateSCPDataMovementDetails(authzToken, dataMovementInterfaceId, scpDataMovement);
   return recv_updateSCPDataMovementDetails();
 }
 
-void AiravataClient::send_updateSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement)
+void AiravataClient::send_updateSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateSCPDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -47083,7 +47083,7 @@ bool AiravataClient::recv_updateSCPDataMovementDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateSCPDataMovementDetails failed: unknown result");
 }
 
-void AiravataClient::getSCPDataMovement( ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId)
+void AiravataClient::getSCPDataMovement( ::apache::airavata::model::data::movement::SCPDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId)
 {
   send_getSCPDataMovement(authzToken, dataMovementId);
   recv_getSCPDataMovement(_return);
@@ -47104,7 +47104,7 @@ void AiravataClient::send_getSCPDataMovement(const  ::apache::airavata::model::s
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getSCPDataMovement( ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& _return)
+void AiravataClient::recv_getSCPDataMovement( ::apache::airavata::model::data::movement::SCPDataMovement& _return)
 {
 
   int32_t rseqid = 0;
@@ -47154,13 +47154,13 @@ void AiravataClient::recv_getSCPDataMovement( ::apache::airavata::model::appcata
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getSCPDataMovement failed: unknown result");
 }
 
-void AiravataClient::addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& unicoreDataMovement)
+void AiravataClient::addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement)
 {
   send_addUnicoreDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, unicoreDataMovement);
   recv_addUnicoreDataMovementDetails(_return);
 }
 
-void AiravataClient::send_addUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& unicoreDataMovement)
+void AiravataClient::send_addUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("addUnicoreDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -47228,13 +47228,13 @@ void AiravataClient::recv_addUnicoreDataMovementDetails(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addUnicoreDataMovementDetails failed: unknown result");
 }
 
-bool AiravataClient::updateUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& unicoreDataMovement)
+bool AiravataClient::updateUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement)
 {
   send_updateUnicoreDataMovementDetails(authzToken, dataMovementInterfaceId, unicoreDataMovement);
   return recv_updateUnicoreDataMovementDetails();
 }
 
-void AiravataClient::send_updateUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& unicoreDataMovement)
+void AiravataClient::send_updateUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateUnicoreDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -47300,7 +47300,7 @@ bool AiravataClient::recv_updateUnicoreDataMovementDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateUnicoreDataMovementDetails failed: unknown result");
 }
 
-void AiravataClient::getUnicoreDataMovement( ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId)
+void AiravataClient::getUnicoreDataMovement( ::apache::airavata::model::data::movement::UnicoreDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId)
 {
   send_getUnicoreDataMovement(authzToken, dataMovementId);
   recv_getUnicoreDataMovement(_return);
@@ -47321,7 +47321,7 @@ void AiravataClient::send_getUnicoreDataMovement(const  ::apache::airavata::mode
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getUnicoreDataMovement( ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& _return)
+void AiravataClient::recv_getUnicoreDataMovement( ::apache::airavata::model::data::movement::UnicoreDataMovement& _return)
 {
 
   int32_t rseqid = 0;
@@ -47371,13 +47371,13 @@ void AiravataClient::recv_getUnicoreDataMovement( ::apache::airavata::model::app
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getUnicoreDataMovement failed: unknown result");
 }
 
-void AiravataClient::addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement)
+void AiravataClient::addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement)
 {
   send_addGridFTPDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, gridFTPDataMovement);
   recv_addGridFTPDataMovementDetails(_return);
 }
 
-void AiravataClient::send_addGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement)
+void AiravataClient::send_addGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("addGridFTPDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -47445,13 +47445,13 @@ void AiravataClient::recv_addGridFTPDataMovementDetails(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addGridFTPDataMovementDetails failed: unknown result");
 }
 
-bool AiravataClient::updateGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement)
+bool AiravataClient::updateGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement)
 {
   send_updateGridFTPDataMovementDetails(authzToken, dataMovementInterfaceId, gridFTPDataMovement);
   return recv_updateGridFTPDataMovementDetails();
 }
 
-void AiravataClient::send_updateGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement)
+void AiravataClient::send_updateGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateGridFTPDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -47517,7 +47517,7 @@ bool AiravataClient::recv_updateGridFTPDataMovementDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateGridFTPDataMovementDetails failed: unknown result");
 }
 
-void AiravataClient::getGridFTPDataMovement( ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId)
+void AiravataClient::getGridFTPDataMovement( ::apache::airavata::model::data::movement::GridFTPDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId)
 {
   send_getGridFTPDataMovement(authzToken, dataMovementId);
   recv_getGridFTPDataMovement(_return);
@@ -47538,7 +47538,7 @@ void AiravataClient::send_getGridFTPDataMovement(const  ::apache::airavata::mode
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getGridFTPDataMovement( ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& _return)
+void AiravataClient::recv_getGridFTPDataMovement( ::apache::airavata::model::data::movement::GridFTPDataMovement& _return)
 {
 
   int32_t rseqid = 0;
@@ -48733,13 +48733,13 @@ bool AiravataClient::recv_addGatewayComputeResourcePreference()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addGatewayComputeResourcePreference failed: unknown result");
 }
 
-bool AiravataClient::addGatewayStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& dataMoveId, const  ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference& storagePreference)
+bool AiravataClient::addGatewayStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& storageResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference& storagePreference)
 {
-  send_addGatewayStoragePreference(authzToken, gatewayID, dataMoveId, storagePreference);
+  send_addGatewayStoragePreference(authzToken, gatewayID, storageResourceId, storagePreference);
   return recv_addGatewayStoragePreference();
 }
 
-void AiravataClient::send_addGatewayStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& dataMoveId, const  ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference& storagePreference)
+void AiravataClient::send_addGatewayStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& storageResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference& storagePreference)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("addGatewayStoragePreference", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -48747,7 +48747,7 @@ void AiravataClient::send_addGatewayStoragePreference(const  ::apache::airavata:
   Airavata_addGatewayStoragePreference_pargs args;
   args.authzToken = &authzToken;
   args.gatewayID = &gatewayID;
-  args.dataMoveId = &dataMoveId;
+  args.storageResourceId = &storageResourceId;
   args.storagePreference = &storagePreference;
   args.write(oprot_);
 
@@ -48878,13 +48878,13 @@ void AiravataClient::recv_getGatewayComputeResourcePreference( ::apache::airavat
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getGatewayComputeResourcePreference failed: unknown result");
 }
 
-void AiravataClient::getGatewayStoragePreference( ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& dataMoveId)
+void AiravataClient::getGatewayStoragePreference( ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& storageResourceId)
 {
-  send_getGatewayStoragePreference(authzToken, gatewayID, dataMoveId);
+  send_getGatewayStoragePreference(authzToken, gatewayID, storageResourceId);
   recv_getGatewayStoragePreference(_return);
 }
 
-void AiravataClient::send_getGatewayStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& dataMoveId)
+void AiravataClient::send_getGatewayStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& storageResourceId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("getGatewayStoragePreference", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -48892,7 +48892,7 @@ void AiravataClient::send_getGatewayStoragePreference(const  ::apache::airavata:
   Airavata_getGatewayStoragePreference_pargs args;
   args.authzToken = &authzToken;
   args.gatewayID = &gatewayID;
-  args.dataMoveId = &dataMoveId;
+  args.storageResourceId = &storageResourceId;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -57455,7 +57455,7 @@ void AiravataProcessor::process_addGatewayStoragePreference(int32_t seqid, ::apa
 
   Airavata_addGatewayStoragePreference_result result;
   try {
-    result.success = iface_->addGatewayStoragePreference(args.authzToken, args.gatewayID, args.dataMoveId, args.storagePreference);
+    result.success = iface_->addGatewayStoragePreference(args.authzToken, args.gatewayID, args.storageResourceId, args.storagePreference);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -57587,7 +57587,7 @@ void AiravataProcessor::process_getGatewayStoragePreference(int32_t seqid, ::apa
 
   Airavata_getGatewayStoragePreference_result result;
   try {
-    iface_->getGatewayStoragePreference(result.success, args.authzToken, args.gatewayID, args.dataMoveId);
+    iface_->getGatewayStoragePreference(result.success, args.authzToken, args.gatewayID, args.storageResourceId);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
