@@ -27,18 +27,18 @@ import org.apache.airavata.model.appcatalog.appinterface.*;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.UnicoreDataMovement;
 import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.DataStoragePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 
@@ -51,6 +51,15 @@ public class AppCatalogThriftConversion {
         resource.setResourceDescription(description.getResourceDescription());
         resource.setResourceId(description.getComputeResourceId());
         resource.setMaxMemoryPerNode(description.getMaxMemoryPerNode());
+        resource.setEnabled(description.isEnabled());
+        return resource;
+    }
+
+    public static StorageResourceResource getStorageResource (StorageResourceDescription description){
+        StorageResourceResource resource = new StorageResourceResource();
+        resource.setHostName(description.getHostName());
+        resource.setResourceDescription(description.getStorageResourceDescription());
+        resource.setStorageResourceId(description.getStorageResourceId());
         resource.setEnabled(description.isEnabled());
         return resource;
     }
@@ -103,10 +112,27 @@ public class AppCatalogThriftConversion {
         return description;
     }
 
+    public static StorageResourceDescription getStorageDescription (StorageResourceResource resource) throws AppCatalogException {
+        StorageResourceDescription description = new StorageResourceDescription();
+        description.setStorageResourceId(resource.getStorageResourceId());
+        description.setHostName(resource.getHostName());
+        description.setStorageResourceDescription(resource.getResourceDescription());
+        description.setEnabled(resource.isEnabled());
+        return description;
+    }
+
     public static  List<ComputeResourceDescription> getComputeDescriptionList (List<AppCatalogResource> resources) throws AppCatalogException {
         List<ComputeResourceDescription> list = new ArrayList<ComputeResourceDescription>();
         for (AppCatalogResource resource : resources){
             list.add(getComputeHostDescription((ComputeResourceResource)resource));
+        }
+        return list;
+    }
+
+    public static  List<StorageResourceDescription> getStorageDescriptionList (List<AppCatalogResource> resources) throws AppCatalogException {
+        List<StorageResourceDescription> list = new ArrayList<StorageResourceDescription>();
+        for (AppCatalogResource resource : resources){
+            list.add(getStorageDescription((StorageResourceResource) resource));
         }
         return list;
     }
@@ -157,6 +183,13 @@ public class AppCatalogThriftConversion {
     	dmi.setDataMovementProtocol(resource.getDataMovementProtocol().toString());
     	dmi.setPriorityOrder(resource.getPriorityOrder());
         return dmi;
+    }
+
+    public static StorageInterfaceResource getStorageInterface(DataMovementInterface resource){
+        StorageInterfaceResource storageInterfaceResource = new StorageInterfaceResource();
+        storageInterfaceResource.setDataMovementInterfaceId(resource.getDataMovementInterfaceId());
+        storageInterfaceResource.setDataMovementProtocol(resource.getDataMovementProtocol().toString());
+        return storageInterfaceResource;
     }
     
     public static List<JobSubmissionInterface> getJobSubmissionInterfaces(List<AppCatalogResource> resources){
@@ -771,20 +804,20 @@ public class AppCatalogThriftConversion {
         return preferences;
     }
 
-    public static DataStoragePreference getDataStoragePreference (DataStoragePreferenceResource resource){
-        DataStoragePreference preference = new DataStoragePreference();
-        preference.setDataMovememtResourceId(resource.getDataMoveId());
+    public static StoragePreference getDataStoragePreference (StoragePreferenceResource resource){
+        StoragePreference preference = new StoragePreference();
+        preference.setStorageResourceId(resource.getStorageResourceId());
         preference.setFileSystemRootLocation(resource.getFsRootLocation());
         preference.setLoginUserName(resource.getLoginUserName());
         preference.setResourceSpecificCredentialStoreToken(resource.getResourceCSToken());
         return preference;
     }
 
-    public static List<DataStoragePreference> getDataStoragePreferences (List<AppCatalogResource> resources){
-        List<DataStoragePreference> preferences = new ArrayList<DataStoragePreference>();
+    public static List<StoragePreference> getDataStoragePreferences (List<AppCatalogResource> resources){
+        List<StoragePreference> preferences = new ArrayList<StoragePreference>();
         if (resources != null && !resources.isEmpty()){
             for (AppCatalogResource resource : resources){
-                preferences.add(getDataStoragePreference((DataStoragePreferenceResource)resource));
+                preferences.add(getDataStoragePreference((StoragePreferenceResource)resource));
             }
         }
         return preferences;
@@ -814,12 +847,12 @@ public class AppCatalogThriftConversion {
         return inputResources;
     }
 
-    public static GatewayResourceProfile getGatewayResourceProfile(GatewayProfileResource gw, List<ComputeResourcePreference> preferences, List<DataStoragePreference> storagePreferences){
+    public static GatewayResourceProfile getGatewayResourceProfile(GatewayProfileResource gw, List<ComputeResourcePreference> preferences, List<StoragePreference> storagePreferences){
         GatewayResourceProfile gatewayProfile = new GatewayResourceProfile();
         gatewayProfile.setGatewayID(gw.getGatewayID());
         gatewayProfile.setCredentialStoreToken(gw.getCredentialStoreToken());
         gatewayProfile.setComputeResourcePreferences(preferences);
-        gatewayProfile.setDataStoragePreferences(storagePreferences);
+        gatewayProfile.setStoragePreferences(storagePreferences);
         return gatewayProfile;
     }
 

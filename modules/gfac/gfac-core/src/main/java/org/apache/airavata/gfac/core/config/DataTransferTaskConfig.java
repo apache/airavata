@@ -20,7 +20,7 @@
  */
 package org.apache.airavata.gfac.core.config;
 
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
+import org.apache.airavata.model.data.movement.DataMovementProtocol;
 
 import java.util.HashMap;
 import java.util.Map;

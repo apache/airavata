@@ -24,6 +24,7 @@ package org.apache.airavata.app.catalog;
 
 import org.apache.airavata.app.catalog.util.Initialize;
 import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.registry.core.app.catalog.resources.AppCatAbstractResource;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;

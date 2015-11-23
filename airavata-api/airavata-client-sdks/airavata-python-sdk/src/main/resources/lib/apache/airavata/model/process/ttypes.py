@@ -52,6 +52,7 @@ class ProcessModel:
    - gatewayExecutionId
    - enableEmailNotification
    - emailAddresses
+   - storageResourceId
   """
 
   thrift_spec = (
@@ -74,9 +75,10 @@ class ProcessModel:
     (16, TType.STRING, 'gatewayExecutionId', None, None, ), # 16
     (17, TType.BOOL, 'enableEmailNotification', None, None, ), # 17
     (18, TType.LIST, 'emailAddresses', (TType.STRING,None), None, ), # 18
+    (19, TType.STRING, 'storageResourceId', None, None, ), # 19
   )
 
-  def __init__(self, processId=thrift_spec[1][4], experimentId=None, creationTime=None, lastUpdateTime=None, processStatus=None, processDetail=None, applicationInterfaceId=None, applicationDeploymentId=None, computeResourceId=None, processInputs=None, processOutputs=None, resourceSchedule=None, tasks=None, taskDag=None, processError=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None,):
+  def __init__(self, processId=thrift_spec[1][4], experimentId=None, creationTime=None, lastUpdateTime=None, processStatus=None, processDetail=None, applicationInterfaceId=None, applicationDeploymentId=None, computeResourceId=None, processInputs=None, processOutputs=None, resourceSchedule=None, tasks=None, taskDag=None, processError=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None, storageResourceId=None,):
     self.processId = processId
     self.experimentId = experimentId
     self.creationTime = creationTime
@@ -95,6 +97,7 @@ class ProcessModel:
     self.gatewayExecutionId = gatewayExecutionId
     self.enableEmailNotification = enableEmailNotification
     self.emailAddresses = emailAddresses
+    self.storageResourceId = storageResourceId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -221,6 +224,11 @@ class ProcessModel:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
+      elif fid == 19:
+        if ftype == TType.STRING:
+          self.storageResourceId = iprot.readString();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -315,6 +323,10 @@ class ProcessModel:
         oprot.writeString(iter27)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
+    if self.storageResourceId is not None:
+      oprot.writeFieldBegin('storageResourceId', TType.STRING, 19)
+      oprot.writeString(self.storageResourceId)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -346,6 +358,7 @@ class ProcessModel:
     value = (value * 31) ^ hash(self.gatewayExecutionId)
     value = (value * 31) ^ hash(self.enableEmailNotification)
     value = (value * 31) ^ hash(self.emailAddresses)
+    value = (value * 31) ^ hash(self.storageResourceId)
     return value
 
   def __repr__(self):

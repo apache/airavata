@@ -45,6 +45,7 @@ public class UserConfigurationData {
     private Integer totalPhysicalMemory;
     private Experiment experiment;
     private String staticWorkingDir;
+    private String storageId;
 
     @Id
     @Column(name = "EXPERIMENT_ID")
@@ -180,6 +181,15 @@ public class UserConfigurationData {
 
     public void setStaticWorkingDir(String staticWorkingDir) {
         this.staticWorkingDir = staticWorkingDir;
+    }
+
+    @Column(name = "ST")
+    public String getStorageId() {
+        return storageId;
+    }
+
+    public void setStorageId(String storageId) {
+        this.storageId = storageId;
     }
 
     //    @Override

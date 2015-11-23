@@ -44,7 +44,7 @@ namespace apache { namespace airavata { namespace model { namespace process {
 class ProcessModel;
 
 typedef struct _ProcessModel__isset {
-  _ProcessModel__isset() : creationTime(false), lastUpdateTime(false), processStatus(false), processDetail(false), applicationInterfaceId(false), applicationDeploymentId(false), computeResourceId(false), processInputs(false), processOutputs(false), resourceSchedule(false), tasks(false), taskDag(false), processError(false), gatewayExecutionId(false), enableEmailNotification(false), emailAddresses(false) {}
+  _ProcessModel__isset() : creationTime(false), lastUpdateTime(false), processStatus(false), processDetail(false), applicationInterfaceId(false), applicationDeploymentId(false), computeResourceId(false), processInputs(false), processOutputs(false), resourceSchedule(false), tasks(false), taskDag(false), processError(false), gatewayExecutionId(false), enableEmailNotification(false), emailAddresses(false), storageResourceId(false) {}
   bool creationTime :1;
   bool lastUpdateTime :1;
   bool processStatus :1;
@@ -61,17 +61,18 @@ typedef struct _ProcessModel__isset {
   bool gatewayExecutionId :1;
   bool enableEmailNotification :1;
   bool emailAddresses :1;
+  bool storageResourceId :1;
 } _ProcessModel__isset;
 
 class ProcessModel {
  public:
 
-  static const char* ascii_fingerprint; // = "39636B349F7E4431980EEC63BDFCEB41";
-  static const uint8_t binary_fingerprint[16]; // = {0x39,0x63,0x6B,0x34,0x9F,0x7E,0x44,0x31,0x98,0x0E,0xEC,0x63,0xBD,0xFC,0xEB,0x41};
+  static const char* ascii_fingerprint; // = "310420C32600E5B38338E13CDB526950";
+  static const uint8_t binary_fingerprint[16]; // = {0x31,0x04,0x20,0xC3,0x26,0x00,0xE5,0xB3,0x83,0x38,0xE1,0x3C,0xDB,0x52,0x69,0x50};
 
   ProcessModel(const ProcessModel&);
   ProcessModel& operator=(const ProcessModel&);
-  ProcessModel() : processId("DO_NOT_SET_AT_CLIENTS"), experimentId(), creationTime(0), lastUpdateTime(0), processDetail(), applicationInterfaceId(), applicationDeploymentId(), computeResourceId(), taskDag(), gatewayExecutionId(), enableEmailNotification(0) {
+  ProcessModel() : processId("DO_NOT_SET_AT_CLIENTS"), experimentId(), creationTime(0), lastUpdateTime(0), processDetail(), applicationInterfaceId(), applicationDeploymentId(), computeResourceId(), taskDag(), gatewayExecutionId(), enableEmailNotification(0), storageResourceId() {
   }
 
   virtual ~ProcessModel() throw();
@@ -93,6 +94,7 @@ class ProcessModel {
   std::string gatewayExecutionId;
   bool enableEmailNotification;
   std::vector<std::string>  emailAddresses;
+  std::string storageResourceId;
 
   _ProcessModel__isset __isset;
 
@@ -131,6 +133,8 @@ class ProcessModel {
   void __set_enableEmailNotification(const bool val);
 
   void __set_emailAddresses(const std::vector<std::string> & val);
+
+  void __set_storageResourceId(const std::string& val);
 
   bool operator == (const ProcessModel & rhs) const
   {
@@ -201,6 +205,10 @@ class ProcessModel {
     if (__isset.emailAddresses != rhs.__isset.emailAddresses)
       return false;
     else if (__isset.emailAddresses && !(emailAddresses == rhs.emailAddresses))
+      return false;
+    if (__isset.storageResourceId != rhs.__isset.storageResourceId)
+      return false;
+    else if (__isset.storageResourceId && !(storageResourceId == rhs.storageResourceId))
       return false;
     return true;
   }

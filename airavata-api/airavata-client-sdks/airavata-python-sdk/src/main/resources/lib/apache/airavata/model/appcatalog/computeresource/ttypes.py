@@ -8,6 +8,7 @@
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import apache.airavata.model.commons.ttypes
+import apache.airavata.model.data.movement.ttypes
 
 
 from thrift.transport import TTransport
@@ -153,46 +154,6 @@ class FileSystems:
     "ARCHIVE": 4,
   }
 
-class SecurityProtocol:
-  """
-  Enumeration of security authentication and authorization mechanisms supported by Airavata. This enumeration just
-   describes the supported mechanism. The corresponding security credentials are registered with Airavata Credential
-   store.
-
-  USERNAME_PASSWORD:
-   A User Name.
-
-  SSH_KEYS:
-   SSH Keys
-
-  FIXME: Change GSI to a more precise generic security protocol - X509
-
-  """
-  USERNAME_PASSWORD = 0
-  SSH_KEYS = 1
-  GSI = 2
-  KERBEROS = 3
-  OAUTH = 4
-  LOCAL = 5
-
-  _VALUES_TO_NAMES = {
-    0: "USERNAME_PASSWORD",
-    1: "SSH_KEYS",
-    2: "GSI",
-    3: "KERBEROS",
-    4: "OAUTH",
-    5: "LOCAL",
-  }
-
-  _NAMES_TO_VALUES = {
-    "USERNAME_PASSWORD": 0,
-    "SSH_KEYS": 1,
-    "GSI": 2,
-    "KERBEROS": 3,
-    "OAUTH": 4,
-    "LOCAL": 5,
-  }
-
 class JobSubmissionProtocol:
   """
   Enumeration of Airavata supported Job Submission Mechanisms for High Performance Computing Clusters.
@@ -264,45 +225,6 @@ class MonitorMode:
     "JOB_EMAIL_NOTIFICATION_MONITOR": 1,
     "XSEDE_AMQP_SUBSCRIBE": 2,
     "FORK": 3,
-  }
-
-class DataMovementProtocol:
-  """
-  Enumeration of data movement supported by Airavata
-
-  SCP:
-   Job manager supporting the Portal Batch System (PBS) protocol. Some examples include TORQUE, PBSPro, Grid Engine.
-
-  SFTP:
-   The Simple Linux Utility for Resource Management is a open source workload manager.
-
-  GridFTP:
-   Globus File Transfer Protocol
-
-  UNICORE_STORAGE_SERVICE:
-   Storage Service Provided by Unicore
-
-  """
-  LOCAL = 0
-  SCP = 1
-  SFTP = 2
-  GridFTP = 3
-  UNICORE_STORAGE_SERVICE = 4
-
-  _VALUES_TO_NAMES = {
-    0: "LOCAL",
-    1: "SCP",
-    2: "SFTP",
-    3: "GridFTP",
-    4: "UNICORE_STORAGE_SERVICE",
-  }
-
-  _NAMES_TO_VALUES = {
-    "LOCAL": 0,
-    "SCP": 1,
-    "SFTP": 2,
-    "GridFTP": 3,
-    "UNICORE_STORAGE_SERVICE": 4,
   }
 
 class ProviderName:
@@ -624,337 +546,6 @@ class BatchQueue:
   def __ne__(self, other):
     return not (self == other)
 
-class SCPDataMovement:
-  """
-  Data Movement through Secured Copy
-
-  alternativeSCPHostName:
-   If the login to scp is different than the hostname itself, specify it here
-
-  sshPort:
-   If a non-default port needs to used, specify it.
-
-  Attributes:
-   - dataMovementInterfaceId
-   - securityProtocol
-   - alternativeSCPHostName
-   - sshPort
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'dataMovementInterfaceId', None, "DO_NOT_SET_AT_CLIENTS", ), # 1
-    (2, TType.I32, 'securityProtocol', None, None, ), # 2
-    (3, TType.STRING, 'alternativeSCPHostName', None, None, ), # 3
-    (4, TType.I32, 'sshPort', None, 22, ), # 4
-  )
-
-  def __init__(self, dataMovementInterfaceId=thrift_spec[1][4], securityProtocol=None, alternativeSCPHostName=None, sshPort=thrift_spec[4][4],):
-    self.dataMovementInterfaceId = dataMovementInterfaceId
-    self.securityProtocol = securityProtocol
-    self.alternativeSCPHostName = alternativeSCPHostName
-    self.sshPort = sshPort
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.dataMovementInterfaceId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.I32:
-          self.securityProtocol = iprot.readI32();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.alternativeSCPHostName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 4:
-        if ftype == TType.I32:
-          self.sshPort = iprot.readI32();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('SCPDataMovement')
-    if self.dataMovementInterfaceId is not None:
-      oprot.writeFieldBegin('dataMovementInterfaceId', TType.STRING, 1)
-      oprot.writeString(self.dataMovementInterfaceId)
-      oprot.writeFieldEnd()
-    if self.securityProtocol is not None:
-      oprot.writeFieldBegin('securityProtocol', TType.I32, 2)
-      oprot.writeI32(self.securityProtocol)
-      oprot.writeFieldEnd()
-    if self.alternativeSCPHostName is not None:
-      oprot.writeFieldBegin('alternativeSCPHostName', TType.STRING, 3)
-      oprot.writeString(self.alternativeSCPHostName)
-      oprot.writeFieldEnd()
-    if self.sshPort is not None:
-      oprot.writeFieldBegin('sshPort', TType.I32, 4)
-      oprot.writeI32(self.sshPort)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.dataMovementInterfaceId is None:
-      raise TProtocol.TProtocolException(message='Required field dataMovementInterfaceId is unset!')
-    if self.securityProtocol is None:
-      raise TProtocol.TProtocolException(message='Required field securityProtocol is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.dataMovementInterfaceId)
-    value = (value * 31) ^ hash(self.securityProtocol)
-    value = (value * 31) ^ hash(self.alternativeSCPHostName)
-    value = (value * 31) ^ hash(self.sshPort)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class GridFTPDataMovement:
-  """
-  Data Movement through GridFTP
-
-  alternativeSCPHostName:
-   If the login to scp is different than the hostname itself, specify it here
-
-  sshPort:
-   If a non-default port needs to used, specify it.
-
-  Attributes:
-   - dataMovementInterfaceId
-   - securityProtocol
-   - gridFTPEndPoints
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'dataMovementInterfaceId', None, "DO_NOT_SET_AT_CLIENTS", ), # 1
-    (2, TType.I32, 'securityProtocol', None, None, ), # 2
-    (3, TType.LIST, 'gridFTPEndPoints', (TType.STRING,None), None, ), # 3
-  )
-
-  def __init__(self, dataMovementInterfaceId=thrift_spec[1][4], securityProtocol=None, gridFTPEndPoints=None,):
-    self.dataMovementInterfaceId = dataMovementInterfaceId
-    self.securityProtocol = securityProtocol
-    self.gridFTPEndPoints = gridFTPEndPoints
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.dataMovementInterfaceId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.I32:
-          self.securityProtocol = iprot.readI32();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.LIST:
-          self.gridFTPEndPoints = []
-          (_etype12, _size9) = iprot.readListBegin()
-          for _i13 in xrange(_size9):
-            _elem14 = iprot.readString();
-            self.gridFTPEndPoints.append(_elem14)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('GridFTPDataMovement')
-    if self.dataMovementInterfaceId is not None:
-      oprot.writeFieldBegin('dataMovementInterfaceId', TType.STRING, 1)
-      oprot.writeString(self.dataMovementInterfaceId)
-      oprot.writeFieldEnd()
-    if self.securityProtocol is not None:
-      oprot.writeFieldBegin('securityProtocol', TType.I32, 2)
-      oprot.writeI32(self.securityProtocol)
-      oprot.writeFieldEnd()
-    if self.gridFTPEndPoints is not None:
-      oprot.writeFieldBegin('gridFTPEndPoints', TType.LIST, 3)
-      oprot.writeListBegin(TType.STRING, len(self.gridFTPEndPoints))
-      for iter15 in self.gridFTPEndPoints:
-        oprot.writeString(iter15)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.dataMovementInterfaceId is None:
-      raise TProtocol.TProtocolException(message='Required field dataMovementInterfaceId is unset!')
-    if self.securityProtocol is None:
-      raise TProtocol.TProtocolException(message='Required field securityProtocol is unset!')
-    if self.gridFTPEndPoints is None:
-      raise TProtocol.TProtocolException(message='Required field gridFTPEndPoints is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.dataMovementInterfaceId)
-    value = (value * 31) ^ hash(self.securityProtocol)
-    value = (value * 31) ^ hash(self.gridFTPEndPoints)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class UnicoreDataMovement:
-  """
-  Data Movement through UnicoreStorage
-
-  unicoreEndPointURL:
-   unicoreGateway End Point. The provider will query this service to fetch required service end points.
-
-  Attributes:
-   - dataMovementInterfaceId
-   - securityProtocol
-   - unicoreEndPointURL
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'dataMovementInterfaceId', None, "DO_NOT_SET_AT_CLIENTS", ), # 1
-    (2, TType.I32, 'securityProtocol', None, None, ), # 2
-    (3, TType.STRING, 'unicoreEndPointURL', None, None, ), # 3
-  )
-
-  def __init__(self, dataMovementInterfaceId=thrift_spec[1][4], securityProtocol=None, unicoreEndPointURL=None,):
-    self.dataMovementInterfaceId = dataMovementInterfaceId
-    self.securityProtocol = securityProtocol
-    self.unicoreEndPointURL = unicoreEndPointURL
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.dataMovementInterfaceId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.I32:
-          self.securityProtocol = iprot.readI32();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.unicoreEndPointURL = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('UnicoreDataMovement')
-    if self.dataMovementInterfaceId is not None:
-      oprot.writeFieldBegin('dataMovementInterfaceId', TType.STRING, 1)
-      oprot.writeString(self.dataMovementInterfaceId)
-      oprot.writeFieldEnd()
-    if self.securityProtocol is not None:
-      oprot.writeFieldBegin('securityProtocol', TType.I32, 2)
-      oprot.writeI32(self.securityProtocol)
-      oprot.writeFieldEnd()
-    if self.unicoreEndPointURL is not None:
-      oprot.writeFieldBegin('unicoreEndPointURL', TType.STRING, 3)
-      oprot.writeString(self.unicoreEndPointURL)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.dataMovementInterfaceId is None:
-      raise TProtocol.TProtocolException(message='Required field dataMovementInterfaceId is unset!')
-    if self.securityProtocol is None:
-      raise TProtocol.TProtocolException(message='Required field securityProtocol is unset!')
-    if self.unicoreEndPointURL is None:
-      raise TProtocol.TProtocolException(message='Required field unicoreEndPointURL is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.dataMovementInterfaceId)
-    value = (value * 31) ^ hash(self.securityProtocol)
-    value = (value * 31) ^ hash(self.unicoreEndPointURL)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
 class LOCALSubmission:
   """
   Locally Fork Jobs as OS processes
@@ -1061,81 +652,6 @@ class LOCALSubmission:
   def __ne__(self, other):
     return not (self == other)
 
-class LOCALDataMovement:
-  """
-  LOCAL
-
-  alternativeSCPHostName:
-   If the login to scp is different than the hostname itself, specify it here
-
-  sshPort:
-   If a non-defualt port needs to used, specify it.
-
-  Attributes:
-   - dataMovementInterfaceId
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'dataMovementInterfaceId', None, "DO_NOT_SET_AT_CLIENTS", ), # 1
-  )
-
-  def __init__(self, dataMovementInterfaceId=thrift_spec[1][4],):
-    self.dataMovementInterfaceId = dataMovementInterfaceId
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.dataMovementInterfaceId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('LOCALDataMovement')
-    if self.dataMovementInterfaceId is not None:
-      oprot.writeFieldBegin('dataMovementInterfaceId', TType.STRING, 1)
-      oprot.writeString(self.dataMovementInterfaceId)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.dataMovementInterfaceId is None:
-      raise TProtocol.TProtocolException(message='Required field dataMovementInterfaceId is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.dataMovementInterfaceId)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
 class SSHJobSubmission:
   """
   Authenticate using Secured Shell
@@ -1226,10 +742,10 @@ class SSHJobSubmission:
       elif fid == 7:
         if ftype == TType.LIST:
           self.batchQueueEmailSenders = []
-          (_etype19, _size16) = iprot.readListBegin()
-          for _i20 in xrange(_size16):
-            _elem21 = iprot.readString();
-            self.batchQueueEmailSenders.append(_elem21)
+          (_etype12, _size9) = iprot.readListBegin()
+          for _i13 in xrange(_size9):
+            _elem14 = iprot.readString();
+            self.batchQueueEmailSenders.append(_elem14)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -1270,8 +786,8 @@ class SSHJobSubmission:
     if self.batchQueueEmailSenders is not None:
       oprot.writeFieldBegin('batchQueueEmailSenders', TType.LIST, 7)
       oprot.writeListBegin(TType.STRING, len(self.batchQueueEmailSenders))
-      for iter22 in self.batchQueueEmailSenders:
-        oprot.writeString(iter22)
+      for iter15 in self.batchQueueEmailSenders:
+        oprot.writeString(iter15)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -1351,10 +867,10 @@ class GlobusJobSubmission:
       elif fid == 3:
         if ftype == TType.LIST:
           self.globusGateKeeperEndPoint = []
-          (_etype26, _size23) = iprot.readListBegin()
-          for _i27 in xrange(_size23):
-            _elem28 = iprot.readString();
-            self.globusGateKeeperEndPoint.append(_elem28)
+          (_etype19, _size16) = iprot.readListBegin()
+          for _i20 in xrange(_size16):
+            _elem21 = iprot.readString();
+            self.globusGateKeeperEndPoint.append(_elem21)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -1379,8 +895,8 @@ class GlobusJobSubmission:
     if self.globusGateKeeperEndPoint is not None:
       oprot.writeFieldBegin('globusGateKeeperEndPoint', TType.LIST, 3)
       oprot.writeListBegin(TType.STRING, len(self.globusGateKeeperEndPoint))
-      for iter29 in self.globusGateKeeperEndPoint:
-        oprot.writeString(iter29)
+      for iter22 in self.globusGateKeeperEndPoint:
+        oprot.writeString(iter22)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -1768,112 +1284,6 @@ class JobSubmissionInterface:
   def __ne__(self, other):
     return not (self == other)
 
-class DataMovementInterface:
-  """
-  Data Movement Interfaces
-
-  dataMovementInterfaceId: The Data Movement Interface has to be previously registered and referenced here.
-
-  priorityOrder:
-   For resources with multiple interfaces, the priority order should be selected.
-    Lower the numerical number, higher the priority
-
-
-  Attributes:
-   - dataMovementInterfaceId
-   - dataMovementProtocol
-   - priorityOrder
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'dataMovementInterfaceId', None, None, ), # 1
-    (2, TType.I32, 'dataMovementProtocol', None, None, ), # 2
-    (3, TType.I32, 'priorityOrder', None, 0, ), # 3
-  )
-
-  def __init__(self, dataMovementInterfaceId=None, dataMovementProtocol=None, priorityOrder=thrift_spec[3][4],):
-    self.dataMovementInterfaceId = dataMovementInterfaceId
-    self.dataMovementProtocol = dataMovementProtocol
-    self.priorityOrder = priorityOrder
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.dataMovementInterfaceId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.I32:
-          self.dataMovementProtocol = iprot.readI32();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.I32:
-          self.priorityOrder = iprot.readI32();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('DataMovementInterface')
-    if self.dataMovementInterfaceId is not None:
-      oprot.writeFieldBegin('dataMovementInterfaceId', TType.STRING, 1)
-      oprot.writeString(self.dataMovementInterfaceId)
-      oprot.writeFieldEnd()
-    if self.dataMovementProtocol is not None:
-      oprot.writeFieldBegin('dataMovementProtocol', TType.I32, 2)
-      oprot.writeI32(self.dataMovementProtocol)
-      oprot.writeFieldEnd()
-    if self.priorityOrder is not None:
-      oprot.writeFieldBegin('priorityOrder', TType.I32, 3)
-      oprot.writeI32(self.priorityOrder)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.dataMovementInterfaceId is None:
-      raise TProtocol.TProtocolException(message='Required field dataMovementInterfaceId is unset!')
-    if self.dataMovementProtocol is None:
-      raise TProtocol.TProtocolException(message='Required field dataMovementProtocol is unset!')
-    if self.priorityOrder is None:
-      raise TProtocol.TProtocolException(message='Required field priorityOrder is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.dataMovementInterfaceId)
-    value = (value * 31) ^ hash(self.dataMovementProtocol)
-    value = (value * 31) ^ hash(self.priorityOrder)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
 class ComputeResourceDescription:
   """
   Computational Resource Description
@@ -1929,7 +1339,7 @@ class ComputeResourceDescription:
     (7, TType.LIST, 'batchQueues', (TType.STRUCT,(BatchQueue, BatchQueue.thrift_spec)), None, ), # 7
     (8, TType.MAP, 'fileSystems', (TType.I32,None,TType.STRING,None), None, ), # 8
     (9, TType.LIST, 'jobSubmissionInterfaces', (TType.STRUCT,(JobSubmissionInterface, JobSubmissionInterface.thrift_spec)), None, ), # 9
-    (10, TType.LIST, 'dataMovementInterfaces', (TType.STRUCT,(DataMovementInterface, DataMovementInterface.thrift_spec)), None, ), # 10
+    (10, TType.LIST, 'dataMovementInterfaces', (TType.STRUCT,(apache.airavata.model.data.movement.ttypes.DataMovementInterface, apache.airavata.model.data.movement.ttypes.DataMovementInterface.thrift_spec)), None, ), # 10
     (11, TType.I32, 'maxMemoryPerNode', None, None, ), # 11
   )
 
@@ -1968,20 +1378,20 @@ class ComputeResourceDescription:
       elif fid == 3:
         if ftype == TType.LIST:
           self.hostAliases = []
-          (_etype33, _size30) = iprot.readListBegin()
-          for _i34 in xrange(_size30):
-            _elem35 = iprot.readString();
-            self.hostAliases.append(_elem35)
+          (_etype26, _size23) = iprot.readListBegin()
+          for _i27 in xrange(_size23):
+            _elem28 = iprot.readString();
+            self.hostAliases.append(_elem28)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 4:
         if ftype == TType.LIST:
           self.ipAddresses = []
-          (_etype39, _size36) = iprot.readListBegin()
-          for _i40 in xrange(_size36):
-            _elem41 = iprot.readString();
-            self.ipAddresses.append(_elem41)
+          (_etype32, _size29) = iprot.readListBegin()
+          for _i33 in xrange(_size29):
+            _elem34 = iprot.readString();
+            self.ipAddresses.append(_elem34)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -1998,44 +1408,44 @@ class ComputeResourceDescription:
       elif fid == 7:
         if ftype == TType.LIST:
           self.batchQueues = []
-          (_etype45, _size42) = iprot.readListBegin()
-          for _i46 in xrange(_size42):
-            _elem47 = BatchQueue()
-            _elem47.read(iprot)
-            self.batchQueues.append(_elem47)
+          (_etype38, _size35) = iprot.readListBegin()
+          for _i39 in xrange(_size35):
+            _elem40 = BatchQueue()
+            _elem40.read(iprot)
+            self.batchQueues.append(_elem40)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 8:
         if ftype == TType.MAP:
           self.fileSystems = {}
-          (_ktype49, _vtype50, _size48 ) = iprot.readMapBegin()
-          for _i52 in xrange(_size48):
-            _key53 = iprot.readI32();
-            _val54 = iprot.readString();
-            self.fileSystems[_key53] = _val54
+          (_ktype42, _vtype43, _size41 ) = iprot.readMapBegin()
+          for _i45 in xrange(_size41):
+            _key46 = iprot.readI32();
+            _val47 = iprot.readString();
+            self.fileSystems[_key46] = _val47
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 9:
         if ftype == TType.LIST:
           self.jobSubmissionInterfaces = []
-          (_etype58, _size55) = iprot.readListBegin()
-          for _i59 in xrange(_size55):
-            _elem60 = JobSubmissionInterface()
-            _elem60.read(iprot)
-            self.jobSubmissionInterfaces.append(_elem60)
+          (_etype51, _size48) = iprot.readListBegin()
+          for _i52 in xrange(_size48):
+            _elem53 = JobSubmissionInterface()
+            _elem53.read(iprot)
+            self.jobSubmissionInterfaces.append(_elem53)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 10:
         if ftype == TType.LIST:
           self.dataMovementInterfaces = []
-          (_etype64, _size61) = iprot.readListBegin()
-          for _i65 in xrange(_size61):
-            _elem66 = DataMovementInterface()
-            _elem66.read(iprot)
-            self.dataMovementInterfaces.append(_elem66)
+          (_etype57, _size54) = iprot.readListBegin()
+          for _i58 in xrange(_size54):
+            _elem59 = apache.airavata.model.data.movement.ttypes.DataMovementInterface()
+            _elem59.read(iprot)
+            self.dataMovementInterfaces.append(_elem59)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -2065,15 +1475,15 @@ class ComputeResourceDescription:
     if self.hostAliases is not None:
       oprot.writeFieldBegin('hostAliases', TType.LIST, 3)
       oprot.writeListBegin(TType.STRING, len(self.hostAliases))
-      for iter67 in self.hostAliases:
-        oprot.writeString(iter67)
+      for iter60 in self.hostAliases:
+        oprot.writeString(iter60)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ipAddresses is not None:
       oprot.writeFieldBegin('ipAddresses', TType.LIST, 4)
       oprot.writeListBegin(TType.STRING, len(self.ipAddresses))
-      for iter68 in self.ipAddresses:
-        oprot.writeString(iter68)
+      for iter61 in self.ipAddresses:
+        oprot.writeString(iter61)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.resourceDescription is not None:
@@ -2087,30 +1497,30 @@ class ComputeResourceDescription:
     if self.batchQueues is not None:
       oprot.writeFieldBegin('batchQueues', TType.LIST, 7)
       oprot.writeListBegin(TType.STRUCT, len(self.batchQueues))
-      for iter69 in self.batchQueues:
-        iter69.write(oprot)
+      for iter62 in self.batchQueues:
+        iter62.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.fileSystems is not None:
       oprot.writeFieldBegin('fileSystems', TType.MAP, 8)
       oprot.writeMapBegin(TType.I32, TType.STRING, len(self.fileSystems))
-      for kiter70,viter71 in self.fileSystems.items():
-        oprot.writeI32(kiter70)
-        oprot.writeString(viter71)
+      for kiter63,viter64 in self.fileSystems.items():
+        oprot.writeI32(kiter63)
+        oprot.writeString(viter64)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.jobSubmissionInterfaces is not None:
       oprot.writeFieldBegin('jobSubmissionInterfaces', TType.LIST, 9)
       oprot.writeListBegin(TType.STRUCT, len(self.jobSubmissionInterfaces))
-      for iter72 in self.jobSubmissionInterfaces:
-        iter72.write(oprot)
+      for iter65 in self.jobSubmissionInterfaces:
+        iter65.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.dataMovementInterfaces is not None:
       oprot.writeFieldBegin('dataMovementInterfaces', TType.LIST, 10)
       oprot.writeListBegin(TType.STRUCT, len(self.dataMovementInterfaces))
-      for iter73 in self.dataMovementInterfaces:
-        iter73.write(oprot)
+      for iter66 in self.dataMovementInterfaces:
+        iter66.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.maxMemoryPerNode is not None:

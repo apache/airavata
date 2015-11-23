@@ -25,15 +25,15 @@ package org.apache.airavata.registry.core.app.catalog.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "DATA_STORAGE_PREFERENCE")
-@IdClass(DataStoragePreferencePK.class)
-public class DataStoragePreference {
+@Table(name = "STORAGE_PREFERENCE")
+@IdClass(StoragePreferencePK.class)
+public class StoragePreference {
     @Id
     @Column(name = "GATEWAY_ID")
     private String gatewayId;
     @Id
-    @Column(name = "DATA_MOVEMENT_ID")
-    private String dataMovementId;
+    @Column(name = "STORAGE_RESOURCE_ID")
+    private String storageResourceId;
     @Column(name = "LOGIN_USERNAME")
     private String loginUserName;
     @Column(name = "FS_ROOT_LOCATION")
@@ -77,14 +77,6 @@ public class DataStoragePreference {
         this.computeResourceCSToken = computeResourceCSToken;
     }
 
-    public String getDataMovementID() {
-        return dataMovementId;
-    }
-
-    public void setDataMovementID(String dataMovementId) {
-        this.dataMovementId = dataMovementId;
-    }
-
     public String getFsRootLocation() {
         return fsRootLocation;
     }
@@ -93,4 +85,11 @@ public class DataStoragePreference {
         this.fsRootLocation = fsRootLocation;
     }
 
+    public String getStorageResourceId() {
+        return storageResourceId;
+    }
+
+    public void setStorageResourceId(String storageResourceId) {
+        this.storageResourceId = storageResourceId;
+    }
 }
