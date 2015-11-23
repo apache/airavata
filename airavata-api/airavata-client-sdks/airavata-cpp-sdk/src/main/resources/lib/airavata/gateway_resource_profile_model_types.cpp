@@ -53,7 +53,7 @@ void ComputeResourcePreference::__set_preferredJobSubmissionProtocol(const  ::ap
 __isset.preferredJobSubmissionProtocol = true;
 }
 
-void ComputeResourcePreference::__set_preferredDataMovementProtocol(const  ::apache::airavata::model::appcatalog::computeresource::DataMovementProtocol::type val) {
+void ComputeResourcePreference::__set_preferredDataMovementProtocol(const  ::apache::airavata::model::data::movement::DataMovementProtocol::type val) {
   this->preferredDataMovementProtocol = val;
 __isset.preferredDataMovementProtocol = true;
 }
@@ -141,7 +141,7 @@ uint32_t ComputeResourcePreference::read(::apache::thrift::protocol::TProtocol* 
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast1;
           xfer += iprot->readI32(ecast1);
-          this->preferredDataMovementProtocol = ( ::apache::airavata::model::appcatalog::computeresource::DataMovementProtocol::type)ecast1;
+          this->preferredDataMovementProtocol = ( ::apache::airavata::model::data::movement::DataMovementProtocol::type)ecast1;
           this->__isset.preferredDataMovementProtocol = true;
         } else {
           xfer += iprot->skip(ftype);

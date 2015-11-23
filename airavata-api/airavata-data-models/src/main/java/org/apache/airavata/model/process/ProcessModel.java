@@ -82,6 +82,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private static final org.apache.thrift.protocol.TField GATEWAY_EXECUTION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayExecutionId", org.apache.thrift.protocol.TType.STRING, (short)16);
   private static final org.apache.thrift.protocol.TField ENABLE_EMAIL_NOTIFICATION_FIELD_DESC = new org.apache.thrift.protocol.TField("enableEmailNotification", org.apache.thrift.protocol.TType.BOOL, (short)17);
   private static final org.apache.thrift.protocol.TField EMAIL_ADDRESSES_FIELD_DESC = new org.apache.thrift.protocol.TField("emailAddresses", org.apache.thrift.protocol.TType.LIST, (short)18);
+  private static final org.apache.thrift.protocol.TField STORAGE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("storageResourceId", org.apache.thrift.protocol.TType.STRING, (short)19);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -107,6 +108,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private String gatewayExecutionId; // optional
   private boolean enableEmailNotification; // optional
   private List<String> emailAddresses; // optional
+  private String storageResourceId; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -127,7 +129,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     PROCESS_ERROR((short)15, "processError"),
     GATEWAY_EXECUTION_ID((short)16, "gatewayExecutionId"),
     ENABLE_EMAIL_NOTIFICATION((short)17, "enableEmailNotification"),
-    EMAIL_ADDRESSES((short)18, "emailAddresses");
+    EMAIL_ADDRESSES((short)18, "emailAddresses"),
+    STORAGE_RESOURCE_ID((short)19, "storageResourceId");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -178,6 +181,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           return ENABLE_EMAIL_NOTIFICATION;
         case 18: // EMAIL_ADDRESSES
           return EMAIL_ADDRESSES;
+        case 19: // STORAGE_RESOURCE_ID
+          return STORAGE_RESOURCE_ID;
         default:
           return null;
       }
@@ -222,7 +227,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private static final int __LASTUPDATETIME_ISSET_ID = 1;
   private static final int __ENABLEEMAILNOTIFICATION_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.LAST_UPDATE_TIME,_Fields.PROCESS_STATUS,_Fields.PROCESS_DETAIL,_Fields.APPLICATION_INTERFACE_ID,_Fields.APPLICATION_DEPLOYMENT_ID,_Fields.COMPUTE_RESOURCE_ID,_Fields.PROCESS_INPUTS,_Fields.PROCESS_OUTPUTS,_Fields.RESOURCE_SCHEDULE,_Fields.TASKS,_Fields.TASK_DAG,_Fields.PROCESS_ERROR,_Fields.GATEWAY_EXECUTION_ID,_Fields.ENABLE_EMAIL_NOTIFICATION,_Fields.EMAIL_ADDRESSES};
+  private static final _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.LAST_UPDATE_TIME,_Fields.PROCESS_STATUS,_Fields.PROCESS_DETAIL,_Fields.APPLICATION_INTERFACE_ID,_Fields.APPLICATION_DEPLOYMENT_ID,_Fields.COMPUTE_RESOURCE_ID,_Fields.PROCESS_INPUTS,_Fields.PROCESS_OUTPUTS,_Fields.RESOURCE_SCHEDULE,_Fields.TASKS,_Fields.TASK_DAG,_Fields.PROCESS_ERROR,_Fields.GATEWAY_EXECUTION_ID,_Fields.ENABLE_EMAIL_NOTIFICATION,_Fields.EMAIL_ADDRESSES,_Fields.STORAGE_RESOURCE_ID};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -266,6 +271,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     tmpMap.put(_Fields.EMAIL_ADDRESSES, new org.apache.thrift.meta_data.FieldMetaData("emailAddresses", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+    tmpMap.put(_Fields.STORAGE_RESOURCE_ID, new org.apache.thrift.meta_data.FieldMetaData("storageResourceId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ProcessModel.class, metaDataMap);
   }
@@ -350,6 +357,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       List<String> __this__emailAddresses = new ArrayList<String>(other.emailAddresses);
       this.emailAddresses = __this__emailAddresses;
     }
+    if (other.isSetStorageResourceId()) {
+      this.storageResourceId = other.storageResourceId;
+    }
   }
 
   public ProcessModel deepCopy() {
@@ -380,6 +390,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     setEnableEmailNotificationIsSet(false);
     this.enableEmailNotification = false;
     this.emailAddresses = null;
+    this.storageResourceId = null;
   }
 
   public String getProcessId() {
@@ -853,6 +864,29 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     }
   }
 
+  public String getStorageResourceId() {
+    return this.storageResourceId;
+  }
+
+  public void setStorageResourceId(String storageResourceId) {
+    this.storageResourceId = storageResourceId;
+  }
+
+  public void unsetStorageResourceId() {
+    this.storageResourceId = null;
+  }
+
+  /** Returns true if field storageResourceId is set (has been assigned a value) and false otherwise */
+  public boolean isSetStorageResourceId() {
+    return this.storageResourceId != null;
+  }
+
+  public void setStorageResourceIdIsSet(boolean value) {
+    if (!value) {
+      this.storageResourceId = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case PROCESS_ID:
@@ -999,6 +1033,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       }
       break;
 
+    case STORAGE_RESOURCE_ID:
+      if (value == null) {
+        unsetStorageResourceId();
+      } else {
+        setStorageResourceId((String)value);
+      }
+      break;
+
     }
   }
 
@@ -1058,6 +1100,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     case EMAIL_ADDRESSES:
       return getEmailAddresses();
 
+    case STORAGE_RESOURCE_ID:
+      return getStorageResourceId();
+
     }
     throw new IllegalStateException();
   }
@@ -1105,6 +1150,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       return isSetEnableEmailNotification();
     case EMAIL_ADDRESSES:
       return isSetEmailAddresses();
+    case STORAGE_RESOURCE_ID:
+      return isSetStorageResourceId();
     }
     throw new IllegalStateException();
   }
@@ -1284,6 +1331,15 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         return false;
     }
 
+    boolean this_present_storageResourceId = true && this.isSetStorageResourceId();
+    boolean that_present_storageResourceId = true && that.isSetStorageResourceId();
+    if (this_present_storageResourceId || that_present_storageResourceId) {
+      if (!(this_present_storageResourceId && that_present_storageResourceId))
+        return false;
+      if (!this.storageResourceId.equals(that.storageResourceId))
+        return false;
+    }
+
     return true;
   }
 
@@ -1380,6 +1436,11 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     list.add(present_emailAddresses);
     if (present_emailAddresses)
       list.add(emailAddresses);
+
+    boolean present_storageResourceId = true && (isSetStorageResourceId());
+    list.add(present_storageResourceId);
+    if (present_storageResourceId)
+      list.add(storageResourceId);
 
     return list.hashCode();
   }
@@ -1572,6 +1633,16 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetStorageResourceId()).compareTo(other.isSetStorageResourceId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetStorageResourceId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.storageResourceId, other.storageResourceId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1752,6 +1823,16 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         sb.append("null");
       } else {
         sb.append(this.emailAddresses);
+      }
+      first = false;
+    }
+    if (isSetStorageResourceId()) {
+      if (!first) sb.append(", ");
+      sb.append("storageResourceId:");
+      if (this.storageResourceId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.storageResourceId);
       }
       first = false;
     }
@@ -2007,6 +2088,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 19: // STORAGE_RESOURCE_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.storageResourceId = iprot.readString();
+              struct.setStorageResourceIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -2164,6 +2253,13 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           oprot.writeFieldEnd();
         }
       }
+      if (struct.storageResourceId != null) {
+        if (struct.isSetStorageResourceId()) {
+          oprot.writeFieldBegin(STORAGE_RESOURCE_ID_FIELD_DESC);
+          oprot.writeString(struct.storageResourceId);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -2232,7 +2328,10 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetEmailAddresses()) {
         optionals.set(15);
       }
-      oprot.writeBitSet(optionals, 16);
+      if (struct.isSetStorageResourceId()) {
+        optionals.set(16);
+      }
+      oprot.writeBitSet(optionals, 17);
       if (struct.isSetCreationTime()) {
         oprot.writeI64(struct.creationTime);
       }
@@ -2305,6 +2404,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           }
         }
       }
+      if (struct.isSetStorageResourceId()) {
+        oprot.writeString(struct.storageResourceId);
+      }
     }
 
     @Override
@@ -2314,7 +2416,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       struct.setProcessIdIsSet(true);
       struct.experimentId = iprot.readString();
       struct.setExperimentIdIsSet(true);
-      BitSet incoming = iprot.readBitSet(16);
+      BitSet incoming = iprot.readBitSet(17);
       if (incoming.get(0)) {
         struct.creationTime = iprot.readI64();
         struct.setCreationTimeIsSet(true);
@@ -2420,6 +2522,10 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           }
         }
         struct.setEmailAddressesIsSet(true);
+      }
+      if (incoming.get(16)) {
+        struct.storageResourceId = iprot.readString();
+        struct.setStorageResourceIdIsSet(true);
       }
     }
   }

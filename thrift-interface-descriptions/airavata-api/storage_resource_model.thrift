@@ -19,7 +19,7 @@
  */
 
 include "airavata_commons.thrift"
-include "compute_resource_model.thrift"
+include "data_movement_models.thrift"
 
 namespace java org.apache.airavata.model.appcatalog.storageresource
 namespace php Airavata.Model.AppCatalog.StorageResource
@@ -48,5 +48,5 @@ struct StorageResourceDescription {
     2: required string hostName,
     3: optional string storageResourceDescription,
     4: optional bool enabled,
-    5: optional list<compute_resource_model.DataMovementInterface> dataMovementInterfaces,
+    5: optional list<data_movement_models.DataMovementInterface> dataMovementInterfaces,
 }

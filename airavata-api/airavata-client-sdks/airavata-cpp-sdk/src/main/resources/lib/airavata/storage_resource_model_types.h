@@ -33,7 +33,7 @@
 
 #include <thrift/cxxfunctional.h>
 #include "airavata_commons_types.h"
-#include "compute_resource_model_types.h"
+#include "data_movement_models_types.h"
 
 
 namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace storageresource {
@@ -63,7 +63,7 @@ class StorageResourceDescription {
   std::string hostName;
   std::string storageResourceDescription;
   bool enabled;
-  std::vector< ::apache::airavata::model::appcatalog::computeresource::DataMovementInterface>  dataMovementInterfaces;
+  std::vector< ::apache::airavata::model::data::movement::DataMovementInterface>  dataMovementInterfaces;
 
   _StorageResourceDescription__isset __isset;
 
@@ -75,7 +75,7 @@ class StorageResourceDescription {
 
   void __set_enabled(const bool val);
 
-  void __set_dataMovementInterfaces(const std::vector< ::apache::airavata::model::appcatalog::computeresource::DataMovementInterface> & val);
+  void __set_dataMovementInterfaces(const std::vector< ::apache::airavata::model::data::movement::DataMovementInterface> & val);
 
   bool operator == (const StorageResourceDescription & rhs) const
   {

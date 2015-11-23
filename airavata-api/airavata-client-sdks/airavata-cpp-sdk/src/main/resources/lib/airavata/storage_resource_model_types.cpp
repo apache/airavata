@@ -53,7 +53,7 @@ void StorageResourceDescription::__set_enabled(const bool val) {
 __isset.enabled = true;
 }
 
-void StorageResourceDescription::__set_dataMovementInterfaces(const std::vector< ::apache::airavata::model::appcatalog::computeresource::DataMovementInterface> & val) {
+void StorageResourceDescription::__set_dataMovementInterfaces(const std::vector< ::apache::airavata::model::data::movement::DataMovementInterface> & val) {
   this->dataMovementInterfaces = val;
 __isset.dataMovementInterfaces = true;
 }
@@ -178,7 +178,7 @@ uint32_t StorageResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeFieldBegin("dataMovementInterfaces", ::apache::thrift::protocol::T_LIST, 5);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->dataMovementInterfaces.size()));
-      std::vector< ::apache::airavata::model::appcatalog::computeresource::DataMovementInterface> ::const_iterator _iter5;
+      std::vector< ::apache::airavata::model::data::movement::DataMovementInterface> ::const_iterator _iter5;
       for (_iter5 = this->dataMovementInterfaces.begin(); _iter5 != this->dataMovementInterfaces.end(); ++_iter5)
       {
         xfer += (*_iter5).write(oprot);

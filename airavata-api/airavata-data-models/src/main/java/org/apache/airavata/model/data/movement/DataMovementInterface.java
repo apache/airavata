@@ -21,7 +21,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package org.apache.airavata.model.appcatalog.computeresource;
+package org.apache.airavata.model.data.movement;
 
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
@@ -552,7 +552,7 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
             break;
           case 2: // DATA_MOVEMENT_PROTOCOL
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.dataMovementProtocol = org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol.findByValue(iprot.readI32());
+              struct.dataMovementProtocol = org.apache.airavata.model.data.movement.DataMovementProtocol.findByValue(iprot.readI32());
               struct.setDataMovementProtocolIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -619,7 +619,7 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.dataMovementInterfaceId = iprot.readString();
       struct.setDataMovementInterfaceIdIsSet(true);
-      struct.dataMovementProtocol = org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol.findByValue(iprot.readI32());
+      struct.dataMovementProtocol = org.apache.airavata.model.data.movement.DataMovementProtocol.findByValue(iprot.readI32());
       struct.setDataMovementProtocolIsSet(true);
       struct.priorityOrder = iprot.readI32();
       struct.setPriorityOrderIsSet(true);

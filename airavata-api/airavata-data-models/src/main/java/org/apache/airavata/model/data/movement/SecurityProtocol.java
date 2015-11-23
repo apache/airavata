@@ -21,7 +21,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package org.apache.airavata.model.appcatalog.computeresource;
+package org.apache.airavata.model.data.movement;
 
 
 import java.util.Map;
@@ -29,31 +29,30 @@ import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 /**
- * Enumeration of data movement supported by Airavata
+ * Enumeration of security authentication and authorization mechanisms supported by Airavata. This enumeration just
+ *  describes the supported mechanism. The corresponding security credentials are registered with Airavata Credential
+ *  store.
  * 
- * SCP:
- *  Job manager supporting the Portal Batch System (PBS) protocol. Some examples include TORQUE, PBSPro, Grid Engine.
+ * USERNAME_PASSWORD:
+ *  A User Name.
  * 
- * SFTP:
- *  The Simple Linux Utility for Resource Management is a open source workload manager.
+ * SSH_KEYS:
+ *  SSH Keys
  * 
- * GridFTP:
- *  Globus File Transfer Protocol
- * 
- * UNICORE_STORAGE_SERVICE:
- *  Storage Service Provided by Unicore
+ * FIXME: Change GSI to a more precise generic security protocol - X509
  * 
  */
-public enum DataMovementProtocol implements org.apache.thrift.TEnum {
-  LOCAL(0),
-  SCP(1),
-  SFTP(2),
-  GridFTP(3),
-  UNICORE_STORAGE_SERVICE(4);
+public enum SecurityProtocol implements org.apache.thrift.TEnum {
+  USERNAME_PASSWORD(0),
+  SSH_KEYS(1),
+  GSI(2),
+  KERBEROS(3),
+  OAUTH(4),
+  LOCAL(5);
 
   private final int value;
 
-  private DataMovementProtocol(int value) {
+  private SecurityProtocol(int value) {
     this.value = value;
   }
 
@@ -68,18 +67,20 @@ public enum DataMovementProtocol implements org.apache.thrift.TEnum {
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static DataMovementProtocol findByValue(int value) { 
+  public static SecurityProtocol findByValue(int value) { 
     switch (value) {
       case 0:
-        return LOCAL;
+        return USERNAME_PASSWORD;
       case 1:
-        return SCP;
+        return SSH_KEYS;
       case 2:
-        return SFTP;
+        return GSI;
       case 3:
-        return GridFTP;
+        return KERBEROS;
       case 4:
-        return UNICORE_STORAGE_SERVICE;
+        return OAUTH;
+      case 5:
+        return LOCAL;
       default:
         return null;
     }

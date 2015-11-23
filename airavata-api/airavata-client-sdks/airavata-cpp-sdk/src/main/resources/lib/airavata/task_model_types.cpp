@@ -636,7 +636,7 @@ void EnvironmentSetupTaskModel::__set_location(const std::string& val) {
   this->location = val;
 }
 
-void EnvironmentSetupTaskModel::__set_protocol(const  ::apache::airavata::model::appcatalog::computeresource::SecurityProtocol::type val) {
+void EnvironmentSetupTaskModel::__set_protocol(const  ::apache::airavata::model::data::movement::SecurityProtocol::type val) {
   this->protocol = val;
 }
 
@@ -677,7 +677,7 @@ uint32_t EnvironmentSetupTaskModel::read(::apache::thrift::protocol::TProtocol* 
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast12;
           xfer += iprot->readI32(ecast12);
-          this->protocol = ( ::apache::airavata::model::appcatalog::computeresource::SecurityProtocol::type)ecast12;
+          this->protocol = ( ::apache::airavata::model::data::movement::SecurityProtocol::type)ecast12;
           isset_protocol = true;
         } else {
           xfer += iprot->skip(ftype);

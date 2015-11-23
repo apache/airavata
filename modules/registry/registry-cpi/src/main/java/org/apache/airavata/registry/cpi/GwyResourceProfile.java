@@ -70,7 +70,7 @@ public interface GwyResourceProfile {
      * @return ComputeResourcePreference
      */
     ComputeResourcePreference getComputeResourcePreference (String gatewayId, String hostId) throws AppCatalogException;
-    StoragePreference getStoragePreference(String gatewayId, String dataMoveId) throws AppCatalogException;
+    StoragePreference getStoragePreference(String gatewayId, String storageId) throws AppCatalogException;
 
     /**
      *

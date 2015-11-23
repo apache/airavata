@@ -10,6 +10,7 @@ from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import apache.airavata.model.commons.ttypes
 import apache.airavata.model.status.ttypes
 import apache.airavata.model.appcatalog.computeresource.ttypes
+import apache.airavata.model.data.movement.ttypes
 import apache.airavata.model.application.io.ttypes
 import apache.airavata.model.job.ttypes
 

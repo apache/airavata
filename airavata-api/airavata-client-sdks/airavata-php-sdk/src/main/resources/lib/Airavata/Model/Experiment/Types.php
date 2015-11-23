@@ -81,6 +81,10 @@ class UserConfigurationDataModel {
    * @var bool
    */
   public $generateCert = false;
+  /**
+   * @var string
+   */
+  public $storageId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -114,6 +118,10 @@ class UserConfigurationDataModel {
           'var' => 'generateCert',
           'type' => TType::BOOL,
           ),
+        8 => array(
+          'var' => 'storageId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -137,6 +145,9 @@ class UserConfigurationDataModel {
       }
       if (isset($vals['generateCert'])) {
         $this->generateCert = $vals['generateCert'];
+      }
+      if (isset($vals['storageId'])) {
+        $this->storageId = $vals['storageId'];
       }
     }
   }
@@ -210,6 +221,13 @@ class UserConfigurationDataModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 8:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->storageId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -259,6 +277,11 @@ class UserConfigurationDataModel {
     if ($this->generateCert !== null) {
       $xfer += $output->writeFieldBegin('generateCert', TType::BOOL, 7);
       $xfer += $output->writeBool($this->generateCert);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->storageId !== null) {
+      $xfer += $output->writeFieldBegin('storageId', TType::STRING, 8);
+      $xfer += $output->writeString($this->storageId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

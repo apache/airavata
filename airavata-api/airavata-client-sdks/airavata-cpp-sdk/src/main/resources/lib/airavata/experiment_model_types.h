@@ -73,23 +73,24 @@ class ExperimentSummaryModel;
 class ExperimentStatistics;
 
 typedef struct _UserConfigurationDataModel__isset {
-  _UserConfigurationDataModel__isset() : shareExperimentPublicly(true), computationalResourceScheduling(false), throttleResources(true), userDN(false), generateCert(true) {}
+  _UserConfigurationDataModel__isset() : shareExperimentPublicly(true), computationalResourceScheduling(false), throttleResources(true), userDN(false), generateCert(true), storageId(false) {}
   bool shareExperimentPublicly :1;
   bool computationalResourceScheduling :1;
   bool throttleResources :1;
   bool userDN :1;
   bool generateCert :1;
+  bool storageId :1;
 } _UserConfigurationDataModel__isset;
 
 class UserConfigurationDataModel {
  public:
 
-  static const char* ascii_fingerprint; // = "D7D5F12196F1444CE2A35E68C2EEDAF2";
-  static const uint8_t binary_fingerprint[16]; // = {0xD7,0xD5,0xF1,0x21,0x96,0xF1,0x44,0x4C,0xE2,0xA3,0x5E,0x68,0xC2,0xEE,0xDA,0xF2};
+  static const char* ascii_fingerprint; // = "9CA6AB92C690C796BF5375F505933922";
+  static const uint8_t binary_fingerprint[16]; // = {0x9C,0xA6,0xAB,0x92,0xC6,0x90,0xC7,0x96,0xBF,0x53,0x75,0xF5,0x05,0x93,0x39,0x22};
 
   UserConfigurationDataModel(const UserConfigurationDataModel&);
   UserConfigurationDataModel& operator=(const UserConfigurationDataModel&);
-  UserConfigurationDataModel() : airavataAutoSchedule(false), overrideManualScheduledParams(false), shareExperimentPublicly(false), throttleResources(false), userDN(), generateCert(false) {
+  UserConfigurationDataModel() : airavataAutoSchedule(false), overrideManualScheduledParams(false), shareExperimentPublicly(false), throttleResources(false), userDN(), generateCert(false), storageId() {
   }
 
   virtual ~UserConfigurationDataModel() throw();
@@ -100,6 +101,7 @@ class UserConfigurationDataModel {
   bool throttleResources;
   std::string userDN;
   bool generateCert;
+  std::string storageId;
 
   _UserConfigurationDataModel__isset __isset;
 
@@ -116,6 +118,8 @@ class UserConfigurationDataModel {
   void __set_userDN(const std::string& val);
 
   void __set_generateCert(const bool val);
+
+  void __set_storageId(const std::string& val);
 
   bool operator == (const UserConfigurationDataModel & rhs) const
   {
@@ -142,6 +146,10 @@ class UserConfigurationDataModel {
     if (__isset.generateCert != rhs.__isset.generateCert)
       return false;
     else if (__isset.generateCert && !(generateCert == rhs.generateCert))
+      return false;
+    if (__isset.storageId != rhs.__isset.storageId)
+      return false;
+    else if (__isset.storageId && !(storageId == rhs.storageId))
       return false;
     return true;
   }
@@ -178,8 +186,8 @@ typedef struct _ExperimentModel__isset {
 class ExperimentModel {
  public:
 
-  static const char* ascii_fingerprint; // = "4DF530DE68212F7F779CF0EF35D9EDC3";
-  static const uint8_t binary_fingerprint[16]; // = {0x4D,0xF5,0x30,0xDE,0x68,0x21,0x2F,0x7F,0x77,0x9C,0xF0,0xEF,0x35,0xD9,0xED,0xC3};
+  static const char* ascii_fingerprint; // = "67B92D103C069754AD7A8ECD124FA0D0";
+  static const uint8_t binary_fingerprint[16]; // = {0x67,0xB9,0x2D,0x10,0x3C,0x06,0x97,0x54,0xAD,0x7A,0x8E,0xCD,0x12,0x4F,0xA0,0xD0};
 
   ExperimentModel(const ExperimentModel&);
   ExperimentModel& operator=(const ExperimentModel&);

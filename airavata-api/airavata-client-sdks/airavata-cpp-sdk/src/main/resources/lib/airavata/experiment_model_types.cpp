@@ -98,8 +98,13 @@ void UserConfigurationDataModel::__set_generateCert(const bool val) {
 __isset.generateCert = true;
 }
 
-const char* UserConfigurationDataModel::ascii_fingerprint = "D7D5F12196F1444CE2A35E68C2EEDAF2";
-const uint8_t UserConfigurationDataModel::binary_fingerprint[16] = {0xD7,0xD5,0xF1,0x21,0x96,0xF1,0x44,0x4C,0xE2,0xA3,0x5E,0x68,0xC2,0xEE,0xDA,0xF2};
+void UserConfigurationDataModel::__set_storageId(const std::string& val) {
+  this->storageId = val;
+__isset.storageId = true;
+}
+
+const char* UserConfigurationDataModel::ascii_fingerprint = "9CA6AB92C690C796BF5375F505933922";
+const uint8_t UserConfigurationDataModel::binary_fingerprint[16] = {0x9C,0xA6,0xAB,0x92,0xC6,0x90,0xC7,0x96,0xBF,0x53,0x75,0xF5,0x05,0x93,0x39,0x22};
 
 uint32_t UserConfigurationDataModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -179,6 +184,14 @@ uint32_t UserConfigurationDataModel::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
+      case 8:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->storageId);
+          this->__isset.storageId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -233,6 +246,11 @@ uint32_t UserConfigurationDataModel::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeBool(this->generateCert);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.storageId) {
+    xfer += oprot->writeFieldBegin("storageId", ::apache::thrift::protocol::T_STRING, 8);
+    xfer += oprot->writeString(this->storageId);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
@@ -248,6 +266,7 @@ void swap(UserConfigurationDataModel &a, UserConfigurationDataModel &b) {
   swap(a.throttleResources, b.throttleResources);
   swap(a.userDN, b.userDN);
   swap(a.generateCert, b.generateCert);
+  swap(a.storageId, b.storageId);
   swap(a.__isset, b.__isset);
 }
 
@@ -259,6 +278,7 @@ UserConfigurationDataModel::UserConfigurationDataModel(const UserConfigurationDa
   throttleResources = other0.throttleResources;
   userDN = other0.userDN;
   generateCert = other0.generateCert;
+  storageId = other0.storageId;
   __isset = other0.__isset;
 }
 UserConfigurationDataModel& UserConfigurationDataModel::operator=(const UserConfigurationDataModel& other1) {
@@ -269,6 +289,7 @@ UserConfigurationDataModel& UserConfigurationDataModel::operator=(const UserConf
   throttleResources = other1.throttleResources;
   userDN = other1.userDN;
   generateCert = other1.generateCert;
+  storageId = other1.storageId;
   __isset = other1.__isset;
   return *this;
 }
@@ -282,6 +303,7 @@ std::ostream& operator<<(std::ostream& out, const UserConfigurationDataModel& ob
   out << ", " << "throttleResources="; (obj.__isset.throttleResources ? (out << to_string(obj.throttleResources)) : (out << "<null>"));
   out << ", " << "userDN="; (obj.__isset.userDN ? (out << to_string(obj.userDN)) : (out << "<null>"));
   out << ", " << "generateCert="; (obj.__isset.generateCert ? (out << to_string(obj.generateCert)) : (out << "<null>"));
+  out << ", " << "storageId="; (obj.__isset.storageId ? (out << to_string(obj.storageId)) : (out << "<null>"));
   out << ")";
   return out;
 }
@@ -375,8 +397,8 @@ void ExperimentModel::__set_processes(const std::vector< ::apache::airavata::mod
 __isset.processes = true;
 }
 
-const char* ExperimentModel::ascii_fingerprint = "4DF530DE68212F7F779CF0EF35D9EDC3";
-const uint8_t ExperimentModel::binary_fingerprint[16] = {0x4D,0xF5,0x30,0xDE,0x68,0x21,0x2F,0x7F,0x77,0x9C,0xF0,0xEF,0x35,0xD9,0xED,0xC3};
+const char* ExperimentModel::ascii_fingerprint = "67B92D103C069754AD7A8ECD124FA0D0";
+const uint8_t ExperimentModel::binary_fingerprint[16] = {0x67,0xB9,0x2D,0x10,0x3C,0x06,0x97,0x54,0xAD,0x7A,0x8E,0xCD,0x12,0x4F,0xA0,0xD0};
 
 uint32_t ExperimentModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 

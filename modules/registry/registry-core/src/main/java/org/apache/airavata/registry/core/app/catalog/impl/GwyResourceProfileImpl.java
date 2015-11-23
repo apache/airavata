@@ -242,14 +242,14 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
     }
 
     @Override
-    public StoragePreference getStoragePreference(String gatewayId, String dataMoveId) throws AppCatalogException {
+    public StoragePreference getStoragePreference(String gatewayId, String storageId) throws AppCatalogException {
         try {
             StoragePreferenceResource prefResource = new StoragePreferenceResource();
             List<AppCatalogResource> computePrefList = prefResource.get(AppCatAbstractResource.ComputeResourcePreferenceConstants.GATEWAY_ID, gatewayId);
             for (AppCatalogResource resource : computePrefList){
                 StoragePreferenceResource dsP = (StoragePreferenceResource) resource;
                 if (dsP.getStorageResourceId() != null && !dsP.getStorageResourceId().equals("")){
-                    if (dsP.getStorageResourceId().equals(dataMoveId)){
+                    if (dsP.getStorageResourceId().equals(storageId)){
                         return AppCatalogThriftConversion.getDataStoragePreference(dsP);
                     }
                 }

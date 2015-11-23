@@ -21,7 +21,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package org.apache.airavata.model.appcatalog.computeresource;
+package org.apache.airavata.model.data.movement;
 
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
@@ -549,7 +549,7 @@ public class UnicoreDataMovement implements org.apache.thrift.TBase<UnicoreDataM
             break;
           case 2: // SECURITY_PROTOCOL
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.securityProtocol = org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol.findByValue(iprot.readI32());
+              struct.securityProtocol = org.apache.airavata.model.data.movement.SecurityProtocol.findByValue(iprot.readI32());
               struct.setSecurityProtocolIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -618,7 +618,7 @@ public class UnicoreDataMovement implements org.apache.thrift.TBase<UnicoreDataM
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.dataMovementInterfaceId = iprot.readString();
       struct.setDataMovementInterfaceIdIsSet(true);
-      struct.securityProtocol = org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol.findByValue(iprot.readI32());
+      struct.securityProtocol = org.apache.airavata.model.data.movement.SecurityProtocol.findByValue(iprot.readI32());
       struct.setSecurityProtocolIsSet(true);
       struct.unicoreEndPointURL = iprot.readString();
       struct.setUnicoreEndPointURLIsSet(true);
