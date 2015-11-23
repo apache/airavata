@@ -26837,7 +26837,8 @@ uint32_t Airavata_addLocalDataMovementDetails_args::read(::apache::thrift::proto
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_authzToken = false;
-  bool isset_computeResourceId = false;
+  bool isset_resourceId = false;
+  bool isset_dataMoveType = false;
   bool isset_priorityOrder = false;
   bool isset_localDataMovement = false;
 
@@ -26859,13 +26860,23 @@ uint32_t Airavata_addLocalDataMovementDetails_args::read(::apache::thrift::proto
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->computeResourceId);
-          isset_computeResourceId = true;
+          xfer += iprot->readString(this->resourceId);
+          isset_resourceId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 3:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast332;
+          xfer += iprot->readI32(ecast332);
+          this->dataMoveType = ( ::apache::airavata::model::appcatalog::computeresource::DMType::type)ecast332;
+          isset_dataMoveType = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->priorityOrder);
           isset_priorityOrder = true;
@@ -26873,7 +26884,7 @@ uint32_t Airavata_addLocalDataMovementDetails_args::read(::apache::thrift::proto
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->localDataMovement.read(iprot);
           isset_localDataMovement = true;
@@ -26892,7 +26903,9 @@ uint32_t Airavata_addLocalDataMovementDetails_args::read(::apache::thrift::proto
 
   if (!isset_authzToken)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_computeResourceId)
+  if (!isset_resourceId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_dataMoveType)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_priorityOrder)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -26910,15 +26923,19 @@ uint32_t Airavata_addLocalDataMovementDetails_args::write(::apache::thrift::prot
   xfer += this->authzToken.write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("computeResourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->computeResourceId);
+  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->resourceId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("priorityOrder", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeFieldBegin("dataMoveType", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32((int32_t)this->dataMoveType);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("priorityOrder", ::apache::thrift::protocol::T_I32, 4);
   xfer += oprot->writeI32(this->priorityOrder);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("localDataMovement", ::apache::thrift::protocol::T_STRUCT, 4);
+  xfer += oprot->writeFieldBegin("localDataMovement", ::apache::thrift::protocol::T_STRUCT, 5);
   xfer += this->localDataMovement.write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -26942,15 +26959,19 @@ uint32_t Airavata_addLocalDataMovementDetails_pargs::write(::apache::thrift::pro
   xfer += (*(this->authzToken)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("computeResourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString((*(this->computeResourceId)));
+  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->resourceId)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("priorityOrder", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeFieldBegin("dataMoveType", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32((int32_t)(*(this->dataMoveType)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("priorityOrder", ::apache::thrift::protocol::T_I32, 4);
   xfer += oprot->writeI32((*(this->priorityOrder)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("localDataMovement", ::apache::thrift::protocol::T_STRUCT, 4);
+  xfer += oprot->writeFieldBegin("localDataMovement", ::apache::thrift::protocol::T_STRUCT, 5);
   xfer += (*(this->localDataMovement)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -27758,7 +27779,8 @@ uint32_t Airavata_addSCPDataMovementDetails_args::read(::apache::thrift::protoco
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_authzToken = false;
-  bool isset_computeResourceId = false;
+  bool isset_resourceId = false;
+  bool isset_dataMoveType = false;
   bool isset_priorityOrder = false;
   bool isset_scpDataMovement = false;
 
@@ -27780,13 +27802,23 @@ uint32_t Airavata_addSCPDataMovementDetails_args::read(::apache::thrift::protoco
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->computeResourceId);
-          isset_computeResourceId = true;
+          xfer += iprot->readString(this->resourceId);
+          isset_resourceId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 3:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast333;
+          xfer += iprot->readI32(ecast333);
+          this->dataMoveType = ( ::apache::airavata::model::appcatalog::computeresource::DMType::type)ecast333;
+          isset_dataMoveType = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->priorityOrder);
           isset_priorityOrder = true;
@@ -27794,7 +27826,7 @@ uint32_t Airavata_addSCPDataMovementDetails_args::read(::apache::thrift::protoco
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->scpDataMovement.read(iprot);
           isset_scpDataMovement = true;
@@ -27813,7 +27845,9 @@ uint32_t Airavata_addSCPDataMovementDetails_args::read(::apache::thrift::protoco
 
   if (!isset_authzToken)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_computeResourceId)
+  if (!isset_resourceId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_dataMoveType)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_priorityOrder)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -27831,15 +27865,19 @@ uint32_t Airavata_addSCPDataMovementDetails_args::write(::apache::thrift::protoc
   xfer += this->authzToken.write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("computeResourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->computeResourceId);
+  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->resourceId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("priorityOrder", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeFieldBegin("dataMoveType", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32((int32_t)this->dataMoveType);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("priorityOrder", ::apache::thrift::protocol::T_I32, 4);
   xfer += oprot->writeI32(this->priorityOrder);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("scpDataMovement", ::apache::thrift::protocol::T_STRUCT, 4);
+  xfer += oprot->writeFieldBegin("scpDataMovement", ::apache::thrift::protocol::T_STRUCT, 5);
   xfer += this->scpDataMovement.write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -27863,15 +27901,19 @@ uint32_t Airavata_addSCPDataMovementDetails_pargs::write(::apache::thrift::proto
   xfer += (*(this->authzToken)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("computeResourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString((*(this->computeResourceId)));
+  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->resourceId)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("priorityOrder", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeFieldBegin("dataMoveType", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32((int32_t)(*(this->dataMoveType)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("priorityOrder", ::apache::thrift::protocol::T_I32, 4);
   xfer += oprot->writeI32((*(this->priorityOrder)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("scpDataMovement", ::apache::thrift::protocol::T_STRUCT, 4);
+  xfer += oprot->writeFieldBegin("scpDataMovement", ::apache::thrift::protocol::T_STRUCT, 5);
   xfer += (*(this->scpDataMovement)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -28679,7 +28721,8 @@ uint32_t Airavata_addUnicoreDataMovementDetails_args::read(::apache::thrift::pro
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_authzToken = false;
-  bool isset_computeResourceId = false;
+  bool isset_resourceId = false;
+  bool isset_dataMoveType = false;
   bool isset_priorityOrder = false;
   bool isset_unicoreDataMovement = false;
 
@@ -28701,13 +28744,23 @@ uint32_t Airavata_addUnicoreDataMovementDetails_args::read(::apache::thrift::pro
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->computeResourceId);
-          isset_computeResourceId = true;
+          xfer += iprot->readString(this->resourceId);
+          isset_resourceId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 3:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast334;
+          xfer += iprot->readI32(ecast334);
+          this->dataMoveType = ( ::apache::airavata::model::appcatalog::computeresource::DMType::type)ecast334;
+          isset_dataMoveType = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->priorityOrder);
           isset_priorityOrder = true;
@@ -28715,7 +28768,7 @@ uint32_t Airavata_addUnicoreDataMovementDetails_args::read(::apache::thrift::pro
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->unicoreDataMovement.read(iprot);
           isset_unicoreDataMovement = true;
@@ -28734,7 +28787,9 @@ uint32_t Airavata_addUnicoreDataMovementDetails_args::read(::apache::thrift::pro
 
   if (!isset_authzToken)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_computeResourceId)
+  if (!isset_resourceId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_dataMoveType)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_priorityOrder)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -28752,15 +28807,19 @@ uint32_t Airavata_addUnicoreDataMovementDetails_args::write(::apache::thrift::pr
   xfer += this->authzToken.write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("computeResourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->computeResourceId);
+  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->resourceId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("priorityOrder", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeFieldBegin("dataMoveType", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32((int32_t)this->dataMoveType);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("priorityOrder", ::apache::thrift::protocol::T_I32, 4);
   xfer += oprot->writeI32(this->priorityOrder);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("unicoreDataMovement", ::apache::thrift::protocol::T_STRUCT, 4);
+  xfer += oprot->writeFieldBegin("unicoreDataMovement", ::apache::thrift::protocol::T_STRUCT, 5);
   xfer += this->unicoreDataMovement.write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -28784,15 +28843,19 @@ uint32_t Airavata_addUnicoreDataMovementDetails_pargs::write(::apache::thrift::p
   xfer += (*(this->authzToken)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("computeResourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString((*(this->computeResourceId)));
+  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->resourceId)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("priorityOrder", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeFieldBegin("dataMoveType", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32((int32_t)(*(this->dataMoveType)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("priorityOrder", ::apache::thrift::protocol::T_I32, 4);
   xfer += oprot->writeI32((*(this->priorityOrder)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("unicoreDataMovement", ::apache::thrift::protocol::T_STRUCT, 4);
+  xfer += oprot->writeFieldBegin("unicoreDataMovement", ::apache::thrift::protocol::T_STRUCT, 5);
   xfer += (*(this->unicoreDataMovement)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -29600,7 +29663,8 @@ uint32_t Airavata_addGridFTPDataMovementDetails_args::read(::apache::thrift::pro
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_authzToken = false;
-  bool isset_computeResourceId = false;
+  bool isset_resourceId = false;
+  bool isset_dataMoveType = false;
   bool isset_priorityOrder = false;
   bool isset_gridFTPDataMovement = false;
 
@@ -29622,13 +29686,23 @@ uint32_t Airavata_addGridFTPDataMovementDetails_args::read(::apache::thrift::pro
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->computeResourceId);
-          isset_computeResourceId = true;
+          xfer += iprot->readString(this->resourceId);
+          isset_resourceId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 3:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast335;
+          xfer += iprot->readI32(ecast335);
+          this->dataMoveType = ( ::apache::airavata::model::appcatalog::computeresource::DMType::type)ecast335;
+          isset_dataMoveType = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->priorityOrder);
           isset_priorityOrder = true;
@@ -29636,7 +29710,7 @@ uint32_t Airavata_addGridFTPDataMovementDetails_args::read(::apache::thrift::pro
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->gridFTPDataMovement.read(iprot);
           isset_gridFTPDataMovement = true;
@@ -29655,7 +29729,9 @@ uint32_t Airavata_addGridFTPDataMovementDetails_args::read(::apache::thrift::pro
 
   if (!isset_authzToken)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_computeResourceId)
+  if (!isset_resourceId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_dataMoveType)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_priorityOrder)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -29673,15 +29749,19 @@ uint32_t Airavata_addGridFTPDataMovementDetails_args::write(::apache::thrift::pr
   xfer += this->authzToken.write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("computeResourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->computeResourceId);
+  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->resourceId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("priorityOrder", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeFieldBegin("dataMoveType", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32((int32_t)this->dataMoveType);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("priorityOrder", ::apache::thrift::protocol::T_I32, 4);
   xfer += oprot->writeI32(this->priorityOrder);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("gridFTPDataMovement", ::apache::thrift::protocol::T_STRUCT, 4);
+  xfer += oprot->writeFieldBegin("gridFTPDataMovement", ::apache::thrift::protocol::T_STRUCT, 5);
   xfer += this->gridFTPDataMovement.write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -29705,15 +29785,19 @@ uint32_t Airavata_addGridFTPDataMovementDetails_pargs::write(::apache::thrift::p
   xfer += (*(this->authzToken)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("computeResourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString((*(this->computeResourceId)));
+  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->resourceId)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("priorityOrder", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeFieldBegin("dataMoveType", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32((int32_t)(*(this->dataMoveType)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("priorityOrder", ::apache::thrift::protocol::T_I32, 4);
   xfer += oprot->writeI32((*(this->priorityOrder)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("gridFTPDataMovement", ::apache::thrift::protocol::T_STRUCT, 4);
+  xfer += oprot->writeFieldBegin("gridFTPDataMovement", ::apache::thrift::protocol::T_STRUCT, 5);
   xfer += (*(this->gridFTPDataMovement)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -31157,17 +31241,17 @@ uint32_t Airavata_changeJobSubmissionPriorities_args::read(::apache::thrift::pro
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->jobSubmissionPriorityMap.clear();
-            uint32_t _size332;
-            ::apache::thrift::protocol::TType _ktype333;
-            ::apache::thrift::protocol::TType _vtype334;
-            xfer += iprot->readMapBegin(_ktype333, _vtype334, _size332);
-            uint32_t _i336;
-            for (_i336 = 0; _i336 < _size332; ++_i336)
+            uint32_t _size336;
+            ::apache::thrift::protocol::TType _ktype337;
+            ::apache::thrift::protocol::TType _vtype338;
+            xfer += iprot->readMapBegin(_ktype337, _vtype338, _size336);
+            uint32_t _i340;
+            for (_i340 = 0; _i340 < _size336; ++_i340)
             {
-              std::string _key337;
-              xfer += iprot->readString(_key337);
-              int32_t& _val338 = this->jobSubmissionPriorityMap[_key337];
-              xfer += iprot->readI32(_val338);
+              std::string _key341;
+              xfer += iprot->readString(_key341);
+              int32_t& _val342 = this->jobSubmissionPriorityMap[_key341];
+              xfer += iprot->readI32(_val342);
             }
             xfer += iprot->readMapEnd();
           }
@@ -31204,11 +31288,11 @@ uint32_t Airavata_changeJobSubmissionPriorities_args::write(::apache::thrift::pr
   xfer += oprot->writeFieldBegin("jobSubmissionPriorityMap", ::apache::thrift::protocol::T_MAP, 2);
   {
     xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_I32, static_cast<uint32_t>(this->jobSubmissionPriorityMap.size()));
-    std::map<std::string, int32_t> ::const_iterator _iter339;
-    for (_iter339 = this->jobSubmissionPriorityMap.begin(); _iter339 != this->jobSubmissionPriorityMap.end(); ++_iter339)
+    std::map<std::string, int32_t> ::const_iterator _iter343;
+    for (_iter343 = this->jobSubmissionPriorityMap.begin(); _iter343 != this->jobSubmissionPriorityMap.end(); ++_iter343)
     {
-      xfer += oprot->writeString(_iter339->first);
-      xfer += oprot->writeI32(_iter339->second);
+      xfer += oprot->writeString(_iter343->first);
+      xfer += oprot->writeI32(_iter343->second);
     }
     xfer += oprot->writeMapEnd();
   }
@@ -31237,11 +31321,11 @@ uint32_t Airavata_changeJobSubmissionPriorities_pargs::write(::apache::thrift::p
   xfer += oprot->writeFieldBegin("jobSubmissionPriorityMap", ::apache::thrift::protocol::T_MAP, 2);
   {
     xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_I32, static_cast<uint32_t>((*(this->jobSubmissionPriorityMap)).size()));
-    std::map<std::string, int32_t> ::const_iterator _iter340;
-    for (_iter340 = (*(this->jobSubmissionPriorityMap)).begin(); _iter340 != (*(this->jobSubmissionPriorityMap)).end(); ++_iter340)
+    std::map<std::string, int32_t> ::const_iterator _iter344;
+    for (_iter344 = (*(this->jobSubmissionPriorityMap)).begin(); _iter344 != (*(this->jobSubmissionPriorityMap)).end(); ++_iter344)
     {
-      xfer += oprot->writeString(_iter340->first);
-      xfer += oprot->writeI32(_iter340->second);
+      xfer += oprot->writeString(_iter344->first);
+      xfer += oprot->writeI32(_iter344->second);
     }
     xfer += oprot->writeMapEnd();
   }
@@ -31478,17 +31562,17 @@ uint32_t Airavata_changeDataMovementPriorities_args::read(::apache::thrift::prot
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->dataMovementPriorityMap.clear();
-            uint32_t _size341;
-            ::apache::thrift::protocol::TType _ktype342;
-            ::apache::thrift::protocol::TType _vtype343;
-            xfer += iprot->readMapBegin(_ktype342, _vtype343, _size341);
-            uint32_t _i345;
-            for (_i345 = 0; _i345 < _size341; ++_i345)
+            uint32_t _size345;
+            ::apache::thrift::protocol::TType _ktype346;
+            ::apache::thrift::protocol::TType _vtype347;
+            xfer += iprot->readMapBegin(_ktype346, _vtype347, _size345);
+            uint32_t _i349;
+            for (_i349 = 0; _i349 < _size345; ++_i349)
             {
-              std::string _key346;
-              xfer += iprot->readString(_key346);
-              int32_t& _val347 = this->dataMovementPriorityMap[_key346];
-              xfer += iprot->readI32(_val347);
+              std::string _key350;
+              xfer += iprot->readString(_key350);
+              int32_t& _val351 = this->dataMovementPriorityMap[_key350];
+              xfer += iprot->readI32(_val351);
             }
             xfer += iprot->readMapEnd();
           }
@@ -31525,11 +31609,11 @@ uint32_t Airavata_changeDataMovementPriorities_args::write(::apache::thrift::pro
   xfer += oprot->writeFieldBegin("dataMovementPriorityMap", ::apache::thrift::protocol::T_MAP, 2);
   {
     xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_I32, static_cast<uint32_t>(this->dataMovementPriorityMap.size()));
-    std::map<std::string, int32_t> ::const_iterator _iter348;
-    for (_iter348 = this->dataMovementPriorityMap.begin(); _iter348 != this->dataMovementPriorityMap.end(); ++_iter348)
+    std::map<std::string, int32_t> ::const_iterator _iter352;
+    for (_iter352 = this->dataMovementPriorityMap.begin(); _iter352 != this->dataMovementPriorityMap.end(); ++_iter352)
     {
-      xfer += oprot->writeString(_iter348->first);
-      xfer += oprot->writeI32(_iter348->second);
+      xfer += oprot->writeString(_iter352->first);
+      xfer += oprot->writeI32(_iter352->second);
     }
     xfer += oprot->writeMapEnd();
   }
@@ -31558,11 +31642,11 @@ uint32_t Airavata_changeDataMovementPriorities_pargs::write(::apache::thrift::pr
   xfer += oprot->writeFieldBegin("dataMovementPriorityMap", ::apache::thrift::protocol::T_MAP, 2);
   {
     xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_I32, static_cast<uint32_t>((*(this->dataMovementPriorityMap)).size()));
-    std::map<std::string, int32_t> ::const_iterator _iter349;
-    for (_iter349 = (*(this->dataMovementPriorityMap)).begin(); _iter349 != (*(this->dataMovementPriorityMap)).end(); ++_iter349)
+    std::map<std::string, int32_t> ::const_iterator _iter353;
+    for (_iter353 = (*(this->dataMovementPriorityMap)).begin(); _iter353 != (*(this->dataMovementPriorityMap)).end(); ++_iter353)
     {
-      xfer += oprot->writeString(_iter349->first);
-      xfer += oprot->writeI32(_iter349->second);
+      xfer += oprot->writeString(_iter353->first);
+      xfer += oprot->writeI32(_iter353->second);
     }
     xfer += oprot->writeMapEnd();
   }
@@ -36420,14 +36504,14 @@ uint32_t Airavata_getAllGatewayComputeResourcePreferences_result::read(::apache:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size350;
-            ::apache::thrift::protocol::TType _etype353;
-            xfer += iprot->readListBegin(_etype353, _size350);
-            this->success.resize(_size350);
-            uint32_t _i354;
-            for (_i354 = 0; _i354 < _size350; ++_i354)
+            uint32_t _size354;
+            ::apache::thrift::protocol::TType _etype357;
+            xfer += iprot->readListBegin(_etype357, _size354);
+            this->success.resize(_size354);
+            uint32_t _i358;
+            for (_i358 = 0; _i358 < _size354; ++_i358)
             {
-              xfer += this->success[_i354].read(iprot);
+              xfer += this->success[_i358].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -36490,10 +36574,10 @@ uint32_t Airavata_getAllGatewayComputeResourcePreferences_result::write(::apache
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> ::const_iterator _iter355;
-      for (_iter355 = this->success.begin(); _iter355 != this->success.end(); ++_iter355)
+      std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> ::const_iterator _iter359;
+      for (_iter359 = this->success.begin(); _iter359 != this->success.end(); ++_iter359)
       {
-        xfer += (*_iter355).write(oprot);
+        xfer += (*_iter359).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -36549,14 +36633,14 @@ uint32_t Airavata_getAllGatewayComputeResourcePreferences_presult::read(::apache
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size356;
-            ::apache::thrift::protocol::TType _etype359;
-            xfer += iprot->readListBegin(_etype359, _size356);
-            (*(this->success)).resize(_size356);
-            uint32_t _i360;
-            for (_i360 = 0; _i360 < _size356; ++_i360)
+            uint32_t _size360;
+            ::apache::thrift::protocol::TType _etype363;
+            xfer += iprot->readListBegin(_etype363, _size360);
+            (*(this->success)).resize(_size360);
+            uint32_t _i364;
+            for (_i364 = 0; _i364 < _size360; ++_i364)
             {
-              xfer += (*(this->success))[_i360].read(iprot);
+              xfer += (*(this->success))[_i364].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -36740,14 +36824,14 @@ uint32_t Airavata_getAllGatewayStoragePreferences_result::read(::apache::thrift:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size361;
-            ::apache::thrift::protocol::TType _etype364;
-            xfer += iprot->readListBegin(_etype364, _size361);
-            this->success.resize(_size361);
-            uint32_t _i365;
-            for (_i365 = 0; _i365 < _size361; ++_i365)
+            uint32_t _size365;
+            ::apache::thrift::protocol::TType _etype368;
+            xfer += iprot->readListBegin(_etype368, _size365);
+            this->success.resize(_size365);
+            uint32_t _i369;
+            for (_i369 = 0; _i369 < _size365; ++_i369)
             {
-              xfer += this->success[_i365].read(iprot);
+              xfer += this->success[_i369].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -36810,10 +36894,10 @@ uint32_t Airavata_getAllGatewayStoragePreferences_result::write(::apache::thrift
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference> ::const_iterator _iter366;
-      for (_iter366 = this->success.begin(); _iter366 != this->success.end(); ++_iter366)
+      std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference> ::const_iterator _iter370;
+      for (_iter370 = this->success.begin(); _iter370 != this->success.end(); ++_iter370)
       {
-        xfer += (*_iter366).write(oprot);
+        xfer += (*_iter370).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -36869,14 +36953,14 @@ uint32_t Airavata_getAllGatewayStoragePreferences_presult::read(::apache::thrift
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size367;
-            ::apache::thrift::protocol::TType _etype370;
-            xfer += iprot->readListBegin(_etype370, _size367);
-            (*(this->success)).resize(_size367);
-            uint32_t _i371;
-            for (_i371 = 0; _i371 < _size367; ++_i371)
+            uint32_t _size371;
+            ::apache::thrift::protocol::TType _etype374;
+            xfer += iprot->readListBegin(_etype374, _size371);
+            (*(this->success)).resize(_size371);
+            uint32_t _i375;
+            for (_i375 = 0; _i375 < _size371; ++_i375)
             {
-              xfer += (*(this->success))[_i371].read(iprot);
+              xfer += (*(this->success))[_i375].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -37041,14 +37125,14 @@ uint32_t Airavata_getAllGatewayResourceProfiles_result::read(::apache::thrift::p
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size372;
-            ::apache::thrift::protocol::TType _etype375;
-            xfer += iprot->readListBegin(_etype375, _size372);
-            this->success.resize(_size372);
-            uint32_t _i376;
-            for (_i376 = 0; _i376 < _size372; ++_i376)
+            uint32_t _size376;
+            ::apache::thrift::protocol::TType _etype379;
+            xfer += iprot->readListBegin(_etype379, _size376);
+            this->success.resize(_size376);
+            uint32_t _i380;
+            for (_i380 = 0; _i380 < _size376; ++_i380)
             {
-              xfer += this->success[_i376].read(iprot);
+              xfer += this->success[_i380].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -37111,10 +37195,10 @@ uint32_t Airavata_getAllGatewayResourceProfiles_result::write(::apache::thrift::
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile> ::const_iterator _iter377;
-      for (_iter377 = this->success.begin(); _iter377 != this->success.end(); ++_iter377)
+      std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile> ::const_iterator _iter381;
+      for (_iter381 = this->success.begin(); _iter381 != this->success.end(); ++_iter381)
       {
-        xfer += (*_iter377).write(oprot);
+        xfer += (*_iter381).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -37170,14 +37254,14 @@ uint32_t Airavata_getAllGatewayResourceProfiles_presult::read(::apache::thrift::
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size378;
-            ::apache::thrift::protocol::TType _etype381;
-            xfer += iprot->readListBegin(_etype381, _size378);
-            (*(this->success)).resize(_size378);
-            uint32_t _i382;
-            for (_i382 = 0; _i382 < _size378; ++_i382)
+            uint32_t _size382;
+            ::apache::thrift::protocol::TType _etype385;
+            xfer += iprot->readListBegin(_etype385, _size382);
+            (*(this->success)).resize(_size382);
+            uint32_t _i386;
+            for (_i386 = 0; _i386 < _size382; ++_i386)
             {
-              xfer += (*(this->success))[_i382].read(iprot);
+              xfer += (*(this->success))[_i386].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -38627,14 +38711,14 @@ uint32_t Airavata_getAllWorkflows_result::read(::apache::thrift::protocol::TProt
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size383;
-            ::apache::thrift::protocol::TType _etype386;
-            xfer += iprot->readListBegin(_etype386, _size383);
-            this->success.resize(_size383);
-            uint32_t _i387;
-            for (_i387 = 0; _i387 < _size383; ++_i387)
+            uint32_t _size387;
+            ::apache::thrift::protocol::TType _etype390;
+            xfer += iprot->readListBegin(_etype390, _size387);
+            this->success.resize(_size387);
+            uint32_t _i391;
+            for (_i391 = 0; _i391 < _size387; ++_i391)
             {
-              xfer += iprot->readString(this->success[_i387]);
+              xfer += iprot->readString(this->success[_i391]);
             }
             xfer += iprot->readListEnd();
           }
@@ -38697,10 +38781,10 @@ uint32_t Airavata_getAllWorkflows_result::write(::apache::thrift::protocol::TPro
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->success.size()));
-      std::vector<std::string> ::const_iterator _iter388;
-      for (_iter388 = this->success.begin(); _iter388 != this->success.end(); ++_iter388)
+      std::vector<std::string> ::const_iterator _iter392;
+      for (_iter392 = this->success.begin(); _iter392 != this->success.end(); ++_iter392)
       {
-        xfer += oprot->writeString((*_iter388));
+        xfer += oprot->writeString((*_iter392));
       }
       xfer += oprot->writeListEnd();
     }
@@ -38756,14 +38840,14 @@ uint32_t Airavata_getAllWorkflows_presult::read(::apache::thrift::protocol::TPro
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size389;
-            ::apache::thrift::protocol::TType _etype392;
-            xfer += iprot->readListBegin(_etype392, _size389);
-            (*(this->success)).resize(_size389);
-            uint32_t _i393;
-            for (_i393 = 0; _i393 < _size389; ++_i393)
+            uint32_t _size393;
+            ::apache::thrift::protocol::TType _etype396;
+            xfer += iprot->readListBegin(_etype396, _size393);
+            (*(this->success)).resize(_size393);
+            uint32_t _i397;
+            for (_i397 = 0; _i397 < _size393; ++_i397)
             {
-              xfer += iprot->readString((*(this->success))[_i393]);
+              xfer += iprot->readString((*(this->success))[_i397]);
             }
             xfer += iprot->readListEnd();
           }
@@ -46636,20 +46720,21 @@ bool AiravataClient::recv_updateUnicoreJobSubmissionDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateUnicoreJobSubmissionDetails failed: unknown result");
 }
 
-void AiravataClient::addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement)
+void AiravataClient::addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement)
 {
-  send_addLocalDataMovementDetails(authzToken, computeResourceId, priorityOrder, localDataMovement);
+  send_addLocalDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, localDataMovement);
   recv_addLocalDataMovementDetails(_return);
 }
 
-void AiravataClient::send_addLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement)
+void AiravataClient::send_addLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("addLocalDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_addLocalDataMovementDetails_pargs args;
   args.authzToken = &authzToken;
-  args.computeResourceId = &computeResourceId;
+  args.resourceId = &resourceId;
+  args.dataMoveType = &dataMoveType;
   args.priorityOrder = &priorityOrder;
   args.localDataMovement = &localDataMovement;
   args.write(oprot_);
@@ -46852,20 +46937,21 @@ void AiravataClient::recv_getLocalDataMovement( ::apache::airavata::model::appca
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getLocalDataMovement failed: unknown result");
 }
 
-void AiravataClient::addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement)
+void AiravataClient::addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement)
 {
-  send_addSCPDataMovementDetails(authzToken, computeResourceId, priorityOrder, scpDataMovement);
+  send_addSCPDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, scpDataMovement);
   recv_addSCPDataMovementDetails(_return);
 }
 
-void AiravataClient::send_addSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement)
+void AiravataClient::send_addSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("addSCPDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_addSCPDataMovementDetails_pargs args;
   args.authzToken = &authzToken;
-  args.computeResourceId = &computeResourceId;
+  args.resourceId = &resourceId;
+  args.dataMoveType = &dataMoveType;
   args.priorityOrder = &priorityOrder;
   args.scpDataMovement = &scpDataMovement;
   args.write(oprot_);
@@ -47068,20 +47154,21 @@ void AiravataClient::recv_getSCPDataMovement( ::apache::airavata::model::appcata
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getSCPDataMovement failed: unknown result");
 }
 
-void AiravataClient::addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& unicoreDataMovement)
+void AiravataClient::addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& unicoreDataMovement)
 {
-  send_addUnicoreDataMovementDetails(authzToken, computeResourceId, priorityOrder, unicoreDataMovement);
+  send_addUnicoreDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, unicoreDataMovement);
   recv_addUnicoreDataMovementDetails(_return);
 }
 
-void AiravataClient::send_addUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& unicoreDataMovement)
+void AiravataClient::send_addUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& unicoreDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("addUnicoreDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_addUnicoreDataMovementDetails_pargs args;
   args.authzToken = &authzToken;
-  args.computeResourceId = &computeResourceId;
+  args.resourceId = &resourceId;
+  args.dataMoveType = &dataMoveType;
   args.priorityOrder = &priorityOrder;
   args.unicoreDataMovement = &unicoreDataMovement;
   args.write(oprot_);
@@ -47284,20 +47371,21 @@ void AiravataClient::recv_getUnicoreDataMovement( ::apache::airavata::model::app
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getUnicoreDataMovement failed: unknown result");
 }
 
-void AiravataClient::addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement)
+void AiravataClient::addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement)
 {
-  send_addGridFTPDataMovementDetails(authzToken, computeResourceId, priorityOrder, gridFTPDataMovement);
+  send_addGridFTPDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, gridFTPDataMovement);
   recv_addGridFTPDataMovementDetails(_return);
 }
 
-void AiravataClient::send_addGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement)
+void AiravataClient::send_addGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::appcatalog::computeresource::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("addGridFTPDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_addGridFTPDataMovementDetails_pargs args;
   args.authzToken = &authzToken;
-  args.computeResourceId = &computeResourceId;
+  args.resourceId = &resourceId;
+  args.dataMoveType = &dataMoveType;
   args.priorityOrder = &priorityOrder;
   args.gridFTPDataMovement = &gridFTPDataMovement;
   args.write(oprot_);
@@ -55519,7 +55607,7 @@ void AiravataProcessor::process_addLocalDataMovementDetails(int32_t seqid, ::apa
 
   Airavata_addLocalDataMovementDetails_result result;
   try {
-    iface_->addLocalDataMovementDetails(result.success, args.authzToken, args.computeResourceId, args.priorityOrder, args.localDataMovement);
+    iface_->addLocalDataMovementDetails(result.success, args.authzToken, args.resourceId, args.dataMoveType, args.priorityOrder, args.localDataMovement);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -55717,7 +55805,7 @@ void AiravataProcessor::process_addSCPDataMovementDetails(int32_t seqid, ::apach
 
   Airavata_addSCPDataMovementDetails_result result;
   try {
-    iface_->addSCPDataMovementDetails(result.success, args.authzToken, args.computeResourceId, args.priorityOrder, args.scpDataMovement);
+    iface_->addSCPDataMovementDetails(result.success, args.authzToken, args.resourceId, args.dataMoveType, args.priorityOrder, args.scpDataMovement);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -55915,7 +56003,7 @@ void AiravataProcessor::process_addUnicoreDataMovementDetails(int32_t seqid, ::a
 
   Airavata_addUnicoreDataMovementDetails_result result;
   try {
-    iface_->addUnicoreDataMovementDetails(result.success, args.authzToken, args.computeResourceId, args.priorityOrder, args.unicoreDataMovement);
+    iface_->addUnicoreDataMovementDetails(result.success, args.authzToken, args.resourceId, args.dataMoveType, args.priorityOrder, args.unicoreDataMovement);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -56113,7 +56201,7 @@ void AiravataProcessor::process_addGridFTPDataMovementDetails(int32_t seqid, ::a
 
   Airavata_addGridFTPDataMovementDetails_result result;
   try {
-    iface_->addGridFTPDataMovementDetails(result.success, args.authzToken, args.computeResourceId, args.priorityOrder, args.gridFTPDataMovement);
+    iface_->addGridFTPDataMovementDetails(result.success, args.authzToken, args.resourceId, args.dataMoveType, args.priorityOrder, args.gridFTPDataMovement);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;

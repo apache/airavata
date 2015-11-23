@@ -175,7 +175,7 @@ public class StorageResourceImpl implements StorageResource {
             List<AppCatalogResource> allStorageResources = resource.getAll();
             if (allStorageResources != null && !allStorageResources.isEmpty()){
                 for (AppCatalogResource sr : allStorageResources){
-                    StorageResourceResource srr = (StorageResourceResource)allStorageResources;
+                    StorageResourceResource srr = (StorageResourceResource)sr;
                     storageResourceMap.put(srr.getStorageResourceId(), srr.getHostName());
                 }
             }

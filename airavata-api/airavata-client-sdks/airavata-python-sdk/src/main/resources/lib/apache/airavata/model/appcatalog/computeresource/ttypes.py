@@ -266,6 +266,20 @@ class MonitorMode:
     "FORK": 3,
   }
 
+class DMType:
+  COMPUTE_RESOURCE = 0
+  STORAGE_RESOURCE = 1
+
+  _VALUES_TO_NAMES = {
+    0: "COMPUTE_RESOURCE",
+    1: "STORAGE_RESOURCE",
+  }
+
+  _NAMES_TO_VALUES = {
+    "COMPUTE_RESOURCE": 0,
+    "STORAGE_RESOURCE": 1,
+  }
+
 class DataMovementProtocol:
   """
   Enumeration of data movement supported by Airavata
