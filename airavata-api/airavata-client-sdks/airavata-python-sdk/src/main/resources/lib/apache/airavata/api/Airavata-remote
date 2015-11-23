@@ -53,6 +53,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  string createExperiment(AuthzToken authzToken, string gatewayId, ExperimentModel experiment)')
   print('  bool deleteExperiment(AuthzToken authzToken, string experimentId)')
   print('  ExperimentModel getExperiment(AuthzToken authzToken, string airavataExperimentId)')
+  print('  ExperimentModel getDetailedExperimentTree(AuthzToken authzToken, string airavataExperimentId)')
   print('  void updateExperiment(AuthzToken authzToken, string airavataExperimentId, ExperimentModel experiment)')
   print('  void updateExperimentConfiguration(AuthzToken authzToken, string airavataExperimentId, UserConfigurationDataModel userConfiguration)')
   print('  void updateResourceScheduleing(AuthzToken authzToken, string airavataExperimentId, ComputationalResourceSchedulingModel resourceScheduling)')
@@ -90,6 +91,11 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('   getAllComputeResourceNames(AuthzToken authzToken)')
   print('  bool updateComputeResource(AuthzToken authzToken, string computeResourceId, ComputeResourceDescription computeResourceDescription)')
   print('  bool deleteComputeResource(AuthzToken authzToken, string computeResourceId)')
+  print('  string registerStorageResource(AuthzToken authzToken, StorageResourceDescription storageResourceDescription)')
+  print('  StorageResourceDescription getStorageResource(AuthzToken authzToken, string storageResourceId)')
+  print('   getAllStorageResourceNames(AuthzToken authzToken)')
+  print('  bool updateStorageResource(AuthzToken authzToken, string storageResourceId, StorageResourceDescription storageResourceDescription)')
+  print('  bool deleteStorageResource(AuthzToken authzToken, string storageResourceId)')
   print('  string addLocalSubmissionDetails(AuthzToken authzToken, string computeResourceId, i32 priorityOrder, LOCALSubmission localSubmission)')
   print('  bool updateLocalSubmissionDetails(AuthzToken authzToken, string jobSubmissionInterfaceId, LOCALSubmission localSubmission)')
   print('  LOCALSubmission getLocalJobSubmission(AuthzToken authzToken, string jobSubmissionId)')
@@ -103,16 +109,16 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  bool updateSSHJobSubmissionDetails(AuthzToken authzToken, string jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission)')
   print('  bool updateCloudJobSubmissionDetails(AuthzToken authzToken, string jobSubmissionInterfaceId, CloudJobSubmission sshJobSubmission)')
   print('  bool updateUnicoreJobSubmissionDetails(AuthzToken authzToken, string jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission)')
-  print('  string addLocalDataMovementDetails(AuthzToken authzToken, string computeResourceId, i32 priorityOrder, LOCALDataMovement localDataMovement)')
+  print('  string addLocalDataMovementDetails(AuthzToken authzToken, string resourceId, DMType dataMoveType, i32 priorityOrder, LOCALDataMovement localDataMovement)')
   print('  bool updateLocalDataMovementDetails(AuthzToken authzToken, string dataMovementInterfaceId, LOCALDataMovement localDataMovement)')
   print('  LOCALDataMovement getLocalDataMovement(AuthzToken authzToken, string dataMovementId)')
-  print('  string addSCPDataMovementDetails(AuthzToken authzToken, string computeResourceId, i32 priorityOrder, SCPDataMovement scpDataMovement)')
+  print('  string addSCPDataMovementDetails(AuthzToken authzToken, string resourceId, DMType dataMoveType, i32 priorityOrder, SCPDataMovement scpDataMovement)')
   print('  bool updateSCPDataMovementDetails(AuthzToken authzToken, string dataMovementInterfaceId, SCPDataMovement scpDataMovement)')
   print('  SCPDataMovement getSCPDataMovement(AuthzToken authzToken, string dataMovementId)')
-  print('  string addUnicoreDataMovementDetails(AuthzToken authzToken, string computeResourceId, i32 priorityOrder, UnicoreDataMovement unicoreDataMovement)')
+  print('  string addUnicoreDataMovementDetails(AuthzToken authzToken, string resourceId, DMType dataMoveType, i32 priorityOrder, UnicoreDataMovement unicoreDataMovement)')
   print('  bool updateUnicoreDataMovementDetails(AuthzToken authzToken, string dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement)')
   print('  UnicoreDataMovement getUnicoreDataMovement(AuthzToken authzToken, string dataMovementId)')
-  print('  string addGridFTPDataMovementDetails(AuthzToken authzToken, string computeResourceId, i32 priorityOrder, GridFTPDataMovement gridFTPDataMovement)')
+  print('  string addGridFTPDataMovementDetails(AuthzToken authzToken, string resourceId, DMType dataMoveType, i32 priorityOrder, GridFTPDataMovement gridFTPDataMovement)')
   print('  bool updateGridFTPDataMovementDetails(AuthzToken authzToken, string dataMovementInterfaceId, GridFTPDataMovement gridFTPDataMovement)')
   print('  GridFTPDataMovement getGridFTPDataMovement(AuthzToken authzToken, string dataMovementId)')
   print('  bool changeJobSubmissionPriority(AuthzToken authzToken, string jobSubmissionInterfaceId, i32 newPriorityOrder)')
@@ -131,16 +137,16 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  bool updateGatewayResourceProfile(AuthzToken authzToken, string gatewayID, GatewayResourceProfile gatewayResourceProfile)')
   print('  bool deleteGatewayResourceProfile(AuthzToken authzToken, string gatewayID)')
   print('  bool addGatewayComputeResourcePreference(AuthzToken authzToken, string gatewayID, string computeResourceId, ComputeResourcePreference computeResourcePreference)')
-  print('  bool addGatewayDataStoragePreference(AuthzToken authzToken, string gatewayID, string dataMoveId, DataStoragePreference dataStoragePreference)')
+  print('  bool addGatewayStoragePreference(AuthzToken authzToken, string gatewayID, string storageResourceId, StoragePreference storagePreference)')
   print('  ComputeResourcePreference getGatewayComputeResourcePreference(AuthzToken authzToken, string gatewayID, string computeResourceId)')
-  print('  DataStoragePreference getGatewayDataStoragePreference(AuthzToken authzToken, string gatewayID, string dataMoveId)')
+  print('  StoragePreference getGatewayStoragePreference(AuthzToken authzToken, string gatewayID, string storageResourceId)')
   print('   getAllGatewayComputeResourcePreferences(AuthzToken authzToken, string gatewayID)')
-  print('   getAllGatewayDataStoragePreferences(AuthzToken authzToken, string gatewayID)')
+  print('   getAllGatewayStoragePreferences(AuthzToken authzToken, string gatewayID)')
   print('   getAllGatewayResourceProfiles(AuthzToken authzToken)')
   print('  bool updateGatewayComputeResourcePreference(AuthzToken authzToken, string gatewayID, string computeResourceId, ComputeResourcePreference computeResourcePreference)')
-  print('  bool updateGatewayDataStoragePreference(AuthzToken authzToken, string gatewayID, string dataMoveId, DataStoragePreference dataStoragePreference)')
+  print('  bool updateGatewayStoragePreference(AuthzToken authzToken, string gatewayID, string storageId, StoragePreference storagePreference)')
   print('  bool deleteGatewayComputeResourcePreference(AuthzToken authzToken, string gatewayID, string computeResourceId)')
-  print('  bool deleteGatewayDataStoragePreference(AuthzToken authzToken, string gatewayID, string dataMoveId)')
+  print('  bool deleteGatewayStoragePreference(AuthzToken authzToken, string gatewayID, string storageId)')
   print('   getAllWorkflows(AuthzToken authzToken, string gatewayId)')
   print('  Workflow getWorkflow(AuthzToken authzToken, string workflowTemplateId)')
   print('  void deleteWorkflow(AuthzToken authzToken, string workflowTemplateId)')
@@ -378,6 +384,12 @@ elif cmd == 'getExperiment':
     sys.exit(1)
   pp.pprint(client.getExperiment(eval(args[0]),args[1],))
 
+elif cmd == 'getDetailedExperimentTree':
+  if len(args) != 2:
+    print('getDetailedExperimentTree requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.getDetailedExperimentTree(eval(args[0]),args[1],))
+
 elif cmd == 'updateExperiment':
   if len(args) != 3:
     print('updateExperiment requires 3 args')
@@ -600,6 +612,36 @@ elif cmd == 'deleteComputeResource':
     sys.exit(1)
   pp.pprint(client.deleteComputeResource(eval(args[0]),args[1],))
 
+elif cmd == 'registerStorageResource':
+  if len(args) != 2:
+    print('registerStorageResource requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.registerStorageResource(eval(args[0]),eval(args[1]),))
+
+elif cmd == 'getStorageResource':
+  if len(args) != 2:
+    print('getStorageResource requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.getStorageResource(eval(args[0]),args[1],))
+
+elif cmd == 'getAllStorageResourceNames':
+  if len(args) != 1:
+    print('getAllStorageResourceNames requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.getAllStorageResourceNames(eval(args[0]),))
+
+elif cmd == 'updateStorageResource':
+  if len(args) != 3:
+    print('updateStorageResource requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.updateStorageResource(eval(args[0]),args[1],eval(args[2]),))
+
+elif cmd == 'deleteStorageResource':
+  if len(args) != 2:
+    print('deleteStorageResource requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.deleteStorageResource(eval(args[0]),args[1],))
+
 elif cmd == 'addLocalSubmissionDetails':
   if len(args) != 4:
     print('addLocalSubmissionDetails requires 4 args')
@@ -679,10 +721,10 @@ elif cmd == 'updateUnicoreJobSubmissionDetails':
   pp.pprint(client.updateUnicoreJobSubmissionDetails(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'addLocalDataMovementDetails':
-  if len(args) != 4:
-    print('addLocalDataMovementDetails requires 4 args')
+  if len(args) != 5:
+    print('addLocalDataMovementDetails requires 5 args')
     sys.exit(1)
-  pp.pprint(client.addLocalDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
+  pp.pprint(client.addLocalDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),eval(args[4]),))
 
 elif cmd == 'updateLocalDataMovementDetails':
   if len(args) != 3:
@@ -697,10 +739,10 @@ elif cmd == 'getLocalDataMovement':
   pp.pprint(client.getLocalDataMovement(eval(args[0]),args[1],))
 
 elif cmd == 'addSCPDataMovementDetails':
-  if len(args) != 4:
-    print('addSCPDataMovementDetails requires 4 args')
+  if len(args) != 5:
+    print('addSCPDataMovementDetails requires 5 args')
     sys.exit(1)
-  pp.pprint(client.addSCPDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
+  pp.pprint(client.addSCPDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),eval(args[4]),))
 
 elif cmd == 'updateSCPDataMovementDetails':
   if len(args) != 3:
@@ -715,10 +757,10 @@ elif cmd == 'getSCPDataMovement':
   pp.pprint(client.getSCPDataMovement(eval(args[0]),args[1],))
 
 elif cmd == 'addUnicoreDataMovementDetails':
-  if len(args) != 4:
-    print('addUnicoreDataMovementDetails requires 4 args')
+  if len(args) != 5:
+    print('addUnicoreDataMovementDetails requires 5 args')
     sys.exit(1)
-  pp.pprint(client.addUnicoreDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
+  pp.pprint(client.addUnicoreDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),eval(args[4]),))
 
 elif cmd == 'updateUnicoreDataMovementDetails':
   if len(args) != 3:
@@ -733,10 +775,10 @@ elif cmd == 'getUnicoreDataMovement':
   pp.pprint(client.getUnicoreDataMovement(eval(args[0]),args[1],))
 
 elif cmd == 'addGridFTPDataMovementDetails':
-  if len(args) != 4:
-    print('addGridFTPDataMovementDetails requires 4 args')
+  if len(args) != 5:
+    print('addGridFTPDataMovementDetails requires 5 args')
     sys.exit(1)
-  pp.pprint(client.addGridFTPDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
+  pp.pprint(client.addGridFTPDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),eval(args[4]),))
 
 elif cmd == 'updateGridFTPDataMovementDetails':
   if len(args) != 3:
@@ -846,11 +888,11 @@ elif cmd == 'addGatewayComputeResourcePreference':
     sys.exit(1)
   pp.pprint(client.addGatewayComputeResourcePreference(eval(args[0]),args[1],args[2],eval(args[3]),))
 
-elif cmd == 'addGatewayDataStoragePreference':
+elif cmd == 'addGatewayStoragePreference':
   if len(args) != 4:
-    print('addGatewayDataStoragePreference requires 4 args')
+    print('addGatewayStoragePreference requires 4 args')
     sys.exit(1)
-  pp.pprint(client.addGatewayDataStoragePreference(eval(args[0]),args[1],args[2],eval(args[3]),))
+  pp.pprint(client.addGatewayStoragePreference(eval(args[0]),args[1],args[2],eval(args[3]),))
 
 elif cmd == 'getGatewayComputeResourcePreference':
   if len(args) != 3:
@@ -858,11 +900,11 @@ elif cmd == 'getGatewayComputeResourcePreference':
     sys.exit(1)
   pp.pprint(client.getGatewayComputeResourcePreference(eval(args[0]),args[1],args[2],))
 
-elif cmd == 'getGatewayDataStoragePreference':
+elif cmd == 'getGatewayStoragePreference':
   if len(args) != 3:
-    print('getGatewayDataStoragePreference requires 3 args')
+    print('getGatewayStoragePreference requires 3 args')
     sys.exit(1)
-  pp.pprint(client.getGatewayDataStoragePreference(eval(args[0]),args[1],args[2],))
+  pp.pprint(client.getGatewayStoragePreference(eval(args[0]),args[1],args[2],))
 
 elif cmd == 'getAllGatewayComputeResourcePreferences':
   if len(args) != 2:
@@ -870,11 +912,11 @@ elif cmd == 'getAllGatewayComputeResourcePreferences':
     sys.exit(1)
   pp.pprint(client.getAllGatewayComputeResourcePreferences(eval(args[0]),args[1],))
 
-elif cmd == 'getAllGatewayDataStoragePreferences':
+elif cmd == 'getAllGatewayStoragePreferences':
   if len(args) != 2:
-    print('getAllGatewayDataStoragePreferences requires 2 args')
+    print('getAllGatewayStoragePreferences requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getAllGatewayDataStoragePreferences(eval(args[0]),args[1],))
+  pp.pprint(client.getAllGatewayStoragePreferences(eval(args[0]),args[1],))
 
 elif cmd == 'getAllGatewayResourceProfiles':
   if len(args) != 1:
@@ -888,11 +930,11 @@ elif cmd == 'updateGatewayComputeResourcePreference':
     sys.exit(1)
   pp.pprint(client.updateGatewayComputeResourcePreference(eval(args[0]),args[1],args[2],eval(args[3]),))
 
-elif cmd == 'updateGatewayDataStoragePreference':
+elif cmd == 'updateGatewayStoragePreference':
   if len(args) != 4:
-    print('updateGatewayDataStoragePreference requires 4 args')
+    print('updateGatewayStoragePreference requires 4 args')
     sys.exit(1)
-  pp.pprint(client.updateGatewayDataStoragePreference(eval(args[0]),args[1],args[2],eval(args[3]),))
+  pp.pprint(client.updateGatewayStoragePreference(eval(args[0]),args[1],args[2],eval(args[3]),))
 
 elif cmd == 'deleteGatewayComputeResourcePreference':
   if len(args) != 3:
@@ -900,11 +942,11 @@ elif cmd == 'deleteGatewayComputeResourcePreference':
     sys.exit(1)
   pp.pprint(client.deleteGatewayComputeResourcePreference(eval(args[0]),args[1],args[2],))
 
-elif cmd == 'deleteGatewayDataStoragePreference':
+elif cmd == 'deleteGatewayStoragePreference':
   if len(args) != 3:
-    print('deleteGatewayDataStoragePreference requires 3 args')
+    print('deleteGatewayStoragePreference requires 3 args')
     sys.exit(1)
-  pp.pprint(client.deleteGatewayDataStoragePreference(eval(args[0]),args[1],args[2],))
+  pp.pprint(client.deleteGatewayStoragePreference(eval(args[0]),args[1],args[2],))
 
 elif cmd == 'getAllWorkflows':
   if len(args) != 2:

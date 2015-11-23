@@ -53,7 +53,7 @@ void ComputeResourcePreference::__set_preferredJobSubmissionProtocol(const  ::ap
 __isset.preferredJobSubmissionProtocol = true;
 }
 
-void ComputeResourcePreference::__set_preferredDataMovementProtocol(const  ::apache::airavata::model::appcatalog::computeresource::DataMovementProtocol::type val) {
+void ComputeResourcePreference::__set_preferredDataMovementProtocol(const  ::apache::airavata::model::data::movement::DataMovementProtocol::type val) {
   this->preferredDataMovementProtocol = val;
 __isset.preferredDataMovementProtocol = true;
 }
@@ -141,7 +141,7 @@ uint32_t ComputeResourcePreference::read(::apache::thrift::protocol::TProtocol* 
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast1;
           xfer += iprot->readI32(ecast1);
-          this->preferredDataMovementProtocol = ( ::apache::airavata::model::appcatalog::computeresource::DataMovementProtocol::type)ecast1;
+          this->preferredDataMovementProtocol = ( ::apache::airavata::model::data::movement::DataMovementProtocol::type)ecast1;
           this->__isset.preferredDataMovementProtocol = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -305,33 +305,33 @@ std::ostream& operator<<(std::ostream& out, const ComputeResourcePreference& obj
 }
 
 
-DataStoragePreference::~DataStoragePreference() throw() {
+StoragePreference::~StoragePreference() throw() {
 }
 
 
-void DataStoragePreference::__set_dataMovememtResourceId(const std::string& val) {
-  this->dataMovememtResourceId = val;
+void StoragePreference::__set_storageResourceId(const std::string& val) {
+  this->storageResourceId = val;
 }
 
-void DataStoragePreference::__set_loginUserName(const std::string& val) {
+void StoragePreference::__set_loginUserName(const std::string& val) {
   this->loginUserName = val;
 __isset.loginUserName = true;
 }
 
-void DataStoragePreference::__set_fileSystemRootLocation(const std::string& val) {
+void StoragePreference::__set_fileSystemRootLocation(const std::string& val) {
   this->fileSystemRootLocation = val;
 __isset.fileSystemRootLocation = true;
 }
 
-void DataStoragePreference::__set_resourceSpecificCredentialStoreToken(const std::string& val) {
+void StoragePreference::__set_resourceSpecificCredentialStoreToken(const std::string& val) {
   this->resourceSpecificCredentialStoreToken = val;
 __isset.resourceSpecificCredentialStoreToken = true;
 }
 
-const char* DataStoragePreference::ascii_fingerprint = "6BA700CA2E5FC52A8DA5ADCF811DC8DA";
-const uint8_t DataStoragePreference::binary_fingerprint[16] = {0x6B,0xA7,0x00,0xCA,0x2E,0x5F,0xC5,0x2A,0x8D,0xA5,0xAD,0xCF,0x81,0x1D,0xC8,0xDA};
+const char* StoragePreference::ascii_fingerprint = "6BA700CA2E5FC52A8DA5ADCF811DC8DA";
+const uint8_t StoragePreference::binary_fingerprint[16] = {0x6B,0xA7,0x00,0xCA,0x2E,0x5F,0xC5,0x2A,0x8D,0xA5,0xAD,0xCF,0x81,0x1D,0xC8,0xDA};
 
-uint32_t DataStoragePreference::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t StoragePreference::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -342,7 +342,7 @@ uint32_t DataStoragePreference::read(::apache::thrift::protocol::TProtocol* ipro
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_dataMovememtResourceId = false;
+  bool isset_storageResourceId = false;
 
   while (true)
   {
@@ -354,8 +354,8 @@ uint32_t DataStoragePreference::read(::apache::thrift::protocol::TProtocol* ipro
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->dataMovememtResourceId);
-          isset_dataMovememtResourceId = true;
+          xfer += iprot->readString(this->storageResourceId);
+          isset_storageResourceId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -393,18 +393,18 @@ uint32_t DataStoragePreference::read(::apache::thrift::protocol::TProtocol* ipro
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_dataMovememtResourceId)
+  if (!isset_storageResourceId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
-uint32_t DataStoragePreference::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t StoragePreference::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("DataStoragePreference");
+  xfer += oprot->writeStructBegin("StoragePreference");
 
-  xfer += oprot->writeFieldBegin("dataMovememtResourceId", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->dataMovememtResourceId);
+  xfer += oprot->writeFieldBegin("storageResourceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->storageResourceId);
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.loginUserName) {
@@ -428,34 +428,34 @@ uint32_t DataStoragePreference::write(::apache::thrift::protocol::TProtocol* opr
   return xfer;
 }
 
-void swap(DataStoragePreference &a, DataStoragePreference &b) {
+void swap(StoragePreference &a, StoragePreference &b) {
   using ::std::swap;
-  swap(a.dataMovememtResourceId, b.dataMovememtResourceId);
+  swap(a.storageResourceId, b.storageResourceId);
   swap(a.loginUserName, b.loginUserName);
   swap(a.fileSystemRootLocation, b.fileSystemRootLocation);
   swap(a.resourceSpecificCredentialStoreToken, b.resourceSpecificCredentialStoreToken);
   swap(a.__isset, b.__isset);
 }
 
-DataStoragePreference::DataStoragePreference(const DataStoragePreference& other4) {
-  dataMovememtResourceId = other4.dataMovememtResourceId;
+StoragePreference::StoragePreference(const StoragePreference& other4) {
+  storageResourceId = other4.storageResourceId;
   loginUserName = other4.loginUserName;
   fileSystemRootLocation = other4.fileSystemRootLocation;
   resourceSpecificCredentialStoreToken = other4.resourceSpecificCredentialStoreToken;
   __isset = other4.__isset;
 }
-DataStoragePreference& DataStoragePreference::operator=(const DataStoragePreference& other5) {
-  dataMovememtResourceId = other5.dataMovememtResourceId;
+StoragePreference& StoragePreference::operator=(const StoragePreference& other5) {
+  storageResourceId = other5.storageResourceId;
   loginUserName = other5.loginUserName;
   fileSystemRootLocation = other5.fileSystemRootLocation;
   resourceSpecificCredentialStoreToken = other5.resourceSpecificCredentialStoreToken;
   __isset = other5.__isset;
   return *this;
 }
-std::ostream& operator<<(std::ostream& out, const DataStoragePreference& obj) {
+std::ostream& operator<<(std::ostream& out, const StoragePreference& obj) {
   using apache::thrift::to_string;
-  out << "DataStoragePreference(";
-  out << "dataMovememtResourceId=" << to_string(obj.dataMovememtResourceId);
+  out << "StoragePreference(";
+  out << "storageResourceId=" << to_string(obj.storageResourceId);
   out << ", " << "loginUserName="; (obj.__isset.loginUserName ? (out << to_string(obj.loginUserName)) : (out << "<null>"));
   out << ", " << "fileSystemRootLocation="; (obj.__isset.fileSystemRootLocation ? (out << to_string(obj.fileSystemRootLocation)) : (out << "<null>"));
   out << ", " << "resourceSpecificCredentialStoreToken="; (obj.__isset.resourceSpecificCredentialStoreToken ? (out << to_string(obj.resourceSpecificCredentialStoreToken)) : (out << "<null>"));
@@ -482,9 +482,9 @@ void GatewayResourceProfile::__set_computeResourcePreferences(const std::vector<
 __isset.computeResourcePreferences = true;
 }
 
-void GatewayResourceProfile::__set_dataStoragePreferences(const std::vector<DataStoragePreference> & val) {
-  this->dataStoragePreferences = val;
-__isset.dataStoragePreferences = true;
+void GatewayResourceProfile::__set_storagePreferences(const std::vector<StoragePreference> & val) {
+  this->storagePreferences = val;
+__isset.storagePreferences = true;
 }
 
 const char* GatewayResourceProfile::ascii_fingerprint = "A4BF6D60A7DE5979505C0E7F00278F12";
@@ -550,19 +550,19 @@ uint32_t GatewayResourceProfile::read(::apache::thrift::protocol::TProtocol* ipr
       case 4:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
-            this->dataStoragePreferences.clear();
+            this->storagePreferences.clear();
             uint32_t _size11;
             ::apache::thrift::protocol::TType _etype14;
             xfer += iprot->readListBegin(_etype14, _size11);
-            this->dataStoragePreferences.resize(_size11);
+            this->storagePreferences.resize(_size11);
             uint32_t _i15;
             for (_i15 = 0; _i15 < _size11; ++_i15)
             {
-              xfer += this->dataStoragePreferences[_i15].read(iprot);
+              xfer += this->storagePreferences[_i15].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
-          this->__isset.dataStoragePreferences = true;
+          this->__isset.storagePreferences = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -608,12 +608,12 @@ uint32_t GatewayResourceProfile::write(::apache::thrift::protocol::TProtocol* op
     }
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.dataStoragePreferences) {
-    xfer += oprot->writeFieldBegin("dataStoragePreferences", ::apache::thrift::protocol::T_LIST, 4);
+  if (this->__isset.storagePreferences) {
+    xfer += oprot->writeFieldBegin("storagePreferences", ::apache::thrift::protocol::T_LIST, 4);
     {
-      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->dataStoragePreferences.size()));
-      std::vector<DataStoragePreference> ::const_iterator _iter17;
-      for (_iter17 = this->dataStoragePreferences.begin(); _iter17 != this->dataStoragePreferences.end(); ++_iter17)
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->storagePreferences.size()));
+      std::vector<StoragePreference> ::const_iterator _iter17;
+      for (_iter17 = this->storagePreferences.begin(); _iter17 != this->storagePreferences.end(); ++_iter17)
       {
         xfer += (*_iter17).write(oprot);
       }
@@ -632,7 +632,7 @@ void swap(GatewayResourceProfile &a, GatewayResourceProfile &b) {
   swap(a.gatewayID, b.gatewayID);
   swap(a.credentialStoreToken, b.credentialStoreToken);
   swap(a.computeResourcePreferences, b.computeResourcePreferences);
-  swap(a.dataStoragePreferences, b.dataStoragePreferences);
+  swap(a.storagePreferences, b.storagePreferences);
   swap(a.__isset, b.__isset);
 }
 
@@ -640,14 +640,14 @@ GatewayResourceProfile::GatewayResourceProfile(const GatewayResourceProfile& oth
   gatewayID = other18.gatewayID;
   credentialStoreToken = other18.credentialStoreToken;
   computeResourcePreferences = other18.computeResourcePreferences;
-  dataStoragePreferences = other18.dataStoragePreferences;
+  storagePreferences = other18.storagePreferences;
   __isset = other18.__isset;
 }
 GatewayResourceProfile& GatewayResourceProfile::operator=(const GatewayResourceProfile& other19) {
   gatewayID = other19.gatewayID;
   credentialStoreToken = other19.credentialStoreToken;
   computeResourcePreferences = other19.computeResourcePreferences;
-  dataStoragePreferences = other19.dataStoragePreferences;
+  storagePreferences = other19.storagePreferences;
   __isset = other19.__isset;
   return *this;
 }
@@ -657,7 +657,7 @@ std::ostream& operator<<(std::ostream& out, const GatewayResourceProfile& obj) {
   out << "gatewayID=" << to_string(obj.gatewayID);
   out << ", " << "credentialStoreToken="; (obj.__isset.credentialStoreToken ? (out << to_string(obj.credentialStoreToken)) : (out << "<null>"));
   out << ", " << "computeResourcePreferences="; (obj.__isset.computeResourcePreferences ? (out << to_string(obj.computeResourcePreferences)) : (out << "<null>"));
-  out << ", " << "dataStoragePreferences="; (obj.__isset.dataStoragePreferences ? (out << to_string(obj.dataStoragePreferences)) : (out << "<null>"));
+  out << ", " << "storagePreferences="; (obj.__isset.storagePreferences ? (out << to_string(obj.storagePreferences)) : (out << "<null>"));
   out << ")";
   return out;
 }

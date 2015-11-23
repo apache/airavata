@@ -37,10 +37,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DataStoragePreferenceResource extends AppCatAbstractResource {
-    private final static Logger logger = LoggerFactory.getLogger(DataStoragePreferenceResource.class);
+public class StoragePreferenceResource extends AppCatAbstractResource {
+    private final static Logger logger = LoggerFactory.getLogger(StoragePreferenceResource.class);
     private String gatewayId;
-    private String dataMoveId;
+    private String storageResourceId;
     private String loginUserName;
     private String fsRootLocation;
     private String resourceCSToken;
@@ -79,20 +79,20 @@ public class DataStoragePreferenceResource extends AppCatAbstractResource {
         this.resourceCSToken = resourceCSToken;
     }
 
-    public String getDataMoveId() {
-        return dataMoveId;
-    }
-
-    public void setDataMoveId(String dataMoveId) {
-        this.dataMoveId = dataMoveId;
-    }
-
     public String getFsRootLocation() {
         return fsRootLocation;
     }
 
     public void setFsRootLocation(String fsRootLocation) {
         this.fsRootLocation = fsRootLocation;
+    }
+
+    public String getStorageResourceId() {
+        return storageResourceId;
+    }
+
+    public void setStorageResourceId(String storageResourceId) {
+        this.storageResourceId = storageResourceId;
     }
 
     @Override
@@ -109,9 +109,9 @@ public class DataStoragePreferenceResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(DATA_STORAGE_PREFERENCE);
-            generator.setParameter(DataStoragePreferenceConstants.DATA_MOVEMENT_ID, ids.get(DataStoragePreferenceConstants.DATA_MOVEMENT_ID));
-            generator.setParameter(DataStoragePreferenceConstants.GATEWAY_ID, ids.get(DataStoragePreferenceConstants.GATEWAY_ID));
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(STORAGE_PREFERENCE);
+            generator.setParameter(StoragePreferenceConstants.STORAGE_ID, ids.get(StoragePreferenceConstants.STORAGE_ID));
+            generator.setParameter(StoragePreferenceConstants.GATEWAY_ID, ids.get(StoragePreferenceConstants.GATEWAY_ID));
 
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
@@ -144,13 +144,13 @@ public class DataStoragePreferenceResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(DATA_STORAGE_PREFERENCE);
-            generator.setParameter(DataStoragePreferenceConstants.GATEWAY_ID, ids.get(DataStoragePreferenceConstants.GATEWAY_ID));
-            generator.setParameter(DataStoragePreferenceConstants.DATA_MOVEMENT_ID, ids.get(DataStoragePreferenceConstants.DATA_MOVEMENT_ID));
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(STORAGE_PREFERENCE);
+            generator.setParameter(StoragePreferenceConstants.GATEWAY_ID, ids.get(StoragePreferenceConstants.GATEWAY_ID));
+            generator.setParameter(StoragePreferenceConstants.STORAGE_ID, ids.get(StoragePreferenceConstants.STORAGE_ID));
             Query q = generator.selectQuery(em);
-            DataStoragePreference preference = (DataStoragePreference) q.getSingleResult();
-            DataStoragePreferenceResource preferenceResource =
-                    (DataStoragePreferenceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.DATA_STORAGE_PREFERENCE, preference);
+            StoragePreference preference = (StoragePreference) q.getSingleResult();
+            StoragePreferenceResource preferenceResource =
+                    (StoragePreferenceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.STORAGE_PREFERENCE, preference);
             em.getTransaction().commit();
             em.close();
             return preferenceResource;
@@ -175,34 +175,34 @@ public class DataStoragePreferenceResource extends AppCatAbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             Query q;
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(DATA_STORAGE_PREFERENCE);
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(STORAGE_PREFERENCE);
             List results;
-            if (fieldName.equals(DataStoragePreferenceConstants.DATA_MOVEMENT_ID)) {
-                generator.setParameter(DataStoragePreferenceConstants.DATA_MOVEMENT_ID, value);
+            if (fieldName.equals(StoragePreferenceConstants.STORAGE_ID)) {
+                generator.setParameter(StoragePreferenceConstants.STORAGE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        DataStoragePreference preference = (DataStoragePreference) result;
-                        if (preference.getDataMovementID()!=null) {
-							DataStoragePreferenceResource preferenceResource = (DataStoragePreferenceResource) AppCatalogJPAUtils
+                        StoragePreference preference = (StoragePreference) result;
+                        if (preference.getStorageResourceId()!=null) {
+							StoragePreferenceResource preferenceResource = (StoragePreferenceResource) AppCatalogJPAUtils
 									.getResource(
-											AppCatalogResourceType.DATA_STORAGE_PREFERENCE,
+											AppCatalogResourceType.STORAGE_PREFERENCE,
 											preference);
 							preferenceResourceList.add(preferenceResource);
 						}
                     }
                 }
-            } else if (fieldName.equals(DataStoragePreferenceConstants.GATEWAY_ID)) {
-                generator.setParameter(DataStoragePreferenceConstants.GATEWAY_ID, value);
+            } else if (fieldName.equals(StoragePreferenceConstants.GATEWAY_ID)) {
+                generator.setParameter(StoragePreferenceConstants.GATEWAY_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        DataStoragePreference preference = (DataStoragePreference) result;
-                        if (preference.getDataMovementID()!=null) {
-	                        DataStoragePreferenceResource preferenceResource =
-	                                (DataStoragePreferenceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.DATA_STORAGE_PREFERENCE, preference);
+                        StoragePreference preference = (StoragePreference) result;
+                        if (preference.getStorageResourceId()!=null) {
+	                        StoragePreferenceResource preferenceResource =
+	                                (StoragePreferenceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.STORAGE_PREFERENCE, preference);
 	                        preferenceResourceList.add(preferenceResource);
                         }
                     }
@@ -250,15 +250,14 @@ public class DataStoragePreferenceResource extends AppCatAbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            DataStoragePreference existingPreference = em.find(DataStoragePreference.class, new DataStoragePreferencePK(gatewayId, dataMoveId));
+            StoragePreference existingPreference = em.find(StoragePreference.class, new StoragePreferencePK(gatewayId, storageResourceId));
             em.close();
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            DataMovementInterface dataMovementInterface = em.find(DataMovementInterface.class, dataMoveId);
             GatewayProfile gatewayProf = em.find(GatewayProfile.class, gatewayId);
             if (existingPreference != null) {
-                existingPreference.setDataMovementID(dataMoveId);
+                existingPreference.setStorageResourceId(storageResourceId);
                 existingPreference.setGatewayId(gatewayId);
                 existingPreference.setGatewayProfile(gatewayProf);
                 existingPreference.setLoginUserName(loginUserName);
@@ -266,8 +265,8 @@ public class DataStoragePreferenceResource extends AppCatAbstractResource {
                 existingPreference.setFsRootLocation(fsRootLocation);
                 em.merge(existingPreference);
             } else {
-                DataStoragePreference resourcePreference = new DataStoragePreference();
-                resourcePreference.setDataMovementID(dataMoveId);
+                StoragePreference resourcePreference = new StoragePreference();
+                resourcePreference.setStorageResourceId(storageResourceId);
                 resourcePreference.setGatewayId(gatewayId);
                 resourcePreference.setGatewayProfile(gatewayProf);
                 resourcePreference.setLoginUserName(loginUserName);
@@ -303,9 +302,9 @@ public class DataStoragePreferenceResource extends AppCatAbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            DataStoragePreference existingPreference = em.find(DataStoragePreference.class,
-                    new DataStoragePreferencePK(ids.get(DataStoragePreferenceConstants.GATEWAY_ID),
-                            ids.get(DataStoragePreferenceConstants.DATA_MOVEMENT_ID)));
+            StoragePreference existingPreference = em.find(StoragePreference.class,
+                    new StoragePreferencePK(ids.get(StoragePreferenceConstants.GATEWAY_ID),
+                            ids.get(StoragePreferenceConstants.STORAGE_ID)));
             em.close();
             return existingPreference != null;
         }catch (Exception e) {

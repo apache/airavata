@@ -30,6 +30,9 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfil
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.data.movement.DMType;
+import org.apache.airavata.model.data.movement.SCPDataMovement;
+import org.apache.airavata.model.data.movement.SecurityProtocol;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.thrift.TException;
@@ -284,7 +287,7 @@ public class RegisterOGCEUS3Application {
 		SCPDataMovement scpDataMovement = new SCPDataMovement();
 		scpDataMovement.setSecurityProtocol(securityProtocol);
 		scpDataMovement.setSshPort(portNumber);
-		airavataClient.addSCPDataMovementDetails(new AuthzToken(""), computeResourceId, 1, scpDataMovement);
+		airavataClient.addSCPDataMovementDetails(new AuthzToken(""), computeResourceId, DMType.COMPUTE_RESOURCE, 1, scpDataMovement);
 
 		return computeResourceId;
 	}
@@ -313,7 +316,7 @@ public class RegisterOGCEUS3Application {
 		SCPDataMovement scpDataMovement = new SCPDataMovement();
 		scpDataMovement.setSecurityProtocol(securityProtocol);
 		scpDataMovement.setSshPort(portNumber);
-		airavataClient.addSCPDataMovementDetails(new AuthzToken(""), computeResourceId, 1, scpDataMovement);
+		airavataClient.addSCPDataMovementDetails(new AuthzToken(""), computeResourceId, DMType.COMPUTE_RESOURCE, 1, scpDataMovement);
 
 		return computeResourceId;
 	}

@@ -8,6 +8,7 @@
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import apache.airavata.model.appcatalog.computeresource.ttypes
+import apache.airavata.model.data.movement.ttypes
 
 
 from thrift.transport import TTransport
@@ -225,10 +226,10 @@ class ComputeResourcePreference:
   def __ne__(self, other):
     return not (self == other)
 
-class DataStoragePreference:
+class StoragePreference:
   """
   Attributes:
-   - dataMovememtResourceId
+   - storageResourceId
    - loginUserName
    - fileSystemRootLocation
    - resourceSpecificCredentialStoreToken
@@ -236,14 +237,14 @@ class DataStoragePreference:
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'dataMovememtResourceId', None, None, ), # 1
+    (1, TType.STRING, 'storageResourceId', None, None, ), # 1
     (2, TType.STRING, 'loginUserName', None, None, ), # 2
     (3, TType.STRING, 'fileSystemRootLocation', None, None, ), # 3
     (4, TType.STRING, 'resourceSpecificCredentialStoreToken', None, None, ), # 4
   )
 
-  def __init__(self, dataMovememtResourceId=None, loginUserName=None, fileSystemRootLocation=None, resourceSpecificCredentialStoreToken=None,):
-    self.dataMovememtResourceId = dataMovememtResourceId
+  def __init__(self, storageResourceId=None, loginUserName=None, fileSystemRootLocation=None, resourceSpecificCredentialStoreToken=None,):
+    self.storageResourceId = storageResourceId
     self.loginUserName = loginUserName
     self.fileSystemRootLocation = fileSystemRootLocation
     self.resourceSpecificCredentialStoreToken = resourceSpecificCredentialStoreToken
@@ -259,7 +260,7 @@ class DataStoragePreference:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.dataMovememtResourceId = iprot.readString();
+          self.storageResourceId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -286,10 +287,10 @@ class DataStoragePreference:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('DataStoragePreference')
-    if self.dataMovememtResourceId is not None:
-      oprot.writeFieldBegin('dataMovememtResourceId', TType.STRING, 1)
-      oprot.writeString(self.dataMovememtResourceId)
+    oprot.writeStructBegin('StoragePreference')
+    if self.storageResourceId is not None:
+      oprot.writeFieldBegin('storageResourceId', TType.STRING, 1)
+      oprot.writeString(self.storageResourceId)
       oprot.writeFieldEnd()
     if self.loginUserName is not None:
       oprot.writeFieldBegin('loginUserName', TType.STRING, 2)
@@ -307,14 +308,14 @@ class DataStoragePreference:
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.dataMovememtResourceId is None:
-      raise TProtocol.TProtocolException(message='Required field dataMovememtResourceId is unset!')
+    if self.storageResourceId is None:
+      raise TProtocol.TProtocolException(message='Required field storageResourceId is unset!')
     return
 
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.dataMovememtResourceId)
+    value = (value * 31) ^ hash(self.storageResourceId)
     value = (value * 31) ^ hash(self.loginUserName)
     value = (value * 31) ^ hash(self.fileSystemRootLocation)
     value = (value * 31) ^ hash(self.resourceSpecificCredentialStoreToken)
@@ -349,7 +350,7 @@ class GatewayResourceProfile:
    - gatewayID
    - credentialStoreToken
    - computeResourcePreferences
-   - dataStoragePreferences
+   - storagePreferences
   """
 
   thrift_spec = (
@@ -357,14 +358,14 @@ class GatewayResourceProfile:
     (1, TType.STRING, 'gatewayID', None, None, ), # 1
     (2, TType.STRING, 'credentialStoreToken', None, None, ), # 2
     (3, TType.LIST, 'computeResourcePreferences', (TType.STRUCT,(ComputeResourcePreference, ComputeResourcePreference.thrift_spec)), None, ), # 3
-    (4, TType.LIST, 'dataStoragePreferences', (TType.STRUCT,(DataStoragePreference, DataStoragePreference.thrift_spec)), None, ), # 4
+    (4, TType.LIST, 'storagePreferences', (TType.STRUCT,(StoragePreference, StoragePreference.thrift_spec)), None, ), # 4
   )
 
-  def __init__(self, gatewayID=None, credentialStoreToken=None, computeResourcePreferences=None, dataStoragePreferences=None,):
+  def __init__(self, gatewayID=None, credentialStoreToken=None, computeResourcePreferences=None, storagePreferences=None,):
     self.gatewayID = gatewayID
     self.credentialStoreToken = credentialStoreToken
     self.computeResourcePreferences = computeResourcePreferences
-    self.dataStoragePreferences = dataStoragePreferences
+    self.storagePreferences = storagePreferences
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -398,12 +399,12 @@ class GatewayResourceProfile:
           iprot.skip(ftype)
       elif fid == 4:
         if ftype == TType.LIST:
-          self.dataStoragePreferences = []
+          self.storagePreferences = []
           (_etype9, _size6) = iprot.readListBegin()
           for _i10 in xrange(_size6):
-            _elem11 = DataStoragePreference()
+            _elem11 = StoragePreference()
             _elem11.read(iprot)
-            self.dataStoragePreferences.append(_elem11)
+            self.storagePreferences.append(_elem11)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -432,10 +433,10 @@ class GatewayResourceProfile:
         iter12.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
-    if self.dataStoragePreferences is not None:
-      oprot.writeFieldBegin('dataStoragePreferences', TType.LIST, 4)
-      oprot.writeListBegin(TType.STRUCT, len(self.dataStoragePreferences))
-      for iter13 in self.dataStoragePreferences:
+    if self.storagePreferences is not None:
+      oprot.writeFieldBegin('storagePreferences', TType.LIST, 4)
+      oprot.writeListBegin(TType.STRUCT, len(self.storagePreferences))
+      for iter13 in self.storagePreferences:
         iter13.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
@@ -453,7 +454,7 @@ class GatewayResourceProfile:
     value = (value * 31) ^ hash(self.gatewayID)
     value = (value * 31) ^ hash(self.credentialStoreToken)
     value = (value * 31) ^ hash(self.computeResourcePreferences)
-    value = (value * 31) ^ hash(self.dataStoragePreferences)
+    value = (value * 31) ^ hash(self.storagePreferences)
     return value
 
   def __repr__(self):

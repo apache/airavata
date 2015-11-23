@@ -101,6 +101,10 @@ class ProcessModel {
    * @var string[]
    */
   public $emailAddresses = null;
+  /**
+   * @var string
+   */
+  public $storageResourceId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -199,6 +203,10 @@ class ProcessModel {
             'type' => TType::STRING,
             ),
           ),
+        19 => array(
+          'var' => 'storageResourceId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -255,6 +263,9 @@ class ProcessModel {
       }
       if (isset($vals['emailAddresses'])) {
         $this->emailAddresses = $vals['emailAddresses'];
+      }
+      if (isset($vals['storageResourceId'])) {
+        $this->storageResourceId = $vals['storageResourceId'];
       }
     }
   }
@@ -450,6 +461,13 @@ class ProcessModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 19:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->storageResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -608,6 +626,11 @@ class ProcessModel {
         }
         $output->writeListEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->storageResourceId !== null) {
+      $xfer += $output->writeFieldBegin('storageResourceId', TType::STRING, 19);
+      $xfer += $output->writeString($this->storageResourceId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

@@ -36,6 +36,7 @@
 #include "scheduling_model_types.h"
 #include "airavata_commons_types.h"
 #include "status_models_types.h"
+#include "process_model_types.h"
 
 
 namespace apache { namespace airavata { namespace model { namespace experiment {
@@ -72,23 +73,24 @@ class ExperimentSummaryModel;
 class ExperimentStatistics;
 
 typedef struct _UserConfigurationDataModel__isset {
-  _UserConfigurationDataModel__isset() : shareExperimentPublicly(true), computationalResourceScheduling(false), throttleResources(true), userDN(false), generateCert(true) {}
+  _UserConfigurationDataModel__isset() : shareExperimentPublicly(true), computationalResourceScheduling(false), throttleResources(true), userDN(false), generateCert(true), storageId(false) {}
   bool shareExperimentPublicly :1;
   bool computationalResourceScheduling :1;
   bool throttleResources :1;
   bool userDN :1;
   bool generateCert :1;
+  bool storageId :1;
 } _UserConfigurationDataModel__isset;
 
 class UserConfigurationDataModel {
  public:
 
-  static const char* ascii_fingerprint; // = "D7D5F12196F1444CE2A35E68C2EEDAF2";
-  static const uint8_t binary_fingerprint[16]; // = {0xD7,0xD5,0xF1,0x21,0x96,0xF1,0x44,0x4C,0xE2,0xA3,0x5E,0x68,0xC2,0xEE,0xDA,0xF2};
+  static const char* ascii_fingerprint; // = "9CA6AB92C690C796BF5375F505933922";
+  static const uint8_t binary_fingerprint[16]; // = {0x9C,0xA6,0xAB,0x92,0xC6,0x90,0xC7,0x96,0xBF,0x53,0x75,0xF5,0x05,0x93,0x39,0x22};
 
   UserConfigurationDataModel(const UserConfigurationDataModel&);
   UserConfigurationDataModel& operator=(const UserConfigurationDataModel&);
-  UserConfigurationDataModel() : airavataAutoSchedule(false), overrideManualScheduledParams(false), shareExperimentPublicly(false), throttleResources(false), userDN(), generateCert(false) {
+  UserConfigurationDataModel() : airavataAutoSchedule(false), overrideManualScheduledParams(false), shareExperimentPublicly(false), throttleResources(false), userDN(), generateCert(false), storageId() {
   }
 
   virtual ~UserConfigurationDataModel() throw();
@@ -99,6 +101,7 @@ class UserConfigurationDataModel {
   bool throttleResources;
   std::string userDN;
   bool generateCert;
+  std::string storageId;
 
   _UserConfigurationDataModel__isset __isset;
 
@@ -115,6 +118,8 @@ class UserConfigurationDataModel {
   void __set_userDN(const std::string& val);
 
   void __set_generateCert(const bool val);
+
+  void __set_storageId(const std::string& val);
 
   bool operator == (const UserConfigurationDataModel & rhs) const
   {
@@ -142,6 +147,10 @@ class UserConfigurationDataModel {
       return false;
     else if (__isset.generateCert && !(generateCert == rhs.generateCert))
       return false;
+    if (__isset.storageId != rhs.__isset.storageId)
+      return false;
+    else if (__isset.storageId && !(storageId == rhs.storageId))
+      return false;
     return true;
   }
   bool operator != (const UserConfigurationDataModel &rhs) const {
@@ -159,7 +168,7 @@ class UserConfigurationDataModel {
 void swap(UserConfigurationDataModel &a, UserConfigurationDataModel &b);
 
 typedef struct _ExperimentModel__isset {
-  _ExperimentModel__isset() : creationTime(false), description(false), executionId(false), gatewayExecutionId(false), enableEmailNotification(false), emailAddresses(false), userConfigurationData(false), experimentInputs(false), experimentOutputs(false), experimentStatus(false), errors(false) {}
+  _ExperimentModel__isset() : creationTime(false), description(false), executionId(false), gatewayExecutionId(false), enableEmailNotification(false), emailAddresses(false), userConfigurationData(false), experimentInputs(false), experimentOutputs(false), experimentStatus(false), errors(false), processes(false) {}
   bool creationTime :1;
   bool description :1;
   bool executionId :1;
@@ -171,13 +180,14 @@ typedef struct _ExperimentModel__isset {
   bool experimentOutputs :1;
   bool experimentStatus :1;
   bool errors :1;
+  bool processes :1;
 } _ExperimentModel__isset;
 
 class ExperimentModel {
  public:
 
-  static const char* ascii_fingerprint; // = "5B49E16C9D5CBD0AE0EC026061048743";
-  static const uint8_t binary_fingerprint[16]; // = {0x5B,0x49,0xE1,0x6C,0x9D,0x5C,0xBD,0x0A,0xE0,0xEC,0x02,0x60,0x61,0x04,0x87,0x43};
+  static const char* ascii_fingerprint; // = "67B92D103C069754AD7A8ECD124FA0D0";
+  static const uint8_t binary_fingerprint[16]; // = {0x67,0xB9,0x2D,0x10,0x3C,0x06,0x97,0x54,0xAD,0x7A,0x8E,0xCD,0x12,0x4F,0xA0,0xD0};
 
   ExperimentModel(const ExperimentModel&);
   ExperimentModel& operator=(const ExperimentModel&);
@@ -204,6 +214,7 @@ class ExperimentModel {
   std::vector< ::apache::airavata::model::application::io::OutputDataObjectType>  experimentOutputs;
    ::apache::airavata::model::status::ExperimentStatus experimentStatus;
   std::vector< ::apache::airavata::model::commons::ErrorModel>  errors;
+  std::vector< ::apache::airavata::model::process::ProcessModel>  processes;
 
   _ExperimentModel__isset __isset;
 
@@ -240,6 +251,8 @@ class ExperimentModel {
   void __set_experimentStatus(const  ::apache::airavata::model::status::ExperimentStatus& val);
 
   void __set_errors(const std::vector< ::apache::airavata::model::commons::ErrorModel> & val);
+
+  void __set_processes(const std::vector< ::apache::airavata::model::process::ProcessModel> & val);
 
   bool operator == (const ExperimentModel & rhs) const
   {
@@ -298,6 +311,10 @@ class ExperimentModel {
     if (__isset.errors != rhs.__isset.errors)
       return false;
     else if (__isset.errors && !(errors == rhs.errors))
+      return false;
+    if (__isset.processes != rhs.__isset.processes)
+      return false;
+    else if (__isset.processes && !(processes == rhs.processes))
       return false;
     return true;
   }

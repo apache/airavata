@@ -28,12 +28,14 @@ import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
+import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ProcessState;
@@ -78,6 +80,8 @@ public class ProcessContext {
 	private DataMovementProtocol dataMovementProtocol;
 	private JobModel jobModel;
 	private ComputeResourcePreference computeResourcePreference;
+    private StoragePreference storagePreference;
+    private StorageResourceDescription storageResource;
 	private MonitorMode monitorMode;
 	private ResourceJobManager resourceJobManager;
 	private boolean handOver;
@@ -461,5 +465,21 @@ public class ProcessContext {
 
     public void setCurrentExecutingTaskModel(TaskModel currentExecutingTaskModel) {
         this.currentExecutingTaskModel = currentExecutingTaskModel;
+    }
+
+    public StoragePreference getStoragePreference() {
+        return storagePreference;
+    }
+
+    public void setStoragePreference(StoragePreference storagePreference) {
+        this.storagePreference = storagePreference;
+    }
+
+    public StorageResourceDescription getStorageResource() {
+        return storageResource;
+    }
+
+    public void setStorageResource(StorageResourceDescription storageResource) {
+        this.storageResource = storageResource;
     }
 }

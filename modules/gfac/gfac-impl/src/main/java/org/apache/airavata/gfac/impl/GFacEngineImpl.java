@@ -44,6 +44,7 @@ import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
+import org.apache.airavata.model.data.movement.SecurityProtocol;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.JobState;
@@ -93,6 +94,7 @@ public class GFacEngineImpl implements GFacEngine {
             processContext.setGatewayResourceProfile(gatewayProfile);
             processContext.setComputeResourcePreference(appCatalog.getGatewayProfile().getComputeResourcePreference
                     (gatewayId, processModel.getComputeResourceId()));
+//            appCatalog.getGatewayProfile().getStoragePreference()
             processContext.setComputeResourceDescription(appCatalog.getComputeResource().getComputeResource
                     (processContext.getComputeResourcePreference().getComputeResourceId()));
             processContext.setApplicationDeploymentDescription(appCatalog.getApplicationDeployment()

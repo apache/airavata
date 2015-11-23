@@ -23,16 +23,16 @@ package org.apache.airavata.registry.core.app.catalog.model;
 
 import java.io.Serializable;
 
-public class DataStoragePreferencePK implements Serializable {
+public class StoragePreferencePK implements Serializable {
     private String gatewayId;
-    private String dataMovementId;
+    private String storageResourceId;
 
-    public DataStoragePreferencePK(String gatewayId, String dataMoveId) {
+    public StoragePreferencePK(String gatewayId, String storageResourceId) {
         this.gatewayId = gatewayId;
-        this.dataMovementId = dataMoveId;
+        this.storageResourceId = storageResourceId;
     }
 
-    public DataStoragePreferencePK() {
+    public StoragePreferencePK() {
         ;
     }
 
@@ -54,11 +54,11 @@ public class DataStoragePreferencePK implements Serializable {
         this.gatewayId = gatewayId;
     }
 
-    public String getDataMoveId() {
-        return dataMovementId;
+    public String getStorageResourceId() {
+        return storageResourceId;
     }
 
-    public void setDataMoveId(String dataMoveId) {
-        this.dataMovementId = dataMoveId;
+    public void setStorageResourceId(String storageResourceId) {
+        this.storageResourceId = storageResourceId;
     }
 }
