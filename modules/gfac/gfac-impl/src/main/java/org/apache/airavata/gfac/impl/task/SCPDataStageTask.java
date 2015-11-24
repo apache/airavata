@@ -44,6 +44,8 @@ import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.gfac.impl.SSHUtils;
+import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
@@ -81,6 +83,7 @@ public class SCPDataStageTask implements Task {
 
     @Override
     public void init(Map<String, String> propertyMap) throws TaskException {
+        // we use what expressed in gfac-config.yaml by default, later replace with storage preferences
         inputPath = propertyMap.get("inputPath");
         hostName = propertyMap.get("hostName");
         userName = propertyMap.get("userName");
@@ -176,6 +179,17 @@ public class SCPDataStageTask implements Task {
                 return status;
             }
             status = new TaskStatus(TaskState.COMPLETED);
+
+            StorageResourceDescription storageResource = taskContext.getParentProcessContext().getStorageResource();
+            StoragePreference storagePreference = taskContext.getParentProcessContext().getStoragePreference();
+            if (storageResource != null){
+                hostName = storageResource.getHostName();
+            }
+
+            if (storagePreference != null){
+                userName = storagePreference.getLoginUserName();
+                inputPath = storagePreference.getFileSystemRootLocation();
+            }
 
             ServerInfo serverInfo = new ServerInfo(userName, hostName, DEFAULT_SSH_PORT);
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
