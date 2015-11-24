@@ -43,6 +43,7 @@ public class Process {
     private String gatewayExecutionId;
     private boolean enableEmailNotification;
     private String emailAddresses;
+    private String storageId;
     private Experiment experiment;
     private Collection<ProcessError> processErrors;
     private Collection<ProcessInput> processInputs;
@@ -105,6 +106,15 @@ public class Process {
 
     public void setApplicationInterfaceId(String applicationInterfaceId) {
         this.applicationInterfaceId = applicationInterfaceId;
+    }
+
+    @Column(name = "STORAGE_RESOURCE_ID")
+    public String getStorageId() {
+        return storageId;
+    }
+
+    public void setStorageId(String storageId) {
+        this.storageId = storageId;
     }
 
     @Lob

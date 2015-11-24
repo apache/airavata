@@ -145,6 +145,7 @@ public class ExperimentRegistry {
             configDataResource.setWallTimeLimit(configurationData.getComputationalResourceScheduling().getWallTimeLimit());
             configDataResource.setTotalPhysicalMemory(configurationData.getComputationalResourceScheduling().getTotalPhysicalMemory());
             configDataResource.setStaticWorkingDir(configurationData.getComputationalResourceScheduling().getStaticWorkingDir());
+            configDataResource.setStorageId(configurationData.getStorageId());
             configDataResource.save();
         } catch (Exception e) {
             logger.error("Unable to save user config data", e);
@@ -690,6 +691,7 @@ public class ExperimentRegistry {
             configDataResource.setThrottleResources(configurationData.isThrottleResources());
             configDataResource.setUserDn(configurationData.getUserDN());
             configDataResource.setGenerateCert(configurationData.isGenerateCert());
+            configDataResource.setStorageId(configurationData.getStorageId());
             configDataResource.setResourceHostId(configurationData.getComputationalResourceScheduling().getResourceHostId());
             configDataResource.setTotalCpuCount(configurationData.getComputationalResourceScheduling().getTotalCPUCount());
             configDataResource.setNodeCount(configurationData.getComputationalResourceScheduling().getNodeCount());
