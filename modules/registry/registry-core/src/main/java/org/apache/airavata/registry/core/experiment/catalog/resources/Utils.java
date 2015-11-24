@@ -512,6 +512,7 @@ public class Utils {
             configurationDataResource.setWallTimeLimit(o.getWallTimeLimit());
             configurationDataResource.setTotalPhysicalMemory(o.getTotalPhysicalMemory());
             configurationDataResource.setStaticWorkingDir(o.getStaticWorkingDir());
+            configurationDataResource.setStorageId(o.getStorageId());
         }
         return configurationDataResource;
     }
@@ -531,6 +532,7 @@ public class Utils {
             processResource.setApplicationDeploymentId(o.getApplicationDeploymentId());
             processResource.setEnableEmailNotification(o.getEnableEmailNotification());
             processResource.setEmailAddresses(o.getEmailAddresses());
+            processResource.setStorageResourceId(o.getStorageId());
         }
         return processResource;
     }

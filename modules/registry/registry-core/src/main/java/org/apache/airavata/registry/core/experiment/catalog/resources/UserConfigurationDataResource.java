@@ -241,6 +241,7 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
             userConfigurationData.setWallTimeLimit(wallTimeLimit);
             userConfigurationData.setStaticWorkingDir(staticWorkingDir);
             userConfigurationData.setTotalPhysicalMemory(totalPhysicalMemory);
+            userConfigurationData.setStorageId(storageId);
             if (existingConf == null){
                 em.persist(userConfigurationData);
             }else {
