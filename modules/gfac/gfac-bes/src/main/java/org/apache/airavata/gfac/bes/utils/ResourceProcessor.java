@@ -75,7 +75,11 @@ public class ResourceProcessor {
 					RangeValueType rangeType = new RangeValueType();
 					rangeType.setLowerBound(Double.NaN);
 					rangeType.setUpperBound(Double.NaN);
-					rangeType.setExact(crs.getTotalCPUCount()/crs.getNodeCount());
+                    int nodeCount = crs.getNodeCount();
+                    if (nodeCount <= 0){
+                        nodeCount = 1;
+                    }
+                    rangeType.setExact(crs.getTotalCPUCount()/ nodeCount);
 					JSDLUtils.setIndividualCPUCountRequirements(value, rangeType);
 				}
 
