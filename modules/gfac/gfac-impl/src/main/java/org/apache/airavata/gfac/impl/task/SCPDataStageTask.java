@@ -164,6 +164,17 @@ public class SCPDataStageTask implements Task {
                 inputPath = storagePreference.getFileSystemRootLocation();
             }
 
+            StorageResourceDescription storageResource = taskContext.getParentProcessContext().getStorageResource();
+            StoragePreference storagePreference = taskContext.getParentProcessContext().getStoragePreference();
+            if (storageResource != null){
+                hostName = storageResource.getHostName();
+            }
+
+            if (storagePreference != null){
+                userName = storagePreference.getLoginUserName();
+                inputPath = storagePreference.getFileSystemRootLocation();
+            }
+
             ServerInfo serverInfo = new ServerInfo(userName, hostName, DEFAULT_SSH_PORT);
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
             if (processState == ProcessState.INPUT_DATA_STAGING) {
