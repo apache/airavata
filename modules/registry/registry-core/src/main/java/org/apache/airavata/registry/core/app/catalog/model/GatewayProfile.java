@@ -43,9 +43,6 @@ public class GatewayProfile implements Serializable {
     @Column(name = "CS_TOKEN")
     private String credentialStoreToken;
 
-    @Column(name = "DATA_STORAGE_HOST")
-    private String dataStorageHost;
-
     public Timestamp getCreationTime() {
         return creationTime;
     }
@@ -77,13 +74,5 @@ public class GatewayProfile implements Serializable {
 
     public void setCredentialStoreToken(String credentialStoreToken) {
         this.credentialStoreToken = credentialStoreToken;
-    }
-
-    public String getDataStorageHost() {
-        return dataStorageHost;
-    }
-
-    public void setDataStorageHost(String dataStorageHost) {
-        this.dataStorageHost = dataStorageHost;
     }
 }
