@@ -255,11 +255,7 @@ public class GFacEngineImpl implements GFacEngine {
                     processContext.setProcessStatus(status);
                     GFacUtils.saveAndPublishProcessStatus(processContext);
                     executeJobSubmission(taskContext, processContext.isRecovery());
-                    // checkpoint
-                    if (processContext.isInterrupted()) {
-                        GFacUtils.handleProcessInterrupt(processContext);
-                        return;
-                    }
+                    // Don't put any checkpoint in between JobSubmission and Monitoring tasks
 
                     JobStatus jobStatus = processContext.getJobModel().getJobStatus();
                     if (jobStatus != null && (jobStatus.getJobState() == JobState.SUBMITTED
@@ -583,9 +579,8 @@ public class GFacEngineImpl implements GFacEngine {
     @Override
     public void cancelProcess(ProcessContext processContext) throws GFacException {
         if (processContext != null) {
-            processContext.setCancel(true);
             switch (processContext.getProcessState()) {
-                case MONITORING:
+                case MONITORING: case EXECUTING:
                     // get job submission task and invoke cancel
                     JobSubmissionTask jobSubmissionTask = Factory.getJobSubmissionTask(processContext.getJobSubmissionProtocol());
                     TaskContext taskCtx = getJobSubmissionTaskContext(processContext);
@@ -614,16 +609,21 @@ public class GFacEngineImpl implements GFacEngine {
         try {
             JobStatus oldJobStatus = jSTask.cancel(taskContext);
 
-            if (oldJobStatus != null && oldJobStatus.getJobState() == JobState.QUEUED) {
-                JobMonitor monitorService = Factory.getMonitorService(taskContext.getParentProcessContext().getMonitorMode());
-                monitorService.stopMonitor(taskContext.getParentProcessContext().getJobModel().getJobId(), true);
+/*            if (oldJobStatus != null && oldJobStatus.getJobState() == JobState.QUEUED) {
+                ProcessContext pc = taskContext.getParentProcessContext();
                 JobStatus newJobStatus = new JobStatus(JobState.CANCELED);
                 newJobStatus.setReason("Job cancelled");
                 newJobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                taskContext.getParentProcessContext().getJobModel().setJobStatus(newJobStatus);
-                GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), taskContext.getParentProcessContext()
-                        .getJobModel());
-            }
+                pc.getJobModel().setJobStatus(newJobStatus);
+                GFacUtils.saveJobStatus(pc, pc.getJobModel());
+                JobMonitor monitorService = Factory.getMonitorService(pc.getMonitorMode());
+                monitorService.stopMonitor(pc.getJobModel().getJobId(), true);
+            }*/
+
+            ProcessContext pc = taskContext.getParentProcessContext();
+            JobMonitor monitorService = Factory.getMonitorService(pc.getMonitorMode());
+            monitorService.canceledJob(pc.getJobModel().getJobId());
+
         } catch (TaskException e) {
             throw new GFacException("Error while cancelling job");
         } catch (AiravataException e) {

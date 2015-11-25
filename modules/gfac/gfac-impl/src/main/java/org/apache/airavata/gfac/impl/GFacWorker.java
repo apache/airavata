@@ -193,21 +193,6 @@ public class GFacWorker implements Runnable {
     }
 
 	private void recoverProcess() throws GFacException {
-
-        String taskDag = processContext.getProcessModel().getTaskDag();
-        List<String> taskExecutionOrder = GFacUtils.parseTaskDag(taskDag);
-        processContext.setTaskExecutionOrder(taskExecutionOrder);
-        Map<String, TaskModel> taskMap = processContext.getTaskMap();
-        String recoverTaskId = null;
-        for (String taskId : taskExecutionOrder) {
-            TaskModel taskModel = taskMap.get(taskId);
-            TaskState state = taskModel.getTaskStatus().getState();
-            if (state == TaskState.CREATED || state == TaskState.EXECUTING) {
-                recoverTaskId = taskId;
-                break;
-            }
-        }
-
         engine.recoverProcess(processContext);
         if (processContext.isInterrupted()) {
             return;
