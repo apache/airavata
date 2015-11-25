@@ -34,11 +34,9 @@ import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.status.JobState;
-import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.model.status.TaskState;
-import org.apache.airavata.model.status.TaskStatus;
+import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskTypes;
+import org.apache.airavata.registry.core.experiment.catalog.model.Process;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -262,6 +260,17 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 		JobModel jobModel = processContext.getJobModel();
 		int retryCount = 0;
 		if (jobModel != null) {
+			if (processContext.getProcessState() == ProcessState.EXECUTING) {
+				while (jobModel.getJobId() == null) {
+					log.info("Cancellation pause until process get jobId");
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						// ignore
+					}
+				}
+			}
+
 			try {
 				JobStatus oldJobStatus = remoteCluster.getJobStatus(jobModel.getJobId());
 				while (oldJobStatus == null && retryCount <= 5) {
