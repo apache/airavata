@@ -371,6 +371,7 @@ public class ThriftDataModelConversion {
                 processModel.setResourceSchedule(schedule);
             }
             processModel.setTasks(getTaskModelList(processResource.getTaskList()));
+            processModel.setStorageResourceId(processResource.getStorageResourceId());
             return processModel;
         }
         return null;
@@ -493,6 +494,7 @@ public class ThriftDataModelConversion {
             data.setShareExperimentPublicly(resource.getShareExperimentPublically());
             data.setUserDN(resource.getUserDn());
             data.setGenerateCert(resource.getGenerateCert());
+            data.setStorageId(resource.getStorageId());
 
             ComputationalResourceSchedulingModel resourceSchedulingModel = new ComputationalResourceSchedulingModel();
             resourceSchedulingModel.setResourceHostId(resource.getResourceHostId());

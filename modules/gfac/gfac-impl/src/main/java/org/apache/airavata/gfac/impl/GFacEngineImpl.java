@@ -40,6 +40,8 @@ import org.apache.airavata.gfac.impl.task.EnvironmentSetupTask;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -94,7 +96,15 @@ public class GFacEngineImpl implements GFacEngine {
             processContext.setGatewayResourceProfile(gatewayProfile);
             processContext.setComputeResourcePreference(appCatalog.getGatewayProfile().getComputeResourcePreference
                     (gatewayId, processModel.getComputeResourceId()));
-//            appCatalog.getGatewayProfile().getStoragePreference()
+            StoragePreference storagePreference = appCatalog.getGatewayProfile().getStoragePreference(gatewayId, processModel.getStorageResourceId());
+            if (storagePreference != null){
+                processContext.setStoragePreference(storagePreference);
+            }
+
+            StorageResourceDescription storageResource = appCatalog.getStorageResource().getStorageResource(processModel.getStorageResourceId());
+            if (storageResource != null){
+                processContext.setStorageResource(storageResource);
+            }
             processContext.setComputeResourceDescription(appCatalog.getComputeResource().getComputeResource
                     (processContext.getComputeResourcePreference().getComputeResourceId()));
             processContext.setApplicationDeploymentDescription(appCatalog.getApplicationDeployment()

@@ -183,7 +183,7 @@ public class UserConfigurationData {
         this.staticWorkingDir = staticWorkingDir;
     }
 
-    @Column(name = "ST")
+    @Column(name = "STORAGE_RESOURCE_ID")
     public String getStorageId() {
         return storageId;
     }
