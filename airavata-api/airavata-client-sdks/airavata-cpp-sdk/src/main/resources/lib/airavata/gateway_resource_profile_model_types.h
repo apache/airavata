@@ -222,17 +222,16 @@ typedef struct _GatewayResourceProfile__isset {
 class GatewayResourceProfile {
  public:
 
-  static const char* ascii_fingerprint; // = "37EFF83E3A15E60FB3772FDFEAD90A88";
-  static const uint8_t binary_fingerprint[16]; // = {0x37,0xEF,0xF8,0x3E,0x3A,0x15,0xE6,0x0F,0xB3,0x77,0x2F,0xDF,0xEA,0xD9,0x0A,0x88};
+  static const char* ascii_fingerprint; // = "A4BF6D60A7DE5979505C0E7F00278F12";
+  static const uint8_t binary_fingerprint[16]; // = {0xA4,0xBF,0x6D,0x60,0xA7,0xDE,0x59,0x79,0x50,0x5C,0x0E,0x7F,0x00,0x27,0x8F,0x12};
 
   GatewayResourceProfile(const GatewayResourceProfile&);
   GatewayResourceProfile& operator=(const GatewayResourceProfile&);
-  GatewayResourceProfile() : gatewayID(), dataStorageHostName(), credentialStoreToken() {
+  GatewayResourceProfile() : gatewayID(), credentialStoreToken() {
   }
 
   virtual ~GatewayResourceProfile() throw();
   std::string gatewayID;
-  std::string dataStorageHostName;
   std::string credentialStoreToken;
   std::vector<ComputeResourcePreference>  computeResourcePreferences;
   std::vector<DataStoragePreference>  dataStoragePreferences;
@@ -240,8 +239,6 @@ class GatewayResourceProfile {
   _GatewayResourceProfile__isset __isset;
 
   void __set_gatewayID(const std::string& val);
-
-  void __set_dataStorageHostName(const std::string& val);
 
   void __set_credentialStoreToken(const std::string& val);
 
@@ -252,8 +249,6 @@ class GatewayResourceProfile {
   bool operator == (const GatewayResourceProfile & rhs) const
   {
     if (!(gatewayID == rhs.gatewayID))
-      return false;
-    if (!(dataStorageHostName == rhs.dataStorageHostName))
       return false;
     if (__isset.credentialStoreToken != rhs.__isset.credentialStoreToken)
       return false;

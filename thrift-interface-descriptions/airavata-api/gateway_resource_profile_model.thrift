@@ -93,8 +93,7 @@ struct DataStoragePreference {
 */
 struct GatewayResourceProfile {
     1: required string gatewayID,
-    2: required string dataStorageHostName;
-    3: optional string credentialStoreToken,
-    4: optional list<ComputeResourcePreference> computeResourcePreferences
-    5: optional list<DataStoragePreference> dataStoragePreferences
+    2: optional string credentialStoreToken,
+    3: optional list<ComputeResourcePreference> computeResourcePreferences
+    4: optional list<DataStoragePreference> dataStoragePreferences
 }
