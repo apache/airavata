@@ -94,8 +94,9 @@ public class ProcessContext {
     private boolean complete = false; // all tasks executed?
     private boolean recovery = false; // is process in recovery mode?
     private TaskModel currentExecutingTaskModel; // current execution task model in case we pause process execution we need this to continue process exectuion again
+	private boolean acknowledge;
 
-    /**
+	/**
 	 * Note: process context property use lazy loading approach. In runtime you will see some properties as null
 	 * unless you have access it previously. Once that property access using the api,it will be set to correct value.
 	 */
@@ -482,4 +483,12 @@ public class ProcessContext {
     public void setStorageResource(StorageResourceDescription storageResource) {
         this.storageResource = storageResource;
     }
+
+	public void setAcknowledge(boolean acknowledge) {
+		this.acknowledge = acknowledge;
+	}
+
+	public boolean isAcknowledge() {
+		return acknowledge;
+	}
 }

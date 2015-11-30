@@ -36,7 +36,6 @@ import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.registry.core.experiment.catalog.model.Process;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -48,7 +47,10 @@ import java.util.Map;
 
 public class DefaultJobSubmissionTask implements JobSubmissionTask {
     private static final Logger log = LoggerFactory.getLogger(DefaultJobSubmissionTask.class);
-    @Override
+	private static int waitForProcessIdmillis = 5000;
+	private static int pauseTimeInSec = waitForProcessIdmillis / 1000;
+
+	@Override
     public void init(Map<String, String> propertyMap) throws TaskException {
 
     }
@@ -262,9 +264,9 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 		if (jobModel != null) {
 			if (processContext.getProcessState() == ProcessState.EXECUTING) {
 				while (jobModel.getJobId() == null) {
-					log.info("Cancellation pause until process get jobId");
+					log.info("Cancellation pause {} secs until process get jobId", pauseTimeInSec);
 					try {
-						Thread.sleep(1000);
+						Thread.sleep(waitForProcessIdmillis);
 					} catch (InterruptedException e) {
 						// ignore
 					}
