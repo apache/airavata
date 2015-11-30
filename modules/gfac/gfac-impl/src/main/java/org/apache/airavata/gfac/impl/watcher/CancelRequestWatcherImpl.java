@@ -49,7 +49,7 @@ public class CancelRequestWatcherImpl implements CancelRequestWatcher {
 		String path = watchedEvent.getPath();
 		Watcher.Event.EventType type = watchedEvent.getType();
 		CuratorFramework curatorClient = Factory.getCuratorClient();
-		log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>  cancel watcher triggered process id {}<<<<<<<<<<<<<<<<<<<<<<<<<<<", processId);
+		log.info("cancel watcher triggered process id {}.", processId);
 		switch (type) {
 			case NodeDataChanged:
 				byte[] bytes = curatorClient.getData().forPath(path);

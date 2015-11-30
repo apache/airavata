@@ -101,10 +101,10 @@ public class GFacEngineImpl implements GFacEngine {
                 processContext.setStoragePreference(storagePreference);
             }
 
-            StorageResourceDescription storageResource = appCatalog.getStorageResource().getStorageResource(processModel.getStorageResourceId());
+/*            StorageResourceDescription storageResource = appCatalog.getStorageResource().getStorageResource(processModel.getStorageResourceId());
             if (storageResource != null){
                 processContext.setStorageResource(storageResource);
-            }
+            }*/
             processContext.setComputeResourceDescription(appCatalog.getComputeResource().getComputeResource
                     (processContext.getComputeResourcePreference().getComputeResourceId()));
             processContext.setApplicationDeploymentDescription(appCatalog.getApplicationDeployment()
