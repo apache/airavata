@@ -88,15 +88,14 @@ public class CancelRequestWatcherImpl implements CancelRequestWatcher {
 		ProcessContext processContext = Factory.getGfacContext().getProcess(processId);
 		if (processContext != null) {
             processContext.setCancel(true);
-            log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>> calling process cancelling operation <<<<<<<<<<<<<<<<<<<<<<<<<<<");
-            Factory.getGFacEngine().cancelProcess(processContext);
-            log.info("expId {}, processId : {}, Cancelling process", experimentId, processId);
+			log.info("expId {}, processId : {}, Cancelling process", experimentId, processId);
+			Factory.getGFacEngine().cancelProcess(processContext);
         } else {
 			if (retryAttempt < max_retry) {
 				log.info("expId: {}, Cancel request came for processId {} but couldn't find process context. " +
-						"retry in {} ms ", experimentId, processId, retryAttempt);
+						"retry in {} s ", experimentId, processId, retryAttempt*3);
 				try {
-					Thread.sleep(retryAttempt++*1000);
+					Thread.sleep(retryAttempt++*3000);
 				} catch (InterruptedException e) {
 					// ignore we don't care this exception.
 				}
