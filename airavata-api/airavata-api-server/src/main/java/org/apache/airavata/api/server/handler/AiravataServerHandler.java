@@ -1637,9 +1637,15 @@ public class AiravataServerHandler implements Airavata.Iface {
                       for (TaskModel task : tasks){
                           String taskId =  task.getTaskId();
                           List<Object> jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.TASK_ID, taskId);
-                          for (Object jobObject : jobs) {
-                              String jobID = ((JobModel)jobObject).getJobId();
-                              jobStatus.put(jobID, ((JobModel)jobObject).getJobStatus());
+                          if (jobs != null && !jobs.isEmpty()){
+                              for (Object jobObject : jobs) {
+                                  JobModel jobModel = (JobModel) jobObject;
+                                  String jobID = jobModel.getJobId();
+                                  JobStatus status = jobModel.getJobStatus();
+                                  if (status != null){
+                                      jobStatus.put(jobID, status);
+                                  }
+                              }
                           }
                       }
                     }
