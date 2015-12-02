@@ -23,13 +23,23 @@
   namespace cpp apache.airavata.model.data.resource
   namespace py apache.airavata.model.data.resource
 
-struct ResourceModel {
+struct DataResourceModel {
     1: optional string resourceId,
     2: optional string resourceName,
-    3: list<ReplicaLocationModel> replicaLocations
+    3: optional string resourceDescription,
+    4: optional i32 resourceSize,
+    5: optional i64 creationTime,
+    6: optional i64 lastModifiedTime,
+    7: list<DataReplicaLocationModel> replicaLocations
 }
 
-struct ReplicaLocationModel {
-    1: optional list<string> physicalLocations
+struct DataReplicaLocationModel {
+    1: optional string replicaId,
+    2: optional string resourceId,
+    3: optional string replicaName,
+    4: optional string replicaDescription,
+    5: optional i64 creationTime,
+    6: optional i64 lastModifiedTime,
+    7: optional list<string> dataLocations
 }
 

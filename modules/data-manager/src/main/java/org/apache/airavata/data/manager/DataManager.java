@@ -20,7 +20,7 @@
  */
 package org.apache.airavata.data.manager;
 
-import org.apache.airavata.model.data.resource.ResourceModel;
+import org.apache.airavata.model.data.resource.DataResourceModel;
 
 public interface DataManager {
 
@@ -30,7 +30,7 @@ public interface DataManager {
      * @param resource
      * @return
      */
-    boolean publishResource(ResourceModel resource);
+    boolean publishResource(DataResourceModel resource);
 
     /**
      * To remove a resource entry from the replica catalog
@@ -53,5 +53,5 @@ public interface DataManager {
      * @param resourceId
      * @return
      */
-    ResourceModel getResource(String resourceId);
+    DataResourceModel getResource(String resourceId);
 }
