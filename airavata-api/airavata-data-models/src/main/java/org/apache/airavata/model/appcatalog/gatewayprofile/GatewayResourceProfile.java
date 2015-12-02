@@ -71,7 +71,7 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
   private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayID", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField CREDENTIAL_STORE_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("credentialStoreToken", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_PREFERENCES_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourcePreferences", org.apache.thrift.protocol.TType.LIST, (short)3);
-  private static final org.apache.thrift.protocol.TField STORAGE_PREFERENCES_FIELD_DESC = new org.apache.thrift.protocol.TField("storagePreferences", org.apache.thrift.protocol.TType.LIST, (short)4);
+  private static final org.apache.thrift.protocol.TField DATA_STORAGE_PREFERENCES_FIELD_DESC = new org.apache.thrift.protocol.TField("dataStoragePreferences", org.apache.thrift.protocol.TType.LIST, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -82,14 +82,14 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
   private String gatewayID; // required
   private String credentialStoreToken; // optional
   private List<ComputeResourcePreference> computeResourcePreferences; // optional
-  private List<StoragePreference> storagePreferences; // optional
+  private List<DataStoragePreference> dataStoragePreferences; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     GATEWAY_ID((short)1, "gatewayID"),
     CREDENTIAL_STORE_TOKEN((short)2, "credentialStoreToken"),
     COMPUTE_RESOURCE_PREFERENCES((short)3, "computeResourcePreferences"),
-    STORAGE_PREFERENCES((short)4, "storagePreferences");
+    DATA_STORAGE_PREFERENCES((short)4, "dataStoragePreferences");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -110,8 +110,8 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
           return CREDENTIAL_STORE_TOKEN;
         case 3: // COMPUTE_RESOURCE_PREFERENCES
           return COMPUTE_RESOURCE_PREFERENCES;
-        case 4: // STORAGE_PREFERENCES
-          return STORAGE_PREFERENCES;
+        case 4: // DATA_STORAGE_PREFERENCES
+          return DATA_STORAGE_PREFERENCES;
         default:
           return null;
       }
@@ -152,7 +152,7 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
   }
 
   // isset id assignments
-  private static final _Fields optionals[] = {_Fields.CREDENTIAL_STORE_TOKEN,_Fields.COMPUTE_RESOURCE_PREFERENCES,_Fields.STORAGE_PREFERENCES};
+  private static final _Fields optionals[] = {_Fields.CREDENTIAL_STORE_TOKEN,_Fields.COMPUTE_RESOURCE_PREFERENCES,_Fields.DATA_STORAGE_PREFERENCES};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -163,9 +163,9 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
     tmpMap.put(_Fields.COMPUTE_RESOURCE_PREFERENCES, new org.apache.thrift.meta_data.FieldMetaData("computeResourcePreferences", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ComputeResourcePreference.class))));
-    tmpMap.put(_Fields.STORAGE_PREFERENCES, new org.apache.thrift.meta_data.FieldMetaData("storagePreferences", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.DATA_STORAGE_PREFERENCES, new org.apache.thrift.meta_data.FieldMetaData("dataStoragePreferences", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, StoragePreference.class))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, DataStoragePreference.class))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(GatewayResourceProfile.class, metaDataMap);
   }
@@ -197,12 +197,12 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
       }
       this.computeResourcePreferences = __this__computeResourcePreferences;
     }
-    if (other.isSetStoragePreferences()) {
-      List<StoragePreference> __this__storagePreferences = new ArrayList<StoragePreference>(other.storagePreferences.size());
-      for (StoragePreference other_element : other.storagePreferences) {
-        __this__storagePreferences.add(new StoragePreference(other_element));
+    if (other.isSetDataStoragePreferences()) {
+      List<DataStoragePreference> __this__dataStoragePreferences = new ArrayList<DataStoragePreference>(other.dataStoragePreferences.size());
+      for (DataStoragePreference other_element : other.dataStoragePreferences) {
+        __this__dataStoragePreferences.add(new DataStoragePreference(other_element));
       }
-      this.storagePreferences = __this__storagePreferences;
+      this.dataStoragePreferences = __this__dataStoragePreferences;
     }
   }
 
@@ -215,7 +215,7 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
     this.gatewayID = null;
     this.credentialStoreToken = null;
     this.computeResourcePreferences = null;
-    this.storagePreferences = null;
+    this.dataStoragePreferences = null;
   }
 
   public String getGatewayID() {
@@ -302,41 +302,41 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
     }
   }
 
-  public int getStoragePreferencesSize() {
-    return (this.storagePreferences == null) ? 0 : this.storagePreferences.size();
+  public int getDataStoragePreferencesSize() {
+    return (this.dataStoragePreferences == null) ? 0 : this.dataStoragePreferences.size();
   }
 
-  public java.util.Iterator<StoragePreference> getStoragePreferencesIterator() {
-    return (this.storagePreferences == null) ? null : this.storagePreferences.iterator();
+  public java.util.Iterator<DataStoragePreference> getDataStoragePreferencesIterator() {
+    return (this.dataStoragePreferences == null) ? null : this.dataStoragePreferences.iterator();
   }
 
-  public void addToStoragePreferences(StoragePreference elem) {
-    if (this.storagePreferences == null) {
-      this.storagePreferences = new ArrayList<StoragePreference>();
+  public void addToDataStoragePreferences(DataStoragePreference elem) {
+    if (this.dataStoragePreferences == null) {
+      this.dataStoragePreferences = new ArrayList<DataStoragePreference>();
     }
-    this.storagePreferences.add(elem);
+    this.dataStoragePreferences.add(elem);
   }
 
-  public List<StoragePreference> getStoragePreferences() {
-    return this.storagePreferences;
+  public List<DataStoragePreference> getDataStoragePreferences() {
+    return this.dataStoragePreferences;
   }
 
-  public void setStoragePreferences(List<StoragePreference> storagePreferences) {
-    this.storagePreferences = storagePreferences;
+  public void setDataStoragePreferences(List<DataStoragePreference> dataStoragePreferences) {
+    this.dataStoragePreferences = dataStoragePreferences;
   }
 
-  public void unsetStoragePreferences() {
-    this.storagePreferences = null;
+  public void unsetDataStoragePreferences() {
+    this.dataStoragePreferences = null;
   }
 
-  /** Returns true if field storagePreferences is set (has been assigned a value) and false otherwise */
-  public boolean isSetStoragePreferences() {
-    return this.storagePreferences != null;
+  /** Returns true if field dataStoragePreferences is set (has been assigned a value) and false otherwise */
+  public boolean isSetDataStoragePreferences() {
+    return this.dataStoragePreferences != null;
   }
 
-  public void setStoragePreferencesIsSet(boolean value) {
+  public void setDataStoragePreferencesIsSet(boolean value) {
     if (!value) {
-      this.storagePreferences = null;
+      this.dataStoragePreferences = null;
     }
   }
 
@@ -366,11 +366,11 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
       }
       break;
 
-    case STORAGE_PREFERENCES:
+    case DATA_STORAGE_PREFERENCES:
       if (value == null) {
-        unsetStoragePreferences();
+        unsetDataStoragePreferences();
       } else {
-        setStoragePreferences((List<StoragePreference>)value);
+        setDataStoragePreferences((List<DataStoragePreference>)value);
       }
       break;
 
@@ -388,8 +388,8 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
     case COMPUTE_RESOURCE_PREFERENCES:
       return getComputeResourcePreferences();
 
-    case STORAGE_PREFERENCES:
-      return getStoragePreferences();
+    case DATA_STORAGE_PREFERENCES:
+      return getDataStoragePreferences();
 
     }
     throw new IllegalStateException();
@@ -408,8 +408,8 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
       return isSetCredentialStoreToken();
     case COMPUTE_RESOURCE_PREFERENCES:
       return isSetComputeResourcePreferences();
-    case STORAGE_PREFERENCES:
-      return isSetStoragePreferences();
+    case DATA_STORAGE_PREFERENCES:
+      return isSetDataStoragePreferences();
     }
     throw new IllegalStateException();
   }
@@ -454,12 +454,12 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
         return false;
     }
 
-    boolean this_present_storagePreferences = true && this.isSetStoragePreferences();
-    boolean that_present_storagePreferences = true && that.isSetStoragePreferences();
-    if (this_present_storagePreferences || that_present_storagePreferences) {
-      if (!(this_present_storagePreferences && that_present_storagePreferences))
+    boolean this_present_dataStoragePreferences = true && this.isSetDataStoragePreferences();
+    boolean that_present_dataStoragePreferences = true && that.isSetDataStoragePreferences();
+    if (this_present_dataStoragePreferences || that_present_dataStoragePreferences) {
+      if (!(this_present_dataStoragePreferences && that_present_dataStoragePreferences))
         return false;
-      if (!this.storagePreferences.equals(that.storagePreferences))
+      if (!this.dataStoragePreferences.equals(that.dataStoragePreferences))
         return false;
     }
 
@@ -485,10 +485,10 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
     if (present_computeResourcePreferences)
       list.add(computeResourcePreferences);
 
-    boolean present_storagePreferences = true && (isSetStoragePreferences());
-    list.add(present_storagePreferences);
-    if (present_storagePreferences)
-      list.add(storagePreferences);
+    boolean present_dataStoragePreferences = true && (isSetDataStoragePreferences());
+    list.add(present_dataStoragePreferences);
+    if (present_dataStoragePreferences)
+      list.add(dataStoragePreferences);
 
     return list.hashCode();
   }
@@ -531,12 +531,12 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetStoragePreferences()).compareTo(other.isSetStoragePreferences());
+    lastComparison = Boolean.valueOf(isSetDataStoragePreferences()).compareTo(other.isSetDataStoragePreferences());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetStoragePreferences()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.storagePreferences, other.storagePreferences);
+    if (isSetDataStoragePreferences()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dataStoragePreferences, other.dataStoragePreferences);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -588,13 +588,13 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
       }
       first = false;
     }
-    if (isSetStoragePreferences()) {
+    if (isSetDataStoragePreferences()) {
       if (!first) sb.append(", ");
-      sb.append("storagePreferences:");
-      if (this.storagePreferences == null) {
+      sb.append("dataStoragePreferences:");
+      if (this.dataStoragePreferences == null) {
         sb.append("null");
       } else {
-        sb.append(this.storagePreferences);
+        sb.append(this.dataStoragePreferences);
       }
       first = false;
     }
@@ -680,21 +680,21 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // STORAGE_PREFERENCES
+          case 4: // DATA_STORAGE_PREFERENCES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
-                struct.storagePreferences = new ArrayList<StoragePreference>(_list3.size);
-                StoragePreference _elem4;
+                struct.dataStoragePreferences = new ArrayList<DataStoragePreference>(_list3.size);
+                DataStoragePreference _elem4;
                 for (int _i5 = 0; _i5 < _list3.size; ++_i5)
                 {
-                  _elem4 = new StoragePreference();
+                  _elem4 = new DataStoragePreference();
                   _elem4.read(iprot);
-                  struct.storagePreferences.add(_elem4);
+                  struct.dataStoragePreferences.add(_elem4);
                 }
                 iprot.readListEnd();
               }
-              struct.setStoragePreferencesIsSet(true);
+              struct.setDataStoragePreferencesIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -738,12 +738,12 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
           oprot.writeFieldEnd();
         }
       }
-      if (struct.storagePreferences != null) {
-        if (struct.isSetStoragePreferences()) {
-          oprot.writeFieldBegin(STORAGE_PREFERENCES_FIELD_DESC);
+      if (struct.dataStoragePreferences != null) {
+        if (struct.isSetDataStoragePreferences()) {
+          oprot.writeFieldBegin(DATA_STORAGE_PREFERENCES_FIELD_DESC);
           {
-            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.storagePreferences.size()));
-            for (StoragePreference _iter7 : struct.storagePreferences)
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.dataStoragePreferences.size()));
+            for (DataStoragePreference _iter7 : struct.dataStoragePreferences)
             {
               _iter7.write(oprot);
             }
@@ -777,7 +777,7 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
       if (struct.isSetComputeResourcePreferences()) {
         optionals.set(1);
       }
-      if (struct.isSetStoragePreferences()) {
+      if (struct.isSetDataStoragePreferences()) {
         optionals.set(2);
       }
       oprot.writeBitSet(optionals, 3);
@@ -793,10 +793,10 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
           }
         }
       }
-      if (struct.isSetStoragePreferences()) {
+      if (struct.isSetDataStoragePreferences()) {
         {
-          oprot.writeI32(struct.storagePreferences.size());
-          for (StoragePreference _iter9 : struct.storagePreferences)
+          oprot.writeI32(struct.dataStoragePreferences.size());
+          for (DataStoragePreference _iter9 : struct.dataStoragePreferences)
           {
             _iter9.write(oprot);
           }
@@ -831,16 +831,16 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
       if (incoming.get(2)) {
         {
           org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.storagePreferences = new ArrayList<StoragePreference>(_list13.size);
-          StoragePreference _elem14;
+          struct.dataStoragePreferences = new ArrayList<DataStoragePreference>(_list13.size);
+          DataStoragePreference _elem14;
           for (int _i15 = 0; _i15 < _list13.size; ++_i15)
           {
-            _elem14 = new StoragePreference();
+            _elem14 = new DataStoragePreference();
             _elem14.read(iprot);
-            struct.storagePreferences.add(_elem14);
+            struct.dataStoragePreferences.add(_elem14);
           }
         }
-        struct.setStoragePreferencesIsSet(true);
+        struct.setDataStoragePreferencesIsSet(true);
       }
     }
   }
