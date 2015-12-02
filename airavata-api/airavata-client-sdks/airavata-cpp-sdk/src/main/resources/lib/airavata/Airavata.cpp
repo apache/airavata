@@ -41476,6 +41476,14 @@ uint32_t Airavata_publishDataResource_result::read(::apache::thrift::protocol::T
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -41526,7 +41534,11 @@ uint32_t Airavata_publishDataResource_result::write(::apache::thrift::protocol::
 
   xfer += oprot->writeStructBegin("Airavata_publishDataResource_result");
 
-  if (this->__isset.ire) {
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
     xfer += this->ire.write(oprot);
     xfer += oprot->writeFieldEnd();
@@ -41573,6 +41585,14 @@ uint32_t Airavata_publishDataResource_presult::read(::apache::thrift::protocol::
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -51069,13 +51089,13 @@ bool AiravataClient::recv_isWorkflowExistWithName()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "isWorkflowExistWithName failed: unknown result");
 }
 
-void AiravataClient::publishDataResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::ResourceModel& resourceModel)
+void AiravataClient::publishDataResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::DataResourceModel& resourceModel)
 {
   send_publishDataResource(authzToken, resourceModel);
-  recv_publishDataResource();
+  recv_publishDataResource(_return);
 }
 
-void AiravataClient::send_publishDataResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::ResourceModel& resourceModel)
+void AiravataClient::send_publishDataResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::DataResourceModel& resourceModel)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("publishDataResource", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -51090,7 +51110,7 @@ void AiravataClient::send_publishDataResource(const  ::apache::airavata::model::
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_publishDataResource()
+void AiravataClient::recv_publishDataResource(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -51116,10 +51136,15 @@ void AiravataClient::recv_publishDataResource()
     iprot_->getTransport()->readEnd();
   }
   Airavata_publishDataResource_presult result;
+  result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
   if (result.__isset.ire) {
     throw result.ire;
   }
@@ -51132,7 +51157,7 @@ void AiravataClient::recv_publishDataResource()
   if (result.__isset.ae) {
     throw result.ae;
   }
-  return;
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "publishDataResource failed: unknown result");
 }
 
 bool AiravataProcessor::dispatchCall(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, const std::string& fname, int32_t seqid, void* callContext) {
@@ -59895,7 +59920,8 @@ void AiravataProcessor::process_publishDataResource(int32_t seqid, ::apache::thr
 
   Airavata_publishDataResource_result result;
   try {
-    iface_->publishDataResource(args.authzToken, args.resourceModel);
+    iface_->publishDataResource(result.success, args.authzToken, args.resourceModel);
+    result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;

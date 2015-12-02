@@ -9708,7 +9708,7 @@ class Client(Iface):
      - resourceModel
     """
     self.send_publishDataResource(authzToken, resourceModel)
-    self.recv_publishDataResource()
+    return self.recv_publishDataResource()
 
   def send_publishDataResource(self, authzToken, resourceModel):
     self._oprot.writeMessageBegin('publishDataResource', TMessageType.CALL, self._seqid)
@@ -9730,6 +9730,8 @@ class Client(Iface):
     result = publishDataResource_result()
     result.read(iprot)
     iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
     if result.ire is not None:
       raise result.ire
     if result.ace is not None:
@@ -9738,7 +9740,7 @@ class Client(Iface):
       raise result.ase
     if result.ae is not None:
       raise result.ae
-    return
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "publishDataResource failed: unknown result");
 
 
 class Processor(Iface, TProcessor):
@@ -14007,7 +14009,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = publishDataResource_result()
     try:
-      self._handler.publishDataResource(args.authzToken, args.resourceModel)
+      result.success = self._handler.publishDataResource(args.authzToken, args.resourceModel)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -42825,7 +42827,7 @@ class publishDataResource_args:
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'resourceModel', (apache.airavata.model.data.resource.ttypes.ResourceModel, apache.airavata.model.data.resource.ttypes.ResourceModel.thrift_spec), None, ), # 2
+    (2, TType.STRUCT, 'resourceModel', (apache.airavata.model.data.resource.ttypes.DataResourceModel, apache.airavata.model.data.resource.ttypes.DataResourceModel.thrift_spec), None, ), # 2
   )
 
   def __init__(self, authzToken=None, resourceModel=None,):
@@ -42849,7 +42851,7 @@ class publishDataResource_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRUCT:
-          self.resourceModel = apache.airavata.model.data.resource.ttypes.ResourceModel()
+          self.resourceModel = apache.airavata.model.data.resource.ttypes.DataResourceModel()
           self.resourceModel.read(iprot)
         else:
           iprot.skip(ftype)
@@ -42900,6 +42902,7 @@ class publishDataResource_args:
 class publishDataResource_result:
   """
   Attributes:
+   - success
    - ire
    - ace
    - ase
@@ -42907,14 +42910,15 @@ class publishDataResource_result:
   """
 
   thrift_spec = (
-    None, # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
     (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
   )
 
-  def __init__(self, ire=None, ace=None, ase=None, ae=None,):
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
     self.ire = ire
     self.ace = ace
     self.ase = ase
@@ -42929,7 +42933,12 @@ class publishDataResource_result:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
+      if fid == 0:
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
         if ftype == TType.STRUCT:
           self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
           self.ire.read(iprot)
@@ -42963,6 +42972,10 @@ class publishDataResource_result:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('publishDataResource_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
+      oprot.writeFieldEnd()
     if self.ire is not None:
       oprot.writeFieldBegin('ire', TType.STRUCT, 1)
       self.ire.write(oprot)
@@ -42988,6 +43001,7 @@ class publishDataResource_result:
 
   def __hash__(self):
     value = 17
+    value = (value * 31) ^ hash(self.success)
     value = (value * 31) ^ hash(self.ire)
     value = (value * 31) ^ hash(self.ace)
     value = (value * 31) ^ hash(self.ase)

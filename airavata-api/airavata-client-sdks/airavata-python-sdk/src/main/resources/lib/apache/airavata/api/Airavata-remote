@@ -156,7 +156,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  void updateWorkflow(AuthzToken authzToken, string workflowTemplateId, Workflow workflow)')
   print('  string getWorkflowTemplateId(AuthzToken authzToken, string workflowName)')
   print('  bool isWorkflowExistWithName(AuthzToken authzToken, string workflowName)')
-  print('  void publishDataResource(AuthzToken authzToken, ResourceModel resourceModel)')
+  print('  string publishDataResource(AuthzToken authzToken, DataResourceModel resourceModel)')
   print('')
   sys.exit(0)
 

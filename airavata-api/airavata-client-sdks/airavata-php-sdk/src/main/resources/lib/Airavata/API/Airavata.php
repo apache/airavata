@@ -3125,13 +3125,14 @@ interface AiravataIf {
   public function isWorkflowExistWithName(\Airavata\Model\Security\AuthzToken $authzToken, $workflowName);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
-   * @param \Airavata\Model\Data\Resource\ResourceModel $resourceModel
+   * @param \Airavata\Model\Data\Resource\DataResourceModel $resourceModel
+   * @return string
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function publishDataResource(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Resource\ResourceModel $resourceModel);
+  public function publishDataResource(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Resource\DataResourceModel $resourceModel);
 }
 
 class AiravataClient implements \Airavata\API\AiravataIf {
@@ -11691,13 +11692,13 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("isWorkflowExistWithName failed: unknown result");
   }
 
-  public function publishDataResource(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Resource\ResourceModel $resourceModel)
+  public function publishDataResource(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Resource\DataResourceModel $resourceModel)
   {
     $this->send_publishDataResource($authzToken, $resourceModel);
-    $this->recv_publishDataResource();
+    return $this->recv_publishDataResource();
   }
 
-  public function send_publishDataResource(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Resource\ResourceModel $resourceModel)
+  public function send_publishDataResource(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Resource\DataResourceModel $resourceModel)
   {
     $args = new \Airavata\API\Airavata_publishDataResource_args();
     $args->authzToken = $authzToken;
@@ -11737,6 +11738,9 @@ class AiravataClient implements \Airavata\API\AiravataIf {
       $result->read($this->input_);
       $this->input_->readMessageEnd();
     }
+    if ($result->success !== null) {
+      return $result->success;
+    }
     if ($result->ire !== null) {
       throw $result->ire;
     }
@@ -11749,7 +11753,7 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     if ($result->ae !== null) {
       throw $result->ae;
     }
-    return;
+    throw new \Exception("publishDataResource failed: unknown result");
   }
 
 }
@@ -52291,7 +52295,7 @@ class Airavata_publishDataResource_args {
    */
   public $authzToken = null;
   /**
-   * @var \Airavata\Model\Data\Resource\ResourceModel
+   * @var \Airavata\Model\Data\Resource\DataResourceModel
    */
   public $resourceModel = null;
 
@@ -52306,7 +52310,7 @@ class Airavata_publishDataResource_args {
         2 => array(
           'var' => 'resourceModel',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Data\Resource\ResourceModel',
+          'class' => '\Airavata\Model\Data\Resource\DataResourceModel',
           ),
         );
     }
@@ -52349,7 +52353,7 @@ class Airavata_publishDataResource_args {
           break;
         case 2:
           if ($ftype == TType::STRUCT) {
-            $this->resourceModel = new \Airavata\Model\Data\Resource\ResourceModel();
+            $this->resourceModel = new \Airavata\Model\Data\Resource\DataResourceModel();
             $xfer += $this->resourceModel->read($input);
           } else {
             $xfer += $input->skip($ftype);
@@ -52395,6 +52399,10 @@ class Airavata_publishDataResource_result {
   static $_TSPEC;
 
   /**
+   * @var string
+   */
+  public $success = null;
+  /**
    * @var \Airavata\API\Error\InvalidRequestException
    */
   public $ire = null;
@@ -52414,6 +52422,10 @@ class Airavata_publishDataResource_result {
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
         1 => array(
           'var' => 'ire',
           'type' => TType::STRUCT,
@@ -52437,6 +52449,9 @@ class Airavata_publishDataResource_result {
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
       if (isset($vals['ire'])) {
         $this->ire = $vals['ire'];
       }
@@ -52471,6 +52486,13 @@ class Airavata_publishDataResource_result {
       }
       switch ($fid)
       {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         case 1:
           if ($ftype == TType::STRUCT) {
             $this->ire = new \Airavata\API\Error\InvalidRequestException();
@@ -52516,6 +52538,11 @@ class Airavata_publishDataResource_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_publishDataResource_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->ire !== null) {
       $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
       $xfer += $this->ire->write($output);
