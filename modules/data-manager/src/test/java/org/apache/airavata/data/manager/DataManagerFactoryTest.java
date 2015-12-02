@@ -20,9 +20,17 @@
 */
 package org.apache.airavata.data.manager;
 
+import junit.framework.Assert;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DataManagerFactoryTest {
     private final static Logger logger = LoggerFactory.getLogger(DataManagerFactoryTest.class);
+
+    @Test
+    public void testCreateDataManager(){
+        DataManager dataManager = DataManagerFactory.getDataManager();
+        Assert.assertNotNull(dataManager);
+    }
 }

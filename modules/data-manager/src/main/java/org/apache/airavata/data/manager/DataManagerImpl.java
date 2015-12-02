@@ -20,9 +20,30 @@
 */
 package org.apache.airavata.data.manager;
 
+import org.apache.airavata.model.data.resource.ResourceModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DataManagerImpl {
+public class DataManagerImpl implements DataManager{
     private final static Logger logger = LoggerFactory.getLogger(DataManagerImpl.class);
+
+    @Override
+    public boolean publishResource(ResourceModel resource) {
+        return false;
+    }
+
+    @Override
+    public boolean removeResource(String resourceId) {
+        return false;
+    }
+
+    @Override
+    public boolean copyResource(String resourceId, String destLocation) {
+        return false;
+    }
+
+    @Override
+    public ResourceModel getResource(String resourceId) {
+        return null;
+    }
 }
