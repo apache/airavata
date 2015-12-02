@@ -2688,6 +2688,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("isWorkflowExistWithName\n");
   }
 
+  void publishDataResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::ResourceModel& resourceModel) {
+    // Your implementation goes here
+    printf("publishDataResource\n");
+  }
+
 };
 
 int main(int argc, char **argv) {
