@@ -556,6 +556,7 @@
 				<module>modules/registry</module>
 				<module>modules/security</module>
 				<module>modules/credential-store</module>
+				<module>modules/data-manager</module>
 				<module>modules/orchestrator</module>
 				<module>modules/server</module>
 				<module>modules/test-suite</module>

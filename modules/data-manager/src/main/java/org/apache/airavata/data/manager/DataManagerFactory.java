@@ -25,4 +25,8 @@ import org.slf4j.LoggerFactory;
 
 public class DataManagerFactory {
     private final static Logger logger = LoggerFactory.getLogger(DataManagerFactory.class);
+
+    public static DataManager getDataManager(){
+        return new DataManagerImpl();
+    }
 }
