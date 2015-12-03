@@ -21,6 +21,28 @@
 
 package org.apache.airavata.gfac.bes.utils;
 
+import eu.emi.security.authn.x509.helpers.CertificateHelpers;
+import eu.emi.security.authn.x509.helpers.proxy.X509v3CertificateBuilder;
+import eu.emi.security.authn.x509.impl.CertificateUtils;
+import eu.emi.security.authn.x509.impl.CertificateUtils.Encoding;
+import eu.emi.security.authn.x509.impl.KeyAndCertCredential;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.credential.store.store.CredentialReader;
+import org.apache.airavata.gfac.bes.security.UNICORESecurityContext;
+import org.apache.airavata.gfac.core.GFacException;
+import org.apache.airavata.gfac.core.GFacUtils;
+import org.apache.airavata.gfac.core.RequestData;
+import org.apache.airavata.gfac.core.context.ProcessContext;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.security.auth.x500.X500Principal;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,43 +55,19 @@ import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.Random;
 
-import javax.security.auth.x500.X500Principal;
-
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.store.CredentialReader;
-import org.apache.airavata.gfac.core.GFacException;
-import org.apache.airavata.gfac.core.RequestData;
-import org.apache.airavata.gfac.bes.security.UNICORESecurityContext;
-import org.apache.airavata.gfac.bes.security.X509SecurityContext;
-import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.GFacUtils;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.bouncycastle.asn1.ASN1InputStream;
-import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import eu.emi.security.authn.x509.helpers.CertificateHelpers;
-import eu.emi.security.authn.x509.helpers.proxy.X509v3CertificateBuilder;
-import eu.emi.security.authn.x509.impl.CertificateUtils;
-import eu.emi.security.authn.x509.impl.KeyAndCertCredential;
-import eu.emi.security.authn.x509.impl.CertificateUtils.Encoding;
-
 public class SecurityUtils {
 	
 	private final static Logger logger = LoggerFactory.getLogger(SecurityUtils.class);
 	
 	
-	public static void addSecurityContext(JobExecutionContext jobExecutionContext) throws GFacException {
+	public static void addSecurityContext(ProcessContext processContext) throws GFacException {
 		
-	        if (!jobExecutionContext.getPreferredJobSubmissionProtocol().equals(JobSubmissionProtocol.UNICORE)) {
+	        if (!processContext.getJobSubmissionProtocol().equals(JobSubmissionProtocol.UNICORE)) {
 	            logger.error("This is a wrong method to invoke for UNICORE host types,please check your gfac-config.xml");
 	        }
 	        else
 	        {	
-	        	String credentialStoreToken = jobExecutionContext.getCredentialStoreToken(); // set by the framework
+	        	String credentialStoreToken = processContext.getTokenId(); // set by the framework
 	            RequestData requestData;
 				try {
 					requestData = new RequestData(ServerSettings.getDefaultUserGateway());
@@ -86,9 +84,7 @@ public class SecurityUtils {
 	            }
 	            
             	UNICORESecurityContext secCtx = new UNICORESecurityContext(credentialReader, requestData);
-            	jobExecutionContext.addSecurityContext(X509SecurityContext.X509_SECURITY_CONTEXT, secCtx);
-	            
-	            
+//            	processContext.addSecurityContext(X509SecurityContext.X509_SECURITY_CONTEXT, secCtx);
 	        }
 	}
 	
