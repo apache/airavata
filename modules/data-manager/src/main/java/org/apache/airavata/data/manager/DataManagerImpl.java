@@ -20,30 +20,73 @@
 */
 package org.apache.airavata.data.manager;
 
-import org.apache.airavata.model.data.resource.ResourceModel;
+import org.apache.airavata.model.data.resource.DataResourceModel;
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
+import org.apache.airavata.registry.cpi.DataCatalog;
+import org.apache.airavata.registry.cpi.DataCatalogException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DataManagerImpl implements DataManager{
     private final static Logger logger = LoggerFactory.getLogger(DataManagerImpl.class);
 
-    @Override
-    public boolean publishResource(ResourceModel resource) {
-        return false;
+    private DataCatalog dataCatalog;
+
+    public DataManagerImpl() throws DataManagerException {
+        try {
+            this.dataCatalog = RegistryFactory.getDataCatalog();
+        } catch (DataCatalogException e) {
+            logger.error(e.getMessage(), e);
+            throw new DataManagerException(e);
+        }
     }
 
     @Override
-    public boolean removeResource(String resourceId) {
-        return false;
+    public String publishDataResource(DataResourceModel resourceModel) throws DataManagerException{
+        try {
+            String resourceId = dataCatalog.publishResource(resourceModel);
+            return resourceId;
+        } catch (DataCatalogException e) {
+            logger.error(e.getMessage(), e);
+            throw new DataManagerException(e);
+        }
     }
 
     @Override
-    public boolean copyResource(String resourceId, String destLocation) {
-        return false;
+    public boolean removeDataResource(String resourceId) throws DataManagerException {
+        try {
+            boolean result = dataCatalog.removeResource(resourceId);
+            return result;
+        } catch (DataCatalogException e) {
+            logger.error(e.getMessage(), e);
+            throw new DataManagerException(e);
+        }
     }
 
     @Override
-    public ResourceModel getResource(String resourceId) {
-        return null;
+    public boolean updateDataResource(DataResourceModel dataResourceModel) throws DataManagerException {
+        try {
+            boolean result = dataCatalog.updateResource(dataResourceModel);
+            return result;
+        } catch (DataCatalogException e) {
+            logger.error(e.getMessage(), e);
+            throw new DataManagerException(e);
+        }
+    }
+
+    @Override
+    public DataResourceModel getDataResource(String resourceId) throws DataManagerException {
+        try {
+            DataResourceModel dataResource = dataCatalog.getResource(resourceId);
+            return dataResource;
+        } catch (DataCatalogException e) {
+            logger.error(e.getMessage(), e);
+            throw new DataManagerException(e);
+        }
+    }
+
+    @Override
+    public boolean copyDataResource(String resourceId, String destLocation) throws DataManagerException{
+        return false;
     }
 }
