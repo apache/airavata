@@ -65,12 +65,8 @@ void DataResourceModel::__set_lastModifiedTime(const int64_t val) {
 __isset.lastModifiedTime = true;
 }
 
-void DataResourceModel::__set_replicaLocations(const std::vector<DataReplicaLocationModel> & val) {
-  this->replicaLocations = val;
-}
-
-const char* DataResourceModel::ascii_fingerprint = "4F1DEF239FC3026BC5C89C567F1A9955";
-const uint8_t DataResourceModel::binary_fingerprint[16] = {0x4F,0x1D,0xEF,0x23,0x9F,0xC3,0x02,0x6B,0xC5,0xC8,0x9C,0x56,0x7F,0x1A,0x99,0x55};
+const char* DataResourceModel::ascii_fingerprint = "8F398C67A12C2B477911D779C3172BD6";
+const uint8_t DataResourceModel::binary_fingerprint[16] = {0x8F,0x39,0x8C,0x67,0xA1,0x2C,0x2B,0x47,0x79,0x11,0xD7,0x79,0xC3,0x17,0x2B,0xD6};
 
 uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -140,26 +136,6 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 7:
-        if (ftype == ::apache::thrift::protocol::T_LIST) {
-          {
-            this->replicaLocations.clear();
-            uint32_t _size0;
-            ::apache::thrift::protocol::TType _etype3;
-            xfer += iprot->readListBegin(_etype3, _size0);
-            this->replicaLocations.resize(_size0);
-            uint32_t _i4;
-            for (_i4 = 0; _i4 < _size0; ++_i4)
-            {
-              xfer += this->replicaLocations[_i4].read(iprot);
-            }
-            xfer += iprot->readListEnd();
-          }
-          this->__isset.replicaLocations = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -207,18 +183,6 @@ uint32_t DataResourceModel::write(::apache::thrift::protocol::TProtocol* oprot) 
     xfer += oprot->writeI64(this->lastModifiedTime);
     xfer += oprot->writeFieldEnd();
   }
-  xfer += oprot->writeFieldBegin("replicaLocations", ::apache::thrift::protocol::T_LIST, 7);
-  {
-    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->replicaLocations.size()));
-    std::vector<DataReplicaLocationModel> ::const_iterator _iter5;
-    for (_iter5 = this->replicaLocations.begin(); _iter5 != this->replicaLocations.end(); ++_iter5)
-    {
-      xfer += (*_iter5).write(oprot);
-    }
-    xfer += oprot->writeListEnd();
-  }
-  xfer += oprot->writeFieldEnd();
-
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
@@ -233,29 +197,26 @@ void swap(DataResourceModel &a, DataResourceModel &b) {
   swap(a.resourceSize, b.resourceSize);
   swap(a.creationTime, b.creationTime);
   swap(a.lastModifiedTime, b.lastModifiedTime);
-  swap(a.replicaLocations, b.replicaLocations);
   swap(a.__isset, b.__isset);
 }
 
-DataResourceModel::DataResourceModel(const DataResourceModel& other6) {
-  resourceId = other6.resourceId;
-  resourceName = other6.resourceName;
-  resourceDescription = other6.resourceDescription;
-  resourceSize = other6.resourceSize;
-  creationTime = other6.creationTime;
-  lastModifiedTime = other6.lastModifiedTime;
-  replicaLocations = other6.replicaLocations;
-  __isset = other6.__isset;
+DataResourceModel::DataResourceModel(const DataResourceModel& other0) {
+  resourceId = other0.resourceId;
+  resourceName = other0.resourceName;
+  resourceDescription = other0.resourceDescription;
+  resourceSize = other0.resourceSize;
+  creationTime = other0.creationTime;
+  lastModifiedTime = other0.lastModifiedTime;
+  __isset = other0.__isset;
 }
-DataResourceModel& DataResourceModel::operator=(const DataResourceModel& other7) {
-  resourceId = other7.resourceId;
-  resourceName = other7.resourceName;
-  resourceDescription = other7.resourceDescription;
-  resourceSize = other7.resourceSize;
-  creationTime = other7.creationTime;
-  lastModifiedTime = other7.lastModifiedTime;
-  replicaLocations = other7.replicaLocations;
-  __isset = other7.__isset;
+DataResourceModel& DataResourceModel::operator=(const DataResourceModel& other1) {
+  resourceId = other1.resourceId;
+  resourceName = other1.resourceName;
+  resourceDescription = other1.resourceDescription;
+  resourceSize = other1.resourceSize;
+  creationTime = other1.creationTime;
+  lastModifiedTime = other1.lastModifiedTime;
+  __isset = other1.__isset;
   return *this;
 }
 std::ostream& operator<<(std::ostream& out, const DataResourceModel& obj) {
@@ -267,7 +228,6 @@ std::ostream& operator<<(std::ostream& out, const DataResourceModel& obj) {
   out << ", " << "resourceSize="; (obj.__isset.resourceSize ? (out << to_string(obj.resourceSize)) : (out << "<null>"));
   out << ", " << "creationTime="; (obj.__isset.creationTime ? (out << to_string(obj.creationTime)) : (out << "<null>"));
   out << ", " << "lastModifiedTime="; (obj.__isset.lastModifiedTime ? (out << to_string(obj.lastModifiedTime)) : (out << "<null>"));
-  out << ", " << "replicaLocations=" << to_string(obj.replicaLocations);
   out << ")";
   return out;
 }
@@ -387,14 +347,14 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->dataLocations.clear();
-            uint32_t _size8;
-            ::apache::thrift::protocol::TType _etype11;
-            xfer += iprot->readListBegin(_etype11, _size8);
-            this->dataLocations.resize(_size8);
-            uint32_t _i12;
-            for (_i12 = 0; _i12 < _size8; ++_i12)
+            uint32_t _size2;
+            ::apache::thrift::protocol::TType _etype5;
+            xfer += iprot->readListBegin(_etype5, _size2);
+            this->dataLocations.resize(_size2);
+            uint32_t _i6;
+            for (_i6 = 0; _i6 < _size2; ++_i6)
             {
-              xfer += iprot->readString(this->dataLocations[_i12]);
+              xfer += iprot->readString(this->dataLocations[_i6]);
             }
             xfer += iprot->readListEnd();
           }
@@ -454,10 +414,10 @@ uint32_t DataReplicaLocationModel::write(::apache::thrift::protocol::TProtocol* 
     xfer += oprot->writeFieldBegin("dataLocations", ::apache::thrift::protocol::T_LIST, 7);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->dataLocations.size()));
-      std::vector<std::string> ::const_iterator _iter13;
-      for (_iter13 = this->dataLocations.begin(); _iter13 != this->dataLocations.end(); ++_iter13)
+      std::vector<std::string> ::const_iterator _iter7;
+      for (_iter7 = this->dataLocations.begin(); _iter7 != this->dataLocations.end(); ++_iter7)
       {
-        xfer += oprot->writeString((*_iter13));
+        xfer += oprot->writeString((*_iter7));
       }
       xfer += oprot->writeListEnd();
     }
@@ -481,25 +441,25 @@ void swap(DataReplicaLocationModel &a, DataReplicaLocationModel &b) {
   swap(a.__isset, b.__isset);
 }
 
-DataReplicaLocationModel::DataReplicaLocationModel(const DataReplicaLocationModel& other14) {
-  replicaId = other14.replicaId;
-  resourceId = other14.resourceId;
-  replicaName = other14.replicaName;
-  replicaDescription = other14.replicaDescription;
-  creationTime = other14.creationTime;
-  lastModifiedTime = other14.lastModifiedTime;
-  dataLocations = other14.dataLocations;
-  __isset = other14.__isset;
+DataReplicaLocationModel::DataReplicaLocationModel(const DataReplicaLocationModel& other8) {
+  replicaId = other8.replicaId;
+  resourceId = other8.resourceId;
+  replicaName = other8.replicaName;
+  replicaDescription = other8.replicaDescription;
+  creationTime = other8.creationTime;
+  lastModifiedTime = other8.lastModifiedTime;
+  dataLocations = other8.dataLocations;
+  __isset = other8.__isset;
 }
-DataReplicaLocationModel& DataReplicaLocationModel::operator=(const DataReplicaLocationModel& other15) {
-  replicaId = other15.replicaId;
-  resourceId = other15.resourceId;
-  replicaName = other15.replicaName;
-  replicaDescription = other15.replicaDescription;
-  creationTime = other15.creationTime;
-  lastModifiedTime = other15.lastModifiedTime;
-  dataLocations = other15.dataLocations;
-  __isset = other15.__isset;
+DataReplicaLocationModel& DataReplicaLocationModel::operator=(const DataReplicaLocationModel& other9) {
+  replicaId = other9.replicaId;
+  resourceId = other9.resourceId;
+  replicaName = other9.replicaName;
+  replicaDescription = other9.replicaDescription;
+  creationTime = other9.creationTime;
+  lastModifiedTime = other9.lastModifiedTime;
+  dataLocations = other9.dataLocations;
+  __isset = other9.__isset;
   return *this;
 }
 std::ostream& operator<<(std::ostream& out, const DataReplicaLocationModel& obj) {

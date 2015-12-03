@@ -29,8 +29,7 @@ struct DataResourceModel {
     3: optional string resourceDescription,
     4: optional i32 resourceSize,
     5: optional i64 creationTime,
-    6: optional i64 lastModifiedTime,
-    7: list<DataReplicaLocationModel> replicaLocations
+    6: optional i64 lastModifiedTime
 }
 
 struct DataReplicaLocationModel {

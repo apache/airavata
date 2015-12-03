@@ -20,24 +20,28 @@
  */
 package org.apache.airavata.data.manager;
 
+import org.apache.airavata.model.data.resource.DataReplicaLocationModel;
 import org.apache.airavata.model.data.resource.DataResourceModel;
+import org.apache.airavata.registry.cpi.DataCatalogException;
+
+import java.util.List;
 
 public interface DataManager {
 
     /**
-     * To create a replica entry for an already existing file(s). This is how the system comes to know about already
+     * To create a new dataResourceModel. This is how the system comes to know about already
      * existing resources
-     * @param resource
+     * @param dataResourceModel
      * @return
      */
-    String publishDataResource(DataResourceModel resource) throws DataManagerException;
+    String publishResource(DataResourceModel dataResourceModel) throws DataManagerException;
 
     /**
      * To remove a resource entry from the replica catalog
      * @param resourceId
      * @return
      */
-    boolean removeDataResource(String resourceId) throws DataManagerException;
+    boolean removeResource(String resourceId) throws DataManagerException;
 
 
     /**
@@ -46,22 +50,72 @@ public interface DataManager {
      * @return
      * @throws DataManagerException
      */
-    boolean updateDataResource(DataResourceModel dataResourceModel) throws DataManagerException;
+    boolean updateResource(DataResourceModel dataResourceModel) throws DataManagerException;
 
     /**
      * To retrieve a resource object providing the resourceId
      * @param resourceId
      * @return
      */
-    DataResourceModel getDataResource(String resourceId) throws DataManagerException;
+    DataResourceModel getResource(String resourceId) throws DataManagerException;
 
     /**
      * To copy an already existing resource to a specified location. After successful copying the new location will be
-     * added to the available replica locations of the resource
+     * added to the available replica locations of the resource. The replica to copy will be selected automatically based
+     * on performance and availability metrics.
      * @param resourceId
      * @param destLocation
      * @return
      */
-    boolean copyDataResource(String resourceId, String destLocation) throws DataManagerException;
+    boolean copyResource(String resourceId, String destLocation) throws DataManagerException;
 
+    /**
+     * To copy an already existing resource from the specified replica location to a specified location. After successful
+     * copying the new location will be added to the available replica locations of the resource
+     * @param resourceId
+     * @param replicaLocationModel
+     * @param destLocation
+     * @return
+     * @throws DataManagerException
+     */
+    boolean copyResource(String resourceId, DataReplicaLocationModel replicaLocationModel, String destLocation)
+            throws DataManagerException;
+
+    /**
+     * To create a new data replica location. This is how the system comes to know about already
+     * existing resources
+     * @param dataReplicaLocationModel
+     * @return
+     */
+    String publishReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws DataManagerException;
+
+    /**
+     * To remove a replica entry from the replica catalog
+     * @param replicaId
+     * @return
+     */
+    boolean removeReplicaLocation(String replicaId) throws DataManagerException;
+
+    /**
+     * To update an existing data replica model
+     * @param dataReplicaLocationModel
+     * @return
+     * @throws DataManagerException
+     */
+    boolean updateReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws DataManagerException;
+
+    /**
+     * To retrieve a replica object providing the replicaId
+     * @param replicaId
+     * @return
+     */
+    DataReplicaLocationModel getReplicaLocation(String replicaId) throws DataManagerException;
+
+    /**
+     * To retrieve all the replica entries for a given resource id
+     * @param resourceId
+     * @return
+     * @throws DataCatalogException
+     */
+    List<DataReplicaLocationModel> getAllReplicaLocations(String resourceId) throws DataManagerException;
 }
