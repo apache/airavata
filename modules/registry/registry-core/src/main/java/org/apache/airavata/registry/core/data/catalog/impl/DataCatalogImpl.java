@@ -23,6 +23,7 @@ package org.apache.airavata.registry.core.data.catalog.impl;
 
 import org.apache.airavata.model.data.resource.DataReplicaLocationModel;
 import org.apache.airavata.model.data.resource.DataResourceModel;
+import org.apache.airavata.registry.core.data.catalog.model.DataReplicaLocation;
 import org.apache.airavata.registry.core.data.catalog.model.DataResource;
 import org.apache.airavata.registry.core.data.catalog.utils.DataCatalogJPAUtils;
 import org.apache.airavata.registry.core.data.catalog.utils.ThriftDataModelConversion;
@@ -32,6 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 public class DataCatalogImpl implements DataCatalog {
@@ -42,10 +46,6 @@ public class DataCatalogImpl implements DataCatalog {
     public String publishResource(DataResourceModel resourceModel) throws DataCatalogException {
         String resourceId = UUID.randomUUID().toString();
         resourceModel.setResourceId(resourceId);
-        for(DataReplicaLocationModel replicaLocationModel : resourceModel.getReplicaLocations()){
-            replicaLocationModel.setReplicaId(UUID.randomUUID().toString());
-            replicaLocationModel.setResourceId(resourceId);
-        }
         DataResource dataResource = ThriftDataModelConversion.getDataResource(resourceModel);
         EntityManager em = null;
         try {
@@ -102,15 +102,8 @@ public class DataCatalogImpl implements DataCatalog {
             DataResource dataResource = em.find(DataResource.class, resourceModel.getResourceId());
             if(dataResource == null)
                 return false;
-            //FIXME - Every time we delete and create
             em.getTransaction().begin();
-            em.remove(dataResource);
-            em.flush();
-            resourceModel.getReplicaLocations().stream().forEach(rl->{
-                rl.setReplicaId(UUID.randomUUID().toString());
-                rl.setResourceId(resourceModel.getResourceId());
-            });
-            em.persist(ThriftDataModelConversion.getDataResource(resourceModel));
+            em.merge(ThriftDataModelConversion.getUpdatedDataResource(resourceModel, dataResource));
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
@@ -134,6 +127,129 @@ public class DataCatalogImpl implements DataCatalog {
             em = DataCatalogJPAUtils.getEntityManager();
             DataResource dataResource = em.find(DataResource.class, resourceId);
             return ThriftDataModelConversion.getDataResourceModel(dataResource);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new DataCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+    }
+
+    @Override
+    public String publishReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws DataCatalogException {
+        String replicaId = UUID.randomUUID().toString();
+        dataReplicaLocationModel.setReplicaId(replicaId);
+        DataReplicaLocation replicaLocation = ThriftDataModelConversion.getDataReplicaLocation(dataReplicaLocationModel);
+        EntityManager em = null;
+        try {
+            em = DataCatalogJPAUtils.getEntityManager();
+            em.getTransaction().begin();
+            em.persist(replicaLocation);
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new DataCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+        return replicaId;
+    }
+
+    @Override
+    public boolean removeReplicaLocation(String replicaId) throws DataCatalogException {
+        EntityManager em = null;
+        try {
+            em = DataCatalogJPAUtils.getEntityManager();
+            DataReplicaLocation replicaLocation = em.find(DataReplicaLocation.class, replicaId);
+            if(replicaLocation == null)
+                return false;
+            em.getTransaction().begin();
+            em.remove(replicaLocation);
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new DataCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean updateReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws DataCatalogException {
+        EntityManager em = null;
+        try {
+            em = DataCatalogJPAUtils.getEntityManager();
+            DataReplicaLocation dataReplicaLocation = em.find(DataReplicaLocation.class, dataReplicaLocationModel.getReplicaId());
+            if(dataReplicaLocation == null)
+                return false;
+            em.getTransaction().begin();
+            em.merge(ThriftDataModelConversion.getUpdatedDataReplicaLocation(dataReplicaLocationModel, dataReplicaLocation));
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new DataCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public DataReplicaLocationModel getReplicaLocation(String replicaId) throws DataCatalogException {
+        EntityManager em = null;
+        try {
+            em = DataCatalogJPAUtils.getEntityManager();
+            DataReplicaLocation replicaLocation = em.find(DataReplicaLocation.class, replicaId);
+            return ThriftDataModelConversion.getDataReplicaLocationModel(replicaLocation);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new DataCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+    }
+
+    @Override
+    public List<DataReplicaLocationModel> getAllReplicaLocations(String resourceId) throws DataCatalogException {
+        EntityManager em = null;
+        try {
+            em = DataCatalogJPAUtils.getEntityManager();
+            DataResource dataResource = em.find(DataResource.class, resourceId);
+            if(dataResource == null)
+                return null;
+            ArrayList<DataReplicaLocationModel> dataReplicaLocationModels = new ArrayList<>();
+            dataResource.getDataReplicaLocations().stream().forEach(rl->dataReplicaLocationModels
+                    .add(ThriftDataModelConversion.getDataReplicaLocationModel(rl)));
+            return dataReplicaLocationModels;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new DataCatalogException(e);

@@ -26,7 +26,6 @@ class DataResourceModel:
    - resourceSize
    - creationTime
    - lastModifiedTime
-   - replicaLocations
   """
 
   thrift_spec = (
@@ -37,17 +36,15 @@ class DataResourceModel:
     (4, TType.I32, 'resourceSize', None, None, ), # 4
     (5, TType.I64, 'creationTime', None, None, ), # 5
     (6, TType.I64, 'lastModifiedTime', None, None, ), # 6
-    (7, TType.LIST, 'replicaLocations', (TType.STRUCT,(DataReplicaLocationModel, DataReplicaLocationModel.thrift_spec)), None, ), # 7
   )
 
-  def __init__(self, resourceId=None, resourceName=None, resourceDescription=None, resourceSize=None, creationTime=None, lastModifiedTime=None, replicaLocations=None,):
+  def __init__(self, resourceId=None, resourceName=None, resourceDescription=None, resourceSize=None, creationTime=None, lastModifiedTime=None,):
     self.resourceId = resourceId
     self.resourceName = resourceName
     self.resourceDescription = resourceDescription
     self.resourceSize = resourceSize
     self.creationTime = creationTime
     self.lastModifiedTime = lastModifiedTime
-    self.replicaLocations = replicaLocations
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -88,17 +85,6 @@ class DataResourceModel:
           self.lastModifiedTime = iprot.readI64();
         else:
           iprot.skip(ftype)
-      elif fid == 7:
-        if ftype == TType.LIST:
-          self.replicaLocations = []
-          (_etype3, _size0) = iprot.readListBegin()
-          for _i4 in xrange(_size0):
-            _elem5 = DataReplicaLocationModel()
-            _elem5.read(iprot)
-            self.replicaLocations.append(_elem5)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -133,13 +119,6 @@ class DataResourceModel:
       oprot.writeFieldBegin('lastModifiedTime', TType.I64, 6)
       oprot.writeI64(self.lastModifiedTime)
       oprot.writeFieldEnd()
-    if self.replicaLocations is not None:
-      oprot.writeFieldBegin('replicaLocations', TType.LIST, 7)
-      oprot.writeListBegin(TType.STRUCT, len(self.replicaLocations))
-      for iter6 in self.replicaLocations:
-        iter6.write(oprot)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -155,7 +134,6 @@ class DataResourceModel:
     value = (value * 31) ^ hash(self.resourceSize)
     value = (value * 31) ^ hash(self.creationTime)
     value = (value * 31) ^ hash(self.lastModifiedTime)
-    value = (value * 31) ^ hash(self.replicaLocations)
     return value
 
   def __repr__(self):
@@ -243,10 +221,10 @@ class DataReplicaLocationModel:
       elif fid == 7:
         if ftype == TType.LIST:
           self.dataLocations = []
-          (_etype10, _size7) = iprot.readListBegin()
-          for _i11 in xrange(_size7):
-            _elem12 = iprot.readString();
-            self.dataLocations.append(_elem12)
+          (_etype3, _size0) = iprot.readListBegin()
+          for _i4 in xrange(_size0):
+            _elem5 = iprot.readString();
+            self.dataLocations.append(_elem5)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -287,8 +265,8 @@ class DataReplicaLocationModel:
     if self.dataLocations is not None:
       oprot.writeFieldBegin('dataLocations', TType.LIST, 7)
       oprot.writeListBegin(TType.STRING, len(self.dataLocations))
-      for iter13 in self.dataLocations:
-        oprot.writeString(iter13)
+      for iter6 in self.dataLocations:
+        oprot.writeString(iter6)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()

@@ -30,6 +30,7 @@ import java.sql.Timestamp;
 @Table(name = "DATA_REPLICA_LOCATION")
 public class DataReplicaLocation {
     private final static Logger logger = LoggerFactory.getLogger(DataReplicaLocation.class);
+    private String replicaId;
     private String resourceId;
     private String replicaName;
     private String replicaDescription;
@@ -38,6 +39,16 @@ public class DataReplicaLocation {
     private Timestamp lastModifiedTime;
 
     private DataResource dataResource;
+
+    @Id
+    @Column(name = "REPLICA_ID")
+    public String getReplicaId() {
+        return replicaId;
+    }
+
+    public void setReplicaId(String replicaId) {
+        this.replicaId = replicaId;
+    }
 
     @Column(name = "RESOURCE_ID")
     public String getResourceId() {

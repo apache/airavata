@@ -41,21 +41,20 @@ class DataResourceModel;
 class DataReplicaLocationModel;
 
 typedef struct _DataResourceModel__isset {
-  _DataResourceModel__isset() : resourceId(false), resourceName(false), resourceDescription(false), resourceSize(false), creationTime(false), lastModifiedTime(false), replicaLocations(false) {}
+  _DataResourceModel__isset() : resourceId(false), resourceName(false), resourceDescription(false), resourceSize(false), creationTime(false), lastModifiedTime(false) {}
   bool resourceId :1;
   bool resourceName :1;
   bool resourceDescription :1;
   bool resourceSize :1;
   bool creationTime :1;
   bool lastModifiedTime :1;
-  bool replicaLocations :1;
 } _DataResourceModel__isset;
 
 class DataResourceModel {
  public:
 
-  static const char* ascii_fingerprint; // = "4F1DEF239FC3026BC5C89C567F1A9955";
-  static const uint8_t binary_fingerprint[16]; // = {0x4F,0x1D,0xEF,0x23,0x9F,0xC3,0x02,0x6B,0xC5,0xC8,0x9C,0x56,0x7F,0x1A,0x99,0x55};
+  static const char* ascii_fingerprint; // = "8F398C67A12C2B477911D779C3172BD6";
+  static const uint8_t binary_fingerprint[16]; // = {0x8F,0x39,0x8C,0x67,0xA1,0x2C,0x2B,0x47,0x79,0x11,0xD7,0x79,0xC3,0x17,0x2B,0xD6};
 
   DataResourceModel(const DataResourceModel&);
   DataResourceModel& operator=(const DataResourceModel&);
@@ -69,7 +68,6 @@ class DataResourceModel {
   int32_t resourceSize;
   int64_t creationTime;
   int64_t lastModifiedTime;
-  std::vector<DataReplicaLocationModel>  replicaLocations;
 
   _DataResourceModel__isset __isset;
 
@@ -84,8 +82,6 @@ class DataResourceModel {
   void __set_creationTime(const int64_t val);
 
   void __set_lastModifiedTime(const int64_t val);
-
-  void __set_replicaLocations(const std::vector<DataReplicaLocationModel> & val);
 
   bool operator == (const DataResourceModel & rhs) const
   {
@@ -112,8 +108,6 @@ class DataResourceModel {
     if (__isset.lastModifiedTime != rhs.__isset.lastModifiedTime)
       return false;
     else if (__isset.lastModifiedTime && !(lastModifiedTime == rhs.lastModifiedTime))
-      return false;
-    if (!(replicaLocations == rhs.replicaLocations))
       return false;
     return true;
   }

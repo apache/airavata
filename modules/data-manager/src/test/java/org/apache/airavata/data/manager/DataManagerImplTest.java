@@ -41,7 +41,7 @@ public class DataManagerImplTest {
     private static DataCatInit dataCatInit;
     private static DataManager dataManager;
     private static DataResourceModel dataResourceModel;
-
+    private static DataReplicaLocationModel dataReplicaLocationModel;
     @BeforeClass
     public static void setUp() {
         try {
@@ -53,14 +53,11 @@ public class DataManagerImplTest {
             dataManager = DataManagerFactory.getDataManager();
             dataResourceModel = new DataResourceModel();
             dataResourceModel.setResourceName("test-file.txt");
-            List<DataReplicaLocationModel> replicaLocationModelList = new ArrayList<>();
-            DataReplicaLocationModel dataReplicaLocationModel = new DataReplicaLocationModel();
+            dataReplicaLocationModel = new DataReplicaLocationModel();
             dataReplicaLocationModel.setReplicaName("1-st-replica");
             ArrayList<String> dataLocations = new ArrayList<>();
             dataLocations.add("scp://g75.iu.xsede.org:/var/www/portal/experimentData/test-file.txt");
             dataReplicaLocationModel.setDataLocations(dataLocations);
-            replicaLocationModelList.add(dataReplicaLocationModel);
-            dataResourceModel.setReplicaLocations(replicaLocationModelList);
         } catch (DataManagerException e) {
             logger.error(e.getMessage(), e);
         }
@@ -75,7 +72,7 @@ public class DataManagerImplTest {
     @Test
     public void testPublishDataResource(){
         try {
-            String resourceId = dataManager.publishDataResource(dataResourceModel);
+            String resourceId = dataManager.publishResource(dataResourceModel);
             org.junit.Assert.assertNotNull(resourceId);
         } catch (DataManagerException e) {
             e.printStackTrace();
@@ -86,13 +83,13 @@ public class DataManagerImplTest {
     @Test
     public void testRemoveDataResource(){
         try {
-            boolean result = dataManager.removeDataResource("234234234");
+            boolean result = dataManager.removeResource("234234234");
             Assert.assertFalse(result);
-            String resourceId = dataManager.publishDataResource(dataResourceModel);
+            String resourceId = dataManager.publishResource(dataResourceModel);
             Assert.assertNotNull(resourceId);
-            result = dataManager.removeDataResource(resourceId);
+            result = dataManager.removeResource(resourceId);
             Assert.assertTrue(result);
-            result = dataManager.removeDataResource(resourceId);
+            result = dataManager.removeResource(resourceId);
             Assert.assertFalse(result);
         } catch (DataManagerException e) {
             e.printStackTrace();
@@ -103,11 +100,10 @@ public class DataManagerImplTest {
     @Test
     public void testGetDataResource(){
         try {
-            String resourceId = dataManager.publishDataResource(dataResourceModel);
+            String resourceId = dataManager.publishResource(dataResourceModel);
             Assert.assertNotNull(resourceId);
-            DataResourceModel persistedCopy = dataManager.getDataResource(resourceId);
+            DataResourceModel persistedCopy = dataManager.getResource(resourceId);
             Assert.assertNotNull(persistedCopy);
-            Assert.assertTrue(persistedCopy.getReplicaLocations().size()==1);
         } catch (DataManagerException e) {
             e.printStackTrace();
             Assert.fail();
@@ -118,21 +114,87 @@ public class DataManagerImplTest {
     public void testUpdateDataResource(){
         try {
             dataResourceModel.setResourceId(UUID.randomUUID().toString());
-            boolean result = dataManager.updateDataResource(dataResourceModel);
+            boolean result = dataManager.updateResource(dataResourceModel);
             Assert.assertFalse(result);
-            dataManager.publishDataResource(dataResourceModel);
-            DataReplicaLocationModel dataReplicaLocationModel = new DataReplicaLocationModel();
-            dataReplicaLocationModel.setReplicaName("2-nd-replica");
-            ArrayList<String> dataLocations = new ArrayList<>();
-            dataLocations.add("scp://g175.iu.xsede.org:/var/www/portal/experimentData/test-file.txt");
-            dataResourceModel.getReplicaLocations().add(dataReplicaLocationModel);
-            dataManager.updateDataResource(dataResourceModel);
-            dataResourceModel = dataManager.getDataResource(dataResourceModel.getResourceId());
-            Assert.assertTrue(dataResourceModel.getReplicaLocations().size()==2);
-            dataResourceModel.getReplicaLocations().remove(1);
-            dataManager.updateDataResource(dataResourceModel);
-            dataResourceModel = dataManager.getDataResource(dataResourceModel.getResourceId());
-            Assert.assertTrue(dataResourceModel.getReplicaLocations().size()==1);
+            dataManager.publishResource(dataResourceModel);
+            dataResourceModel.setResourceName("updated-name");
+            dataManager.updateResource(dataResourceModel);
+            dataResourceModel = dataManager.getResource(dataResourceModel.getResourceId());
+            Assert.assertTrue(dataResourceModel.getResourceName().equals("updated-name"));
+        } catch (DataManagerException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void testPublishReplicaLocation(){
+        try {
+            String resourceId = dataManager.publishResource(dataResourceModel);
+            dataReplicaLocationModel.setResourceId(resourceId);
+            String replicaId = dataManager.publishReplicaLocation(dataReplicaLocationModel);
+            org.junit.Assert.assertNotNull(replicaId);
+        } catch (DataManagerException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void testRemoveReplicaLocation(){
+        try {
+            String resourceId = dataManager.publishResource(dataResourceModel);
+            dataReplicaLocationModel.setResourceId(resourceId);
+            String replicaId = dataManager.publishReplicaLocation(dataReplicaLocationModel);
+            boolean result = dataManager.removeReplicaLocation(replicaId);
+            Assert.assertTrue(result);
+            result = dataManager.removeReplicaLocation(dataReplicaLocationModel.getReplicaId());
+            Assert.assertFalse(result);
+        } catch (DataManagerException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void testGetReplicaLocation(){
+        try {
+            String resourceId = dataManager.publishResource(dataResourceModel);
+            dataReplicaLocationModel.setResourceId(resourceId);
+            String replicaId = dataManager.publishReplicaLocation(dataReplicaLocationModel);
+            DataReplicaLocationModel persistedCopy = dataManager.getReplicaLocation(replicaId);
+            Assert.assertNotNull(persistedCopy);
+        } catch (DataManagerException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void testUpdateReplicaLocation(){
+        try {
+            String resourceId = dataManager.publishResource(dataResourceModel);
+            dataReplicaLocationModel.setResourceId(resourceId);
+            String replicaId = dataManager.publishReplicaLocation(dataReplicaLocationModel);
+            DataReplicaLocationModel persistedCopy = dataManager.getReplicaLocation(replicaId);
+            persistedCopy.setReplicaDescription("updated-description");
+            dataManager.updateReplicaLocation(persistedCopy);
+            persistedCopy = dataManager.getReplicaLocation(replicaId);
+            Assert.assertTrue(persistedCopy.getReplicaDescription().equals("updated-description"));
+        } catch (DataManagerException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void testGetAllReplicaLocations(){
+        try {
+            String resourceId = dataManager.publishResource(dataResourceModel);
+            dataReplicaLocationModel.setResourceId(resourceId);
+            String replicaId = dataManager.publishReplicaLocation(dataReplicaLocationModel);
+            List<DataReplicaLocationModel> replicaLocationModelList = dataManager.getAllReplicaLocations(resourceId);
+            Assert.assertTrue(replicaLocationModelList.get(0).getReplicaId().equals(replicaId));
         } catch (DataManagerException e) {
             e.printStackTrace();
             Assert.fail();

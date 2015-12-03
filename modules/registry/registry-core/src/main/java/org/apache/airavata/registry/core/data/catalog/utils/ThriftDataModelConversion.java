@@ -30,8 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class ThriftDataModelConversion {
 
@@ -46,8 +44,6 @@ public class ThriftDataModelConversion {
             dataResourceModel.setResourceSize(dataResource.getResourceSize());
             dataResourceModel.setCreationTime(dataResource.getCreationTime().getTime());
             dataResourceModel.setLastModifiedTime(dataResource.getLastModifiedTime().getTime());
-            dataResource.getDataReplicaLocations().stream().forEach(rl->dataResourceModel
-                    .addToReplicaLocations(getDataReplicaLocationModel(rl)));
             return dataResourceModel;
         }
         return null;
@@ -56,23 +52,25 @@ public class ThriftDataModelConversion {
     public static DataResource getDataResource(DataResourceModel dataResourceModel){
         if(dataResourceModel != null){
             DataResource dataResource = new DataResource();
-            dataResource.setResourceId(dataResourceModel.getResourceId());
-            dataResource.setResourceName(dataResourceModel.getResourceName());
-            dataResource.setResourceDescription(dataResourceModel.getResourceDescription());
-            dataResource.setResourceSize(dataResourceModel.getResourceSize());
-            dataResource.setCreationTime(new Timestamp(dataResourceModel.getCreationTime()));
-            dataResource.setLastModifiedTime(new Timestamp(dataResourceModel.getLastModifiedTime()));
-            List<DataReplicaLocation> replicaLocationList = dataResourceModel.getReplicaLocations()
-                    .stream().map(ThriftDataModelConversion::getDataReplicaLocation).collect(Collectors.toList());
-            dataResource.setDataReplicaLocations(replicaLocationList);
-            return dataResource;
+            return getUpdatedDataResource(dataResourceModel, dataResource);
         }
         return null;
+    }
+
+    public static DataResource getUpdatedDataResource(DataResourceModel dataResourceModel, DataResource dataResource){
+        dataResource.setResourceId(dataResourceModel.getResourceId());
+        dataResource.setResourceName(dataResourceModel.getResourceName());
+        dataResource.setResourceDescription(dataResourceModel.getResourceDescription());
+        dataResource.setResourceSize(dataResourceModel.getResourceSize());
+        dataResource.setCreationTime(new Timestamp(dataResourceModel.getCreationTime()));
+        dataResource.setLastModifiedTime(new Timestamp(dataResourceModel.getLastModifiedTime()));
+        return dataResource;
     }
 
     public static DataReplicaLocationModel getDataReplicaLocationModel(DataReplicaLocation replicaLocation){
         if (replicaLocation != null) {
             DataReplicaLocationModel replicaLocationModel = new DataReplicaLocationModel();
+            replicaLocationModel.setReplicaId(replicaLocation.getReplicaId());
             replicaLocationModel.setResourceId(replicaLocation.getResourceId());
             replicaLocationModel.setReplicaName(replicaLocation.getReplicaName());
             replicaLocationModel.setReplicaDescription(replicaLocation.getReplicaDescription());
@@ -92,14 +90,20 @@ public class ThriftDataModelConversion {
     public static DataReplicaLocation getDataReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel){
         if(dataReplicaLocationModel != null){
             DataReplicaLocation dataReplicaLocation = new DataReplicaLocation();
-            dataReplicaLocation.setResourceId(dataReplicaLocationModel.getResourceId());
-            dataReplicaLocation.setReplicaName(dataReplicaLocationModel.getReplicaName());
-            dataReplicaLocation.setReplicaDescription(dataReplicaLocationModel.getReplicaDescription());
-            dataReplicaLocation.setDataLocations(StringUtils.join(dataReplicaLocationModel.getDataLocations(), ','));
-            dataReplicaLocation.setCreationTime(new Timestamp(dataReplicaLocationModel.getCreationTime()));
-            dataReplicaLocation.setLastModifiedTime(new Timestamp(dataReplicaLocationModel.getLastModifiedTime()));
-            return dataReplicaLocation;
+            return getUpdatedDataReplicaLocation(dataReplicaLocationModel, dataReplicaLocation);
         }
         return null;
+    }
+
+    public static DataReplicaLocation getUpdatedDataReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel,
+                                                                    DataReplicaLocation dataReplicaLocation){
+        dataReplicaLocation.setReplicaId(dataReplicaLocationModel.getReplicaId());
+        dataReplicaLocation.setResourceId(dataReplicaLocationModel.getResourceId());
+        dataReplicaLocation.setReplicaName(dataReplicaLocationModel.getReplicaName());
+        dataReplicaLocation.setReplicaDescription(dataReplicaLocationModel.getReplicaDescription());
+        dataReplicaLocation.setDataLocations(StringUtils.join(dataReplicaLocationModel.getDataLocations(), ','));
+        dataReplicaLocation.setCreationTime(new Timestamp(dataReplicaLocationModel.getCreationTime()));
+        dataReplicaLocation.setLastModifiedTime(new Timestamp(dataReplicaLocationModel.getLastModifiedTime()));
+        return dataReplicaLocation;
     }
 }

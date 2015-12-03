@@ -44,10 +44,6 @@ class DataResourceModel {
    * @var int
    */
   public $lastModifiedTime = null;
-  /**
-   * @var \Airavata\Model\Data\Resource\DataReplicaLocationModel[]
-   */
-  public $replicaLocations = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -76,15 +72,6 @@ class DataResourceModel {
           'var' => 'lastModifiedTime',
           'type' => TType::I64,
           ),
-        7 => array(
-          'var' => 'replicaLocations',
-          'type' => TType::LST,
-          'etype' => TType::STRUCT,
-          'elem' => array(
-            'type' => TType::STRUCT,
-            'class' => '\Airavata\Model\Data\Resource\DataReplicaLocationModel',
-            ),
-          ),
         );
     }
     if (is_array($vals)) {
@@ -105,9 +92,6 @@ class DataResourceModel {
       }
       if (isset($vals['lastModifiedTime'])) {
         $this->lastModifiedTime = $vals['lastModifiedTime'];
-      }
-      if (isset($vals['replicaLocations'])) {
-        $this->replicaLocations = $vals['replicaLocations'];
       }
     }
   }
@@ -173,24 +157,6 @@ class DataResourceModel {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 7:
-          if ($ftype == TType::LST) {
-            $this->replicaLocations = array();
-            $_size0 = 0;
-            $_etype3 = 0;
-            $xfer += $input->readListBegin($_etype3, $_size0);
-            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
-            {
-              $elem5 = null;
-              $elem5 = new \Airavata\Model\Data\Resource\DataReplicaLocationModel();
-              $xfer += $elem5->read($input);
-              $this->replicaLocations []= $elem5;
-            }
-            $xfer += $input->readListEnd();
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -232,23 +198,6 @@ class DataResourceModel {
     if ($this->lastModifiedTime !== null) {
       $xfer += $output->writeFieldBegin('lastModifiedTime', TType::I64, 6);
       $xfer += $output->writeI64($this->lastModifiedTime);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->replicaLocations !== null) {
-      if (!is_array($this->replicaLocations)) {
-        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
-      }
-      $xfer += $output->writeFieldBegin('replicaLocations', TType::LST, 7);
-      {
-        $output->writeListBegin(TType::STRUCT, count($this->replicaLocations));
-        {
-          foreach ($this->replicaLocations as $iter6)
-          {
-            $xfer += $iter6->write($output);
-          }
-        }
-        $output->writeListEnd();
-      }
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -416,14 +365,14 @@ class DataReplicaLocationModel {
         case 7:
           if ($ftype == TType::LST) {
             $this->dataLocations = array();
-            $_size7 = 0;
-            $_etype10 = 0;
-            $xfer += $input->readListBegin($_etype10, $_size7);
-            for ($_i11 = 0; $_i11 < $_size7; ++$_i11)
+            $_size0 = 0;
+            $_etype3 = 0;
+            $xfer += $input->readListBegin($_etype3, $_size0);
+            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
             {
-              $elem12 = null;
-              $xfer += $input->readString($elem12);
-              $this->dataLocations []= $elem12;
+              $elem5 = null;
+              $xfer += $input->readString($elem5);
+              $this->dataLocations []= $elem5;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -481,9 +430,9 @@ class DataReplicaLocationModel {
       {
         $output->writeListBegin(TType::STRING, count($this->dataLocations));
         {
-          foreach ($this->dataLocations as $iter13)
+          foreach ($this->dataLocations as $iter6)
           {
-            $xfer += $output->writeString($iter13);
+            $xfer += $output->writeString($iter6);
           }
         }
         $output->writeListEnd();

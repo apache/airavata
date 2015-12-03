@@ -21,6 +21,8 @@ package org.apache.airavata.registry.cpi;
 
 import org.apache.airavata.model.data.resource.*;
 
+import java.util.List;
+
 public interface DataCatalog {
 
     String publishResource(DataResourceModel resource) throws DataCatalogException;
@@ -30,4 +32,14 @@ public interface DataCatalog {
     boolean updateResource(DataResourceModel resource) throws DataCatalogException;
 
     DataResourceModel getResource(String resourceId) throws DataCatalogException;
+
+    String publishReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws DataCatalogException;
+
+    boolean removeReplicaLocation(String replicaId) throws DataCatalogException;
+
+    boolean updateReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws DataCatalogException;
+
+    DataReplicaLocationModel getReplicaLocation(String replicaId) throws DataCatalogException;
+
+    List<DataReplicaLocationModel> getAllReplicaLocations(String resourceId) throws DataCatalogException;
 }
