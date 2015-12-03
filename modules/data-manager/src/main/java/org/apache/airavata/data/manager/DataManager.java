@@ -30,14 +30,30 @@ public interface DataManager {
      * @param resource
      * @return
      */
-    boolean publishResource(DataResourceModel resource);
+    String publishDataResource(DataResourceModel resource) throws DataManagerException;
 
     /**
      * To remove a resource entry from the replica catalog
      * @param resourceId
      * @return
      */
-    boolean removeResource(String resourceId);
+    boolean removeDataResource(String resourceId) throws DataManagerException;
+
+
+    /**
+     * To update an existing data resource model
+     * @param dataResourceModel
+     * @return
+     * @throws DataManagerException
+     */
+    boolean updateDataResource(DataResourceModel dataResourceModel) throws DataManagerException;
+
+    /**
+     * To retrieve a resource object providing the resourceId
+     * @param resourceId
+     * @return
+     */
+    DataResourceModel getDataResource(String resourceId) throws DataManagerException;
 
     /**
      * To copy an already existing resource to a specified location. After successful copying the new location will be
@@ -46,12 +62,6 @@ public interface DataManager {
      * @param destLocation
      * @return
      */
-    boolean copyResource(String resourceId, String destLocation);
+    boolean copyDataResource(String resourceId, String destLocation) throws DataManagerException;
 
-    /**
-     * To retrieve a resource object providing the resourceId
-     * @param resourceId
-     * @return
-     */
-    DataResourceModel getResource(String resourceId);
 }
