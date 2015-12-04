@@ -50,11 +50,11 @@
             <artifactId>airavata-orchestrator-stubs</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-workflow-core</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>app-catalog-data</artifactId>

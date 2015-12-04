@@ -54,7 +54,7 @@
 								</artifactItem>
 								<!--Airavata Client Distributions-->
 								<!--Java SDK-->
-								<artifactItem>
+<!--								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
 									<artifactId>apache-airavata-client-java-sdk</artifactId>
 						           		<version>${project.version}</version>
@@ -68,7 +68,7 @@
 									<type>tar.gz</type>
 									<classifier>bin</classifier>
 								</artifactItem>
-								<!--PHP SDK-->
+								&lt;!&ndash;PHP SDK&ndash;&gt;
 								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
 									<artifactId>apache-airavata-client-php-sdk</artifactId>
@@ -83,7 +83,7 @@
 									<type>tar.gz</type>
 									<classifier>bin</classifier>
 								</artifactItem>
-								<!--CPP SDK-->
+								&lt;!&ndash;CPP SDK&ndash;&gt;
 								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
 									<artifactId>apache-airavata-client-cpp-sdk</artifactId>
@@ -97,7 +97,7 @@
 						            		<version>${project.version}</version>
 									<type>tar.gz</type>
 									<classifier>bin</classifier>
-								</artifactItem>
+								</artifactItem>-->
 							</artifactItems>
 							<outputDirectory>${project.build.directory}/release-artifacts</outputDirectory>
 						</configuration>

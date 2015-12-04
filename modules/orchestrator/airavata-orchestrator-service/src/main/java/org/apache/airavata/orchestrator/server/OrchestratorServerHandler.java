@@ -73,7 +73,7 @@ import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetailConstants;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
-import org.apache.airavata.workflow.core.WorkflowEnactmentService;
+//import org.apache.airavata.workflow.core.WorkflowEnactmentService;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 
@@ -511,12 +511,14 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     }
 
     private void launchWorkflowExperiment(String experimentId, String airavataCredStoreToken) throws TException {
-        try {
-            WorkflowEnactmentService.getInstance().
-                    submitWorkflow(experimentId, airavataCredStoreToken, getGatewayName(), getRabbitMQProcessPublisher());
-        } catch (Exception e) {
-            log.error("Error while launching workflow", e);
-        }
+//        try {
+//            WorkflowEnactmentService.getInstance().
+//                    submitWorkflow(experimentId, airavataCredStoreToken, getGatewayName(), getRabbitMQProcessPublisher());
+//
+//        } catch (Exception e) {
+//            log.error("Error while launching workflow", e);
+//        }
+        log.error("Workflow implementations are non funcational. Please contact Airavata dev list for details");
     }
 
     public synchronized RabbitMQProcessPublisher getRabbitMQProcessPublisher() throws Exception {
