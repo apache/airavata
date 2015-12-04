@@ -15,7 +15,7 @@
 	<parent>
 		<groupId>org.apache.airavata</groupId>
 		<artifactId>distribution</artifactId>
-		<version>0.15</version>
+		<version>0.15.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
