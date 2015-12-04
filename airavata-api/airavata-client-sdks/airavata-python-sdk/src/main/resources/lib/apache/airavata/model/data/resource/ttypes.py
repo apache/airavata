@@ -23,6 +23,7 @@ class DataResourceModel:
    - resourceId
    - resourceName
    - resourceDescription
+   - ownerName
    - resourceSize
    - creationTime
    - lastModifiedTime
@@ -33,15 +34,17 @@ class DataResourceModel:
     (1, TType.STRING, 'resourceId', None, None, ), # 1
     (2, TType.STRING, 'resourceName', None, None, ), # 2
     (3, TType.STRING, 'resourceDescription', None, None, ), # 3
-    (4, TType.I32, 'resourceSize', None, None, ), # 4
-    (5, TType.I64, 'creationTime', None, None, ), # 5
-    (6, TType.I64, 'lastModifiedTime', None, None, ), # 6
+    (4, TType.STRING, 'ownerName', None, None, ), # 4
+    (5, TType.I32, 'resourceSize', None, None, ), # 5
+    (6, TType.I64, 'creationTime', None, None, ), # 6
+    (7, TType.I64, 'lastModifiedTime', None, None, ), # 7
   )
 
-  def __init__(self, resourceId=None, resourceName=None, resourceDescription=None, resourceSize=None, creationTime=None, lastModifiedTime=None,):
+  def __init__(self, resourceId=None, resourceName=None, resourceDescription=None, ownerName=None, resourceSize=None, creationTime=None, lastModifiedTime=None,):
     self.resourceId = resourceId
     self.resourceName = resourceName
     self.resourceDescription = resourceDescription
+    self.ownerName = ownerName
     self.resourceSize = resourceSize
     self.creationTime = creationTime
     self.lastModifiedTime = lastModifiedTime
@@ -71,16 +74,21 @@ class DataResourceModel:
         else:
           iprot.skip(ftype)
       elif fid == 4:
+        if ftype == TType.STRING:
+          self.ownerName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
         if ftype == TType.I32:
           self.resourceSize = iprot.readI32();
         else:
           iprot.skip(ftype)
-      elif fid == 5:
+      elif fid == 6:
         if ftype == TType.I64:
           self.creationTime = iprot.readI64();
         else:
           iprot.skip(ftype)
-      elif fid == 6:
+      elif fid == 7:
         if ftype == TType.I64:
           self.lastModifiedTime = iprot.readI64();
         else:
@@ -107,16 +115,20 @@ class DataResourceModel:
       oprot.writeFieldBegin('resourceDescription', TType.STRING, 3)
       oprot.writeString(self.resourceDescription)
       oprot.writeFieldEnd()
+    if self.ownerName is not None:
+      oprot.writeFieldBegin('ownerName', TType.STRING, 4)
+      oprot.writeString(self.ownerName)
+      oprot.writeFieldEnd()
     if self.resourceSize is not None:
-      oprot.writeFieldBegin('resourceSize', TType.I32, 4)
+      oprot.writeFieldBegin('resourceSize', TType.I32, 5)
       oprot.writeI32(self.resourceSize)
       oprot.writeFieldEnd()
     if self.creationTime is not None:
-      oprot.writeFieldBegin('creationTime', TType.I64, 5)
+      oprot.writeFieldBegin('creationTime', TType.I64, 6)
       oprot.writeI64(self.creationTime)
       oprot.writeFieldEnd()
     if self.lastModifiedTime is not None:
-      oprot.writeFieldBegin('lastModifiedTime', TType.I64, 6)
+      oprot.writeFieldBegin('lastModifiedTime', TType.I64, 7)
       oprot.writeI64(self.lastModifiedTime)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -131,6 +143,7 @@ class DataResourceModel:
     value = (value * 31) ^ hash(self.resourceId)
     value = (value * 31) ^ hash(self.resourceName)
     value = (value * 31) ^ hash(self.resourceDescription)
+    value = (value * 31) ^ hash(self.ownerName)
     value = (value * 31) ^ hash(self.resourceSize)
     value = (value * 31) ^ hash(self.creationTime)
     value = (value * 31) ^ hash(self.lastModifiedTime)

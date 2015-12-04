@@ -34,7 +34,7 @@ class DMType:
 
 class SecurityProtocol:
   """
-  Enumeration of security authentication and authorization mechanisms supported by Airavata. This enumeration just
+  Enumeration of security sshKeyAuthentication and authorization mechanisms supported by Airavata. This enumeration just
    describes the supported mechanism. The corresponding security credentials are registered with Airavata Credential
    store.
 

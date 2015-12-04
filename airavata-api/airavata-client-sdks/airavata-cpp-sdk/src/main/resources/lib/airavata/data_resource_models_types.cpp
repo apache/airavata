@@ -50,6 +50,11 @@ void DataResourceModel::__set_resourceDescription(const std::string& val) {
 __isset.resourceDescription = true;
 }
 
+void DataResourceModel::__set_ownerName(const std::string& val) {
+  this->ownerName = val;
+__isset.ownerName = true;
+}
+
 void DataResourceModel::__set_resourceSize(const int32_t val) {
   this->resourceSize = val;
 __isset.resourceSize = true;
@@ -65,8 +70,8 @@ void DataResourceModel::__set_lastModifiedTime(const int64_t val) {
 __isset.lastModifiedTime = true;
 }
 
-const char* DataResourceModel::ascii_fingerprint = "8F398C67A12C2B477911D779C3172BD6";
-const uint8_t DataResourceModel::binary_fingerprint[16] = {0x8F,0x39,0x8C,0x67,0xA1,0x2C,0x2B,0x47,0x79,0x11,0xD7,0x79,0xC3,0x17,0x2B,0xD6};
+const char* DataResourceModel::ascii_fingerprint = "F4F870AD81FF6118FD1ADC4F20AC188B";
+const uint8_t DataResourceModel::binary_fingerprint[16] = {0xF4,0xF8,0x70,0xAD,0x81,0xFF,0x61,0x18,0xFD,0x1A,0xDC,0x4F,0x20,0xAC,0x18,0x8B};
 
 uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -113,6 +118,14 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->ownerName);
+          this->__isset.ownerName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->resourceSize);
           this->__isset.resourceSize = true;
@@ -120,7 +133,7 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 5:
+      case 6:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->creationTime);
           this->__isset.creationTime = true;
@@ -128,7 +141,7 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 6:
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->lastModifiedTime);
           this->__isset.lastModifiedTime = true;
@@ -168,18 +181,23 @@ uint32_t DataResourceModel::write(::apache::thrift::protocol::TProtocol* oprot) 
     xfer += oprot->writeString(this->resourceDescription);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.ownerName) {
+    xfer += oprot->writeFieldBegin("ownerName", ::apache::thrift::protocol::T_STRING, 4);
+    xfer += oprot->writeString(this->ownerName);
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.resourceSize) {
-    xfer += oprot->writeFieldBegin("resourceSize", ::apache::thrift::protocol::T_I32, 4);
+    xfer += oprot->writeFieldBegin("resourceSize", ::apache::thrift::protocol::T_I32, 5);
     xfer += oprot->writeI32(this->resourceSize);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.creationTime) {
-    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 5);
+    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 6);
     xfer += oprot->writeI64(this->creationTime);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.lastModifiedTime) {
-    xfer += oprot->writeFieldBegin("lastModifiedTime", ::apache::thrift::protocol::T_I64, 6);
+    xfer += oprot->writeFieldBegin("lastModifiedTime", ::apache::thrift::protocol::T_I64, 7);
     xfer += oprot->writeI64(this->lastModifiedTime);
     xfer += oprot->writeFieldEnd();
   }
@@ -194,6 +212,7 @@ void swap(DataResourceModel &a, DataResourceModel &b) {
   swap(a.resourceId, b.resourceId);
   swap(a.resourceName, b.resourceName);
   swap(a.resourceDescription, b.resourceDescription);
+  swap(a.ownerName, b.ownerName);
   swap(a.resourceSize, b.resourceSize);
   swap(a.creationTime, b.creationTime);
   swap(a.lastModifiedTime, b.lastModifiedTime);
@@ -204,6 +223,7 @@ DataResourceModel::DataResourceModel(const DataResourceModel& other0) {
   resourceId = other0.resourceId;
   resourceName = other0.resourceName;
   resourceDescription = other0.resourceDescription;
+  ownerName = other0.ownerName;
   resourceSize = other0.resourceSize;
   creationTime = other0.creationTime;
   lastModifiedTime = other0.lastModifiedTime;
@@ -213,6 +233,7 @@ DataResourceModel& DataResourceModel::operator=(const DataResourceModel& other1)
   resourceId = other1.resourceId;
   resourceName = other1.resourceName;
   resourceDescription = other1.resourceDescription;
+  ownerName = other1.ownerName;
   resourceSize = other1.resourceSize;
   creationTime = other1.creationTime;
   lastModifiedTime = other1.lastModifiedTime;
@@ -225,6 +246,7 @@ std::ostream& operator<<(std::ostream& out, const DataResourceModel& obj) {
   out << "resourceId="; (obj.__isset.resourceId ? (out << to_string(obj.resourceId)) : (out << "<null>"));
   out << ", " << "resourceName="; (obj.__isset.resourceName ? (out << to_string(obj.resourceName)) : (out << "<null>"));
   out << ", " << "resourceDescription="; (obj.__isset.resourceDescription ? (out << to_string(obj.resourceDescription)) : (out << "<null>"));
+  out << ", " << "ownerName="; (obj.__isset.ownerName ? (out << to_string(obj.ownerName)) : (out << "<null>"));
   out << ", " << "resourceSize="; (obj.__isset.resourceSize ? (out << to_string(obj.resourceSize)) : (out << "<null>"));
   out << ", " << "creationTime="; (obj.__isset.creationTime ? (out << to_string(obj.creationTime)) : (out << "<null>"));
   out << ", " << "lastModifiedTime="; (obj.__isset.lastModifiedTime ? (out << to_string(obj.lastModifiedTime)) : (out << "<null>"));

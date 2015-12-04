@@ -41,10 +41,11 @@ class DataResourceModel;
 class DataReplicaLocationModel;
 
 typedef struct _DataResourceModel__isset {
-  _DataResourceModel__isset() : resourceId(false), resourceName(false), resourceDescription(false), resourceSize(false), creationTime(false), lastModifiedTime(false) {}
+  _DataResourceModel__isset() : resourceId(false), resourceName(false), resourceDescription(false), ownerName(false), resourceSize(false), creationTime(false), lastModifiedTime(false) {}
   bool resourceId :1;
   bool resourceName :1;
   bool resourceDescription :1;
+  bool ownerName :1;
   bool resourceSize :1;
   bool creationTime :1;
   bool lastModifiedTime :1;
@@ -53,18 +54,19 @@ typedef struct _DataResourceModel__isset {
 class DataResourceModel {
  public:
 
-  static const char* ascii_fingerprint; // = "8F398C67A12C2B477911D779C3172BD6";
-  static const uint8_t binary_fingerprint[16]; // = {0x8F,0x39,0x8C,0x67,0xA1,0x2C,0x2B,0x47,0x79,0x11,0xD7,0x79,0xC3,0x17,0x2B,0xD6};
+  static const char* ascii_fingerprint; // = "F4F870AD81FF6118FD1ADC4F20AC188B";
+  static const uint8_t binary_fingerprint[16]; // = {0xF4,0xF8,0x70,0xAD,0x81,0xFF,0x61,0x18,0xFD,0x1A,0xDC,0x4F,0x20,0xAC,0x18,0x8B};
 
   DataResourceModel(const DataResourceModel&);
   DataResourceModel& operator=(const DataResourceModel&);
-  DataResourceModel() : resourceId(), resourceName(), resourceDescription(), resourceSize(0), creationTime(0), lastModifiedTime(0) {
+  DataResourceModel() : resourceId(), resourceName(), resourceDescription(), ownerName(), resourceSize(0), creationTime(0), lastModifiedTime(0) {
   }
 
   virtual ~DataResourceModel() throw();
   std::string resourceId;
   std::string resourceName;
   std::string resourceDescription;
+  std::string ownerName;
   int32_t resourceSize;
   int64_t creationTime;
   int64_t lastModifiedTime;
@@ -76,6 +78,8 @@ class DataResourceModel {
   void __set_resourceName(const std::string& val);
 
   void __set_resourceDescription(const std::string& val);
+
+  void __set_ownerName(const std::string& val);
 
   void __set_resourceSize(const int32_t val);
 
@@ -96,6 +100,10 @@ class DataResourceModel {
     if (__isset.resourceDescription != rhs.__isset.resourceDescription)
       return false;
     else if (__isset.resourceDescription && !(resourceDescription == rhs.resourceDescription))
+      return false;
+    if (__isset.ownerName != rhs.__isset.ownerName)
+      return false;
+    else if (__isset.ownerName && !(ownerName == rhs.ownerName))
       return false;
     if (__isset.resourceSize != rhs.__isset.resourceSize)
       return false;

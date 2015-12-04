@@ -41,6 +41,7 @@ public class ThriftDataModelConversion {
             dataResourceModel.setResourceId(dataResource.getResourceId());
             dataResourceModel.setResourceName(dataResource.getResourceName());
             dataResourceModel.setResourceDescription(dataResource.getResourceDescription());
+            dataResourceModel.setOwnerName(dataResource.getOwnerName());
             dataResourceModel.setResourceSize(dataResource.getResourceSize());
             dataResourceModel.setCreationTime(dataResource.getCreationTime().getTime());
             dataResourceModel.setLastModifiedTime(dataResource.getLastModifiedTime().getTime());
@@ -61,6 +62,7 @@ public class ThriftDataModelConversion {
         dataResource.setResourceId(dataResourceModel.getResourceId());
         dataResource.setResourceName(dataResourceModel.getResourceName());
         dataResource.setResourceDescription(dataResourceModel.getResourceDescription());
+        dataResource.setOwnerName(dataResourceModel.getOwnerName());
         dataResource.setResourceSize(dataResourceModel.getResourceSize());
         dataResource.setCreationTime(new Timestamp(dataResourceModel.getCreationTime()));
         dataResource.setLastModifiedTime(new Timestamp(dataResourceModel.getLastModifiedTime()));

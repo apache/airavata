@@ -20,6 +20,9 @@
 */
 package org.apache.airavata.data.manager;
 
+import org.apache.airavata.data.manager.utils.ssh.SSHAuthenticationUtils;
+import org.apache.airavata.data.manager.utils.DataTransferUtils;
+import org.apache.airavata.data.manager.utils.ssh.SSHKeyAuthentication;
 import org.apache.airavata.model.data.resource.DataReplicaLocationModel;
 import org.apache.airavata.model.data.resource.DataResourceModel;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
@@ -29,21 +32,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 public class DataManagerImpl implements DataManager{
     private final static Logger logger = LoggerFactory.getLogger(DataManagerImpl.class);
 
-    private DataCatalog dataCatalog;
+    private final DataCatalog dataCatalog;
+    private final SSHKeyAuthentication sshKeyAuthentication;
 
     public DataManagerImpl() throws DataManagerException {
         try {
             this.dataCatalog = RegistryFactory.getDataCatalog();
-        } catch (DataCatalogException e) {
+            this.sshKeyAuthentication = SSHAuthenticationUtils.getSSHKeyAuthentication();
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new DataManagerException(e);
         }
+    }
+
+    public DataManagerImpl(DataCatalog dataCatalog, SSHKeyAuthentication sshKeyAuthentication){
+        this.dataCatalog = dataCatalog;
+        this.sshKeyAuthentication = sshKeyAuthentication;
     }
 
     /**
@@ -130,33 +139,34 @@ public class DataManagerImpl implements DataManager{
      * copying the new location will be added to the available replica locations of the resource
      *
      * @param resourceId
-     * @param replicaLocationModel
+     * @param replicaId
      * @param destLocation
      * @return
      * @throws DataManagerException
      */
     @Override
-    public boolean copyResource(String resourceId, DataReplicaLocationModel replicaLocationModel, String destLocation)
+    public boolean copyResource(String resourceId, String replicaId, String destLocation)
             throws DataManagerException {
         try {
             //FIXME Bellow implementation is a skeleton code only to support the current airavata usecase of one to one copy
             DataResourceModel resourceModel = getResource(resourceId);
+            DataReplicaLocationModel replicaLocationModel = getReplicaLocation(replicaId);
             if(resourceModel == null)
                 throw new DataManagerException("Non existent resource id:"+resourceId);
+            if(replicaLocationModel == null)
+                throw new DataManagerException("Non existent replica id:"+replicaId);
             URI sourceUri = new URI(replicaLocationModel.getDataLocations().get(0));
             URI destinationUri = new URI(destLocation);
-            if(sourceUri.getScheme().equals(destinationUri.getScheme()) && sourceUri.getScheme()
-                    .equals(DataManagerConstants.SCP_URI_SCHEME)){
+            DataTransferUtils dataTransferUtils = new DataTransferUtils(sshKeyAuthentication);
+            boolean result = dataTransferUtils.copyData(sourceUri, destinationUri);
+            if(result){
 
-            }else{
-                throw new DataManagerException("Unsupported Data Transfer protocol. Currently Data Manager only supports" +
-                        " one to one SCP transfers");
             }
-        } catch (URISyntaxException e) {
+            return result;
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new DataManagerException(e);
         }
-        return true;
     }
 
     /**

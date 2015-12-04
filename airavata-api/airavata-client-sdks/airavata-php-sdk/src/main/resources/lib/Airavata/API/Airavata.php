@@ -515,7 +515,7 @@ interface AiravataIf {
   public function getUserExperiments(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $userName, $limit, $offset);
   /**
    * Create an experiment for the specified user belonging to the gateway. The gateway identity is not explicitly passed
-   *   but inferred from the authentication header. This experiment is just a persistent place holder. The client
+   *   but inferred from the sshKeyAuthentication header. This experiment is just a persistent place holder. The client
    *   has to subsequently configure and launch the created experiment. No action is taken on Airavata Server except
    *   registering the experiment in a persistent store.
    * 

@@ -33,6 +33,10 @@ class DataResourceModel {
    */
   public $resourceDescription = null;
   /**
+   * @var string
+   */
+  public $ownerName = null;
+  /**
    * @var int
    */
   public $resourceSize = null;
@@ -61,14 +65,18 @@ class DataResourceModel {
           'type' => TType::STRING,
           ),
         4 => array(
+          'var' => 'ownerName',
+          'type' => TType::STRING,
+          ),
+        5 => array(
           'var' => 'resourceSize',
           'type' => TType::I32,
           ),
-        5 => array(
+        6 => array(
           'var' => 'creationTime',
           'type' => TType::I64,
           ),
-        6 => array(
+        7 => array(
           'var' => 'lastModifiedTime',
           'type' => TType::I64,
           ),
@@ -83,6 +91,9 @@ class DataResourceModel {
       }
       if (isset($vals['resourceDescription'])) {
         $this->resourceDescription = $vals['resourceDescription'];
+      }
+      if (isset($vals['ownerName'])) {
+        $this->ownerName = $vals['ownerName'];
       }
       if (isset($vals['resourceSize'])) {
         $this->resourceSize = $vals['resourceSize'];
@@ -137,20 +148,27 @@ class DataResourceModel {
           }
           break;
         case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->ownerName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
           if ($ftype == TType::I32) {
             $xfer += $input->readI32($this->resourceSize);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 5:
+        case 6:
           if ($ftype == TType::I64) {
             $xfer += $input->readI64($this->creationTime);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 6:
+        case 7:
           if ($ftype == TType::I64) {
             $xfer += $input->readI64($this->lastModifiedTime);
           } else {
@@ -185,18 +203,23 @@ class DataResourceModel {
       $xfer += $output->writeString($this->resourceDescription);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->ownerName !== null) {
+      $xfer += $output->writeFieldBegin('ownerName', TType::STRING, 4);
+      $xfer += $output->writeString($this->ownerName);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->resourceSize !== null) {
-      $xfer += $output->writeFieldBegin('resourceSize', TType::I32, 4);
+      $xfer += $output->writeFieldBegin('resourceSize', TType::I32, 5);
       $xfer += $output->writeI32($this->resourceSize);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->creationTime !== null) {
-      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 5);
+      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 6);
       $xfer += $output->writeI64($this->creationTime);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->lastModifiedTime !== null) {
-      $xfer += $output->writeFieldBegin('lastModifiedTime', TType::I64, 6);
+      $xfer += $output->writeFieldBegin('lastModifiedTime', TType::I64, 7);
       $xfer += $output->writeI64($this->lastModifiedTime);
       $xfer += $output->writeFieldEnd();
     }
