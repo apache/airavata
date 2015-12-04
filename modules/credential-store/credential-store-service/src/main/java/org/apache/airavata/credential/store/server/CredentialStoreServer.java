@@ -21,19 +21,18 @@
 package org.apache.airavata.credential.store.server;
 
 
-import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
-import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TServerSocket;
+import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 public class CredentialStoreServer  implements IServer {
     private final static Logger logger = LoggerFactory.getLogger(CredentialStoreServer.class);
@@ -62,38 +61,42 @@ public class CredentialStoreServer  implements IServer {
         if(ServerSettings.isCredentialStoreStartEnabled()) {
             try {
                 setStatus(ServerStatus.STARTING);
-                TSSLTransportFactory.TSSLTransportParameters params =
-                        new TSSLTransportFactory.TSSLTransportParameters();
-                String keystorePath = ServerSettings.getCredentialStoreThriftServerKeyStorePath();
-                String keystorePWD = ServerSettings.getCredentialStoreThriftServerKeyStorePassword();
 	            final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
 	            final String serverHost = ServerSettings.getCredentialStoreServerHost();
-                params.setKeyStore(keystorePath, keystorePWD);
-                TServerSocket serverTransport = TSSLTransportFactory.getServerSocket(serverPort, 100, InetAddress.getByName(serverHost), params);
                 CredentialStoreService.Processor processor = new CredentialStoreService.Processor(new CredentialStoreServerHandler());
 
-                server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).
-                        processor(processor));
+                TServerTransport serverTransport;
+
+                if(serverHost == null){
+                    serverTransport = new TServerSocket(serverPort);
+                }else{
+                    InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
+                    serverTransport = new TServerSocket(inetSocketAddress);
+                }
+                TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
+                options.minWorkerThreads = 30;
+                server = new TThreadPoolServer(options.processor(processor));
+
                 new Thread() {
                     public void run() {
                         server.serve();
                         setStatus(ServerStatus.STOPPED);
-                        logger.info("Credential Store Server Stopped.");
+                        logger.info("Credential store Server Stopped.");
                     }
                 }.start();
                 new Thread() {
                     public void run() {
-                        while (!server.isServing()) {
+                        while(!server.isServing()){
                             try {
                                 Thread.sleep(500);
                             } catch (InterruptedException e) {
                                 break;
                             }
                         }
-                        if (server.isServing()) {
+                        if (server.isServing()){
                             setStatus(ServerStatus.STARTED);
-                            logger.info("Starting Credential Store Server on Port " + serverPort);
-                            logger.info("Listening to Credential Store Clients ....");
+                            logger.info("Starting Credential store Server on Port " + serverPort);
+                            logger.info("Listening to Credential store clients ....");
                         }
                     }
                 }.start();

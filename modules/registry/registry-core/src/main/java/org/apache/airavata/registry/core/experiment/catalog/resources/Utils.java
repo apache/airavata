@@ -533,6 +533,8 @@ public class Utils {
             processResource.setEnableEmailNotification(o.getEnableEmailNotification());
             processResource.setEmailAddresses(o.getEmailAddresses());
             processResource.setStorageResourceId(o.getStorageId());
+            processResource.setUserDn(o.getUserDn());
+            processResource.setGenerateCert(o.getGenerateCert());
         }
         return processResource;
     }

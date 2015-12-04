@@ -51,6 +51,8 @@ public class Process {
     private ProcessResourceSchedule processResourceSchedule;
     private Collection<ProcessStatus> processStatuses;
     private Collection<Task> tasks;
+    private String userDn;
+    private boolean generateCert;
 
     @Id
     @Column(name = "PROCESS_ID")
@@ -171,6 +173,24 @@ public class Process {
 
     public void setEmailAddresses(String emailAddresses) {
         this.emailAddresses = emailAddresses;
+    }
+
+    @Column(name = "USER_DN")
+    public String getUserDn() {
+        return userDn;
+    }
+
+    public void setUserDn(String userDn) {
+        this.userDn = userDn;
+    }
+
+    @Column(name = "GENERATE_CERT")
+    public boolean getGenerateCert() {
+        return generateCert;
+    }
+
+    public void setGenerateCert(boolean generateCert) {
+        this.generateCert = generateCert;
     }
 
 //    @Override

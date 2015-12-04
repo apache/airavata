@@ -44,7 +44,7 @@ namespace apache { namespace airavata { namespace model { namespace process {
 class ProcessModel;
 
 typedef struct _ProcessModel__isset {
-  _ProcessModel__isset() : creationTime(false), lastUpdateTime(false), processStatus(false), processDetail(false), applicationInterfaceId(false), applicationDeploymentId(false), computeResourceId(false), processInputs(false), processOutputs(false), resourceSchedule(false), tasks(false), taskDag(false), processError(false), gatewayExecutionId(false), enableEmailNotification(false), emailAddresses(false), storageResourceId(false) {}
+  _ProcessModel__isset() : creationTime(false), lastUpdateTime(false), processStatus(false), processDetail(false), applicationInterfaceId(false), applicationDeploymentId(false), computeResourceId(false), processInputs(false), processOutputs(false), resourceSchedule(false), tasks(false), taskDag(false), processError(false), gatewayExecutionId(false), enableEmailNotification(false), emailAddresses(false), storageResourceId(false), userDn(false), generateCert(true) {}
   bool creationTime :1;
   bool lastUpdateTime :1;
   bool processStatus :1;
@@ -62,17 +62,19 @@ typedef struct _ProcessModel__isset {
   bool enableEmailNotification :1;
   bool emailAddresses :1;
   bool storageResourceId :1;
+  bool userDn :1;
+  bool generateCert :1;
 } _ProcessModel__isset;
 
 class ProcessModel {
  public:
 
-  static const char* ascii_fingerprint; // = "310420C32600E5B38338E13CDB526950";
-  static const uint8_t binary_fingerprint[16]; // = {0x31,0x04,0x20,0xC3,0x26,0x00,0xE5,0xB3,0x83,0x38,0xE1,0x3C,0xDB,0x52,0x69,0x50};
+  static const char* ascii_fingerprint; // = "A087E9470A40D2BF31FE2FDD88B9FB1C";
+  static const uint8_t binary_fingerprint[16]; // = {0xA0,0x87,0xE9,0x47,0x0A,0x40,0xD2,0xBF,0x31,0xFE,0x2F,0xDD,0x88,0xB9,0xFB,0x1C};
 
   ProcessModel(const ProcessModel&);
   ProcessModel& operator=(const ProcessModel&);
-  ProcessModel() : processId("DO_NOT_SET_AT_CLIENTS"), experimentId(), creationTime(0), lastUpdateTime(0), processDetail(), applicationInterfaceId(), applicationDeploymentId(), computeResourceId(), taskDag(), gatewayExecutionId(), enableEmailNotification(0), storageResourceId() {
+  ProcessModel() : processId("DO_NOT_SET_AT_CLIENTS"), experimentId(), creationTime(0), lastUpdateTime(0), processDetail(), applicationInterfaceId(), applicationDeploymentId(), computeResourceId(), taskDag(), gatewayExecutionId(), enableEmailNotification(0), storageResourceId(), userDn(), generateCert(false) {
   }
 
   virtual ~ProcessModel() throw();
@@ -95,6 +97,8 @@ class ProcessModel {
   bool enableEmailNotification;
   std::vector<std::string>  emailAddresses;
   std::string storageResourceId;
+  std::string userDn;
+  bool generateCert;
 
   _ProcessModel__isset __isset;
 
@@ -135,6 +139,10 @@ class ProcessModel {
   void __set_emailAddresses(const std::vector<std::string> & val);
 
   void __set_storageResourceId(const std::string& val);
+
+  void __set_userDn(const std::string& val);
+
+  void __set_generateCert(const bool val);
 
   bool operator == (const ProcessModel & rhs) const
   {
@@ -209,6 +217,14 @@ class ProcessModel {
     if (__isset.storageResourceId != rhs.__isset.storageResourceId)
       return false;
     else if (__isset.storageResourceId && !(storageResourceId == rhs.storageResourceId))
+      return false;
+    if (__isset.userDn != rhs.__isset.userDn)
+      return false;
+    else if (__isset.userDn && !(userDn == rhs.userDn))
+      return false;
+    if (__isset.generateCert != rhs.__isset.generateCert)
+      return false;
+    else if (__isset.generateCert && !(generateCert == rhs.generateCert))
       return false;
     return true;
   }
