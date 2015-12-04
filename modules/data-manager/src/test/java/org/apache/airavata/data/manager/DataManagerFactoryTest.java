@@ -21,6 +21,10 @@
 package org.apache.airavata.data.manager;
 
 import junit.framework.Assert;
+import org.apache.airavata.data.manager.utils.ssh.SSHKeyAuthentication;
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
+import org.apache.airavata.registry.cpi.DataCatalog;
+import org.apache.airavata.registry.cpi.DataCatalogException;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +33,10 @@ public class DataManagerFactoryTest {
     private final static Logger logger = LoggerFactory.getLogger(DataManagerFactoryTest.class);
 
     @Test
-    public void testCreateDataManager() throws DataManagerException {
-        DataManager dataManager = DataManagerFactory.getDataManager();
+    public void testCreateDataManager() throws DataManagerException, DataCatalogException {
+        DataCatalog dataCatalog = RegistryFactory.getDataCatalog();
+        SSHKeyAuthentication sshKeyAuthentication = new SSHKeyAuthentication();
+        DataManager dataManager = new DataManagerImpl(dataCatalog, sshKeyAuthentication);
         Assert.assertNotNull(dataManager);
     }
 }

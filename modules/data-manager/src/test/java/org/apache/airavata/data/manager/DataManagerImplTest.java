@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.data.manager;
 
+import org.apache.airavata.data.manager.utils.AppCatInit;
 import org.apache.airavata.data.manager.utils.DataCatInit;
 import org.apache.airavata.data.manager.utils.ssh.SSHKeyAuthentication;
 import org.apache.airavata.model.data.resource.DataReplicaLocationModel;
@@ -41,6 +42,7 @@ import java.util.UUID;
 
 public class DataManagerImplTest {
     private final static Logger logger = LoggerFactory.getLogger(DataManagerImplTest.class);
+    private static AppCatInit appCatInit;
     private static DataCatInit dataCatInit;
     private static DataManager dataManager;
     private static DataResourceModel dataResourceModel;
@@ -50,6 +52,8 @@ public class DataManagerImplTest {
     public static void setUp() {
         try {
             System.out.println("********** SET UP ************");
+            appCatInit = new AppCatInit("appcatalog-derby.sql");
+            appCatInit.initializeDB();
             dataCatInit = new DataCatInit("datacatalog-derby.sql");
             dataCatInit.initializeDB();
             DataCatalog dataCatalog = RegistryFactory.getDataCatalog();
