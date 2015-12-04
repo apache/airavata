@@ -19,7 +19,7 @@
 *
 */
 
-package org.apache.airavata.gfac.bes.utils;
+package org.apache.airavata.gfac.impl.task.utils.bes;
 
 import eu.emi.security.authn.x509.helpers.CertificateHelpers;
 import eu.emi.security.authn.x509.helpers.proxy.X509v3CertificateBuilder;
@@ -29,7 +29,6 @@ import eu.emi.security.authn.x509.impl.KeyAndCertCredential;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.store.CredentialReader;
-import org.apache.airavata.gfac.bes.security.UNICORESecurityContext;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.RequestData;
@@ -84,7 +83,7 @@ public class SecurityUtils {
 	            }
 	            
             	UNICORESecurityContext secCtx = new UNICORESecurityContext(credentialReader, requestData);
-//            	processContext.addSecurityContext(X509SecurityContext.X509_SECURITY_CONTEXT, secCtx);
+//            	processContext.setJobSubmissionRemoteCluster(X509SecurityContext.X509_SECURITY_CONTEXT, secCtx);
 	        }
 	}
 	

@@ -83,6 +83,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private static final org.apache.thrift.protocol.TField ENABLE_EMAIL_NOTIFICATION_FIELD_DESC = new org.apache.thrift.protocol.TField("enableEmailNotification", org.apache.thrift.protocol.TType.BOOL, (short)17);
   private static final org.apache.thrift.protocol.TField EMAIL_ADDRESSES_FIELD_DESC = new org.apache.thrift.protocol.TField("emailAddresses", org.apache.thrift.protocol.TType.LIST, (short)18);
   private static final org.apache.thrift.protocol.TField STORAGE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("storageResourceId", org.apache.thrift.protocol.TType.STRING, (short)19);
+  private static final org.apache.thrift.protocol.TField USER_DN_FIELD_DESC = new org.apache.thrift.protocol.TField("userDn", org.apache.thrift.protocol.TType.STRING, (short)20);
+  private static final org.apache.thrift.protocol.TField GENERATE_CERT_FIELD_DESC = new org.apache.thrift.protocol.TField("generateCert", org.apache.thrift.protocol.TType.BOOL, (short)21);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -109,6 +111,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private boolean enableEmailNotification; // optional
   private List<String> emailAddresses; // optional
   private String storageResourceId; // optional
+  private String userDn; // optional
+  private boolean generateCert; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -130,7 +134,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     GATEWAY_EXECUTION_ID((short)16, "gatewayExecutionId"),
     ENABLE_EMAIL_NOTIFICATION((short)17, "enableEmailNotification"),
     EMAIL_ADDRESSES((short)18, "emailAddresses"),
-    STORAGE_RESOURCE_ID((short)19, "storageResourceId");
+    STORAGE_RESOURCE_ID((short)19, "storageResourceId"),
+    USER_DN((short)20, "userDn"),
+    GENERATE_CERT((short)21, "generateCert");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -183,6 +189,10 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           return EMAIL_ADDRESSES;
         case 19: // STORAGE_RESOURCE_ID
           return STORAGE_RESOURCE_ID;
+        case 20: // USER_DN
+          return USER_DN;
+        case 21: // GENERATE_CERT
+          return GENERATE_CERT;
         default:
           return null;
       }
@@ -226,8 +236,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private static final int __CREATIONTIME_ISSET_ID = 0;
   private static final int __LASTUPDATETIME_ISSET_ID = 1;
   private static final int __ENABLEEMAILNOTIFICATION_ISSET_ID = 2;
+  private static final int __GENERATECERT_ISSET_ID = 3;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.LAST_UPDATE_TIME,_Fields.PROCESS_STATUS,_Fields.PROCESS_DETAIL,_Fields.APPLICATION_INTERFACE_ID,_Fields.APPLICATION_DEPLOYMENT_ID,_Fields.COMPUTE_RESOURCE_ID,_Fields.PROCESS_INPUTS,_Fields.PROCESS_OUTPUTS,_Fields.RESOURCE_SCHEDULE,_Fields.TASKS,_Fields.TASK_DAG,_Fields.PROCESS_ERROR,_Fields.GATEWAY_EXECUTION_ID,_Fields.ENABLE_EMAIL_NOTIFICATION,_Fields.EMAIL_ADDRESSES,_Fields.STORAGE_RESOURCE_ID};
+  private static final _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.LAST_UPDATE_TIME,_Fields.PROCESS_STATUS,_Fields.PROCESS_DETAIL,_Fields.APPLICATION_INTERFACE_ID,_Fields.APPLICATION_DEPLOYMENT_ID,_Fields.COMPUTE_RESOURCE_ID,_Fields.PROCESS_INPUTS,_Fields.PROCESS_OUTPUTS,_Fields.RESOURCE_SCHEDULE,_Fields.TASKS,_Fields.TASK_DAG,_Fields.PROCESS_ERROR,_Fields.GATEWAY_EXECUTION_ID,_Fields.ENABLE_EMAIL_NOTIFICATION,_Fields.EMAIL_ADDRESSES,_Fields.STORAGE_RESOURCE_ID,_Fields.USER_DN,_Fields.GENERATE_CERT};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -273,12 +284,18 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     tmpMap.put(_Fields.STORAGE_RESOURCE_ID, new org.apache.thrift.meta_data.FieldMetaData("storageResourceId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.USER_DN, new org.apache.thrift.meta_data.FieldMetaData("userDn", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.GENERATE_CERT, new org.apache.thrift.meta_data.FieldMetaData("generateCert", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ProcessModel.class, metaDataMap);
   }
 
   public ProcessModel() {
     this.processId = "DO_NOT_SET_AT_CLIENTS";
+
+    this.generateCert = false;
 
   }
 
@@ -360,6 +377,10 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     if (other.isSetStorageResourceId()) {
       this.storageResourceId = other.storageResourceId;
     }
+    if (other.isSetUserDn()) {
+      this.userDn = other.userDn;
+    }
+    this.generateCert = other.generateCert;
   }
 
   public ProcessModel deepCopy() {
@@ -391,6 +412,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     this.enableEmailNotification = false;
     this.emailAddresses = null;
     this.storageResourceId = null;
+    this.userDn = null;
+    this.generateCert = false;
+
   }
 
   public String getProcessId() {
@@ -887,6 +911,51 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     }
   }
 
+  public String getUserDn() {
+    return this.userDn;
+  }
+
+  public void setUserDn(String userDn) {
+    this.userDn = userDn;
+  }
+
+  public void unsetUserDn() {
+    this.userDn = null;
+  }
+
+  /** Returns true if field userDn is set (has been assigned a value) and false otherwise */
+  public boolean isSetUserDn() {
+    return this.userDn != null;
+  }
+
+  public void setUserDnIsSet(boolean value) {
+    if (!value) {
+      this.userDn = null;
+    }
+  }
+
+  public boolean isGenerateCert() {
+    return this.generateCert;
+  }
+
+  public void setGenerateCert(boolean generateCert) {
+    this.generateCert = generateCert;
+    setGenerateCertIsSet(true);
+  }
+
+  public void unsetGenerateCert() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __GENERATECERT_ISSET_ID);
+  }
+
+  /** Returns true if field generateCert is set (has been assigned a value) and false otherwise */
+  public boolean isSetGenerateCert() {
+    return EncodingUtils.testBit(__isset_bitfield, __GENERATECERT_ISSET_ID);
+  }
+
+  public void setGenerateCertIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __GENERATECERT_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case PROCESS_ID:
@@ -1041,6 +1110,22 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       }
       break;
 
+    case USER_DN:
+      if (value == null) {
+        unsetUserDn();
+      } else {
+        setUserDn((String)value);
+      }
+      break;
+
+    case GENERATE_CERT:
+      if (value == null) {
+        unsetGenerateCert();
+      } else {
+        setGenerateCert((Boolean)value);
+      }
+      break;
+
     }
   }
 
@@ -1103,6 +1188,12 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     case STORAGE_RESOURCE_ID:
       return getStorageResourceId();
 
+    case USER_DN:
+      return getUserDn();
+
+    case GENERATE_CERT:
+      return Boolean.valueOf(isGenerateCert());
+
     }
     throw new IllegalStateException();
   }
@@ -1152,6 +1243,10 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       return isSetEmailAddresses();
     case STORAGE_RESOURCE_ID:
       return isSetStorageResourceId();
+    case USER_DN:
+      return isSetUserDn();
+    case GENERATE_CERT:
+      return isSetGenerateCert();
     }
     throw new IllegalStateException();
   }
@@ -1340,6 +1435,24 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         return false;
     }
 
+    boolean this_present_userDn = true && this.isSetUserDn();
+    boolean that_present_userDn = true && that.isSetUserDn();
+    if (this_present_userDn || that_present_userDn) {
+      if (!(this_present_userDn && that_present_userDn))
+        return false;
+      if (!this.userDn.equals(that.userDn))
+        return false;
+    }
+
+    boolean this_present_generateCert = true && this.isSetGenerateCert();
+    boolean that_present_generateCert = true && that.isSetGenerateCert();
+    if (this_present_generateCert || that_present_generateCert) {
+      if (!(this_present_generateCert && that_present_generateCert))
+        return false;
+      if (this.generateCert != that.generateCert)
+        return false;
+    }
+
     return true;
   }
 
@@ -1441,6 +1554,16 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     list.add(present_storageResourceId);
     if (present_storageResourceId)
       list.add(storageResourceId);
+
+    boolean present_userDn = true && (isSetUserDn());
+    list.add(present_userDn);
+    if (present_userDn)
+      list.add(userDn);
+
+    boolean present_generateCert = true && (isSetGenerateCert());
+    list.add(present_generateCert);
+    if (present_generateCert)
+      list.add(generateCert);
 
     return list.hashCode();
   }
@@ -1643,6 +1766,26 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetUserDn()).compareTo(other.isSetUserDn());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetUserDn()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userDn, other.userDn);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetGenerateCert()).compareTo(other.isSetGenerateCert());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetGenerateCert()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.generateCert, other.generateCert);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1834,6 +1977,22 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       } else {
         sb.append(this.storageResourceId);
       }
+      first = false;
+    }
+    if (isSetUserDn()) {
+      if (!first) sb.append(", ");
+      sb.append("userDn:");
+      if (this.userDn == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.userDn);
+      }
+      first = false;
+    }
+    if (isSetGenerateCert()) {
+      if (!first) sb.append(", ");
+      sb.append("generateCert:");
+      sb.append(this.generateCert);
       first = false;
     }
     sb.append(")");
@@ -2096,6 +2255,22 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 20: // USER_DN
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.userDn = iprot.readString();
+              struct.setUserDnIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 21: // GENERATE_CERT
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.generateCert = iprot.readBool();
+              struct.setGenerateCertIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -2260,6 +2435,18 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           oprot.writeFieldEnd();
         }
       }
+      if (struct.userDn != null) {
+        if (struct.isSetUserDn()) {
+          oprot.writeFieldBegin(USER_DN_FIELD_DESC);
+          oprot.writeString(struct.userDn);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.isSetGenerateCert()) {
+        oprot.writeFieldBegin(GENERATE_CERT_FIELD_DESC);
+        oprot.writeBool(struct.generateCert);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -2331,7 +2518,13 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetStorageResourceId()) {
         optionals.set(16);
       }
-      oprot.writeBitSet(optionals, 17);
+      if (struct.isSetUserDn()) {
+        optionals.set(17);
+      }
+      if (struct.isSetGenerateCert()) {
+        optionals.set(18);
+      }
+      oprot.writeBitSet(optionals, 19);
       if (struct.isSetCreationTime()) {
         oprot.writeI64(struct.creationTime);
       }
@@ -2407,6 +2600,12 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetStorageResourceId()) {
         oprot.writeString(struct.storageResourceId);
       }
+      if (struct.isSetUserDn()) {
+        oprot.writeString(struct.userDn);
+      }
+      if (struct.isSetGenerateCert()) {
+        oprot.writeBool(struct.generateCert);
+      }
     }
 
     @Override
@@ -2416,7 +2615,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       struct.setProcessIdIsSet(true);
       struct.experimentId = iprot.readString();
       struct.setExperimentIdIsSet(true);
-      BitSet incoming = iprot.readBitSet(17);
+      BitSet incoming = iprot.readBitSet(19);
       if (incoming.get(0)) {
         struct.creationTime = iprot.readI64();
         struct.setCreationTimeIsSet(true);
@@ -2526,6 +2725,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (incoming.get(16)) {
         struct.storageResourceId = iprot.readString();
         struct.setStorageResourceIdIsSet(true);
+      }
+      if (incoming.get(17)) {
+        struct.userDn = iprot.readString();
+        struct.setUserDnIsSet(true);
+      }
+      if (incoming.get(18)) {
+        struct.generateCert = iprot.readBool();
+        struct.setGenerateCertIsSet(true);
       }
     }
   }

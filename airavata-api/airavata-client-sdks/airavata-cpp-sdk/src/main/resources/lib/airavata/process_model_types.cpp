@@ -128,8 +128,18 @@ void ProcessModel::__set_storageResourceId(const std::string& val) {
 __isset.storageResourceId = true;
 }
 
-const char* ProcessModel::ascii_fingerprint = "310420C32600E5B38338E13CDB526950";
-const uint8_t ProcessModel::binary_fingerprint[16] = {0x31,0x04,0x20,0xC3,0x26,0x00,0xE5,0xB3,0x83,0x38,0xE1,0x3C,0xDB,0x52,0x69,0x50};
+void ProcessModel::__set_userDn(const std::string& val) {
+  this->userDn = val;
+__isset.userDn = true;
+}
+
+void ProcessModel::__set_generateCert(const bool val) {
+  this->generateCert = val;
+__isset.generateCert = true;
+}
+
+const char* ProcessModel::ascii_fingerprint = "A087E9470A40D2BF31FE2FDD88B9FB1C";
+const uint8_t ProcessModel::binary_fingerprint[16] = {0xA0,0x87,0xE9,0x47,0x0A,0x40,0xD2,0xBF,0x31,0xFE,0x2F,0xDD,0x88,0xB9,0xFB,0x1C};
 
 uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -353,6 +363,22 @@ uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 20:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->userDn);
+          this->__isset.userDn = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 21:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->generateCert);
+          this->__isset.generateCert = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -499,6 +525,16 @@ uint32_t ProcessModel::write(::apache::thrift::protocol::TProtocol* oprot) const
     xfer += oprot->writeString(this->storageResourceId);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.userDn) {
+    xfer += oprot->writeFieldBegin("userDn", ::apache::thrift::protocol::T_STRING, 20);
+    xfer += oprot->writeString(this->userDn);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.generateCert) {
+    xfer += oprot->writeFieldBegin("generateCert", ::apache::thrift::protocol::T_BOOL, 21);
+    xfer += oprot->writeBool(this->generateCert);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
@@ -526,6 +562,8 @@ void swap(ProcessModel &a, ProcessModel &b) {
   swap(a.enableEmailNotification, b.enableEmailNotification);
   swap(a.emailAddresses, b.emailAddresses);
   swap(a.storageResourceId, b.storageResourceId);
+  swap(a.userDn, b.userDn);
+  swap(a.generateCert, b.generateCert);
   swap(a.__isset, b.__isset);
 }
 
@@ -549,6 +587,8 @@ ProcessModel::ProcessModel(const ProcessModel& other24) {
   enableEmailNotification = other24.enableEmailNotification;
   emailAddresses = other24.emailAddresses;
   storageResourceId = other24.storageResourceId;
+  userDn = other24.userDn;
+  generateCert = other24.generateCert;
   __isset = other24.__isset;
 }
 ProcessModel& ProcessModel::operator=(const ProcessModel& other25) {
@@ -571,6 +611,8 @@ ProcessModel& ProcessModel::operator=(const ProcessModel& other25) {
   enableEmailNotification = other25.enableEmailNotification;
   emailAddresses = other25.emailAddresses;
   storageResourceId = other25.storageResourceId;
+  userDn = other25.userDn;
+  generateCert = other25.generateCert;
   __isset = other25.__isset;
   return *this;
 }
@@ -596,6 +638,8 @@ std::ostream& operator<<(std::ostream& out, const ProcessModel& obj) {
   out << ", " << "enableEmailNotification="; (obj.__isset.enableEmailNotification ? (out << to_string(obj.enableEmailNotification)) : (out << "<null>"));
   out << ", " << "emailAddresses="; (obj.__isset.emailAddresses ? (out << to_string(obj.emailAddresses)) : (out << "<null>"));
   out << ", " << "storageResourceId="; (obj.__isset.storageResourceId ? (out << to_string(obj.storageResourceId)) : (out << "<null>"));
+  out << ", " << "userDn="; (obj.__isset.userDn ? (out << to_string(obj.userDn)) : (out << "<null>"));
+  out << ", " << "generateCert="; (obj.__isset.generateCert ? (out << to_string(obj.generateCert)) : (out << "<null>"));
   out << ")";
   return out;
 }

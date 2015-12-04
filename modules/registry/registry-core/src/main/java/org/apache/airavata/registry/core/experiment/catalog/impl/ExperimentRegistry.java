@@ -274,6 +274,9 @@ public class ExperimentRegistry {
             processResource.setGatewayExecutionId(process.getGatewayExecutionId());
             processResource.setComputeResourceId(process.getComputeResourceId());
             processResource.setApplicationInterfaceId(process.getApplicationInterfaceId());
+            processResource.setStorageResourceId(process.getStorageResourceId());
+            processResource.setUserDn(process.getUserDn());
+            processResource.setGenerateCert(process.isGenerateCert());
             if(process.isEnableEmailNotification()){
                 processResource.setEnableEmailNotification(true);
                 if(process.getEmailAddresses() != null){
@@ -722,6 +725,9 @@ public class ExperimentRegistry {
             processResource.setGatewayExecutionId(process.getGatewayExecutionId());
             processResource.setComputeResourceId(process.getComputeResourceId());
             processResource.setApplicationDeploymentId(process.getApplicationDeploymentId());
+            processResource.setStorageResourceId(process.getStorageResourceId());
+            processResource.setUserDn(process.getUserDn());
+            processResource.setGenerateCert(process.isGenerateCert());
             if(process.isEnableEmailNotification()){
                 processResource.setEnableEmailNotification(true);
                 if(process.getEmailAddresses() != null){
