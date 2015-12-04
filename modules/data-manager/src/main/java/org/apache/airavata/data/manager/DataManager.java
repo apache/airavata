@@ -73,12 +73,12 @@ public interface DataManager {
      * To copy an already existing resource from the specified replica location to a specified location. After successful
      * copying the new location will be added to the available replica locations of the resource
      * @param resourceId
-     * @param replicaLocationModel
+     * @param replicaId
      * @param destLocation
      * @return
      * @throws DataManagerException
      */
-    boolean copyResource(String resourceId, DataReplicaLocationModel replicaLocationModel, String destLocation)
+    boolean copyResource(String resourceId, String replicaId, String destLocation)
             throws DataManagerException;
 
     /**

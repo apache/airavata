@@ -34,6 +34,7 @@ public class DataResource {
     private String resourceId;
     private String resourceName;
     private String resourceDescription;
+    private String ownerName;
     private int resourceSize;
     private Timestamp creationTime;
     private Timestamp lastModifiedTime;
@@ -66,6 +67,15 @@ public class DataResource {
 
     public void setResourceDescription(String resourceDescription) {
         this.resourceDescription = resourceDescription;
+    }
+
+    @Column(name = "OWNER_NAME")
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
     }
 
     @Column(name = "RESOURCE_SIZE")

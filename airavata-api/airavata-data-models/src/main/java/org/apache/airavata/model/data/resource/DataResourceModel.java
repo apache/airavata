@@ -58,9 +58,10 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
   private static final org.apache.thrift.protocol.TField RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField RESOURCE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceName", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField RESOURCE_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceDescription", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField RESOURCE_SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceSize", org.apache.thrift.protocol.TType.I32, (short)4);
-  private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)5);
-  private static final org.apache.thrift.protocol.TField LAST_MODIFIED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("lastModifiedTime", org.apache.thrift.protocol.TType.I64, (short)6);
+  private static final org.apache.thrift.protocol.TField OWNER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("ownerName", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField RESOURCE_SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceSize", org.apache.thrift.protocol.TType.I32, (short)5);
+  private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)6);
+  private static final org.apache.thrift.protocol.TField LAST_MODIFIED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("lastModifiedTime", org.apache.thrift.protocol.TType.I64, (short)7);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -71,6 +72,7 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
   private String resourceId; // optional
   private String resourceName; // optional
   private String resourceDescription; // optional
+  private String ownerName; // optional
   private int resourceSize; // optional
   private long creationTime; // optional
   private long lastModifiedTime; // optional
@@ -80,9 +82,10 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
     RESOURCE_ID((short)1, "resourceId"),
     RESOURCE_NAME((short)2, "resourceName"),
     RESOURCE_DESCRIPTION((short)3, "resourceDescription"),
-    RESOURCE_SIZE((short)4, "resourceSize"),
-    CREATION_TIME((short)5, "creationTime"),
-    LAST_MODIFIED_TIME((short)6, "lastModifiedTime");
+    OWNER_NAME((short)4, "ownerName"),
+    RESOURCE_SIZE((short)5, "resourceSize"),
+    CREATION_TIME((short)6, "creationTime"),
+    LAST_MODIFIED_TIME((short)7, "lastModifiedTime");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -103,11 +106,13 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
           return RESOURCE_NAME;
         case 3: // RESOURCE_DESCRIPTION
           return RESOURCE_DESCRIPTION;
-        case 4: // RESOURCE_SIZE
+        case 4: // OWNER_NAME
+          return OWNER_NAME;
+        case 5: // RESOURCE_SIZE
           return RESOURCE_SIZE;
-        case 5: // CREATION_TIME
+        case 6: // CREATION_TIME
           return CREATION_TIME;
-        case 6: // LAST_MODIFIED_TIME
+        case 7: // LAST_MODIFIED_TIME
           return LAST_MODIFIED_TIME;
         default:
           return null;
@@ -153,7 +158,7 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
   private static final int __CREATIONTIME_ISSET_ID = 1;
   private static final int __LASTMODIFIEDTIME_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.RESOURCE_ID,_Fields.RESOURCE_NAME,_Fields.RESOURCE_DESCRIPTION,_Fields.RESOURCE_SIZE,_Fields.CREATION_TIME,_Fields.LAST_MODIFIED_TIME};
+  private static final _Fields optionals[] = {_Fields.RESOURCE_ID,_Fields.RESOURCE_NAME,_Fields.RESOURCE_DESCRIPTION,_Fields.OWNER_NAME,_Fields.RESOURCE_SIZE,_Fields.CREATION_TIME,_Fields.LAST_MODIFIED_TIME};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -162,6 +167,8 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
     tmpMap.put(_Fields.RESOURCE_NAME, new org.apache.thrift.meta_data.FieldMetaData("resourceName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.RESOURCE_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("resourceDescription", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.OWNER_NAME, new org.apache.thrift.meta_data.FieldMetaData("ownerName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.RESOURCE_SIZE, new org.apache.thrift.meta_data.FieldMetaData("resourceSize", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
@@ -190,6 +197,9 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
     if (other.isSetResourceDescription()) {
       this.resourceDescription = other.resourceDescription;
     }
+    if (other.isSetOwnerName()) {
+      this.ownerName = other.ownerName;
+    }
     this.resourceSize = other.resourceSize;
     this.creationTime = other.creationTime;
     this.lastModifiedTime = other.lastModifiedTime;
@@ -204,6 +214,7 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
     this.resourceId = null;
     this.resourceName = null;
     this.resourceDescription = null;
+    this.ownerName = null;
     setResourceSizeIsSet(false);
     this.resourceSize = 0;
     setCreationTimeIsSet(false);
@@ -278,6 +289,29 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
   public void setResourceDescriptionIsSet(boolean value) {
     if (!value) {
       this.resourceDescription = null;
+    }
+  }
+
+  public String getOwnerName() {
+    return this.ownerName;
+  }
+
+  public void setOwnerName(String ownerName) {
+    this.ownerName = ownerName;
+  }
+
+  public void unsetOwnerName() {
+    this.ownerName = null;
+  }
+
+  /** Returns true if field ownerName is set (has been assigned a value) and false otherwise */
+  public boolean isSetOwnerName() {
+    return this.ownerName != null;
+  }
+
+  public void setOwnerNameIsSet(boolean value) {
+    if (!value) {
+      this.ownerName = null;
     }
   }
 
@@ -373,6 +407,14 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
       }
       break;
 
+    case OWNER_NAME:
+      if (value == null) {
+        unsetOwnerName();
+      } else {
+        setOwnerName((String)value);
+      }
+      break;
+
     case RESOURCE_SIZE:
       if (value == null) {
         unsetResourceSize();
@@ -411,6 +453,9 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
     case RESOURCE_DESCRIPTION:
       return getResourceDescription();
 
+    case OWNER_NAME:
+      return getOwnerName();
+
     case RESOURCE_SIZE:
       return Integer.valueOf(getResourceSize());
 
@@ -437,6 +482,8 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
       return isSetResourceName();
     case RESOURCE_DESCRIPTION:
       return isSetResourceDescription();
+    case OWNER_NAME:
+      return isSetOwnerName();
     case RESOURCE_SIZE:
       return isSetResourceSize();
     case CREATION_TIME:
@@ -484,6 +531,15 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
       if (!(this_present_resourceDescription && that_present_resourceDescription))
         return false;
       if (!this.resourceDescription.equals(that.resourceDescription))
+        return false;
+    }
+
+    boolean this_present_ownerName = true && this.isSetOwnerName();
+    boolean that_present_ownerName = true && that.isSetOwnerName();
+    if (this_present_ownerName || that_present_ownerName) {
+      if (!(this_present_ownerName && that_present_ownerName))
+        return false;
+      if (!this.ownerName.equals(that.ownerName))
         return false;
     }
 
@@ -535,6 +591,11 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
     list.add(present_resourceDescription);
     if (present_resourceDescription)
       list.add(resourceDescription);
+
+    boolean present_ownerName = true && (isSetOwnerName());
+    list.add(present_ownerName);
+    if (present_ownerName)
+      list.add(ownerName);
 
     boolean present_resourceSize = true && (isSetResourceSize());
     list.add(present_resourceSize);
@@ -588,6 +649,16 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
     }
     if (isSetResourceDescription()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.resourceDescription, other.resourceDescription);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetOwnerName()).compareTo(other.isSetOwnerName());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetOwnerName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ownerName, other.ownerName);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -668,6 +739,16 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
         sb.append("null");
       } else {
         sb.append(this.resourceDescription);
+      }
+      first = false;
+    }
+    if (isSetOwnerName()) {
+      if (!first) sb.append(", ");
+      sb.append("ownerName:");
+      if (this.ownerName == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ownerName);
       }
       first = false;
     }
@@ -758,7 +839,15 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // RESOURCE_SIZE
+          case 4: // OWNER_NAME
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.ownerName = iprot.readString();
+              struct.setOwnerNameIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 5: // RESOURCE_SIZE
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.resourceSize = iprot.readI32();
               struct.setResourceSizeIsSet(true);
@@ -766,7 +855,7 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // CREATION_TIME
+          case 6: // CREATION_TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.creationTime = iprot.readI64();
               struct.setCreationTimeIsSet(true);
@@ -774,7 +863,7 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // LAST_MODIFIED_TIME
+          case 7: // LAST_MODIFIED_TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.lastModifiedTime = iprot.readI64();
               struct.setLastModifiedTimeIsSet(true);
@@ -813,6 +902,13 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
         if (struct.isSetResourceDescription()) {
           oprot.writeFieldBegin(RESOURCE_DESCRIPTION_FIELD_DESC);
           oprot.writeString(struct.resourceDescription);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.ownerName != null) {
+        if (struct.isSetOwnerName()) {
+          oprot.writeFieldBegin(OWNER_NAME_FIELD_DESC);
+          oprot.writeString(struct.ownerName);
           oprot.writeFieldEnd();
         }
       }
@@ -858,16 +954,19 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
       if (struct.isSetResourceDescription()) {
         optionals.set(2);
       }
-      if (struct.isSetResourceSize()) {
+      if (struct.isSetOwnerName()) {
         optionals.set(3);
       }
-      if (struct.isSetCreationTime()) {
+      if (struct.isSetResourceSize()) {
         optionals.set(4);
       }
-      if (struct.isSetLastModifiedTime()) {
+      if (struct.isSetCreationTime()) {
         optionals.set(5);
       }
-      oprot.writeBitSet(optionals, 6);
+      if (struct.isSetLastModifiedTime()) {
+        optionals.set(6);
+      }
+      oprot.writeBitSet(optionals, 7);
       if (struct.isSetResourceId()) {
         oprot.writeString(struct.resourceId);
       }
@@ -876,6 +975,9 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
       }
       if (struct.isSetResourceDescription()) {
         oprot.writeString(struct.resourceDescription);
+      }
+      if (struct.isSetOwnerName()) {
+        oprot.writeString(struct.ownerName);
       }
       if (struct.isSetResourceSize()) {
         oprot.writeI32(struct.resourceSize);
@@ -891,7 +993,7 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, DataResourceModel struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(6);
+      BitSet incoming = iprot.readBitSet(7);
       if (incoming.get(0)) {
         struct.resourceId = iprot.readString();
         struct.setResourceIdIsSet(true);
@@ -905,14 +1007,18 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
         struct.setResourceDescriptionIsSet(true);
       }
       if (incoming.get(3)) {
+        struct.ownerName = iprot.readString();
+        struct.setOwnerNameIsSet(true);
+      }
+      if (incoming.get(4)) {
         struct.resourceSize = iprot.readI32();
         struct.setResourceSizeIsSet(true);
       }
-      if (incoming.get(4)) {
+      if (incoming.get(5)) {
         struct.creationTime = iprot.readI64();
         struct.setCreationTimeIsSet(true);
       }
-      if (incoming.get(5)) {
+      if (incoming.get(6)) {
         struct.lastModifiedTime = iprot.readI64();
         struct.setLastModifiedTimeIsSet(true);
       }
