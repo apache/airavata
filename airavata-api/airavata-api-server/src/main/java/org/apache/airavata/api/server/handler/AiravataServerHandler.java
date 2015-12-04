@@ -41,10 +41,12 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.DataStoragePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.model.job.JobModel;
@@ -66,8 +68,6 @@ import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.core.experiment.catalog.model.*;
-import org.apache.airavata.registry.core.experiment.catalog.model.Process;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
@@ -2539,6 +2539,118 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
+     * Register a Storage Resource.
+     *
+     * @param authzToken
+     * @param storageResourceDescription Storge Resource Object created from the datamodel.
+     * @return storageResourceId
+     * Returns a server-side generated airavata storage resource globally unique identifier.
+     */
+    @Override
+    public String registerStorageResource(AuthzToken authzToken, StorageResourceDescription storageResourceDescription) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            return appCatalog.getStorageResource().addStorageResource(storageResourceDescription);
+        } catch (AppCatalogException e) {
+            logger.error("Error while saving storage resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while saving storage resource. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Fetch the given Storage Resource.
+     *
+     * @param authzToken
+     * @param storageResourceId The identifier for the requested storage resource
+     * @return storageResourceDescription
+     * Storage Resource Object created from the datamodel..
+     */
+    @Override
+    public StorageResourceDescription getStorageResource(AuthzToken authzToken, String storageResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            return appCatalog.getStorageResource().getStorageResource(storageResourceId);
+        } catch (AppCatalogException e) {
+            logger.error(storageResourceId, "Error while retrieving storage resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving storage resource. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Fetch all registered Storage Resources.
+     *
+     * @param authzToken
+     * @return A map of registered compute resource id's and thier corresponding hostnames.
+     * Compute Resource Object created from the datamodel..
+     */
+    @Override
+    public Map<String, String> getAllStorageResourceNames(AuthzToken authzToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            return appCatalog.getStorageResource().getAllStorageResourceIdList();
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving storage resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving storage resource. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Update a Compute Resource.
+     *
+     * @param authzToken
+     * @param storageResourceId          The identifier for the requested compute resource to be updated.
+     * @param storageResourceDescription Storage Resource Object created from the datamodel.
+     * @return status
+     * Returns a success/failure of the update.
+     */
+    @Override
+    public boolean updateStorageResource(AuthzToken authzToken, String storageResourceId, StorageResourceDescription storageResourceDescription) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            appCatalog.getStorageResource().updateStorageResource(storageResourceId, storageResourceDescription);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(storageResourceId, "Error while updating storage resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updaing storage resource. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Delete a Storage Resource.
+     *
+     * @param authzToken
+     * @param storageResourceId The identifier for the requested compute resource to be deleted.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean deleteStorageResource(AuthzToken authzToken, String storageResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            appCatalog.getStorageResource().removeStorageResource(storageResourceId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(storageResourceId, "Error while deleting storage resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while deleting storage resource. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
      * Add a Local Job Submission details to a compute resource
      * App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
      *
@@ -2849,7 +2961,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Add a Local data moevement details to a compute resource
      * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
      *
-     * @param computeResourceId The identifier of the compute resource to which JobSubmission protocol to be added
+     * @param resourceId The identifier of the compute resource to which JobSubmission protocol to be added
      * @param priorityOrder     Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
      * @param localDataMovement The LOCALDataMovement object to be added to the resource.
      * @return status
@@ -2857,19 +2969,19 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public String addLocalDataMovementDetails(AuthzToken authzToken, String computeResourceId, int priorityOrder,
+    public String addLocalDataMovementDetails(AuthzToken authzToken, String resourceId, DMType dmType, int priorityOrder,
                                               LOCALDataMovement localDataMovement) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             appCatalog = RegistryFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
-            return addDataMovementInterface(computeResource, computeResourceId,
+            return addDataMovementInterface(computeResource, resourceId,dmType,
             		computeResource.addLocalDataMovement(localDataMovement), DataMovementProtocol.LOCAL, priorityOrder);
         } catch (AppCatalogException e) {
-            logger.error(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
+            logger.error(resourceId, "Error while adding data movement interface to resource resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while adding data movement interface to resource compute resource. More info : " + e.getMessage());
+            exception.setMessage("Error while adding data movement interface to resource. More info : " + e.getMessage());
             throw exception;
         }
     }
@@ -2918,21 +3030,21 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     private String addDataMovementInterface(ComputeResource computeResource,
-			String computeResourceId, String dataMovementInterfaceId,
+			String computeResourceId, DMType dmType, String dataMovementInterfaceId,
 			DataMovementProtocol protocolType, int priorityOrder)
 			throws AppCatalogException {
 		DataMovementInterface dataMovementInterface = new DataMovementInterface();
 		dataMovementInterface.setDataMovementInterfaceId(dataMovementInterfaceId);
 		dataMovementInterface.setPriorityOrder(priorityOrder);
 		dataMovementInterface.setDataMovementProtocol(protocolType);
-		return computeResource.addDataMovementProtocol(computeResourceId,dataMovementInterface);
+		return computeResource.addDataMovementProtocol(computeResourceId, dmType, dataMovementInterface);
 	}
 
     /**
      * Add a SCP data moevement details to a compute resource
      * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
      *
-     * @param computeResourceId The identifier of the compute resource to which JobSubmission protocol to be added
+     * @param resourceId The identifier of the compute resource to which JobSubmission protocol to be added
      * @param priorityOrder     Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
      * @param scpDataMovement   The SCPDataMovement object to be added to the resource.
      * @return status
@@ -2940,15 +3052,15 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public String addSCPDataMovementDetails(AuthzToken authzToken, String computeResourceId, int priorityOrder, SCPDataMovement scpDataMovement)
+    public String addSCPDataMovementDetails(AuthzToken authzToken, String resourceId, DMType dmType, int priorityOrder, SCPDataMovement scpDataMovement)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             appCatalog = RegistryFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
-            return addDataMovementInterface(computeResource, computeResourceId,
+            return addDataMovementInterface(computeResource, resourceId,dmType,
             		computeResource.addScpDataMovement(scpDataMovement), DataMovementProtocol.SCP, priorityOrder);
         } catch (AppCatalogException e) {
-            logger.error(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
+            logger.error(resourceId, "Error while adding data movement interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding data movement interface to resource compute resource. More info : " + e.getMessage());
@@ -3002,15 +3114,15 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public String addUnicoreDataMovementDetails(AuthzToken authzToken, String computeResourceId, int priorityOrder, UnicoreDataMovement unicoreDataMovement)
+    public String addUnicoreDataMovementDetails(AuthzToken authzToken, String resourceId, DMType dmType, int priorityOrder, UnicoreDataMovement unicoreDataMovement)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
-            return addDataMovementInterface(computeResource, computeResourceId,
+            return addDataMovementInterface(computeResource, resourceId,dmType,
                     computeResource.addUnicoreDataMovement(unicoreDataMovement), DataMovementProtocol.UNICORE_STORAGE_SERVICE, priorityOrder);
         } catch (AppCatalogException e) {
-            logger.error(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
+            logger.error(resourceId, "Error while adding data movement interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding data movement interface to resource compute resource. More info : " + e.getMessage());
@@ -3065,13 +3177,13 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public String addGridFTPDataMovementDetails(AuthzToken authzToken, String computeResourceId, int priorityOrder,
+    public String addGridFTPDataMovementDetails(AuthzToken authzToken, String computeResourceId, DMType dmType, int priorityOrder,
                                                 GridFTPDataMovement gridFTPDataMovement) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             appCatalog = RegistryFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
-            return addDataMovementInterface(computeResource, computeResourceId,
+            return addDataMovementInterface(computeResource, computeResourceId,dmType,
             		computeResource.addGridFTPDataMovement(gridFTPDataMovement), DataMovementProtocol.GridFTP, priorityOrder);
         } catch (AppCatalogException e) {
             logger.error(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
@@ -3479,7 +3591,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public boolean addGatewayDataStoragePreference(AuthzToken authzToken, String gatewayID, String dataMoveId, DataStoragePreference dataStoragePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean addGatewayStoragePreference(AuthzToken authzToken, String gatewayID, String storageResourceId, StoragePreference dataStoragePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -3492,7 +3604,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
 //            gatewayProfile.removeGatewayResourceProfile(gatewayID);
-            profile.addToDataStoragePreferences(dataStoragePreference);
+            dataStoragePreference.setStorageResourceId(storageResourceId);
+            profile.addToStoragePreferences(dataStoragePreference);
             gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
             return true;
         } catch (AppCatalogException e) {
@@ -3549,7 +3662,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public DataStoragePreference getGatewayDataStoragePreference(AuthzToken authzToken, String gatewayID, String dataMoveId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public StoragePreference getGatewayStoragePreference(AuthzToken authzToken, String gatewayID, String storageId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -3557,7 +3670,6 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             appCatalog = RegistryFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            ComputeResource computeResource = appCatalog.getComputeResource();
             if (!gatewayProfile.isGatewayResourceProfileExists(gatewayID)){
                 logger.error(gatewayID, "Given gateway profile does not exist in the system. Please provide a valid gateway id...");
                 AiravataSystemException exception = new AiravataSystemException();
@@ -3566,7 +3678,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw exception;
             }
 
-            return gatewayProfile.getDataStoragePreference(gatewayID, dataMoveId);
+            return gatewayProfile.getStoragePreference(gatewayID, storageId);
         } catch (AppCatalogException e) {
             logger.error(gatewayID, "Error while reading gateway data storage preference...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -3605,7 +3717,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public List<DataStoragePreference> getAllGatewayDataStoragePreferences(AuthzToken authzToken, String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public List<StoragePreference> getAllGatewayStoragePreferences(AuthzToken authzToken, String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -3613,7 +3725,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             appCatalog = RegistryFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            return gatewayProfile.getGatewayProfile(gatewayID).getDataStoragePreferences();
+            return gatewayProfile.getGatewayProfile(gatewayID).getStoragePreferences();
         } catch (AppCatalogException e) {
             logger.error(gatewayID, "Error while reading gateway data storage preferences...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -3686,7 +3798,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public boolean updateGatewayDataStoragePreference(AuthzToken authzToken, String gatewayID, String dataMoveId, DataStoragePreference dataStoragePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean updateGatewayStoragePreference(AuthzToken authzToken, String gatewayID, String storageId, StoragePreference dataStoragePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -3695,19 +3807,19 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog = RegistryFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
             GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
-            List<DataStoragePreference> dataStoragePreferences = profile.getDataStoragePreferences();
-            DataStoragePreference preferenceToRemove = null;
-            for (DataStoragePreference preference : dataStoragePreferences) {
-                if (preference.getDataMovememtResourceId().equals(dataMoveId)){
+            List<StoragePreference> dataStoragePreferences = profile.getStoragePreferences();
+            StoragePreference preferenceToRemove = null;
+            for (StoragePreference preference : dataStoragePreferences) {
+                if (preference.getStorageResourceId().equals(storageId)){
                     preferenceToRemove=preference;
                     break;
                 }
             }
             if (preferenceToRemove!=null) {
-                profile.getDataStoragePreferences().remove(
+                profile.getStoragePreferences().remove(
                         preferenceToRemove);
             }
-            profile.getDataStoragePreferences().add(dataStoragePreference);
+            profile.getStoragePreferences().add(dataStoragePreference);
             gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
             return true;
         } catch (AppCatalogException e) {
@@ -3749,7 +3861,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public boolean deleteGatewayDataStoragePreference(AuthzToken authzToken, String gatewayID, String dataMoveId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean deleteGatewayStoragePreference(AuthzToken authzToken, String gatewayID, String storageId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -3757,7 +3869,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             appCatalog = RegistryFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            return gatewayProfile.removeDataStoragePreferenceFromGateway(gatewayID, dataMoveId);
+            return gatewayProfile.removeDataStoragePreferenceFromGateway(gatewayID, storageId);
         } catch (AppCatalogException e) {
             logger.error(gatewayID, "Error while reading gateway data storage preference...", e);
             AiravataSystemException exception = new AiravataSystemException();

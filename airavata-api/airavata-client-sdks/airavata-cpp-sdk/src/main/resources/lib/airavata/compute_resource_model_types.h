@@ -33,6 +33,7 @@
 
 #include <thrift/cxxfunctional.h>
 #include "airavata_commons_types.h"
+#include "data_movement_models_types.h"
 
 
 namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace computeresource {
@@ -75,19 +76,6 @@ struct FileSystems {
 
 extern const std::map<int, const char*> _FileSystems_VALUES_TO_NAMES;
 
-struct SecurityProtocol {
-  enum type {
-    USERNAME_PASSWORD = 0,
-    SSH_KEYS = 1,
-    GSI = 2,
-    KERBEROS = 3,
-    OAUTH = 4,
-    LOCAL = 5
-  };
-};
-
-extern const std::map<int, const char*> _SecurityProtocol_VALUES_TO_NAMES;
-
 struct JobSubmissionProtocol {
   enum type {
     LOCAL = 0,
@@ -113,18 +101,6 @@ struct MonitorMode {
 
 extern const std::map<int, const char*> _MonitorMode_VALUES_TO_NAMES;
 
-struct DataMovementProtocol {
-  enum type {
-    LOCAL = 0,
-    SCP = 1,
-    SFTP = 2,
-    GridFTP = 3,
-    UNICORE_STORAGE_SERVICE = 4
-  };
-};
-
-extern const std::map<int, const char*> _DataMovementProtocol_VALUES_TO_NAMES;
-
 struct ProviderName {
   enum type {
     EC2 = 0,
@@ -139,15 +115,7 @@ class ResourceJobManager;
 
 class BatchQueue;
 
-class SCPDataMovement;
-
-class GridFTPDataMovement;
-
-class UnicoreDataMovement;
-
 class LOCALSubmission;
-
-class LOCALDataMovement;
 
 class SSHJobSubmission;
 
@@ -158,8 +126,6 @@ class UnicoreJobSubmission;
 class CloudJobSubmission;
 
 class JobSubmissionInterface;
-
-class DataMovementInterface;
 
 class ComputeResourceDescription;
 
@@ -324,163 +290,6 @@ class BatchQueue {
 
 void swap(BatchQueue &a, BatchQueue &b);
 
-typedef struct _SCPDataMovement__isset {
-  _SCPDataMovement__isset() : alternativeSCPHostName(false), sshPort(true) {}
-  bool alternativeSCPHostName :1;
-  bool sshPort :1;
-} _SCPDataMovement__isset;
-
-class SCPDataMovement {
- public:
-
-  static const char* ascii_fingerprint; // = "63CAE6EE336A7DBD91CCCD6E22628F4A";
-  static const uint8_t binary_fingerprint[16]; // = {0x63,0xCA,0xE6,0xEE,0x33,0x6A,0x7D,0xBD,0x91,0xCC,0xCD,0x6E,0x22,0x62,0x8F,0x4A};
-
-  SCPDataMovement(const SCPDataMovement&);
-  SCPDataMovement& operator=(const SCPDataMovement&);
-  SCPDataMovement() : dataMovementInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), alternativeSCPHostName(), sshPort(22) {
-  }
-
-  virtual ~SCPDataMovement() throw();
-  std::string dataMovementInterfaceId;
-  SecurityProtocol::type securityProtocol;
-  std::string alternativeSCPHostName;
-  int32_t sshPort;
-
-  _SCPDataMovement__isset __isset;
-
-  void __set_dataMovementInterfaceId(const std::string& val);
-
-  void __set_securityProtocol(const SecurityProtocol::type val);
-
-  void __set_alternativeSCPHostName(const std::string& val);
-
-  void __set_sshPort(const int32_t val);
-
-  bool operator == (const SCPDataMovement & rhs) const
-  {
-    if (!(dataMovementInterfaceId == rhs.dataMovementInterfaceId))
-      return false;
-    if (!(securityProtocol == rhs.securityProtocol))
-      return false;
-    if (__isset.alternativeSCPHostName != rhs.__isset.alternativeSCPHostName)
-      return false;
-    else if (__isset.alternativeSCPHostName && !(alternativeSCPHostName == rhs.alternativeSCPHostName))
-      return false;
-    if (__isset.sshPort != rhs.__isset.sshPort)
-      return false;
-    else if (__isset.sshPort && !(sshPort == rhs.sshPort))
-      return false;
-    return true;
-  }
-  bool operator != (const SCPDataMovement &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const SCPDataMovement & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const SCPDataMovement& obj);
-};
-
-void swap(SCPDataMovement &a, SCPDataMovement &b);
-
-
-class GridFTPDataMovement {
- public:
-
-  static const char* ascii_fingerprint; // = "790EE8B1D56A3B9B76C41DD063726E75";
-  static const uint8_t binary_fingerprint[16]; // = {0x79,0x0E,0xE8,0xB1,0xD5,0x6A,0x3B,0x9B,0x76,0xC4,0x1D,0xD0,0x63,0x72,0x6E,0x75};
-
-  GridFTPDataMovement(const GridFTPDataMovement&);
-  GridFTPDataMovement& operator=(const GridFTPDataMovement&);
-  GridFTPDataMovement() : dataMovementInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0) {
-  }
-
-  virtual ~GridFTPDataMovement() throw();
-  std::string dataMovementInterfaceId;
-  SecurityProtocol::type securityProtocol;
-  std::vector<std::string>  gridFTPEndPoints;
-
-  void __set_dataMovementInterfaceId(const std::string& val);
-
-  void __set_securityProtocol(const SecurityProtocol::type val);
-
-  void __set_gridFTPEndPoints(const std::vector<std::string> & val);
-
-  bool operator == (const GridFTPDataMovement & rhs) const
-  {
-    if (!(dataMovementInterfaceId == rhs.dataMovementInterfaceId))
-      return false;
-    if (!(securityProtocol == rhs.securityProtocol))
-      return false;
-    if (!(gridFTPEndPoints == rhs.gridFTPEndPoints))
-      return false;
-    return true;
-  }
-  bool operator != (const GridFTPDataMovement &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const GridFTPDataMovement & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const GridFTPDataMovement& obj);
-};
-
-void swap(GridFTPDataMovement &a, GridFTPDataMovement &b);
-
-
-class UnicoreDataMovement {
- public:
-
-  static const char* ascii_fingerprint; // = "D9F4CFE2F293A8B1052FD3031DD2C847";
-  static const uint8_t binary_fingerprint[16]; // = {0xD9,0xF4,0xCF,0xE2,0xF2,0x93,0xA8,0xB1,0x05,0x2F,0xD3,0x03,0x1D,0xD2,0xC8,0x47};
-
-  UnicoreDataMovement(const UnicoreDataMovement&);
-  UnicoreDataMovement& operator=(const UnicoreDataMovement&);
-  UnicoreDataMovement() : dataMovementInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), unicoreEndPointURL() {
-  }
-
-  virtual ~UnicoreDataMovement() throw();
-  std::string dataMovementInterfaceId;
-  SecurityProtocol::type securityProtocol;
-  std::string unicoreEndPointURL;
-
-  void __set_dataMovementInterfaceId(const std::string& val);
-
-  void __set_securityProtocol(const SecurityProtocol::type val);
-
-  void __set_unicoreEndPointURL(const std::string& val);
-
-  bool operator == (const UnicoreDataMovement & rhs) const
-  {
-    if (!(dataMovementInterfaceId == rhs.dataMovementInterfaceId))
-      return false;
-    if (!(securityProtocol == rhs.securityProtocol))
-      return false;
-    if (!(unicoreEndPointURL == rhs.unicoreEndPointURL))
-      return false;
-    return true;
-  }
-  bool operator != (const UnicoreDataMovement &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const UnicoreDataMovement & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const UnicoreDataMovement& obj);
-};
-
-void swap(UnicoreDataMovement &a, UnicoreDataMovement &b);
-
 
 class LOCALSubmission {
  public:
@@ -490,17 +299,17 @@ class LOCALSubmission {
 
   LOCALSubmission(const LOCALSubmission&);
   LOCALSubmission& operator=(const LOCALSubmission&);
-  LOCALSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0) {
+  LOCALSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol(( ::apache::airavata::model::data::movement::SecurityProtocol::type)0) {
   }
 
   virtual ~LOCALSubmission() throw();
   std::string jobSubmissionInterfaceId;
-  SecurityProtocol::type securityProtocol;
+   ::apache::airavata::model::data::movement::SecurityProtocol::type securityProtocol;
   ResourceJobManager resourceJobManager;
 
   void __set_jobSubmissionInterfaceId(const std::string& val);
 
-  void __set_securityProtocol(const SecurityProtocol::type val);
+  void __set_securityProtocol(const  ::apache::airavata::model::data::movement::SecurityProtocol::type val);
 
   void __set_resourceJobManager(const ResourceJobManager& val);
 
@@ -528,43 +337,6 @@ class LOCALSubmission {
 
 void swap(LOCALSubmission &a, LOCALSubmission &b);
 
-
-class LOCALDataMovement {
- public:
-
-  static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
-  static const uint8_t binary_fingerprint[16]; // = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
-
-  LOCALDataMovement(const LOCALDataMovement&);
-  LOCALDataMovement& operator=(const LOCALDataMovement&);
-  LOCALDataMovement() : dataMovementInterfaceId("DO_NOT_SET_AT_CLIENTS") {
-  }
-
-  virtual ~LOCALDataMovement() throw();
-  std::string dataMovementInterfaceId;
-
-  void __set_dataMovementInterfaceId(const std::string& val);
-
-  bool operator == (const LOCALDataMovement & rhs) const
-  {
-    if (!(dataMovementInterfaceId == rhs.dataMovementInterfaceId))
-      return false;
-    return true;
-  }
-  bool operator != (const LOCALDataMovement &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const LOCALDataMovement & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const LOCALDataMovement& obj);
-};
-
-void swap(LOCALDataMovement &a, LOCALDataMovement &b);
-
 typedef struct _SSHJobSubmission__isset {
   _SSHJobSubmission__isset() : alternativeSSHHostName(false), sshPort(true), monitorMode(false), batchQueueEmailSenders(false) {}
   bool alternativeSSHHostName :1;
@@ -581,12 +353,12 @@ class SSHJobSubmission {
 
   SSHJobSubmission(const SSHJobSubmission&);
   SSHJobSubmission& operator=(const SSHJobSubmission&);
-  SSHJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), alternativeSSHHostName(), sshPort(22), monitorMode((MonitorMode::type)0) {
+  SSHJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol(( ::apache::airavata::model::data::movement::SecurityProtocol::type)0), alternativeSSHHostName(), sshPort(22), monitorMode((MonitorMode::type)0) {
   }
 
   virtual ~SSHJobSubmission() throw();
   std::string jobSubmissionInterfaceId;
-  SecurityProtocol::type securityProtocol;
+   ::apache::airavata::model::data::movement::SecurityProtocol::type securityProtocol;
   ResourceJobManager resourceJobManager;
   std::string alternativeSSHHostName;
   int32_t sshPort;
@@ -597,7 +369,7 @@ class SSHJobSubmission {
 
   void __set_jobSubmissionInterfaceId(const std::string& val);
 
-  void __set_securityProtocol(const SecurityProtocol::type val);
+  void __set_securityProtocol(const  ::apache::airavata::model::data::movement::SecurityProtocol::type val);
 
   void __set_resourceJobManager(const ResourceJobManager& val);
 
@@ -662,19 +434,19 @@ class GlobusJobSubmission {
 
   GlobusJobSubmission(const GlobusJobSubmission&);
   GlobusJobSubmission& operator=(const GlobusJobSubmission&);
-  GlobusJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0) {
+  GlobusJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol(( ::apache::airavata::model::data::movement::SecurityProtocol::type)0) {
   }
 
   virtual ~GlobusJobSubmission() throw();
   std::string jobSubmissionInterfaceId;
-  SecurityProtocol::type securityProtocol;
+   ::apache::airavata::model::data::movement::SecurityProtocol::type securityProtocol;
   std::vector<std::string>  globusGateKeeperEndPoint;
 
   _GlobusJobSubmission__isset __isset;
 
   void __set_jobSubmissionInterfaceId(const std::string& val);
 
-  void __set_securityProtocol(const SecurityProtocol::type val);
+  void __set_securityProtocol(const  ::apache::airavata::model::data::movement::SecurityProtocol::type val);
 
   void __set_globusGateKeeperEndPoint(const std::vector<std::string> & val);
 
@@ -713,17 +485,17 @@ class UnicoreJobSubmission {
 
   UnicoreJobSubmission(const UnicoreJobSubmission&);
   UnicoreJobSubmission& operator=(const UnicoreJobSubmission&);
-  UnicoreJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), unicoreEndPointURL() {
+  UnicoreJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol(( ::apache::airavata::model::data::movement::SecurityProtocol::type)0), unicoreEndPointURL() {
   }
 
   virtual ~UnicoreJobSubmission() throw();
   std::string jobSubmissionInterfaceId;
-  SecurityProtocol::type securityProtocol;
+   ::apache::airavata::model::data::movement::SecurityProtocol::type securityProtocol;
   std::string unicoreEndPointURL;
 
   void __set_jobSubmissionInterfaceId(const std::string& val);
 
-  void __set_securityProtocol(const SecurityProtocol::type val);
+  void __set_securityProtocol(const  ::apache::airavata::model::data::movement::SecurityProtocol::type val);
 
   void __set_unicoreEndPointURL(const std::string& val);
 
@@ -760,12 +532,12 @@ class CloudJobSubmission {
 
   CloudJobSubmission(const CloudJobSubmission&);
   CloudJobSubmission& operator=(const CloudJobSubmission&);
-  CloudJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), nodeId(), executableType(), providerName((ProviderName::type)0), userAccountName() {
+  CloudJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol(( ::apache::airavata::model::data::movement::SecurityProtocol::type)0), nodeId(), executableType(), providerName((ProviderName::type)0), userAccountName() {
   }
 
   virtual ~CloudJobSubmission() throw();
   std::string jobSubmissionInterfaceId;
-  SecurityProtocol::type securityProtocol;
+   ::apache::airavata::model::data::movement::SecurityProtocol::type securityProtocol;
   std::string nodeId;
   std::string executableType;
   ProviderName::type providerName;
@@ -773,7 +545,7 @@ class CloudJobSubmission {
 
   void __set_jobSubmissionInterfaceId(const std::string& val);
 
-  void __set_securityProtocol(const SecurityProtocol::type val);
+  void __set_securityProtocol(const  ::apache::airavata::model::data::movement::SecurityProtocol::type val);
 
   void __set_nodeId(const std::string& val);
 
@@ -860,53 +632,6 @@ class JobSubmissionInterface {
 
 void swap(JobSubmissionInterface &a, JobSubmissionInterface &b);
 
-
-class DataMovementInterface {
- public:
-
-  static const char* ascii_fingerprint; // = "A0A4DD7B8243FB842E64EAC6E5DA6C7B";
-  static const uint8_t binary_fingerprint[16]; // = {0xA0,0xA4,0xDD,0x7B,0x82,0x43,0xFB,0x84,0x2E,0x64,0xEA,0xC6,0xE5,0xDA,0x6C,0x7B};
-
-  DataMovementInterface(const DataMovementInterface&);
-  DataMovementInterface& operator=(const DataMovementInterface&);
-  DataMovementInterface() : dataMovementInterfaceId(), dataMovementProtocol((DataMovementProtocol::type)0), priorityOrder(0) {
-  }
-
-  virtual ~DataMovementInterface() throw();
-  std::string dataMovementInterfaceId;
-  DataMovementProtocol::type dataMovementProtocol;
-  int32_t priorityOrder;
-
-  void __set_dataMovementInterfaceId(const std::string& val);
-
-  void __set_dataMovementProtocol(const DataMovementProtocol::type val);
-
-  void __set_priorityOrder(const int32_t val);
-
-  bool operator == (const DataMovementInterface & rhs) const
-  {
-    if (!(dataMovementInterfaceId == rhs.dataMovementInterfaceId))
-      return false;
-    if (!(dataMovementProtocol == rhs.dataMovementProtocol))
-      return false;
-    if (!(priorityOrder == rhs.priorityOrder))
-      return false;
-    return true;
-  }
-  bool operator != (const DataMovementInterface &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const DataMovementInterface & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const DataMovementInterface& obj);
-};
-
-void swap(DataMovementInterface &a, DataMovementInterface &b);
-
 typedef struct _ComputeResourceDescription__isset {
   _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), enabled(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovementInterfaces(false), maxMemoryPerNode(false) {}
   bool hostAliases :1;
@@ -941,7 +666,7 @@ class ComputeResourceDescription {
   std::vector<BatchQueue>  batchQueues;
   std::map<FileSystems::type, std::string>  fileSystems;
   std::vector<JobSubmissionInterface>  jobSubmissionInterfaces;
-  std::vector<DataMovementInterface>  dataMovementInterfaces;
+  std::vector< ::apache::airavata::model::data::movement::DataMovementInterface>  dataMovementInterfaces;
   int32_t maxMemoryPerNode;
 
   _ComputeResourceDescription__isset __isset;
@@ -964,7 +689,7 @@ class ComputeResourceDescription {
 
   void __set_jobSubmissionInterfaces(const std::vector<JobSubmissionInterface> & val);
 
-  void __set_dataMovementInterfaces(const std::vector<DataMovementInterface> & val);
+  void __set_dataMovementInterfaces(const std::vector< ::apache::airavata::model::data::movement::DataMovementInterface> & val);
 
   void __set_maxMemoryPerNode(const int32_t val);
 

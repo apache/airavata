@@ -51,12 +51,7 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.search.FlagTerm;
 import javax.mail.search.SearchTerm;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class EmailBasedMonitor implements JobMonitor, Runnable{
@@ -77,9 +72,11 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
     private Map<ResourceJobManagerType, EmailParser> emailParserMap = new HashMap<ResourceJobManagerType, EmailParser>();
 	private Map<String, ResourceJobManagerType> addressMap = new HashMap<>();
 	private Message[] flushUnseenMessages;
+    private Map<String, Boolean> canceledJobs = new ConcurrentHashMap<>();
+    private Timer timer;
 
 
-	public EmailBasedMonitor(Map<ResourceJobManagerType, ResourceConfig> resourceConfigs) throws AiravataException {
+    public EmailBasedMonitor(Map<ResourceJobManagerType, ResourceConfig> resourceConfigs) throws AiravataException {
 		init();
 		populateAddressAndParserMap(resourceConfigs);
 	}
@@ -96,6 +93,9 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
         }
         properties = new Properties();
         properties.put("mail.store.protocol", storeProtocol);
+        timer = new Timer("CancelJobHandler", true);
+        long period = 1000*60*5; // five minute delay between successive task executions.
+        timer.schedule(new CancelTimerTask(), 0 , period);
     }
 
 	private void populateAddressAndParserMap(Map<ResourceJobManagerType, ResourceConfig> resourceConfigs) throws AiravataException {
@@ -140,6 +140,11 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
     @Override
     public boolean isMonitoring(String jobId) {
         return jobMonitorMap.containsKey(jobId);
+    }
+
+    @Override
+    public void canceledJob(String jobId) {
+        canceledJobs.put(jobId, Boolean.FALSE);
     }
 
     private JobStatusResult parse(Message message) throws MessagingException, AiravataException {
@@ -309,6 +314,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 	    JobStatus jobStatus = new JobStatus();
 	    JobModel jobModel = taskContext.getParentProcessContext().getJobModel();
         String jobDetails = "JobName : " + jobStatusResult.getJobName() + ", JobId : " + jobStatusResult.getJobId();
+        canceledJobs.remove(jobStatusResult.getJobId());
         // TODO - Handle all other valid JobStates
         if (resultState == JobState.COMPLETE) {
             jobMonitorMap.remove(jobStatusResult.getJobId());
@@ -338,7 +344,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
             log.info("[EJM]: Job failed email received , removed job from job monitoring. " + jobDetails);
         }else if (resultState == JobState.CANCELED) {
             jobMonitorMap.remove(jobStatusResult.getJobId());
-	        jobStatus.setJobState(JobState.CANCELED);
+            jobStatus.setJobState(JobState.CANCELED);
 	        jobStatus.setReason("Canceled email received");
             jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 	        log.info("[EJM]: Job canceled mail received, removed job from job monitoring. " + jobDetails);
@@ -395,5 +401,25 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
         this.monitorStartDate = date;
     }
 
+    private class CancelTimerTask extends TimerTask {
 
+        @Override
+        public void run() {
+            if (!canceledJobs.isEmpty()) {
+                Iterator<Map.Entry<String, Boolean>> cancelJobIter = canceledJobs.entrySet().iterator();
+                while (cancelJobIter.hasNext()) {
+                    Map.Entry<String, Boolean> cancelJobIdWithFlag = cancelJobIter.next();
+                    if (!cancelJobIdWithFlag.getValue()) {
+                        cancelJobIdWithFlag.setValue(Boolean.TRUE);
+                    } else {
+                        TaskContext taskContext = jobMonitorMap.get(cancelJobIdWithFlag.getKey());
+                        if (taskContext != null) {
+                            stopMonitor(cancelJobIdWithFlag.getKey(), true);
+                        }
+                        cancelJobIter.remove();
+                    }
+                }
+            }
+        }
+    }
 }

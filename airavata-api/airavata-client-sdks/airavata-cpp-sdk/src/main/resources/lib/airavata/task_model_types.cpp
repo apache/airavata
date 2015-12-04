@@ -35,16 +35,18 @@ int _kTaskTypesValues[] = {
   TaskTypes::DATA_STAGING,
   TaskTypes::JOB_SUBMISSION,
   TaskTypes::ENV_CLEANUP,
-  TaskTypes::MONITORING
+  TaskTypes::MONITORING,
+  TaskTypes::OUTPUT_FETCHING
 };
 const char* _kTaskTypesNames[] = {
   "ENV_SETUP",
   "DATA_STAGING",
   "JOB_SUBMISSION",
   "ENV_CLEANUP",
-  "MONITORING"
+  "MONITORING",
+  "OUTPUT_FETCHING"
 };
-const std::map<int, const char*> _TaskTypes_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(5, _kTaskTypesValues, _kTaskTypesNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _TaskTypes_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kTaskTypesValues, _kTaskTypesNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kDataStageTypeValues[] = {
   DataStageType::INPUT,
@@ -634,7 +636,7 @@ void EnvironmentSetupTaskModel::__set_location(const std::string& val) {
   this->location = val;
 }
 
-void EnvironmentSetupTaskModel::__set_protocol(const  ::apache::airavata::model::appcatalog::computeresource::SecurityProtocol::type val) {
+void EnvironmentSetupTaskModel::__set_protocol(const  ::apache::airavata::model::data::movement::SecurityProtocol::type val) {
   this->protocol = val;
 }
 
@@ -675,7 +677,7 @@ uint32_t EnvironmentSetupTaskModel::read(::apache::thrift::protocol::TProtocol* 
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast12;
           xfer += iprot->readI32(ecast12);
-          this->protocol = ( ::apache::airavata::model::appcatalog::computeresource::SecurityProtocol::type)ecast12;
+          this->protocol = ( ::apache::airavata::model::data::movement::SecurityProtocol::type)ecast12;
           isset_protocol = true;
         } else {
           xfer += iprot->skip(ftype);

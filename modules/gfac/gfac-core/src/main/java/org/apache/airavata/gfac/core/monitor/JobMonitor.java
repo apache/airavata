@@ -40,4 +40,10 @@ public interface JobMonitor {
      * Return <code>true</code> if jobId is already monitoring by this Monitor, <code>false</code> if not
      */
     boolean isMonitoring(String jobId);
+
+	/**
+	 * make monitor service aware of cancelled jobs, in case job monitor details doesn't comes withing predefine time
+	 * it will move job to CANCELED state and call output
+	 */
+	void canceledJob(String jobId);
 }

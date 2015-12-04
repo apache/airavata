@@ -29,6 +29,10 @@ public class AppCatalogImpl implements AppCatalog {
         return new ComputeResourceImpl();
     }
 
+    public StorageResource getStorageResource() throws AppCatalogException {
+        return new StorageResourceImpl();
+    }
+
     public ApplicationInterface getApplicationInterface() {
         return new ApplicationInterfaceImpl();
     }

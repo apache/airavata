@@ -43,6 +43,7 @@ public class Process {
     private String gatewayExecutionId;
     private boolean enableEmailNotification;
     private String emailAddresses;
+    private String storageId;
     private Experiment experiment;
     private Collection<ProcessError> processErrors;
     private Collection<ProcessInput> processInputs;
@@ -50,6 +51,8 @@ public class Process {
     private ProcessResourceSchedule processResourceSchedule;
     private Collection<ProcessStatus> processStatuses;
     private Collection<Task> tasks;
+    private String userDn;
+    private boolean generateCert;
 
     @Id
     @Column(name = "PROCESS_ID")
@@ -107,6 +110,15 @@ public class Process {
         this.applicationInterfaceId = applicationInterfaceId;
     }
 
+    @Column(name = "STORAGE_RESOURCE_ID")
+    public String getStorageId() {
+        return storageId;
+    }
+
+    public void setStorageId(String storageId) {
+        this.storageId = storageId;
+    }
+
     @Lob
     @Column(name = "TASK_DAG")
     public String getTaskDag() {
@@ -161,6 +173,24 @@ public class Process {
 
     public void setEmailAddresses(String emailAddresses) {
         this.emailAddresses = emailAddresses;
+    }
+
+    @Column(name = "USER_DN")
+    public String getUserDn() {
+        return userDn;
+    }
+
+    public void setUserDn(String userDn) {
+        this.userDn = userDn;
+    }
+
+    @Column(name = "GENERATE_CERT")
+    public boolean getGenerateCert() {
+        return generateCert;
+    }
+
+    public void setGenerateCert(boolean generateCert) {
+        this.generateCert = generateCert;
     }
 
 //    @Override

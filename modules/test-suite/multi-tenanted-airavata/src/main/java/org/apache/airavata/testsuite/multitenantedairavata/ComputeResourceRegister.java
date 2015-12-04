@@ -25,6 +25,10 @@ import org.apache.airavata.api.Airavata;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.data.movement.DMType;
+import org.apache.airavata.model.data.movement.DataMovementProtocol;
+import org.apache.airavata.model.data.movement.SCPDataMovement;
+import org.apache.airavata.model.data.movement.SecurityProtocol;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.thrift.TException;
@@ -152,7 +156,7 @@ public class ComputeResourceRegister {
         SCPDataMovement scpDataMovement = new SCPDataMovement();
         scpDataMovement.setSecurityProtocol(securityProtocol);
         scpDataMovement.setSshPort(portNumber);
-        airavata.addSCPDataMovementDetails(authzToken, computeResourceId, 1, scpDataMovement);
+        airavata.addSCPDataMovementDetails(authzToken, computeResourceId, DMType.COMPUTE_RESOURCE, 1, scpDataMovement);
 
         return computeResourceId;
     }

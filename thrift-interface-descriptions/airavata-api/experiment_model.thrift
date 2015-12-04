@@ -55,7 +55,8 @@ struct UserConfigurationDataModel {
     4: optional scheduling_model.ComputationalResourceSchedulingModel computationalResourceScheduling,
     5: optional bool throttleResources = 0,
     6: optional string userDN,
-    7: optional bool generateCert = 0
+    7: optional bool generateCert = 0,
+    8: optional string storageId;
 }
 
 /**

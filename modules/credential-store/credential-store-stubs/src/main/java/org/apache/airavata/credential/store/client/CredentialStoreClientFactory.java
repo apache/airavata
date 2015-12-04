@@ -21,34 +21,23 @@
 
 package org.apache.airavata.credential.store.client;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
-import org.apache.thrift.transport.TSSLTransportFactory;
+import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
 public class CredentialStoreClientFactory {
 
     public static CredentialStoreService.Client createAiravataCSClient(String serverHost, int serverPort) throws CredentialStoreException {
-        TTransport transport;
         try {
-            TSSLTransportFactory.TSSLTransportParameters params =
-                    new TSSLTransportFactory.TSSLTransportParameters();
-            String keystorePath = ServerSettings.getCredentialStoreThriftServerKeyStorePath();
-            String keystorePWD = ServerSettings.getCredentialStoreThriftServerKeyStorePassword();
-            params.setTrustStore(keystorePath, keystorePWD);
-
-            transport = TSSLTransportFactory.getClientSocket(serverHost, serverPort, 10000, params);
+            TTransport transport = new TSocket(serverHost, serverPort);
+            transport.open();
             TProtocol protocol = new TBinaryProtocol(transport);
-
             return new CredentialStoreService.Client(protocol);
         } catch (TTransportException e) {
-            throw new CredentialStoreException("Unable to connect to the credential store server at " + serverHost + ":" + serverPort);
-        } catch (ApplicationSettingsException e) {
             throw new CredentialStoreException("Unable to connect to the credential store server at " + serverHost + ":" + serverPort);
         }
     }

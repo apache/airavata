@@ -24,6 +24,7 @@ namespace cpp apache.airavata.model.appcatalog.gatewayprofile
 namespace py apache.airavata.model.appcatalog.gatewayprofile
 
 include "compute_resource_model.thrift"
+include "data_movement_models.thrift"
 
 /**
  * Gateway specific preferences for a Computer Resource
@@ -64,15 +65,15 @@ struct ComputeResourcePreference {
     2: required bool overridebyAiravata = 1,
     3: optional string loginUserName,
     4: optional compute_resource_model.JobSubmissionProtocol preferredJobSubmissionProtocol,
-    5: optional compute_resource_model.DataMovementProtocol preferredDataMovementProtocol,
+    5: optional data_movement_models.DataMovementProtocol preferredDataMovementProtocol,
     6: optional string preferredBatchQueue,
     7: optional string scratchLocation,
     8: optional string allocationProjectNumber,
     9: optional string resourceSpecificCredentialStoreToken
 }
 
-struct DataStoragePreference {
-    1: required string dataMovememtResourceId,
+struct StoragePreference {
+    1: required string storageResourceId,
     2: optional string loginUserName,
     3: optional string fileSystemRootLocation,
     4: optional string resourceSpecificCredentialStoreToken
@@ -95,5 +96,5 @@ struct GatewayResourceProfile {
     1: required string gatewayID,
     2: optional string credentialStoreToken,
     3: optional list<ComputeResourcePreference> computeResourcePreferences
-    4: optional list<DataStoragePreference> dataStoragePreferences
+    4: optional list<StoragePreference> storagePreferences
 }

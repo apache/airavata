@@ -55,6 +55,7 @@ import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.impl.RabbitMQProcessLaunchConsumer;
 import org.apache.airavata.messaging.core.impl.RabbitMQStatusPublisher;
 import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
@@ -201,13 +202,13 @@ public abstract class Factory {
 	 * @throws AppCatalogException
 	 * @throws AiravataException
 	 */
-	public static RemoteCluster getRemoteCluster(ProcessContext processContext) throws GFacException,
-			AppCatalogException, AiravataException {
+	public static RemoteCluster getJobSubmissionRemoteCluster(ProcessContext processContext)
+            throws GFacException, AppCatalogException, AiravataException {
 
         String computeResourceId = processContext.getComputeResourceId();
-        String key = processContext.getJobSubmissionProtocol().toString() + ":" + computeResourceId;
+        JobSubmissionProtocol jobSubmissionProtocol = processContext.getJobSubmissionProtocol();
+        String key = jobSubmissionProtocol.name() + ":" + computeResourceId;
 		RemoteCluster remoteCluster = remoteClusterMap.get(key);
-		JobSubmissionProtocol jobSubmissionProtocol = processContext.getJobSubmissionProtocol();
         if (remoteCluster == null) {
             JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
             if (jobSubmissionProtocol == JobSubmissionProtocol.LOCAL ||
@@ -222,6 +223,27 @@ public abstract class Factory {
 		}
 		return remoteCluster;
 	}
+
+    public static RemoteCluster getDataMovementRemoteCluster(ProcessContext processContext)
+            throws GFacException, AiravataException {
+
+        String computeResourceId = processContext.getComputeResourceId();
+        DataMovementProtocol dataMovementProtocol = processContext.getDataMovementProtocol();
+        String key = dataMovementProtocol.name() + ":" + computeResourceId;
+        RemoteCluster remoteCluster = remoteClusterMap.get(key);
+        if (remoteCluster == null) {
+            JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
+            if (dataMovementProtocol == DataMovementProtocol.LOCAL) {
+                remoteCluster = new LocalRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration, null);
+            } else if (dataMovementProtocol == DataMovementProtocol.SCP) {
+                AuthenticationInfo authenticationInfo = getSSHKeyAuthentication();
+                remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration, authenticationInfo);
+            }
+
+            remoteClusterMap.put(key, remoteCluster);
+        }
+        return remoteCluster;
+    }
 
 	private static SSHKeyAuthentication getSSHKeyAuthentication() throws ApplicationSettingsException {
 		SSHKeyAuthentication sshKA = new SSHKeyAuthentication();

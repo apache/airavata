@@ -51,6 +51,9 @@ public class ProcessResource extends AbstractExpCatResource {
     private String gatewayExecutionId;
     private boolean enableEmailNotification;
     private String emailAddresses;
+    private String storageResourceId;
+    private String userDn;
+    private boolean generateCert;
 
     public String getProcessId() {
         return processId;
@@ -146,6 +149,30 @@ public class ProcessResource extends AbstractExpCatResource {
 
     public void setEmailAddresses(String emailAddresses) {
         this.emailAddresses = emailAddresses;
+    }
+
+    public String getStorageResourceId() {
+        return storageResourceId;
+    }
+
+    public void setStorageResourceId(String storageResourceId) {
+        this.storageResourceId = storageResourceId;
+    }
+
+    public String getUserDn() {
+        return userDn;
+    }
+
+    public void setUserDn(String userDn) {
+        this.userDn = userDn;
+    }
+
+    public boolean isGenerateCert() {
+        return generateCert;
+    }
+
+    public void setGenerateCert(boolean generateCert) {
+        this.generateCert = generateCert;
     }
 
     public ExperimentCatResource create(ResourceType type) throws RegistryException{
@@ -549,6 +576,9 @@ public class ProcessResource extends AbstractExpCatResource {
             process.setGatewayExecutionId(gatewayExecutionId);
             process.setEnableEmailNotification(enableEmailNotification);
             process.setEmailAddresses(emailAddresses);
+            process.setStorageId(storageResourceId);
+            process.setUserDn(userDn);
+            process.setGenerateCert(generateCert);
             if (existingProcess == null){
                 em.persist(process);
             }else {
