@@ -27,12 +27,14 @@ final class TaskTypes {
   const JOB_SUBMISSION = 2;
   const ENV_CLEANUP = 3;
   const MONITORING = 4;
+  const OUTPUT_FETCHING = 5;
   static public $__names = array(
     0 => 'ENV_SETUP',
     1 => 'DATA_STAGING',
     2 => 'JOB_SUBMISSION',
     3 => 'ENV_CLEANUP',
     4 => 'MONITORING',
+    5 => 'OUTPUT_FETCHING',
   );
 }
 

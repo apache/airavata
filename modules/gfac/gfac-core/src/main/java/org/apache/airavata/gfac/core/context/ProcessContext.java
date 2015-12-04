@@ -28,12 +28,14 @@ import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
+import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ProcessState;
@@ -69,7 +71,8 @@ public class ProcessContext {
 	private ComputeResourceDescription computeResourceDescription;
 	private ApplicationDeploymentDescription applicationDeploymentDescription;
 	private ApplicationInterfaceDescription applicationInterfaceDescription;
-	private RemoteCluster remoteCluster;
+	private RemoteCluster jobSubmissionRemoteCluster;
+	private RemoteCluster dataMovementRemoteCluster;
 	private Map<String, String> sshProperties;
 	private String stdoutLocation;
 	private String stderrLocation;
@@ -77,6 +80,8 @@ public class ProcessContext {
 	private DataMovementProtocol dataMovementProtocol;
 	private JobModel jobModel;
 	private ComputeResourcePreference computeResourcePreference;
+    private StoragePreference storagePreference;
+    private StorageResourceDescription storageResource;
 	private MonitorMode monitorMode;
 	private ResourceJobManager resourceJobManager;
 	private boolean handOver;
@@ -89,8 +94,9 @@ public class ProcessContext {
     private boolean complete = false; // all tasks executed?
     private boolean recovery = false; // is process in recovery mode?
     private TaskModel currentExecutingTaskModel; // current execution task model in case we pause process execution we need this to continue process exectuion again
+	private boolean acknowledge;
 
-    /**
+	/**
 	 * Note: process context property use lazy loading approach. In runtime you will see some properties as null
 	 * unless you have access it previously. Once that property access using the api,it will be set to correct value.
 	 */
@@ -178,12 +184,20 @@ public class ProcessContext {
 		this.gatewayResourceProfile = gatewayResourceProfile;
 	}
 
-	public RemoteCluster getRemoteCluster() {
-		return remoteCluster;
+	public RemoteCluster getJobSubmissionRemoteCluster() {
+		return jobSubmissionRemoteCluster;
 	}
 
-	public void setRemoteCluster(RemoteCluster remoteCluster) {
-		this.remoteCluster = remoteCluster;
+	public void setJobSubmissionRemoteCluster(RemoteCluster jobSubmissoinRemoteCluster) {
+		this.jobSubmissionRemoteCluster = jobSubmissoinRemoteCluster;
+	}
+
+	public RemoteCluster getDataMovementRemoteCluster() {
+		return dataMovementRemoteCluster;
+	}
+
+	public void setDataMovementRemoteCluster(RemoteCluster dataMovementRemoteCluster) {
+		this.dataMovementRemoteCluster = dataMovementRemoteCluster;
 	}
 
 	public Map<String, String> getSshProperties() {
@@ -453,4 +467,28 @@ public class ProcessContext {
     public void setCurrentExecutingTaskModel(TaskModel currentExecutingTaskModel) {
         this.currentExecutingTaskModel = currentExecutingTaskModel;
     }
+
+    public StoragePreference getStoragePreference() {
+        return storagePreference;
+    }
+
+    public void setStoragePreference(StoragePreference storagePreference) {
+        this.storagePreference = storagePreference;
+    }
+
+    public StorageResourceDescription getStorageResource() {
+        return storageResource;
+    }
+
+    public void setStorageResource(StorageResourceDescription storageResource) {
+        this.storageResource = storageResource;
+    }
+
+	public void setAcknowledge(boolean acknowledge) {
+		this.acknowledge = acknowledge;
+	}
+
+	public boolean isAcknowledge() {
+		return acknowledge;
+	}
 }

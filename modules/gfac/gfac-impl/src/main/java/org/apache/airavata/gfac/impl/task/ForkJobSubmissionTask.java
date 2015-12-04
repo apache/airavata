@@ -62,7 +62,7 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
             ProcessContext processContext = taskContext.getParentProcessContext();
             JobModel jobModel = processContext.getJobModel();
             jobModel.setTaskId(taskContext.getTaskId());
-            RemoteCluster remoteCluster = processContext.getRemoteCluster();
+            RemoteCluster remoteCluster = processContext.getJobSubmissionRemoteCluster();
             JobDescriptor jobDescriptor = GFacUtils.createJobDescriptor(processContext, taskContext);
             jobModel.setJobName(jobDescriptor.getJobName());
             ResourceJobManager resourceJobManager = GFacUtils.getResourceJobManager(processContext);

@@ -127,37 +127,6 @@ final class FileSystems {
 }
 
 /**
- * Enumeration of security authentication and authorization mechanisms supported by Airavata. This enumeration just
- *  describes the supported mechanism. The corresponding security credentials are registered with Airavata Credential
- *  store.
- * 
- * USERNAME_PASSWORD:
- *  A User Name.
- * 
- * SSH_KEYS:
- *  SSH Keys
- * 
- * FIXME: Change GSI to a more precise generic security protocol - X509
- * 
- */
-final class SecurityProtocol {
-  const USERNAME_PASSWORD = 0;
-  const SSH_KEYS = 1;
-  const GSI = 2;
-  const KERBEROS = 3;
-  const OAUTH = 4;
-  const LOCAL = 5;
-  static public $__names = array(
-    0 => 'USERNAME_PASSWORD',
-    1 => 'SSH_KEYS',
-    2 => 'GSI',
-    3 => 'KERBEROS',
-    4 => 'OAUTH',
-    5 => 'LOCAL',
-  );
-}
-
-/**
  * Enumeration of Airavata supported Job Submission Mechanisms for High Performance Computing Clusters.
  * 
  * SSH:
@@ -210,37 +179,6 @@ final class MonitorMode {
     1 => 'JOB_EMAIL_NOTIFICATION_MONITOR',
     2 => 'XSEDE_AMQP_SUBSCRIBE',
     3 => 'FORK',
-  );
-}
-
-/**
- * Enumeration of data movement supported by Airavata
- * 
- * SCP:
- *  Job manager supporting the Portal Batch System (PBS) protocol. Some examples include TORQUE, PBSPro, Grid Engine.
- * 
- * SFTP:
- *  The Simple Linux Utility for Resource Management is a open source workload manager.
- * 
- * GridFTP:
- *  Globus File Transfer Protocol
- * 
- * UNICORE_STORAGE_SERVICE:
- *  Storage Service Provided by Unicore
- * 
- */
-final class DataMovementProtocol {
-  const LOCAL = 0;
-  const SCP = 1;
-  const SFTP = 2;
-  const GridFTP = 3;
-  const UNICORE_STORAGE_SERVICE = 4;
-  static public $__names = array(
-    0 => 'LOCAL',
-    1 => 'SCP',
-    2 => 'SFTP',
-    3 => 'GridFTP',
-    4 => 'UNICORE_STORAGE_SERVICE',
   );
 }
 
@@ -697,442 +635,6 @@ class BatchQueue {
 }
 
 /**
- * Data Movement through Secured Copy
- * 
- * alternativeSCPHostName:
- *  If the login to scp is different than the hostname itself, specify it here
- * 
- * sshPort:
- *  If a non-default port needs to used, specify it.
- */
-class SCPDataMovement {
-  static $_TSPEC;
-
-  /**
-   * @var string
-   */
-  public $dataMovementInterfaceId = "DO_NOT_SET_AT_CLIENTS";
-  /**
-   * @var int
-   */
-  public $securityProtocol = null;
-  /**
-   * @var string
-   */
-  public $alternativeSCPHostName = null;
-  /**
-   * @var int
-   */
-  public $sshPort = 22;
-
-  public function __construct($vals=null) {
-    if (!isset(self::$_TSPEC)) {
-      self::$_TSPEC = array(
-        1 => array(
-          'var' => 'dataMovementInterfaceId',
-          'type' => TType::STRING,
-          ),
-        2 => array(
-          'var' => 'securityProtocol',
-          'type' => TType::I32,
-          ),
-        3 => array(
-          'var' => 'alternativeSCPHostName',
-          'type' => TType::STRING,
-          ),
-        4 => array(
-          'var' => 'sshPort',
-          'type' => TType::I32,
-          ),
-        );
-    }
-    if (is_array($vals)) {
-      if (isset($vals['dataMovementInterfaceId'])) {
-        $this->dataMovementInterfaceId = $vals['dataMovementInterfaceId'];
-      }
-      if (isset($vals['securityProtocol'])) {
-        $this->securityProtocol = $vals['securityProtocol'];
-      }
-      if (isset($vals['alternativeSCPHostName'])) {
-        $this->alternativeSCPHostName = $vals['alternativeSCPHostName'];
-      }
-      if (isset($vals['sshPort'])) {
-        $this->sshPort = $vals['sshPort'];
-      }
-    }
-  }
-
-  public function getName() {
-    return 'SCPDataMovement';
-  }
-
-  public function read($input)
-  {
-    $xfer = 0;
-    $fname = null;
-    $ftype = 0;
-    $fid = 0;
-    $xfer += $input->readStructBegin($fname);
-    while (true)
-    {
-      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
-      if ($ftype == TType::STOP) {
-        break;
-      }
-      switch ($fid)
-      {
-        case 1:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->dataMovementInterfaceId);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 2:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->securityProtocol);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 3:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->alternativeSCPHostName);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 4:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->sshPort);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        default:
-          $xfer += $input->skip($ftype);
-          break;
-      }
-      $xfer += $input->readFieldEnd();
-    }
-    $xfer += $input->readStructEnd();
-    return $xfer;
-  }
-
-  public function write($output) {
-    $xfer = 0;
-    $xfer += $output->writeStructBegin('SCPDataMovement');
-    if ($this->dataMovementInterfaceId !== null) {
-      $xfer += $output->writeFieldBegin('dataMovementInterfaceId', TType::STRING, 1);
-      $xfer += $output->writeString($this->dataMovementInterfaceId);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->securityProtocol !== null) {
-      $xfer += $output->writeFieldBegin('securityProtocol', TType::I32, 2);
-      $xfer += $output->writeI32($this->securityProtocol);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->alternativeSCPHostName !== null) {
-      $xfer += $output->writeFieldBegin('alternativeSCPHostName', TType::STRING, 3);
-      $xfer += $output->writeString($this->alternativeSCPHostName);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->sshPort !== null) {
-      $xfer += $output->writeFieldBegin('sshPort', TType::I32, 4);
-      $xfer += $output->writeI32($this->sshPort);
-      $xfer += $output->writeFieldEnd();
-    }
-    $xfer += $output->writeFieldStop();
-    $xfer += $output->writeStructEnd();
-    return $xfer;
-  }
-
-}
-
-/**
- * Data Movement through GridFTP
- * 
- * alternativeSCPHostName:
- *  If the login to scp is different than the hostname itself, specify it here
- * 
- * sshPort:
- *  If a non-default port needs to used, specify it.
- */
-class GridFTPDataMovement {
-  static $_TSPEC;
-
-  /**
-   * @var string
-   */
-  public $dataMovementInterfaceId = "DO_NOT_SET_AT_CLIENTS";
-  /**
-   * @var int
-   */
-  public $securityProtocol = null;
-  /**
-   * @var string[]
-   */
-  public $gridFTPEndPoints = null;
-
-  public function __construct($vals=null) {
-    if (!isset(self::$_TSPEC)) {
-      self::$_TSPEC = array(
-        1 => array(
-          'var' => 'dataMovementInterfaceId',
-          'type' => TType::STRING,
-          ),
-        2 => array(
-          'var' => 'securityProtocol',
-          'type' => TType::I32,
-          ),
-        3 => array(
-          'var' => 'gridFTPEndPoints',
-          'type' => TType::LST,
-          'etype' => TType::STRING,
-          'elem' => array(
-            'type' => TType::STRING,
-            ),
-          ),
-        );
-    }
-    if (is_array($vals)) {
-      if (isset($vals['dataMovementInterfaceId'])) {
-        $this->dataMovementInterfaceId = $vals['dataMovementInterfaceId'];
-      }
-      if (isset($vals['securityProtocol'])) {
-        $this->securityProtocol = $vals['securityProtocol'];
-      }
-      if (isset($vals['gridFTPEndPoints'])) {
-        $this->gridFTPEndPoints = $vals['gridFTPEndPoints'];
-      }
-    }
-  }
-
-  public function getName() {
-    return 'GridFTPDataMovement';
-  }
-
-  public function read($input)
-  {
-    $xfer = 0;
-    $fname = null;
-    $ftype = 0;
-    $fid = 0;
-    $xfer += $input->readStructBegin($fname);
-    while (true)
-    {
-      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
-      if ($ftype == TType::STOP) {
-        break;
-      }
-      switch ($fid)
-      {
-        case 1:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->dataMovementInterfaceId);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 2:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->securityProtocol);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 3:
-          if ($ftype == TType::LST) {
-            $this->gridFTPEndPoints = array();
-            $_size9 = 0;
-            $_etype12 = 0;
-            $xfer += $input->readListBegin($_etype12, $_size9);
-            for ($_i13 = 0; $_i13 < $_size9; ++$_i13)
-            {
-              $elem14 = null;
-              $xfer += $input->readString($elem14);
-              $this->gridFTPEndPoints []= $elem14;
-            }
-            $xfer += $input->readListEnd();
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        default:
-          $xfer += $input->skip($ftype);
-          break;
-      }
-      $xfer += $input->readFieldEnd();
-    }
-    $xfer += $input->readStructEnd();
-    return $xfer;
-  }
-
-  public function write($output) {
-    $xfer = 0;
-    $xfer += $output->writeStructBegin('GridFTPDataMovement');
-    if ($this->dataMovementInterfaceId !== null) {
-      $xfer += $output->writeFieldBegin('dataMovementInterfaceId', TType::STRING, 1);
-      $xfer += $output->writeString($this->dataMovementInterfaceId);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->securityProtocol !== null) {
-      $xfer += $output->writeFieldBegin('securityProtocol', TType::I32, 2);
-      $xfer += $output->writeI32($this->securityProtocol);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->gridFTPEndPoints !== null) {
-      if (!is_array($this->gridFTPEndPoints)) {
-        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
-      }
-      $xfer += $output->writeFieldBegin('gridFTPEndPoints', TType::LST, 3);
-      {
-        $output->writeListBegin(TType::STRING, count($this->gridFTPEndPoints));
-        {
-          foreach ($this->gridFTPEndPoints as $iter15)
-          {
-            $xfer += $output->writeString($iter15);
-          }
-        }
-        $output->writeListEnd();
-      }
-      $xfer += $output->writeFieldEnd();
-    }
-    $xfer += $output->writeFieldStop();
-    $xfer += $output->writeStructEnd();
-    return $xfer;
-  }
-
-}
-
-/**
- * Data Movement through UnicoreStorage
- * 
- * unicoreEndPointURL:
- *  unicoreGateway End Point. The provider will query this service to fetch required service end points.
- */
-class UnicoreDataMovement {
-  static $_TSPEC;
-
-  /**
-   * @var string
-   */
-  public $dataMovementInterfaceId = "DO_NOT_SET_AT_CLIENTS";
-  /**
-   * @var int
-   */
-  public $securityProtocol = null;
-  /**
-   * @var string
-   */
-  public $unicoreEndPointURL = null;
-
-  public function __construct($vals=null) {
-    if (!isset(self::$_TSPEC)) {
-      self::$_TSPEC = array(
-        1 => array(
-          'var' => 'dataMovementInterfaceId',
-          'type' => TType::STRING,
-          ),
-        2 => array(
-          'var' => 'securityProtocol',
-          'type' => TType::I32,
-          ),
-        3 => array(
-          'var' => 'unicoreEndPointURL',
-          'type' => TType::STRING,
-          ),
-        );
-    }
-    if (is_array($vals)) {
-      if (isset($vals['dataMovementInterfaceId'])) {
-        $this->dataMovementInterfaceId = $vals['dataMovementInterfaceId'];
-      }
-      if (isset($vals['securityProtocol'])) {
-        $this->securityProtocol = $vals['securityProtocol'];
-      }
-      if (isset($vals['unicoreEndPointURL'])) {
-        $this->unicoreEndPointURL = $vals['unicoreEndPointURL'];
-      }
-    }
-  }
-
-  public function getName() {
-    return 'UnicoreDataMovement';
-  }
-
-  public function read($input)
-  {
-    $xfer = 0;
-    $fname = null;
-    $ftype = 0;
-    $fid = 0;
-    $xfer += $input->readStructBegin($fname);
-    while (true)
-    {
-      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
-      if ($ftype == TType::STOP) {
-        break;
-      }
-      switch ($fid)
-      {
-        case 1:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->dataMovementInterfaceId);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 2:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->securityProtocol);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 3:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->unicoreEndPointURL);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        default:
-          $xfer += $input->skip($ftype);
-          break;
-      }
-      $xfer += $input->readFieldEnd();
-    }
-    $xfer += $input->readStructEnd();
-    return $xfer;
-  }
-
-  public function write($output) {
-    $xfer = 0;
-    $xfer += $output->writeStructBegin('UnicoreDataMovement');
-    if ($this->dataMovementInterfaceId !== null) {
-      $xfer += $output->writeFieldBegin('dataMovementInterfaceId', TType::STRING, 1);
-      $xfer += $output->writeString($this->dataMovementInterfaceId);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->securityProtocol !== null) {
-      $xfer += $output->writeFieldBegin('securityProtocol', TType::I32, 2);
-      $xfer += $output->writeI32($this->securityProtocol);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->unicoreEndPointURL !== null) {
-      $xfer += $output->writeFieldBegin('unicoreEndPointURL', TType::STRING, 3);
-      $xfer += $output->writeString($this->unicoreEndPointURL);
-      $xfer += $output->writeFieldEnd();
-    }
-    $xfer += $output->writeFieldStop();
-    $xfer += $output->writeStructEnd();
-    return $xfer;
-  }
-
-}
-
-/**
  * Locally Fork Jobs as OS processes
  * 
  * alternativeSSHHostName:
@@ -1258,90 +760,6 @@ class LOCALSubmission {
       }
       $xfer += $output->writeFieldBegin('resourceJobManager', TType::STRUCT, 3);
       $xfer += $this->resourceJobManager->write($output);
-      $xfer += $output->writeFieldEnd();
-    }
-    $xfer += $output->writeFieldStop();
-    $xfer += $output->writeStructEnd();
-    return $xfer;
-  }
-
-}
-
-/**
- * LOCAL
- * 
- * alternativeSCPHostName:
- *  If the login to scp is different than the hostname itself, specify it here
- * 
- * sshPort:
- *  If a non-defualt port needs to used, specify it.
- */
-class LOCALDataMovement {
-  static $_TSPEC;
-
-  /**
-   * @var string
-   */
-  public $dataMovementInterfaceId = "DO_NOT_SET_AT_CLIENTS";
-
-  public function __construct($vals=null) {
-    if (!isset(self::$_TSPEC)) {
-      self::$_TSPEC = array(
-        1 => array(
-          'var' => 'dataMovementInterfaceId',
-          'type' => TType::STRING,
-          ),
-        );
-    }
-    if (is_array($vals)) {
-      if (isset($vals['dataMovementInterfaceId'])) {
-        $this->dataMovementInterfaceId = $vals['dataMovementInterfaceId'];
-      }
-    }
-  }
-
-  public function getName() {
-    return 'LOCALDataMovement';
-  }
-
-  public function read($input)
-  {
-    $xfer = 0;
-    $fname = null;
-    $ftype = 0;
-    $fid = 0;
-    $xfer += $input->readStructBegin($fname);
-    while (true)
-    {
-      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
-      if ($ftype == TType::STOP) {
-        break;
-      }
-      switch ($fid)
-      {
-        case 1:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->dataMovementInterfaceId);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        default:
-          $xfer += $input->skip($ftype);
-          break;
-      }
-      $xfer += $input->readFieldEnd();
-    }
-    $xfer += $input->readStructEnd();
-    return $xfer;
-  }
-
-  public function write($output) {
-    $xfer = 0;
-    $xfer += $output->writeStructBegin('LOCALDataMovement');
-    if ($this->dataMovementInterfaceId !== null) {
-      $xfer += $output->writeFieldBegin('dataMovementInterfaceId', TType::STRING, 1);
-      $xfer += $output->writeString($this->dataMovementInterfaceId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -1527,14 +945,14 @@ class SSHJobSubmission {
         case 7:
           if ($ftype == TType::LST) {
             $this->batchQueueEmailSenders = array();
-            $_size16 = 0;
-            $_etype19 = 0;
-            $xfer += $input->readListBegin($_etype19, $_size16);
-            for ($_i20 = 0; $_i20 < $_size16; ++$_i20)
+            $_size9 = 0;
+            $_etype12 = 0;
+            $xfer += $input->readListBegin($_etype12, $_size9);
+            for ($_i13 = 0; $_i13 < $_size9; ++$_i13)
             {
-              $elem21 = null;
-              $xfer += $input->readString($elem21);
-              $this->batchQueueEmailSenders []= $elem21;
+              $elem14 = null;
+              $xfer += $input->readString($elem14);
+              $this->batchQueueEmailSenders []= $elem14;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -1595,9 +1013,9 @@ class SSHJobSubmission {
       {
         $output->writeListBegin(TType::STRING, count($this->batchQueueEmailSenders));
         {
-          foreach ($this->batchQueueEmailSenders as $iter22)
+          foreach ($this->batchQueueEmailSenders as $iter15)
           {
-            $xfer += $output->writeString($iter22);
+            $xfer += $output->writeString($iter15);
           }
         }
         $output->writeListEnd();
@@ -1697,14 +1115,14 @@ class GlobusJobSubmission {
         case 3:
           if ($ftype == TType::LST) {
             $this->globusGateKeeperEndPoint = array();
-            $_size23 = 0;
-            $_etype26 = 0;
-            $xfer += $input->readListBegin($_etype26, $_size23);
-            for ($_i27 = 0; $_i27 < $_size23; ++$_i27)
+            $_size16 = 0;
+            $_etype19 = 0;
+            $xfer += $input->readListBegin($_etype19, $_size16);
+            for ($_i20 = 0; $_i20 < $_size16; ++$_i20)
             {
-              $elem28 = null;
-              $xfer += $input->readString($elem28);
-              $this->globusGateKeeperEndPoint []= $elem28;
+              $elem21 = null;
+              $xfer += $input->readString($elem21);
+              $this->globusGateKeeperEndPoint []= $elem21;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -1742,9 +1160,9 @@ class GlobusJobSubmission {
       {
         $output->writeListBegin(TType::STRING, count($this->globusGateKeeperEndPoint));
         {
-          foreach ($this->globusGateKeeperEndPoint as $iter29)
+          foreach ($this->globusGateKeeperEndPoint as $iter22)
           {
-            $xfer += $output->writeString($iter29);
+            $xfer += $output->writeString($iter22);
           }
         }
         $output->writeListEnd();
@@ -2214,137 +1632,6 @@ class JobSubmissionInterface {
 }
 
 /**
- * Data Movement Interfaces
- * 
- * dataMovementInterfaceId: The Data Movement Interface has to be previously registered and referenced here.
- * 
- * priorityOrder:
- *  For resources with multiple interfaces, the priority order should be selected.
- *   Lower the numerical number, higher the priority
- * 
- */
-class DataMovementInterface {
-  static $_TSPEC;
-
-  /**
-   * @var string
-   */
-  public $dataMovementInterfaceId = null;
-  /**
-   * @var int
-   */
-  public $dataMovementProtocol = null;
-  /**
-   * @var int
-   */
-  public $priorityOrder = 0;
-
-  public function __construct($vals=null) {
-    if (!isset(self::$_TSPEC)) {
-      self::$_TSPEC = array(
-        1 => array(
-          'var' => 'dataMovementInterfaceId',
-          'type' => TType::STRING,
-          ),
-        2 => array(
-          'var' => 'dataMovementProtocol',
-          'type' => TType::I32,
-          ),
-        3 => array(
-          'var' => 'priorityOrder',
-          'type' => TType::I32,
-          ),
-        );
-    }
-    if (is_array($vals)) {
-      if (isset($vals['dataMovementInterfaceId'])) {
-        $this->dataMovementInterfaceId = $vals['dataMovementInterfaceId'];
-      }
-      if (isset($vals['dataMovementProtocol'])) {
-        $this->dataMovementProtocol = $vals['dataMovementProtocol'];
-      }
-      if (isset($vals['priorityOrder'])) {
-        $this->priorityOrder = $vals['priorityOrder'];
-      }
-    }
-  }
-
-  public function getName() {
-    return 'DataMovementInterface';
-  }
-
-  public function read($input)
-  {
-    $xfer = 0;
-    $fname = null;
-    $ftype = 0;
-    $fid = 0;
-    $xfer += $input->readStructBegin($fname);
-    while (true)
-    {
-      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
-      if ($ftype == TType::STOP) {
-        break;
-      }
-      switch ($fid)
-      {
-        case 1:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->dataMovementInterfaceId);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 2:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->dataMovementProtocol);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 3:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->priorityOrder);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        default:
-          $xfer += $input->skip($ftype);
-          break;
-      }
-      $xfer += $input->readFieldEnd();
-    }
-    $xfer += $input->readStructEnd();
-    return $xfer;
-  }
-
-  public function write($output) {
-    $xfer = 0;
-    $xfer += $output->writeStructBegin('DataMovementInterface');
-    if ($this->dataMovementInterfaceId !== null) {
-      $xfer += $output->writeFieldBegin('dataMovementInterfaceId', TType::STRING, 1);
-      $xfer += $output->writeString($this->dataMovementInterfaceId);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->dataMovementProtocol !== null) {
-      $xfer += $output->writeFieldBegin('dataMovementProtocol', TType::I32, 2);
-      $xfer += $output->writeI32($this->dataMovementProtocol);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->priorityOrder !== null) {
-      $xfer += $output->writeFieldBegin('priorityOrder', TType::I32, 3);
-      $xfer += $output->writeI32($this->priorityOrder);
-      $xfer += $output->writeFieldEnd();
-    }
-    $xfer += $output->writeFieldStop();
-    $xfer += $output->writeStructEnd();
-    return $xfer;
-  }
-
-}
-
-/**
  * Computational Resource Description
  * 
  * computeResourceId: Airavata Internal Unique Identifier to distinguish Compute Resource.
@@ -2413,7 +1700,7 @@ class ComputeResourceDescription {
    */
   public $jobSubmissionInterfaces = null;
   /**
-   * @var \Airavata\Model\AppCatalog\ComputeResource\DataMovementInterface[]
+   * @var \Airavata\Model\Data\Movement\DataMovementInterface[]
    */
   public $dataMovementInterfaces = null;
   /**
@@ -2492,7 +1779,7 @@ class ComputeResourceDescription {
           'etype' => TType::STRUCT,
           'elem' => array(
             'type' => TType::STRUCT,
-            'class' => '\Airavata\Model\AppCatalog\ComputeResource\DataMovementInterface',
+            'class' => '\Airavata\Model\Data\Movement\DataMovementInterface',
             ),
           ),
         11 => array(
@@ -2574,14 +1861,14 @@ class ComputeResourceDescription {
         case 3:
           if ($ftype == TType::LST) {
             $this->hostAliases = array();
-            $_size30 = 0;
-            $_etype33 = 0;
-            $xfer += $input->readListBegin($_etype33, $_size30);
-            for ($_i34 = 0; $_i34 < $_size30; ++$_i34)
+            $_size23 = 0;
+            $_etype26 = 0;
+            $xfer += $input->readListBegin($_etype26, $_size23);
+            for ($_i27 = 0; $_i27 < $_size23; ++$_i27)
             {
-              $elem35 = null;
-              $xfer += $input->readString($elem35);
-              $this->hostAliases []= $elem35;
+              $elem28 = null;
+              $xfer += $input->readString($elem28);
+              $this->hostAliases []= $elem28;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -2591,14 +1878,14 @@ class ComputeResourceDescription {
         case 4:
           if ($ftype == TType::LST) {
             $this->ipAddresses = array();
-            $_size36 = 0;
-            $_etype39 = 0;
-            $xfer += $input->readListBegin($_etype39, $_size36);
-            for ($_i40 = 0; $_i40 < $_size36; ++$_i40)
+            $_size29 = 0;
+            $_etype32 = 0;
+            $xfer += $input->readListBegin($_etype32, $_size29);
+            for ($_i33 = 0; $_i33 < $_size29; ++$_i33)
             {
-              $elem41 = null;
-              $xfer += $input->readString($elem41);
-              $this->ipAddresses []= $elem41;
+              $elem34 = null;
+              $xfer += $input->readString($elem34);
+              $this->ipAddresses []= $elem34;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -2622,15 +1909,15 @@ class ComputeResourceDescription {
         case 7:
           if ($ftype == TType::LST) {
             $this->batchQueues = array();
-            $_size42 = 0;
-            $_etype45 = 0;
-            $xfer += $input->readListBegin($_etype45, $_size42);
-            for ($_i46 = 0; $_i46 < $_size42; ++$_i46)
+            $_size35 = 0;
+            $_etype38 = 0;
+            $xfer += $input->readListBegin($_etype38, $_size35);
+            for ($_i39 = 0; $_i39 < $_size35; ++$_i39)
             {
-              $elem47 = null;
-              $elem47 = new \Airavata\Model\AppCatalog\ComputeResource\BatchQueue();
-              $xfer += $elem47->read($input);
-              $this->batchQueues []= $elem47;
+              $elem40 = null;
+              $elem40 = new \Airavata\Model\AppCatalog\ComputeResource\BatchQueue();
+              $xfer += $elem40->read($input);
+              $this->batchQueues []= $elem40;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -2640,17 +1927,17 @@ class ComputeResourceDescription {
         case 8:
           if ($ftype == TType::MAP) {
             $this->fileSystems = array();
-            $_size48 = 0;
-            $_ktype49 = 0;
-            $_vtype50 = 0;
-            $xfer += $input->readMapBegin($_ktype49, $_vtype50, $_size48);
-            for ($_i52 = 0; $_i52 < $_size48; ++$_i52)
+            $_size41 = 0;
+            $_ktype42 = 0;
+            $_vtype43 = 0;
+            $xfer += $input->readMapBegin($_ktype42, $_vtype43, $_size41);
+            for ($_i45 = 0; $_i45 < $_size41; ++$_i45)
             {
-              $key53 = 0;
-              $val54 = '';
-              $xfer += $input->readI32($key53);
-              $xfer += $input->readString($val54);
-              $this->fileSystems[$key53] = $val54;
+              $key46 = 0;
+              $val47 = '';
+              $xfer += $input->readI32($key46);
+              $xfer += $input->readString($val47);
+              $this->fileSystems[$key46] = $val47;
             }
             $xfer += $input->readMapEnd();
           } else {
@@ -2660,15 +1947,15 @@ class ComputeResourceDescription {
         case 9:
           if ($ftype == TType::LST) {
             $this->jobSubmissionInterfaces = array();
-            $_size55 = 0;
-            $_etype58 = 0;
-            $xfer += $input->readListBegin($_etype58, $_size55);
-            for ($_i59 = 0; $_i59 < $_size55; ++$_i59)
+            $_size48 = 0;
+            $_etype51 = 0;
+            $xfer += $input->readListBegin($_etype51, $_size48);
+            for ($_i52 = 0; $_i52 < $_size48; ++$_i52)
             {
-              $elem60 = null;
-              $elem60 = new \Airavata\Model\AppCatalog\ComputeResource\JobSubmissionInterface();
-              $xfer += $elem60->read($input);
-              $this->jobSubmissionInterfaces []= $elem60;
+              $elem53 = null;
+              $elem53 = new \Airavata\Model\AppCatalog\ComputeResource\JobSubmissionInterface();
+              $xfer += $elem53->read($input);
+              $this->jobSubmissionInterfaces []= $elem53;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -2678,15 +1965,15 @@ class ComputeResourceDescription {
         case 10:
           if ($ftype == TType::LST) {
             $this->dataMovementInterfaces = array();
-            $_size61 = 0;
-            $_etype64 = 0;
-            $xfer += $input->readListBegin($_etype64, $_size61);
-            for ($_i65 = 0; $_i65 < $_size61; ++$_i65)
+            $_size54 = 0;
+            $_etype57 = 0;
+            $xfer += $input->readListBegin($_etype57, $_size54);
+            for ($_i58 = 0; $_i58 < $_size54; ++$_i58)
             {
-              $elem66 = null;
-              $elem66 = new \Airavata\Model\AppCatalog\ComputeResource\DataMovementInterface();
-              $xfer += $elem66->read($input);
-              $this->dataMovementInterfaces []= $elem66;
+              $elem59 = null;
+              $elem59 = new \Airavata\Model\Data\Movement\DataMovementInterface();
+              $xfer += $elem59->read($input);
+              $this->dataMovementInterfaces []= $elem59;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -2731,9 +2018,9 @@ class ComputeResourceDescription {
       {
         $output->writeListBegin(TType::STRING, count($this->hostAliases));
         {
-          foreach ($this->hostAliases as $iter67)
+          foreach ($this->hostAliases as $iter60)
           {
-            $xfer += $output->writeString($iter67);
+            $xfer += $output->writeString($iter60);
           }
         }
         $output->writeListEnd();
@@ -2748,9 +2035,9 @@ class ComputeResourceDescription {
       {
         $output->writeListBegin(TType::STRING, count($this->ipAddresses));
         {
-          foreach ($this->ipAddresses as $iter68)
+          foreach ($this->ipAddresses as $iter61)
           {
-            $xfer += $output->writeString($iter68);
+            $xfer += $output->writeString($iter61);
           }
         }
         $output->writeListEnd();
@@ -2775,9 +2062,9 @@ class ComputeResourceDescription {
       {
         $output->writeListBegin(TType::STRUCT, count($this->batchQueues));
         {
-          foreach ($this->batchQueues as $iter69)
+          foreach ($this->batchQueues as $iter62)
           {
-            $xfer += $iter69->write($output);
+            $xfer += $iter62->write($output);
           }
         }
         $output->writeListEnd();
@@ -2792,10 +2079,10 @@ class ComputeResourceDescription {
       {
         $output->writeMapBegin(TType::I32, TType::STRING, count($this->fileSystems));
         {
-          foreach ($this->fileSystems as $kiter70 => $viter71)
+          foreach ($this->fileSystems as $kiter63 => $viter64)
           {
-            $xfer += $output->writeI32($kiter70);
-            $xfer += $output->writeString($viter71);
+            $xfer += $output->writeI32($kiter63);
+            $xfer += $output->writeString($viter64);
           }
         }
         $output->writeMapEnd();
@@ -2810,9 +2097,9 @@ class ComputeResourceDescription {
       {
         $output->writeListBegin(TType::STRUCT, count($this->jobSubmissionInterfaces));
         {
-          foreach ($this->jobSubmissionInterfaces as $iter72)
+          foreach ($this->jobSubmissionInterfaces as $iter65)
           {
-            $xfer += $iter72->write($output);
+            $xfer += $iter65->write($output);
           }
         }
         $output->writeListEnd();
@@ -2827,9 +2114,9 @@ class ComputeResourceDescription {
       {
         $output->writeListBegin(TType::STRUCT, count($this->dataMovementInterfaces));
         {
-          foreach ($this->dataMovementInterfaces as $iter73)
+          foreach ($this->dataMovementInterfaces as $iter66)
           {
-            $xfer += $iter73->write($output);
+            $xfer += $iter66->write($output);
           }
         }
         $output->writeListEnd();

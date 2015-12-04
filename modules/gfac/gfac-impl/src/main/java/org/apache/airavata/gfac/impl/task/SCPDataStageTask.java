@@ -44,6 +44,8 @@ import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.gfac.impl.SSHUtils;
+import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
@@ -81,6 +83,7 @@ public class SCPDataStageTask implements Task {
 
     @Override
     public void init(Map<String, String> propertyMap) throws TaskException {
+        // we use what expressed in gfac-config.yaml by default, later replace with storage preferences
         inputPath = propertyMap.get("inputPath");
         hostName = propertyMap.get("hostName");
         userName = propertyMap.get("userName");
@@ -177,6 +180,17 @@ public class SCPDataStageTask implements Task {
             }
             status = new TaskStatus(TaskState.COMPLETED);
 
+            StorageResourceDescription storageResource = taskContext.getParentProcessContext().getStorageResource();
+            StoragePreference storagePreference = taskContext.getParentProcessContext().getStoragePreference();
+            if (storageResource != null){
+                hostName = storageResource.getHostName();
+            }
+
+            if (storagePreference != null){
+                userName = storagePreference.getLoginUserName();
+                inputPath = storagePreference.getFileSystemRootLocation();
+            }
+
             ServerInfo serverInfo = new ServerInfo(userName, hostName, DEFAULT_SSH_PORT);
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
             if (processState == ProcessState.INPUT_DATA_STAGING) {
@@ -262,7 +276,7 @@ public class SCPDataStageTask implements Task {
         StringBuilder sb = new StringBuilder("rsync -cr ");
         sb.append(sourceURI.getPath()).append(" ").append(destinationURI.getPath());
         CommandInfo commandInfo = new RawCommandInfo(sb.toString());
-        taskContext.getParentProcessContext().getRemoteCluster().execute(commandInfo);
+        taskContext.getParentProcessContext().getDataMovementRemoteCluster().execute(commandInfo);
     }
 
     private void inputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI
@@ -270,7 +284,7 @@ public class SCPDataStageTask implements Task {
         /**
          * scp third party file transfer 'to' compute resource.
          */
-        taskContext.getParentProcessContext().getRemoteCluster().scpThirdParty(sourceURI.getPath(),
+        taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
                 destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.TO);
     }
 
@@ -280,7 +294,7 @@ public class SCPDataStageTask implements Task {
         /**
          * scp third party file transfer 'from' comute resource.
          */
-        taskContext.getParentProcessContext().getRemoteCluster().scpThirdParty(sourceURI.getPath(),
+        taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
                 destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.FROM);
         // update output locations
         GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());

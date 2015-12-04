@@ -20,8 +20,8 @@
 package org.apache.airavata.registry.cpi;
 
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.DataStoragePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 
 import java.util.List;
 
@@ -70,7 +70,7 @@ public interface GwyResourceProfile {
      * @return ComputeResourcePreference
      */
     ComputeResourcePreference getComputeResourcePreference (String gatewayId, String hostId) throws AppCatalogException;
-    DataStoragePreference getDataStoragePreference (String gatewayId, String dataMoveId) throws AppCatalogException;
+    StoragePreference getStoragePreference(String gatewayId, String storageId) throws AppCatalogException;
 
     /**
      *
@@ -78,7 +78,7 @@ public interface GwyResourceProfile {
      * @return
      */
     List<ComputeResourcePreference> getAllComputeResourcePreferences (String gatewayId) throws AppCatalogException;
-    List<DataStoragePreference> getAllDataStoragePreferences (String gatewayId) throws AppCatalogException;
+    List<StoragePreference> getAllStoragePreferences(String gatewayId) throws AppCatalogException;
 
     List<String> getGatewayProfileIds (String gatewayName) throws AppCatalogException;
     List<GatewayResourceProfile> getAllGatewayProfiles () throws AppCatalogException;

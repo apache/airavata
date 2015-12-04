@@ -80,6 +80,7 @@ class UserConfigurationDataModel:
    - throttleResources
    - userDN
    - generateCert
+   - storageId
   """
 
   thrift_spec = (
@@ -91,9 +92,10 @@ class UserConfigurationDataModel:
     (5, TType.BOOL, 'throttleResources', None, False, ), # 5
     (6, TType.STRING, 'userDN', None, None, ), # 6
     (7, TType.BOOL, 'generateCert', None, False, ), # 7
+    (8, TType.STRING, 'storageId', None, None, ), # 8
   )
 
-  def __init__(self, airavataAutoSchedule=thrift_spec[1][4], overrideManualScheduledParams=thrift_spec[2][4], shareExperimentPublicly=thrift_spec[3][4], computationalResourceScheduling=None, throttleResources=thrift_spec[5][4], userDN=None, generateCert=thrift_spec[7][4],):
+  def __init__(self, airavataAutoSchedule=thrift_spec[1][4], overrideManualScheduledParams=thrift_spec[2][4], shareExperimentPublicly=thrift_spec[3][4], computationalResourceScheduling=None, throttleResources=thrift_spec[5][4], userDN=None, generateCert=thrift_spec[7][4], storageId=None,):
     self.airavataAutoSchedule = airavataAutoSchedule
     self.overrideManualScheduledParams = overrideManualScheduledParams
     self.shareExperimentPublicly = shareExperimentPublicly
@@ -101,6 +103,7 @@ class UserConfigurationDataModel:
     self.throttleResources = throttleResources
     self.userDN = userDN
     self.generateCert = generateCert
+    self.storageId = storageId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -147,6 +150,11 @@ class UserConfigurationDataModel:
           self.generateCert = iprot.readBool();
         else:
           iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.STRING:
+          self.storageId = iprot.readString();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -185,6 +193,10 @@ class UserConfigurationDataModel:
       oprot.writeFieldBegin('generateCert', TType.BOOL, 7)
       oprot.writeBool(self.generateCert)
       oprot.writeFieldEnd()
+    if self.storageId is not None:
+      oprot.writeFieldBegin('storageId', TType.STRING, 8)
+      oprot.writeString(self.storageId)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -205,6 +217,7 @@ class UserConfigurationDataModel:
     value = (value * 31) ^ hash(self.throttleResources)
     value = (value * 31) ^ hash(self.userDN)
     value = (value * 31) ^ hash(self.generateCert)
+    value = (value * 31) ^ hash(self.storageId)
     return value
 
   def __repr__(self):

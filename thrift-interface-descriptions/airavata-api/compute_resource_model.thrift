@@ -19,6 +19,7 @@
  */
 
 include "airavata_commons.thrift"
+include "data_movement_models.thrift"
 
 namespace java org.apache.airavata.model.appcatalog.computeresource
 namespace php Airavata.Model.AppCatalog.ComputeResource
@@ -154,28 +155,6 @@ struct BatchQueue {
     7: optional i32 maxMemory
 }
 
-/**
- * Enumeration of security authentication and authorization mechanisms supported by Airavata. This enumeration just
- *  describes the supported mechanism. The corresponding security credentials are registered with Airavata Credential
- *  store.
- *
- * USERNAME_PASSWORD:
- *  A User Name.
- *
- * SSH_KEYS:
- *  SSH Keys
- *
- * FIXME: Change GSI to a more precise generic security protocol - X509
- *
-*/
-enum SecurityProtocol {
-    USERNAME_PASSWORD,
-    SSH_KEYS,
-    GSI,
-    KERBEROS,
-    OAUTH,
-    LOCAL
-}
 
 /**
  * Enumeration of Airavata supported Job Submission Mechanisms for High Performance Computing Clusters.
@@ -218,73 +197,6 @@ enum MonitorMode {
 }
 
 /**
- * Enumeration of data movement supported by Airavata
- *
- * SCP:
- *  Job manager supporting the Portal Batch System (PBS) protocol. Some examples include TORQUE, PBSPro, Grid Engine.
- *
- * SFTP:
- *  The Simple Linux Utility for Resource Management is a open source workload manager.
- *
- * GridFTP:
- *  Globus File Transfer Protocol
- *
- * UNICORE_STORAGE_SERVICE:
- *  Storage Service Provided by Unicore
- *
-*/
-enum DataMovementProtocol {
-    LOCAL,
-    SCP,
-    SFTP,
-    GridFTP,
-    UNICORE_STORAGE_SERVICE
-}
-
-/**
- * Data Movement through Secured Copy
- *
- * alternativeSCPHostName:
- *  If the login to scp is different than the hostname itself, specify it here
- *
- * sshPort:
- *  If a non-default port needs to used, specify it.
-*/
-struct SCPDataMovement {
-    1: required string dataMovementInterfaceId = airavata_commons.DEFAULT_ID,
-    2: required SecurityProtocol securityProtocol,
-    3: optional string alternativeSCPHostName,
-    4: optional i32 sshPort = 22
-}
-
-/**
- * Data Movement through GridFTP
- *
- * alternativeSCPHostName:
- *  If the login to scp is different than the hostname itself, specify it here
- *
- * sshPort:
- *  If a non-default port needs to used, specify it.
-*/
-struct GridFTPDataMovement {
-    1: required string dataMovementInterfaceId = airavata_commons.DEFAULT_ID,
-    2: required SecurityProtocol securityProtocol,
-    3: required list<string>  gridFTPEndPoints
-}
-
-/**
- * Data Movement through UnicoreStorage
- *
- * unicoreEndPointURL:
- *  unicoreGateway End Point. The provider will query this service to fetch required service end points.
-*/
-struct UnicoreDataMovement {
-    1: required string dataMovementInterfaceId = airavata_commons.DEFAULT_ID,
-    2: required SecurityProtocol securityProtocol,
-    3: required string unicoreEndPointURL
-}
-
-/**
  * Locally Fork Jobs as OS processes
  *
  * alternativeSSHHostName:
@@ -295,21 +207,8 @@ struct UnicoreDataMovement {
 */
 struct LOCALSubmission {
     1: required string jobSubmissionInterfaceId = airavata_commons.DEFAULT_ID,
-    2: required SecurityProtocol securityProtocol,
+    2: required data_movement_models.SecurityProtocol securityProtocol,
     3: required ResourceJobManager resourceJobManager
-}
-
-/**
- * LOCAL
- *
- * alternativeSCPHostName:
- *  If the login to scp is different than the hostname itself, specify it here
- *
- * sshPort:
- *  If a non-defualt port needs to used, specify it.
-*/
-struct LOCALDataMovement {
-    1: required string dataMovementInterfaceId = airavata_commons.DEFAULT_ID,
 }
 
 /**
@@ -330,7 +229,7 @@ struct LOCALDataMovement {
 */
 struct SSHJobSubmission {
     1: required string jobSubmissionInterfaceId = airavata_commons.DEFAULT_ID,
-    2: required SecurityProtocol securityProtocol,
+    2: required data_movement_models.SecurityProtocol securityProtocol,
     3: required ResourceJobManager resourceJobManager,
     4: optional string alternativeSSHHostName,
     5: optional i32 sshPort = 22,
@@ -340,7 +239,7 @@ struct SSHJobSubmission {
 
 struct GlobusJobSubmission {
     1: required string jobSubmissionInterfaceId = airavata_commons.DEFAULT_ID,
-    2: required SecurityProtocol securityProtocol,
+    2: required data_movement_models.SecurityProtocol securityProtocol,
     3: optional list<string> globusGateKeeperEndPoint
 }
 
@@ -354,7 +253,7 @@ struct GlobusJobSubmission {
 */
 struct UnicoreJobSubmission {
     1: required string jobSubmissionInterfaceId = airavata_commons.DEFAULT_ID,
-    2: required SecurityProtocol securityProtocol,
+    2: required data_movement_models.SecurityProtocol securityProtocol,
     3: required string unicoreEndPointURL,
 }
 
@@ -376,7 +275,7 @@ enum ProviderName {
 */
 struct CloudJobSubmission {
     1: required string jobSubmissionInterfaceId = airavata_commons.DEFAULT_ID,
-    2: required SecurityProtocol securityProtocol,
+    2: required data_movement_models.SecurityProtocol securityProtocol,
     3: required string nodeId,
     4: required string executableType,
     5: required ProviderName providerName,
@@ -399,21 +298,7 @@ struct JobSubmissionInterface {
     3: required i32 priorityOrder = 0,
 }
 
-/**
- * Data Movement Interfaces
- *
- * dataMovementInterfaceId: The Data Movement Interface has to be previously registered and referenced here.
- *
- * priorityOrder:
- *  For resources with multiple interfaces, the priority order should be selected.
- *   Lower the numerical number, higher the priority
- *
-*/
-struct DataMovementInterface {
-    1: required string dataMovementInterfaceId,
-    2: required DataMovementProtocol dataMovementProtocol,
-    3: required i32 priorityOrder = 0,
-}
+
 
 /**
  * Computational Resource Description
@@ -455,6 +340,6 @@ struct ComputeResourceDescription {
     7: optional list<BatchQueue> batchQueues,
     8: optional map<FileSystems, string> fileSystems,
     9: optional list<JobSubmissionInterface> jobSubmissionInterfaces,
-    10: optional list<DataMovementInterface> dataMovementInterfaces,
+    10: optional list<data_movement_models.DataMovementInterface> dataMovementInterfaces,
     11: optional i32 maxMemoryPerNode
 }
