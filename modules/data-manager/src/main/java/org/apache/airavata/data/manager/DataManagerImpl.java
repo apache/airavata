@@ -148,21 +148,22 @@ public class DataManagerImpl implements DataManager{
     public boolean copyResource(String resourceId, String replicaId, String destLocation)
             throws DataManagerException {
         try {
-            //FIXME Bellow implementation is a skeleton code only to support the current airavata usecase of one to one copy
             DataResourceModel resourceModel = getResource(resourceId);
             DataReplicaLocationModel replicaLocationModel = getReplicaLocation(replicaId);
             if(resourceModel == null)
                 throw new DataManagerException("Non existent resource id:"+resourceId);
             if(replicaLocationModel == null)
                 throw new DataManagerException("Non existent replica id:"+replicaId);
-            URI sourceUri = new URI(replicaLocationModel.getDataLocations().get(0));
+            boolean result;
             URI destinationUri = new URI(destLocation);
-            DataTransferUtils dataTransferUtils = new DataTransferUtils(sshKeyAuthentication);
-            boolean result = dataTransferUtils.copyData(sourceUri, destinationUri);
-            if(result){
-
+            for(String dataLocation : replicaLocationModel.getDataLocations()) {
+                URI sourceUri = new URI(dataLocation);
+                DataTransferUtils dataTransferUtils = new DataTransferUtils(sshKeyAuthentication);
+                result = dataTransferUtils.copyData(sourceUri, destinationUri);
+                if(result == false)
+                    return result;
             }
-            return result;
+            return true;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new DataManagerException(e);
