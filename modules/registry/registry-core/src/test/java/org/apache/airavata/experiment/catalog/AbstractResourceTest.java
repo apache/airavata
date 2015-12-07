@@ -52,7 +52,7 @@ public abstract class AbstractResourceTest {
     public void setUp() throws Exception {
         gatewayResource = (GatewayResource) ExpCatResourceUtils.getGateway(ServerSettings.getDefaultUserGateway());
         workerResource = (WorkerResource) ExpCatResourceUtils.getWorker(gatewayResource.getGatewayName(), ServerSettings.getDefaultUser());
-        userResource = (UserResource) ExpCatResourceUtils.getUser(ServerSettings.getDefaultUser());
+        userResource = (UserResource) ExpCatResourceUtils.getUser(ServerSettings.getDefaultUser(), gatewayResource.getGatewayId());
         projectResource = workerResource.getProject("default");
     }
 

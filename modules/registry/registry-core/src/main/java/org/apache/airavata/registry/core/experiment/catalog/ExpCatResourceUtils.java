@@ -92,7 +92,7 @@ public class ExpCatResourceUtils {
             userResource.setGatewayId(gatewayId);
             return userResource;
         }else {
-            return (UserResource)getUser(username);
+            return (UserResource)getUser(username, gatewayId);
         }
 
     }
@@ -155,12 +155,15 @@ public class ExpCatResourceUtils {
     }
 
 
-    public static ExperimentCatResource getUser(String userName) throws RegistryException{
+    public static ExperimentCatResource getUser(String userName, String gatewayId) throws RegistryException{
         EntityManager em = null;
         try {
             if (isUserExist(userName)) {
                 em = getEntityManager();
-                Users user =  em.find(Users.class, userName);
+                UserPK userPK = new UserPK();
+                userPK.setUserName(userName);
+                userPK.setGatewayId(gatewayId);
+                Users user =  em.find(Users.class, userPK);
                 UserResource userResource = (UserResource)Utils.getResource(ResourceType.USER, user);
                 em.close();
                 return userResource;

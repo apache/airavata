@@ -251,7 +251,10 @@ public class WorkerResource extends AbstractExpCatResource {
             switch (type) {
                 case PROJECT:
                     generator = new QueryGenerator(PROJECT);
-                    Users users = em.find(Users.class, getUser());
+                    UserPK userPK = new UserPK();
+                    userPK.setGatewayId(getGatewayId());
+                    userPK.setUserName(user);
+                    Users users = em.find(Users.class, userPK);
                     Gateway gatewayModel = em.find(Gateway.class, gatewayId);
                     generator.setParameter("users", users);
                     if (gatewayModel != null) {
