@@ -376,7 +376,10 @@ public class GatewayResource extends AbstractExpCatResource {
                     return existingWorker != null;
                 case USER:
                     em = ExpCatResourceUtils.getEntityManager();
-                    Users existingUser = em.find(Users.class, name);
+                    UserPK userPK = new UserPK();
+                    userPK.setGatewayId(getGatewayId());
+                    userPK.setUserName(name.toString());
+                    Users existingUser = em.find(Users.class, userPK);
                     em.close();
                     return existingUser != null;
                 case EXPERIMENT:

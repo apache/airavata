@@ -111,7 +111,7 @@ public class ProjectRegistry {
             existingProject.setDescription(project.getDescription());
             existingProject.setName(project.getName());
 //            existingProject.setGateway(gatewayResource);
-            UserResource user = (UserResource) ExpCatResourceUtils.getUser(project.getOwner());
+            UserResource user = (UserResource) ExpCatResourceUtils.getUser(project.getOwner(),gatewayResource.getGatewayId());
             if (!gatewayResource.isExists(ResourceType.GATEWAY_WORKER, user.getUserName())){
                 workerResource = ExpCatResourceUtils.addGatewayWorker(gatewayResource, user);
             }else {

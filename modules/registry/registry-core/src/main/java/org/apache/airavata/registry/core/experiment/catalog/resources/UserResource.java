@@ -131,7 +131,10 @@ public class UserResource extends AbstractExpCatResource {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
-            Users existingUser = em.find(Users.class, new UserPK(userName, gatewayId));
+            UserPK userPK = new UserPK();
+            userPK.setGatewayId(gatewayId);
+            userPK.setUserName(userName);
+            Users existingUser = em.find(Users.class, userPK);
             Gateway gateway = em.find(Gateway.class, gatewayId);
             em.close();
 

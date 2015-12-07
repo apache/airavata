@@ -32,14 +32,6 @@ public class UserPK implements Serializable {
     private String gatewayId;
     private String userName;
 
-    public UserPK() {
-    }
-
-    public UserPK(String gatewayId, String userName) {
-        this.gatewayId = gatewayId;
-        this.userName = userName;
-    }
-
     @Id
     @Column(name = "GATEWAY_ID")
     public String getGatewayId() {
