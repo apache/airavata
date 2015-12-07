@@ -69,7 +69,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
             }
 
             if (!ExpCatResourceUtils.isUserExist(ServerSettings.getDefaultUser())){
-                user = ExpCatResourceUtils.createUser(ServerSettings.getDefaultUser(), ServerSettings.getDefaultUserPassword());
+                user = ExpCatResourceUtils.createUser(ServerSettings.getDefaultUser(), ServerSettings.getDefaultUserPassword(), ServerSettings.getDefaultUserGateway());
                 user.save();
             }else {
                 user = (UserResource) ExpCatResourceUtils.getUser(ServerSettings.getDefaultUser());
@@ -92,7 +92,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
         }
 
         if (!ExpCatResourceUtils.isUserExist(username)){
-            user = ExpCatResourceUtils.createUser(username, password);
+            user = ExpCatResourceUtils.createUser(username, password, gateway);
             user.save();
         }else {
             user = (UserResource) ExpCatResourceUtils.getUser(username);

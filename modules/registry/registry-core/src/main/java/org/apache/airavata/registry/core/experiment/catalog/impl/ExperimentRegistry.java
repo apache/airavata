@@ -71,7 +71,7 @@ public class ExperimentRegistry {
         String experimentId;
         try {
             if (!ExpCatResourceUtils.isUserExist(experiment.getUserName())) {
-                ExpCatResourceUtils.addUser(experiment.getUserName(), null);
+                ExpCatResourceUtils.addUser(experiment.getUserName(), null, experiment.getGatewayId());
             }
             if (!workerResource.isProjectExists(experiment.getProjectId())) {
                 logger.error("Project does not exist in the system..");

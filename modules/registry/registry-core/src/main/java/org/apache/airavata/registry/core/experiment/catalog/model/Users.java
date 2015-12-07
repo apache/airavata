@@ -24,18 +24,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
-import java.util.Collection;
 
 @Entity
 @Table(name = "USERS")
+@IdClass(UserPK.class)
 public class Users {
     private final static Logger logger = LoggerFactory.getLogger(Users.class);
     private String userName;
     private String password;
-    private Collection<Experiment> experiments;
-    private Collection<GatewayWorker> gatewayWorkers;
-    private Collection<Project> projects;
-    private Collection<ProjectUser> projectUsers;
+    private String gatewayId;
+//    private Collection<Experiment> experiments;
+//    private Collection<GatewayWorker> gatewayWorkers;
+//    private Collection<Project> projects;
+//    private Collection<ProjectUser> projectUsers;
+    private Gateway gateway;
 
     @Id
     @Column(name = "USER_NAME")
@@ -47,6 +49,16 @@ public class Users {
         this.userName = userName;
     }
 
+    @Id
+    @Column(name = "GATEWAY_ID")
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
     @Column(name = "PASSWORD")
     public String getPassword() {
         return password;
@@ -54,6 +66,16 @@ public class Users {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @JoinColumn(name = "GATEWAY_ID", referencedColumnName = "GATEWAY_ID")
+    @ManyToOne(optional = false, cascade = {CascadeType.PERSIST})
+    public Gateway getGateway() {
+        return gateway;
+    }
+
+    public void setGateway(Gateway gateway) {
+        this.gateway = gateway;
     }
 
 //    @Override
@@ -76,39 +98,39 @@ public class Users {
 //        return result;
 //    }
 
-    @OneToMany(mappedBy = "user")
-    public Collection<Experiment> getExperiments() {
-        return experiments;
-    }
+//    @OneToMany(mappedBy = "userName")
+//    public Collection<Experiment> getExperiments() {
+//        return experiments;
+//    }
+//
+//    public void setExperiments(Collection<Experiment> experimentByUserName) {
+//        this.experiments = experimentByUserName;
+//    }
 
-    public void setExperiments(Collection<Experiment> experimentByUserName) {
-        this.experiments = experimentByUserName;
-    }
-
-    @OneToMany(mappedBy = "user")
-    public Collection<GatewayWorker> getGatewayWorkers() {
-        return gatewayWorkers;
-    }
-
-    public void setGatewayWorkers(Collection<GatewayWorker> gatewayWorkerByUserName) {
-        this.gatewayWorkers = gatewayWorkerByUserName;
-    }
-
-    @OneToMany(mappedBy = "user")
-    public Collection<Project> getProjects() {
-        return projects;
-    }
-
-    public void setProjects(Collection<Project> projectByUserName) {
-        this.projects = projectByUserName;
-    }
-
-    @OneToMany(mappedBy = "user")
-    public Collection<ProjectUser> getProjectUsers() {
-        return projectUsers;
-    }
-
-    public void setProjectUsers(Collection<ProjectUser> projectUserByUserName) {
-        this.projectUsers = projectUserByUserName;
-    }
+//    @OneToMany(mappedBy = "userName")
+//    public Collection<GatewayWorker> getGatewayWorkers() {
+//        return gatewayWorkers;
+//    }
+//
+//    public void setGatewayWorkers(Collection<GatewayWorker> gatewayWorkerByUserName) {
+//        this.gatewayWorkers = gatewayWorkerByUserName;
+//    }
+//
+//    @OneToMany(mappedBy = "userName")
+//    public Collection<Project> getProjects() {
+//        return projects;
+//    }
+//
+//    public void setProjects(Collection<Project> projectByUserName) {
+//        this.projects = projectByUserName;
+//    }
+//
+//    @OneToMany(mappedBy = "userName")
+//    public Collection<ProjectUser> getProjectUsers() {
+//        return projectUsers;
+//    }
+//
+//    public void setProjectUsers(Collection<ProjectUser> projectUserByUserName) {
+//        this.projectUsers = projectUserByUserName;
+//    }
 }
