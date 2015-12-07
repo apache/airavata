@@ -208,16 +208,6 @@ public class Experiment {
 //    }
 
     @ManyToOne
-    @JoinColumn(name = "USER_NAME", referencedColumnName = "USER_NAME", nullable = false)
-    public Users getUser() {
-        return user;
-    }
-
-    public void setUser(Users userByUserName) {
-        this.user = userByUserName;
-    }
-
-    @ManyToOne
     @JoinColumn(name = "PROJECT_ID", referencedColumnName = "PROJECT_ID", nullable = false)
     public Project getProject() {
         return project;

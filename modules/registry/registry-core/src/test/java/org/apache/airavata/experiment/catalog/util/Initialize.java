@@ -144,6 +144,7 @@ public class Initialize {
             UserResource userResource = new UserResource();
             userResource.setUserName(ServerSettings.getSetting("default.registry.user"));
             userResource.setPassword(ServerSettings.getSetting("default.registry.password"));
+            userResource.setGatewayId(ServerSettings.getDefaultUserGateway());
             userResource.save();
 
             WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);

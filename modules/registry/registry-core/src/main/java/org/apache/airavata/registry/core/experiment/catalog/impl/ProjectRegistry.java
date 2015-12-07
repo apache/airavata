@@ -58,7 +58,7 @@ public class ProjectRegistry {
         String projectId;
         try {
             if (!ExpCatResourceUtils.isUserExist(project.getOwner())){
-                ExpCatResourceUtils.addUser(project.getOwner(), null);
+                ExpCatResourceUtils.addUser(project.getOwner(), null, gatewayId);
             }
             ProjectResource projectResource = new ProjectResource();
             projectId = getProjectId(project.getName());

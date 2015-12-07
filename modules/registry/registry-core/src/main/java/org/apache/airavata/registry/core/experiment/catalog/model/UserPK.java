@@ -23,16 +23,22 @@ package org.apache.airavata.registry.core.experiment.catalog.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import java.io.Serializable;
 
-@Entity
-@Table(name = "GATEWAY_WORKER")
-@IdClass(GatewayWorkerPK.class)
-public class GatewayWorker {
-    private final static Logger logger = LoggerFactory.getLogger(GatewayWorker.class);
+public class UserPK implements Serializable {
+    private final static Logger logger = LoggerFactory.getLogger(UserPK.class);
     private String gatewayId;
     private String userName;
-    private Gateway gateway;
+
+    public UserPK() {
+    }
+
+    public UserPK(String gatewayId, String userName) {
+        this.gatewayId = gatewayId;
+        this.userName = userName;
+    }
 
     @Id
     @Column(name = "GATEWAY_ID")
@@ -44,6 +50,7 @@ public class GatewayWorker {
         this.gatewayId = gatewayId;
     }
 
+
     @Id
     @Column(name = "USER_NAME")
     public String getUserName() {
@@ -54,33 +61,23 @@ public class GatewayWorker {
         this.userName = userName;
     }
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//
-//        GatewayWorker that = (GatewayWorker) o;
-//
-//        if (gatewayId != null ? !gatewayId.equals(that.gatewayId) : that.gatewayId != null) return false;
-//        if (userName != null ? !userName.equals(that.userName) : that.userName != null) return false;
-//
-//        return true;
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        int result = gatewayId != null ? gatewayId.hashCode() : 0;
-//        result = 31 * result + (userName != null ? userName.hashCode() : 0);
-//        return result;
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-    @ManyToOne
-    @JoinColumn(name = "GATEWAY_ID", referencedColumnName = "GATEWAY_ID", nullable = false)
-    public Gateway getGateway() {
-        return gateway;
+        UserPK that = (UserPK) o;
+
+        if (getGatewayId() != null ? !getGatewayId().equals(that.getGatewayId()) : that.getGatewayId() != null) return false;
+        if (getUserName() != null ? !getUserName().equals(that.getUserName()) : that.getUserName() != null) return false;
+
+        return true;
     }
 
-    public void setGateway(Gateway gatewayByGatewayId) {
-        this.gateway = gatewayByGatewayId;
+    @Override
+    public int hashCode() {
+        int result = getGatewayId() != null ? getGatewayId().hashCode() : 0;
+        result = 31 * result + (getUserName() != null ? getUserName().hashCode() : 0);
+        return result;
     }
 }

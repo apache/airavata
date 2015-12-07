@@ -26,6 +26,8 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
+import org.apache.airavata.registry.core.experiment.catalog.model.Gateway;
+import org.apache.airavata.registry.core.experiment.catalog.model.UserPK;
 import org.apache.airavata.registry.core.experiment.catalog.model.Users;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
@@ -39,6 +41,25 @@ public class UserResource extends AbstractExpCatResource {
     private final static Logger logger = LoggerFactory.getLogger(UserResource.class);
     private String userName;
     private String password;
+    private String gatewayId;
+//    private GatewayResource gatewayResource;
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
+//    public GatewayResource getGatewayResource() {
+//        return gatewayResource;
+//    }
+//
+//    public void setGatewayResource(GatewayResource gatewayResource) {
+//        this.gatewayResource = gatewayResource;
+//    }
+
     /**
      *
      */
@@ -110,13 +131,16 @@ public class UserResource extends AbstractExpCatResource {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
-            Users existingUser = em.find(Users.class, userName);
+            Users existingUser = em.find(Users.class, new UserPK(userName, gatewayId));
+            Gateway gateway = em.find(Gateway.class, gatewayId);
             em.close();
 
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
             Users user = new Users();
             user.setUserName(userName);
+            user.setGatewayId(gateway.getGatewayId());
+            user.setGateway(gateway);
             if (password != null && !password.equals("")) {
                 try {
                     user.setPassword(SecurityUtil.digestString(password,
@@ -132,6 +156,8 @@ public class UserResource extends AbstractExpCatResource {
                     try {
                         existingUser.setPassword(SecurityUtil.digestString(password,
                                 ServerSettings.getSetting("default.registry.password.hash.method")));
+                        existingUser.setGatewayId(gateway.getGatewayId());
+                        existingUser.setGateway(gateway);
                     } catch (NoSuchAlgorithmException e) {
                         throw new RuntimeException("Error hashing default admin password. Invalid hash algorithm.", e);
                     } catch (ApplicationSettingsException e) {

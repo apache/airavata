@@ -351,7 +351,6 @@ public class Utils {
             projectResource.setGatewayId(o.getGatewayId());
             GatewayWorker gatewayWorker = new GatewayWorker();
             gatewayWorker.setGateway(o.getGateway());
-            gatewayWorker.setUser(o.getUser());
             gatewayWorker.setUserName(o.getUser().getUserName());
             WorkerResource workerResource = (WorkerResource) createGatewayWorker(gatewayWorker);
             projectResource.setWorker(workerResource);
@@ -386,6 +385,7 @@ public class Utils {
         if (o != null){
             userResource.setUserName(o.getUserName());
             userResource.setPassword(o.getPassword());
+            userResource.setGatewayId(o.getGatewayId());
         }
         return userResource;
     }
