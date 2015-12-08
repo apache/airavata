@@ -116,12 +116,22 @@ public class AiravataServerHandler implements Airavata.Iface {
                 logger.error("Gateway id cannot be empty...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
-            return (String) experimentCatalog.add(ExpCatParentDataType.GATEWAY, gateway, gateway.getGatewayId());
+            String gatewayId = (String) experimentCatalog.add(ExpCatParentDataType.GATEWAY, gateway, gateway.getGatewayId());
+            GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
+            gatewayResourceProfile.setGatewayID(gatewayId);
+            appCatalog.getGatewayProfile().addGatewayResourceProfile(gatewayResourceProfile);
+            return gatewayId;
         } catch (RegistryException e) {
             logger.error("Error while adding gateway", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding gateway. More info : " + e.getMessage());
+            throw exception;
+        } catch (AppCatalogException e) {
+            logger.error("Error while adding gateway profile", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding gateway profile. More info : " + e.getMessage());
             throw exception;
         }
     }
