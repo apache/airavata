@@ -32,6 +32,7 @@ import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSSLTransportFactory;
+import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
@@ -44,21 +45,27 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Map;
+
 import org.apache.commons.codec.binary.Base64;
 
 public class TestSSLClient {
     private void invoke() {
-        TTransport transport;
+//        TTransport transport;
         try {
-            TSSLTransportFactory.TSSLTransportParameters params =
-                    new TSSLTransportFactory.TSSLTransportParameters();
-            String keystorePath = ServerSettings.getCredentialStoreThriftServerKeyStorePath();
-            String keystorePWD = ServerSettings.getCredentialStoreThriftServerKeyStorePassword();
-            params.setTrustStore(keystorePath, keystorePWD);
+
+//            TSSLTransportFactory.TSSLTransportParameters params =
+//                    new TSSLTransportFactory.TSSLTransportParameters();
+//            String keystorePath = ServerSettings.getCredentialStoreThriftServerKeyStorePath();
+//            String keystorePWD = ServerSettings.getCredentialStoreThriftServerKeyStorePassword();
+//            params.setTrustStore(keystorePath, keystorePWD);
             final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
             final String serverHost = ServerSettings.getCredentialStoreServerHost();
-            transport = TSSLTransportFactory.getClientSocket(serverHost, serverPort, 10000, params);
+            TTransport transport = new TSocket(serverHost, serverPort);
+            transport.open();
             TProtocol protocol = new TBinaryProtocol(transport);
+//            transport = TSSLTransportFactory.getClientSocket(serverHost, serverPort, 10000, params);
+//            TProtocol protocol = new TBinaryProtocol(transport);
 
             CredentialStoreService.Client client = new CredentialStoreService.Client(protocol);
             testSSHCredential(client);
@@ -80,6 +87,7 @@ public class TestSSLClient {
             String token = client.addSSHCredential(sshCredential);
             System.out.println("SSH Token :" + token);
             SSHCredential credential = client.getSSHCredential(token, "testGateway");
+            Map<String, String> allSSHKeysForGateway = client.getAllSSHKeysForGateway(sshCredential.getGatewayId());
             System.out.println("private key : " + credential.getPrivateKey());
             System.out.println("public key : " + credential.getPublicKey());
         }catch (TTransportException e) {

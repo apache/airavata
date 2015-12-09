@@ -207,13 +207,16 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
         try {
             List<Credential> allCredentials = credentialReader.getAllCredentials();
             if (allCredentials != null && !allCredentials.isEmpty()){
-                for (Credential credential : allCredentials){
-                    if (credential.getPortalUserName().equals(username)){
-                        if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential){
-                            org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential)credential;
-                            byte[] publicKey = sshCredential.getPublicKey();
-                            if (publicKey != null){
-                                sshKeyMap.put(sshCredential.getToken(), new String(publicKey));
+                for (Credential credential : allCredentials) {
+                    if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) {
+                        org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
+                        String portalUserName = sshCredential.getPortalUserName();
+                        if (portalUserName != null){
+                            if (portalUserName.equals(username)) {
+                                byte[] publicKey = sshCredential.getPublicKey();
+                                if (publicKey != null) {
+                                    sshKeyMap.put(sshCredential.getToken(), new String(publicKey));
+                                }
                             }
                         }
                     }
@@ -232,13 +235,16 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
         try {
             List<Credential> allCredentials = credentialReader.getAllCredentials();
             if (allCredentials != null && !allCredentials.isEmpty()){
-                for (Credential credential : allCredentials){
-                    if (credential.getGatewayId().equals(gatewayId)){
-                        if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential){
-                            org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential)credential;
-                            byte[] publicKey = sshCredential.getPublicKey();
-                            if (publicKey != null){
-                                sshKeyMap.put(sshCredential.getToken(), new String(publicKey));
+                for (Credential credential : allCredentials) {
+                    if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) {
+                        org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
+                        String gateway = sshCredential.getGateway();
+                        if (gateway != null){
+                            if (gateway.equals(gatewayId)) {
+                                byte[] publicKey = sshCredential.getPublicKey();
+                                if (publicKey != null) {
+                                    sshKeyMap.put(sshCredential.getToken(), new String(publicKey));
+                                }
                             }
                         }
                     }
