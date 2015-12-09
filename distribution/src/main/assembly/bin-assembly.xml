@@ -145,6 +145,7 @@
 			</includes>
 		</dependencySet>
 		<dependencySet>
+			<useProjectArtifact>false</useProjectArtifact>
 			<outputDirectory>lib</outputDirectory>
 			<includes>
 				<include>*:*:jar</include>
