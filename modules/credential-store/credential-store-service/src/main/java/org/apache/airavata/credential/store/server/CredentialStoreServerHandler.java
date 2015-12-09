@@ -213,7 +213,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                             org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential)credential;
                             byte[] publicKey = sshCredential.getPublicKey();
                             if (publicKey != null){
-                                sshKeyMap.put(sshCredential.getPortalUserName(), new String(publicKey));
+                                sshKeyMap.put(sshCredential.getToken(), new String(publicKey));
                             }
                         }
                     }
@@ -224,6 +224,32 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
             throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while retrieving credentials");
         }
         return sshKeyMap;
+    }
+
+    @Override
+    public Map<String, String> getAllSSHKeysForGateway(String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
+        Map<String, String> sshKeyMap = new HashMap<>();
+        try {
+            List<Credential> allCredentials = credentialReader.getAllCredentials();
+            if (allCredentials != null && !allCredentials.isEmpty()){
+                for (Credential credential : allCredentials){
+                    if (credential.getGatewayId().equals(gatewayId)){
+                        if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential){
+                            org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential)credential;
+                            byte[] publicKey = sshCredential.getPublicKey();
+                            if (publicKey != null){
+                                sshKeyMap.put(sshCredential.getToken(), new String(publicKey));
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (CredentialStoreException e) {
+            log.error("Error occurred while retrieving credentials", e);
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while retrieving credentials");
+        }
+        return sshKeyMap;
+
     }
 
 

@@ -32,6 +32,7 @@ import java.util.Date;
 public abstract class Credential implements Serializable {
 
     private String portalUserName;
+    private String gatewayId;
     private Date persistedTime;
     private String token;
 
@@ -50,6 +51,10 @@ public abstract class Credential implements Serializable {
     public String getPortalUserName() {
         return portalUserName;
     }
+
+    public String getGatewayId() { return gatewayId; }
+
+    public void setGatewayId(String gatewayId) { this.gatewayId = gatewayId; }
 
     public void setCertificateRequestedTime(Date ts) {
         persistedTime = ts;

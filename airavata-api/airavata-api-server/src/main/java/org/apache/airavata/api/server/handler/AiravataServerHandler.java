@@ -308,6 +308,22 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    @Override
+    public Map<String, String> getAllGatewaySSHPubKeys(AuthzToken authzToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            if (csClient == null){
+                csClient = getCredentialStoreServiceClient();
+            }
+            return csClient.getAllSSHKeysForGateway(gatewayId);
+        }catch (Exception e){
+            logger.error("Error occurred while retrieving SSH public keys for gateway : " + gatewayId , e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while retrieving SSH public keys for gateway : " + gatewayId + ". More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     /**
      * Create a Project
      *
