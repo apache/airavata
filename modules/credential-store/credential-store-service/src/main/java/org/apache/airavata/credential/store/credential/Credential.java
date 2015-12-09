@@ -31,6 +31,8 @@ import java.util.Date;
  */
 public abstract class Credential implements Serializable {
 
+    static final long serialVersionUID = 5783370135149452010L;
+
     private String portalUserName;
     private String gatewayId;
     private Date persistedTime;
