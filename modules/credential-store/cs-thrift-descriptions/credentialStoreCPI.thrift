@@ -58,7 +58,7 @@ service CredentialStoreService {
 
   map<string,string> getAllSSHKeysForUser (1: required string username) throws (1:credentialStoreErrors.CredentialStoreException csException);
 
-
+  map<string,string> getAllSSHKeysForGateway (1: required string gatewayId) throws (1:credentialStoreErrors.CredentialStoreException csException);
 
 
 }
