@@ -275,13 +275,17 @@ public class GatewayProfileResource extends AppCatAbstractResource {
             em.getTransaction().begin();
             if (existingGatewayProfile != null) {
                 existingGatewayProfile.setUpdateTime(AiravataUtils.getCurrentTimestamp());
-                existingGatewayProfile.setCredentialStoreToken(credentialStoreToken);
+                if (credentialStoreToken != null){
+                    existingGatewayProfile.setCredentialStoreToken(credentialStoreToken);
+                }
                 em.merge(existingGatewayProfile);
             } else {
                 GatewayProfile gatewayProfile = new GatewayProfile();
                 gatewayProfile.setGatewayID(gatewayID);
                 gatewayProfile.setCreationTime(AiravataUtils.getCurrentTimestamp());
-                gatewayProfile.setCredentialStoreToken(credentialStoreToken);
+                if (credentialStoreToken != null){
+                    gatewayProfile.setCredentialStoreToken(credentialStoreToken);
+                }
                 em.persist(gatewayProfile);
             }
             em.getTransaction().commit();

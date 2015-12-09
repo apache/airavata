@@ -112,6 +112,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            appCatalog = RegistryFactory.getAppCatalog();
             if (!validateString(gateway.getGatewayId())){
                 logger.error("Gateway id cannot be empty...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
