@@ -21,6 +21,7 @@
 package org.apache.airavata.gfac.impl.watcher;
 
 import org.apache.airavata.common.utils.ZkConstants;
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
 import org.apache.airavata.gfac.impl.Factory;
@@ -35,6 +36,7 @@ public class CancelRequestWatcherImpl implements CancelRequestWatcher {
 	private static final Logger log = LoggerFactory.getLogger(CancelRequestWatcherImpl.class);
 	private final String processId;
 	private final String experimentId;
+	private final int max_retry = 3;
 
 	public CancelRequestWatcherImpl(String experimentId, String processId) {
 		this.experimentId = experimentId;
@@ -47,20 +49,13 @@ public class CancelRequestWatcherImpl implements CancelRequestWatcher {
 		String path = watchedEvent.getPath();
 		Watcher.Event.EventType type = watchedEvent.getType();
 		CuratorFramework curatorClient = Factory.getCuratorClient();
+		log.info("cancel watcher triggered process id {}.", processId);
 		switch (type) {
 			case NodeDataChanged:
 				byte[] bytes = curatorClient.getData().forPath(path);
 				String action = new String(bytes);
 				if (action.equalsIgnoreCase(ZkConstants.ZOOKEEPER_CANCEL_REQEUST)) {
-					ProcessContext processContext = Factory.getGfacContext().getProcess(processId);
-					if (processContext != null) {
-						processContext.setCancel(true);
-						Factory.getGFacEngine().cancelProcess(processContext);
-						log.info("expId {}, processId : {}, Cancelling process", experimentId, processId);
-					} else {
-						log.info("expId: {}, Cancel request came for processId {} but couldn't find process context",
-								experimentId, processId);
-					}
+					cancelProcess(0);
 				} else {
 					curatorClient.getData().usingWatcher(this).forPath(path);
 				}
@@ -86,6 +81,29 @@ public class CancelRequestWatcherImpl implements CancelRequestWatcher {
 					curatorClient.getData().usingWatcher(this).forPath(path);
 				}
 				break;
+		}
+	}
+
+	private void cancelProcess(int retryAttempt) throws GFacException {
+		ProcessContext processContext = Factory.getGfacContext().getProcess(processId);
+		if (processContext != null) {
+            processContext.setCancel(true);
+			log.info("expId {}, processId : {}, Cancelling process", experimentId, processId);
+			Factory.getGFacEngine().cancelProcess(processContext);
+        } else {
+			if (retryAttempt < max_retry) {
+				log.info("expId: {}, Cancel request came for processId {} but couldn't find process context. " +
+						"retry in {} s ", experimentId, processId, retryAttempt*3);
+				try {
+					Thread.sleep(retryAttempt++*3000);
+				} catch (InterruptedException e) {
+					// ignore we don't care this exception.
+				}
+				cancelProcess(retryAttempt);
+			} else {
+				log.info("expId: {}, Cancel request came for processId {} but couldn't find process context.",
+						experimentId, processId);
+			}
 		}
 	}
 }

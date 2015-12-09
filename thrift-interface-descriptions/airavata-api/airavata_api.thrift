@@ -31,6 +31,7 @@ include "job_model.thrift"
 include "experiment_model.thrift"
 include "workspace_model.thrift"
 include "compute_resource_model.thrift"
+include "storage_resource_model.thrift"
 include "scheduling_model.thrift"
 include "application_io_models.thrift"
 include "application_deployment_model.thrift"
@@ -38,6 +39,7 @@ include "application_interface_model.thrift"
 include "gateway_resource_profile_model.thrift"
 include "workflow_data_model.thrift"
 include "security_model.thrift"
+include "data_movement_models.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API
@@ -509,7 +511,7 @@ service Airavata {
 
   /**
      * Create an experiment for the specified user belonging to the gateway. The gateway identity is not explicitly passed
-     *   but inferred from the authentication header. This experiment is just a persistent place holder. The client
+     *   but inferred from the sshKeyAuthentication header. This experiment is just a persistent place holder. The client
      *   has to subsequently configure and launch the created experiment. No action is taken on Airavata Server except
      *   registering the experiment in a persistent store.
      *
@@ -610,6 +612,50 @@ service Airavata {
             3: airavata_errors.AiravataClientException ace,
             4: airavata_errors.AiravataSystemException ase,
             5: airavata_errors.AuthorizationException ae)
+
+
+  /**
+   * Fetch the completed nested tree structue of previously created experiment metadata which includes processes ->
+   * tasks -> jobs information.
+   *
+   * @param airavataExperimentId
+   *    The identifier for the requested experiment. This is returned during the create experiment step.
+   *
+   * @return experimentMetada
+   *   This method will return the previously stored experiment metadata.
+   *
+   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *    For any incorrect forming of the request itself.
+   *
+   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+   *
+   * @throws org.apache.airavata.model.error.AiravataClientException
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *         gateway registration steps and retry this request.
+   *
+   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *         For now this is a place holder.
+   *
+   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *         is implemented, the authorization will be more substantial.
+   *
+   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *       rather an Airavata Administrator will be notified to take corrective action.
+   *
+  */
+  experiment_model.ExperimentModel getDetailedExperimentTree(1: required security_model.AuthzToken authzToken,
+                                                   2: required string airavataExperimentId)
+      throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.ExperimentNotFoundException enf,
+              3: airavata_errors.AiravataClientException ace,
+              4: airavata_errors.AiravataSystemException ase,
+              5: airavata_errors.AuthorizationException ae)
+
 
   /**
    * Configure a previously created experiment with required inputs, scheduling and other quality of service
@@ -1312,6 +1358,95 @@ service Airavata {
                    3: airavata_errors.AiravataSystemException ase,
                    4: airavata_errors.AuthorizationException ae)
 
+/*
+ * Storage Resource
+ *
+*/
+
+  /**
+   * Register a Storage Resource.
+   *
+   * @param storageResourceDescription
+   *    Storge Resource Object created from the datamodel.
+   *
+   * @return storageResourceId
+   *   Returns a server-side generated airavata storage resource globally unique identifier.
+   *
+  */
+  string registerStorageResource(1: required security_model.AuthzToken authzToken,
+                                 2: required storage_resource_model.StorageResourceDescription storageResourceDescription)
+    	throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
+
+  /**
+   * Fetch the given Storage Resource.
+   *
+   * @param storageResourceId
+   *   The identifier for the requested storage resource
+   *
+   * @return storageResourceDescription
+   *    Storage Resource Object created from the datamodel..
+   *
+  */
+  storage_resource_model.StorageResourceDescription getStorageResource(1: required security_model.AuthzToken authzToken,
+                2: required string storageResourceId)
+      	throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.AiravataClientException ace,
+                3: airavata_errors.AiravataSystemException ase,
+                4: airavata_errors.AuthorizationException ae)
+
+  /**
+   * Fetch all registered Storage Resources.
+   *
+   * @return A map of registered compute resource id's and thier corresponding hostnames.
+   *    Compute Resource Object created from the datamodel..
+   *
+  */
+  map<string, string> getAllStorageResourceNames(1: required security_model.AuthzToken authzToken)
+      	throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.AiravataClientException ace,
+                3: airavata_errors.AiravataSystemException ase,
+                4: airavata_errors.AuthorizationException ae)
+
+  /**
+   * Update a Compute Resource.
+   *
+   * @param storageResourceId
+   *   The identifier for the requested compute resource to be updated.
+   *
+   * @param storageResourceDescription
+   *    Storage Resource Object created from the datamodel.
+   *
+   * @return status
+   *   Returns a success/failure of the update.
+   *
+  */
+  bool updateStorageResource(1: required security_model.AuthzToken authzToken,
+            2: required string storageResourceId,
+            3: required storage_resource_model.StorageResourceDescription storageResourceDescription)
+      	throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.AiravataClientException ace,
+                3: airavata_errors.AiravataSystemException ase,
+                4: airavata_errors.AuthorizationException ae)
+
+  /**
+   * Delete a Storage Resource.
+   *
+   * @param storageResourceId
+   *   The identifier for the requested compute resource to be deleted.
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+  */
+  bool deleteStorageResource(1: required security_model.AuthzToken authzToken, 2: required string storageResourceId)
+         	throws (1: airavata_errors.InvalidRequestException ire,
+                   2: airavata_errors.AiravataClientException ace,
+                   3: airavata_errors.AiravataSystemException ase,
+                   4: airavata_errors.AuthorizationException ae)
+
   /**
    * Add a Local Job Submission details to a compute resource
    *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
@@ -1589,9 +1724,10 @@ service Airavata {
    *
   */
   string addLocalDataMovementDetails(1: required security_model.AuthzToken authzToken,
-            2: required string computeResourceId,
-            3: required i32 priorityOrder,
-            4: required compute_resource_model.LOCALDataMovement localDataMovement)
+            2: required string resourceId,
+            3: required data_movement_models.DMType dataMoveType,
+            4: required i32 priorityOrder,
+            5: required data_movement_models.LOCALDataMovement localDataMovement)
   	throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.AiravataClientException ace,
             3: airavata_errors.AiravataSystemException ase,
@@ -1612,7 +1748,7 @@ service Airavata {
   */
   bool updateLocalDataMovementDetails(1: required security_model.AuthzToken authzToken,
             2: required string dataMovementInterfaceId,
-            3: required compute_resource_model.LOCALDataMovement localDataMovement)
+            3: required data_movement_models.LOCALDataMovement localDataMovement)
   	throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.AiravataClientException ace,
             3: airavata_errors.AiravataSystemException ase,
@@ -1624,7 +1760,7 @@ service Airavata {
           *   The identifier of the datamovement Interface to be retrieved.
           *  @return LOCALDataMovement instance
   **/
-  compute_resource_model.LOCALDataMovement getLocalDataMovement(1: required security_model.AuthzToken authzToken,
+  data_movement_models.LOCALDataMovement getLocalDataMovement(1: required security_model.AuthzToken authzToken,
                     2: required string dataMovementId)
                     throws (1: airavata_errors.InvalidRequestException ire,
                             2: airavata_errors.AiravataClientException ace,
@@ -1649,9 +1785,11 @@ service Airavata {
    *   Returns the unique job submission id.
    *
   */
-  string addSCPDataMovementDetails(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId,
-            3: required i32 priorityOrder,
-            4: required compute_resource_model.SCPDataMovement scpDataMovement)
+  string addSCPDataMovementDetails(1: required security_model.AuthzToken authzToken,
+            2: required string resourceId,
+            3: required data_movement_models.DMType dataMoveType,
+            4: required i32 priorityOrder,
+            5: required data_movement_models.SCPDataMovement scpDataMovement)
   	throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.AiravataClientException ace,
             3: airavata_errors.AiravataSystemException ase,
@@ -1671,8 +1809,9 @@ service Airavata {
    *   Returns a success/failure of the update.
    *
   */
-  bool updateSCPDataMovementDetails(1: required security_model.AuthzToken authzToken, 2: required string dataMovementInterfaceId,
-            3: required compute_resource_model.SCPDataMovement scpDataMovement)
+  bool updateSCPDataMovementDetails(1: required security_model.AuthzToken authzToken,
+            2: required string dataMovementInterfaceId,
+            3: required data_movement_models.SCPDataMovement scpDataMovement)
   	throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.AiravataClientException ace,
             3: airavata_errors.AiravataSystemException ase,
@@ -1684,29 +1823,31 @@ service Airavata {
        *   The identifier of the datamovement Interface to be retrieved.
        *  @return SCPDataMovement instance
   **/
-  compute_resource_model.SCPDataMovement getSCPDataMovement(1: required security_model.AuthzToken authzToken, 2: required string dataMovementId)
+  data_movement_models.SCPDataMovement getSCPDataMovement(1: required security_model.AuthzToken authzToken, 2: required string dataMovementId)
                     throws (1: airavata_errors.InvalidRequestException ire,
                             2: airavata_errors.AiravataClientException ace,
                             3: airavata_errors.AiravataSystemException ase,
                             4: airavata_errors.AuthorizationException ae)
 
 
- string addUnicoreDataMovementDetails(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId,
-              3: required i32 priorityOrder,
-              4: required compute_resource_model.UnicoreDataMovement unicoreDataMovement)
+ string addUnicoreDataMovementDetails(1: required security_model.AuthzToken authzToken,
+              2: required string resourceId,
+              3: required data_movement_models.DMType dataMoveType,
+              4: required i32 priorityOrder,
+              5: required data_movement_models.UnicoreDataMovement unicoreDataMovement)
     	throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.AiravataClientException ace,
               3: airavata_errors.AiravataSystemException ase,
               4: airavata_errors.AuthorizationException ae)
 
  bool updateUnicoreDataMovementDetails(1: required security_model.AuthzToken authzToken, 2: required string dataMovementInterfaceId,
-             3: required compute_resource_model.UnicoreDataMovement unicoreDataMovement)
+             3: required data_movement_models.UnicoreDataMovement unicoreDataMovement)
    	throws (1: airavata_errors.InvalidRequestException ire,
              2: airavata_errors.AiravataClientException ace,
              3: airavata_errors.AiravataSystemException ase,
              4: airavata_errors.AuthorizationException ae)
 
- compute_resource_model.UnicoreDataMovement getUnicoreDataMovement(1: required security_model.AuthzToken authzToken,
+ data_movement_models.UnicoreDataMovement getUnicoreDataMovement(1: required security_model.AuthzToken authzToken,
                      2: required string dataMovementId)
                      throws (1: airavata_errors.InvalidRequestException ire,
                              2: airavata_errors.AiravataClientException ace,
@@ -1730,9 +1871,11 @@ service Airavata {
    *   Returns the unique job submission id.
    *
   */
-  string addGridFTPDataMovementDetails(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId,
-            3: required i32 priorityOrder,
-            4: required compute_resource_model.GridFTPDataMovement gridFTPDataMovement)
+  string addGridFTPDataMovementDetails(1: required security_model.AuthzToken authzToken,
+            2: required string resourceId,
+            3: required data_movement_models.DMType dataMoveType,
+            4: required i32 priorityOrder,
+            5: required data_movement_models.GridFTPDataMovement gridFTPDataMovement)
   	throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.AiravataClientException ace,
             3: airavata_errors.AiravataSystemException ase,
@@ -1753,7 +1896,7 @@ service Airavata {
    *
   */
   bool updateGridFTPDataMovementDetails(1: required security_model.AuthzToken authzToken, 2: required string dataMovementInterfaceId,
-            3: required compute_resource_model.GridFTPDataMovement gridFTPDataMovement)
+            3: required data_movement_models.GridFTPDataMovement gridFTPDataMovement)
   	throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.AiravataClientException ace,
             3: airavata_errors.AiravataSystemException ase,
@@ -1765,7 +1908,7 @@ service Airavata {
        *   The identifier of the datamovement Interface to be retrieved.
     *  @return GridFTPDataMovement instance
   **/
-  compute_resource_model.GridFTPDataMovement getGridFTPDataMovement(1: required security_model.AuthzToken authzToken, 2: required string dataMovementId)
+  data_movement_models.GridFTPDataMovement getGridFTPDataMovement(1: required security_model.AuthzToken authzToken, 2: required string dataMovementId)
                     throws (1: airavata_errors.InvalidRequestException ire,
                             2: airavata_errors.AiravataClientException ace,
                             3: airavata_errors.AiravataSystemException ase,
@@ -2010,9 +2153,9 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
-  bool addGatewayDataStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string gatewayID,
-              3: required string dataMoveId,
-              4: required gateway_resource_profile_model.DataStoragePreference dataStoragePreference)
+  bool addGatewayStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string gatewayID,
+              3: required string storageResourceId,
+              4: required gateway_resource_profile_model.StoragePreference storagePreference)
     	throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.AiravataClientException ace,
               3: airavata_errors.AiravataSystemException ase,
@@ -2038,9 +2181,9 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
-  gateway_resource_profile_model.DataStoragePreference getGatewayDataStoragePreference(1: required security_model.AuthzToken authzToken,
+  gateway_resource_profile_model.StoragePreference getGatewayStoragePreference(1: required security_model.AuthzToken authzToken,
               2: required string gatewayID,
-              3: required string dataMoveId)
+              3: required string storageResourceId)
     	throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.AiravataClientException ace,
               3: airavata_errors.AiravataSystemException ase,
@@ -2064,8 +2207,8 @@ service Airavata {
             4: airavata_errors.AuthorizationException ae)
 
 
-  list<gateway_resource_profile_model.DataStoragePreference>
-              getAllGatewayDataStoragePreferences(1: required security_model.AuthzToken authzToken, 2: required string gatewayID)
+  list<gateway_resource_profile_model.StoragePreference>
+              getAllGatewayStoragePreferences(1: required security_model.AuthzToken authzToken, 2: required string gatewayID)
     	throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.AiravataClientException ace,
               3: airavata_errors.AiravataSystemException ase,
@@ -2105,9 +2248,9 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
-  bool updateGatewayDataStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string gatewayID,
-              3: required string dataMoveId,
-              4: required gateway_resource_profile_model.DataStoragePreference dataStoragePreference)
+  bool updateGatewayStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string gatewayID,
+              3: required string storageId,
+              4: required gateway_resource_profile_model.StoragePreference storagePreference)
     	throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.AiravataClientException ace,
               3: airavata_errors.AiravataSystemException ase,
@@ -2133,8 +2276,8 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
-  bool deleteGatewayDataStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string gatewayID,
-              3: required string dataMoveId)
+  bool deleteGatewayStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string gatewayID,
+              3: required string storageId)
     	throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.AiravataClientException ace,
               3: airavata_errors.AiravataSystemException ase,

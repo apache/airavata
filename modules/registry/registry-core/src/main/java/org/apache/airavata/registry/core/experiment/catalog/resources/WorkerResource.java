@@ -251,7 +251,10 @@ public class WorkerResource extends AbstractExpCatResource {
             switch (type) {
                 case PROJECT:
                     generator = new QueryGenerator(PROJECT);
-                    Users users = em.find(Users.class, getUser());
+                    UserPK userPK = new UserPK();
+                    userPK.setGatewayId(getGatewayId());
+                    userPK.setUserName(user);
+                    Users users = em.find(Users.class, userPK);
                     Gateway gatewayModel = em.find(Gateway.class, gatewayId);
                     generator.setParameter("users", users);
                     if (gatewayModel != null) {
@@ -338,13 +341,10 @@ public class WorkerResource extends AbstractExpCatResource {
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
             GatewayWorker gatewayWorker = new GatewayWorker();
-            Users existingUser = em.find(Users.class, this.user);
-            gatewayWorker.setUser(existingUser);
-            gatewayWorker.setUserName(existingUser.getUserName());
+            gatewayWorker.setUserName(user);
             gatewayWorker.setGatewayId(gatewayId);
             if (existingWorker != null) {
-                existingWorker.setUserName(existingUser.getUserName());
-                existingWorker.setUser(existingUser);
+                existingWorker.setUserName(user);
                 existingWorker.setGatewayId(gatewayId);
                 gatewayWorker = em.merge(existingWorker);
             } else {

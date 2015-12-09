@@ -101,6 +101,18 @@ class ProcessModel {
    * @var string[]
    */
   public $emailAddresses = null;
+  /**
+   * @var string
+   */
+  public $storageResourceId = null;
+  /**
+   * @var string
+   */
+  public $userDn = null;
+  /**
+   * @var bool
+   */
+  public $generateCert = false;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -199,6 +211,18 @@ class ProcessModel {
             'type' => TType::STRING,
             ),
           ),
+        19 => array(
+          'var' => 'storageResourceId',
+          'type' => TType::STRING,
+          ),
+        20 => array(
+          'var' => 'userDn',
+          'type' => TType::STRING,
+          ),
+        21 => array(
+          'var' => 'generateCert',
+          'type' => TType::BOOL,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -255,6 +279,15 @@ class ProcessModel {
       }
       if (isset($vals['emailAddresses'])) {
         $this->emailAddresses = $vals['emailAddresses'];
+      }
+      if (isset($vals['storageResourceId'])) {
+        $this->storageResourceId = $vals['storageResourceId'];
+      }
+      if (isset($vals['userDn'])) {
+        $this->userDn = $vals['userDn'];
+      }
+      if (isset($vals['generateCert'])) {
+        $this->generateCert = $vals['generateCert'];
       }
     }
   }
@@ -450,6 +483,27 @@ class ProcessModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 19:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->storageResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 20:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userDn);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 21:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->generateCert);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -608,6 +662,21 @@ class ProcessModel {
         }
         $output->writeListEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->storageResourceId !== null) {
+      $xfer += $output->writeFieldBegin('storageResourceId', TType::STRING, 19);
+      $xfer += $output->writeString($this->storageResourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userDn !== null) {
+      $xfer += $output->writeFieldBegin('userDn', TType::STRING, 20);
+      $xfer += $output->writeString($this->userDn);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->generateCert !== null) {
+      $xfer += $output->writeFieldBegin('generateCert', TType::BOOL, 21);
+      $xfer += $output->writeBool($this->generateCert);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

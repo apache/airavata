@@ -66,13 +66,13 @@ public class DataStageTask implements Task {
 					/**
 					 * copy local file to compute resource.
 					 */
-					taskContext.getParentProcessContext().getRemoteCluster().copyTo(sourceURI.getPath(), destinationURI
+					taskContext.getParentProcessContext().getDataMovementRemoteCluster().copyTo(sourceURI.getPath(), destinationURI
 							.getPath());
 				} else if (processState == ProcessState.OUTPUT_DATA_STAGING) {
 					/**
 					 * copy remote file from compute resource.
 					 */
-					taskContext.getParentProcessContext().getRemoteCluster().copyFrom(sourceURI.getPath(), destinationURI
+					taskContext.getParentProcessContext().getDataMovementRemoteCluster().copyFrom(sourceURI.getPath(), destinationURI
 							.getPath());
 				}
 				status.setReason("Successfully staged data");

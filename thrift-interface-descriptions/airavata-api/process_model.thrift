@@ -57,5 +57,8 @@ struct ProcessModel {
     15: optional airavata_commons.ErrorModel processError,
     16: optional string gatewayExecutionId,
     17: optional bool enableEmailNotification,
-    18: optional list<string> emailAddresses
+    18: optional list<string> emailAddresses,
+    19: optional string storageResourceId,
+    20: optional string userDn,
+    21: optional bool generateCert = 0
 }

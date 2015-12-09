@@ -65,6 +65,7 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
 	public final class UserConstants {
 		public static final String USERNAME = "userName";
 		public static final String PASSWORD = "password";
+		public static final String GATEWAY_ID = "gatewayId";
 	}
 
 	// Gateway_Worker table

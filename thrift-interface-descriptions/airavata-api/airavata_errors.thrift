@@ -101,7 +101,7 @@ exception TimedOutException {
 }
 
 /** 
-* This exception is thrown for invalid authentication requests.
+* This exception is thrown for invalid sshKeyAuthentication requests.
 * 
 *  message: contains the cause of the authorization failure.
 */

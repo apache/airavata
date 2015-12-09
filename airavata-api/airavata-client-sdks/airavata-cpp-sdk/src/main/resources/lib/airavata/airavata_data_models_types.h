@@ -43,6 +43,8 @@
 #include "process_model_types.h"
 #include "scheduling_model_types.h"
 #include "status_models_types.h"
+#include "data_movement_models_types.h"
+#include "data_resource_models_types.h"
 
 
 namespace apache { namespace airavata { namespace model {

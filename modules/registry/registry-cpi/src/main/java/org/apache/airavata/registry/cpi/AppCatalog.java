@@ -27,6 +27,12 @@ public interface AppCatalog {
     ComputeResource getComputeResource() throws AppCatalogException;
 
     /**
+     * Get StorageResource interface
+     * @return StorageResource interface
+     */
+    StorageResource getStorageResource() throws AppCatalogException;
+
+    /**
      * Get application interface
      * @return application interface
      */

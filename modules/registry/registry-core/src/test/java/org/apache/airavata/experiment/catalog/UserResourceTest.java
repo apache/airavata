@@ -41,6 +41,7 @@ public class UserResourceTest extends AbstractResourceTest {
         userResource = super.getUserResource();
         userResource.setUserName(userName);
         userResource.setPassword("testPassword");
+        userResource.setGatewayId(gatewayResource.getGatewayId());
         userResource.save();
     }
 

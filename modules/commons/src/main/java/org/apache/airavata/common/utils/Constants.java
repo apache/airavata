@@ -63,4 +63,7 @@ public final class Constants {
     public static final String USER_NAME = "userName";
     public static final String EMAIL = "email";
     public static final String ROLE = "role";
+
+    public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
+    public static final String TRUSTED_CERTIFICATE_SYSTEM_PROPERTY = "X509_CERT_DIR";
 }

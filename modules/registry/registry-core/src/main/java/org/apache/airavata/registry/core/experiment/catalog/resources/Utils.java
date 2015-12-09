@@ -351,7 +351,6 @@ public class Utils {
             projectResource.setGatewayId(o.getGatewayId());
             GatewayWorker gatewayWorker = new GatewayWorker();
             gatewayWorker.setGateway(o.getGateway());
-            gatewayWorker.setUser(o.getUser());
             gatewayWorker.setUserName(o.getUser().getUserName());
             WorkerResource workerResource = (WorkerResource) createGatewayWorker(gatewayWorker);
             projectResource.setWorker(workerResource);
@@ -386,6 +385,7 @@ public class Utils {
         if (o != null){
             userResource.setUserName(o.getUserName());
             userResource.setPassword(o.getPassword());
+            userResource.setGatewayId(o.getGatewayId());
         }
         return userResource;
     }
@@ -512,6 +512,7 @@ public class Utils {
             configurationDataResource.setWallTimeLimit(o.getWallTimeLimit());
             configurationDataResource.setTotalPhysicalMemory(o.getTotalPhysicalMemory());
             configurationDataResource.setStaticWorkingDir(o.getStaticWorkingDir());
+            configurationDataResource.setStorageId(o.getStorageId());
         }
         return configurationDataResource;
     }
@@ -531,6 +532,9 @@ public class Utils {
             processResource.setApplicationDeploymentId(o.getApplicationDeploymentId());
             processResource.setEnableEmailNotification(o.getEnableEmailNotification());
             processResource.setEmailAddresses(o.getEmailAddresses());
+            processResource.setStorageResourceId(o.getStorageId());
+            processResource.setUserDn(o.getUserDn());
+            processResource.setGenerateCert(o.getGenerateCert());
         }
         return processResource;
     }

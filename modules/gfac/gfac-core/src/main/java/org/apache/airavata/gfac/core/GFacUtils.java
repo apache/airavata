@@ -44,7 +44,6 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.JobSubmissionTaskModel;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.core.experiment.catalog.model.ProcessOutput;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.commons.io.FileUtils;
@@ -52,7 +51,6 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.ZKPaths;
 import org.apache.thrift.TException;
 import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
@@ -518,10 +516,10 @@ public class GFacUtils {
         }
 
         jobDescriptor.setInputValues(inputValues);
-        jobDescriptor.setUserName(processContext.getRemoteCluster().getServerInfo().getUserName());
+        jobDescriptor.setUserName(processContext.getJobSubmissionRemoteCluster().getServerInfo().getUserName());
         jobDescriptor.setShellName("/bin/bash");
         jobDescriptor.setAllEnvExport(true);
-        jobDescriptor.setOwner(processContext.getRemoteCluster().getServerInfo().getUserName());
+        jobDescriptor.setOwner(processContext.getJobSubmissionRemoteCluster().getServerInfo().getUserName());
         // get walltime
         try {
             JobSubmissionTaskModel jobSubmissionTaskModel = ((JobSubmissionTaskModel) taskContext.getSubTaskModel());
