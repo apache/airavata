@@ -41,6 +41,8 @@ import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.gfac.impl.SSHUtils;
 import org.apache.airavata.model.commons.ErrorModel;
+import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +77,16 @@ public class StreamData extends TimerTask  {
     @Override
     public void run() {
         try {
-            runOutputStaging();
+            // output staging should start when the job is in active state
+            JobStatus jobStatus = taskContext.getParentProcessContext().getJobModel().getJobStatus();
+            if (jobStatus != null && jobStatus.getJobState().equals(JobState.ACTIVE)){
+                runOutputStaging();
+            }
+
+            // output staging should end when the job is complete
+            if (jobStatus != null && jobStatus.getJobState().equals(JobState.COMPLETE) || jobStatus.getJobState().equals(JobState.CANCELED) || jobStatus.getJobState().equals(JobState.FAILED)){
+                this.cancel();
+            }
         } catch (URISyntaxException e) {
             log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , Erroneous path specified",
                     taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
@@ -135,7 +146,6 @@ public class StreamData extends TimerTask  {
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
             String targetPath = destinationURI.getPath().substring(0, destinationURI.getPath().lastIndexOf('/'));
             SSHUtils.makeDirectory(targetPath, sshSession);
-            // TODO - save updated subtask model with new destination
             outputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
         } catch (GFacException e) {
             log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , Error while output staging",
@@ -149,7 +159,7 @@ public class StreamData extends TimerTask  {
         StringBuilder sb = new StringBuilder("rsync -cr ");
         sb.append(sourceURI.getPath()).append(" ").append(destinationURI.getPath());
         CommandInfo commandInfo = new RawCommandInfo(sb.toString());
-        taskContext.getParentProcessContext().getRemoteCluster().execute(commandInfo);
+        taskContext.getParentProcessContext().getDataMovementRemoteCluster().execute(commandInfo);
     }
 
 
@@ -166,7 +176,7 @@ public class StreamData extends TimerTask  {
         /**
          * scp third party file transfer 'from' comute resource.
          */
-        taskContext.getParentProcessContext().getRemoteCluster().scpThirdParty(sourceURI.getPath(),
+        taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
                 destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.FROM);
         // update output locations
         GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());

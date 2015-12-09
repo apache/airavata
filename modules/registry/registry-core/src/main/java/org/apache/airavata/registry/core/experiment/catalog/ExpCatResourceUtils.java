@@ -84,14 +84,15 @@ public class ExpCatResourceUtils {
         }
     }
 
-    public static UserResource createUser(String username, String password) throws RegistryException {
+    public static UserResource createUser(String username, String password, String gatewayId) throws RegistryException {
         if (!isUserExist(username)) {
             UserResource userResource = new UserResource();
             userResource.setUserName(username);
             userResource.setPassword(password);
+            userResource.setGatewayId(gatewayId);
             return userResource;
         }else {
-            return (UserResource)getUser(username);
+            return (UserResource)getUser(username, gatewayId);
         }
 
     }
@@ -120,10 +121,11 @@ public class ExpCatResourceUtils {
         return null;
     }
 
-    public static void addUser (String userName, String password) throws RegistryException{
+    public static void addUser (String userName, String password, String gatewayId) throws RegistryException{
         UserResource resource = new UserResource();
         resource.setUserName(userName);
         resource.setPassword(password);
+        resource.setGatewayId(gatewayId);
         resource.save();
     }
 
@@ -153,12 +155,15 @@ public class ExpCatResourceUtils {
     }
 
 
-    public static ExperimentCatResource getUser(String userName) throws RegistryException{
+    public static ExperimentCatResource getUser(String userName, String gatewayId) throws RegistryException{
         EntityManager em = null;
         try {
             if (isUserExist(userName)) {
                 em = getEntityManager();
-                Users user =  em.find(Users.class, userName);
+                UserPK userPK = new UserPK();
+                userPK.setUserName(userName);
+                userPK.setGatewayId(gatewayId);
+                Users user =  em.find(Users.class, userPK);
                 UserResource userResource = (UserResource)Utils.getResource(ResourceType.USER, user);
                 em.close();
                 return userResource;
@@ -313,10 +318,9 @@ public class ExpCatResourceUtils {
                 userResource.save();
             }
             Gateway gateway = em.find(Gateway.class, gatewayResource.getGatewayId());
-            Users user = em.find(Users.class, userResource.getUserName());
             GatewayWorker gatewayWorker = new GatewayWorker();
             gatewayWorker.setGateway(gateway);
-            gatewayWorker.setUser(user);
+            gatewayWorker.setUserName(userResource.getUserName());
             em.persist(gatewayWorker);
             em.getTransaction().commit();
             em.close();

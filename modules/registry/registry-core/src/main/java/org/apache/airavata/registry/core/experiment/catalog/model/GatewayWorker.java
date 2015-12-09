@@ -32,7 +32,6 @@ public class GatewayWorker {
     private final static Logger logger = LoggerFactory.getLogger(GatewayWorker.class);
     private String gatewayId;
     private String userName;
-    private Users user;
     private Gateway gateway;
 
     @Id
@@ -74,16 +73,6 @@ public class GatewayWorker {
 //        result = 31 * result + (userName != null ? userName.hashCode() : 0);
 //        return result;
 //    }
-
-    @ManyToOne
-    @JoinColumn(name = "USER_NAME", referencedColumnName = "USER_NAME", nullable = false)
-    public Users getUser() {
-        return user;
-    }
-
-    public void setUser(Users userByUserName) {
-        this.user = userByUserName;
-    }
 
     @ManyToOne
     @JoinColumn(name = "GATEWAY_ID", referencedColumnName = "GATEWAY_ID", nullable = false)

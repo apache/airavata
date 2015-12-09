@@ -71,7 +71,7 @@ public class ExperimentRegistry {
         String experimentId;
         try {
             if (!ExpCatResourceUtils.isUserExist(experiment.getUserName())) {
-                ExpCatResourceUtils.addUser(experiment.getUserName(), null);
+                ExpCatResourceUtils.addUser(experiment.getUserName(), null, experiment.getGatewayId());
             }
             if (!workerResource.isProjectExists(experiment.getProjectId())) {
                 logger.error("Project does not exist in the system..");
@@ -145,6 +145,7 @@ public class ExperimentRegistry {
             configDataResource.setWallTimeLimit(configurationData.getComputationalResourceScheduling().getWallTimeLimit());
             configDataResource.setTotalPhysicalMemory(configurationData.getComputationalResourceScheduling().getTotalPhysicalMemory());
             configDataResource.setStaticWorkingDir(configurationData.getComputationalResourceScheduling().getStaticWorkingDir());
+            configDataResource.setStorageId(configurationData.getStorageId());
             configDataResource.save();
         } catch (Exception e) {
             logger.error("Unable to save user config data", e);
@@ -273,6 +274,9 @@ public class ExperimentRegistry {
             processResource.setGatewayExecutionId(process.getGatewayExecutionId());
             processResource.setComputeResourceId(process.getComputeResourceId());
             processResource.setApplicationInterfaceId(process.getApplicationInterfaceId());
+            processResource.setStorageResourceId(process.getStorageResourceId());
+            processResource.setUserDn(process.getUserDn());
+            processResource.setGenerateCert(process.isGenerateCert());
             if(process.isEnableEmailNotification()){
                 processResource.setEnableEmailNotification(true);
                 if(process.getEmailAddresses() != null){
@@ -690,6 +694,7 @@ public class ExperimentRegistry {
             configDataResource.setThrottleResources(configurationData.isThrottleResources());
             configDataResource.setUserDn(configurationData.getUserDN());
             configDataResource.setGenerateCert(configurationData.isGenerateCert());
+            configDataResource.setStorageId(configurationData.getStorageId());
             configDataResource.setResourceHostId(configurationData.getComputationalResourceScheduling().getResourceHostId());
             configDataResource.setTotalCpuCount(configurationData.getComputationalResourceScheduling().getTotalCPUCount());
             configDataResource.setNodeCount(configurationData.getComputationalResourceScheduling().getNodeCount());
@@ -720,6 +725,9 @@ public class ExperimentRegistry {
             processResource.setGatewayExecutionId(process.getGatewayExecutionId());
             processResource.setComputeResourceId(process.getComputeResourceId());
             processResource.setApplicationDeploymentId(process.getApplicationDeploymentId());
+            processResource.setStorageResourceId(process.getStorageResourceId());
+            processResource.setUserDn(process.getUserDn());
+            processResource.setGenerateCert(process.isGenerateCert());
             if(process.isEnableEmailNotification()){
                 processResource.setEnableEmailNotification(true);
                 if(process.getEmailAddresses() != null){

@@ -29,8 +29,6 @@ import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.model.status.TaskState;
-import org.apache.airavata.model.task.TaskModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +36,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Map;
 
 public class GFacWorker implements Runnable {
 
@@ -122,8 +119,13 @@ public class GFacWorker implements Runnable {
 					throw new GFacException("process Id : " + processId + " Couldn't identify process type");
 			}
 			if (processContext.isCancel()) {
-				sendAck();
-				Factory.getGfacContext().removeProcess(processContext.getProcessId());
+				if (processContext.getProcessState() == ProcessState.MONITORING
+						|| processContext.getProcessState() == ProcessState.EXECUTING) {
+					// don't send ack if the process is in MONITORING state, wait until cancel email comes to airavata.
+				} else {
+					sendAck();
+					Factory.getGfacContext().removeProcess(processContext.getProcessId());
+				}
 			}
 		} catch (GFacException e) {
 			log.error("GFac Worker throws an exception", e);
@@ -193,21 +195,6 @@ public class GFacWorker implements Runnable {
     }
 
 	private void recoverProcess() throws GFacException {
-
-        String taskDag = processContext.getProcessModel().getTaskDag();
-        List<String> taskExecutionOrder = GFacUtils.parseTaskDag(taskDag);
-        processContext.setTaskExecutionOrder(taskExecutionOrder);
-        Map<String, TaskModel> taskMap = processContext.getTaskMap();
-        String recoverTaskId = null;
-        for (String taskId : taskExecutionOrder) {
-            TaskModel taskModel = taskMap.get(taskId);
-            TaskState state = taskModel.getTaskStatus().getState();
-            if (state == TaskState.CREATED || state == TaskState.EXECUTING) {
-                recoverTaskId = taskId;
-                break;
-            }
-        }
-
         engine.recoverProcess(processContext);
         if (processContext.isInterrupted()) {
             return;
@@ -248,16 +235,23 @@ public class GFacWorker implements Runnable {
 //	}
 
 	private void sendAck() {
-		try {
-			long processDeliveryTag = GFacUtils.getProcessDeliveryTag(processContext.getCuratorClient(),
-					processContext.getExperimentId(), processId);
-			Factory.getProcessLaunchConsumer().sendAck(processDeliveryTag);
-			log.info("expId: {}, procesId: {} :- Sent ack for deliveryTag {}", processContext.getExperimentId(),
-					processId, processDeliveryTag);
-		} catch (Exception e1) {
-			String format = MessageFormat.format("expId: {0}, processId: {1} :- Couldn't send ack for deliveryTag ",
-					processContext .getExperimentId(), processId);
-			log.error(format, e1);
+		// this ensure, gfac doesn't send ack more than once for a process. which cause to remove gfac rabbitmq consumer from rabbitmq server.
+		if (!processContext.isAcknowledge()) {
+			try {
+                long processDeliveryTag = GFacUtils.getProcessDeliveryTag(processContext.getCuratorClient(),
+                        processContext.getExperimentId(), processId);
+                Factory.getProcessLaunchConsumer().sendAck(processDeliveryTag);
+                processContext.setAcknowledge(true);
+                log.info("expId: {}, processId: {} :- Sent ack for deliveryTag {}", processContext.getExperimentId(),
+                        processId, processDeliveryTag);
+            } catch (Exception e1) {
+                processContext.setAcknowledge(false);
+                String format = MessageFormat.format("expId: {0}, processId: {1} :- Couldn't send ack for deliveryTag ",
+                        processContext .getExperimentId(), processId);
+                log.error(format, e1);
+            }
+		} else {
+			log.info("expId: {}, processId: {} :- already acknowledged ", processContext.getExperimentId(), processId);
 		}
 	}
 

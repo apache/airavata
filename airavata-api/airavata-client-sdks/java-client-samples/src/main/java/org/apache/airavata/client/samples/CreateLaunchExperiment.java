@@ -30,6 +30,7 @@ import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
+import org.apache.airavata.model.data.movement.SecurityProtocol;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentSummaryModel;
@@ -93,12 +94,14 @@ public class CreateLaunchExperiment {
         AuthzToken token = new AuthzToken("empty_token");
         System.out.println("API version is " + airavataClient.getAPIVersion(token));
 //        registerApplications(); // run this only the first time
-        Map<String, JobStatus> jobStatuses = airavataClient.getJobStatuses(token, "Cloneofamber_1ca82c71-b173-4f86-832d-a94b86319edf");
-        for (String jobId : jobStatuses.keySet()){
-            JobStatus jobStatus = jobStatuses.get(jobId);
-            System.out.println(jobId);
-            System.out.println(jobStatus.getJobState().toString());
-        }
+        Map<String, String> master = airavataClient.getAllUserSSHPubKeys(token, "master");
+        System.out.println(master.size());
+//        Map<String, JobStatus> jobStatuses = airavataClient.getJobStatuses(token, "exp_5_19ea743b-c9c9-4b79-9374-cc8420ca1062");
+//        for (String jobId : jobStatuses.keySet()){
+//            JobStatus jobStatus = jobStatuses.get(jobId);
+//            System.out.println(jobId);
+//            System.out.println(jobStatus.getJobState().toString());
+//        }
 //        createAndLaunchExp();
     }
 

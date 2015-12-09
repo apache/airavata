@@ -35,14 +35,18 @@ import org.apache.airavata.gfac.core.monitor.JobMonitor;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
+import org.apache.airavata.gfac.impl.task.DataStreamingTask;
 import org.apache.airavata.gfac.impl.task.EnvironmentSetupTask;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
+import org.apache.airavata.model.data.movement.SecurityProtocol;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.JobState;
@@ -92,6 +96,15 @@ public class GFacEngineImpl implements GFacEngine {
             processContext.setGatewayResourceProfile(gatewayProfile);
             processContext.setComputeResourcePreference(appCatalog.getGatewayProfile().getComputeResourcePreference
                     (gatewayId, processModel.getComputeResourceId()));
+            StoragePreference storagePreference = appCatalog.getGatewayProfile().getStoragePreference(gatewayId, processModel.getStorageResourceId());
+            if (storagePreference != null){
+                processContext.setStoragePreference(storagePreference);
+            }
+
+/*            StorageResourceDescription storageResource = appCatalog.getStorageResource().getStorageResource(processModel.getStorageResourceId());
+            if (storageResource != null){
+                processContext.setStorageResource(storageResource);
+            }*/
             processContext.setComputeResourceDescription(appCatalog.getComputeResource().getComputeResource
                     (processContext.getComputeResourcePreference().getComputeResourceId()));
             processContext.setApplicationDeploymentDescription(appCatalog.getApplicationDeployment()
@@ -128,7 +141,8 @@ public class GFacEngineImpl implements GFacEngine {
             expCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processId);
             processModel.setProcessOutputs(applicationOutputs);
             processContext.setResourceJobManager(getResourceJobManager(processContext));
-            processContext.setRemoteCluster(Factory.getRemoteCluster(processContext));
+            processContext.setJobSubmissionRemoteCluster(Factory.getJobSubmissionRemoteCluster(processContext));
+            processContext.setDataMovementRemoteCluster(Factory.getDataMovementRemoteCluster(processContext));
 
             String inputPath = ServerSettings.getLocalDataLocation();
             if (inputPath != null) {
@@ -251,10 +265,45 @@ public class GFacEngineImpl implements GFacEngine {
                     processContext.setProcessStatus(status);
                     GFacUtils.saveAndPublishProcessStatus(processContext);
                     executeJobSubmission(taskContext, processContext.isRecovery());
-                    // checkpoint
-                    if (processContext.isInterrupted()) {
-                        GFacUtils.handleProcessInterrupt(processContext);
-                        return;
+                    // Don't put any checkpoint in between JobSubmission and Monitoring tasks
+
+                    JobStatus jobStatus = processContext.getJobModel().getJobStatus();
+                    if (jobStatus != null && (jobStatus.getJobState() == JobState.SUBMITTED
+                            || jobStatus.getJobState() == JobState.QUEUED || jobStatus.getJobState() == JobState.ACTIVE)) {
+
+                        List<OutputDataObjectType> processOutputs = processContext.getProcessModel().getProcessOutputs();
+                        if (processOutputs != null && !processOutputs.isEmpty()){
+                            for (OutputDataObjectType output : processOutputs){
+                                try {
+                                    if (output.isOutputStreaming()){
+                                        TaskModel streamingTaskModel = new TaskModel();
+                                        streamingTaskModel.setTaskType(TaskTypes.OUTPUT_FETCHING);
+                                        streamingTaskModel.setTaskStatus(new TaskStatus(TaskState.CREATED));
+                                        streamingTaskModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
+                                        streamingTaskModel.setParentProcessId(processContext.getProcessId());
+                                        TaskContext streamingTaskContext = getTaskContext(processContext);
+                                        DataStagingTaskModel submodel = new DataStagingTaskModel();
+                                        submodel.setType(DataStageType.OUPUT);
+                                        submodel.setProcessOutput(output);
+                                        URI source = new URI(processContext.getDataMovementProtocol().name(),
+                                                processContext.getComputeResourcePreference().getLoginUserName(),
+                                                processContext.getComputeResourceDescription().getHostName(),
+                                                22,
+                                                processContext.getWorkingDir() + output.getValue(), null, null);
+                                        submodel.setSource(source.getPath());
+                                        submodel.setDestination("dummy://temp/file/location");
+                                        streamingTaskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
+                                        String streamTaskId = (String) processContext.getExperimentCatalog()
+                                                .add(ExpCatChildDataType.TASK, streamingTaskModel, processContext.getProcessId());
+                                        streamingTaskModel.setTaskId(streamTaskId);
+                                        streamingTaskContext.setTaskModel(streamingTaskModel);
+                                        executeDataStreaming(streamingTaskContext, processContext.isRecovery());
+                                    }
+                                } catch (URISyntaxException | TException | RegistryException e) {
+                                    log.error("Error while streaming output " + output.getValue());
+                                }
+                            }
+                        }
                     }
                     break;
 
@@ -274,6 +323,7 @@ public class GFacEngineImpl implements GFacEngine {
                     throw new GFacException("Unsupported Task type");
 
             }
+
 
             if (processContext.isPauseTaskExecution()) {
                 return;   // If any task put processContext to wait, the same task must continue processContext execution.
@@ -342,10 +392,25 @@ public class GFacEngineImpl implements GFacEngine {
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             taskContext.setTaskStatus(taskStatus);
             GFacUtils.saveAndPublishTaskStatus(taskContext);
-
             checkFailures(taskContext, taskStatus, jobSubmissionTask);
             return false;
         } catch (TException e) {
+            throw new GFacException(e);
+        }
+    }
+
+    private void executeDataStreaming(TaskContext taskContext, boolean recovery) throws GFacException {
+        TaskStatus taskStatus = new TaskStatus(TaskState.EXECUTING);
+        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        taskContext.setTaskStatus(taskStatus);
+        GFacUtils.saveAndPublishTaskStatus(taskContext);
+        try {
+            DataStreamingTask dataStreamingTask = new DataStreamingTask();
+            taskStatus = executeTask(taskContext, dataStreamingTask, recovery);
+            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            taskContext.setTaskStatus(taskStatus);
+            GFacUtils.saveAndPublishTaskStatus(taskContext);
+        } catch (Exception e) {
             throw new GFacException(e);
         }
     }
@@ -523,11 +588,20 @@ public class GFacEngineImpl implements GFacEngine {
 
     @Override
     public void cancelProcess(ProcessContext processContext) throws GFacException {
-        if (processContext.getProcessState() == ProcessState.MONITORING) {
-            // get job submission task and invoke cancel
-            JobSubmissionTask jobSubmissionTask = Factory.getJobSubmissionTask(processContext.getJobSubmissionProtocol());
-            TaskContext taskCtx = getJobSubmissionTaskContext(processContext);
-            executeCancel(taskCtx, jobSubmissionTask);
+        if (processContext != null) {
+            switch (processContext.getProcessState()) {
+                case MONITORING: case EXECUTING:
+                    // get job submission task and invoke cancel
+                    JobSubmissionTask jobSubmissionTask = Factory.getJobSubmissionTask(processContext.getJobSubmissionProtocol());
+                    TaskContext taskCtx = getJobSubmissionTaskContext(processContext);
+                    executeCancel(taskCtx, jobSubmissionTask);
+                    break;
+                case COMPLETED: case FAILED: case CANCELED : case CANCELLING:
+                    log.warn("Process cancel trigger for already {} process", processContext.getProcessState().name());
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -545,16 +619,21 @@ public class GFacEngineImpl implements GFacEngine {
         try {
             JobStatus oldJobStatus = jSTask.cancel(taskContext);
 
-            if (oldJobStatus != null && oldJobStatus.getJobState() == JobState.QUEUED) {
-                JobMonitor monitorService = Factory.getMonitorService(taskContext.getParentProcessContext().getMonitorMode());
-                monitorService.stopMonitor(taskContext.getParentProcessContext().getJobModel().getJobId(), true);
+/*            if (oldJobStatus != null && oldJobStatus.getJobState() == JobState.QUEUED) {
+                ProcessContext pc = taskContext.getParentProcessContext();
                 JobStatus newJobStatus = new JobStatus(JobState.CANCELED);
                 newJobStatus.setReason("Job cancelled");
                 newJobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                taskContext.getParentProcessContext().getJobModel().setJobStatus(newJobStatus);
-                GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), taskContext.getParentProcessContext()
-                        .getJobModel());
-            }
+                pc.getJobModel().setJobStatus(newJobStatus);
+                GFacUtils.saveJobStatus(pc, pc.getJobModel());
+                JobMonitor monitorService = Factory.getMonitorService(pc.getMonitorMode());
+                monitorService.stopMonitor(pc.getJobModel().getJobId(), true);
+            }*/
+
+            ProcessContext pc = taskContext.getParentProcessContext();
+            JobMonitor monitorService = Factory.getMonitorService(pc.getMonitorMode());
+            monitorService.canceledJob(pc.getJobModel().getJobId());
+
         } catch (TaskException e) {
             throw new GFacException("Error while cancelling job");
         } catch (AiravataException e) {

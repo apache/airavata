@@ -29,6 +29,8 @@ include "task_model.thrift"
 include "process_model.thrift"
 include "scheduling_model.thrift"
 include "status_models.thrift"
+include "data_movement_models.thrift"
+include "data_resource_models.thrift"
 
 namespace java org.apache.airavata.model
 namespace php Airavata.Model

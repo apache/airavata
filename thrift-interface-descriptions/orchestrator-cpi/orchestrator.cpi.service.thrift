@@ -48,7 +48,7 @@ service OrchestratorService {
     /**
      * In order to run single applications users should create an associating 
      * process and hand it over for execution
-     * along with a credential store token for authentication
+     * along with a credential store token for sshKeyAuthentication
      *
      * @param processId
      * @param airavataCredStoreToken

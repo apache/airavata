@@ -46,7 +46,7 @@ public class EnvironmentSetupTask implements Task {
 	public TaskStatus execute(TaskContext taskContext) {
 		TaskStatus status = new TaskStatus(TaskState.COMPLETED);
 		try {
-			RemoteCluster remoteCluster = taskContext.getParentProcessContext().getRemoteCluster();
+			RemoteCluster remoteCluster = taskContext.getParentProcessContext().getJobSubmissionRemoteCluster();
 			remoteCluster.makeDirectory(taskContext.getParentProcessContext().getWorkingDir());
 			status.setReason("Successfully created environment");
 		} catch (SSHApiException e) {

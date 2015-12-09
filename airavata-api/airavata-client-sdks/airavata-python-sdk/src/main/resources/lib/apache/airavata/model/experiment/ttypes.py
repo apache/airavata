@@ -11,6 +11,7 @@ import apache.airavata.model.application.io.ttypes
 import apache.airavata.model.scheduling.ttypes
 import apache.airavata.model.commons.ttypes
 import apache.airavata.model.status.ttypes
+import apache.airavata.model.process.ttypes
 
 
 from thrift.transport import TTransport
@@ -79,6 +80,7 @@ class UserConfigurationDataModel:
    - throttleResources
    - userDN
    - generateCert
+   - storageId
   """
 
   thrift_spec = (
@@ -90,9 +92,10 @@ class UserConfigurationDataModel:
     (5, TType.BOOL, 'throttleResources', None, False, ), # 5
     (6, TType.STRING, 'userDN', None, None, ), # 6
     (7, TType.BOOL, 'generateCert', None, False, ), # 7
+    (8, TType.STRING, 'storageId', None, None, ), # 8
   )
 
-  def __init__(self, airavataAutoSchedule=thrift_spec[1][4], overrideManualScheduledParams=thrift_spec[2][4], shareExperimentPublicly=thrift_spec[3][4], computationalResourceScheduling=None, throttleResources=thrift_spec[5][4], userDN=None, generateCert=thrift_spec[7][4],):
+  def __init__(self, airavataAutoSchedule=thrift_spec[1][4], overrideManualScheduledParams=thrift_spec[2][4], shareExperimentPublicly=thrift_spec[3][4], computationalResourceScheduling=None, throttleResources=thrift_spec[5][4], userDN=None, generateCert=thrift_spec[7][4], storageId=None,):
     self.airavataAutoSchedule = airavataAutoSchedule
     self.overrideManualScheduledParams = overrideManualScheduledParams
     self.shareExperimentPublicly = shareExperimentPublicly
@@ -100,6 +103,7 @@ class UserConfigurationDataModel:
     self.throttleResources = throttleResources
     self.userDN = userDN
     self.generateCert = generateCert
+    self.storageId = storageId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -146,6 +150,11 @@ class UserConfigurationDataModel:
           self.generateCert = iprot.readBool();
         else:
           iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.STRING:
+          self.storageId = iprot.readString();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -184,6 +193,10 @@ class UserConfigurationDataModel:
       oprot.writeFieldBegin('generateCert', TType.BOOL, 7)
       oprot.writeBool(self.generateCert)
       oprot.writeFieldEnd()
+    if self.storageId is not None:
+      oprot.writeFieldBegin('storageId', TType.STRING, 8)
+      oprot.writeString(self.storageId)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -204,6 +217,7 @@ class UserConfigurationDataModel:
     value = (value * 31) ^ hash(self.throttleResources)
     value = (value * 31) ^ hash(self.userDN)
     value = (value * 31) ^ hash(self.generateCert)
+    value = (value * 31) ^ hash(self.storageId)
     return value
 
   def __repr__(self):
@@ -252,6 +266,7 @@ class ExperimentModel:
    - experimentOutputs
    - experimentStatus
    - errors
+   - processes
   """
 
   thrift_spec = (
@@ -273,9 +288,10 @@ class ExperimentModel:
     (15, TType.LIST, 'experimentOutputs', (TType.STRUCT,(apache.airavata.model.application.io.ttypes.OutputDataObjectType, apache.airavata.model.application.io.ttypes.OutputDataObjectType.thrift_spec)), None, ), # 15
     (16, TType.STRUCT, 'experimentStatus', (apache.airavata.model.status.ttypes.ExperimentStatus, apache.airavata.model.status.ttypes.ExperimentStatus.thrift_spec), None, ), # 16
     (17, TType.LIST, 'errors', (TType.STRUCT,(apache.airavata.model.commons.ttypes.ErrorModel, apache.airavata.model.commons.ttypes.ErrorModel.thrift_spec)), None, ), # 17
+    (18, TType.LIST, 'processes', (TType.STRUCT,(apache.airavata.model.process.ttypes.ProcessModel, apache.airavata.model.process.ttypes.ProcessModel.thrift_spec)), None, ), # 18
   )
 
-  def __init__(self, experimentId=thrift_spec[1][4], projectId=None, gatewayId=None, experimentType=thrift_spec[4][4], userName=None, experimentName=None, creationTime=None, description=None, executionId=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None, userConfigurationData=None, experimentInputs=None, experimentOutputs=None, experimentStatus=None, errors=None,):
+  def __init__(self, experimentId=thrift_spec[1][4], projectId=None, gatewayId=None, experimentType=thrift_spec[4][4], userName=None, experimentName=None, creationTime=None, description=None, executionId=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None, userConfigurationData=None, experimentInputs=None, experimentOutputs=None, experimentStatus=None, errors=None, processes=None,):
     self.experimentId = experimentId
     self.projectId = projectId
     self.gatewayId = gatewayId
@@ -293,6 +309,7 @@ class ExperimentModel:
     self.experimentOutputs = experimentOutputs
     self.experimentStatus = experimentStatus
     self.errors = errors
+    self.processes = processes
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -413,6 +430,17 @@ class ExperimentModel:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
+      elif fid == 18:
+        if ftype == TType.LIST:
+          self.processes = []
+          (_etype27, _size24) = iprot.readListBegin()
+          for _i28 in xrange(_size24):
+            _elem29 = apache.airavata.model.process.ttypes.ProcessModel()
+            _elem29.read(iprot)
+            self.processes.append(_elem29)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -470,8 +498,8 @@ class ExperimentModel:
     if self.emailAddresses is not None:
       oprot.writeFieldBegin('emailAddresses', TType.LIST, 12)
       oprot.writeListBegin(TType.STRING, len(self.emailAddresses))
-      for iter24 in self.emailAddresses:
-        oprot.writeString(iter24)
+      for iter30 in self.emailAddresses:
+        oprot.writeString(iter30)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.userConfigurationData is not None:
@@ -481,15 +509,15 @@ class ExperimentModel:
     if self.experimentInputs is not None:
       oprot.writeFieldBegin('experimentInputs', TType.LIST, 14)
       oprot.writeListBegin(TType.STRUCT, len(self.experimentInputs))
-      for iter25 in self.experimentInputs:
-        iter25.write(oprot)
+      for iter31 in self.experimentInputs:
+        iter31.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.experimentOutputs is not None:
       oprot.writeFieldBegin('experimentOutputs', TType.LIST, 15)
       oprot.writeListBegin(TType.STRUCT, len(self.experimentOutputs))
-      for iter26 in self.experimentOutputs:
-        iter26.write(oprot)
+      for iter32 in self.experimentOutputs:
+        iter32.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.experimentStatus is not None:
@@ -499,8 +527,15 @@ class ExperimentModel:
     if self.errors is not None:
       oprot.writeFieldBegin('errors', TType.LIST, 17)
       oprot.writeListBegin(TType.STRUCT, len(self.errors))
-      for iter27 in self.errors:
-        iter27.write(oprot)
+      for iter33 in self.errors:
+        iter33.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.processes is not None:
+      oprot.writeFieldBegin('processes', TType.LIST, 18)
+      oprot.writeListBegin(TType.STRUCT, len(self.processes))
+      for iter34 in self.processes:
+        iter34.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -541,6 +576,7 @@ class ExperimentModel:
     value = (value * 31) ^ hash(self.experimentOutputs)
     value = (value * 31) ^ hash(self.experimentStatus)
     value = (value * 31) ^ hash(self.errors)
+    value = (value * 31) ^ hash(self.processes)
     return value
 
   def __repr__(self):
@@ -849,66 +885,66 @@ class ExperimentStatistics:
       elif fid == 7:
         if ftype == TType.LIST:
           self.allExperiments = []
-          (_etype31, _size28) = iprot.readListBegin()
-          for _i32 in xrange(_size28):
-            _elem33 = ExperimentSummaryModel()
-            _elem33.read(iprot)
-            self.allExperiments.append(_elem33)
+          (_etype38, _size35) = iprot.readListBegin()
+          for _i39 in xrange(_size35):
+            _elem40 = ExperimentSummaryModel()
+            _elem40.read(iprot)
+            self.allExperiments.append(_elem40)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 8:
         if ftype == TType.LIST:
           self.completedExperiments = []
-          (_etype37, _size34) = iprot.readListBegin()
-          for _i38 in xrange(_size34):
-            _elem39 = ExperimentSummaryModel()
-            _elem39.read(iprot)
-            self.completedExperiments.append(_elem39)
+          (_etype44, _size41) = iprot.readListBegin()
+          for _i45 in xrange(_size41):
+            _elem46 = ExperimentSummaryModel()
+            _elem46.read(iprot)
+            self.completedExperiments.append(_elem46)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 9:
         if ftype == TType.LIST:
           self.failedExperiments = []
-          (_etype43, _size40) = iprot.readListBegin()
-          for _i44 in xrange(_size40):
-            _elem45 = ExperimentSummaryModel()
-            _elem45.read(iprot)
-            self.failedExperiments.append(_elem45)
+          (_etype50, _size47) = iprot.readListBegin()
+          for _i51 in xrange(_size47):
+            _elem52 = ExperimentSummaryModel()
+            _elem52.read(iprot)
+            self.failedExperiments.append(_elem52)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 10:
         if ftype == TType.LIST:
           self.cancelledExperiments = []
-          (_etype49, _size46) = iprot.readListBegin()
-          for _i50 in xrange(_size46):
-            _elem51 = ExperimentSummaryModel()
-            _elem51.read(iprot)
-            self.cancelledExperiments.append(_elem51)
+          (_etype56, _size53) = iprot.readListBegin()
+          for _i57 in xrange(_size53):
+            _elem58 = ExperimentSummaryModel()
+            _elem58.read(iprot)
+            self.cancelledExperiments.append(_elem58)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 11:
         if ftype == TType.LIST:
           self.createdExperiments = []
-          (_etype55, _size52) = iprot.readListBegin()
-          for _i56 in xrange(_size52):
-            _elem57 = ExperimentSummaryModel()
-            _elem57.read(iprot)
-            self.createdExperiments.append(_elem57)
+          (_etype62, _size59) = iprot.readListBegin()
+          for _i63 in xrange(_size59):
+            _elem64 = ExperimentSummaryModel()
+            _elem64.read(iprot)
+            self.createdExperiments.append(_elem64)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 12:
         if ftype == TType.LIST:
           self.runningExperiments = []
-          (_etype61, _size58) = iprot.readListBegin()
-          for _i62 in xrange(_size58):
-            _elem63 = ExperimentSummaryModel()
-            _elem63.read(iprot)
-            self.runningExperiments.append(_elem63)
+          (_etype68, _size65) = iprot.readListBegin()
+          for _i69 in xrange(_size65):
+            _elem70 = ExperimentSummaryModel()
+            _elem70.read(iprot)
+            self.runningExperiments.append(_elem70)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -949,43 +985,43 @@ class ExperimentStatistics:
     if self.allExperiments is not None:
       oprot.writeFieldBegin('allExperiments', TType.LIST, 7)
       oprot.writeListBegin(TType.STRUCT, len(self.allExperiments))
-      for iter64 in self.allExperiments:
-        iter64.write(oprot)
+      for iter71 in self.allExperiments:
+        iter71.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.completedExperiments is not None:
       oprot.writeFieldBegin('completedExperiments', TType.LIST, 8)
       oprot.writeListBegin(TType.STRUCT, len(self.completedExperiments))
-      for iter65 in self.completedExperiments:
-        iter65.write(oprot)
+      for iter72 in self.completedExperiments:
+        iter72.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.failedExperiments is not None:
       oprot.writeFieldBegin('failedExperiments', TType.LIST, 9)
       oprot.writeListBegin(TType.STRUCT, len(self.failedExperiments))
-      for iter66 in self.failedExperiments:
-        iter66.write(oprot)
+      for iter73 in self.failedExperiments:
+        iter73.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.cancelledExperiments is not None:
       oprot.writeFieldBegin('cancelledExperiments', TType.LIST, 10)
       oprot.writeListBegin(TType.STRUCT, len(self.cancelledExperiments))
-      for iter67 in self.cancelledExperiments:
-        iter67.write(oprot)
+      for iter74 in self.cancelledExperiments:
+        iter74.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.createdExperiments is not None:
       oprot.writeFieldBegin('createdExperiments', TType.LIST, 11)
       oprot.writeListBegin(TType.STRUCT, len(self.createdExperiments))
-      for iter68 in self.createdExperiments:
-        iter68.write(oprot)
+      for iter75 in self.createdExperiments:
+        iter75.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.runningExperiments is not None:
       oprot.writeFieldBegin('runningExperiments', TType.LIST, 12)
       oprot.writeListBegin(TType.STRUCT, len(self.runningExperiments))
-      for iter69 in self.runningExperiments:
-        iter69.write(oprot)
+      for iter76 in self.runningExperiments:
+        iter76.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()

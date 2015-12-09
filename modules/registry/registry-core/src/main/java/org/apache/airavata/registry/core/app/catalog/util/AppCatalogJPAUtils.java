@@ -280,12 +280,26 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a Compute Resource Preference.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Compute Resource Preference.");
                 }
-            case DATA_STORAGE_PREFERENCE:
-                if (o instanceof DataStoragePreference){
-                    return createDataStoragePref((DataStoragePreference) o);
+            case STORAGE_PREFERENCE:
+                if (o instanceof StoragePreference){
+                    return createStoragePref((StoragePreference) o);
                 }else {
                     logger.error("Object should be a data storage Preference.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a data storage Preference.");
+                }
+            case STORAGE_RESOURCE:
+                if (o instanceof StorageResource){
+                    return createStorageResource((StorageResource) o);
+                }else {
+                    logger.error("Object should be a storage resource.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a storage resource.");
+                }
+            case STORAGE_INTERFACE:
+                if (o instanceof StorageInterface){
+                    return createStorageInterface((StorageInterface) o);
+                }else {
+                    logger.error("Object should be a storage interface.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a storage interface.");
                 }
             case APPLICATION_INPUT:
                 if (o instanceof ApplicationIntInput){
@@ -872,7 +886,6 @@ public class AppCatalogJPAUtils {
             resource.setGatewayID(o.getGatewayID());
             resource.setCreatedTime(o.getCreationTime());
             resource.setCredentialStoreToken(o.getCredentialStoreToken());
-            resource.setDataStorageHost(o.getDataStorageHost());
             if (o.getUpdateTime() != null){
                 resource.setUpdatedTime(o.getUpdateTime());
             }
@@ -899,15 +912,37 @@ public class AppCatalogJPAUtils {
         return resource;
     }
 
-    private static AppCatalogResource createDataStoragePref(DataStoragePreference o) {
-        DataStoragePreferenceResource resource = new DataStoragePreferenceResource();
+    private static AppCatalogResource createStoragePref(StoragePreference o) {
+        StoragePreferenceResource resource = new StoragePreferenceResource();
         if (o != null) {
             resource.setGatewayId(o.getGatewayId());
-            resource.setDataMoveId(o.getDataMovementID());
+            resource.setStorageResourceId(o.getStorageResourceId());
             resource.setLoginUserName(o.getLoginUserName());
             resource.setResourceCSToken(o.getComputeResourceCSToken());
             resource.setFsRootLocation(o.getFsRootLocation());
             resource.setGatewayProfile((GatewayProfileResource) createGatewayProfile(o.getGatewayProfile()));
+        }
+        return resource;
+    }
+
+    private static AppCatalogResource createStorageResource(StorageResource o) {
+        StorageResourceResource resource = new StorageResourceResource();
+        if (o != null) {
+            resource.setStorageResourceId(o.getStorageResourceId());
+            resource.setHostName(o.getHostName());
+            resource.setEnabled(o.getEnabled());
+            resource.setResourceDescription(o.getDescription());
+        }
+        return resource;
+    }
+
+    private static AppCatalogResource createStorageInterface(StorageInterface o) {
+        StorageInterfaceResource resource = new StorageInterfaceResource();
+        if (o != null) {
+            resource.setStorageResourceId(o.getStorageResourceId());
+            resource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
+            resource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
+            resource.setStorageResourceResource((StorageResourceResource)createStorageResource(o.getStorageResource()));
         }
         return resource;
     }

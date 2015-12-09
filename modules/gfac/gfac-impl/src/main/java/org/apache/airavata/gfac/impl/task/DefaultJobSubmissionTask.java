@@ -34,10 +34,7 @@ import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.status.JobState;
-import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.model.status.TaskState;
-import org.apache.airavata.model.status.TaskStatus;
+import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.commons.io.FileUtils;
@@ -50,7 +47,10 @@ import java.util.Map;
 
 public class DefaultJobSubmissionTask implements JobSubmissionTask {
     private static final Logger log = LoggerFactory.getLogger(DefaultJobSubmissionTask.class);
-    @Override
+	private static int waitForProcessIdmillis = 5000;
+	private static int pauseTimeInSec = waitForProcessIdmillis / 1000;
+
+	@Override
     public void init(Map<String, String> propertyMap) throws TaskException {
 
     }
@@ -62,7 +62,7 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 		    ProcessContext processContext = taskContext.getParentProcessContext();
 		    JobModel jobModel = processContext.getJobModel();
 		    jobModel.setTaskId(taskContext.getTaskId());
-		    RemoteCluster remoteCluster = processContext.getRemoteCluster();
+		    RemoteCluster remoteCluster = processContext.getJobSubmissionRemoteCluster();
 		    JobDescriptor jobDescriptor = GFacUtils.createJobDescriptor(processContext,taskContext);
 		    jobModel.setJobName(jobDescriptor.getJobName());
 		    ResourceJobManager resourceJobManager = GFacUtils.getResourceJobManager(processContext);
@@ -258,10 +258,21 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 	@Override
 	public JobStatus cancel(TaskContext taskcontext) throws TaskException {
 		ProcessContext processContext = taskcontext.getParentProcessContext();
-		RemoteCluster remoteCluster = processContext.getRemoteCluster();
+		RemoteCluster remoteCluster = processContext.getJobSubmissionRemoteCluster();
 		JobModel jobModel = processContext.getJobModel();
 		int retryCount = 0;
 		if (jobModel != null) {
+			if (processContext.getProcessState() == ProcessState.EXECUTING) {
+				while (jobModel.getJobId() == null) {
+					log.info("Cancellation pause {} secs until process get jobId", pauseTimeInSec);
+					try {
+						Thread.sleep(waitForProcessIdmillis);
+					} catch (InterruptedException e) {
+						// ignore
+					}
+				}
+			}
+
 			try {
 				JobStatus oldJobStatus = remoteCluster.getJobStatus(jobModel.getJobId());
 				while (oldJobStatus == null && retryCount <= 5) {

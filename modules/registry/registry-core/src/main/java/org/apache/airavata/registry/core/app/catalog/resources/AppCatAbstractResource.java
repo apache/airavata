@@ -24,6 +24,8 @@ package org.apache.airavata.registry.core.app.catalog.resources;
 public abstract class AppCatAbstractResource implements AppCatalogResource {
     // table names
 	public static final String COMPUTE_RESOURCE = "ComputeResource";
+    public static final String STORAGE_RESOURCE = "StorageResource";
+    public static final String STORAGE_INTERFACE = "StorageInterface";
 	public static final String HOST_ALIAS = "HostAlias";
     public static final String HOST_IPADDRESS = "HostIPAddress";
     public static final String GSISSH_SUBMISSION = "GSISSHSubmission";
@@ -53,7 +55,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
     public static final String WORKFLOW_OUTPUT = "WorkflowOutput";
     public static final String GATEWAY_PROFILE = "GatewayProfile";
     public static final String COMPUTE_RESOURCE_PREFERENCE = "ComputeResourcePreference";
-    public static final String DATA_STORAGE_PREFERENCE = "DataStoragePreference";
+    public static final String STORAGE_PREFERENCE = "StoragePreference";
 	public static final String BATCH_QUEUE = "BatchQueue";
 	public static final String COMPUTE_RESOURCE_FILE_SYSTEM = "ComputeResourceFileSystem";
 	public static final String JOB_SUBMISSION_INTERFACE = "JobSubmissionInterface";
@@ -78,6 +80,8 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
 		public static final String RESOURCE_ID = "resourceId";
 		public static final String HOST_NAME = "hostName";
 	}
+
+
 
     // Host Alias Table
     public final class HostAliasConstants {
@@ -285,11 +289,6 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
         public static final String ALLOCATION_PROJECT_NUMBER = "projectNumber";
     }
 
-    public final class DataStoragePreferenceConstants {
-        public static final String GATEWAY_ID = "gatewayId";
-        public static final String DATA_MOVEMENT_ID = "dataMovementId";
-    }
-
     // Batch Queue Table
  	public final class BatchQueueConstants {
  		public static final String COMPUTE_RESOURCE_ID = "computeResourceId";
@@ -323,6 +322,24 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
 		public static final String DATA_MOVEMENT_INTERFACE_ID = "dataMovementInterfaceId";
 		public static final String PRIORITY_ORDER = "priorityOrder";
 	}
+
+    // Storage Resource Table
+    public final class StorageResourceConstants {
+        public static final String RESOURCE_DESCRIPTION = "resourceDescription";
+        public static final String RESOURCE_ID = "storageResourceId";
+        public static final String HOST_NAME = "hostName";
+    }
+
+    public final class StoragePreferenceConstants {
+        public static final String GATEWAY_ID = "gatewayId";
+        public static final String STORAGE_ID = "storageResourceId";
+    }
+
+    public final class StorageInterfaceConstants {
+        public static final String STORAGE_RESOURCE_ID = "storageResourceId";
+        public static final String DATA_MOVEMENT_PROTOCOL = "dataMovementProtocol";
+        public static final String DATA_MOVEMENT_ID = "dataMovementInterfaceId";
+    }
 	
 	// Resource Job Manager Table
 	public final class ResourceJobManagerConstants {

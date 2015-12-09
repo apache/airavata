@@ -37,7 +37,8 @@ public enum TaskTypes implements org.apache.thrift.TEnum {
   DATA_STAGING(1),
   JOB_SUBMISSION(2),
   ENV_CLEANUP(3),
-  MONITORING(4);
+  MONITORING(4),
+  OUTPUT_FETCHING(5);
 
   private final int value;
 
@@ -68,6 +69,8 @@ public enum TaskTypes implements org.apache.thrift.TEnum {
         return ENV_CLEANUP;
       case 4:
         return MONITORING;
+      case 5:
+        return OUTPUT_FETCHING;
       default:
         return null;
     }

@@ -22,6 +22,7 @@
 package org.apache.airavata.registry.core.app.catalog.impl;
 
 import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogUtils;
@@ -367,15 +368,27 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
-    public String addDataMovementProtocol(String computeResourceId, DataMovementInterface dataMovementInterface) throws AppCatalogException {
+    public String addDataMovementProtocol(String resourceId, DMType dmType, DataMovementInterface dataMovementInterface) throws AppCatalogException {
         try {
-        	DataMovementInterfaceResource dmi = AppCatalogThriftConversion.getDataMovementInterface(dataMovementInterface);
-        	dmi.setComputeResourceId(computeResourceId);
-        	ComputeResourceResource computeResourceResource = new ComputeResourceResource();
-        	computeResourceResource=(ComputeResourceResource)computeResourceResource.get(computeResourceId);
-        	dmi.setComputeHostResource(computeResourceResource);
-        	dmi.save();
-            return dmi.getDataMovementInterfaceId();
+            String dmId = null;
+            if (dmType.equals(DMType.COMPUTE_RESOURCE)){
+                DataMovementInterfaceResource dmi = AppCatalogThriftConversion.getDataMovementInterface(dataMovementInterface);
+                dmi.setComputeResourceId(resourceId);
+                ComputeResourceResource computeResourceResource = new ComputeResourceResource();
+                computeResourceResource=(ComputeResourceResource)computeResourceResource.get(resourceId);
+                dmi.setComputeHostResource(computeResourceResource);
+                dmi.save();
+                dmId = dmi.getDataMovementInterfaceId();
+            }else if (dmType.equals(DMType.STORAGE_RESOURCE)){
+                StorageInterfaceResource storageInterface = AppCatalogThriftConversion.getStorageInterface(dataMovementInterface);
+                storageInterface.setStorageResourceId(resourceId);
+                StorageResourceResource storageResourceResource = new StorageResourceResource();
+                storageResourceResource=(StorageResourceResource)storageResourceResource.get(resourceId);
+                storageInterface.setStorageResourceResource(storageResourceResource);
+                storageInterface.save();
+                dmId = storageInterface.getDataMovementInterfaceId();
+            }
+            return dmId;
         }catch (Exception e){
             logger.error("Error while saving "+dataMovementInterface.getDataMovementProtocol().toString()+" data movement Protocol...", e);
             throw new AppCatalogException(e);

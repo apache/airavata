@@ -345,20 +345,30 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	}
 
     private boolean validateStatesAndCancel(String experimentId, String gatewayId) throws Exception {
-	    String expCancelNodePath = ZKPaths.makePath(ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE,
-			    experimentId), ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
-	    Stat stat = curatorClient.checkExists().forPath(expCancelNodePath);
-	    if (stat != null) {
-		    curatorClient.setData().withVersion(-1).forPath(expCancelNodePath, ZkConstants.ZOOKEEPER_CANCEL_REQEUST
-				    .getBytes());
-		    ExperimentStatus status = new ExperimentStatus(ExperimentState.CANCELING);
-		    status.setReason("Experiment cancel request processed");
-		    status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-		    OrchestratorUtils.updageExperimentStatus(experimentId, status);
-		    log.info("expId : " + experimentId + " :- Experiment status updated to " + status.getState());
-		    return true;
-	    }
-	    return false;
+		ExperimentStatus experimentStatus = OrchestratorUtils.getExperimentStatus(experimentId);
+		switch (experimentStatus.getState()) {
+			case COMPLETED: case CANCELED: case FAILED: case CANCELING:
+				log.warn("Can't terminate already {} experiment", experimentStatus.getState().name());
+				return false;
+			case CREATED:
+				log.warn("Experiment termination is only allowed for launched experiments.");
+				return false;
+			default:
+				String expCancelNodePath = ZKPaths.makePath(ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE,
+						experimentId), ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+				Stat stat = curatorClient.checkExists().forPath(expCancelNodePath);
+				if (stat != null) {
+					curatorClient.setData().withVersion(-1).forPath(expCancelNodePath, ZkConstants.ZOOKEEPER_CANCEL_REQEUST
+							.getBytes());
+					ExperimentStatus status = new ExperimentStatus(ExperimentState.CANCELING);
+					status.setReason("Experiment cancel request processed");
+					status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+					OrchestratorUtils.updageExperimentStatus(experimentId, status);
+					log.info("expId : " + experimentId + " :- Experiment status updated to " + status.getState());
+					return true;
+				}
+				return false;
+		}
     }
 
     private void launchWorkflowExperiment(String experimentId, String airavataCredStoreToken) throws TException {
