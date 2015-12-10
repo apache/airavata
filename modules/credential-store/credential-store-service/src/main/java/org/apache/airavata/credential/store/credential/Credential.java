@@ -22,7 +22,6 @@
 package org.apache.airavata.credential.store.credential;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -31,10 +30,7 @@ import java.util.Date;
  */
 public abstract class Credential implements Serializable {
 
-    static final long serialVersionUID = 5783370135149452010L;
-
     private String portalUserName;
-    private String gatewayId;
     private Date persistedTime;
     private String token;
 
@@ -53,10 +49,6 @@ public abstract class Credential implements Serializable {
     public String getPortalUserName() {
         return portalUserName;
     }
-
-    public String getGatewayId() { return gatewayId; }
-
-    public void setGatewayId(String gatewayId) { this.gatewayId = gatewayId; }
 
     public void setCertificateRequestedTime(Date ts) {
         persistedTime = ts;
