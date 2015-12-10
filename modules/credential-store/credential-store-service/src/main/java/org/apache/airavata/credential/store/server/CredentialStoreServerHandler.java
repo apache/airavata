@@ -258,5 +258,16 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
 
     }
 
+    @Override
+    public boolean deleteSSHCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
+        try {
+            credentialReader.removeCredentials(gatewayId, tokenId);
+            return true;
+        } catch (CredentialStoreException e) {
+            log.error("Error occurred while deleting SSH credential for token - " +  tokenId + " and gateway id - " + gatewayId, e);
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while deleting SSH credential for token - " +  tokenId + " and gateway id - " + gatewayId);
+        }
+    }
+
 
 }

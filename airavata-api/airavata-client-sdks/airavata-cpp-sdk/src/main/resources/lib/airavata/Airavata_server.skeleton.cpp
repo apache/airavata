@@ -119,6 +119,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllGatewaySSHPubKeys\n");
   }
 
+  bool deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("deleteSSHPubKey\n");
+  }
+
   /**
    * Creates a Project with basic metadata.
    *    A Project is a container of experiments.

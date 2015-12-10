@@ -124,6 +124,15 @@ class Iface:
     """
     pass
 
+  def deleteSSHPubKey(self, authzToken, airavataCredStoreToken, gatewayId):
+    """
+    Parameters:
+     - authzToken
+     - airavataCredStoreToken
+     - gatewayId
+    """
+    pass
+
   def createProject(self, authzToken, gatewayId, project):
     """
     Creates a Project with basic metadata.
@@ -2768,6 +2777,47 @@ class Client(Iface):
     if result.ase is not None:
       raise result.ase
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllGatewaySSHPubKeys failed: unknown result");
+
+  def deleteSSHPubKey(self, authzToken, airavataCredStoreToken, gatewayId):
+    """
+    Parameters:
+     - authzToken
+     - airavataCredStoreToken
+     - gatewayId
+    """
+    self.send_deleteSSHPubKey(authzToken, airavataCredStoreToken, gatewayId)
+    return self.recv_deleteSSHPubKey()
+
+  def send_deleteSSHPubKey(self, authzToken, airavataCredStoreToken, gatewayId):
+    self._oprot.writeMessageBegin('deleteSSHPubKey', TMessageType.CALL, self._seqid)
+    args = deleteSSHPubKey_args()
+    args.authzToken = authzToken
+    args.airavataCredStoreToken = airavataCredStoreToken
+    args.gatewayId = gatewayId
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_deleteSSHPubKey(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = deleteSSHPubKey_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "deleteSSHPubKey failed: unknown result");
 
   def createProject(self, authzToken, gatewayId, project):
     """
@@ -9034,6 +9084,7 @@ class Processor(Iface, TProcessor):
     self._processMap["getSSHPubKey"] = Processor.process_getSSHPubKey
     self._processMap["getAllUserSSHPubKeys"] = Processor.process_getAllUserSSHPubKeys
     self._processMap["getAllGatewaySSHPubKeys"] = Processor.process_getAllGatewaySSHPubKeys
+    self._processMap["deleteSSHPubKey"] = Processor.process_deleteSSHPubKey
     self._processMap["createProject"] = Processor.process_createProject
     self._processMap["updateProject"] = Processor.process_updateProject
     self._processMap["getProject"] = Processor.process_getProject
@@ -9378,6 +9429,24 @@ class Processor(Iface, TProcessor):
     except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
       result.ase = ase
     oprot.writeMessageBegin("getAllGatewaySSHPubKeys", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_deleteSSHPubKey(self, seqid, iprot, oprot):
+    args = deleteSSHPubKey_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = deleteSSHPubKey_result()
+    try:
+      result.success = self._handler.deleteSSHPubKey(args.authzToken, args.airavataCredStoreToken, args.gatewayId)
+    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
+      result.ase = ase
+    oprot.writeMessageBegin("deleteSSHPubKey", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -13978,6 +14047,210 @@ class getAllGatewaySSHPubKeys_result:
         oprot.writeString(kiter23)
         oprot.writeString(viter24)
       oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class deleteSSHPubKey_args:
+  """
+  Attributes:
+   - authzToken
+   - airavataCredStoreToken
+   - gatewayId
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'airavataCredStoreToken', None, None, ), # 2
+    (3, TType.STRING, 'gatewayId', None, None, ), # 3
+  )
+
+  def __init__(self, authzToken=None, airavataCredStoreToken=None, gatewayId=None,):
+    self.authzToken = authzToken
+    self.airavataCredStoreToken = airavataCredStoreToken
+    self.gatewayId = gatewayId
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.airavataCredStoreToken = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.gatewayId = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('deleteSSHPubKey_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.airavataCredStoreToken is not None:
+      oprot.writeFieldBegin('airavataCredStoreToken', TType.STRING, 2)
+      oprot.writeString(self.airavataCredStoreToken)
+      oprot.writeFieldEnd()
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.airavataCredStoreToken is None:
+      raise TProtocol.TProtocolException(message='Required field airavataCredStoreToken is unset!')
+    if self.gatewayId is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.airavataCredStoreToken)
+    value = (value * 31) ^ hash(self.gatewayId)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class deleteSSHPubKey_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+  """
+
+  thrift_spec = (
+    (0, TType.BOOL, 'success', None, None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.BOOL:
+          self.success = iprot.readBool();
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('deleteSSHPubKey_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.BOOL, 0)
+      oprot.writeBool(self.success)
       oprot.writeFieldEnd()
     if self.ire is not None:
       oprot.writeFieldBegin('ire', TType.STRUCT, 1)
