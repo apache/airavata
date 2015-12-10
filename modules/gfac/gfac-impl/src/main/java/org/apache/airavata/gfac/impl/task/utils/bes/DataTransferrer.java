@@ -22,14 +22,22 @@
 package org.apache.airavata.gfac.impl.task.utils.bes;
 
 import de.fzj.unicore.uas.client.StorageClient;
+import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.gfac.core.GFac;
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.registry.cpi.ExpCatChildDataType;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
+import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -96,6 +104,100 @@ public class DataTransferrer {
         }
 	}
 
+    public void uploadLocalFiles() throws GFacException {
+        List<String> inFilePrms = extractInFileParams();
+        for (String uri : inFilePrms) {
+            String fileName = new File(uri).getName();
+            if (uri.startsWith("file")) {
+                try {
+                    String uriWithoutProtocol = uri.substring(uri.lastIndexOf("://") + 1, uri.length());
+                    FileUploader fileUploader = new FileUploader(uriWithoutProtocol,fileName,Mode.overwrite);
+                    fileUploader.perform(storageClient);
+                } catch (FileNotFoundException e3) {
+                    throw new GFacException(
+                            "Error while staging-in, local file "+fileName+" not found", e3);
+                } catch (Exception e) {
+                    throw new GFacException("Cannot upload files", e);
+
+                }
+
+            }
+        }
+    }
+
+    public List<String> extractInFileParams() {
+        List<String> filePrmsList = new ArrayList<String>();
+        List<InputDataObjectType> applicationInputs = processContext.getProcessModel().getProcessInputs();
+        if (applicationInputs != null && !applicationInputs.isEmpty()){
+            for (InputDataObjectType output : applicationInputs){
+                if(output.getType().equals(DataType.URI)) {
+                    filePrmsList.add(output.getValue());
+                }
+            }
+        }
+        return filePrmsList;
+    }
+
+    public void setStorageClient(StorageClient sc){
+        storageClient = sc;
+    }
+
+    public void downloadStdOuts()  throws GFacException{
+
+        String stdoutFileName = new File(stdoutLocation).getName();
+
+        String stderrFileName = new File(stderrLocation).getName();
+
+        FileDownloader f1 = null;
+        try {
+            log.info("Downloading stdout and stderr..");
+            log.info(stdoutFileName + " -> "+stdoutLocation);
+
+            f1 = new FileDownloader(stdoutFileName,stdoutLocation, Mode.overwrite);
+            f1.perform(storageClient);
+            String stdoutput = readFile(stdoutLocation);
+
+            log.info(stderrFileName + " -> " + stderrLocation);
+            f1.setFrom(stderrFileName);
+            f1.setTo(stderrLocation);
+            f1.perform(storageClient);
+            String stderror = readFile(stderrLocation);
+
+            if(UASDataStagingProcessor.isUnicoreEndpoint(processContext)) {
+                String scriptExitCodeFName = "UNICORE_SCRIPT_EXIT_CODE";
+                String scriptCodeLocation = gatewayDownloadLocation+File.separator+scriptExitCodeFName;
+                f1.setFrom(scriptExitCodeFName);
+                f1.setTo(scriptCodeLocation);
+                f1.perform(storageClient);
+                OutputDataObjectType output = new OutputDataObjectType();
+                output.setName(scriptExitCodeFName);
+                output.setValue(scriptCodeLocation);
+                output.setType(DataType.URI);
+                output.setIsRequired(true);
+                processContext.getProcessModel().getProcessOutputs().add(output);
+                log.info("UNICORE_SCRIPT_EXIT_CODE -> "+scriptCodeLocation);
+                log.info("EXIT CODE: "+ readFile(scriptCodeLocation));
+            }
+        } catch (Exception e) {
+            throw new GFacException(e.getLocalizedMessage(),e);
+        }
+
+    }
+
+    private String readFile(String localFile) throws IOException {
+        BufferedReader instream = new BufferedReader(new FileReader(localFile));
+        StringBuffer buff = new StringBuffer();
+        String temp = null;
+        while ((temp = instream.readLine()) != null) {
+            buff.append(temp);
+            buff.append(Constants.NEWLINE);
+        }
+
+        log.info("finish read file:" + localFile);
+
+        return buff.toString();
+    }
+
 	private String getDownloadLocation() {
 		ProcessModel processModel = processContext.getProcessModel();
 		String outputDataDir = "";
@@ -145,6 +247,74 @@ public class DataTransferrer {
 				+ processContext.getProcessId();
 		(new File(tmpOutputDir)).mkdirs();
 		return tmpOutputDir;
-	}	
+	}
+
+    public void downloadRemoteFiles() throws GFacException {
+
+        if(log.isDebugEnabled()) {
+            log.debug("Download location is:"+gatewayDownloadLocation);
+        }
+
+        List<OutputDataObjectType> applicationOutputs = processContext.getProcessModel().getProcessOutputs();
+        if (applicationOutputs != null && !applicationOutputs.isEmpty()){
+            for (OutputDataObjectType output : applicationOutputs){
+                if("".equals(output.getValue()) || output.getValue() == null) {
+                    continue;
+                }
+                if(output.getType().equals(DataType.STDOUT)) {
+                    output.setValue(processContext.getStdoutLocation());
+                    resultantOutputsLst.add(output);
+                }
+
+                else if(output.getType().equals(DataType.STDERR)) {
+                    output.setValue(processContext.getStderrLocation());
+                    resultantOutputsLst.add(output);
+                }
+                else if(output.getType().equals(DataType.STRING)) {
+                    String value = null;
+                    if(!output.getLocation().isEmpty()){
+                        value = output.getLocation() + File.separator + output.getValue();
+                    }else{
+                        value = output.getValue();
+                    }
+                    String outputPath = gatewayDownloadLocation + File.separator + output.getValue();
+                    File f = new File(gatewayDownloadLocation);
+                    if(!f.exists())
+                        f.mkdirs();
+
+                    FileDownloader fileDownloader = new FileDownloader(value,outputPath, Mode.overwrite);
+                    try {
+                        fileDownloader.perform(storageClient);
+                        output.setType(DataType.URI);
+                        output.setValue(outputPath);
+                        processContext.getProcessModel().getProcessOutputs().add(output);
+                        resultantOutputsLst.add(output);
+                    } catch (Exception e) {
+                        log.error("Error downloading "+value+" from job working directory. ");
+                        throw new GFacException(e.getLocalizedMessage(),e);
+                    }
+                }
+
+            }
+
+        }
+
+        downloadStdOuts();
+
+    }
+
+    public void publishFinalOutputs() throws GFacException {
+        try {
+            if(!resultantOutputsLst.isEmpty()) {
+                log.debug("Publishing the list of outputs to the registry instance..");
+                ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+                experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_OUTPUT, resultantOutputsLst, processContext.getExperimentId());
+            }
+        } catch (RegistryException e) {
+            throw new GFacException("Cannot publish outputs to the registry.");
+        }
+
+
+    }
 	
 }
