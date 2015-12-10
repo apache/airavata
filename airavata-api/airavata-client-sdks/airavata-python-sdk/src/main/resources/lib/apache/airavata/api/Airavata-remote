@@ -35,6 +35,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  string getSSHPubKey(AuthzToken authzToken, string airavataCredStoreToken, string gatewayId)')
   print('   getAllUserSSHPubKeys(AuthzToken authzToken, string userName)')
   print('   getAllGatewaySSHPubKeys(AuthzToken authzToken, string gatewayId)')
+  print('  bool deleteSSHPubKey(AuthzToken authzToken, string airavataCredStoreToken, string gatewayId)')
   print('  string createProject(AuthzToken authzToken, string gatewayId, Project project)')
   print('  void updateProject(AuthzToken authzToken, string projectId, Project updatedProject)')
   print('  Project getProject(AuthzToken authzToken, string projectId)')
@@ -276,6 +277,12 @@ elif cmd == 'getAllGatewaySSHPubKeys':
     print('getAllGatewaySSHPubKeys requires 2 args')
     sys.exit(1)
   pp.pprint(client.getAllGatewaySSHPubKeys(eval(args[0]),args[1],))
+
+elif cmd == 'deleteSSHPubKey':
+  if len(args) != 3:
+    print('deleteSSHPubKey requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.deleteSSHPubKey(eval(args[0]),args[1],args[2],))
 
 elif cmd == 'createProject':
   if len(args) != 3:
