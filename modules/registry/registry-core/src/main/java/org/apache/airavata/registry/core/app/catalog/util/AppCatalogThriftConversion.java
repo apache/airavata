@@ -118,6 +118,11 @@ public class AppCatalogThriftConversion {
         description.setHostName(resource.getHostName());
         description.setStorageResourceDescription(resource.getResourceDescription());
         description.setEnabled(resource.isEnabled());
+        DataMovementInterfaceResource dmiResource = new DataMovementInterfaceResource();
+        List<AppCatalogResource> dmiList = dmiResource.get(AppCatAbstractResource.StorageInterfaceConstants.STORAGE_RESOURCE_ID, resource.getStorageResourceId());
+        if (dmiList != null && !dmiList.isEmpty()){
+            description.setDataMovementInterfaces(getDataMovementInterfaces(dmiList));
+        }
         return description;
     }
 
