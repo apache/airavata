@@ -87,7 +87,7 @@ public class Utility {
     public static org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential generateKeyPair(SSHCredential credential) throws Exception{
         JSch jsch=new JSch();
         try{
-            KeyPair kpair=KeyPair.genKeyPair(jsch, KeyPair.RSA);
+            KeyPair kpair=KeyPair.genKeyPair(jsch, KeyPair.RSA, 2048);
             File file = File.createTempFile("id_rsa", "");
             String fileName = file.getAbsolutePath();
 
