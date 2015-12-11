@@ -70,6 +70,7 @@ class AiravataIf {
   virtual void getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) = 0;
   virtual void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName) = 0;
   virtual void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
+  virtual bool deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) = 0;
 
   /**
    * Creates a Project with basic metadata.
@@ -1903,6 +1904,10 @@ class AiravataNull : virtual public AiravataIf {
   }
   void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */) {
     return;
+  }
+  bool deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataCredStoreToken */, const std::string& /* gatewayId */) {
+    bool _return = false;
+    return _return;
   }
   void createProject(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const  ::apache::airavata::model::workspace::Project& /* project */) {
     return;
@@ -3941,6 +3946,156 @@ class Airavata_getAllGatewaySSHPubKeys_presult {
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
   friend std::ostream& operator<<(std::ostream& out, const Airavata_getAllGatewaySSHPubKeys_presult& obj);
+};
+
+
+class Airavata_deleteSSHPubKey_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "1E6476DBB101101BCE4A4B190EDEB468";
+  static const uint8_t binary_fingerprint[16]; // = {0x1E,0x64,0x76,0xDB,0xB1,0x01,0x10,0x1B,0xCE,0x4A,0x4B,0x19,0x0E,0xDE,0xB4,0x68};
+
+  Airavata_deleteSSHPubKey_args(const Airavata_deleteSSHPubKey_args&);
+  Airavata_deleteSSHPubKey_args& operator=(const Airavata_deleteSSHPubKey_args&);
+  Airavata_deleteSSHPubKey_args() : airavataCredStoreToken(), gatewayId() {
+  }
+
+  virtual ~Airavata_deleteSSHPubKey_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string airavataCredStoreToken;
+  std::string gatewayId;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_airavataCredStoreToken(const std::string& val);
+
+  void __set_gatewayId(const std::string& val);
+
+  bool operator == (const Airavata_deleteSSHPubKey_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(airavataCredStoreToken == rhs.airavataCredStoreToken))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteSSHPubKey_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteSSHPubKey_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_deleteSSHPubKey_args& obj);
+};
+
+
+class Airavata_deleteSSHPubKey_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "1E6476DBB101101BCE4A4B190EDEB468";
+  static const uint8_t binary_fingerprint[16]; // = {0x1E,0x64,0x76,0xDB,0xB1,0x01,0x10,0x1B,0xCE,0x4A,0x4B,0x19,0x0E,0xDE,0xB4,0x68};
+
+
+  virtual ~Airavata_deleteSSHPubKey_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* airavataCredStoreToken;
+  const std::string* gatewayId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_deleteSSHPubKey_pargs& obj);
+};
+
+typedef struct _Airavata_deleteSSHPubKey_result__isset {
+  _Airavata_deleteSSHPubKey_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+} _Airavata_deleteSSHPubKey_result__isset;
+
+class Airavata_deleteSSHPubKey_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "7B9EFBD21F2946E23A4FA136FF14760C";
+  static const uint8_t binary_fingerprint[16]; // = {0x7B,0x9E,0xFB,0xD2,0x1F,0x29,0x46,0xE2,0x3A,0x4F,0xA1,0x36,0xFF,0x14,0x76,0x0C};
+
+  Airavata_deleteSSHPubKey_result(const Airavata_deleteSSHPubKey_result&);
+  Airavata_deleteSSHPubKey_result& operator=(const Airavata_deleteSSHPubKey_result&);
+  Airavata_deleteSSHPubKey_result() : success(0) {
+  }
+
+  virtual ~Airavata_deleteSSHPubKey_result() throw();
+  bool success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deleteSSHPubKey_result__isset __isset;
+
+  void __set_success(const bool val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  bool operator == (const Airavata_deleteSSHPubKey_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteSSHPubKey_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteSSHPubKey_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_deleteSSHPubKey_result& obj);
+};
+
+typedef struct _Airavata_deleteSSHPubKey_presult__isset {
+  _Airavata_deleteSSHPubKey_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+} _Airavata_deleteSSHPubKey_presult__isset;
+
+class Airavata_deleteSSHPubKey_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "7B9EFBD21F2946E23A4FA136FF14760C";
+  static const uint8_t binary_fingerprint[16]; // = {0x7B,0x9E,0xFB,0xD2,0x1F,0x29,0x46,0xE2,0x3A,0x4F,0xA1,0x36,0xFF,0x14,0x76,0x0C};
+
+
+  virtual ~Airavata_deleteSSHPubKey_presult() throw();
+  bool* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deleteSSHPubKey_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const Airavata_deleteSSHPubKey_presult& obj);
 };
 
 
@@ -22925,6 +23080,9 @@ class AiravataClient : virtual public AiravataIf {
   void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void send_getAllGatewaySSHPubKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return);
+  bool deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
+  void send_deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
+  bool recv_deleteSSHPubKey();
   void createProject(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project);
   void send_createProject(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project);
   void recv_createProject(std::string& _return);
@@ -23311,6 +23469,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_getSSHPubKey(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllUserSSHPubKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllGatewaySSHPubKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_deleteSSHPubKey(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_createProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -23445,6 +23604,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["getSSHPubKey"] = &AiravataProcessor::process_getSSHPubKey;
     processMap_["getAllUserSSHPubKeys"] = &AiravataProcessor::process_getAllUserSSHPubKeys;
     processMap_["getAllGatewaySSHPubKeys"] = &AiravataProcessor::process_getAllGatewaySSHPubKeys;
+    processMap_["deleteSSHPubKey"] = &AiravataProcessor::process_deleteSSHPubKey;
     processMap_["createProject"] = &AiravataProcessor::process_createProject;
     processMap_["updateProject"] = &AiravataProcessor::process_updateProject;
     processMap_["getProject"] = &AiravataProcessor::process_getProject;
@@ -23698,6 +23858,15 @@ class AiravataMultiface : virtual public AiravataIf {
     }
     ifaces_[i]->getAllGatewaySSHPubKeys(_return, authzToken, gatewayId);
     return;
+  }
+
+  bool deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->deleteSSHPubKey(authzToken, airavataCredStoreToken, gatewayId);
+    }
+    return ifaces_[i]->deleteSSHPubKey(authzToken, airavataCredStoreToken, gatewayId);
   }
 
   void createProject(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project) {

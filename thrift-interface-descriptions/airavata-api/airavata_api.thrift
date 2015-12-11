@@ -162,6 +162,13 @@ service Airavata {
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
+
+  bool deleteSSHPubKey (1: required security_model.AuthzToken authzToken,
+                          2: required string airavataCredStoreToken,
+                          3: required string gatewayId)
+             throws (1: airavata_errors.InvalidRequestException ire,
+                     2: airavata_errors.AiravataClientException ace,
+                     3: airavata_errors.AiravataSystemException ase)
   /**
    * Creates a Project with basic metadata.
    *    A Project is a container of experiments.

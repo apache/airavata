@@ -332,6 +332,22 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    @Override
+    public boolean deleteSSHPubKey(AuthzToken authzToken, String airavataCredStoreToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            if (csClient == null){
+                csClient = getCredentialStoreServiceClient();
+            }
+            return csClient.deleteSSHCredential(airavataCredStoreToken, gatewayId);
+        }catch (Exception e){
+            logger.error("Error occurred while deleting SSH credential", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while deleting SSH credential. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     /**
      * Create a Project
      *
