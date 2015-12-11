@@ -23,13 +23,21 @@ package org.apache.airavata.registry.core.data.catalog.utils;
 
 import org.apache.airavata.model.data.resource.DataReplicaLocationModel;
 import org.apache.airavata.model.data.resource.DataResourceModel;
+import org.apache.airavata.model.data.resource.ReplicaLocationCategory;
+import org.apache.airavata.model.data.resource.ReplicaPersistentType;
 import org.apache.airavata.registry.core.data.catalog.model.DataReplicaLocation;
+import org.apache.airavata.registry.core.data.catalog.model.DataReplicaMetaData;
 import org.apache.airavata.registry.core.data.catalog.model.DataResource;
+import org.apache.airavata.registry.core.data.catalog.model.DataResourceMetaData;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ThriftDataModelConversion {
 
@@ -45,6 +53,13 @@ public class ThriftDataModelConversion {
             dataResourceModel.setResourceSize(dataResource.getResourceSize());
             dataResourceModel.setCreationTime(dataResource.getCreationTime().getTime());
             dataResourceModel.setLastModifiedTime(dataResource.getLastModifiedTime().getTime());
+            dataResourceModel.setResourceMetadata(getResourceMetaData(dataResource.getDataResourceMetaData()));
+            if(dataResource.getDataReplicaLocations() != null){
+                ArrayList<DataReplicaLocationModel> dataReplicaLocationModels = new ArrayList<>();
+                dataResource.getDataReplicaLocations().stream().forEach(r->dataReplicaLocationModels
+                        .add(getDataReplicaLocationModel(r)));
+                dataResourceModel.setDataReplicaLocations(dataReplicaLocationModels);
+            }
             return dataResourceModel;
         }
         return null;
@@ -66,6 +81,27 @@ public class ThriftDataModelConversion {
         dataResource.setResourceSize(dataResourceModel.getResourceSize());
         dataResource.setCreationTime(new Timestamp(dataResourceModel.getCreationTime()));
         dataResource.setLastModifiedTime(new Timestamp(dataResourceModel.getLastModifiedTime()));
+        ArrayList<DataResourceMetaData> dataResourceMetaData = new ArrayList<>();
+        if(dataResourceModel.getResourceMetadata() != null) {
+            dataResourceModel.getResourceMetadata().keySet().stream().forEach(k -> {
+                String v = dataResourceModel.getResourceMetadata().get(k);
+                DataResourceMetaData temp = new DataResourceMetaData();
+                temp.setResourceId(dataResource.getResourceId());
+                temp.setKey(k);
+                temp.setValue(v);
+                dataResourceMetaData.add(temp);
+            });
+            dataResource.setDataResourceMetaData(dataResourceMetaData);
+        }
+        if(dataResourceModel.getDataReplicaLocations() != null){
+            ArrayList<DataReplicaLocation> dataReplicaLocations = new ArrayList<>();
+            dataResourceModel.getDataReplicaLocations().stream().forEach(r->{
+                DataReplicaLocation dataReplicaLocationModel = getDataReplicaLocation(r);
+                dataReplicaLocationModel.setResourceId(dataResourceModel.getResourceId());
+                dataReplicaLocations.add(dataReplicaLocationModel);
+            });
+            dataResource.setDataReplicaLocations(dataReplicaLocations);
+        }
         return dataResource;
     }
 
@@ -78,12 +114,19 @@ public class ThriftDataModelConversion {
             replicaLocationModel.setReplicaDescription(replicaLocation.getReplicaDescription());
             replicaLocationModel.setCreationTime(replicaLocation.getCreationTime().getTime());
             replicaLocationModel.setLastModifiedTime(replicaLocation.getLastModifiedTime().getTime());
+            if(replicaLocation.getReplicaLocationCategory() != null)
+                replicaLocationModel.setReplicaLocationCategory(ReplicaLocationCategory.valueOf(replicaLocation
+                    .getReplicaLocationCategory().toString()));
+            if(replicaLocation.getReplicaPersistentType() != null)
+                replicaLocationModel.setReplicaPersistentType(ReplicaPersistentType.valueOf(replicaLocation
+                    .getReplicaPersistentType().toString()));
             if(replicaLocation.getDataLocations()!=null && !replicaLocation.getDataLocations().isEmpty()) {
                 String[] dataLocations = replicaLocation.getDataLocations().split(",");
                 for(String dataLocation : dataLocations){
                     replicaLocationModel.addToDataLocations(dataLocation);
                 }
             }
+            replicaLocationModel.setReplicaMetadata(getReplicaMetaData(replicaLocation.getDataReplicaMetaData()));
             return replicaLocationModel;
         }
         return null;
@@ -106,6 +149,38 @@ public class ThriftDataModelConversion {
         dataReplicaLocation.setDataLocations(StringUtils.join(dataReplicaLocationModel.getDataLocations(), ','));
         dataReplicaLocation.setCreationTime(new Timestamp(dataReplicaLocationModel.getCreationTime()));
         dataReplicaLocation.setLastModifiedTime(new Timestamp(dataReplicaLocationModel.getLastModifiedTime()));
+        if(dataReplicaLocationModel.getReplicaLocationCategory() != null)
+            dataReplicaLocation.setReplicaLocationCategory(dataReplicaLocationModel.getReplicaLocationCategory().toString());
+        if(dataReplicaLocationModel.getReplicaPersistentType() != null)
+            dataReplicaLocation.setReplicaPersistentType(dataReplicaLocationModel.getReplicaPersistentType().toString());
+        ArrayList<DataReplicaMetaData> dataReplicaMetadata = new ArrayList<>();
+        if(dataReplicaLocation.getDataReplicaMetaData() != null){
+            dataReplicaLocationModel.getReplicaMetadata().keySet().stream().forEach(k -> {
+                String v = dataReplicaLocationModel.getReplicaMetadata().get(k);
+                DataReplicaMetaData temp = new DataReplicaMetaData();
+                temp.setReplicaId(dataReplicaLocationModel.getResourceId());
+                temp.setKey(k);
+                temp.setValue(v);
+                dataReplicaMetadata.add(temp);
+            });
+            dataReplicaLocation.setDataReplicaMetaData(dataReplicaMetadata);
+        }
         return dataReplicaLocation;
+    }
+
+    public static Map<String, String> getResourceMetaData(Collection<DataResourceMetaData> dataResourceMetaData){
+        HashMap<String, String> metadata = new HashMap<>();
+        if(dataResourceMetaData!=null && !dataResourceMetaData.isEmpty()) {
+            dataResourceMetaData.stream().forEach(m -> metadata.put(m.getKey(),m.getValue()));
+        }
+        return metadata;
+    }
+
+    public static Map<String, String> getReplicaMetaData(Collection<DataReplicaMetaData> dataReplicaMetaData){
+        HashMap<String, String> metadata = new HashMap<>();
+        if(dataReplicaMetaData!=null && !dataReplicaMetaData.isEmpty()) {
+            dataReplicaMetaData.stream().forEach(m -> metadata.put(m.getKey(),m.getValue()));
+        }
+        return metadata;
     }
 }

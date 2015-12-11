@@ -40,6 +40,7 @@ public class DataResource {
     private Timestamp lastModifiedTime;
 
     private Collection<DataReplicaLocation> dataReplicaLocations;
+    private Collection<DataResourceMetaData> dataResourceMetaData;
 
     @Id
     @Column(name = "RESOURCE_ID")
@@ -105,12 +106,21 @@ public class DataResource {
         this.lastModifiedTime = lastModifiedTime;
     }
 
-    @OneToMany(mappedBy = "dataResource", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "dataResource", cascade = {CascadeType.ALL})
     public Collection<DataReplicaLocation> getDataReplicaLocations() {
         return dataReplicaLocations;
     }
 
     public void setDataReplicaLocations(Collection<DataReplicaLocation> dataReplicaLocations) {
         this.dataReplicaLocations = dataReplicaLocations;
+    }
+
+    @OneToMany(mappedBy = "dataResource", cascade = {CascadeType.ALL})
+    public Collection<DataResourceMetaData> getDataResourceMetaData() {
+        return dataResourceMetaData;
+    }
+
+    public void setDataResourceMetaData(Collection<DataResourceMetaData> dataResourceMetaData) {
+        this.dataResourceMetaData = dataResourceMetaData;
     }
 }

@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 @Entity
 @Table(name = "DATA_REPLICA_LOCATION")
@@ -35,10 +36,13 @@ public class DataReplicaLocation {
     private String replicaName;
     private String replicaDescription;
     private String dataLocations;
+    private String replicaLocationCategory;
+    private String replicaPersistentType;
     private Timestamp creationTime;
     private Timestamp lastModifiedTime;
 
     private DataResource dataResource;
+    private Collection<DataReplicaMetaData> dataReplicaMetaData;
 
     @Id
     @Column(name = "REPLICA_ID")
@@ -104,6 +108,24 @@ public class DataReplicaLocation {
         this.lastModifiedTime = lastModifiedTime;
     }
 
+    @Column(name = "REPLICA_LOCATION_CATEGORY")
+    public String getReplicaLocationCategory() {
+        return replicaLocationCategory;
+    }
+
+    public void setReplicaLocationCategory(String replicaLocationCategory) {
+        this.replicaLocationCategory = replicaLocationCategory;
+    }
+
+    @Column(name = "REPLICA_PERSISTENT_TYPE")
+    public String getReplicaPersistentType() {
+        return replicaPersistentType;
+    }
+
+    public void setReplicaPersistentType(String replicaPersistentType) {
+        this.replicaPersistentType = replicaPersistentType;
+    }
+
     @ManyToOne
     @JoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID")
     public DataResource getDataResource() {
@@ -112,5 +134,14 @@ public class DataReplicaLocation {
 
     public void setDataResource(DataResource dataResource) {
         this.dataResource = dataResource;
+    }
+
+    @OneToMany(mappedBy = "dataReplicaLocation", cascade = {CascadeType.ALL})
+    public Collection<DataReplicaMetaData> getDataReplicaMetaData() {
+        return dataReplicaMetaData;
+    }
+
+    public void setDataReplicaMetaData(Collection<DataReplicaMetaData> dataReplicaMetaData) {
+        this.dataReplicaMetaData = dataReplicaMetaData;
     }
 }

@@ -23,6 +23,18 @@
   namespace cpp apache.airavata.model.data.resource
   namespace py apache.airavata.model.data.resource
 
+enum ReplicaLocationCategory {
+    GATEWAY_DATA_STORE,
+    COMPUTE_RESOURCE,
+    LONG_TERM_STORAGE_RESOURCE,
+    OTHER
+}
+
+enum ReplicaPersistentType {
+    TRANSIENT,
+    PERSISTENT
+}
+
 struct DataResourceModel {
     1: optional string resourceId,
     2: optional string resourceName,
@@ -30,7 +42,9 @@ struct DataResourceModel {
     4: optional string ownerName,
     5: optional i32 resourceSize,
     6: optional i64 creationTime,
-    7: optional i64 lastModifiedTime
+    7: optional i64 lastModifiedTime,
+    8: optional map<string, string> resourceMetadata,
+    9: optional list<DataReplicaLocationModel> dataReplicaLocations
 }
 
 struct DataReplicaLocationModel {
@@ -40,5 +54,8 @@ struct DataReplicaLocationModel {
     4: optional string replicaDescription,
     5: optional i64 creationTime,
     6: optional i64 lastModifiedTime,
-    7: optional list<string> dataLocations
+    7: optional ReplicaLocationCategory replicaLocationCategory,
+    8: optional ReplicaPersistentType replicaPersistentType,
+    9: optional list<string> dataLocations,
+    10: optional map<string, string> replicaMetadata
 }

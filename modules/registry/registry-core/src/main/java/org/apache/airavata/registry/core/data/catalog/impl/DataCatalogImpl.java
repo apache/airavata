@@ -46,6 +46,12 @@ public class DataCatalogImpl implements DataCatalog {
     public String publishResource(DataResourceModel resourceModel) throws DataCatalogException {
         String resourceId = UUID.randomUUID().toString();
         resourceModel.setResourceId(resourceId);
+        if(resourceModel.getDataReplicaLocations() != null){
+            resourceModel.getDataReplicaLocations().stream().forEach(r-> {
+                r.setResourceId(resourceId);
+                r.setReplicaId(UUID.randomUUID().toString());
+            });
+        }
         DataResource dataResource = ThriftDataModelConversion.getDataResource(resourceModel);
         EntityManager em = null;
         try {

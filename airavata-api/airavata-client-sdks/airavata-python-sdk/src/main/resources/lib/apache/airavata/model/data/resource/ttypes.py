@@ -16,6 +16,40 @@ except:
   fastbinary = None
 
 
+class ReplicaLocationCategory:
+  GATEWAY_DATA_STORE = 0
+  COMPUTE_RESOURCE = 1
+  LONG_TERM_STORAGE_RESOURCE = 2
+  OTHER = 3
+
+  _VALUES_TO_NAMES = {
+    0: "GATEWAY_DATA_STORE",
+    1: "COMPUTE_RESOURCE",
+    2: "LONG_TERM_STORAGE_RESOURCE",
+    3: "OTHER",
+  }
+
+  _NAMES_TO_VALUES = {
+    "GATEWAY_DATA_STORE": 0,
+    "COMPUTE_RESOURCE": 1,
+    "LONG_TERM_STORAGE_RESOURCE": 2,
+    "OTHER": 3,
+  }
+
+class ReplicaPersistentType:
+  TRANSIENT = 0
+  PERSISTENT = 1
+
+  _VALUES_TO_NAMES = {
+    0: "TRANSIENT",
+    1: "PERSISTENT",
+  }
+
+  _NAMES_TO_VALUES = {
+    "TRANSIENT": 0,
+    "PERSISTENT": 1,
+  }
+
 
 class DataResourceModel:
   """
@@ -27,6 +61,8 @@ class DataResourceModel:
    - resourceSize
    - creationTime
    - lastModifiedTime
+   - resourceMetadata
+   - dataReplicaLocations
   """
 
   thrift_spec = (
@@ -38,9 +74,11 @@ class DataResourceModel:
     (5, TType.I32, 'resourceSize', None, None, ), # 5
     (6, TType.I64, 'creationTime', None, None, ), # 6
     (7, TType.I64, 'lastModifiedTime', None, None, ), # 7
+    (8, TType.MAP, 'resourceMetadata', (TType.STRING,None,TType.STRING,None), None, ), # 8
+    (9, TType.LIST, 'dataReplicaLocations', (TType.STRUCT,(DataReplicaLocationModel, DataReplicaLocationModel.thrift_spec)), None, ), # 9
   )
 
-  def __init__(self, resourceId=None, resourceName=None, resourceDescription=None, ownerName=None, resourceSize=None, creationTime=None, lastModifiedTime=None,):
+  def __init__(self, resourceId=None, resourceName=None, resourceDescription=None, ownerName=None, resourceSize=None, creationTime=None, lastModifiedTime=None, resourceMetadata=None, dataReplicaLocations=None,):
     self.resourceId = resourceId
     self.resourceName = resourceName
     self.resourceDescription = resourceDescription
@@ -48,6 +86,8 @@ class DataResourceModel:
     self.resourceSize = resourceSize
     self.creationTime = creationTime
     self.lastModifiedTime = lastModifiedTime
+    self.resourceMetadata = resourceMetadata
+    self.dataReplicaLocations = dataReplicaLocations
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -93,6 +133,28 @@ class DataResourceModel:
           self.lastModifiedTime = iprot.readI64();
         else:
           iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.MAP:
+          self.resourceMetadata = {}
+          (_ktype1, _vtype2, _size0 ) = iprot.readMapBegin()
+          for _i4 in xrange(_size0):
+            _key5 = iprot.readString();
+            _val6 = iprot.readString();
+            self.resourceMetadata[_key5] = _val6
+          iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 9:
+        if ftype == TType.LIST:
+          self.dataReplicaLocations = []
+          (_etype10, _size7) = iprot.readListBegin()
+          for _i11 in xrange(_size7):
+            _elem12 = DataReplicaLocationModel()
+            _elem12.read(iprot)
+            self.dataReplicaLocations.append(_elem12)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -131,6 +193,21 @@ class DataResourceModel:
       oprot.writeFieldBegin('lastModifiedTime', TType.I64, 7)
       oprot.writeI64(self.lastModifiedTime)
       oprot.writeFieldEnd()
+    if self.resourceMetadata is not None:
+      oprot.writeFieldBegin('resourceMetadata', TType.MAP, 8)
+      oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.resourceMetadata))
+      for kiter13,viter14 in self.resourceMetadata.items():
+        oprot.writeString(kiter13)
+        oprot.writeString(viter14)
+      oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    if self.dataReplicaLocations is not None:
+      oprot.writeFieldBegin('dataReplicaLocations', TType.LIST, 9)
+      oprot.writeListBegin(TType.STRUCT, len(self.dataReplicaLocations))
+      for iter15 in self.dataReplicaLocations:
+        iter15.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -147,6 +224,8 @@ class DataResourceModel:
     value = (value * 31) ^ hash(self.resourceSize)
     value = (value * 31) ^ hash(self.creationTime)
     value = (value * 31) ^ hash(self.lastModifiedTime)
+    value = (value * 31) ^ hash(self.resourceMetadata)
+    value = (value * 31) ^ hash(self.dataReplicaLocations)
     return value
 
   def __repr__(self):
@@ -169,7 +248,10 @@ class DataReplicaLocationModel:
    - replicaDescription
    - creationTime
    - lastModifiedTime
+   - replicaLocationCategory
+   - replicaPersistentType
    - dataLocations
+   - replicaMetadata
   """
 
   thrift_spec = (
@@ -180,17 +262,23 @@ class DataReplicaLocationModel:
     (4, TType.STRING, 'replicaDescription', None, None, ), # 4
     (5, TType.I64, 'creationTime', None, None, ), # 5
     (6, TType.I64, 'lastModifiedTime', None, None, ), # 6
-    (7, TType.LIST, 'dataLocations', (TType.STRING,None), None, ), # 7
+    (7, TType.I32, 'replicaLocationCategory', None, None, ), # 7
+    (8, TType.I32, 'replicaPersistentType', None, None, ), # 8
+    (9, TType.LIST, 'dataLocations', (TType.STRING,None), None, ), # 9
+    (10, TType.MAP, 'replicaMetadata', (TType.STRING,None,TType.STRING,None), None, ), # 10
   )
 
-  def __init__(self, replicaId=None, resourceId=None, replicaName=None, replicaDescription=None, creationTime=None, lastModifiedTime=None, dataLocations=None,):
+  def __init__(self, replicaId=None, resourceId=None, replicaName=None, replicaDescription=None, creationTime=None, lastModifiedTime=None, replicaLocationCategory=None, replicaPersistentType=None, dataLocations=None, replicaMetadata=None,):
     self.replicaId = replicaId
     self.resourceId = resourceId
     self.replicaName = replicaName
     self.replicaDescription = replicaDescription
     self.creationTime = creationTime
     self.lastModifiedTime = lastModifiedTime
+    self.replicaLocationCategory = replicaLocationCategory
+    self.replicaPersistentType = replicaPersistentType
     self.dataLocations = dataLocations
+    self.replicaMetadata = replicaMetadata
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -232,13 +320,34 @@ class DataReplicaLocationModel:
         else:
           iprot.skip(ftype)
       elif fid == 7:
+        if ftype == TType.I32:
+          self.replicaLocationCategory = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.I32:
+          self.replicaPersistentType = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 9:
         if ftype == TType.LIST:
           self.dataLocations = []
-          (_etype3, _size0) = iprot.readListBegin()
-          for _i4 in xrange(_size0):
-            _elem5 = iprot.readString();
-            self.dataLocations.append(_elem5)
+          (_etype19, _size16) = iprot.readListBegin()
+          for _i20 in xrange(_size16):
+            _elem21 = iprot.readString();
+            self.dataLocations.append(_elem21)
           iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 10:
+        if ftype == TType.MAP:
+          self.replicaMetadata = {}
+          (_ktype23, _vtype24, _size22 ) = iprot.readMapBegin()
+          for _i26 in xrange(_size22):
+            _key27 = iprot.readString();
+            _val28 = iprot.readString();
+            self.replicaMetadata[_key27] = _val28
+          iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       else:
@@ -275,12 +384,28 @@ class DataReplicaLocationModel:
       oprot.writeFieldBegin('lastModifiedTime', TType.I64, 6)
       oprot.writeI64(self.lastModifiedTime)
       oprot.writeFieldEnd()
+    if self.replicaLocationCategory is not None:
+      oprot.writeFieldBegin('replicaLocationCategory', TType.I32, 7)
+      oprot.writeI32(self.replicaLocationCategory)
+      oprot.writeFieldEnd()
+    if self.replicaPersistentType is not None:
+      oprot.writeFieldBegin('replicaPersistentType', TType.I32, 8)
+      oprot.writeI32(self.replicaPersistentType)
+      oprot.writeFieldEnd()
     if self.dataLocations is not None:
-      oprot.writeFieldBegin('dataLocations', TType.LIST, 7)
+      oprot.writeFieldBegin('dataLocations', TType.LIST, 9)
       oprot.writeListBegin(TType.STRING, len(self.dataLocations))
-      for iter6 in self.dataLocations:
-        oprot.writeString(iter6)
+      for iter29 in self.dataLocations:
+        oprot.writeString(iter29)
       oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.replicaMetadata is not None:
+      oprot.writeFieldBegin('replicaMetadata', TType.MAP, 10)
+      oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.replicaMetadata))
+      for kiter30,viter31 in self.replicaMetadata.items():
+        oprot.writeString(kiter30)
+        oprot.writeString(viter31)
+      oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -297,7 +422,10 @@ class DataReplicaLocationModel:
     value = (value * 31) ^ hash(self.replicaDescription)
     value = (value * 31) ^ hash(self.creationTime)
     value = (value * 31) ^ hash(self.lastModifiedTime)
+    value = (value * 31) ^ hash(self.replicaLocationCategory)
+    value = (value * 31) ^ hash(self.replicaPersistentType)
     value = (value * 31) ^ hash(self.dataLocations)
+    value = (value * 31) ^ hash(self.replicaMetadata)
     return value
 
   def __repr__(self):

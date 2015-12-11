@@ -36,12 +36,32 @@
 
 namespace apache { namespace airavata { namespace model { namespace data { namespace resource {
 
+struct ReplicaLocationCategory {
+  enum type {
+    GATEWAY_DATA_STORE = 0,
+    COMPUTE_RESOURCE = 1,
+    LONG_TERM_STORAGE_RESOURCE = 2,
+    OTHER = 3
+  };
+};
+
+extern const std::map<int, const char*> _ReplicaLocationCategory_VALUES_TO_NAMES;
+
+struct ReplicaPersistentType {
+  enum type {
+    TRANSIENT = 0,
+    PERSISTENT = 1
+  };
+};
+
+extern const std::map<int, const char*> _ReplicaPersistentType_VALUES_TO_NAMES;
+
 class DataResourceModel;
 
 class DataReplicaLocationModel;
 
 typedef struct _DataResourceModel__isset {
-  _DataResourceModel__isset() : resourceId(false), resourceName(false), resourceDescription(false), ownerName(false), resourceSize(false), creationTime(false), lastModifiedTime(false) {}
+  _DataResourceModel__isset() : resourceId(false), resourceName(false), resourceDescription(false), ownerName(false), resourceSize(false), creationTime(false), lastModifiedTime(false), resourceMetadata(false), dataReplicaLocations(false) {}
   bool resourceId :1;
   bool resourceName :1;
   bool resourceDescription :1;
@@ -49,13 +69,15 @@ typedef struct _DataResourceModel__isset {
   bool resourceSize :1;
   bool creationTime :1;
   bool lastModifiedTime :1;
+  bool resourceMetadata :1;
+  bool dataReplicaLocations :1;
 } _DataResourceModel__isset;
 
 class DataResourceModel {
  public:
 
-  static const char* ascii_fingerprint; // = "F4F870AD81FF6118FD1ADC4F20AC188B";
-  static const uint8_t binary_fingerprint[16]; // = {0xF4,0xF8,0x70,0xAD,0x81,0xFF,0x61,0x18,0xFD,0x1A,0xDC,0x4F,0x20,0xAC,0x18,0x8B};
+  static const char* ascii_fingerprint; // = "1320CB0B65DC2E766D01B7D3255179F7";
+  static const uint8_t binary_fingerprint[16]; // = {0x13,0x20,0xCB,0x0B,0x65,0xDC,0x2E,0x76,0x6D,0x01,0xB7,0xD3,0x25,0x51,0x79,0xF7};
 
   DataResourceModel(const DataResourceModel&);
   DataResourceModel& operator=(const DataResourceModel&);
@@ -70,6 +92,8 @@ class DataResourceModel {
   int32_t resourceSize;
   int64_t creationTime;
   int64_t lastModifiedTime;
+  std::map<std::string, std::string>  resourceMetadata;
+  std::vector<DataReplicaLocationModel>  dataReplicaLocations;
 
   _DataResourceModel__isset __isset;
 
@@ -86,6 +110,10 @@ class DataResourceModel {
   void __set_creationTime(const int64_t val);
 
   void __set_lastModifiedTime(const int64_t val);
+
+  void __set_resourceMetadata(const std::map<std::string, std::string> & val);
+
+  void __set_dataReplicaLocations(const std::vector<DataReplicaLocationModel> & val);
 
   bool operator == (const DataResourceModel & rhs) const
   {
@@ -117,6 +145,14 @@ class DataResourceModel {
       return false;
     else if (__isset.lastModifiedTime && !(lastModifiedTime == rhs.lastModifiedTime))
       return false;
+    if (__isset.resourceMetadata != rhs.__isset.resourceMetadata)
+      return false;
+    else if (__isset.resourceMetadata && !(resourceMetadata == rhs.resourceMetadata))
+      return false;
+    if (__isset.dataReplicaLocations != rhs.__isset.dataReplicaLocations)
+      return false;
+    else if (__isset.dataReplicaLocations && !(dataReplicaLocations == rhs.dataReplicaLocations))
+      return false;
     return true;
   }
   bool operator != (const DataResourceModel &rhs) const {
@@ -134,25 +170,28 @@ class DataResourceModel {
 void swap(DataResourceModel &a, DataResourceModel &b);
 
 typedef struct _DataReplicaLocationModel__isset {
-  _DataReplicaLocationModel__isset() : replicaId(false), resourceId(false), replicaName(false), replicaDescription(false), creationTime(false), lastModifiedTime(false), dataLocations(false) {}
+  _DataReplicaLocationModel__isset() : replicaId(false), resourceId(false), replicaName(false), replicaDescription(false), creationTime(false), lastModifiedTime(false), replicaLocationCategory(false), replicaPersistentType(false), dataLocations(false), replicaMetadata(false) {}
   bool replicaId :1;
   bool resourceId :1;
   bool replicaName :1;
   bool replicaDescription :1;
   bool creationTime :1;
   bool lastModifiedTime :1;
+  bool replicaLocationCategory :1;
+  bool replicaPersistentType :1;
   bool dataLocations :1;
+  bool replicaMetadata :1;
 } _DataReplicaLocationModel__isset;
 
 class DataReplicaLocationModel {
  public:
 
-  static const char* ascii_fingerprint; // = "1619AEF299C273167E541E0F4A915D54";
-  static const uint8_t binary_fingerprint[16]; // = {0x16,0x19,0xAE,0xF2,0x99,0xC2,0x73,0x16,0x7E,0x54,0x1E,0x0F,0x4A,0x91,0x5D,0x54};
+  static const char* ascii_fingerprint; // = "781A1748A91BB45A79F33F79DC9474F1";
+  static const uint8_t binary_fingerprint[16]; // = {0x78,0x1A,0x17,0x48,0xA9,0x1B,0xB4,0x5A,0x79,0xF3,0x3F,0x79,0xDC,0x94,0x74,0xF1};
 
   DataReplicaLocationModel(const DataReplicaLocationModel&);
   DataReplicaLocationModel& operator=(const DataReplicaLocationModel&);
-  DataReplicaLocationModel() : replicaId(), resourceId(), replicaName(), replicaDescription(), creationTime(0), lastModifiedTime(0) {
+  DataReplicaLocationModel() : replicaId(), resourceId(), replicaName(), replicaDescription(), creationTime(0), lastModifiedTime(0), replicaLocationCategory((ReplicaLocationCategory::type)0), replicaPersistentType((ReplicaPersistentType::type)0) {
   }
 
   virtual ~DataReplicaLocationModel() throw();
@@ -162,7 +201,10 @@ class DataReplicaLocationModel {
   std::string replicaDescription;
   int64_t creationTime;
   int64_t lastModifiedTime;
+  ReplicaLocationCategory::type replicaLocationCategory;
+  ReplicaPersistentType::type replicaPersistentType;
   std::vector<std::string>  dataLocations;
+  std::map<std::string, std::string>  replicaMetadata;
 
   _DataReplicaLocationModel__isset __isset;
 
@@ -178,7 +220,13 @@ class DataReplicaLocationModel {
 
   void __set_lastModifiedTime(const int64_t val);
 
+  void __set_replicaLocationCategory(const ReplicaLocationCategory::type val);
+
+  void __set_replicaPersistentType(const ReplicaPersistentType::type val);
+
   void __set_dataLocations(const std::vector<std::string> & val);
+
+  void __set_replicaMetadata(const std::map<std::string, std::string> & val);
 
   bool operator == (const DataReplicaLocationModel & rhs) const
   {
@@ -206,9 +254,21 @@ class DataReplicaLocationModel {
       return false;
     else if (__isset.lastModifiedTime && !(lastModifiedTime == rhs.lastModifiedTime))
       return false;
+    if (__isset.replicaLocationCategory != rhs.__isset.replicaLocationCategory)
+      return false;
+    else if (__isset.replicaLocationCategory && !(replicaLocationCategory == rhs.replicaLocationCategory))
+      return false;
+    if (__isset.replicaPersistentType != rhs.__isset.replicaPersistentType)
+      return false;
+    else if (__isset.replicaPersistentType && !(replicaPersistentType == rhs.replicaPersistentType))
+      return false;
     if (__isset.dataLocations != rhs.__isset.dataLocations)
       return false;
     else if (__isset.dataLocations && !(dataLocations == rhs.dataLocations))
+      return false;
+    if (__isset.replicaMetadata != rhs.__isset.replicaMetadata)
+      return false;
+    else if (__isset.replicaMetadata && !(replicaMetadata == rhs.replicaMetadata))
       return false;
     return true;
   }
