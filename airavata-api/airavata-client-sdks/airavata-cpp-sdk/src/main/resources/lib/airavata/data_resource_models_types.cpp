@@ -30,6 +30,30 @@
 
 namespace apache { namespace airavata { namespace model { namespace data { namespace resource {
 
+int _kReplicaLocationCategoryValues[] = {
+  ReplicaLocationCategory::GATEWAY_DATA_STORE,
+  ReplicaLocationCategory::COMPUTE_RESOURCE,
+  ReplicaLocationCategory::LONG_TERM_STORAGE_RESOURCE,
+  ReplicaLocationCategory::OTHER
+};
+const char* _kReplicaLocationCategoryNames[] = {
+  "GATEWAY_DATA_STORE",
+  "COMPUTE_RESOURCE",
+  "LONG_TERM_STORAGE_RESOURCE",
+  "OTHER"
+};
+const std::map<int, const char*> _ReplicaLocationCategory_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(4, _kReplicaLocationCategoryValues, _kReplicaLocationCategoryNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
+int _kReplicaPersistentTypeValues[] = {
+  ReplicaPersistentType::TRANSIENT,
+  ReplicaPersistentType::PERSISTENT
+};
+const char* _kReplicaPersistentTypeNames[] = {
+  "TRANSIENT",
+  "PERSISTENT"
+};
+const std::map<int, const char*> _ReplicaPersistentType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kReplicaPersistentTypeValues, _kReplicaPersistentTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
 
 DataResourceModel::~DataResourceModel() throw() {
 }
@@ -70,8 +94,18 @@ void DataResourceModel::__set_lastModifiedTime(const int64_t val) {
 __isset.lastModifiedTime = true;
 }
 
-const char* DataResourceModel::ascii_fingerprint = "F4F870AD81FF6118FD1ADC4F20AC188B";
-const uint8_t DataResourceModel::binary_fingerprint[16] = {0xF4,0xF8,0x70,0xAD,0x81,0xFF,0x61,0x18,0xFD,0x1A,0xDC,0x4F,0x20,0xAC,0x18,0x8B};
+void DataResourceModel::__set_resourceMetadata(const std::map<std::string, std::string> & val) {
+  this->resourceMetadata = val;
+__isset.resourceMetadata = true;
+}
+
+void DataResourceModel::__set_dataReplicaLocations(const std::vector<DataReplicaLocationModel> & val) {
+  this->dataReplicaLocations = val;
+__isset.dataReplicaLocations = true;
+}
+
+const char* DataResourceModel::ascii_fingerprint = "1320CB0B65DC2E766D01B7D3255179F7";
+const uint8_t DataResourceModel::binary_fingerprint[16] = {0x13,0x20,0xCB,0x0B,0x65,0xDC,0x2E,0x76,0x6D,0x01,0xB7,0xD3,0x25,0x51,0x79,0xF7};
 
 uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -149,6 +183,49 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 8:
+        if (ftype == ::apache::thrift::protocol::T_MAP) {
+          {
+            this->resourceMetadata.clear();
+            uint32_t _size0;
+            ::apache::thrift::protocol::TType _ktype1;
+            ::apache::thrift::protocol::TType _vtype2;
+            xfer += iprot->readMapBegin(_ktype1, _vtype2, _size0);
+            uint32_t _i4;
+            for (_i4 = 0; _i4 < _size0; ++_i4)
+            {
+              std::string _key5;
+              xfer += iprot->readString(_key5);
+              std::string& _val6 = this->resourceMetadata[_key5];
+              xfer += iprot->readString(_val6);
+            }
+            xfer += iprot->readMapEnd();
+          }
+          this->__isset.resourceMetadata = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 9:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->dataReplicaLocations.clear();
+            uint32_t _size7;
+            ::apache::thrift::protocol::TType _etype10;
+            xfer += iprot->readListBegin(_etype10, _size7);
+            this->dataReplicaLocations.resize(_size7);
+            uint32_t _i11;
+            for (_i11 = 0; _i11 < _size7; ++_i11)
+            {
+              xfer += this->dataReplicaLocations[_i11].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.dataReplicaLocations = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -201,6 +278,33 @@ uint32_t DataResourceModel::write(::apache::thrift::protocol::TProtocol* oprot) 
     xfer += oprot->writeI64(this->lastModifiedTime);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.resourceMetadata) {
+    xfer += oprot->writeFieldBegin("resourceMetadata", ::apache::thrift::protocol::T_MAP, 8);
+    {
+      xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->resourceMetadata.size()));
+      std::map<std::string, std::string> ::const_iterator _iter12;
+      for (_iter12 = this->resourceMetadata.begin(); _iter12 != this->resourceMetadata.end(); ++_iter12)
+      {
+        xfer += oprot->writeString(_iter12->first);
+        xfer += oprot->writeString(_iter12->second);
+      }
+      xfer += oprot->writeMapEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.dataReplicaLocations) {
+    xfer += oprot->writeFieldBegin("dataReplicaLocations", ::apache::thrift::protocol::T_LIST, 9);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->dataReplicaLocations.size()));
+      std::vector<DataReplicaLocationModel> ::const_iterator _iter13;
+      for (_iter13 = this->dataReplicaLocations.begin(); _iter13 != this->dataReplicaLocations.end(); ++_iter13)
+      {
+        xfer += (*_iter13).write(oprot);
+      }
+      xfer += oprot->writeListEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
@@ -216,28 +320,34 @@ void swap(DataResourceModel &a, DataResourceModel &b) {
   swap(a.resourceSize, b.resourceSize);
   swap(a.creationTime, b.creationTime);
   swap(a.lastModifiedTime, b.lastModifiedTime);
+  swap(a.resourceMetadata, b.resourceMetadata);
+  swap(a.dataReplicaLocations, b.dataReplicaLocations);
   swap(a.__isset, b.__isset);
 }
 
-DataResourceModel::DataResourceModel(const DataResourceModel& other0) {
-  resourceId = other0.resourceId;
-  resourceName = other0.resourceName;
-  resourceDescription = other0.resourceDescription;
-  ownerName = other0.ownerName;
-  resourceSize = other0.resourceSize;
-  creationTime = other0.creationTime;
-  lastModifiedTime = other0.lastModifiedTime;
-  __isset = other0.__isset;
+DataResourceModel::DataResourceModel(const DataResourceModel& other14) {
+  resourceId = other14.resourceId;
+  resourceName = other14.resourceName;
+  resourceDescription = other14.resourceDescription;
+  ownerName = other14.ownerName;
+  resourceSize = other14.resourceSize;
+  creationTime = other14.creationTime;
+  lastModifiedTime = other14.lastModifiedTime;
+  resourceMetadata = other14.resourceMetadata;
+  dataReplicaLocations = other14.dataReplicaLocations;
+  __isset = other14.__isset;
 }
-DataResourceModel& DataResourceModel::operator=(const DataResourceModel& other1) {
-  resourceId = other1.resourceId;
-  resourceName = other1.resourceName;
-  resourceDescription = other1.resourceDescription;
-  ownerName = other1.ownerName;
-  resourceSize = other1.resourceSize;
-  creationTime = other1.creationTime;
-  lastModifiedTime = other1.lastModifiedTime;
-  __isset = other1.__isset;
+DataResourceModel& DataResourceModel::operator=(const DataResourceModel& other15) {
+  resourceId = other15.resourceId;
+  resourceName = other15.resourceName;
+  resourceDescription = other15.resourceDescription;
+  ownerName = other15.ownerName;
+  resourceSize = other15.resourceSize;
+  creationTime = other15.creationTime;
+  lastModifiedTime = other15.lastModifiedTime;
+  resourceMetadata = other15.resourceMetadata;
+  dataReplicaLocations = other15.dataReplicaLocations;
+  __isset = other15.__isset;
   return *this;
 }
 std::ostream& operator<<(std::ostream& out, const DataResourceModel& obj) {
@@ -250,6 +360,8 @@ std::ostream& operator<<(std::ostream& out, const DataResourceModel& obj) {
   out << ", " << "resourceSize="; (obj.__isset.resourceSize ? (out << to_string(obj.resourceSize)) : (out << "<null>"));
   out << ", " << "creationTime="; (obj.__isset.creationTime ? (out << to_string(obj.creationTime)) : (out << "<null>"));
   out << ", " << "lastModifiedTime="; (obj.__isset.lastModifiedTime ? (out << to_string(obj.lastModifiedTime)) : (out << "<null>"));
+  out << ", " << "resourceMetadata="; (obj.__isset.resourceMetadata ? (out << to_string(obj.resourceMetadata)) : (out << "<null>"));
+  out << ", " << "dataReplicaLocations="; (obj.__isset.dataReplicaLocations ? (out << to_string(obj.dataReplicaLocations)) : (out << "<null>"));
   out << ")";
   return out;
 }
@@ -289,13 +401,28 @@ void DataReplicaLocationModel::__set_lastModifiedTime(const int64_t val) {
 __isset.lastModifiedTime = true;
 }
 
+void DataReplicaLocationModel::__set_replicaLocationCategory(const ReplicaLocationCategory::type val) {
+  this->replicaLocationCategory = val;
+__isset.replicaLocationCategory = true;
+}
+
+void DataReplicaLocationModel::__set_replicaPersistentType(const ReplicaPersistentType::type val) {
+  this->replicaPersistentType = val;
+__isset.replicaPersistentType = true;
+}
+
 void DataReplicaLocationModel::__set_dataLocations(const std::vector<std::string> & val) {
   this->dataLocations = val;
 __isset.dataLocations = true;
 }
 
-const char* DataReplicaLocationModel::ascii_fingerprint = "1619AEF299C273167E541E0F4A915D54";
-const uint8_t DataReplicaLocationModel::binary_fingerprint[16] = {0x16,0x19,0xAE,0xF2,0x99,0xC2,0x73,0x16,0x7E,0x54,0x1E,0x0F,0x4A,0x91,0x5D,0x54};
+void DataReplicaLocationModel::__set_replicaMetadata(const std::map<std::string, std::string> & val) {
+  this->replicaMetadata = val;
+__isset.replicaMetadata = true;
+}
+
+const char* DataReplicaLocationModel::ascii_fingerprint = "781A1748A91BB45A79F33F79DC9474F1";
+const uint8_t DataReplicaLocationModel::binary_fingerprint[16] = {0x78,0x1A,0x17,0x48,0xA9,0x1B,0xB4,0x5A,0x79,0xF3,0x3F,0x79,0xDC,0x94,0x74,0xF1};
 
 uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -366,21 +493,64 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
         }
         break;
       case 7:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast16;
+          xfer += iprot->readI32(ecast16);
+          this->replicaLocationCategory = (ReplicaLocationCategory::type)ecast16;
+          this->__isset.replicaLocationCategory = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 8:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast17;
+          xfer += iprot->readI32(ecast17);
+          this->replicaPersistentType = (ReplicaPersistentType::type)ecast17;
+          this->__isset.replicaPersistentType = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 9:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->dataLocations.clear();
-            uint32_t _size2;
-            ::apache::thrift::protocol::TType _etype5;
-            xfer += iprot->readListBegin(_etype5, _size2);
-            this->dataLocations.resize(_size2);
-            uint32_t _i6;
-            for (_i6 = 0; _i6 < _size2; ++_i6)
+            uint32_t _size18;
+            ::apache::thrift::protocol::TType _etype21;
+            xfer += iprot->readListBegin(_etype21, _size18);
+            this->dataLocations.resize(_size18);
+            uint32_t _i22;
+            for (_i22 = 0; _i22 < _size18; ++_i22)
             {
-              xfer += iprot->readString(this->dataLocations[_i6]);
+              xfer += iprot->readString(this->dataLocations[_i22]);
             }
             xfer += iprot->readListEnd();
           }
           this->__isset.dataLocations = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 10:
+        if (ftype == ::apache::thrift::protocol::T_MAP) {
+          {
+            this->replicaMetadata.clear();
+            uint32_t _size23;
+            ::apache::thrift::protocol::TType _ktype24;
+            ::apache::thrift::protocol::TType _vtype25;
+            xfer += iprot->readMapBegin(_ktype24, _vtype25, _size23);
+            uint32_t _i27;
+            for (_i27 = 0; _i27 < _size23; ++_i27)
+            {
+              std::string _key28;
+              xfer += iprot->readString(_key28);
+              std::string& _val29 = this->replicaMetadata[_key28];
+              xfer += iprot->readString(_val29);
+            }
+            xfer += iprot->readMapEnd();
+          }
+          this->__isset.replicaMetadata = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -432,16 +602,40 @@ uint32_t DataReplicaLocationModel::write(::apache::thrift::protocol::TProtocol* 
     xfer += oprot->writeI64(this->lastModifiedTime);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.replicaLocationCategory) {
+    xfer += oprot->writeFieldBegin("replicaLocationCategory", ::apache::thrift::protocol::T_I32, 7);
+    xfer += oprot->writeI32((int32_t)this->replicaLocationCategory);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.replicaPersistentType) {
+    xfer += oprot->writeFieldBegin("replicaPersistentType", ::apache::thrift::protocol::T_I32, 8);
+    xfer += oprot->writeI32((int32_t)this->replicaPersistentType);
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.dataLocations) {
-    xfer += oprot->writeFieldBegin("dataLocations", ::apache::thrift::protocol::T_LIST, 7);
+    xfer += oprot->writeFieldBegin("dataLocations", ::apache::thrift::protocol::T_LIST, 9);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->dataLocations.size()));
-      std::vector<std::string> ::const_iterator _iter7;
-      for (_iter7 = this->dataLocations.begin(); _iter7 != this->dataLocations.end(); ++_iter7)
+      std::vector<std::string> ::const_iterator _iter30;
+      for (_iter30 = this->dataLocations.begin(); _iter30 != this->dataLocations.end(); ++_iter30)
       {
-        xfer += oprot->writeString((*_iter7));
+        xfer += oprot->writeString((*_iter30));
       }
       xfer += oprot->writeListEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.replicaMetadata) {
+    xfer += oprot->writeFieldBegin("replicaMetadata", ::apache::thrift::protocol::T_MAP, 10);
+    {
+      xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->replicaMetadata.size()));
+      std::map<std::string, std::string> ::const_iterator _iter31;
+      for (_iter31 = this->replicaMetadata.begin(); _iter31 != this->replicaMetadata.end(); ++_iter31)
+      {
+        xfer += oprot->writeString(_iter31->first);
+        xfer += oprot->writeString(_iter31->second);
+      }
+      xfer += oprot->writeMapEnd();
     }
     xfer += oprot->writeFieldEnd();
   }
@@ -459,29 +653,38 @@ void swap(DataReplicaLocationModel &a, DataReplicaLocationModel &b) {
   swap(a.replicaDescription, b.replicaDescription);
   swap(a.creationTime, b.creationTime);
   swap(a.lastModifiedTime, b.lastModifiedTime);
+  swap(a.replicaLocationCategory, b.replicaLocationCategory);
+  swap(a.replicaPersistentType, b.replicaPersistentType);
   swap(a.dataLocations, b.dataLocations);
+  swap(a.replicaMetadata, b.replicaMetadata);
   swap(a.__isset, b.__isset);
 }
 
-DataReplicaLocationModel::DataReplicaLocationModel(const DataReplicaLocationModel& other8) {
-  replicaId = other8.replicaId;
-  resourceId = other8.resourceId;
-  replicaName = other8.replicaName;
-  replicaDescription = other8.replicaDescription;
-  creationTime = other8.creationTime;
-  lastModifiedTime = other8.lastModifiedTime;
-  dataLocations = other8.dataLocations;
-  __isset = other8.__isset;
+DataReplicaLocationModel::DataReplicaLocationModel(const DataReplicaLocationModel& other32) {
+  replicaId = other32.replicaId;
+  resourceId = other32.resourceId;
+  replicaName = other32.replicaName;
+  replicaDescription = other32.replicaDescription;
+  creationTime = other32.creationTime;
+  lastModifiedTime = other32.lastModifiedTime;
+  replicaLocationCategory = other32.replicaLocationCategory;
+  replicaPersistentType = other32.replicaPersistentType;
+  dataLocations = other32.dataLocations;
+  replicaMetadata = other32.replicaMetadata;
+  __isset = other32.__isset;
 }
-DataReplicaLocationModel& DataReplicaLocationModel::operator=(const DataReplicaLocationModel& other9) {
-  replicaId = other9.replicaId;
-  resourceId = other9.resourceId;
-  replicaName = other9.replicaName;
-  replicaDescription = other9.replicaDescription;
-  creationTime = other9.creationTime;
-  lastModifiedTime = other9.lastModifiedTime;
-  dataLocations = other9.dataLocations;
-  __isset = other9.__isset;
+DataReplicaLocationModel& DataReplicaLocationModel::operator=(const DataReplicaLocationModel& other33) {
+  replicaId = other33.replicaId;
+  resourceId = other33.resourceId;
+  replicaName = other33.replicaName;
+  replicaDescription = other33.replicaDescription;
+  creationTime = other33.creationTime;
+  lastModifiedTime = other33.lastModifiedTime;
+  replicaLocationCategory = other33.replicaLocationCategory;
+  replicaPersistentType = other33.replicaPersistentType;
+  dataLocations = other33.dataLocations;
+  replicaMetadata = other33.replicaMetadata;
+  __isset = other33.__isset;
   return *this;
 }
 std::ostream& operator<<(std::ostream& out, const DataReplicaLocationModel& obj) {
@@ -493,7 +696,10 @@ std::ostream& operator<<(std::ostream& out, const DataReplicaLocationModel& obj)
   out << ", " << "replicaDescription="; (obj.__isset.replicaDescription ? (out << to_string(obj.replicaDescription)) : (out << "<null>"));
   out << ", " << "creationTime="; (obj.__isset.creationTime ? (out << to_string(obj.creationTime)) : (out << "<null>"));
   out << ", " << "lastModifiedTime="; (obj.__isset.lastModifiedTime ? (out << to_string(obj.lastModifiedTime)) : (out << "<null>"));
+  out << ", " << "replicaLocationCategory="; (obj.__isset.replicaLocationCategory ? (out << to_string(obj.replicaLocationCategory)) : (out << "<null>"));
+  out << ", " << "replicaPersistentType="; (obj.__isset.replicaPersistentType ? (out << to_string(obj.replicaPersistentType)) : (out << "<null>"));
   out << ", " << "dataLocations="; (obj.__isset.dataLocations ? (out << to_string(obj.dataLocations)) : (out << "<null>"));
+  out << ", " << "replicaMetadata="; (obj.__isset.replicaMetadata ? (out << to_string(obj.replicaMetadata)) : (out << "<null>"));
   out << ")";
   return out;
 }

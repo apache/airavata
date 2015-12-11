@@ -60,28 +60,6 @@ public interface DataManager {
     DataResourceModel getResource(String resourceId) throws DataManagerException;
 
     /**
-     * To copy an already existing resource to a specified location. After successful copying the new location will be
-     * added to the available replica locations of the resource. The replica to copy will be selected automatically based
-     * on performance and availability metrics.
-     * @param resourceId
-     * @param destLocation
-     * @return
-     */
-    boolean copyResource(String resourceId, String destLocation) throws DataManagerException;
-
-    /**
-     * To copy an already existing resource from the specified replica location to a specified location. After successful
-     * copying the new location will be added to the available replica locations of the resource
-     * @param resourceId
-     * @param replicaId
-     * @param destLocation
-     * @return
-     * @throws DataManagerException
-     */
-    boolean copyResource(String resourceId, String replicaId, String destLocation)
-            throws DataManagerException;
-
-    /**
      * To create a new data replica location. This is how the system comes to know about already
      * existing resources
      * @param dataReplicaLocationModel

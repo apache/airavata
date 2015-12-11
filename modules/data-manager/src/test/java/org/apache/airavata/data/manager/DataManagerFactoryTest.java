@@ -21,7 +21,6 @@
 package org.apache.airavata.data.manager;
 
 import junit.framework.Assert;
-import org.apache.airavata.data.manager.utils.ssh.SSHKeyAuthentication;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.DataCatalog;
 import org.apache.airavata.registry.cpi.DataCatalogException;
@@ -35,8 +34,7 @@ public class DataManagerFactoryTest {
     @Test
     public void testCreateDataManager() throws DataManagerException, DataCatalogException {
         DataCatalog dataCatalog = RegistryFactory.getDataCatalog();
-        SSHKeyAuthentication sshKeyAuthentication = new SSHKeyAuthentication();
-        DataManager dataManager = new DataManagerImpl(dataCatalog, sshKeyAuthentication);
+        DataManager dataManager = new DataManagerImpl(dataCatalog);
         Assert.assertNotNull(dataManager);
     }
 }

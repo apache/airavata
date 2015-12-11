@@ -20,9 +20,6 @@
 */
 package org.apache.airavata.data.manager;
 
-import org.apache.airavata.data.manager.utils.ssh.SSHAuthenticationUtils;
-import org.apache.airavata.data.manager.utils.DataTransferUtils;
-import org.apache.airavata.data.manager.utils.ssh.SSHKeyAuthentication;
 import org.apache.airavata.model.data.resource.DataReplicaLocationModel;
 import org.apache.airavata.model.data.resource.DataResourceModel;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
@@ -31,28 +28,24 @@ import org.apache.airavata.registry.cpi.DataCatalogException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
 import java.util.List;
 
 public class DataManagerImpl implements DataManager{
     private final static Logger logger = LoggerFactory.getLogger(DataManagerImpl.class);
 
     private final DataCatalog dataCatalog;
-    private final SSHKeyAuthentication sshKeyAuthentication;
 
     public DataManagerImpl() throws DataManagerException {
         try {
             this.dataCatalog = RegistryFactory.getDataCatalog();
-            this.sshKeyAuthentication = SSHAuthenticationUtils.getSSHKeyAuthentication();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new DataManagerException(e);
         }
     }
 
-    public DataManagerImpl(DataCatalog dataCatalog, SSHKeyAuthentication sshKeyAuthentication){
+    public DataManagerImpl(DataCatalog dataCatalog){
         this.dataCatalog = dataCatalog;
-        this.sshKeyAuthentication = sshKeyAuthentication;
     }
 
     /**
@@ -116,55 +109,6 @@ public class DataManagerImpl implements DataManager{
             DataResourceModel dataResource = dataCatalog.getResource(resourceId);
             return dataResource;
         } catch (DataCatalogException e) {
-            logger.error(e.getMessage(), e);
-            throw new DataManagerException(e);
-        }
-    }
-
-    /**
-     * To copy an already existing resource to a specified location. After successful copying the new location will be
-     * added to the available replica locations of the resource. The replica to copy will be selected automatically based
-     * on performance and availability metrics.
-     * @param resourceId
-     * @param destLocation
-     * @return
-     */
-    @Override
-    public boolean copyResource(String resourceId, String destLocation) throws DataManagerException{
-        return false;
-    }
-
-    /**
-     * To copy an already existing resource from the specified replica location to a specified location. After successful
-     * copying the new location will be added to the available replica locations of the resource
-     *
-     * @param resourceId
-     * @param replicaId
-     * @param destLocation
-     * @return
-     * @throws DataManagerException
-     */
-    @Override
-    public boolean copyResource(String resourceId, String replicaId, String destLocation)
-            throws DataManagerException {
-        try {
-            DataResourceModel resourceModel = getResource(resourceId);
-            DataReplicaLocationModel replicaLocationModel = getReplicaLocation(replicaId);
-            if(resourceModel == null)
-                throw new DataManagerException("Non existent resource id:"+resourceId);
-            if(replicaLocationModel == null)
-                throw new DataManagerException("Non existent replica id:"+replicaId);
-            boolean result;
-            URI destinationUri = new URI(destLocation);
-            for(String dataLocation : replicaLocationModel.getDataLocations()) {
-                URI sourceUri = new URI(dataLocation);
-                DataTransferUtils dataTransferUtils = new DataTransferUtils(sshKeyAuthentication);
-                result = dataTransferUtils.copyData(sourceUri, destinationUri);
-                if(result == false)
-                    return result;
-            }
-            return true;
-        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new DataManagerException(e);
         }

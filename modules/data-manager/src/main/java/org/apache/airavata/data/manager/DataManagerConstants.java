@@ -25,9 +25,4 @@ import org.slf4j.LoggerFactory;
 
 public class DataManagerConstants {
     private final static Logger logger = LoggerFactory.getLogger(DataManagerConstants.class);
-
-    public static final String SCP_URI_SCHEME = "scp";
-    public static final String LOCAL_URI_SCHEME = "file";
-
-    public static final int DEFAULT_SSH_PORT = 22;
 }
