@@ -2284,6 +2284,33 @@ class AiravataHandler : virtual public AiravataIf {
     printf("isWorkflowExistWithName\n");
   }
 
+  /**
+   *  * Replica Catalog Related API Methods
+   * *
+   * 
+   * @param authzToken
+   * @param dataResourceModel
+   */
+  void publishDataResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::DataResourceModel& dataResourceModel) {
+    // Your implementation goes here
+    printf("publishDataResource\n");
+  }
+
+  void updateDataResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::DataResourceModel& dataResourceModel) {
+    // Your implementation goes here
+    printf("updateDataResource\n");
+  }
+
+  void removeDataResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId) {
+    // Your implementation goes here
+    printf("removeDataResource\n");
+  }
+
+  void getDataResource( ::apache::airavata::model::data::resource::DataResourceModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId) {
+    // Your implementation goes here
+    printf("getDataResource\n");
+  }
+
 };
 
 int main(int argc, char **argv) {

@@ -47,6 +47,7 @@ import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescr
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.data.movement.*;
+import org.apache.airavata.model.data.resource.DataResourceModel;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.model.job.JobModel;
@@ -412,6 +413,29 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     }
 
+    @Override
+    @SecurityCheck
+    public boolean deleteProject(AuthzToken authzToken, String projectId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, ProjectNotFoundException, AuthorizationException, TException {
+
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            if (!experimentCatalog.isExist(ExperimentCatalogModelType.PROJECT, projectId)) {
+                logger.error("Project does not exist in the system. Please provide a valid project ID...");
+                ProjectNotFoundException exception = new ProjectNotFoundException();
+                exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
+                throw exception;
+            }
+            experimentCatalog.remove(ExperimentCatalogModelType.PROJECT, projectId);
+            return true;
+        } catch (RegistryException e) {
+            logger.error("Error while removing the project", e);
+            ProjectNotFoundException exception = new ProjectNotFoundException();
+            exception.setMessage("Error while removing the project. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     private boolean validateString(String name){
         boolean valid = true;
         if (name == null || name.equals("") || name.trim().length() == 0){
@@ -429,7 +453,6 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public Project getProject(AuthzToken authzToken, String projectId) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, ProjectNotFoundException, AuthorizationException, TException {
-
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.PROJECT, projectId)){
@@ -4036,7 +4059,115 @@ public class AiravataServerHandler implements Airavata.Iface {
 		}
 	}
 
-	private WorkflowCatalog getWorkflowCatalog() {
+    /**
+     * * Replica Catalog Related API Methods
+     * *
+     */
+
+    /**
+     * Create new data resource. Resourse ID is returned
+     * @param authzToken
+     * @param dataResourceModel
+     * @return
+     * @throws InvalidRequestException
+     * @throws AiravataClientException
+     * @throws AiravataSystemException
+     * @throws AuthorizationException
+     * @throws TException
+     */
+    @Override
+    @SecurityCheck
+    public String publishDataResource(AuthzToken authzToken, DataResourceModel dataResourceModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            DataCatalog dataCatalog = RegistryFactory.getDataCatalog();
+            return dataCatalog.publishResource(dataResourceModel);
+        } catch (DataCatalogException e) {
+            String msg = "Error in publishing the data resource"+dataResourceModel.getResourceName()+".";
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Update exisiting data resource
+     * @param authzToken
+     * @param dataResourceModel
+     * @throws InvalidRequestException
+     * @throws AiravataClientException
+     * @throws AiravataSystemException
+     * @throws AuthorizationException
+     * @throws TException
+     */
+    @Override
+    @SecurityCheck
+    public void updateDataResource(AuthzToken authzToken, DataResourceModel dataResourceModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            DataCatalog dataCatalog = RegistryFactory.getDataCatalog();
+            dataCatalog.updateResource(dataResourceModel);
+        } catch (DataCatalogException e) {
+            String msg = "Error in updating the data resource"+dataResourceModel.getResourceName()+".";
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Remove existing data resource
+     * @param authzToken
+     * @param resourceId
+     * @throws InvalidRequestException
+     * @throws AiravataClientException
+     * @throws AiravataSystemException
+     * @throws AuthorizationException
+     * @throws TException
+     */
+    @Override
+    @SecurityCheck
+    public void removeDataResource(AuthzToken authzToken, String resourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            DataCatalog dataCatalog = RegistryFactory.getDataCatalog();
+            dataCatalog.removeResource(resourceId);
+        } catch (DataCatalogException e) {
+            String msg = "Error in removing the data resource "+resourceId+".";
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Retreive existing data resource
+     * @param authzToken
+     * @param resourceId
+     * @return
+     * @throws InvalidRequestException
+     * @throws AiravataClientException
+     * @throws AiravataSystemException
+     * @throws AuthorizationException
+     * @throws TException
+     */
+    @Override
+    @SecurityCheck
+    public DataResourceModel getDataResource(AuthzToken authzToken, String resourceId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            DataCatalog dataCatalog = RegistryFactory.getDataCatalog();
+            return  dataCatalog.getResource(resourceId);
+        } catch (DataCatalogException e) {
+            String msg = "Error in retreiving the data resource "+resourceId+".";
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    private WorkflowCatalog getWorkflowCatalog() {
 		if (workflowCatalog == null) {
 			try {
 				workflowCatalog = RegistryFactory.getAppCatalog().getWorkflowCatalog();
@@ -4046,29 +4177,6 @@ public class AiravataServerHandler implements Airavata.Iface {
 		}
 		return workflowCatalog;
 	}
-
-    @Override
-    @SecurityCheck
-    public boolean deleteProject(AuthzToken authzToken, String projectId) throws InvalidRequestException,
-            AiravataClientException, AiravataSystemException, ProjectNotFoundException, AuthorizationException, TException {
-
-        try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            if (!experimentCatalog.isExist(ExperimentCatalogModelType.PROJECT, projectId)) {
-                logger.error("Project does not exist in the system. Please provide a valid project ID...");
-                ProjectNotFoundException exception = new ProjectNotFoundException();
-                exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
-                throw exception;
-            }
-            experimentCatalog.remove(ExperimentCatalogModelType.PROJECT, projectId);
-            return true;
-        } catch (RegistryException e) {
-            logger.error("Error while removing the project", e);
-            ProjectNotFoundException exception = new ProjectNotFoundException();
-            exception.setMessage("Error while removing the project. More info : " + e.getMessage());
-            throw exception;
-        }
-    }
 
     private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
         final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
