@@ -40,6 +40,7 @@ include "gateway_resource_profile_model.thrift"
 include "workflow_data_model.thrift"
 include "security_model.thrift"
 include "data_movement_models.thrift"
+include "data_resource_models.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API
@@ -2334,6 +2335,32 @@ service Airavata {
                   3: airavata_errors.AiravataSystemException ase,
                   4: airavata_errors.AuthorizationException ae)
 
+ /**
+  * Replica Catalog Related API Methods
+ **/
+ string publishDataResource(1: required security_model.AuthzToken authzToken, 2: required data_resource_models.DataResourceModel dataResourceModel)
+          throws (1: airavata_errors.InvalidRequestException ire,
+                  2: airavata_errors.AiravataClientException ace,
+                  3: airavata_errors.AiravataSystemException ase,
+                  4: airavata_errors.AuthorizationException ae)
+
+ void updateDataResource(1: required security_model.AuthzToken authzToken, 2: required data_resource_models.DataResourceModel dataResourceModel)
+           throws (1: airavata_errors.InvalidRequestException ire,
+                   2: airavata_errors.AiravataClientException ace,
+                   3: airavata_errors.AiravataSystemException ase,
+                   4: airavata_errors.AuthorizationException ae)
+
+ void removeDataResource(1: required security_model.AuthzToken authzToken, 2: required string resourceId)
+           throws (1: airavata_errors.InvalidRequestException ire,
+                   2: airavata_errors.AiravataClientException ace,
+                   3: airavata_errors.AiravataSystemException ase,
+                   4: airavata_errors.AuthorizationException ae)
+
+ data_resource_models.DataResourceModel getDataResource(1: required security_model.AuthzToken authzToken, 2: required string resourceId)
+            throws (1: airavata_errors.InvalidRequestException ire,
+                    2: airavata_errors.AiravataClientException ace,
+                    3: airavata_errors.AiravataSystemException ase,
+                    4: airavata_errors.AuthorizationException ae)
  //End of API
  }
 

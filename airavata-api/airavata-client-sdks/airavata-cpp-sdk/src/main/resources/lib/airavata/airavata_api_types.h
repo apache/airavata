@@ -48,6 +48,7 @@
 #include "workflow_data_model_types.h"
 #include "security_model_types.h"
 #include "data_movement_models_types.h"
+#include "data_resource_models_types.h"
 
 
 namespace apache { namespace airavata { namespace api {
