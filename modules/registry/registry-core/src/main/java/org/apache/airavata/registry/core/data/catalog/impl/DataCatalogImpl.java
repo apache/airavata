@@ -52,6 +52,8 @@ public class DataCatalogImpl implements DataCatalog {
                 r.setReplicaId(UUID.randomUUID().toString());
             });
         }
+        resourceModel.setCreationTime(System.currentTimeMillis());
+        resourceModel.setLastModifiedTime(System.currentTimeMillis());
         DataResource dataResource = ThriftDataModelConversion.getDataResource(resourceModel);
         EntityManager em = null;
         try {
@@ -109,6 +111,8 @@ public class DataCatalogImpl implements DataCatalog {
             if(dataResource == null)
                 return false;
             em.getTransaction().begin();
+            resourceModel.setCreationTime(dataResource.getCreationTime().getTime());
+            resourceModel.setLastModifiedTime(System.currentTimeMillis());
             em.merge(ThriftDataModelConversion.getUpdatedDataResource(resourceModel, dataResource));
             em.getTransaction().commit();
             em.close();
@@ -150,6 +154,8 @@ public class DataCatalogImpl implements DataCatalog {
     public String publishReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws DataCatalogException {
         String replicaId = UUID.randomUUID().toString();
         dataReplicaLocationModel.setReplicaId(replicaId);
+        dataReplicaLocationModel.setCreationTime(System.currentTimeMillis());
+        dataReplicaLocationModel.setLastModifiedTime(System.currentTimeMillis());
         DataReplicaLocation replicaLocation = ThriftDataModelConversion.getDataReplicaLocation(dataReplicaLocationModel);
         EntityManager em = null;
         try {
@@ -207,6 +213,8 @@ public class DataCatalogImpl implements DataCatalog {
             if(dataReplicaLocation == null)
                 return false;
             em.getTransaction().begin();
+            dataReplicaLocationModel.setCreationTime(dataReplicaLocation.getCreationTime().getTime());
+            dataReplicaLocationModel.setLastModifiedTime(System.currentTimeMillis());
             em.merge(ThriftDataModelConversion.getUpdatedDataReplicaLocation(dataReplicaLocationModel, dataReplicaLocation));
             em.getTransaction().commit();
             em.close();
