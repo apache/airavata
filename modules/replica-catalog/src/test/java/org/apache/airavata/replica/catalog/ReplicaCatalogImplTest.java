@@ -51,7 +51,7 @@ public class ReplicaCatalogImplTest {
             System.out.println("********** SET UP ************");
             appCatInit = new AppCatInit("appcatalog-derby.sql");
             appCatInit.initializeDB();
-            dataCatInit = new DataCatInit("datacatalog-derby.sql");
+            dataCatInit = new DataCatInit("replicacatalog-derby.sql");
             dataCatInit.initializeDB();
             DataCatalog dataCatalog = RegistryFactory.getDataCatalog();
             replicaCatalog = new ReplicaCatalogImpl(dataCatalog);
