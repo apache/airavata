@@ -85,10 +85,7 @@ public class DefaultOAuthClient {
         } catch (RemoteException e) {
             logger.error(e.getMessage(), e);
             throw new AiravataSecurityException("Error in validating the OAuth access token.");
-        } /*catch (ApplicationSettingsException e) {
-            logger.error(e.getMessage(), e);
-            throw new AiravataSecurityException("Error in reading OAuth configuration.");
-        }*/
+        }
     }
 
 }

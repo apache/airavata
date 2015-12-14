@@ -22,7 +22,7 @@
 package org.apache.airavata.registry.core.impl;
 
 import org.apache.airavata.registry.core.app.catalog.impl.AppCatalogImpl;
-import org.apache.airavata.registry.core.data.catalog.impl.DataCatalogImpl;
+import org.apache.airavata.registry.core.replica.catalog.impl.DataCatalogImpl;
 import org.apache.airavata.registry.core.experiment.catalog.impl.ExperimentCatalogImpl;
 import org.apache.airavata.registry.cpi.*;
 
