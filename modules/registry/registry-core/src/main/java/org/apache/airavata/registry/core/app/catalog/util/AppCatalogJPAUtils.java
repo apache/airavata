@@ -942,6 +942,7 @@ public class AppCatalogJPAUtils {
             resource.setStorageResourceId(o.getStorageResourceId());
             resource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
             resource.setDataMovementProtocol(o.getDataMovementProtocol());
+            resource.setPriorityOrder(o.getPriorityOrder());
             resource.setStorageResourceResource((StorageResourceResource)createStorageResource(o.getStorageResource()));
         }
         return resource;

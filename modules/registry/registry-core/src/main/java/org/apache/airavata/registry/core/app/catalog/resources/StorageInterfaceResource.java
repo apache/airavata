@@ -45,6 +45,7 @@ public class StorageInterfaceResource extends AppCatAbstractResource {
 	private StorageResourceResource storageResourceResource;
 	private String dataMovementProtocol;
 	private String dataMovementInterfaceId;
+    private int priorityOrder;
     private Timestamp createdTime;
     private Timestamp updatedTime;
 
@@ -63,8 +64,16 @@ public class StorageInterfaceResource extends AppCatAbstractResource {
     public void setUpdatedTime(Timestamp updatedTime) {
         this.updatedTime = updatedTime;
     }
-	
-	@Override
+
+    public int getPriorityOrder() {
+        return priorityOrder;
+    }
+
+    public void setPriorityOrder(int priorityOrder) {
+        this.priorityOrder = priorityOrder;
+    }
+
+    @Override
 	public void remove(Object identifier) throws AppCatalogException {
 		HashMap<String, String> ids;
 		if (identifier instanceof Map) {
@@ -244,6 +253,7 @@ public class StorageInterfaceResource extends AppCatAbstractResource {
 			storageInterface.setStorageResource(storageResource);
 			storageInterface.setDataMovementProtocol(getDataMovementProtocol());
 			storageInterface.setDataMovementInterfaceId(getDataMovementInterfaceId());
+            storageInterface.setPriorityOrder(priorityOrder);
 			if (existingStorageInterface == null) {
 				em.persist(storageInterface);
 			} else {
