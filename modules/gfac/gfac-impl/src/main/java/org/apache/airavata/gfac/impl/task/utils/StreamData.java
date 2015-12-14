@@ -121,26 +121,7 @@ public class StreamData extends TimerTask  {
                     && sourceURI.getUserInfo().equalsIgnoreCase(destinationURI.getUserInfo())) {
                 localDataCopy(taskContext, sourceURI, destinationURI);
             }
-
-            String tokenId = taskContext.getParentProcessContext().getTokenId();
-            CredentialReader credentialReader = GFacUtils.getCredentialReader();
-            Credential credential = credentialReader.getCredential(taskContext.getParentProcessContext().getGatewayId(), tokenId);
-            if (credential instanceof SSHCredential) {
-                SSHCredential sshCredential = (SSHCredential) credential;
-                byte[] publicKey = sshCredential.getPublicKey();
-                publicKeyPath = writeFileToDisk(publicKey);
-                byte[] privateKey = sshCredential.getPrivateKey();
-                privateKeyPath = writeFileToDisk(privateKey);
-                passPhrase = sshCredential.getPassphrase();
-                authenticationInfo = getSSHKeyAuthentication();
-            } else {
-                String msg = "Provided credential store token is not valid. Please provide the correct credential store token";
-                log.error(msg);
-                ErrorModel errorModel = new ErrorModel();
-                errorModel.setActualErrorMessage(msg);
-                errorModel.setUserFriendlyMessage(msg);
-                taskContext.getTaskModel().setTaskError(errorModel);
-            }
+            authenticationInfo = Factory.getStorageSSHKeyAuthentication(taskContext.getParentProcessContext());
 
             ServerInfo serverInfo = new ServerInfo(userName, hostName, DEFAULT_SSH_PORT);
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
@@ -184,27 +165,4 @@ public class StreamData extends TimerTask  {
 
     }
 
-    private String writeFileToDisk(byte[] data) {
-        File temp = null;
-        try {
-            temp = File.createTempFile("id_rsa", "");
-            //write it
-            FileOutputStream bw = new FileOutputStream(temp);
-            bw.write(data);
-            bw.close();
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        }
-        return temp.getAbsolutePath();
-    }
-
-    private SSHKeyAuthentication getSSHKeyAuthentication() {
-        SSHKeyAuthentication sshKA = new SSHKeyAuthentication();
-        sshKA.setUserName(userName);
-        sshKA.setPassphrase(passPhrase);
-        sshKA.setPrivateKeyFilePath(privateKeyPath);
-        sshKA.setPublicKeyFilePath(publicKeyPath);
-        sshKA.setStrictHostKeyChecking("no");
-        return sshKA;
-    }
 }

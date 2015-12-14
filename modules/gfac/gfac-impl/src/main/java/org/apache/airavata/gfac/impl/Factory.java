@@ -27,8 +27,13 @@ import com.jcraft.jsch.UserInfo;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.credential.store.credential.Credential;
+import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
+import org.apache.airavata.credential.store.store.CredentialReader;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
+import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.JobManagerConfiguration;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
@@ -55,7 +60,11 @@ import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.impl.RabbitMQProcessLaunchConsumer;
 import org.apache.airavata.messaging.core.impl.RabbitMQStatusPublisher;
 import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
+import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
@@ -71,6 +80,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public abstract class Factory {
 
@@ -209,7 +219,6 @@ public abstract class Factory {
         JobSubmissionProtocol jobSubmissionProtocol = processContext.getJobSubmissionProtocol();
         String key = jobSubmissionProtocol.name() + ":" + computeResourceId;
 		RemoteCluster remoteCluster = remoteClusterMap.get(key);
-        String loginUserName = processContext.getComputeResourcePreference().getLoginUserName();
         if (remoteCluster == null) {
             JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
             if (jobSubmissionProtocol == JobSubmissionProtocol.LOCAL ||
@@ -217,8 +226,8 @@ public abstract class Factory {
                 remoteCluster = new LocalRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration, null);
             } else if (jobSubmissionProtocol == JobSubmissionProtocol.SSH ||
                     jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK) {
-                AuthenticationInfo authenticationInfo = getSSHKeyAuthentication(loginUserName);
-                remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration, authenticationInfo);
+                remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration,
+                        processContext.getSshKeyAuthentication());
             }
             remoteClusterMap.put(key, remoteCluster);
 		}
@@ -231,15 +240,14 @@ public abstract class Factory {
         String computeResourceId = processContext.getComputeResourceId();
         DataMovementProtocol dataMovementProtocol = processContext.getDataMovementProtocol();
         String key = dataMovementProtocol.name() + ":" + computeResourceId;
-        String loginUserName = processContext.getComputeResourcePreference().getLoginUserName();
         RemoteCluster remoteCluster = remoteClusterMap.get(key);
         if (remoteCluster == null) {
             JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
             if (dataMovementProtocol == DataMovementProtocol.LOCAL) {
                 remoteCluster = new LocalRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration, null);
             } else if (dataMovementProtocol == DataMovementProtocol.SCP) {
-                AuthenticationInfo authenticationInfo = getSSHKeyAuthentication(loginUserName);
-                remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration, authenticationInfo);
+                remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration,
+                        processContext.getSshKeyAuthentication());
             }
 
             remoteClusterMap.put(key, remoteCluster);
@@ -247,24 +255,64 @@ public abstract class Factory {
         return remoteCluster;
     }
 
-	private static SSHKeyAuthentication getSSHKeyAuthentication(String loginUserName) throws ApplicationSettingsException {
-		SSHKeyAuthentication sshKA = new SSHKeyAuthentication();
-        if (loginUserName != null && !loginUserName.isEmpty()) {
-            sshKA.setUserName(loginUserName);
-        } else {
-            sshKA.setUserName(ServerSettings.getSetting("ssh.username"));
+	public static SSHKeyAuthentication getComputerResourceSSHKeyAuthentication(ProcessContext pc) throws GFacException {
+        try {
+            ComputeResourcePreference computeResourcePreference = pc.getComputeResourcePreference();
+            String loginUserName = computeResourcePreference.getLoginUserName();
+            String credentialStoreToken = computeResourcePreference.getResourceSpecificCredentialStoreToken();
+            if (credentialStoreToken == null) {
+                credentialStoreToken = pc.getGatewayResourceProfile().getCredentialStoreToken();
+            }
+            return getSshKeyAuthentication(pc.getGatewayId(),loginUserName, credentialStoreToken);
+        } catch (ApplicationSettingsException | IllegalAccessException | InstantiationException | CredentialStoreException e) {
+            throw new GFacException("Couldn't build ssh authentication object", e);
         }
-		sshKA.setPassphrase(ServerSettings.getSetting("ssh.keypass"));
-		sshKA.setPrivateKeyFilePath(ServerSettings.getSetting("ssh.private.key"));
-		sshKA.setPublicKeyFilePath(ServerSettings.getSetting("ssh.public.key"));
-		sshKA.setStrictHostKeyChecking(ServerSettings.getSetting("ssh.strict.hostKey.checking", "no"));
-		sshKA.setKnownHostsFilePath(ServerSettings.getSetting("ssh.known.hosts.file", null));
-		if (sshKA.getStrictHostKeyChecking().equals("yes") && sshKA.getKnownHostsFilePath() == null) {
-			throw new ApplicationSettingsException("If ssh strict hostkey checking property is set to yes, you must " +
-					"provide known host file path");
-		}
-		return sshKA;
-	}
+    }
+
+    public static SSHKeyAuthentication getStorageSSHKeyAuthentication(ProcessContext pc) throws GFacException {
+        try {
+            StoragePreference storagePreference = pc.getStoragePreference();
+            String loginUserName = storagePreference.getLoginUserName();
+            String credentialStoreToken = storagePreference.getResourceSpecificCredentialStoreToken();
+            if (credentialStoreToken == null) {
+                credentialStoreToken = pc.getGatewayResourceProfile().getCredentialStoreToken();
+            }
+            return getSshKeyAuthentication(pc.getGatewayId(), loginUserName, credentialStoreToken);
+        }  catch (ApplicationSettingsException | IllegalAccessException | InstantiationException | CredentialStoreException e) {
+            throw new GFacException("Couldn't build ssh authentication object", e);
+        }
+    }
+
+    private static SSHKeyAuthentication getSshKeyAuthentication(String gatewayId,
+                                                                String loginUserName,
+                                                                String credentialStoreToken)
+            throws ApplicationSettingsException, IllegalAccessException, InstantiationException,
+            CredentialStoreException, GFacException {
+
+        SSHKeyAuthentication sshKA;CredentialReader credentialReader = GFacUtils.getCredentialReader();
+        Credential credential = credentialReader.getCredential(gatewayId, credentialStoreToken);
+        if (credential instanceof SSHCredential) {
+            sshKA = new SSHKeyAuthentication();
+            sshKA.setUserName(loginUserName);
+            SSHCredential sshCredential = (SSHCredential) credential;
+            sshKA.setPublicKey(sshCredential.getPublicKey());
+            sshKA.setPrivateKey(sshCredential.getPrivateKey());
+            sshKA.setPassphrase(sshCredential.getPassphrase());
+            sshKA.setStrictHostKeyChecking("no");
+/*            sshKA.setStrictHostKeyChecking(ServerSettings.getSetting("ssh.strict.hostKey.checking", "no"));
+            sshKA.setKnownHostsFilePath(ServerSettings.getSetting("ssh.known.hosts.file", null));
+            if (sshKA.getStrictHostKeyChecking().equals("yes") && sshKA.getKnownHostsFilePath() == null) {
+                throw new ApplicationSettingsException("If ssh strict hostkey checking property is set to yes, you must " +
+                        "provide known host file path");
+            }*/
+            return sshKA;
+        } else {
+            String msg = "Provided credential store token is not valid. Please provide the correct credential store token";
+            log.error(msg);
+            throw new GFacException("Invalid credential store token:" + credentialStoreToken);
+        }
+    }
+
 
 	public static JobSubmissionTask getJobSubmissionTask(JobSubmissionProtocol jobSubmissionProtocol) {
 		return jobSubmissionTask.get(jobSubmissionProtocol);
@@ -353,7 +401,7 @@ public abstract class Factory {
 					throw new AiravataException("Support ssh key authentication only");
 				}
 				JSch jSch = new JSch();
-				jSch.addIdentity(authentication.getPrivateKeyFilePath(), authentication.getPublicKeyFilePath(),
+				jSch.addIdentity(UUID.randomUUID().toString(), authentication.getPrivateKey(), authentication.getPublicKey(),
 						authentication.getPassphrase().getBytes());
 				Session session = jSch.getSession(serverInfo.getUserName(), serverInfo.getHost(),
 						serverInfo.getPort());

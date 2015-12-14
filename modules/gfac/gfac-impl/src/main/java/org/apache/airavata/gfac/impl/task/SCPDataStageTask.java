@@ -73,10 +73,6 @@ import java.util.Map;
 public class SCPDataStageTask implements Task {
     private static final Logger log = LoggerFactory.getLogger(SCPDataStageTask.class);
     private static final int DEFAULT_SSH_PORT = 22;
-    private String password;
-    private String publicKeyPath;
-    private String passPhrase;
-    private String privateKeyPath;
     private String userName;
     private String hostName;
     private String inputPath;
@@ -154,34 +150,11 @@ public class SCPDataStageTask implements Task {
                 return status;
             }
 
-
-            String tokenId = taskContext.getParentProcessContext().getTokenId();
-            CredentialReader credentialReader = GFacUtils.getCredentialReader();
-            Credential credential = credentialReader.getCredential(taskContext.getParentProcessContext().getGatewayId(), tokenId);
-            if (credential instanceof SSHCredential) {
-                SSHCredential sshCredential = (SSHCredential) credential;
-                byte[] publicKey = sshCredential.getPublicKey();
-                publicKeyPath = writeFileToDisk(publicKey);
-                byte[] privateKey = sshCredential.getPrivateKey();
-                privateKeyPath = writeFileToDisk(privateKey);
-                passPhrase = sshCredential.getPassphrase();
-//                userName = sshCredential.getPortalUserName(); // this might not same as login user name
-                authenticationInfo = getSSHKeyAuthentication();
-            } else {
-                String msg = "Provided credential store token is not valid. Please provide the correct credential store token";
-                log.error(msg);
-                status.setState(TaskState.FAILED);
-                status.setReason(msg);
-                ErrorModel errorModel = new ErrorModel();
-                errorModel.setActualErrorMessage(msg);
-                errorModel.setUserFriendlyMessage(msg);
-                taskContext.getTaskModel().setTaskError(errorModel);
-                return status;
-            }
+            authenticationInfo = Factory.getStorageSSHKeyAuthentication(taskContext.getParentProcessContext());
             status = new TaskStatus(TaskState.COMPLETED);
-
             StorageResourceDescription storageResource = taskContext.getParentProcessContext().getStorageResource();
             StoragePreference storagePreference = taskContext.getParentProcessContext().getStoragePreference();
+
             if (storageResource != null){
                 hostName = storageResource.getHostName();
             }
@@ -213,7 +186,7 @@ public class SCPDataStageTask implements Task {
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskError(errorModel);
             return status;
-        } catch (ApplicationSettingsException | FileNotFoundException | CredentialStoreException | IllegalAccessException | InstantiationException e) {
+        } catch (ApplicationSettingsException | FileNotFoundException e) {
             String msg = "Failed while reading credentials";
             log.error(msg, e);
             status.setState(TaskState.FAILED);
@@ -316,34 +289,6 @@ public class SCPDataStageTask implements Task {
     @Override
     public TaskTypes getType() {
         return TaskTypes.DATA_STAGING;
-    }
-
-    private SSHPasswordAuthentication getSSHPasswordAuthentication() {
-        return new SSHPasswordAuthentication(userName, password);
-    }
-
-    private SSHKeyAuthentication getSSHKeyAuthentication() {
-        SSHKeyAuthentication sshKA = new SSHKeyAuthentication();
-        sshKA.setUserName(userName);
-        sshKA.setPassphrase(passPhrase);
-        sshKA.setPrivateKeyFilePath(privateKeyPath);
-        sshKA.setPublicKeyFilePath(publicKeyPath);
-        sshKA.setStrictHostKeyChecking("no");
-        return sshKA;
-    }
-
-    private String writeFileToDisk(byte[] data) {
-        File temp = null;
-        try {
-            temp = File.createTempFile("id_rsa", "");
-            //write it
-            FileOutputStream bw = new FileOutputStream(temp);
-            bw.write(data);
-            bw.close();
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        }
-        return temp.getAbsolutePath();
     }
 
     public URI getDestinationURI(TaskContext taskContext, String fileName) throws URISyntaxException {

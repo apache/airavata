@@ -41,7 +41,6 @@ import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDes
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
-import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -140,6 +139,8 @@ public class GFacEngineImpl implements GFacEngine {
             }
             expCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processId);
             processModel.setProcessOutputs(applicationOutputs);
+
+            processContext.setSshKeyAuthentication(Factory.getComputerResourceSSHKeyAuthentication(processContext));
             processContext.setResourceJobManager(getResourceJobManager(processContext));
             processContext.setJobSubmissionRemoteCluster(Factory.getJobSubmissionRemoteCluster(processContext));
             processContext.setDataMovementRemoteCluster(Factory.getDataMovementRemoteCluster(processContext));

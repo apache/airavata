@@ -31,8 +31,8 @@ package org.apache.airavata.gfac.core.authentication;/*
 public class SSHKeyAuthentication implements AuthenticationInfo {
 
 	private String userName;
-	private String privateKeyFilePath;
-	private String publicKeyFilePath;
+	private byte[] privateKey;
+	private byte[] publicKey;
 	private String passphrase;
 	private String knownHostsFilePath;
 	private String strictHostKeyChecking; // yes or no
@@ -48,20 +48,20 @@ public class SSHKeyAuthentication implements AuthenticationInfo {
 		this.userName = userName;
 	}
 
-	public String getPrivateKeyFilePath() {
-		return privateKeyFilePath;
+	public byte[] getPrivateKey() {
+		return privateKey;
 	}
 
-	public void setPrivateKeyFilePath(String privateKeyFilePath) {
-		this.privateKeyFilePath = privateKeyFilePath;
+	public void setPrivateKey(byte[] privateKey) {
+		this.privateKey = privateKey;
 	}
 
-	public String getPublicKeyFilePath() {
-		return publicKeyFilePath;
+	public byte[] getPublicKey() {
+		return publicKey;
 	}
 
-	public void setPublicKeyFilePath(String publicKeyFilePath) {
-		this.publicKeyFilePath = publicKeyFilePath;
+	public void setPublicKey(byte[] publicKey) {
+		this.publicKey = publicKey;
 	}
 
 	public String getPassphrase() {
