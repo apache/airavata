@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 
 /**
@@ -60,7 +61,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 				throw new AiravataException("Support ssh key authentication only");
 			}
 			jSch = new JSch();
-			jSch.addIdentity(authentication.getPrivateKeyFilePath(), authentication.getPublicKeyFilePath(),
+			jSch.addIdentity(UUID.randomUUID().toString(), authentication.getPrivateKey(), authentication.getPublicKey(),
 					authentication.getPassphrase().getBytes());
 			session = getOpenSession();
 		} catch (JSchException e) {

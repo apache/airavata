@@ -22,6 +22,7 @@
 package org.apache.airavata.gfac.core.context;
 
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.messaging.core.Publisher;
@@ -95,6 +96,7 @@ public class ProcessContext {
     private boolean recovery = false; // is process in recovery mode?
     private TaskModel currentExecutingTaskModel; // current execution task model in case we pause process execution we need this to continue process exectuion again
 	private boolean acknowledge;
+	private SSHKeyAuthentication sshKeyAuthentication;
 
 	/**
 	 * Note: process context property use lazy loading approach. In runtime you will see some properties as null
@@ -491,4 +493,13 @@ public class ProcessContext {
 	public boolean isAcknowledge() {
 		return acknowledge;
 	}
+
+	public SSHKeyAuthentication getSshKeyAuthentication() {
+		return sshKeyAuthentication;
+	}
+
+	public void setSshKeyAuthentication(SSHKeyAuthentication sshKeyAuthentication) {
+		this.sshKeyAuthentication = sshKeyAuthentication;
+	}
 }
+
