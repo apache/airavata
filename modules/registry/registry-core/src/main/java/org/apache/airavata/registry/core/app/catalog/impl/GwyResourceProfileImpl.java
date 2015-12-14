@@ -135,11 +135,11 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                 for (StoragePreference storagePreference : dataStoragePreferences){
                     StoragePreferenceResource resource = new StoragePreferenceResource();
                     resource.setStorageResourceId(storagePreference.getStorageResourceId());
-                    resource.setGatewayId(profileResource.getGatewayID());
+                    resource.setGatewayId(existingGP.getGatewayID());
                     resource.setFsRootLocation(storagePreference.getFileSystemRootLocation());
                     resource.setLoginUserName(storagePreference.getLoginUserName());
                     resource.setResourceCSToken(storagePreference.getResourceSpecificCredentialStoreToken());
-                    resource.setGatewayProfile(profileResource);
+                    resource.setGatewayProfile(existingGP);
                     resource.save();
                 }
             }
