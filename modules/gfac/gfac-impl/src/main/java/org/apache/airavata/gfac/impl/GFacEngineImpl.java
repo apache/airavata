@@ -96,9 +96,13 @@ public class GFacEngineImpl implements GFacEngine {
             processContext.setComputeResourcePreference(appCatalog.getGatewayProfile().getComputeResourcePreference
                     (gatewayId, processModel.getComputeResourceId()));
             StoragePreference storagePreference = appCatalog.getGatewayProfile().getStoragePreference(gatewayId, processModel.getStorageResourceId());
-            if (storagePreference != null){
+            if (storagePreference != null) {
                 processContext.setStoragePreference(storagePreference);
+            } else {
+                throw new GFacException("expId: " + processModel.getExperimentId() + ", processId: " + processId +
+                        ":- Couldn't find storage preference for storage resource id :" + processModel.getStorageResourceId());
             }
+
 
 /*            StorageResourceDescription storageResource = appCatalog.getStorageResource().getStorageResource(processModel.getStorageResourceId());
             if (storageResource != null){
