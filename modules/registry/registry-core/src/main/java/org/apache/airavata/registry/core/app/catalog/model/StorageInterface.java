@@ -51,6 +51,9 @@ public class StorageInterface implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
+    @Column(name = "PRIORITY_ORDER")
+    private int priorityOrder;
+
     public Timestamp getCreationTime() {
         return creationTime;
     }
@@ -97,6 +100,14 @@ public class StorageInterface implements Serializable {
 
     public void setStorageResource(StorageResource storageResource) {
         this.storageResource = storageResource;
+    }
+
+    public int getPriorityOrder() {
+        return priorityOrder;
+    }
+
+    public void setPriorityOrder(int priorityOrder) {
+        this.priorityOrder = priorityOrder;
     }
 }
 	
