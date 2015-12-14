@@ -55,6 +55,7 @@ class DataResourceModel:
   """
   Attributes:
    - resourceId
+   - gatewayId
    - resourceName
    - resourceDescription
    - ownerName
@@ -68,18 +69,20 @@ class DataResourceModel:
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'resourceId', None, None, ), # 1
-    (2, TType.STRING, 'resourceName', None, None, ), # 2
-    (3, TType.STRING, 'resourceDescription', None, None, ), # 3
-    (4, TType.STRING, 'ownerName', None, None, ), # 4
-    (5, TType.I32, 'resourceSize', None, None, ), # 5
-    (6, TType.I64, 'creationTime', None, None, ), # 6
-    (7, TType.I64, 'lastModifiedTime', None, None, ), # 7
-    (8, TType.MAP, 'resourceMetadata', (TType.STRING,None,TType.STRING,None), None, ), # 8
-    (9, TType.LIST, 'dataReplicaLocations', (TType.STRUCT,(DataReplicaLocationModel, DataReplicaLocationModel.thrift_spec)), None, ), # 9
+    (2, TType.STRING, 'gatewayId', None, None, ), # 2
+    (3, TType.STRING, 'resourceName', None, None, ), # 3
+    (4, TType.STRING, 'resourceDescription', None, None, ), # 4
+    (5, TType.STRING, 'ownerName', None, None, ), # 5
+    (6, TType.I32, 'resourceSize', None, None, ), # 6
+    (7, TType.I64, 'creationTime', None, None, ), # 7
+    (8, TType.I64, 'lastModifiedTime', None, None, ), # 8
+    (9, TType.MAP, 'resourceMetadata', (TType.STRING,None,TType.STRING,None), None, ), # 9
+    (10, TType.LIST, 'dataReplicaLocations', (TType.STRUCT,(DataReplicaLocationModel, DataReplicaLocationModel.thrift_spec)), None, ), # 10
   )
 
-  def __init__(self, resourceId=None, resourceName=None, resourceDescription=None, ownerName=None, resourceSize=None, creationTime=None, lastModifiedTime=None, resourceMetadata=None, dataReplicaLocations=None,):
+  def __init__(self, resourceId=None, gatewayId=None, resourceName=None, resourceDescription=None, ownerName=None, resourceSize=None, creationTime=None, lastModifiedTime=None, resourceMetadata=None, dataReplicaLocations=None,):
     self.resourceId = resourceId
+    self.gatewayId = gatewayId
     self.resourceName = resourceName
     self.resourceDescription = resourceDescription
     self.ownerName = ownerName
@@ -105,35 +108,40 @@ class DataResourceModel:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.resourceName = iprot.readString();
+          self.gatewayId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
-          self.resourceDescription = iprot.readString();
+          self.resourceName = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 4:
         if ftype == TType.STRING:
-          self.ownerName = iprot.readString();
+          self.resourceDescription = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 5:
+        if ftype == TType.STRING:
+          self.ownerName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
         if ftype == TType.I32:
           self.resourceSize = iprot.readI32();
         else:
           iprot.skip(ftype)
-      elif fid == 6:
+      elif fid == 7:
         if ftype == TType.I64:
           self.creationTime = iprot.readI64();
         else:
           iprot.skip(ftype)
-      elif fid == 7:
+      elif fid == 8:
         if ftype == TType.I64:
           self.lastModifiedTime = iprot.readI64();
         else:
           iprot.skip(ftype)
-      elif fid == 8:
+      elif fid == 9:
         if ftype == TType.MAP:
           self.resourceMetadata = {}
           (_ktype1, _vtype2, _size0 ) = iprot.readMapBegin()
@@ -144,7 +152,7 @@ class DataResourceModel:
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 9:
+      elif fid == 10:
         if ftype == TType.LIST:
           self.dataReplicaLocations = []
           (_etype10, _size7) = iprot.readListBegin()
@@ -169,32 +177,36 @@ class DataResourceModel:
       oprot.writeFieldBegin('resourceId', TType.STRING, 1)
       oprot.writeString(self.resourceId)
       oprot.writeFieldEnd()
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
     if self.resourceName is not None:
-      oprot.writeFieldBegin('resourceName', TType.STRING, 2)
+      oprot.writeFieldBegin('resourceName', TType.STRING, 3)
       oprot.writeString(self.resourceName)
       oprot.writeFieldEnd()
     if self.resourceDescription is not None:
-      oprot.writeFieldBegin('resourceDescription', TType.STRING, 3)
+      oprot.writeFieldBegin('resourceDescription', TType.STRING, 4)
       oprot.writeString(self.resourceDescription)
       oprot.writeFieldEnd()
     if self.ownerName is not None:
-      oprot.writeFieldBegin('ownerName', TType.STRING, 4)
+      oprot.writeFieldBegin('ownerName', TType.STRING, 5)
       oprot.writeString(self.ownerName)
       oprot.writeFieldEnd()
     if self.resourceSize is not None:
-      oprot.writeFieldBegin('resourceSize', TType.I32, 5)
+      oprot.writeFieldBegin('resourceSize', TType.I32, 6)
       oprot.writeI32(self.resourceSize)
       oprot.writeFieldEnd()
     if self.creationTime is not None:
-      oprot.writeFieldBegin('creationTime', TType.I64, 6)
+      oprot.writeFieldBegin('creationTime', TType.I64, 7)
       oprot.writeI64(self.creationTime)
       oprot.writeFieldEnd()
     if self.lastModifiedTime is not None:
-      oprot.writeFieldBegin('lastModifiedTime', TType.I64, 7)
+      oprot.writeFieldBegin('lastModifiedTime', TType.I64, 8)
       oprot.writeI64(self.lastModifiedTime)
       oprot.writeFieldEnd()
     if self.resourceMetadata is not None:
-      oprot.writeFieldBegin('resourceMetadata', TType.MAP, 8)
+      oprot.writeFieldBegin('resourceMetadata', TType.MAP, 9)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.resourceMetadata))
       for kiter13,viter14 in self.resourceMetadata.items():
         oprot.writeString(kiter13)
@@ -202,7 +214,7 @@ class DataResourceModel:
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.dataReplicaLocations is not None:
-      oprot.writeFieldBegin('dataReplicaLocations', TType.LIST, 9)
+      oprot.writeFieldBegin('dataReplicaLocations', TType.LIST, 10)
       oprot.writeListBegin(TType.STRUCT, len(self.dataReplicaLocations))
       for iter15 in self.dataReplicaLocations:
         iter15.write(oprot)
@@ -218,6 +230,7 @@ class DataResourceModel:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.resourceId)
+    value = (value * 31) ^ hash(self.gatewayId)
     value = (value * 31) ^ hash(self.resourceName)
     value = (value * 31) ^ hash(self.resourceDescription)
     value = (value * 31) ^ hash(self.ownerName)
