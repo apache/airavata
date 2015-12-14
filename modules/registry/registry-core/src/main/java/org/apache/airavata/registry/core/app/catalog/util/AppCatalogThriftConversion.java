@@ -118,9 +118,11 @@ public class AppCatalogThriftConversion {
         description.setHostName(resource.getHostName());
         description.setStorageResourceDescription(resource.getResourceDescription());
         description.setEnabled(resource.isEnabled());
-        List<AppCatalogResource> dmiList = resource.get(AppCatAbstractResource.StorageInterfaceConstants.STORAGE_RESOURCE_ID, resource.getStorageResourceId());
-        if (dmiList != null && !dmiList.isEmpty()){
-            description.setDataMovementInterfaces(getDataMovementInterfaces(dmiList));
+        StorageInterfaceResource interfaceResource = new StorageInterfaceResource();
+        interfaceResource.setStorageResourceId(resource.getStorageResourceId());
+        List<AppCatalogResource> resources = interfaceResource.get(AppCatAbstractResource.StorageResourceConstants.RESOURCE_ID, resource.getStorageResourceId());
+        if (resources != null && !resources.isEmpty()){
+            description.setDataMovementInterfaces(getDataMovementInterfacesForStorageResource(resources));
         }
         return description;
     }
@@ -164,28 +166,43 @@ public class AppCatalogThriftConversion {
         }
         return batchQueues;
     }
-    
+
     public static List<DataMovementInterface> getDataMovementInterfaces(List<AppCatalogResource> resources){
+        List<DataMovementInterface> dataMovementInterfaces = new ArrayList<DataMovementInterface>();
+        for (AppCatalogResource resource : resources){
+            dataMovementInterfaces.add(getDataMovementInterface((DataMovementInterfaceResource)resource));
+        }
+        return dataMovementInterfaces;
+    }
+
+    public static List<DataMovementInterface> getDataMovementInterfacesForStorageResource(List<AppCatalogResource> resources){
     	List<DataMovementInterface> dataMovementInterfaces = new ArrayList<DataMovementInterface>();
         for (AppCatalogResource resource : resources){
-        	dataMovementInterfaces.add(getDataMovementInterface((DataMovementInterfaceResource)resource));
+        	dataMovementInterfaces.add(getDataMovementInterfaceForStorageResource((StorageInterfaceResource)resource));
         }
         return dataMovementInterfaces;
     }
     
-    public static DataMovementInterface getDataMovementInterface(DataMovementInterfaceResource resource){
+    public static DataMovementInterface getDataMovementInterfaceForStorageResource(StorageInterfaceResource resource){
     	DataMovementInterface dmi = new DataMovementInterface();
+    	dmi.setDataMovementInterfaceId(resource.getDataMovementInterfaceId());
+    	dmi.setDataMovementProtocol(DataMovementProtocol.valueOf(resource.getDataMovementProtocol()));
+        return dmi;
+    }
+    
+    public static DataMovementInterface getDataMovementInterface(DataMovementInterfaceResource resource){
+        DataMovementInterface dmi = new DataMovementInterface();
     	dmi.setDataMovementInterfaceId(resource.getDataMovementInterfaceId());
     	dmi.setDataMovementProtocol(DataMovementProtocol.valueOf(resource.getDataMovementProtocol()));
     	dmi.setPriorityOrder(resource.getPriorityOrder());
         return dmi;
     }
-    
-    public static DataMovementInterfaceResource getDataMovementInterface(DataMovementInterface resource){
-    	DataMovementInterfaceResource dmi = new DataMovementInterfaceResource();
-    	dmi.setDataMovementInterfaceId(resource.getDataMovementInterfaceId());
-    	dmi.setDataMovementProtocol(resource.getDataMovementProtocol().toString());
-    	dmi.setPriorityOrder(resource.getPriorityOrder());
+
+    public static DataMovementInterfaceResource getDataMovementInterfaceResource(DataMovementInterface dataMovementInterface){
+        DataMovementInterfaceResource dmi = new DataMovementInterfaceResource();
+        dmi.setDataMovementInterfaceId(dataMovementInterface.getDataMovementInterfaceId());
+        dmi.setDataMovementProtocol(dataMovementInterface.getDataMovementProtocol().toString());
+        dmi.setPriorityOrder(dataMovementInterface.getPriorityOrder());
         return dmi;
     }
 

@@ -23,8 +23,10 @@ package org.apache.airavata.registry.core.app.catalog.impl;
 
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
+import org.apache.airavata.model.data.movement.DataMovementInterface;
 import org.apache.airavata.registry.core.app.catalog.resources.AppCatAbstractResource;
 import org.apache.airavata.registry.core.app.catalog.resources.AppCatalogResource;
+import org.apache.airavata.registry.core.app.catalog.resources.StorageInterfaceResource;
 import org.apache.airavata.registry.core.app.catalog.resources.StorageResourceResource;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogUtils;
@@ -53,9 +55,24 @@ public class StorageResourceImpl implements StorageResource {
 			StorageResourceDescription description) throws AppCatalogException {
         StorageResourceResource storageResourceResource = AppCatalogThriftConversion.getStorageResource(description);
         storageResourceResource.save();
+        saveDataMovementInterfaces(description, storageResourceResource);
 		return storageResourceResource;
 	}
 
+    protected void saveDataMovementInterfaces(
+            StorageResourceDescription description,
+            StorageResourceResource storageResourceResource)
+            throws AppCatalogException {
+        List<DataMovementInterface> dataMovemenetInterfaces = description.getDataMovementInterfaces();
+        if (dataMovemenetInterfaces != null && !dataMovemenetInterfaces.isEmpty()) {
+            for (DataMovementInterface dataMovementInterface : dataMovemenetInterfaces) {
+                StorageInterfaceResource storageInterface = AppCatalogThriftConversion.getStorageInterface(dataMovementInterface);
+                storageInterface.setStorageResourceResource(storageResourceResource);
+                storageInterface.setStorageResourceId(storageResourceResource.getStorageResourceId());
+                storageInterface.save();
+            }
+        }
+    }
     /**
      * This function will add a storage resource description to the database
      *

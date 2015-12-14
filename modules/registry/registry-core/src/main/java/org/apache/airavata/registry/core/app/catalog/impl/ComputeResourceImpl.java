@@ -79,7 +79,7 @@ public class ComputeResourceImpl implements ComputeResource {
 		List<DataMovementInterface> dataMovemenetInterfaces = description.getDataMovementInterfaces();
 		if (dataMovemenetInterfaces != null && !dataMovemenetInterfaces.isEmpty()) {
 		    for (DataMovementInterface dataMovementInterface : dataMovemenetInterfaces) {
-		    	DataMovementInterfaceResource dmir = AppCatalogThriftConversion.getDataMovementInterface(dataMovementInterface);
+		    	DataMovementInterfaceResource dmir = AppCatalogThriftConversion.getDataMovementInterfaceResource(dataMovementInterface);
 		    	dmir.setComputeHostResource(computeHostResource);
 		    	dmir.setComputeResourceId(computeHostResource.getResourceId());
 				dmir.save();
@@ -372,7 +372,7 @@ public class ComputeResourceImpl implements ComputeResource {
         try {
             String dmId = null;
             if (dmType.equals(DMType.COMPUTE_RESOURCE)){
-                DataMovementInterfaceResource dmi = AppCatalogThriftConversion.getDataMovementInterface(dataMovementInterface);
+                DataMovementInterfaceResource dmi = AppCatalogThriftConversion.getDataMovementInterfaceResource(dataMovementInterface);
                 dmi.setComputeResourceId(resourceId);
                 ComputeResourceResource computeResourceResource = new ComputeResourceResource();
                 computeResourceResource=(ComputeResourceResource)computeResourceResource.get(resourceId);
