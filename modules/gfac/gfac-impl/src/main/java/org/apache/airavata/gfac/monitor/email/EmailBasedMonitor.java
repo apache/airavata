@@ -251,9 +251,18 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
         for (Message message : searchMessages) {
             try {
                 JobStatusResult jobStatusResult = parse(message);
-                TaskContext taskContext = jobMonitorMap.get(jobStatusResult.getJobId());
+                TaskContext taskContext = null;
+                if (jobStatusResult.getJobId() != null) {
+                    taskContext = jobMonitorMap.get(jobStatusResult.getJobId());
+                } else {
+                    log.info("Returned null for job id, message subject--> {}" , message.getSubject());
+                }
                 if (taskContext == null) {
-                    taskContext = jobMonitorMap.get(jobStatusResult.getJobName());
+                    if (jobStatusResult.getJobName() != null) {
+                        taskContext = jobMonitorMap.get(jobStatusResult.getJobName());
+                    } else {
+                        log.info("Returned null for job name, message subject --> {}" , message.getSubject());
+                    }
                 }
                 if (taskContext != null) {
                     process(jobStatusResult, taskContext);

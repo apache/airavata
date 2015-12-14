@@ -37,9 +37,10 @@ public class SLURMEmailParser implements EmailParser {
     private static final Logger log = LoggerFactory.getLogger(SLURMEmailParser.class);
 
     private static final String REGEX = "[A-Z]*\\s[a-zA-Z]*_[a-z]*=(?<" + JOBID + ">\\d*)[ ]*[a-zA-Z]*=(?<"+
-            JOBNAME + ">[a-zA-Z0-9-]*)[ ]*(?<" + STATUS + ">[]a-zA-Z]*),.*";
+            JOBNAME + ">[a-zA-Z0-9-]*)[ ]*(?<" + STATUS + ">[]a-zA-Z ]*),.*";
 
     public static final String BEGAN = "Began";
+    public static final String STAGE_OUT = "Staged Out";
     public static final String ENDED = "Ended";
     public static final String FAILED = "Failed";
     private static final Pattern cancelledStatePattern = Pattern.compile("CANCELLED");
@@ -63,7 +64,7 @@ public class SLURMEmailParser implements EmailParser {
 
     private JobState getJobState(String state, String subject) {
         switch (state.trim()) {
-            case BEGAN:
+            case BEGAN: case STAGE_OUT:
                 return JobState.ACTIVE;
             case ENDED:
                 Matcher matcher = cancelledStatePattern.matcher(subject);
