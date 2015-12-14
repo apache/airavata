@@ -187,6 +187,7 @@ public class AppCatalogThriftConversion {
     	DataMovementInterface dmi = new DataMovementInterface();
     	dmi.setDataMovementInterfaceId(resource.getDataMovementInterfaceId());
     	dmi.setDataMovementProtocol(DataMovementProtocol.valueOf(resource.getDataMovementProtocol()));
+        dmi.setPriorityOrder(resource.getPriorityOrder());
         return dmi;
     }
     
@@ -210,6 +211,7 @@ public class AppCatalogThriftConversion {
         StorageInterfaceResource storageInterfaceResource = new StorageInterfaceResource();
         storageInterfaceResource.setDataMovementInterfaceId(resource.getDataMovementInterfaceId());
         storageInterfaceResource.setDataMovementProtocol(resource.getDataMovementProtocol().toString());
+        storageInterfaceResource.setPriorityOrder(resource.getPriorityOrder());
         return storageInterfaceResource;
     }
     
