@@ -209,6 +209,7 @@ public abstract class Factory {
         JobSubmissionProtocol jobSubmissionProtocol = processContext.getJobSubmissionProtocol();
         String key = jobSubmissionProtocol.name() + ":" + computeResourceId;
 		RemoteCluster remoteCluster = remoteClusterMap.get(key);
+        String loginUserName = processContext.getComputeResourcePreference().getLoginUserName();
         if (remoteCluster == null) {
             JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
             if (jobSubmissionProtocol == JobSubmissionProtocol.LOCAL ||
@@ -216,7 +217,7 @@ public abstract class Factory {
                 remoteCluster = new LocalRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration, null);
             } else if (jobSubmissionProtocol == JobSubmissionProtocol.SSH ||
                     jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK) {
-                AuthenticationInfo authenticationInfo = getSSHKeyAuthentication();
+                AuthenticationInfo authenticationInfo = getSSHKeyAuthentication(loginUserName);
                 remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration, authenticationInfo);
             }
             remoteClusterMap.put(key, remoteCluster);
@@ -230,13 +231,14 @@ public abstract class Factory {
         String computeResourceId = processContext.getComputeResourceId();
         DataMovementProtocol dataMovementProtocol = processContext.getDataMovementProtocol();
         String key = dataMovementProtocol.name() + ":" + computeResourceId;
+        String loginUserName = processContext.getComputeResourcePreference().getLoginUserName();
         RemoteCluster remoteCluster = remoteClusterMap.get(key);
         if (remoteCluster == null) {
             JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
             if (dataMovementProtocol == DataMovementProtocol.LOCAL) {
                 remoteCluster = new LocalRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration, null);
             } else if (dataMovementProtocol == DataMovementProtocol.SCP) {
-                AuthenticationInfo authenticationInfo = getSSHKeyAuthentication();
+                AuthenticationInfo authenticationInfo = getSSHKeyAuthentication(loginUserName);
                 remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration, authenticationInfo);
             }
 
@@ -245,17 +247,21 @@ public abstract class Factory {
         return remoteCluster;
     }
 
-	private static SSHKeyAuthentication getSSHKeyAuthentication() throws ApplicationSettingsException {
+	private static SSHKeyAuthentication getSSHKeyAuthentication(String loginUserName) throws ApplicationSettingsException {
 		SSHKeyAuthentication sshKA = new SSHKeyAuthentication();
-		sshKA.setUserName(ServerSettings.getSetting("ssh.username"));
+        if (loginUserName != null && !loginUserName.isEmpty()) {
+            sshKA.setUserName(loginUserName);
+        } else {
+            sshKA.setUserName(ServerSettings.getSetting("ssh.username"));
+        }
 		sshKA.setPassphrase(ServerSettings.getSetting("ssh.keypass"));
 		sshKA.setPrivateKeyFilePath(ServerSettings.getSetting("ssh.private.key"));
 		sshKA.setPublicKeyFilePath(ServerSettings.getSetting("ssh.public.key"));
 		sshKA.setStrictHostKeyChecking(ServerSettings.getSetting("ssh.strict.hostKey.checking", "no"));
 		sshKA.setKnownHostsFilePath(ServerSettings.getSetting("ssh.known.hosts.file", null));
 		if (sshKA.getStrictHostKeyChecking().equals("yes") && sshKA.getKnownHostsFilePath() == null) {
-			throw new ApplicationSettingsException("If ssh scrict hostky checking property is set to yes, you must " +
-					"provid known host file path");
+			throw new ApplicationSettingsException("If ssh strict hostkey checking property is set to yes, you must " +
+					"provide known host file path");
 		}
 		return sshKA;
 	}
