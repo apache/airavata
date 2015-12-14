@@ -260,7 +260,7 @@ public abstract class Factory {
             ComputeResourcePreference computeResourcePreference = pc.getComputeResourcePreference();
             String loginUserName = computeResourcePreference.getLoginUserName();
             String credentialStoreToken = computeResourcePreference.getResourceSpecificCredentialStoreToken();
-            if (credentialStoreToken == null) {
+            if (credentialStoreToken == null && credentialStoreToken.isEmpty()) {
                 credentialStoreToken = pc.getGatewayResourceProfile().getCredentialStoreToken();
             }
             return getSshKeyAuthentication(pc.getGatewayId(),loginUserName, credentialStoreToken);
@@ -274,7 +274,7 @@ public abstract class Factory {
             StoragePreference storagePreference = pc.getStoragePreference();
             String loginUserName = storagePreference.getLoginUserName();
             String credentialStoreToken = storagePreference.getResourceSpecificCredentialStoreToken();
-            if (credentialStoreToken == null) {
+            if (credentialStoreToken == null && credentialStoreToken.isEmpty()) {
                 credentialStoreToken = pc.getGatewayResourceProfile().getCredentialStoreToken();
             }
             return getSshKeyAuthentication(pc.getGatewayId(), loginUserName, credentialStoreToken);
