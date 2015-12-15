@@ -71,16 +71,16 @@ service Airavata {
  * Apache Airavata API Service Methods. For data structures associated in the signatures, please see included thrift files
 */
 
-  /**
+   /**
    * Fetch Apache Airavata API version
-  */
+   **/
   string getAPIVersion(1: required security_model.AuthzToken authzToken)
         throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
                 3: airavata_errors.AiravataSystemException ase,
                 4: airavata_errors.AuthorizationException ae)
 
-  /**
+   /**
    * Register a Gateway with Airavata.
    *
    * @param gateway
@@ -89,7 +89,7 @@ service Airavata {
    * @return gatewayId
    *   Th unique identifier of the  newly registered gateway.
    *
-  */
+   **/
   
   string addGateway(1: required security_model.AuthzToken authzToken, 2: required workspace_model.Gateway gateway)
          throws (1: airavata_errors.InvalidRequestException ire,
@@ -97,16 +97,16 @@ service Airavata {
                  3: airavata_errors.AiravataSystemException ase,
                  4: airavata_errors.AuthorizationException ae)
 
-  /**
+   /**
    * Update previously registered Gateway metadata.
    *
    * @param gatewayId
    *    The gateway Id of the Gateway which require an update.
    *
-   * @param gateway
+   * @return gateway
    *    Modified gateway obejct.
    *
-  */
+   **/
 
   void updateGateway(1: required security_model.AuthzToken authzToken, 2: required string gatewayId, 3: required workspace_model.Gateway updatedGateway)
          throws (1: airavata_errors.InvalidRequestException ire,
@@ -114,17 +114,43 @@ service Airavata {
                  3: airavata_errors.AiravataSystemException ase,
                  4: airavata_errors.AuthorizationException ae)
 
+    /**
+    * Get Gateway details by providing gatewayId
+    *
+    * @param gatewayId
+    *    The gateway Id of the Gateway.
+    *
+    * @return gateway
+    *    Gateway obejct.
+    *
+    **/
+
   workspace_model.Gateway getGateway(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase,
                    4: airavata_errors.AuthorizationException ae)
 
+    /**
+    * Delete a Gateway
+    *
+    * @param gatewayId
+    *    The gateway Id of the Gateway to be deleted.
+    *
+    * @return boolean
+    *    Boolean identifier for the success or failure of the deletion operation.
+    *
+    **/
+
   bool deleteGateway(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase,
                      4: airavata_errors.AuthorizationException ae)
+
+    /**
+    * Get All the Gateways Connected to Airavata.
+    **/
 
   list<workspace_model.Gateway> getAllGateways(1: required security_model.AuthzToken authzToken)
              throws (1: airavata_errors.InvalidRequestException ire,
@@ -1065,6 +1091,7 @@ service Airavata {
    *   Returns a application Deployment Object.
    *
   */
+
   application_deployment_model.ApplicationDeploymentDescription getApplicationDeployment(1: required security_model.AuthzToken authzToken,
                 2: required string appDeploymentId)
       	throws (1: airavata_errors.InvalidRequestException ire,
