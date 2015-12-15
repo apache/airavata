@@ -2812,7 +2812,7 @@ interface AiravataIf {
    */
   public function isWorkflowExistWithName(\Airavata\Model\Security\AuthzToken $authzToken, $workflowName);
   /**
-   *  * Replica Catalog Related API Methods
+   *  * Data Manager Related API Methods
    * *
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
@@ -2823,7 +2823,7 @@ interface AiravataIf {
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function publishDataResource(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Resource\DataResourceModel $dataResourceModel);
+  public function registerDataResource(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Resource\DataResourceModel $dataResourceModel);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param \Airavata\Model\Data\Resource\DataResourceModel $dataResourceModel
@@ -11411,35 +11411,35 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("isWorkflowExistWithName failed: unknown result");
   }
 
-  public function publishDataResource(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Resource\DataResourceModel $dataResourceModel)
+  public function registerDataResource(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Resource\DataResourceModel $dataResourceModel)
   {
-    $this->send_publishDataResource($authzToken, $dataResourceModel);
-    return $this->recv_publishDataResource();
+    $this->send_registerDataResource($authzToken, $dataResourceModel);
+    return $this->recv_registerDataResource();
   }
 
-  public function send_publishDataResource(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Resource\DataResourceModel $dataResourceModel)
+  public function send_registerDataResource(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Resource\DataResourceModel $dataResourceModel)
   {
-    $args = new \Airavata\API\Airavata_publishDataResource_args();
+    $args = new \Airavata\API\Airavata_registerDataResource_args();
     $args->authzToken = $authzToken;
     $args->dataResourceModel = $dataResourceModel;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
-      thrift_protocol_write_binary($this->output_, 'publishDataResource', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+      thrift_protocol_write_binary($this->output_, 'registerDataResource', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
     }
     else
     {
-      $this->output_->writeMessageBegin('publishDataResource', TMessageType::CALL, $this->seqid_);
+      $this->output_->writeMessageBegin('registerDataResource', TMessageType::CALL, $this->seqid_);
       $args->write($this->output_);
       $this->output_->writeMessageEnd();
       $this->output_->getTransport()->flush();
     }
   }
 
-  public function recv_publishDataResource()
+  public function recv_registerDataResource()
   {
     $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
-    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_publishDataResource_result', $this->input_->isStrictRead());
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_registerDataResource_result', $this->input_->isStrictRead());
     else
     {
       $rseqid = 0;
@@ -11453,7 +11453,7 @@ class AiravataClient implements \Airavata\API\AiravataIf {
         $this->input_->readMessageEnd();
         throw $x;
       }
-      $result = new \Airavata\API\Airavata_publishDataResource_result();
+      $result = new \Airavata\API\Airavata_registerDataResource_result();
       $result->read($this->input_);
       $this->input_->readMessageEnd();
     }
@@ -11472,7 +11472,7 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     if ($result->ae !== null) {
       throw $result->ae;
     }
-    throw new \Exception("publishDataResource failed: unknown result");
+    throw new \Exception("registerDataResource failed: unknown result");
   }
 
   public function updateDataResource(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Resource\DataResourceModel $dataResourceModel)
@@ -52192,7 +52192,7 @@ class Airavata_isWorkflowExistWithName_result {
 
 }
 
-class Airavata_publishDataResource_args {
+class Airavata_registerDataResource_args {
   static $_TSPEC;
 
   /**
@@ -52230,7 +52230,7 @@ class Airavata_publishDataResource_args {
   }
 
   public function getName() {
-    return 'Airavata_publishDataResource_args';
+    return 'Airavata_registerDataResource_args';
   }
 
   public function read($input)
@@ -52276,7 +52276,7 @@ class Airavata_publishDataResource_args {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('Airavata_publishDataResource_args');
+    $xfer += $output->writeStructBegin('Airavata_registerDataResource_args');
     if ($this->authzToken !== null) {
       if (!is_object($this->authzToken)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
@@ -52300,7 +52300,7 @@ class Airavata_publishDataResource_args {
 
 }
 
-class Airavata_publishDataResource_result {
+class Airavata_registerDataResource_result {
   static $_TSPEC;
 
   /**
@@ -52373,7 +52373,7 @@ class Airavata_publishDataResource_result {
   }
 
   public function getName() {
-    return 'Airavata_publishDataResource_result';
+    return 'Airavata_registerDataResource_result';
   }
 
   public function read($input)
@@ -52442,7 +52442,7 @@ class Airavata_publishDataResource_result {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('Airavata_publishDataResource_result');
+    $xfer += $output->writeStructBegin('Airavata_registerDataResource_result');
     if ($this->success !== null) {
       $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
       $xfer += $output->writeString($this->success);

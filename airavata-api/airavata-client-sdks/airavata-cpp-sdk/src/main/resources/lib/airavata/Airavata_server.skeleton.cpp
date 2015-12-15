@@ -2285,15 +2285,15 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   *  * Replica Catalog Related API Methods
+   *  * Data Manager Related API Methods
    * *
    * 
    * @param authzToken
    * @param dataResourceModel
    */
-  void publishDataResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::DataResourceModel& dataResourceModel) {
+  void registerDataResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::DataResourceModel& dataResourceModel) {
     // Your implementation goes here
-    printf("publishDataResource\n");
+    printf("registerDataResource\n");
   }
 
   void updateDataResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::DataResourceModel& dataResourceModel) {

@@ -41221,11 +41221,11 @@ uint32_t Airavata_isWorkflowExistWithName_presult::read(::apache::thrift::protoc
 }
 
 
-Airavata_publishDataResource_args::~Airavata_publishDataResource_args() throw() {
+Airavata_registerDataResource_args::~Airavata_registerDataResource_args() throw() {
 }
 
 
-uint32_t Airavata_publishDataResource_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Airavata_registerDataResource_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -41279,10 +41279,10 @@ uint32_t Airavata_publishDataResource_args::read(::apache::thrift::protocol::TPr
   return xfer;
 }
 
-uint32_t Airavata_publishDataResource_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t Airavata_registerDataResource_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("Airavata_publishDataResource_args");
+  xfer += oprot->writeStructBegin("Airavata_registerDataResource_args");
 
   xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
   xfer += this->authzToken.write(oprot);
@@ -41299,14 +41299,14 @@ uint32_t Airavata_publishDataResource_args::write(::apache::thrift::protocol::TP
 }
 
 
-Airavata_publishDataResource_pargs::~Airavata_publishDataResource_pargs() throw() {
+Airavata_registerDataResource_pargs::~Airavata_registerDataResource_pargs() throw() {
 }
 
 
-uint32_t Airavata_publishDataResource_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t Airavata_registerDataResource_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("Airavata_publishDataResource_pargs");
+  xfer += oprot->writeStructBegin("Airavata_registerDataResource_pargs");
 
   xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
   xfer += (*(this->authzToken)).write(oprot);
@@ -41323,11 +41323,11 @@ uint32_t Airavata_publishDataResource_pargs::write(::apache::thrift::protocol::T
 }
 
 
-Airavata_publishDataResource_result::~Airavata_publishDataResource_result() throw() {
+Airavata_registerDataResource_result::~Airavata_registerDataResource_result() throw() {
 }
 
 
-uint32_t Airavata_publishDataResource_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Airavata_registerDataResource_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -41399,11 +41399,11 @@ uint32_t Airavata_publishDataResource_result::read(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t Airavata_publishDataResource_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t Airavata_registerDataResource_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("Airavata_publishDataResource_result");
+  xfer += oprot->writeStructBegin("Airavata_registerDataResource_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
@@ -41432,11 +41432,11 @@ uint32_t Airavata_publishDataResource_result::write(::apache::thrift::protocol::
 }
 
 
-Airavata_publishDataResource_presult::~Airavata_publishDataResource_presult() throw() {
+Airavata_registerDataResource_presult::~Airavata_registerDataResource_presult() throw() {
 }
 
 
-uint32_t Airavata_publishDataResource_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Airavata_registerDataResource_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -51784,18 +51784,18 @@ bool AiravataClient::recv_isWorkflowExistWithName()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "isWorkflowExistWithName failed: unknown result");
 }
 
-void AiravataClient::publishDataResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::DataResourceModel& dataResourceModel)
+void AiravataClient::registerDataResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::DataResourceModel& dataResourceModel)
 {
-  send_publishDataResource(authzToken, dataResourceModel);
-  recv_publishDataResource(_return);
+  send_registerDataResource(authzToken, dataResourceModel);
+  recv_registerDataResource(_return);
 }
 
-void AiravataClient::send_publishDataResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::DataResourceModel& dataResourceModel)
+void AiravataClient::send_registerDataResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::DataResourceModel& dataResourceModel)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("publishDataResource", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("registerDataResource", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  Airavata_publishDataResource_pargs args;
+  Airavata_registerDataResource_pargs args;
   args.authzToken = &authzToken;
   args.dataResourceModel = &dataResourceModel;
   args.write(oprot_);
@@ -51805,7 +51805,7 @@ void AiravataClient::send_publishDataResource(const  ::apache::airavata::model::
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_publishDataResource(std::string& _return)
+void AiravataClient::recv_registerDataResource(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -51825,12 +51825,12 @@ void AiravataClient::recv_publishDataResource(std::string& _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("publishDataResource") != 0) {
+  if (fname.compare("registerDataResource") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  Airavata_publishDataResource_presult result;
+  Airavata_registerDataResource_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -51852,7 +51852,7 @@ void AiravataClient::recv_publishDataResource(std::string& _return)
   if (result.__isset.ae) {
     throw result.ae;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "publishDataResource failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "registerDataResource failed: unknown result");
 }
 
 void AiravataClient::updateDataResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::DataResourceModel& dataResourceModel)
@@ -60795,30 +60795,30 @@ void AiravataProcessor::process_isWorkflowExistWithName(int32_t seqid, ::apache:
   }
 }
 
-void AiravataProcessor::process_publishDataResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void AiravataProcessor::process_registerDataResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("Airavata.publishDataResource", callContext);
+    ctx = this->eventHandler_->getContext("Airavata.registerDataResource", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.publishDataResource");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.registerDataResource");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "Airavata.publishDataResource");
+    this->eventHandler_->preRead(ctx, "Airavata.registerDataResource");
   }
 
-  Airavata_publishDataResource_args args;
+  Airavata_registerDataResource_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "Airavata.publishDataResource", bytes);
+    this->eventHandler_->postRead(ctx, "Airavata.registerDataResource", bytes);
   }
 
-  Airavata_publishDataResource_result result;
+  Airavata_registerDataResource_result result;
   try {
-    iface_->publishDataResource(result.success, args.authzToken, args.dataResourceModel);
+    iface_->registerDataResource(result.success, args.authzToken, args.dataResourceModel);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -60834,11 +60834,11 @@ void AiravataProcessor::process_publishDataResource(int32_t seqid, ::apache::thr
     result.__isset.ae = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "Airavata.publishDataResource");
+      this->eventHandler_->handlerError(ctx, "Airavata.registerDataResource");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("publishDataResource", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("registerDataResource", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -60847,17 +60847,17 @@ void AiravataProcessor::process_publishDataResource(int32_t seqid, ::apache::thr
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "Airavata.publishDataResource");
+    this->eventHandler_->preWrite(ctx, "Airavata.registerDataResource");
   }
 
-  oprot->writeMessageBegin("publishDataResource", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("registerDataResource", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "Airavata.publishDataResource", bytes);
+    this->eventHandler_->postWrite(ctx, "Airavata.registerDataResource", bytes);
   }
 }
 

@@ -71,6 +71,9 @@ import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
+import org.apache.airavata.replica.catalog.core.DataManagerFactory;
+import org.apache.airavata.replica.catalog.cpi.DataManager;
+import org.apache.airavata.replica.catalog.cpi.DataManagerException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -4060,7 +4063,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 	}
 
     /**
-     * * Replica Catalog Related API Methods
+     * * Data Manager Related API Methods
      * *
      */
 
@@ -4077,11 +4080,11 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public String publishDataResource(AuthzToken authzToken, DataResourceModel dataResourceModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public String registerDataResource(AuthzToken authzToken, DataResourceModel dataResourceModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
-            DataCatalog dataCatalog = RegistryFactory.getDataCatalog();
-            return dataCatalog.publishResource(dataResourceModel);
-        } catch (DataCatalogException e) {
+            DataManager dataManager = DataManagerFactory.getDataManager();
+            return dataManager.registerResource(dataResourceModel);
+        } catch (DataManagerException e) {
             String msg = "Error in publishing the data resource"+dataResourceModel.getResourceName()+".";
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -4104,9 +4107,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public void updateDataResource(AuthzToken authzToken, DataResourceModel dataResourceModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
-            DataCatalog dataCatalog = RegistryFactory.getDataCatalog();
-            dataCatalog.updateResource(dataResourceModel);
-        } catch (DataCatalogException e) {
+            DataManager dataManager = DataManagerFactory.getDataManager();
+            dataManager.updateResource(dataResourceModel);
+        } catch (DataManagerException e) {
             String msg = "Error in updating the data resource"+dataResourceModel.getResourceName()+".";
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -4129,9 +4132,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public void removeDataResource(AuthzToken authzToken, String resourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
-            DataCatalog dataCatalog = RegistryFactory.getDataCatalog();
-            dataCatalog.removeResource(resourceId);
-        } catch (DataCatalogException e) {
+            DataManager dataManager = DataManagerFactory.getDataManager();
+            dataManager.removeResource(resourceId);
+        } catch (DataManagerException e) {
             String msg = "Error in removing the data resource "+resourceId+".";
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -4156,9 +4159,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public DataResourceModel getDataResource(AuthzToken authzToken, String resourceId) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
-            DataCatalog dataCatalog = RegistryFactory.getDataCatalog();
-            return  dataCatalog.getResource(resourceId);
-        } catch (DataCatalogException e) {
+            DataManager dataManager = DataManagerFactory.getDataManager();
+            return dataManager.getResource(resourceId);
+        } catch (DataManagerException e) {
             String msg = "Error in retreiving the data resource "+resourceId+".";
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
