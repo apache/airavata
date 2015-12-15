@@ -80,6 +80,17 @@ service Airavata {
                 3: airavata_errors.AiravataSystemException ase,
                 4: airavata_errors.AuthorizationException ae)
 
+ /**
+   * Register a gateway with Airavata.
+   *
+   * @param gateway
+   *    The gateway data model.
+   * 
+   * @return gatewayId
+   *   A newly registered gateway Identifier.
+   *
+   **/
+  
   string addGateway(1: required security_model.AuthzToken authzToken, 2: required workspace_model.Gateway gateway)
          throws (1: airavata_errors.InvalidRequestException ire,
                  2: airavata_errors.AiravataClientException ace,
