@@ -20,6 +20,4 @@
 
 include "compute_resource_model.thrift"
 include "storage_resource_model.thrift"
-include "application_deployment_model.thrift"
-include "application_interface_model.thrift"
 include "gateway_resource_profile_model.thrift"

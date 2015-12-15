@@ -8,9 +8,9 @@
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import apache.airavata.model.commons.ttypes
+import apache.airavata.model.application.io.ttypes
 import apache.airavata.model.status.ttypes
 import apache.airavata.model.task.ttypes
-import apache.airavata.model.application.io.ttypes
 import apache.airavata.model.scheduling.ttypes
 
 

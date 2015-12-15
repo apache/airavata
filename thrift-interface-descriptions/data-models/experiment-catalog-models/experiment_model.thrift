@@ -18,9 +18,9 @@
  *
  */
 
- include "application_io_models.thrift"
+ include "../../airavata-apis/airavata_commons.thrift"
+ include "../app-catalog-models/application_io_models.thrift"
  include "scheduling_model.thrift"
- include "airavata_commons.thrift"
  include "status_models.thrift"
  include "process_model.thrift"
 

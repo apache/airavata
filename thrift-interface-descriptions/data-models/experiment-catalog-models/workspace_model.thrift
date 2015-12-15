@@ -18,7 +18,7 @@
  *
  */
 
-include "airavata_commons.thrift"
+include "../../airavata-apis/airavata_commons.thrift"
 
 namespace java org.apache.airavata.model.workspace
 namespace php Airavata.Model.Workspace

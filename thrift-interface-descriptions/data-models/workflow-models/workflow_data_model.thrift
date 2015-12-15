@@ -18,24 +18,13 @@
  *
  */
 
-include "airavata_commons.thrift"
-include "workspace_model.thrift"
-include "airavata_errors.thrift"
-include "messaging_events.thrift"
-include "security_model.thrift"
-include "experiment_model.thrift"
-include "job_model.thrift"
-include "task_model.thrift"
-include "process_model.thrift"
-include "scheduling_model.thrift"
-include "status_models.thrift"
-include "data_movement_models.thrift"
-include "replica_catalog_models.thrift"
 
 namespace java org.apache.airavata.model
 namespace php Airavata.Model
-namespace cpp apache.airavata.model
-namespace py apache.airavata.model
+namespace py apache.airavata.model.workflow
+
+include "../app-catalog-models/application_io_models.thrift"
+include "../../airavata-apis/airavata_commons.thrift"
 
 /*
  * This file describes the definitions of the Airavata Execution Data Structures. Each of the
@@ -44,4 +33,11 @@ namespace py apache.airavata.model
 */
 
 
-
+struct Workflow {
+    1: required string templateId = airavata_commons.DEFAULT_ID,
+    2: required string name,
+    3: optional string graph,
+    4: optional binary image,
+    5: optional list<application_io_models.InputDataObjectType> workflowInputs,
+    6: optional list<application_io_models.OutputDataObjectType> workflowOutputs
+}

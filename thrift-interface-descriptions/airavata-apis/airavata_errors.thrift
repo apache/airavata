@@ -24,7 +24,7 @@
 *  built in funcationality to raise TApplicationException for all internal server errors.
 */
 
-include "experiment_model.thrift"
+include "../data-models/experiment-catalog-models/experiment_model.thrift"
 
 namespace java org.apache.airavata.model.error
 namespace php Airavata.API.Error

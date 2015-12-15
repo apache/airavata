@@ -20,7 +20,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package org.apache.airavata.orchestrator.cpi;
+package org.apache.airavata.gfac.cpi;
 
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
@@ -50,8 +50,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked"})
-public class orchestrator_cpi_serviceConstants {
+public class gfac_cpiConstants {
 
-  public static final String ORCHESTRATOR_CPI_VERSION = "0.16.0";
+  public static final String GFAC_CPI_VERSION = "0.16.0";
 
 }

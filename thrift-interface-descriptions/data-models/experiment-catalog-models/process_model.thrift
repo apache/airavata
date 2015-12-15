@@ -18,10 +18,10 @@
  *
  */
 
-include "airavata_commons.thrift"
+include "../../airavata-apis/airavata_commons.thrift"
+include "../app-catalog-models/application_io_models.thrift"
 include "status_models.thrift"
 include "task_model.thrift"
-include "application_io_models.thrift"
 include "scheduling_model.thrift"
 
 namespace java org.apache.airavata.model.process

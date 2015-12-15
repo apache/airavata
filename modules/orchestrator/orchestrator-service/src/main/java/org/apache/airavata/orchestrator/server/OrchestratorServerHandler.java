@@ -55,7 +55,7 @@ import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
-import org.apache.airavata.orchestrator.cpi.orchestrator_cpi_serviceConstants;
+import org.apache.airavata.orchestrator.cpi.orchestrator_cpiConstants;
 import org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor;
 import org.apache.airavata.orchestrator.util.OrchestratorUtils;
 import org.apache.airavata.registry.core.app.catalog.resources.AppCatAbstractResource;
@@ -95,7 +95,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	 * Query orchestrator server to fetch the CPI version
 	 */
 	public String getOrchestratorCPIVersion() throws TException {
-		return orchestrator_cpi_serviceConstants.ORCHESTRATOR_CPI_VERSION;
+		return orchestrator_cpiConstants.ORCHESTRATOR_CPI_VERSION;
 	}
 
 	public OrchestratorServerHandler() throws OrchestratorException{
