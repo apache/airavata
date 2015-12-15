@@ -80,7 +80,7 @@ service Airavata {
                 3: airavata_errors.AiravataSystemException ase,
                 4: airavata_errors.AuthorizationException ae)
 
- /**
+  /**
    * Register a Gateway with Airavata.
    *
    * @param gateway
@@ -89,7 +89,7 @@ service Airavata {
    * @return gatewayId
    *   Th unique identifier of the  newly registered gateway.
    *
-   **/
+  */
   
   string addGateway(1: required security_model.AuthzToken authzToken, 2: required workspace_model.Gateway gateway)
          throws (1: airavata_errors.InvalidRequestException ire,
@@ -97,16 +97,17 @@ service Airavata {
                  3: airavata_errors.AiravataSystemException ase,
                  4: airavata_errors.AuthorizationException ae)
 
- /**
-   * Update previously registered gateway metadata.
+  /**
+   * Update previously registered Gateway metadata.
    *
    * @param gatewayId
-   *    The gateway Id.
+   *    The gateway Id of the Gateway which require an update.
    *
    * @param gateway
    *    Modified gateway obejct.
    *
-   **/
+  */
+
   void updateGateway(1: required security_model.AuthzToken authzToken, 2: required string gatewayId, 3: required workspace_model.Gateway updatedGateway)
          throws (1: airavata_errors.InvalidRequestException ire,
                  2: airavata_errors.AiravataClientException ace,
