@@ -50,7 +50,7 @@ namespace py apache.airavata.api
 namespace js ApacheAiravataAPI
 
 /**
- * Airavata Interface Versions depend upon this Thrift Interface File. When Making changes, please edit the
+ * Airavata Interface Versions depend upon this Thrift Interface File. When making changes, please edit the
  *  Version Constants according to Semantic Versioning Specification (SemVer) http://semver.org.
  *
  * Note: The Airavata API version may be different from the Airavata software release versions.
@@ -81,13 +81,13 @@ service Airavata {
                 4: airavata_errors.AuthorizationException ae)
 
  /**
-   * Register a gateway with Airavata.
+   * Register a Gateway with Airavata.
    *
    * @param gateway
    *    The gateway data model.
    * 
    * @return gatewayId
-   *   A newly registered gateway Identifier.
+   *   Th unique identifier of the  newly registered gateway.
    *
    **/
   
