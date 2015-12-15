@@ -18,7 +18,7 @@
  *
  */
 
-include "airavata_commons.thrift"
+include "../../airavata-apis/airavata_commons.thrift"
 include "data_movement_models.thrift"
 
 namespace java org.apache.airavata.model.appcatalog.computeresource

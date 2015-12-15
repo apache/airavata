@@ -23,8 +23,8 @@
  *
 */
 
-include "credentialStoreDataModel.thrift"
-include "credentialStoreErrors.thrift"
+include "credential-store-data-models.thrift"
+include "credential-store-errors.thrift"
 
 namespace java org.apache.airavata.credential.store.cpi
 
@@ -38,22 +38,22 @@ service CredentialStoreService {
   /**
   * This method is to add SSHCredential which will return the token Id in success
   **/
-  string addSSHCredential (1: required credentialStoreDataModel.SSHCredential sshCredential)
+  string addSSHCredential (1: required credential-store-data-models.SSHCredential sshCredential)
+                        throws (1:credential-store-errors.CredentialStoreException csException);
+
+  string addCertificateCredential (1: required credential-store-data-models.CertificateCredential certificateCredential)
+                        throws (1:credential-store-errors.CredentialStoreException csException);
+
+  string addPasswordCredential (1: required credential-store-data-models.PasswordCredential passwordCredential)
+                        throws (1:credential-store-errors.CredentialStoreException csException);
+
+  credential-store-data-models.SSHCredential getSSHCredential (1: required string tokenId, 2: required string gatewayId)
                         throws (1:credentialStoreErrors.CredentialStoreException csException);
 
-  string addCertificateCredential (1: required credentialStoreDataModel.CertificateCredential certificateCredential)
+  credential-store-data-models.CertificateCredential getCertificateCredential (1: required string tokenId, 2: required string gatewayId)
                         throws (1:credentialStoreErrors.CredentialStoreException csException);
 
-  string addPasswordCredential (1: required credentialStoreDataModel.PasswordCredential passwordCredential)
-                        throws (1:credentialStoreErrors.CredentialStoreException csException);
-
-  credentialStoreDataModel.SSHCredential getSSHCredential (1: required string tokenId, 2: required string gatewayId)
-                        throws (1:credentialStoreErrors.CredentialStoreException csException);
-
-  credentialStoreDataModel.CertificateCredential getCertificateCredential (1: required string tokenId, 2: required string gatewayId)
-                        throws (1:credentialStoreErrors.CredentialStoreException csException);
-
-  credentialStoreDataModel.PasswordCredential getPasswordCredential (1: required string tokenId, 2: required string gatewayId)
+  credential-store-data-models.PasswordCredential getPasswordCredential (1: required string tokenId, 2: required string gatewayId)
                         throws (1:credentialStoreErrors.CredentialStoreException csException);
 
   map<string,string> getAllSSHKeysForUser (1: required string username) throws (1:credentialStoreErrors.CredentialStoreException csException);

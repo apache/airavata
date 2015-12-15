@@ -32,9 +32,9 @@
 #include <thrift/transport/TTransport.h>
 
 #include <thrift/cxxfunctional.h>
+#include "airavata_commons_types.h"
 #include "application_io_models_types.h"
 #include "scheduling_model_types.h"
-#include "airavata_commons_types.h"
 #include "status_models_types.h"
 #include "process_model_types.h"
 

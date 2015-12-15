@@ -24,7 +24,7 @@
  *
 */
 
-include "airavata_commons.thrift"
+include "../../airavata-apis/airavata_commons.thrift"
 
 namespace java org.apache.airavata.model.appcatalog.appdeployment
 namespace php Airavata.Model.AppCatalog.AppDeployment

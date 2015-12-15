@@ -24,7 +24,7 @@
  *
 */
 include "application_io_models.thrift"
-include "airavata_commons.thrift"
+include "../../airavata-apis/airavata_commons.thrift"
 
 namespace java org.apache.airavata.model.appcatalog.appinterface
 namespace php Airavata.Model.AppCatalog.AppInterface

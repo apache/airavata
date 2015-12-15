@@ -18,11 +18,11 @@
  *
  */
 
-include "airavata_commons.thrift"
+include "../../airavata-apis/airavata_commons.thrift"
+include "../resource-catalog-models/compute_resource_model.thrift"
+include "../resource-catalog-models/data_movement_models.thrift"
+include "../app-catalog-models/application_io_models.thrift"
 include "status_models.thrift"
-include "compute_resource_model.thrift"
-include "data_movement_models.thrift"
-include "application_io_models.thrift"
 include "job_model.thrift"
 
 namespace java org.apache.airavata.model.task

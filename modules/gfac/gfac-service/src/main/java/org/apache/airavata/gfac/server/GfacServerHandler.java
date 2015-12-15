@@ -33,7 +33,7 @@ import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
 import org.apache.airavata.gfac.cpi.GfacService;
-import org.apache.airavata.gfac.cpi.gfac_cpi_serviceConstants;
+import org.apache.airavata.gfac.cpi.gfac_cpiConstants;
 import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.gfac.impl.GFacWorker;
 import org.apache.airavata.messaging.core.MessageContext;
@@ -132,7 +132,7 @@ public class GfacServerHandler implements GfacService.Iface {
     }
 
     public String getGFACServiceVersion() throws TException {
-        return gfac_cpi_serviceConstants.GFAC_CPI_VERSION;
+        return gfac_cpiConstants.GFAC_CPI_VERSION;
     }
 
     /**

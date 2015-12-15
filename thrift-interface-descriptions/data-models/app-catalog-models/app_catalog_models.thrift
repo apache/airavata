@@ -18,26 +18,5 @@
  *
  */
 
-
-namespace java org.apache.airavata.model
-namespace php Airavata.Model
-namespace py apache.airavata.model.workflow
-
-include "application_io_models.thrift"
-include "airavata_commons.thrift"
-
-/*
- * This file describes the definitions of the Airavata Execution Data Structures. Each of the
- *   language specific Airavata Client SDK's will translate this neutral data model into an
- *   appropriate form for passing to the Airavata Server Execution API Calls.
-*/
-
-
-struct Workflow {
-    1: required string templateId = airavata_commons.DEFAULT_ID,
-    2: required string name,
-    3: optional string graph,
-    4: optional binary image,
-    5: optional list<application_io_models.InputDataObjectType> workflowInputs,
-    6: optional list<application_io_models.OutputDataObjectType> workflowOutputs
-}
+include "application_deployment_model.thrift"
+include "application_interface_model.thrift"

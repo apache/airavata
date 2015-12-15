@@ -18,7 +18,7 @@
  *
  */
 
-include "airavata_commons.thrift"
+include "../../airavata-apis/airavata_commons.thrift"
 
 namespace java org.apache.airavata.model.data.movement
 namespace php Airavata.Model.Data.Movement

@@ -18,8 +18,8 @@
  *
  */
 
-include "status_models.thrift"
-include "application_io_models.thrift"
+include "../data-models/experiment-catalog-models/status_models.thrift"
+include "../data-models/app-catalog-models/application_io_models.thrift"
 include "airavata_commons.thrift"
 
 namespace java org.apache.airavata.model.messaging.event

@@ -23,8 +23,8 @@
  *
 */
 
-include "../airavata-api/airavata_errors.thrift"
-include "../airavata-api/process_model.thrift"
+include "../airavata-apis/airavata_errors.thrift"
+include "../data-models/experiment-catalog-models/process_model.thrift"
 namespace java org.apache.airavata.orchestrator.cpi
 
 const string ORCHESTRATOR_CPI_VERSION = "0.16.0"
