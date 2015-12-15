@@ -165,16 +165,16 @@ service Airavata {
                    4: airavata_errors.AuthorizationException ae)
 
 
-  /**
+    /**
     * Airavata Adminstrative Funcationality
-  **/
+    **/
 
 
-  /**
+   /**
    * Generate and Register SSH Key Pair with Airavata Credential Store.
    *
    * @param gatewayId
-   *    The identifier for the requested gateway.
+   *    The identifier for the requested Gateway.
    *
    * @param userName
    *    The User for which the credential should be registered. For community accounts, this user is the name of the
@@ -182,7 +182,7 @@ service Airavata {
    *
    * @return airavataCredStoreToken
    *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
-   *   belonging to a gateway.
+   *   belonging to a Gateway.
    *
    **/
 
