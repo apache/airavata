@@ -193,6 +193,19 @@ service Airavata {
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
 
+   /**
+   * Get a Public Key by Providing the Token
+   *
+   * @param CredStoreToken
+   *    Credential Store Token which you want to find the Public Key for.
+   *
+   * @param gatewayId
+   *    This is the unique identifier of your gateway where the token and public key was generated from.
+   *
+   * @return publicKey
+   *
+   **/
+
    string getSSHPubKey (1: required security_model.AuthzToken authzToken,
                         2: required string airavataCredStoreToken,
                         3: required string gatewayId)
@@ -200,11 +213,37 @@ service Airavata {
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
 
+   /**
+   * Get a Public Key by Providing the Token
+   *
+   * @param CredStoreToken
+   *    Credential Store Token which you want to find the Public Key for.
+   *
+   * @param gatewayId
+   *    This is the unique identifier of your gateway where the token and public key was generated from.
+   *
+   * @return SSHpubKey
+   *
+   **/
+
    map<string, string> getAllUserSSHPubKeys (1: required security_model.AuthzToken authzToken,
                                              2: required string userName)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
+
+   /**
+   * Get all Public Keys of the Gateway
+   *
+   * @param CredStoreToken
+   *    Credential Store Token which you want to find the Public Key for.
+   *
+   * @param gatewayId
+   *    This is the unique identifier of your gateway where the token and public key was generated from.
+   *
+   * @return publicKey
+   *
+   **/
 
   map<string, string> getAllGatewaySSHPubKeys (1: required security_model.AuthzToken authzToken,
                                                2: required string gatewayId)
