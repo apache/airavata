@@ -2310,9 +2310,9 @@ class Iface:
     """
     pass
 
-  def publishDataResource(self, authzToken, dataResourceModel):
+  def registerDataResource(self, authzToken, dataResourceModel):
     """
-     * Replica Catalog Related API Methods
+     * Data Manager Related API Methods
     *
 
     Parameters:
@@ -9103,28 +9103,28 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "isWorkflowExistWithName failed: unknown result");
 
-  def publishDataResource(self, authzToken, dataResourceModel):
+  def registerDataResource(self, authzToken, dataResourceModel):
     """
-     * Replica Catalog Related API Methods
+     * Data Manager Related API Methods
     *
 
     Parameters:
      - authzToken
      - dataResourceModel
     """
-    self.send_publishDataResource(authzToken, dataResourceModel)
-    return self.recv_publishDataResource()
+    self.send_registerDataResource(authzToken, dataResourceModel)
+    return self.recv_registerDataResource()
 
-  def send_publishDataResource(self, authzToken, dataResourceModel):
-    self._oprot.writeMessageBegin('publishDataResource', TMessageType.CALL, self._seqid)
-    args = publishDataResource_args()
+  def send_registerDataResource(self, authzToken, dataResourceModel):
+    self._oprot.writeMessageBegin('registerDataResource', TMessageType.CALL, self._seqid)
+    args = registerDataResource_args()
     args.authzToken = authzToken
     args.dataResourceModel = dataResourceModel
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_publishDataResource(self):
+  def recv_registerDataResource(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -9132,7 +9132,7 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = publishDataResource_result()
+    result = registerDataResource_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
@@ -9145,7 +9145,7 @@ class Client(Iface):
       raise result.ase
     if result.ae is not None:
       raise result.ae
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "publishDataResource failed: unknown result");
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "registerDataResource failed: unknown result");
 
   def updateDataResource(self, authzToken, dataResourceModel):
     """
@@ -9403,7 +9403,7 @@ class Processor(Iface, TProcessor):
     self._processMap["updateWorkflow"] = Processor.process_updateWorkflow
     self._processMap["getWorkflowTemplateId"] = Processor.process_getWorkflowTemplateId
     self._processMap["isWorkflowExistWithName"] = Processor.process_isWorkflowExistWithName
-    self._processMap["publishDataResource"] = Processor.process_publishDataResource
+    self._processMap["registerDataResource"] = Processor.process_registerDataResource
     self._processMap["updateDataResource"] = Processor.process_updateDataResource
     self._processMap["removeDataResource"] = Processor.process_removeDataResource
     self._processMap["getDataResource"] = Processor.process_getDataResource
@@ -12073,13 +12073,13 @@ class Processor(Iface, TProcessor):
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_publishDataResource(self, seqid, iprot, oprot):
-    args = publishDataResource_args()
+  def process_registerDataResource(self, seqid, iprot, oprot):
+    args = registerDataResource_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = publishDataResource_result()
+    result = registerDataResource_result()
     try:
-      result.success = self._handler.publishDataResource(args.authzToken, args.dataResourceModel)
+      result.success = self._handler.registerDataResource(args.authzToken, args.dataResourceModel)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -12088,7 +12088,7 @@ class Processor(Iface, TProcessor):
       result.ase = ase
     except apache.airavata.api.error.ttypes.AuthorizationException, ae:
       result.ae = ae
-    oprot.writeMessageBegin("publishDataResource", TMessageType.REPLY, seqid)
+    oprot.writeMessageBegin("registerDataResource", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -40947,7 +40947,7 @@ class isWorkflowExistWithName_result:
   def __ne__(self, other):
     return not (self == other)
 
-class publishDataResource_args:
+class registerDataResource_args:
   """
   Attributes:
    - authzToken
@@ -40994,7 +40994,7 @@ class publishDataResource_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('publishDataResource_args')
+    oprot.writeStructBegin('registerDataResource_args')
     if self.authzToken is not None:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
@@ -41031,7 +41031,7 @@ class publishDataResource_args:
   def __ne__(self, other):
     return not (self == other)
 
-class publishDataResource_result:
+class registerDataResource_result:
   """
   Attributes:
    - success
@@ -41103,7 +41103,7 @@ class publishDataResource_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('publishDataResource_result')
+    oprot.writeStructBegin('registerDataResource_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.STRING, 0)
       oprot.writeString(self.success)

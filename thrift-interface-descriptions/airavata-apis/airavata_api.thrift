@@ -2336,9 +2336,9 @@ service Airavata {
                   4: airavata_errors.AuthorizationException ae)
 
  /**
-  * Replica Catalog Related API Methods
+  * Data Manager Related API Methods
  **/
- string publishDataResource(1: required security_model.AuthzToken authzToken, 2: required replica_catalog_models.DataResourceModel dataResourceModel)
+ string registerDataResource(1: required security_model.AuthzToken authzToken, 2: required replica_catalog_models.DataResourceModel dataResourceModel)
           throws (1: airavata_errors.InvalidRequestException ire,
                   2: airavata_errors.AiravataClientException ace,
                   3: airavata_errors.AiravataSystemException ase,
