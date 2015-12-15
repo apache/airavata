@@ -116,7 +116,7 @@ public class ProjectRegistry {
                 workerResource = ExpCatResourceUtils.addGatewayWorker(gatewayResource, user);
             }else {
                 workerResource = (WorkerResource) ExpCatResourceUtils.getWorker(
-                        gatewayResource.getGatewayName(), user.getUserName());
+                        gatewayResource.getGatewayId(), user.getUserName());
             }
             WorkerResource worker = new WorkerResource(project.getOwner(), gatewayResource.getGatewayId());
             existingProject.setWorker(worker);
