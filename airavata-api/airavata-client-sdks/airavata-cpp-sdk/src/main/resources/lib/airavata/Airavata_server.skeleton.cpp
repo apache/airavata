@@ -42,6 +42,7 @@ class AiravataHandler : virtual public AiravataIf {
   /**
    * Fetch Apache Airavata API version
    * 
+   * 
    * @param authzToken
    */
   void getAPIVersion(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
@@ -49,26 +50,89 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAPIVersion\n");
   }
 
+  /**
+   * Register a Gateway with Airavata.
+   * 
+   * @param gateway
+   *    The gateway data model.
+   * 
+   * @return gatewayId
+   *   Th unique identifier of the  newly registered gateway.
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param gateway
+   */
   void addGateway(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Gateway& gateway) {
     // Your implementation goes here
     printf("addGateway\n");
   }
 
+  /**
+   * Update previously registered Gateway metadata.
+   * 
+   * @param gatewayId
+   *    The gateway Id of the Gateway which require an update.
+   * 
+   * @return gateway
+   *    Modified gateway obejct.
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   * @param updatedGateway
+   */
   void updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway) {
     // Your implementation goes here
     printf("updateGateway\n");
   }
 
+  /**
+   * Get Gateway details by providing gatewayId
+   * 
+   * @param gatewayId
+   *    The gateway Id of the Gateway.
+   * 
+   * @return gateway
+   *    Gateway obejct.
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   */
   void getGateway( ::apache::airavata::model::workspace::Gateway& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getGateway\n");
   }
 
+  /**
+   * Delete a Gateway
+   * 
+   * @param gatewayId
+   *    The gateway Id of the Gateway to be deleted.
+   * 
+   * @return boolean
+   *    Boolean identifier for the success or failure of the deletion operation.
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   */
   bool deleteGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("deleteGateway\n");
   }
 
+  /**
+   * Get All the Gateways Connected to Airavata.
+   * 
+   * 
+   * @param authzToken
+   */
   void getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
     // Your implementation goes here
     printf("getAllGateways\n");
@@ -83,7 +147,7 @@ class AiravataHandler : virtual public AiravataIf {
    * Generate and Register SSH Key Pair with Airavata Credential Store.
    * 
    * @param gatewayId
-   *    The identifier for the requested gateway.
+   *    The identifier for the requested Gateway.
    * 
    * @param userName
    *    The User for which the credential should be registered. For community accounts, this user is the name of the
@@ -91,7 +155,7 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * @return airavataCredStoreToken
    *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
-   *   belonging to a gateway.
+   *   belonging to a Gateway.
    * 
    * 
    * 
@@ -104,16 +168,65 @@ class AiravataHandler : virtual public AiravataIf {
     printf("generateAndRegisterSSHKeys\n");
   }
 
+  /**
+   * Get a Public Key by Providing the Token
+   * 
+   * @param CredStoreToken
+   *    Credential Store Token which you want to find the Public Key for.
+   * 
+   * @param gatewayId
+   *    This is the unique identifier of your gateway where the token and public key was generated from.
+   * 
+   * @return publicKey
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param airavataCredStoreToken
+   * @param gatewayId
+   */
   void getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getSSHPubKey\n");
   }
 
+  /**
+   * Get a Public Key by Providing the Token
+   * 
+   * @param CredStoreToken
+   *    Credential Store Token which you want to find the Public Key for.
+   * 
+   * @param gatewayId
+   *    This is the unique identifier of your gateway where the token and public key was generated from.
+   * 
+   * @return SSHpubKey
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param userName
+   */
   void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName) {
     // Your implementation goes here
     printf("getAllUserSSHPubKeys\n");
   }
 
+  /**
+   * Get all Public Keys of the Gateway
+   * 
+   * @param CredStoreToken
+   *    Credential Store Token which you want to find the Public Key for.
+   * 
+   * @param gatewayId
+   *    This is the unique identifier of your gateway where the token and public key was generated from.
+   * 
+   * @return publicKey
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   */
   void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllGatewaySSHPubKeys\n");
