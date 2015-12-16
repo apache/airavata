@@ -116,6 +116,16 @@ const char* _kMonitorModeNames[] = {
 };
 const std::map<int, const char*> _MonitorMode_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(4, _kMonitorModeValues, _kMonitorModeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
+int _kDMTypeValues[] = {
+  DMType::COMPUTE_RESOURCE,
+  DMType::STORAGE_RESOURCE
+};
+const char* _kDMTypeNames[] = {
+  "COMPUTE_RESOURCE",
+  "STORAGE_RESOURCE"
+};
+const std::map<int, const char*> _DMType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kDMTypeValues, _kDMTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
 int _kProviderNameValues[] = {
   ProviderName::EC2,
   ProviderName::AWSEC2,

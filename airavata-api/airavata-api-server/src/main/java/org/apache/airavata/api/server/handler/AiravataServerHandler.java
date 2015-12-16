@@ -47,6 +47,7 @@ import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescr
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.data.movement.*;
+import org.apache.airavata.model.data.movement.DMType;
 import org.apache.airavata.model.data.resource.DataResourceModel;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.experiment.*;
