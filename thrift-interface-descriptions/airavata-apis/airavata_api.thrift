@@ -304,7 +304,13 @@ service Airavata {
                   4: airavata_errors.AuthorizationException ae)
 
   /**
-   * Update a Project
+   * Update an Existing Project
+   *
+   * @param projectId
+   *    The projectId of the project needed an update.
+   *
+   * @return void
+   *    Currently this does not return any value.
    *
   */
   void updateProject (1: required security_model.AuthzToken authzToken,
@@ -318,6 +324,13 @@ service Airavata {
 
 /**
    * Get a Project by ID
+   *    This method is to obtain a project by providing a projectId
+   *
+   * @param projectId
+   *    projectId of the project you require
+   *
+   * @return project
+   *    project data model will be returned
    *
   */
   workspace_model.Project getProject (1: required security_model.AuthzToken authzToken, 2: required string projectId)
