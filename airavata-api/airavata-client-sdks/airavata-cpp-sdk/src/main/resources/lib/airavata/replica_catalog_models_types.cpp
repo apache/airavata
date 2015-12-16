@@ -517,6 +517,11 @@ void DataReplicaLocationModel::__set_lastModifiedTime(const int64_t val) {
 __isset.lastModifiedTime = true;
 }
 
+void DataReplicaLocationModel::__set_validUntilTime(const int64_t val) {
+  this->validUntilTime = val;
+__isset.validUntilTime = true;
+}
+
 void DataReplicaLocationModel::__set_replicaLocationCategory(const ReplicaLocationCategory::type val) {
   this->replicaLocationCategory = val;
 __isset.replicaLocationCategory = true;
@@ -532,29 +537,9 @@ void DataReplicaLocationModel::__set_storageResourceId(const std::string& val) {
 __isset.storageResourceId = true;
 }
 
-void DataReplicaLocationModel::__set_storageResourceHostName(const std::string& val) {
-  this->storageResourceHostName = val;
-__isset.storageResourceHostName = true;
-}
-
-void DataReplicaLocationModel::__set_dataMovementProtocol(const  ::apache::airavata::model::data::movement::DataMovementProtocol::type val) {
-  this->dataMovementProtocol = val;
-__isset.dataMovementProtocol = true;
-}
-
-void DataReplicaLocationModel::__set_hostPort(const int64_t val) {
-  this->hostPort = val;
-__isset.hostPort = true;
-}
-
-void DataReplicaLocationModel::__set_filePath(const std::string& val) {
-  this->filePath = val;
-__isset.filePath = true;
-}
-
-void DataReplicaLocationModel::__set_replicaUrl(const std::string& val) {
-  this->replicaUrl = val;
-__isset.replicaUrl = true;
+void DataReplicaLocationModel::__set_fileAbsolutePath(const std::string& val) {
+  this->fileAbsolutePath = val;
+__isset.fileAbsolutePath = true;
 }
 
 void DataReplicaLocationModel::__set_replicaMetadata(const std::map<std::string, std::string> & val) {
@@ -632,6 +617,14 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
         }
         break;
       case 7:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->validUntilTime);
+          this->__isset.validUntilTime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 8:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast23;
           xfer += iprot->readI32(ecast23);
@@ -641,7 +634,7 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
           xfer += iprot->skip(ftype);
         }
         break;
-      case 8:
+      case 9:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast24;
           xfer += iprot->readI32(ecast24);
@@ -651,7 +644,7 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
           xfer += iprot->skip(ftype);
         }
         break;
-      case 9:
+      case 10:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->storageResourceId);
           this->__isset.storageResourceId = true;
@@ -659,63 +652,29 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
           xfer += iprot->skip(ftype);
         }
         break;
-      case 10:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->storageResourceHostName);
-          this->__isset.storageResourceHostName = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
       case 11:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast25;
-          xfer += iprot->readI32(ecast25);
-          this->dataMovementProtocol = ( ::apache::airavata::model::data::movement::DataMovementProtocol::type)ecast25;
-          this->__isset.dataMovementProtocol = true;
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->fileAbsolutePath);
+          this->__isset.fileAbsolutePath = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 12:
-        if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64(this->hostPort);
-          this->__isset.hostPort = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 13:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->filePath);
-          this->__isset.filePath = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 14:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->replicaUrl);
-          this->__isset.replicaUrl = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 15:
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->replicaMetadata.clear();
-            uint32_t _size26;
-            ::apache::thrift::protocol::TType _ktype27;
-            ::apache::thrift::protocol::TType _vtype28;
-            xfer += iprot->readMapBegin(_ktype27, _vtype28, _size26);
-            uint32_t _i30;
-            for (_i30 = 0; _i30 < _size26; ++_i30)
+            uint32_t _size25;
+            ::apache::thrift::protocol::TType _ktype26;
+            ::apache::thrift::protocol::TType _vtype27;
+            xfer += iprot->readMapBegin(_ktype26, _vtype27, _size25);
+            uint32_t _i29;
+            for (_i29 = 0; _i29 < _size25; ++_i29)
             {
-              std::string _key31;
-              xfer += iprot->readString(_key31);
-              std::string& _val32 = this->replicaMetadata[_key31];
-              xfer += iprot->readString(_val32);
+              std::string _key30;
+              xfer += iprot->readString(_key30);
+              std::string& _val31 = this->replicaMetadata[_key30];
+              xfer += iprot->readString(_val31);
             }
             xfer += iprot->readMapEnd();
           }
@@ -771,55 +730,40 @@ uint32_t DataReplicaLocationModel::write(::apache::thrift::protocol::TProtocol* 
     xfer += oprot->writeI64(this->lastModifiedTime);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.validUntilTime) {
+    xfer += oprot->writeFieldBegin("validUntilTime", ::apache::thrift::protocol::T_I64, 7);
+    xfer += oprot->writeI64(this->validUntilTime);
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.replicaLocationCategory) {
-    xfer += oprot->writeFieldBegin("replicaLocationCategory", ::apache::thrift::protocol::T_I32, 7);
+    xfer += oprot->writeFieldBegin("replicaLocationCategory", ::apache::thrift::protocol::T_I32, 8);
     xfer += oprot->writeI32((int32_t)this->replicaLocationCategory);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.replicaPersistentType) {
-    xfer += oprot->writeFieldBegin("replicaPersistentType", ::apache::thrift::protocol::T_I32, 8);
+    xfer += oprot->writeFieldBegin("replicaPersistentType", ::apache::thrift::protocol::T_I32, 9);
     xfer += oprot->writeI32((int32_t)this->replicaPersistentType);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.storageResourceId) {
-    xfer += oprot->writeFieldBegin("storageResourceId", ::apache::thrift::protocol::T_STRING, 9);
+    xfer += oprot->writeFieldBegin("storageResourceId", ::apache::thrift::protocol::T_STRING, 10);
     xfer += oprot->writeString(this->storageResourceId);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.storageResourceHostName) {
-    xfer += oprot->writeFieldBegin("storageResourceHostName", ::apache::thrift::protocol::T_STRING, 10);
-    xfer += oprot->writeString(this->storageResourceHostName);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.dataMovementProtocol) {
-    xfer += oprot->writeFieldBegin("dataMovementProtocol", ::apache::thrift::protocol::T_I32, 11);
-    xfer += oprot->writeI32((int32_t)this->dataMovementProtocol);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.hostPort) {
-    xfer += oprot->writeFieldBegin("hostPort", ::apache::thrift::protocol::T_I64, 12);
-    xfer += oprot->writeI64(this->hostPort);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.filePath) {
-    xfer += oprot->writeFieldBegin("filePath", ::apache::thrift::protocol::T_STRING, 13);
-    xfer += oprot->writeString(this->filePath);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.replicaUrl) {
-    xfer += oprot->writeFieldBegin("replicaUrl", ::apache::thrift::protocol::T_STRING, 14);
-    xfer += oprot->writeString(this->replicaUrl);
+  if (this->__isset.fileAbsolutePath) {
+    xfer += oprot->writeFieldBegin("fileAbsolutePath", ::apache::thrift::protocol::T_STRING, 11);
+    xfer += oprot->writeString(this->fileAbsolutePath);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.replicaMetadata) {
-    xfer += oprot->writeFieldBegin("replicaMetadata", ::apache::thrift::protocol::T_MAP, 15);
+    xfer += oprot->writeFieldBegin("replicaMetadata", ::apache::thrift::protocol::T_MAP, 12);
     {
       xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->replicaMetadata.size()));
-      std::map<std::string, std::string> ::const_iterator _iter33;
-      for (_iter33 = this->replicaMetadata.begin(); _iter33 != this->replicaMetadata.end(); ++_iter33)
+      std::map<std::string, std::string> ::const_iterator _iter32;
+      for (_iter32 = this->replicaMetadata.begin(); _iter32 != this->replicaMetadata.end(); ++_iter32)
       {
-        xfer += oprot->writeString(_iter33->first);
-        xfer += oprot->writeString(_iter33->second);
+        xfer += oprot->writeString(_iter32->first);
+        xfer += oprot->writeString(_iter32->second);
       }
       xfer += oprot->writeMapEnd();
     }
@@ -838,53 +782,44 @@ void swap(DataReplicaLocationModel &a, DataReplicaLocationModel &b) {
   swap(a.replicaDescription, b.replicaDescription);
   swap(a.creationTime, b.creationTime);
   swap(a.lastModifiedTime, b.lastModifiedTime);
+  swap(a.validUntilTime, b.validUntilTime);
   swap(a.replicaLocationCategory, b.replicaLocationCategory);
   swap(a.replicaPersistentType, b.replicaPersistentType);
   swap(a.storageResourceId, b.storageResourceId);
-  swap(a.storageResourceHostName, b.storageResourceHostName);
-  swap(a.dataMovementProtocol, b.dataMovementProtocol);
-  swap(a.hostPort, b.hostPort);
-  swap(a.filePath, b.filePath);
-  swap(a.replicaUrl, b.replicaUrl);
+  swap(a.fileAbsolutePath, b.fileAbsolutePath);
   swap(a.replicaMetadata, b.replicaMetadata);
   swap(a.__isset, b.__isset);
 }
 
-DataReplicaLocationModel::DataReplicaLocationModel(const DataReplicaLocationModel& other34) {
+DataReplicaLocationModel::DataReplicaLocationModel(const DataReplicaLocationModel& other33) {
+  replicaId = other33.replicaId;
+  resourceId = other33.resourceId;
+  replicaName = other33.replicaName;
+  replicaDescription = other33.replicaDescription;
+  creationTime = other33.creationTime;
+  lastModifiedTime = other33.lastModifiedTime;
+  validUntilTime = other33.validUntilTime;
+  replicaLocationCategory = other33.replicaLocationCategory;
+  replicaPersistentType = other33.replicaPersistentType;
+  storageResourceId = other33.storageResourceId;
+  fileAbsolutePath = other33.fileAbsolutePath;
+  replicaMetadata = other33.replicaMetadata;
+  __isset = other33.__isset;
+}
+DataReplicaLocationModel& DataReplicaLocationModel::operator=(const DataReplicaLocationModel& other34) {
   replicaId = other34.replicaId;
   resourceId = other34.resourceId;
   replicaName = other34.replicaName;
   replicaDescription = other34.replicaDescription;
   creationTime = other34.creationTime;
   lastModifiedTime = other34.lastModifiedTime;
+  validUntilTime = other34.validUntilTime;
   replicaLocationCategory = other34.replicaLocationCategory;
   replicaPersistentType = other34.replicaPersistentType;
   storageResourceId = other34.storageResourceId;
-  storageResourceHostName = other34.storageResourceHostName;
-  dataMovementProtocol = other34.dataMovementProtocol;
-  hostPort = other34.hostPort;
-  filePath = other34.filePath;
-  replicaUrl = other34.replicaUrl;
+  fileAbsolutePath = other34.fileAbsolutePath;
   replicaMetadata = other34.replicaMetadata;
   __isset = other34.__isset;
-}
-DataReplicaLocationModel& DataReplicaLocationModel::operator=(const DataReplicaLocationModel& other35) {
-  replicaId = other35.replicaId;
-  resourceId = other35.resourceId;
-  replicaName = other35.replicaName;
-  replicaDescription = other35.replicaDescription;
-  creationTime = other35.creationTime;
-  lastModifiedTime = other35.lastModifiedTime;
-  replicaLocationCategory = other35.replicaLocationCategory;
-  replicaPersistentType = other35.replicaPersistentType;
-  storageResourceId = other35.storageResourceId;
-  storageResourceHostName = other35.storageResourceHostName;
-  dataMovementProtocol = other35.dataMovementProtocol;
-  hostPort = other35.hostPort;
-  filePath = other35.filePath;
-  replicaUrl = other35.replicaUrl;
-  replicaMetadata = other35.replicaMetadata;
-  __isset = other35.__isset;
   return *this;
 }
 void DataReplicaLocationModel::printTo(std::ostream& out) const {
@@ -896,14 +831,11 @@ void DataReplicaLocationModel::printTo(std::ostream& out) const {
   out << ", " << "replicaDescription="; (__isset.replicaDescription ? (out << to_string(replicaDescription)) : (out << "<null>"));
   out << ", " << "creationTime="; (__isset.creationTime ? (out << to_string(creationTime)) : (out << "<null>"));
   out << ", " << "lastModifiedTime="; (__isset.lastModifiedTime ? (out << to_string(lastModifiedTime)) : (out << "<null>"));
+  out << ", " << "validUntilTime="; (__isset.validUntilTime ? (out << to_string(validUntilTime)) : (out << "<null>"));
   out << ", " << "replicaLocationCategory="; (__isset.replicaLocationCategory ? (out << to_string(replicaLocationCategory)) : (out << "<null>"));
   out << ", " << "replicaPersistentType="; (__isset.replicaPersistentType ? (out << to_string(replicaPersistentType)) : (out << "<null>"));
   out << ", " << "storageResourceId="; (__isset.storageResourceId ? (out << to_string(storageResourceId)) : (out << "<null>"));
-  out << ", " << "storageResourceHostName="; (__isset.storageResourceHostName ? (out << to_string(storageResourceHostName)) : (out << "<null>"));
-  out << ", " << "dataMovementProtocol="; (__isset.dataMovementProtocol ? (out << to_string(dataMovementProtocol)) : (out << "<null>"));
-  out << ", " << "hostPort="; (__isset.hostPort ? (out << to_string(hostPort)) : (out << "<null>"));
-  out << ", " << "filePath="; (__isset.filePath ? (out << to_string(filePath)) : (out << "<null>"));
-  out << ", " << "replicaUrl="; (__isset.replicaUrl ? (out << to_string(replicaUrl)) : (out << "<null>"));
+  out << ", " << "fileAbsolutePath="; (__isset.fileAbsolutePath ? (out << to_string(fileAbsolutePath)) : (out << "<null>"));
   out << ", " << "replicaMetadata="; (__isset.replicaMetadata ? (out << to_string(replicaMetadata)) : (out << "<null>"));
   out << ")";
 }

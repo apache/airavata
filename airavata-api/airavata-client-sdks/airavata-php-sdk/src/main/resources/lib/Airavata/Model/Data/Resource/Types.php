@@ -519,6 +519,10 @@ class DataReplicaLocationModel {
   /**
    * @var int
    */
+  public $validUntilTime = null;
+  /**
+   * @var int
+   */
   public $replicaLocationCategory = null;
   /**
    * @var int
@@ -531,23 +535,7 @@ class DataReplicaLocationModel {
   /**
    * @var string
    */
-  public $storageResourceHostName = null;
-  /**
-   * @var int
-   */
-  public $dataMovementProtocol = null;
-  /**
-   * @var int
-   */
-  public $hostPort = null;
-  /**
-   * @var string
-   */
-  public $filePath = null;
-  /**
-   * @var string
-   */
-  public $replicaUrl = null;
+  public $fileAbsolutePath = null;
   /**
    * @var array
    */
@@ -581,38 +569,26 @@ class DataReplicaLocationModel {
           'type' => TType::I64,
           ),
         7 => array(
+          'var' => 'validUntilTime',
+          'type' => TType::I64,
+          ),
+        8 => array(
           'var' => 'replicaLocationCategory',
           'type' => TType::I32,
           ),
-        8 => array(
+        9 => array(
           'var' => 'replicaPersistentType',
           'type' => TType::I32,
           ),
-        9 => array(
+        10 => array(
           'var' => 'storageResourceId',
           'type' => TType::STRING,
           ),
-        10 => array(
-          'var' => 'storageResourceHostName',
-          'type' => TType::STRING,
-          ),
         11 => array(
-          'var' => 'dataMovementProtocol',
-          'type' => TType::I32,
+          'var' => 'fileAbsolutePath',
+          'type' => TType::STRING,
           ),
         12 => array(
-          'var' => 'hostPort',
-          'type' => TType::I64,
-          ),
-        13 => array(
-          'var' => 'filePath',
-          'type' => TType::STRING,
-          ),
-        14 => array(
-          'var' => 'replicaUrl',
-          'type' => TType::STRING,
-          ),
-        15 => array(
           'var' => 'replicaMetadata',
           'type' => TType::MAP,
           'ktype' => TType::STRING,
@@ -645,6 +621,9 @@ class DataReplicaLocationModel {
       if (isset($vals['lastModifiedTime'])) {
         $this->lastModifiedTime = $vals['lastModifiedTime'];
       }
+      if (isset($vals['validUntilTime'])) {
+        $this->validUntilTime = $vals['validUntilTime'];
+      }
       if (isset($vals['replicaLocationCategory'])) {
         $this->replicaLocationCategory = $vals['replicaLocationCategory'];
       }
@@ -654,20 +633,8 @@ class DataReplicaLocationModel {
       if (isset($vals['storageResourceId'])) {
         $this->storageResourceId = $vals['storageResourceId'];
       }
-      if (isset($vals['storageResourceHostName'])) {
-        $this->storageResourceHostName = $vals['storageResourceHostName'];
-      }
-      if (isset($vals['dataMovementProtocol'])) {
-        $this->dataMovementProtocol = $vals['dataMovementProtocol'];
-      }
-      if (isset($vals['hostPort'])) {
-        $this->hostPort = $vals['hostPort'];
-      }
-      if (isset($vals['filePath'])) {
-        $this->filePath = $vals['filePath'];
-      }
-      if (isset($vals['replicaUrl'])) {
-        $this->replicaUrl = $vals['replicaUrl'];
+      if (isset($vals['fileAbsolutePath'])) {
+        $this->fileAbsolutePath = $vals['fileAbsolutePath'];
       }
       if (isset($vals['replicaMetadata'])) {
         $this->replicaMetadata = $vals['replicaMetadata'];
@@ -737,62 +704,41 @@ class DataReplicaLocationModel {
           }
           break;
         case 7:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->replicaLocationCategory);
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->validUntilTime);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 8:
           if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->replicaPersistentType);
+            $xfer += $input->readI32($this->replicaLocationCategory);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 9:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->storageResourceId);
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->replicaPersistentType);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 10:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->storageResourceHostName);
+            $xfer += $input->readString($this->storageResourceId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 11:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->dataMovementProtocol);
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->fileAbsolutePath);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 12:
-          if ($ftype == TType::I64) {
-            $xfer += $input->readI64($this->hostPort);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 13:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->filePath);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 14:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->replicaUrl);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 15:
           if ($ftype == TType::MAP) {
             $this->replicaMetadata = array();
             $_size23 = 0;
@@ -855,51 +801,36 @@ class DataReplicaLocationModel {
       $xfer += $output->writeI64($this->lastModifiedTime);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->validUntilTime !== null) {
+      $xfer += $output->writeFieldBegin('validUntilTime', TType::I64, 7);
+      $xfer += $output->writeI64($this->validUntilTime);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->replicaLocationCategory !== null) {
-      $xfer += $output->writeFieldBegin('replicaLocationCategory', TType::I32, 7);
+      $xfer += $output->writeFieldBegin('replicaLocationCategory', TType::I32, 8);
       $xfer += $output->writeI32($this->replicaLocationCategory);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->replicaPersistentType !== null) {
-      $xfer += $output->writeFieldBegin('replicaPersistentType', TType::I32, 8);
+      $xfer += $output->writeFieldBegin('replicaPersistentType', TType::I32, 9);
       $xfer += $output->writeI32($this->replicaPersistentType);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->storageResourceId !== null) {
-      $xfer += $output->writeFieldBegin('storageResourceId', TType::STRING, 9);
+      $xfer += $output->writeFieldBegin('storageResourceId', TType::STRING, 10);
       $xfer += $output->writeString($this->storageResourceId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->storageResourceHostName !== null) {
-      $xfer += $output->writeFieldBegin('storageResourceHostName', TType::STRING, 10);
-      $xfer += $output->writeString($this->storageResourceHostName);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->dataMovementProtocol !== null) {
-      $xfer += $output->writeFieldBegin('dataMovementProtocol', TType::I32, 11);
-      $xfer += $output->writeI32($this->dataMovementProtocol);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->hostPort !== null) {
-      $xfer += $output->writeFieldBegin('hostPort', TType::I64, 12);
-      $xfer += $output->writeI64($this->hostPort);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->filePath !== null) {
-      $xfer += $output->writeFieldBegin('filePath', TType::STRING, 13);
-      $xfer += $output->writeString($this->filePath);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->replicaUrl !== null) {
-      $xfer += $output->writeFieldBegin('replicaUrl', TType::STRING, 14);
-      $xfer += $output->writeString($this->replicaUrl);
+    if ($this->fileAbsolutePath !== null) {
+      $xfer += $output->writeFieldBegin('fileAbsolutePath', TType::STRING, 11);
+      $xfer += $output->writeString($this->fileAbsolutePath);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->replicaMetadata !== null) {
       if (!is_array($this->replicaMetadata)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('replicaMetadata', TType::MAP, 15);
+      $xfer += $output->writeFieldBegin('replicaMetadata', TType::MAP, 12);
       {
         $output->writeMapBegin(TType::STRING, TType::STRING, count($this->replicaMetadata));
         {

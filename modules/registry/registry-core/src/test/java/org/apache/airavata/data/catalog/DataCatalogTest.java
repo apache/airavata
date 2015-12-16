@@ -60,7 +60,6 @@ public class DataCatalogTest {
             HashMap<String, String> rMetadata = new HashMap<>();
             rMetadata.put("name", "name");
             replicaLocationModel.setReplicaMetadata(rMetadata);
-            replicaLocationModel.setReplicaUrl("scp://g75.iu.xsede.org:/var/www/portal/experimentData/test-file.txt");
             dataResourceModel.addToReplicaLocations(replicaLocationModel);
         } catch (DataCatalogException e) {
             logger.error(e.getMessage(), e);

@@ -65,13 +65,10 @@ struct DataReplicaLocationModel {
     4: optional string replicaDescription,
     5: optional i64 creationTime,
     6: optional i64 lastModifiedTime,
-    7: optional ReplicaLocationCategory replicaLocationCategory,
-    8: optional ReplicaPersistentType replicaPersistentType,
-    9: optional string storageResourceId,
-    10: optional string storageResourceHostName,
-    11: optional data_movement_models.DataMovementProtocol dataMovementProtocol,
-    12: optional i64 hostPort,
-    13: optional string filePath,
-    14: optional string replicaUrl,
-    15: optional map<string, string> replicaMetadata
+    7: optional i64 validUntilTime,
+    8: optional ReplicaLocationCategory replicaLocationCategory,
+    9: optional ReplicaPersistentType replicaPersistentType,
+    10: optional string storageResourceId,
+    11: optional string fileAbsolutePath,
+    12: optional map<string, string> replicaMetadata
 }
