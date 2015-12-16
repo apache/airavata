@@ -284,7 +284,7 @@ service Airavata {
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
-  /**
+   /**
    * Creates a Project with basic metadata.
    *    A Project is a container of experiments.
    *
@@ -294,7 +294,8 @@ service Airavata {
    * @param Project
    *    The Project Object described in the workspace_model
    *
-  */
+   **/
+
   string createProject (1: required security_model.AuthzToken authzToken,
                         2: required string gatewayId,
                         3: required workspace_model.Project project)
@@ -303,7 +304,7 @@ service Airavata {
                   3: airavata_errors.AiravataSystemException ase,
                   4: airavata_errors.AuthorizationException ae)
 
-  /**
+   /**
    * Update an Existing Project
    *
    * @param projectId
@@ -312,7 +313,8 @@ service Airavata {
    * @return void
    *    Currently this does not return any value.
    *
-  */
+   **/
+
   void updateProject (1: required security_model.AuthzToken authzToken,
                       2: required string projectId,
                       3: required workspace_model.Project updatedProject)
@@ -322,7 +324,7 @@ service Airavata {
               4: airavata_errors.ProjectNotFoundException pnfe,
               5: airavata_errors.AuthorizationException ae)
 
-/**
+   /**
    * Get a Project by ID
    *    This method is to obtain a project by providing a projectId
    *
@@ -332,7 +334,8 @@ service Airavata {
    * @return project
    *    project data model will be returned
    *
-  */
+   **/
+
   workspace_model.Project getProject (1: required security_model.AuthzToken authzToken, 2: required string projectId)
         throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
@@ -340,7 +343,7 @@ service Airavata {
                 4: airavata_errors.ProjectNotFoundException pnfe,
                 5: airavata_errors.AuthorizationException ae)
 
-/**
+   /**
    * Delete a Project
    *    This method is used to delete an existing Project
    *
@@ -350,7 +353,7 @@ service Airavata {
    * @return boolean
    *    Boolean identifier for the success or failure of the deletion operation.
    *
-  */
+   **/
 
   bool deleteProject (1: required security_model.AuthzToken authzToken, 2: required string projectId)
           throws (1: airavata_errors.InvalidRequestException ire,
@@ -359,19 +362,24 @@ service Airavata {
                   4: airavata_errors.ProjectNotFoundException pnfe,
                   5: airavata_errors.AuthorizationException ae)
 
- /**
+   /**
    * Get all Project by user with pagination. Results will be ordered based
    * on creation time DESC
    *
    * @param gatewayId
    *    The identifier for the requested gateway.
+   *
    * @param userName
    *    The identifier of the user
+   *
    * @param limit
    *    The amount results to be fetched
+   *
    * @param offset
    *    The starting point of the results to be fetched
- **/
+   *
+   **/
+
   list<workspace_model.Project> getUserProjects(1: required security_model.AuthzToken authzToken,
                                                    2: required string gatewayId,
                                                    3: required string userName,
@@ -382,7 +390,7 @@ service Airavata {
                 3: airavata_errors.AiravataSystemException ase,
                 4: airavata_errors.AuthorizationException ae)
 
-  /**
+   /**
    * Get all Project for user by project name with pagination.Results will be ordered based
    * on creation time DESC
    *
@@ -396,7 +404,8 @@ service Airavata {
    *    The amount results to be fetched
    * @param offset
    *    The starting point of the results to be fetched
-  */
+   **/
+
   list<workspace_model.Project> searchProjectsByProjectName (1: required security_model.AuthzToken authzToken,
                         2: required string gatewayId,
                         3: required string userName,
@@ -408,7 +417,7 @@ service Airavata {
                   3: airavata_errors.AiravataSystemException ase,
                   4: airavata_errors.AuthorizationException ae)
 
-  /**
+    /**
     * Search and get all Projects for user by project description with pagination. Results
     * will be ordered based on creation time DESC
     *
@@ -422,7 +431,8 @@ service Airavata {
     *    The amount results to be fetched
     * @param offset
     *    The starting point of the results to be fetched
-   */
+    **/
+
   list<workspace_model.Project> searchProjectsByProjectDesc(1: required security_model.AuthzToken authzToken,
                         2: required string gatewayId,
                         3: required string userName,
@@ -434,7 +444,7 @@ service Airavata {
                     3: airavata_errors.AiravataSystemException ase,
                     4: airavata_errors.AuthorizationException ae)
 
-  /**
+    /**
     * Search Experiments by experiment name with pagination. Results will be sorted
     * based on creation time DESC
     *
@@ -448,7 +458,8 @@ service Airavata {
     *       Amount of results to be fetched
     * @param offset
     *       The starting point of the results to be fetched
-    */
+    **/
+
   list<experiment_model.ExperimentSummaryModel> searchExperimentsByName(1: required security_model.AuthzToken authzToken,
                           2: required string gatewayId,
                           3: required string userName,
@@ -460,7 +471,7 @@ service Airavata {
                     3: airavata_errors.AiravataSystemException ase,
                     4: airavata_errors.AuthorizationException ae)
 
-  /**
+    /**
     * Search Experiments by experiment name with pagination. Results will be sorted
     * based on creation time DESC
     *
@@ -474,7 +485,8 @@ service Airavata {
     *       Amount of results to be fetched
     * @param offset
     *       The starting point of the results to be fetched
-    */
+    **/
+
   list<experiment_model.ExperimentSummaryModel> searchExperimentsByDesc(1: required security_model.AuthzToken authzToken,
                             2: required string gatewayId,
                             3: required string userName,
@@ -486,7 +498,7 @@ service Airavata {
                       3: airavata_errors.AiravataSystemException ase,
                       4: airavata_errors.AuthorizationException ae)
 
-  /**
+   /**
    * Search Experiments by application id with pagination. Results will be sorted
    * based on creation time DESC
    *
@@ -500,7 +512,8 @@ service Airavata {
    *       Amount of results to be fetched
    * @param offset
    *       The starting point of the results to be fetched
-   */
+   **/
+
   list<experiment_model.ExperimentSummaryModel> searchExperimentsByApplication(1: required security_model.AuthzToken authzToken,
                              2: required string gatewayId,
                              3: required string userName,
@@ -512,7 +525,7 @@ service Airavata {
                       3: airavata_errors.AiravataSystemException ase,
                       4: airavata_errors.AuthorizationException ae)
 
-  /**
+   /**
    * Search Experiments by experiment status with pagination. Results will be sorted
    * based on creation time DESC
    *
@@ -526,7 +539,8 @@ service Airavata {
    *       Amount of results to be fetched
    * @param offset
    *       The starting point of the results to be fetched
-   */
+   **/
+
     list<experiment_model.ExperimentSummaryModel> searchExperimentsByStatus(1: required security_model.AuthzToken authzToken,
                             2: required string gatewayId,
                             3: required string userName,
@@ -538,7 +552,7 @@ service Airavata {
                         3: airavata_errors.AiravataSystemException ase,
                         4: airavata_errors.AuthorizationException ae)
 
-  /**
+   /**
    * Search Experiments by experiment creation time with pagination. Results will be sorted
    * based on creation time DESC
    *
@@ -554,7 +568,8 @@ service Airavata {
    *       Amount of results to be fetched
    * @param offset
    *       The starting point of the results to be fetched
-   */
+   **/
+
     list<experiment_model.ExperimentSummaryModel> searchExperimentsByCreationTime(1: required security_model.AuthzToken authzToken,
                             2: required string gatewayId,
                             3: required string userName,
@@ -567,7 +582,7 @@ service Airavata {
                         3: airavata_errors.AiravataSystemException ase,
                         4: airavata_errors.AuthorizationException ae)
 
-  /**
+   /**
    * Search Experiments by using multiple filter criteria with pagination. Results will be sorted
    * based on creation time DESC
    *
@@ -581,7 +596,8 @@ service Airavata {
    *       Amount of results to be fetched
    * @param offset
    *       The starting point of the results to be fetched
-   */
+   **/
+
     list<experiment_model.ExperimentSummaryModel> searchExperiments(1: required security_model.AuthzToken authzToken,
                             2: required string gatewayId,
                             3: required string userName,
@@ -622,7 +638,8 @@ service Airavata {
    *       Amount of results to be fetched
    * @param offset
    *       The starting point of the results to be fetched
-   */
+   **/
+
   list<experiment_model.ExperimentModel> getExperimentsInProject(1: required security_model.AuthzToken authzToken,
                   2: required string projectId,
                   3: required i32 limit,
@@ -633,7 +650,7 @@ service Airavata {
                   4: airavata_errors.ProjectNotFoundException pnfe,
                   5: airavata_errors.AuthorizationException ae)
 
-  /**
+   /**
    * Get experiments by user with pagination. Results will be sorted
    * based on creation time DESC
    *
@@ -645,7 +662,8 @@ service Airavata {
    *       Amount of results to be fetched
    * @param offset
    *       The starting point of the results to be fetched
-   */
+   **/
+
   list<experiment_model.ExperimentModel> getUserExperiments(1: required security_model.AuthzToken authzToken,
                         2: required string gatewayId,
                         3: required string userName,
@@ -656,7 +674,7 @@ service Airavata {
                     3: airavata_errors.AiravataSystemException ase,
                     4: airavata_errors.AuthorizationException ae)
 
-  /**
+   /**
      * Create an experiment for the specified user belonging to the gateway. The gateway identity is not explicitly passed
      *   but inferred from the sshKeyAuthentication header. This experiment is just a persistent place holder. The client
      *   has to subsequently configure and launch the created experiment. No action is taken on Airavata Server except
@@ -690,7 +708,7 @@ service Airavata {
      *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *       rather an Airavata Administrator will be notified to take corrective action.
      *
-    */
+   **/
 
   string createExperiment(1: required security_model.AuthzToken authzToken,
                           2: required string gatewayId,
@@ -702,15 +720,21 @@ service Airavata {
 
 
 
-/**
+  /**
+  * Delete an Experiment
+  *
   * If the experiment is not already launched experiment can be deleted.
   *
   * @param authzToken
+  *
   * @param experiementId
+  *     Experiment ID of the experimnet you want to delete.
   *
-  * @return boolean identifier for the success or failure of the deletion operation
+  * @return boolean
+  *     Identifier for the success or failure of the deletion operation
   *
- */
+  **/
+
   bool deleteExperiment(1: required security_model.AuthzToken authzToken,
                           2: required string experimentId)
     throws (1: airavata_errors.InvalidRequestException ire,
@@ -751,7 +775,7 @@ service Airavata {
    *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
-  */
+ **/
   experiment_model.ExperimentModel getExperiment(1: required security_model.AuthzToken authzToken,
                                                  2: required string airavataExperimentId)
     throws (1: airavata_errors.InvalidRequestException ire,
@@ -866,8 +890,11 @@ service Airavata {
      *
      * Validate experiment configuration. A true in general indicates, the experiment is ready to be launched.
      *
-     * @param experimentID
-     * @return sucess/failure
+     * @param experimentId
+     *
+     *
+     * @return boolean
+     *      Identifier for the success or failure of the validation operation
      *
     **/
   bool validateExperiment(1: required security_model.AuthzToken authzToken,
