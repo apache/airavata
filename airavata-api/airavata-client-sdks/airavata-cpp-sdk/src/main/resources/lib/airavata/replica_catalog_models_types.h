@@ -215,21 +215,18 @@ inline std::ostream& operator<<(std::ostream& out, const DataResourceModel& obj)
 }
 
 typedef struct _DataReplicaLocationModel__isset {
-  _DataReplicaLocationModel__isset() : replicaId(false), resourceId(false), replicaName(false), replicaDescription(false), creationTime(false), lastModifiedTime(false), replicaLocationCategory(false), replicaPersistentType(false), storageResourceId(false), storageResourceHostName(false), dataMovementProtocol(false), hostPort(false), filePath(false), replicaUrl(false), replicaMetadata(false) {}
+  _DataReplicaLocationModel__isset() : replicaId(false), resourceId(false), replicaName(false), replicaDescription(false), creationTime(false), lastModifiedTime(false), validUntilTime(false), replicaLocationCategory(false), replicaPersistentType(false), storageResourceId(false), fileAbsolutePath(false), replicaMetadata(false) {}
   bool replicaId :1;
   bool resourceId :1;
   bool replicaName :1;
   bool replicaDescription :1;
   bool creationTime :1;
   bool lastModifiedTime :1;
+  bool validUntilTime :1;
   bool replicaLocationCategory :1;
   bool replicaPersistentType :1;
   bool storageResourceId :1;
-  bool storageResourceHostName :1;
-  bool dataMovementProtocol :1;
-  bool hostPort :1;
-  bool filePath :1;
-  bool replicaUrl :1;
+  bool fileAbsolutePath :1;
   bool replicaMetadata :1;
 } _DataReplicaLocationModel__isset;
 
@@ -238,7 +235,7 @@ class DataReplicaLocationModel {
 
   DataReplicaLocationModel(const DataReplicaLocationModel&);
   DataReplicaLocationModel& operator=(const DataReplicaLocationModel&);
-  DataReplicaLocationModel() : replicaId(), resourceId(), replicaName(), replicaDescription(), creationTime(0), lastModifiedTime(0), replicaLocationCategory((ReplicaLocationCategory::type)0), replicaPersistentType((ReplicaPersistentType::type)0), storageResourceId(), storageResourceHostName(), dataMovementProtocol(( ::apache::airavata::model::data::movement::DataMovementProtocol::type)0), hostPort(0), filePath(), replicaUrl() {
+  DataReplicaLocationModel() : replicaId(), resourceId(), replicaName(), replicaDescription(), creationTime(0), lastModifiedTime(0), validUntilTime(0), replicaLocationCategory((ReplicaLocationCategory::type)0), replicaPersistentType((ReplicaPersistentType::type)0), storageResourceId(), fileAbsolutePath() {
   }
 
   virtual ~DataReplicaLocationModel() throw();
@@ -248,14 +245,11 @@ class DataReplicaLocationModel {
   std::string replicaDescription;
   int64_t creationTime;
   int64_t lastModifiedTime;
+  int64_t validUntilTime;
   ReplicaLocationCategory::type replicaLocationCategory;
   ReplicaPersistentType::type replicaPersistentType;
   std::string storageResourceId;
-  std::string storageResourceHostName;
-   ::apache::airavata::model::data::movement::DataMovementProtocol::type dataMovementProtocol;
-  int64_t hostPort;
-  std::string filePath;
-  std::string replicaUrl;
+  std::string fileAbsolutePath;
   std::map<std::string, std::string>  replicaMetadata;
 
   _DataReplicaLocationModel__isset __isset;
@@ -272,21 +266,15 @@ class DataReplicaLocationModel {
 
   void __set_lastModifiedTime(const int64_t val);
 
+  void __set_validUntilTime(const int64_t val);
+
   void __set_replicaLocationCategory(const ReplicaLocationCategory::type val);
 
   void __set_replicaPersistentType(const ReplicaPersistentType::type val);
 
   void __set_storageResourceId(const std::string& val);
 
-  void __set_storageResourceHostName(const std::string& val);
-
-  void __set_dataMovementProtocol(const  ::apache::airavata::model::data::movement::DataMovementProtocol::type val);
-
-  void __set_hostPort(const int64_t val);
-
-  void __set_filePath(const std::string& val);
-
-  void __set_replicaUrl(const std::string& val);
+  void __set_fileAbsolutePath(const std::string& val);
 
   void __set_replicaMetadata(const std::map<std::string, std::string> & val);
 
@@ -316,6 +304,10 @@ class DataReplicaLocationModel {
       return false;
     else if (__isset.lastModifiedTime && !(lastModifiedTime == rhs.lastModifiedTime))
       return false;
+    if (__isset.validUntilTime != rhs.__isset.validUntilTime)
+      return false;
+    else if (__isset.validUntilTime && !(validUntilTime == rhs.validUntilTime))
+      return false;
     if (__isset.replicaLocationCategory != rhs.__isset.replicaLocationCategory)
       return false;
     else if (__isset.replicaLocationCategory && !(replicaLocationCategory == rhs.replicaLocationCategory))
@@ -328,25 +320,9 @@ class DataReplicaLocationModel {
       return false;
     else if (__isset.storageResourceId && !(storageResourceId == rhs.storageResourceId))
       return false;
-    if (__isset.storageResourceHostName != rhs.__isset.storageResourceHostName)
+    if (__isset.fileAbsolutePath != rhs.__isset.fileAbsolutePath)
       return false;
-    else if (__isset.storageResourceHostName && !(storageResourceHostName == rhs.storageResourceHostName))
-      return false;
-    if (__isset.dataMovementProtocol != rhs.__isset.dataMovementProtocol)
-      return false;
-    else if (__isset.dataMovementProtocol && !(dataMovementProtocol == rhs.dataMovementProtocol))
-      return false;
-    if (__isset.hostPort != rhs.__isset.hostPort)
-      return false;
-    else if (__isset.hostPort && !(hostPort == rhs.hostPort))
-      return false;
-    if (__isset.filePath != rhs.__isset.filePath)
-      return false;
-    else if (__isset.filePath && !(filePath == rhs.filePath))
-      return false;
-    if (__isset.replicaUrl != rhs.__isset.replicaUrl)
-      return false;
-    else if (__isset.replicaUrl && !(replicaUrl == rhs.replicaUrl))
+    else if (__isset.fileAbsolutePath && !(fileAbsolutePath == rhs.fileAbsolutePath))
       return false;
     if (__isset.replicaMetadata != rhs.__isset.replicaMetadata)
       return false;

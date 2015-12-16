@@ -60,7 +60,6 @@ public class DataManagerImplTest {
             dataResourceModel.setResourceName("test-file.txt");
             dataReplicaLocationModel = new DataReplicaLocationModel();
             dataReplicaLocationModel.setReplicaName("1-st-replica");
-            dataReplicaLocationModel.setReplicaUrl("scp://g75.iu.xsede.org:/var/www/portal/experimentData/test-file.txt");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }

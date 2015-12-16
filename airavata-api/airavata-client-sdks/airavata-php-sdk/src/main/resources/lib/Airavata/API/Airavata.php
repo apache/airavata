@@ -58,6 +58,8 @@ interface AiravataIf {
    * @return gateway
    *    Modified gateway obejct.
    * 
+   * @exception AiravataClientException
+   * 
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
@@ -122,6 +124,19 @@ interface AiravataIf {
    */
   public function getAllGateways(\Airavata\Model\Security\AuthzToken $authzToken);
   /**
+   * Check for the Existance of a Gateway within Airavata
+   * 
+   * @param gatewayId
+   *   Provide the gatewayId of the gateway you want to check the existancy
+   * 
+   * @return boolean
+   *   Boolean idetifier for the existance or non-existane of the gatewayId
+   * 
+   * @return gatewayId
+   *   return the gatewayId of the existing gateway.
+   * 
+   * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayId
    * @return bool
@@ -221,6 +236,16 @@ interface AiravataIf {
    */
   public function getAllGatewaySSHPubKeys(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId);
   /**
+   * Delete a Gateway
+   * 
+   * @param gatewayId
+   *    The gateway Id of the Gateway to be deleted.
+   * 
+   * @return boolean
+   *    Boolean identifier for the success or failure of the deletion operation.
+   * 
+   * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $airavataCredStoreToken
    * @param string $gatewayId
@@ -241,6 +266,7 @@ interface AiravataIf {
    *    The Project Object described in the workspace_model
    * 
    * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayId
    * @param \Airavata\Model\Workspace\Project $project
@@ -252,7 +278,14 @@ interface AiravataIf {
    */
   public function createProject(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, \Airavata\Model\Workspace\Project $project);
   /**
-   * Update a Project
+   * Update an Existing Project
+   * 
+   * @param projectId
+   *    The projectId of the project needed an update.
+   * 
+   * @return void
+   *    Currently this does not return any value.
+   * 
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
@@ -267,6 +300,14 @@ interface AiravataIf {
   public function updateProject(\Airavata\Model\Security\AuthzToken $authzToken, $projectId, \Airavata\Model\Workspace\Project $updatedProject);
   /**
    * Get a Project by ID
+   *    This method is to obtain a project by providing a projectId
+   * 
+   * @param projectId
+   *    projectId of the project you require
+   * 
+   * @return project
+   *    project data model will be returned
+   * 
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
@@ -280,6 +321,17 @@ interface AiravataIf {
    */
   public function getProject(\Airavata\Model\Security\AuthzToken $authzToken, $projectId);
   /**
+   * Delete a Project
+   *    This method is used to delete an existing Project
+   * 
+   * @param projectId
+   *    projectId of the project you want to delete
+   * 
+   * @return boolean
+   *    Boolean identifier for the success or failure of the deletion operation.
+   * 
+   * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $projectId
    * @return bool
@@ -291,18 +343,22 @@ interface AiravataIf {
    */
   public function deleteProject(\Airavata\Model\Security\AuthzToken $authzToken, $projectId);
   /**
-   *   * Get all Project by user with pagination. Results will be ordered based
-   *   * on creation time DESC
-   *   *
-   *   * @param gatewayId
-   *   *    The identifier for the requested gateway.
-   *   * @param userName
-   *   *    The identifier of the user
-   *   * @param limit
-   *   *    The amount results to be fetched
-   *   * @param offset
-   *   *    The starting point of the results to be fetched
-   * *
+   * Get all Project by user with pagination. Results will be ordered based
+   * on creation time DESC
+   * 
+   * @param gatewayId
+   *    The identifier for the requested gateway.
+   * 
+   * @param userName
+   *    The identifier of the user
+   * 
+   * @param limit
+   *    The amount results to be fetched
+   * 
+   * @param offset
+   *    The starting point of the results to be fetched
+   * 
+   * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayId
@@ -330,6 +386,7 @@ interface AiravataIf {
    *    The amount results to be fetched
    * @param offset
    *    The starting point of the results to be fetched
+   * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayId
@@ -359,6 +416,7 @@ interface AiravataIf {
    * @param offset
    *    The starting point of the results to be fetched
    * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayId
    * @param string $userName
@@ -386,6 +444,7 @@ interface AiravataIf {
    *       Amount of results to be fetched
    * @param offset
    *       The starting point of the results to be fetched
+   * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayId
@@ -415,6 +474,7 @@ interface AiravataIf {
    * @param offset
    *       The starting point of the results to be fetched
    * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayId
    * @param string $userName
@@ -443,6 +503,7 @@ interface AiravataIf {
    * @param offset
    *       The starting point of the results to be fetched
    * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayId
    * @param string $userName
@@ -470,6 +531,7 @@ interface AiravataIf {
    *       Amount of results to be fetched
    * @param offset
    *       The starting point of the results to be fetched
+   * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayId
@@ -501,6 +563,7 @@ interface AiravataIf {
    * @param offset
    *       The starting point of the results to be fetched
    * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayId
    * @param string $userName
@@ -529,6 +592,7 @@ interface AiravataIf {
    *       Amount of results to be fetched
    * @param offset
    *       The starting point of the results to be fetched
+   * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayId
@@ -575,6 +639,7 @@ interface AiravataIf {
    * @param offset
    *       The starting point of the results to be fetched
    * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $projectId
    * @param int $limit
@@ -600,6 +665,7 @@ interface AiravataIf {
    * @param offset
    *       The starting point of the results to be fetched
    * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayId
    * @param string $userName
@@ -613,39 +679,40 @@ interface AiravataIf {
    */
   public function getUserExperiments(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $userName, $limit, $offset);
   /**
-   * Create an experiment for the specified user belonging to the gateway. The gateway identity is not explicitly passed
-   *   but inferred from the sshKeyAuthentication header. This experiment is just a persistent place holder. The client
-   *   has to subsequently configure and launch the created experiment. No action is taken on Airavata Server except
-   *   registering the experiment in a persistent store.
-   * 
-   * @param basicExperimentMetadata
-   *    The create experiment will require the basic experiment metadata like the name and description, intended user,
-   *      the gateway identifer and if the experiment should be shared public by defualt. During the creation of an experiment
-   *      the ExperimentMetadata is a required field.
-   * 
-   * @return
-   *   The server-side generated.airavata.registry.core.experiment.globally unique identifier.
-   * 
-   * @throws org.apache.airavata.model.error.InvalidRequestException
-   *    For any incorrect forming of the request itself.
-   * 
-   * @throws org.apache.airavata.model.error.AiravataClientException
-   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-   * 
-   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
-   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
-   *         gateway registration steps and retry this request.
-   * 
-   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
-   *         For now this is a place holder.
-   * 
-   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
-   *         is implemented, the authorization will be more substantial.
-   * 
-   * @throws org.apache.airavata.model.error.AiravataSystemException
-   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
-   *       rather an Airavata Administrator will be notified to take corrective action.
-   * 
+   *   * Create an experiment for the specified user belonging to the gateway. The gateway identity is not explicitly passed
+   *   *   but inferred from the sshKeyAuthentication header. This experiment is just a persistent place holder. The client
+   *   *   has to subsequently configure and launch the created experiment. No action is taken on Airavata Server except
+   *   *   registering the experiment in a persistent store.
+   *   *
+   *   * @param basicExperimentMetadata
+   *   *    The create experiment will require the basic experiment metadata like the name and description, intended user,
+   *   *      the gateway identifer and if the experiment should be shared public by defualt. During the creation of an experiment
+   *   *      the ExperimentMetadata is a required field.
+   *   *
+   *   * @return
+   *   *   The server-side generated.airavata.registry.core.experiment.globally unique identifier.
+   *   *
+   *   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *   *    For any incorrect forming of the request itself.
+   *   *
+   *   * @throws org.apache.airavata.model.error.AiravataClientException
+   *   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *   *
+   *   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *   *         gateway registration steps and retry this request.
+   *   *
+   *   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *   *         For now this is a place holder.
+   *   *
+   *   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *   *         is implemented, the authorization will be more substantial.
+   *   *
+   *   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *   *       rather an Airavata Administrator will be notified to take corrective action.
+   *   *
+   * *
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayId
@@ -658,12 +725,18 @@ interface AiravataIf {
    */
   public function createExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, \Airavata\Model\Experiment\ExperimentModel $experiment);
   /**
+   * Delete an Experiment
+   * 
    * If the experiment is not already launched experiment can be deleted.
    * 
    * @param authzToken
-   * @param experiementId
    * 
-   * @return boolean identifier for the success or failure of the deletion operation
+   * @param experiementId
+   *     Experiment ID of the experimnet you want to delete.
+   * 
+   * @return boolean
+   *     Identifier for the success or failure of the deletion operation
+   * 
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
@@ -676,37 +749,38 @@ interface AiravataIf {
    */
   public function deleteExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $experimentId);
   /**
-   * Fetch previously created experiment metadata.
-   * 
-   * @param airavataExperimentId
-   *    The identifier for the requested experiment. This is returned during the create experiment step.
-   * 
-   * @return experimentMetada
-   *   This method will return the previously stored experiment metadata.
-   * 
-   * @throws org.apache.airavata.model.error.InvalidRequestException
-   *    For any incorrect forming of the request itself.
-   * 
-   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
-   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-   * 
-   * @throws org.apache.airavata.model.error.AiravataClientException
-   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-   *      
-   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
-   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
-   *         gateway registration steps and retry this request.
-   * 
-   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
-   *         For now this is a place holder.
-   * 
-   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
-   *         is implemented, the authorization will be more substantial.
-   * 
-   * @throws org.apache.airavata.model.error.AiravataSystemException
-   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
-   *       rather an Airavata Administrator will be notified to take corrective action.
-   * 
+   *   * Fetch previously created experiment metadata.
+   *   *
+   *   * @param airavataExperimentId
+   *   *    The identifier for the requested experiment. This is returned during the create experiment step.
+   *   *
+   *   * @return experimentMetada
+   *   *   This method will return the previously stored experiment metadata.
+   *   *
+   *   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *   *    For any incorrect forming of the request itself.
+   *   *
+   *   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+   *   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+   *   *
+   *   * @throws org.apache.airavata.model.error.AiravataClientException
+   *   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *   *
+   *   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *   *         gateway registration steps and retry this request.
+   *   *
+   *   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *   *         For now this is a place holder.
+   *   *
+   *   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *   *         is implemented, the authorization will be more substantial.
+   *   *
+   *   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *   *       rather an Airavata Administrator will be notified to take corrective action.
+   *   *
+   * *
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $airavataExperimentId
@@ -857,8 +931,11 @@ interface AiravataIf {
    *  *
    *  * Validate experiment configuration. A true in general indicates, the experiment is ready to be launched.
    *  *
-   *  * @param experimentID
-   *  * @return sucess/failure
+   *  * @param experimentId
+   *  *
+   *  *
+   *  * @return boolean
+   *  *      Identifier for the success or failure of the validation operation
    *  *
    * *
    * 
@@ -917,6 +994,20 @@ interface AiravataIf {
    */
   public function launchExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $airavataExperimentId, $gatewayId);
   /**
+   * Get Experiment Status
+   * 
+   * Obtain the status os an experiment by providing the Experiment Id
+   * 
+   * @param authzToken
+   * 
+   * @param experiementId
+   *     Experiment ID of the experimnet you require the status
+   * 
+   * @return ExperimentStatus
+   *     ExperimentStatus model with current status will be returned.
+   * 
+   * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $airavataExperimentId
    * @return \Airavata\Model\Status\ExperimentStatus Status: A generic status object.
@@ -939,6 +1030,19 @@ interface AiravataIf {
    */
   public function getExperimentStatus(\Airavata\Model\Security\AuthzToken $authzToken, $airavataExperimentId);
   /**
+   * Get Experiment Outputs
+   * This method to be used when need to obtain outputs of a certain Experiment
+   * 
+   * @param authzToken
+   * 
+   * @param experiementId
+   *     Experiment ID of the experimnet you need the outputs
+   * 
+   * @return list
+   *     List of experiment outputs will be returned. They will be returned as a list of OutputDataObjectType for the experiment
+   * 
+   * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $airavataExperimentId
    * @return \Airavata\Model\Application\Io\OutputDataObjectType[]
@@ -950,6 +1054,19 @@ interface AiravataIf {
    */
   public function getExperimentOutputs(\Airavata\Model\Security\AuthzToken $authzToken, $airavataExperimentId);
   /**
+   * Get Intermediate Experiment Outputs
+   * This method to be used when need to obtain intermediate outputs of a certain Experiment
+   * 
+   * @param authzToken
+   * 
+   * @param experiementId
+   *     Experiment ID of the experimnet you need the intermediate outputs
+   * 
+   * @return list
+   *     List of intermediate experiment outputs will be returned. They will be returned as a list of OutputDataObjectType for the experiment
+   * 
+   * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $airavataExperimentId
    * @return \Airavata\Model\Application\Io\OutputDataObjectType[]
@@ -961,6 +1078,19 @@ interface AiravataIf {
    */
   public function getIntermediateOutputs(\Airavata\Model\Security\AuthzToken $authzToken, $airavataExperimentId);
   /**
+   * Get Job Status for an Experiment
+   * This method to be used when need to get the job status of an Experiment. An experiment may have one or many jobs; there for one or many job statuses may turnup
+   * 
+   * @param authzToken
+   * 
+   * @param experiementId
+   *     Experiment ID of the experimnet you need the intermediate outputs
+   * 
+   * @return JobStatus
+   *     Job status (string) for all all the existing jobs for the experiment will be returned in the form of a map
+   * 
+   * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $airavataExperimentId
    * @return array
@@ -972,6 +1102,19 @@ interface AiravataIf {
    */
   public function getJobStatuses(\Airavata\Model\Security\AuthzToken $authzToken, $airavataExperimentId);
   /**
+   * Get Job Details for all the jobs within an Experiment
+   * This method to be used when need to get the job details for one or many jobs of an Experiment.
+   * 
+   * @param authzToken
+   * 
+   * @param experiementId
+   *     Experiment ID of the experimnet you need job details
+   * 
+   * @return list of JobDetails
+   *     Job details
+   * 
+   * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $airavataExperimentId
    * @return \Airavata\Model\Job\JobModel[]
@@ -2005,7 +2148,7 @@ interface AiravataIf {
    *   The SSHJobSubmission object to be updated.
    * 
    * @return status
-   *   Returns a success/failure of the deletion.
+   *   Returns a success/failure of the update.
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
@@ -2028,7 +2171,7 @@ interface AiravataIf {
    *   The CloudJobSubmission object to be updated.
    * 
    * @return status
-   *   Returns a success/failure of the deletion.
+   *   Returns a success/failure of the update.
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
@@ -2042,6 +2185,19 @@ interface AiravataIf {
    */
   public function updateCloudJobSubmissionDetails(\Airavata\Model\Security\AuthzToken $authzToken, $jobSubmissionInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\CloudJobSubmission $sshJobSubmission);
   /**
+   * Update the UNIOCRE Job Submission details
+   * 
+   * @param jobSubmissionInterfaceId
+   *   The identifier of the JobSubmission Interface to be updated.
+   * 
+   * @param UnicoreJobSubmission
+   *   The UnicoreJobSubmission object to be updated.
+   * 
+   * @return status
+   *   Returns a success/failure of the update.
+   * 
+   * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $jobSubmissionInterfaceId
    * @param \Airavata\Model\AppCatalog\ComputeResource\UnicoreJobSubmission $unicoreJobSubmission
@@ -2056,8 +2212,11 @@ interface AiravataIf {
    * Add a Local data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
-   * @param computeResourceId
+   * @param resourceId
    *   The identifier of the compute resource to which JobSubmission protocol to be added
+   * 
+   * @param DMType
+   *   DMType object to be added to the resource.
    * 
    * @param priorityOrder
    *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
@@ -2067,6 +2226,7 @@ interface AiravataIf {
    * 
    * @return status
    *   Returns the unique job submission id.
+   * 
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
@@ -2094,6 +2254,7 @@ interface AiravataIf {
    *   Returns a success/failure of the update.
    * 
    * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $dataMovementInterfaceId
    * @param \Airavata\Model\Data\Movement\LOCALDataMovement $localDataMovement
@@ -2105,11 +2266,14 @@ interface AiravataIf {
    */
   public function updateLocalDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $dataMovementInterfaceId, \Airavata\Model\Data\Movement\LOCALDataMovement $localDataMovement);
   /**
-   *         * This method returns local datamovement object
-   *         * @param dataMovementId
-   *         *   The identifier of the datamovement Interface to be retrieved.
-   *         *  @return LOCALDataMovement instance
-   * *
+   * This method returns local datamovement object
+   * 
+   * @param dataMovementId
+   *   The identifier of the datamovement Interface to be retrieved.
+   * 
+   *  @return LOCALDataMovement instance
+   * 
+   * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $dataMovementId
@@ -2131,7 +2295,7 @@ interface AiravataIf {
    * Add a SCP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
-   * @param computeResourceId
+   * @param resourceId
    *   The identifier of the compute resource to which JobSubmission protocol to be added
    * 
    * @param priorityOrder
@@ -2181,11 +2345,14 @@ interface AiravataIf {
    */
   public function updateSCPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $dataMovementInterfaceId, \Airavata\Model\Data\Movement\SCPDataMovement $scpDataMovement);
   /**
-   *   * This method returns SCP datamovement object
-   *   * @param dataMovementId
-   *      *   The identifier of the datamovement Interface to be retrieved.
-   *      *  @return SCPDataMovement instance
-   * *
+   * This method returns SCP datamovement object
+   * 
+   * @param dataMovementId
+   *   The identifier of the datamovement Interface to be retrieved.
+   * 
+   * @return SCPDataMovement instance
+   * 
+   * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $dataMovementId
@@ -2204,6 +2371,22 @@ interface AiravataIf {
    */
   public function getSCPDataMovement(\Airavata\Model\Security\AuthzToken $authzToken, $dataMovementId);
   /**
+   * Add a UNICORE data movement details to a compute resource
+   *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+   * 
+   * @param resourceId
+   *   The identifier of the compute resource to which data movement protocol to be added
+   * 
+   * @param priorityOrder
+   *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   * 
+   * @param UnicoreDataMovement
+   *   The UnicoreDataMovement object to be added to the resource.
+   * 
+   * @return status
+   *   Returns the unique data movement id.
+   * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $resourceId
    * @param int $dataMoveType
@@ -2217,6 +2400,20 @@ interface AiravataIf {
    */
   public function addUnicoreDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\UnicoreDataMovement $unicoreDataMovement);
   /**
+   * Update a selected UNICORE data movement details
+   *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+   * 
+   * @param dataMovementInterfaceId
+   *   The identifier of the data movement Interface to be updated.
+   * 
+   * @param UnicoreDataMovement
+   *   The UnicoreDataMovement object to be updated.
+   * 
+   * @return status
+   *   Returns a success/failure of the update.
+   * 
+   * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $dataMovementInterfaceId
    * @param \Airavata\Model\Data\Movement\UnicoreDataMovement $unicoreDataMovement
@@ -2228,6 +2425,15 @@ interface AiravataIf {
    */
   public function updateUnicoreDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $dataMovementInterfaceId, \Airavata\Model\Data\Movement\UnicoreDataMovement $unicoreDataMovement);
   /**
+   * This method returns UNICORE datamovement object
+   * 
+   * @param dataMovementId
+   *   The identifier of the datamovement Interface to be retrieved.
+   * 
+   * @return UnicoreDataMovement instance
+   * 
+   * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $dataMovementId
    * @return \Airavata\Model\Data\Movement\UnicoreDataMovement Data Movement through UnicoreStorage
@@ -2245,8 +2451,11 @@ interface AiravataIf {
    * Add a GridFTP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
-   * @param computeResourceId
-   *   The identifier of the compute resource to which JobSubmission protocol to be added
+   * @param resourceId
+   *   The identifier of the compute resource to which dataMovement protocol to be added
+   * 
+   * @param DMType
+   *    The DMType object to be added to the resource.
    * 
    * @param priorityOrder
    *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
@@ -2255,7 +2464,8 @@ interface AiravataIf {
    *   The GridFTPDataMovement object to be added to the resource.
    * 
    * @return status
-   *   Returns the unique job submission id.
+   *   Returns the unique data movement id.
+   * 
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
@@ -2280,8 +2490,9 @@ interface AiravataIf {
    * @param gridFTPDataMovement
    *   The GridFTPDataMovement object to be updated.
    * 
-   * @return status
-   *   Returns a success/failure of the updation.
+   * @return boolean
+   *   Returns a success/failure of the update.
+   * 
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
@@ -2295,11 +2506,14 @@ interface AiravataIf {
    */
   public function updateGridFTPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $dataMovementInterfaceId, \Airavata\Model\Data\Movement\GridFTPDataMovement $gridFTPDataMovement);
   /**
-   *   * This method returns GridFTP datamovement object
-   *   * @param dataMovementId
-   *      *   The identifier of the datamovement Interface to be retrieved.
-   *   *  @return GridFTPDataMovement instance
-   * *
+   * This method returns GridFTP datamovement object
+   * 
+   * @param dataMovementId
+   *   The identifier of the datamovement Interface to be retrieved.
+   * 
+   *  @return GridFTPDataMovement instance
+   * 
+   * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $dataMovementId
@@ -2330,6 +2544,7 @@ interface AiravataIf {
    *   Returns a success/failure of the change.
    * 
    * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $jobSubmissionInterfaceId
    * @param int $newPriorityOrder
@@ -2351,6 +2566,7 @@ interface AiravataIf {
    * 
    * @return status
    *   Returns a success/failure of the change.
+   * 
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
@@ -2392,6 +2608,7 @@ interface AiravataIf {
    *   Returns a success/failure of the changes.
    * 
    * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param array $dataMovementPriorityMap
    * @return bool
@@ -2409,6 +2626,7 @@ interface AiravataIf {
    * 
    * @return status
    *   Returns a success/failure of the deletion.
+   * 
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
@@ -2429,6 +2647,7 @@ interface AiravataIf {
    * 
    * @return status
    *   Returns a success/failure of the deletion.
+   * 
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
@@ -2498,6 +2717,19 @@ interface AiravataIf {
    */
   public function deleteResourceJobManager(\Airavata\Model\Security\AuthzToken $authzToken, $resourceJobManagerId);
   /**
+   * Delete a Compute Resource Queue
+   * 
+   * @param computeResourceId
+   *   The identifier of the compute resource which has the queue to be deleted
+   * 
+   * @param queueName
+   *   Name of the queue need to be deleted. Name is the uniqueue identifier for the queue within a compute resource
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $computeResourceId
    * @param string $queueName

@@ -36,15 +36,12 @@ public class DataReplicaLocation {
     private String replicaName;
     private String replicaDescription;
     private String storageResourceId;
-    private String storageResourceHostName;
-    private String storageResourceDataTransferProtocol;
-    private int storageResourcePort;
-    private String filePath;
-    private String replicaUrl;
+    private String fileAbsolutePath;
     private String replicaLocationCategory;
     private String replicaPersistentType;
     private Timestamp creationTime;
     private Timestamp lastModifiedTime;
+    private Timestamp validUntilTime;
 
     private DataResource dataResource;
     private Collection<DataReplicaMetaData> dataReplicaMetaData;
@@ -68,14 +65,6 @@ public class DataReplicaLocation {
         this.resourceId = resourceId;
     }
 
-    @Column(name = "REPLICA_URL")
-    public String getReplicaUrl() {
-        return replicaUrl;
-    }
-
-    public void setReplicaUrl(String replicaUrl) {
-        this.replicaUrl = replicaUrl;
-    }
 
     @Column(name = "REPLICA_NAME")
     public String getReplicaName() {
@@ -104,40 +93,13 @@ public class DataReplicaLocation {
         this.storageResourceId = storageResourceId;
     }
 
-    @Column(name = "STORAGE_RESOURCE_HOST_NAME")
-    public String getStorageResourceHostName() {
-        return storageResourceHostName;
+    @Column(name = "FILE_ABSOLUTE_PATH")
+    public String getFileAbsolutePath() {
+        return fileAbsolutePath;
     }
 
-    public void setStorageResourceHostName(String storageResourceHostName) {
-        this.storageResourceHostName = storageResourceHostName;
-    }
-
-    @Column(name = "STORAGE_RESOURCE_DATA_TRANSFER_PROTOCOL")
-    public String getStorageResourceDataTransferProtocol() {
-        return storageResourceDataTransferProtocol;
-    }
-
-    public void setStorageResourceDataTransferProtocol(String storageResourceDataTransferProtocol) {
-        this.storageResourceDataTransferProtocol = storageResourceDataTransferProtocol;
-    }
-
-    @Column(name = "STORAGE_RESOURCE_PORT")
-    public int getStorageResourcePort() {
-        return storageResourcePort;
-    }
-
-    public void setStorageResourcePort(int storageResourcePort) {
-        this.storageResourcePort = storageResourcePort;
-    }
-
-    @Column(name = "FILE_PATH")
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setFileAbsolutePath(String fileAbsolutePath) {
+        this.fileAbsolutePath = fileAbsolutePath;
     }
 
     @Column(name = "CREATION_TIME")
@@ -157,6 +119,16 @@ public class DataReplicaLocation {
     public void setLastModifiedTime(Timestamp lastModifiedTime) {
         this.lastModifiedTime = lastModifiedTime;
     }
+
+    @Column(name = "VALID_UNTIL_TIME")
+    public Timestamp getValidUntilTime() {
+        return validUntilTime;
+    }
+
+    public void setValidUntilTime(Timestamp validUntilTime) {
+        this.validUntilTime = validUntilTime;
+    }
+
 
     @Column(name = "REPLICA_LOCATION_CATEGORY")
     public String getReplicaLocationCategory() {

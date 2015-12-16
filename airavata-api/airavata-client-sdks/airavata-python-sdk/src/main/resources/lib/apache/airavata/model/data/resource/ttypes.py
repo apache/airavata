@@ -325,14 +325,11 @@ class DataReplicaLocationModel:
    - replicaDescription
    - creationTime
    - lastModifiedTime
+   - validUntilTime
    - replicaLocationCategory
    - replicaPersistentType
    - storageResourceId
-   - storageResourceHostName
-   - dataMovementProtocol
-   - hostPort
-   - filePath
-   - replicaUrl
+   - fileAbsolutePath
    - replicaMetadata
   """
 
@@ -344,32 +341,26 @@ class DataReplicaLocationModel:
     (4, TType.STRING, 'replicaDescription', None, None, ), # 4
     (5, TType.I64, 'creationTime', None, None, ), # 5
     (6, TType.I64, 'lastModifiedTime', None, None, ), # 6
-    (7, TType.I32, 'replicaLocationCategory', None, None, ), # 7
-    (8, TType.I32, 'replicaPersistentType', None, None, ), # 8
-    (9, TType.STRING, 'storageResourceId', None, None, ), # 9
-    (10, TType.STRING, 'storageResourceHostName', None, None, ), # 10
-    (11, TType.I32, 'dataMovementProtocol', None, None, ), # 11
-    (12, TType.I64, 'hostPort', None, None, ), # 12
-    (13, TType.STRING, 'filePath', None, None, ), # 13
-    (14, TType.STRING, 'replicaUrl', None, None, ), # 14
-    (15, TType.MAP, 'replicaMetadata', (TType.STRING,None,TType.STRING,None), None, ), # 15
+    (7, TType.I64, 'validUntilTime', None, None, ), # 7
+    (8, TType.I32, 'replicaLocationCategory', None, None, ), # 8
+    (9, TType.I32, 'replicaPersistentType', None, None, ), # 9
+    (10, TType.STRING, 'storageResourceId', None, None, ), # 10
+    (11, TType.STRING, 'fileAbsolutePath', None, None, ), # 11
+    (12, TType.MAP, 'replicaMetadata', (TType.STRING,None,TType.STRING,None), None, ), # 12
   )
 
-  def __init__(self, replicaId=None, resourceId=None, replicaName=None, replicaDescription=None, creationTime=None, lastModifiedTime=None, replicaLocationCategory=None, replicaPersistentType=None, storageResourceId=None, storageResourceHostName=None, dataMovementProtocol=None, hostPort=None, filePath=None, replicaUrl=None, replicaMetadata=None,):
+  def __init__(self, replicaId=None, resourceId=None, replicaName=None, replicaDescription=None, creationTime=None, lastModifiedTime=None, validUntilTime=None, replicaLocationCategory=None, replicaPersistentType=None, storageResourceId=None, fileAbsolutePath=None, replicaMetadata=None,):
     self.replicaId = replicaId
     self.resourceId = resourceId
     self.replicaName = replicaName
     self.replicaDescription = replicaDescription
     self.creationTime = creationTime
     self.lastModifiedTime = lastModifiedTime
+    self.validUntilTime = validUntilTime
     self.replicaLocationCategory = replicaLocationCategory
     self.replicaPersistentType = replicaPersistentType
     self.storageResourceId = storageResourceId
-    self.storageResourceHostName = storageResourceHostName
-    self.dataMovementProtocol = dataMovementProtocol
-    self.hostPort = hostPort
-    self.filePath = filePath
-    self.replicaUrl = replicaUrl
+    self.fileAbsolutePath = fileAbsolutePath
     self.replicaMetadata = replicaMetadata
 
   def read(self, iprot):
@@ -412,46 +403,31 @@ class DataReplicaLocationModel:
         else:
           iprot.skip(ftype)
       elif fid == 7:
-        if ftype == TType.I32:
-          self.replicaLocationCategory = iprot.readI32()
+        if ftype == TType.I64:
+          self.validUntilTime = iprot.readI64()
         else:
           iprot.skip(ftype)
       elif fid == 8:
         if ftype == TType.I32:
-          self.replicaPersistentType = iprot.readI32()
+          self.replicaLocationCategory = iprot.readI32()
         else:
           iprot.skip(ftype)
       elif fid == 9:
-        if ftype == TType.STRING:
-          self.storageResourceId = iprot.readString()
+        if ftype == TType.I32:
+          self.replicaPersistentType = iprot.readI32()
         else:
           iprot.skip(ftype)
       elif fid == 10:
         if ftype == TType.STRING:
-          self.storageResourceHostName = iprot.readString()
+          self.storageResourceId = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 11:
-        if ftype == TType.I32:
-          self.dataMovementProtocol = iprot.readI32()
+        if ftype == TType.STRING:
+          self.fileAbsolutePath = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 12:
-        if ftype == TType.I64:
-          self.hostPort = iprot.readI64()
-        else:
-          iprot.skip(ftype)
-      elif fid == 13:
-        if ftype == TType.STRING:
-          self.filePath = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 14:
-        if ftype == TType.STRING:
-          self.replicaUrl = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 15:
         if ftype == TType.MAP:
           self.replicaMetadata = {}
           (_ktype24, _vtype25, _size23 ) = iprot.readMapBegin()
@@ -496,40 +472,28 @@ class DataReplicaLocationModel:
       oprot.writeFieldBegin('lastModifiedTime', TType.I64, 6)
       oprot.writeI64(self.lastModifiedTime)
       oprot.writeFieldEnd()
+    if self.validUntilTime is not None:
+      oprot.writeFieldBegin('validUntilTime', TType.I64, 7)
+      oprot.writeI64(self.validUntilTime)
+      oprot.writeFieldEnd()
     if self.replicaLocationCategory is not None:
-      oprot.writeFieldBegin('replicaLocationCategory', TType.I32, 7)
+      oprot.writeFieldBegin('replicaLocationCategory', TType.I32, 8)
       oprot.writeI32(self.replicaLocationCategory)
       oprot.writeFieldEnd()
     if self.replicaPersistentType is not None:
-      oprot.writeFieldBegin('replicaPersistentType', TType.I32, 8)
+      oprot.writeFieldBegin('replicaPersistentType', TType.I32, 9)
       oprot.writeI32(self.replicaPersistentType)
       oprot.writeFieldEnd()
     if self.storageResourceId is not None:
-      oprot.writeFieldBegin('storageResourceId', TType.STRING, 9)
+      oprot.writeFieldBegin('storageResourceId', TType.STRING, 10)
       oprot.writeString(self.storageResourceId)
       oprot.writeFieldEnd()
-    if self.storageResourceHostName is not None:
-      oprot.writeFieldBegin('storageResourceHostName', TType.STRING, 10)
-      oprot.writeString(self.storageResourceHostName)
-      oprot.writeFieldEnd()
-    if self.dataMovementProtocol is not None:
-      oprot.writeFieldBegin('dataMovementProtocol', TType.I32, 11)
-      oprot.writeI32(self.dataMovementProtocol)
-      oprot.writeFieldEnd()
-    if self.hostPort is not None:
-      oprot.writeFieldBegin('hostPort', TType.I64, 12)
-      oprot.writeI64(self.hostPort)
-      oprot.writeFieldEnd()
-    if self.filePath is not None:
-      oprot.writeFieldBegin('filePath', TType.STRING, 13)
-      oprot.writeString(self.filePath)
-      oprot.writeFieldEnd()
-    if self.replicaUrl is not None:
-      oprot.writeFieldBegin('replicaUrl', TType.STRING, 14)
-      oprot.writeString(self.replicaUrl)
+    if self.fileAbsolutePath is not None:
+      oprot.writeFieldBegin('fileAbsolutePath', TType.STRING, 11)
+      oprot.writeString(self.fileAbsolutePath)
       oprot.writeFieldEnd()
     if self.replicaMetadata is not None:
-      oprot.writeFieldBegin('replicaMetadata', TType.MAP, 15)
+      oprot.writeFieldBegin('replicaMetadata', TType.MAP, 12)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.replicaMetadata))
       for kiter30,viter31 in self.replicaMetadata.items():
         oprot.writeString(kiter30)
@@ -551,14 +515,11 @@ class DataReplicaLocationModel:
     value = (value * 31) ^ hash(self.replicaDescription)
     value = (value * 31) ^ hash(self.creationTime)
     value = (value * 31) ^ hash(self.lastModifiedTime)
+    value = (value * 31) ^ hash(self.validUntilTime)
     value = (value * 31) ^ hash(self.replicaLocationCategory)
     value = (value * 31) ^ hash(self.replicaPersistentType)
     value = (value * 31) ^ hash(self.storageResourceId)
-    value = (value * 31) ^ hash(self.storageResourceHostName)
-    value = (value * 31) ^ hash(self.dataMovementProtocol)
-    value = (value * 31) ^ hash(self.hostPort)
-    value = (value * 31) ^ hash(self.filePath)
-    value = (value * 31) ^ hash(self.replicaUrl)
+    value = (value * 31) ^ hash(self.fileAbsolutePath)
     value = (value * 31) ^ hash(self.replicaMetadata)
     return value
 

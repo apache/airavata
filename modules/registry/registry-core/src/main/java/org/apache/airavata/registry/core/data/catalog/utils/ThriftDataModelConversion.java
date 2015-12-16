@@ -27,7 +27,6 @@ import org.apache.airavata.registry.core.data.catalog.model.DataReplicaLocation;
 import org.apache.airavata.registry.core.data.catalog.model.DataReplicaMetaData;
 import org.apache.airavata.registry.core.data.catalog.model.DataResource;
 import org.apache.airavata.registry.core.data.catalog.model.DataResourceMetaData;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,11 +132,8 @@ public class ThriftDataModelConversion {
             replicaLocationModel.setReplicaName(replicaLocation.getReplicaName());
             replicaLocationModel.setReplicaDescription(replicaLocation.getReplicaDescription());
             replicaLocationModel.setStorageResourceId(replicaLocation.getStorageResourceId());
-            replicaLocationModel.setStorageResourceHostName(replicaLocation.getStorageResourceHostName());
-            if(replicaLocation.getStorageResourceDataTransferProtocol() != null)
-                replicaLocationModel.setDataMovementProtocol(DataMovementProtocol.valueOf(replicaLocation.getStorageResourceDataTransferProtocol()));
-            replicaLocationModel.setHostPort(replicaLocation.getStorageResourcePort());
-            replicaLocationModel.setFilePath(replicaLocation.getFilePath());
+            replicaLocationModel.setValidUntilTime(replicaLocation.getValidUntilTime().getTime());
+            replicaLocationModel.setFileAbsolutePath(replicaLocation.getFileAbsolutePath());
             replicaLocationModel.setCreationTime(replicaLocation.getCreationTime().getTime());
             replicaLocationModel.setLastModifiedTime(replicaLocation.getLastModifiedTime().getTime());
             if(replicaLocation.getReplicaLocationCategory() != null)
@@ -146,7 +142,6 @@ public class ThriftDataModelConversion {
             if(replicaLocation.getReplicaPersistentType() != null)
                 replicaLocationModel.setReplicaPersistentType(ReplicaPersistentType.valueOf(replicaLocation
                     .getReplicaPersistentType().toString()));
-            replicaLocationModel.setReplicaUrl(replicaLocation.getReplicaUrl());
             replicaLocationModel.setReplicaMetadata(getReplicaMetaData(replicaLocation.getDataReplicaMetaData()));
             return replicaLocationModel;
         }
@@ -168,12 +163,8 @@ public class ThriftDataModelConversion {
         dataReplicaLocation.setReplicaName(dataReplicaLocationModel.getReplicaName());
         dataReplicaLocation.setReplicaDescription(dataReplicaLocationModel.getReplicaDescription());
         dataReplicaLocation.setStorageResourceId(dataReplicaLocationModel.getStorageResourceId());
-        dataReplicaLocation.setStorageResourceHostName(dataReplicaLocationModel.getStorageResourceHostName());
-        if(dataReplicaLocationModel.getDataMovementProtocol() != null)
-            dataReplicaLocation.setStorageResourceDataTransferProtocol(dataReplicaLocationModel.getDataMovementProtocol().toString());
-        dataReplicaLocation.setStorageResourcePort((int)dataReplicaLocationModel.getHostPort());
-        dataReplicaLocation.setFilePath(dataReplicaLocationModel.getFilePath());
-        dataReplicaLocation.setReplicaUrl(dataReplicaLocation.getReplicaUrl());
+        dataReplicaLocation.setFileAbsolutePath(dataReplicaLocationModel.getFileAbsolutePath());
+        dataReplicaLocation.setValidUntilTime(new Timestamp(dataReplicaLocationModel.getValidUntilTime()));
         dataReplicaLocation.setCreationTime(new Timestamp(dataReplicaLocationModel.getCreationTime()));
         dataReplicaLocation.setLastModifiedTime(new Timestamp(dataReplicaLocationModel.getLastModifiedTime()));
         if(dataReplicaLocationModel.getReplicaLocationCategory() != null)

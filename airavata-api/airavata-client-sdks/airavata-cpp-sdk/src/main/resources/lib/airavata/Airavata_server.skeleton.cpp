@@ -78,6 +78,8 @@ class AiravataHandler : virtual public AiravataIf {
    * @return gateway
    *    Modified gateway obejct.
    * 
+   * @exception AiravataClientException
+   * 
    * 
    * 
    * @param authzToken
@@ -138,6 +140,23 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllGateways\n");
   }
 
+  /**
+   * Check for the Existance of a Gateway within Airavata
+   * 
+   * @param gatewayId
+   *   Provide the gatewayId of the gateway you want to check the existancy
+   * 
+   * @return boolean
+   *   Boolean idetifier for the existance or non-existane of the gatewayId
+   * 
+   * @return gatewayId
+   *   return the gatewayId of the existing gateway.
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   */
   bool isGatewayExist(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("isGatewayExist\n");
@@ -232,6 +251,21 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllGatewaySSHPubKeys\n");
   }
 
+  /**
+   * Delete a Gateway
+   * 
+   * @param gatewayId
+   *    The gateway Id of the Gateway to be deleted.
+   * 
+   * @return boolean
+   *    Boolean identifier for the success or failure of the deletion operation.
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param airavataCredStoreToken
+   * @param gatewayId
+   */
   bool deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("deleteSSHPubKey\n");
@@ -248,6 +282,7 @@ class AiravataHandler : virtual public AiravataIf {
    *    The Project Object described in the workspace_model
    * 
    * 
+   * 
    * @param authzToken
    * @param gatewayId
    * @param project
@@ -258,7 +293,14 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Update a Project
+   * Update an Existing Project
+   * 
+   * @param projectId
+   *    The projectId of the project needed an update.
+   * 
+   * @return void
+   *    Currently this does not return any value.
+   * 
    * 
    * 
    * @param authzToken
@@ -272,6 +314,14 @@ class AiravataHandler : virtual public AiravataIf {
 
   /**
    * Get a Project by ID
+   *    This method is to obtain a project by providing a projectId
+   * 
+   * @param projectId
+   *    projectId of the project you require
+   * 
+   * @return project
+   *    project data model will be returned
+   * 
    * 
    * 
    * @param authzToken
@@ -282,24 +332,43 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getProject\n");
   }
 
+  /**
+   * Delete a Project
+   *    This method is used to delete an existing Project
+   * 
+   * @param projectId
+   *    projectId of the project you want to delete
+   * 
+   * @return boolean
+   *    Boolean identifier for the success or failure of the deletion operation.
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param projectId
+   */
   bool deleteProject(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId) {
     // Your implementation goes here
     printf("deleteProject\n");
   }
 
   /**
-   *   * Get all Project by user with pagination. Results will be ordered based
-   *   * on creation time DESC
-   *   *
-   *   * @param gatewayId
-   *   *    The identifier for the requested gateway.
-   *   * @param userName
-   *   *    The identifier of the user
-   *   * @param limit
-   *   *    The amount results to be fetched
-   *   * @param offset
-   *   *    The starting point of the results to be fetched
-   * *
+   * Get all Project by user with pagination. Results will be ordered based
+   * on creation time DESC
+   * 
+   * @param gatewayId
+   *    The identifier for the requested gateway.
+   * 
+   * @param userName
+   *    The identifier of the user
+   * 
+   * @param limit
+   *    The amount results to be fetched
+   * 
+   * @param offset
+   *    The starting point of the results to be fetched
+   * 
+   * 
    * 
    * @param authzToken
    * @param gatewayId
@@ -326,6 +395,7 @@ class AiravataHandler : virtual public AiravataIf {
    *    The amount results to be fetched
    * @param offset
    *    The starting point of the results to be fetched
+   * 
    * 
    * @param authzToken
    * @param gatewayId
@@ -354,6 +424,7 @@ class AiravataHandler : virtual public AiravataIf {
    * @param offset
    *    The starting point of the results to be fetched
    * 
+   * 
    * @param authzToken
    * @param gatewayId
    * @param userName
@@ -380,6 +451,7 @@ class AiravataHandler : virtual public AiravataIf {
    *       Amount of results to be fetched
    * @param offset
    *       The starting point of the results to be fetched
+   * 
    * 
    * @param authzToken
    * @param gatewayId
@@ -408,6 +480,7 @@ class AiravataHandler : virtual public AiravataIf {
    * @param offset
    *       The starting point of the results to be fetched
    * 
+   * 
    * @param authzToken
    * @param gatewayId
    * @param userName
@@ -435,6 +508,7 @@ class AiravataHandler : virtual public AiravataIf {
    * @param offset
    *       The starting point of the results to be fetched
    * 
+   * 
    * @param authzToken
    * @param gatewayId
    * @param userName
@@ -461,6 +535,7 @@ class AiravataHandler : virtual public AiravataIf {
    *       Amount of results to be fetched
    * @param offset
    *       The starting point of the results to be fetched
+   * 
    * 
    * @param authzToken
    * @param gatewayId
@@ -491,6 +566,7 @@ class AiravataHandler : virtual public AiravataIf {
    * @param offset
    *       The starting point of the results to be fetched
    * 
+   * 
    * @param authzToken
    * @param gatewayId
    * @param userName
@@ -518,6 +594,7 @@ class AiravataHandler : virtual public AiravataIf {
    *       Amount of results to be fetched
    * @param offset
    *       The starting point of the results to be fetched
+   * 
    * 
    * @param authzToken
    * @param gatewayId
@@ -562,6 +639,7 @@ class AiravataHandler : virtual public AiravataIf {
    * @param offset
    *       The starting point of the results to be fetched
    * 
+   * 
    * @param authzToken
    * @param projectId
    * @param limit
@@ -585,6 +663,7 @@ class AiravataHandler : virtual public AiravataIf {
    * @param offset
    *       The starting point of the results to be fetched
    * 
+   * 
    * @param authzToken
    * @param gatewayId
    * @param userName
@@ -597,39 +676,40 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Create an experiment for the specified user belonging to the gateway. The gateway identity is not explicitly passed
-   *   but inferred from the sshKeyAuthentication header. This experiment is just a persistent place holder. The client
-   *   has to subsequently configure and launch the created experiment. No action is taken on Airavata Server except
-   *   registering the experiment in a persistent store.
-   * 
-   * @param basicExperimentMetadata
-   *    The create experiment will require the basic experiment metadata like the name and description, intended user,
-   *      the gateway identifer and if the experiment should be shared public by defualt. During the creation of an experiment
-   *      the ExperimentMetadata is a required field.
-   * 
-   * @return
-   *   The server-side generated.airavata.registry.core.experiment.globally unique identifier.
-   * 
-   * @throws org.apache.airavata.model.error.InvalidRequestException
-   *    For any incorrect forming of the request itself.
-   * 
-   * @throws org.apache.airavata.model.error.AiravataClientException
-   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-   * 
-   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
-   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
-   *         gateway registration steps and retry this request.
-   * 
-   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
-   *         For now this is a place holder.
-   * 
-   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
-   *         is implemented, the authorization will be more substantial.
-   * 
-   * @throws org.apache.airavata.model.error.AiravataSystemException
-   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
-   *       rather an Airavata Administrator will be notified to take corrective action.
-   * 
+   *   * Create an experiment for the specified user belonging to the gateway. The gateway identity is not explicitly passed
+   *   *   but inferred from the sshKeyAuthentication header. This experiment is just a persistent place holder. The client
+   *   *   has to subsequently configure and launch the created experiment. No action is taken on Airavata Server except
+   *   *   registering the experiment in a persistent store.
+   *   *
+   *   * @param basicExperimentMetadata
+   *   *    The create experiment will require the basic experiment metadata like the name and description, intended user,
+   *   *      the gateway identifer and if the experiment should be shared public by defualt. During the creation of an experiment
+   *   *      the ExperimentMetadata is a required field.
+   *   *
+   *   * @return
+   *   *   The server-side generated.airavata.registry.core.experiment.globally unique identifier.
+   *   *
+   *   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *   *    For any incorrect forming of the request itself.
+   *   *
+   *   * @throws org.apache.airavata.model.error.AiravataClientException
+   *   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *   *
+   *   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *   *         gateway registration steps and retry this request.
+   *   *
+   *   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *   *         For now this is a place holder.
+   *   *
+   *   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *   *         is implemented, the authorization will be more substantial.
+   *   *
+   *   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *   *       rather an Airavata Administrator will be notified to take corrective action.
+   *   *
+   * *
    * 
    * @param authzToken
    * @param gatewayId
@@ -641,12 +721,18 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * Delete an Experiment
+   * 
    * If the experiment is not already launched experiment can be deleted.
    * 
    * @param authzToken
-   * @param experiementId
    * 
-   * @return boolean identifier for the success or failure of the deletion operation
+   * @param experiementId
+   *     Experiment ID of the experimnet you want to delete.
+   * 
+   * @return boolean
+   *     Identifier for the success or failure of the deletion operation
+   * 
    * 
    * 
    * @param authzToken
@@ -658,37 +744,38 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Fetch previously created experiment metadata.
-   * 
-   * @param airavataExperimentId
-   *    The identifier for the requested experiment. This is returned during the create experiment step.
-   * 
-   * @return experimentMetada
-   *   This method will return the previously stored experiment metadata.
-   * 
-   * @throws org.apache.airavata.model.error.InvalidRequestException
-   *    For any incorrect forming of the request itself.
-   * 
-   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
-   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-   * 
-   * @throws org.apache.airavata.model.error.AiravataClientException
-   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-   *      
-   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
-   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
-   *         gateway registration steps and retry this request.
-   * 
-   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
-   *         For now this is a place holder.
-   * 
-   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
-   *         is implemented, the authorization will be more substantial.
-   * 
-   * @throws org.apache.airavata.model.error.AiravataSystemException
-   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
-   *       rather an Airavata Administrator will be notified to take corrective action.
-   * 
+   *   * Fetch previously created experiment metadata.
+   *   *
+   *   * @param airavataExperimentId
+   *   *    The identifier for the requested experiment. This is returned during the create experiment step.
+   *   *
+   *   * @return experimentMetada
+   *   *   This method will return the previously stored experiment metadata.
+   *   *
+   *   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *   *    For any incorrect forming of the request itself.
+   *   *
+   *   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+   *   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+   *   *
+   *   * @throws org.apache.airavata.model.error.AiravataClientException
+   *   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *   *
+   *   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *   *         gateway registration steps and retry this request.
+   *   *
+   *   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *   *         For now this is a place holder.
+   *   *
+   *   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *   *         is implemented, the authorization will be more substantial.
+   *   *
+   *   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *   *       rather an Airavata Administrator will be notified to take corrective action.
+   *   *
+   * *
    * 
    * @param authzToken
    * @param airavataExperimentId
@@ -802,8 +889,11 @@ class AiravataHandler : virtual public AiravataIf {
    *  *
    *  * Validate experiment configuration. A true in general indicates, the experiment is ready to be launched.
    *  *
-   *  * @param experimentID
-   *  * @return sucess/failure
+   *  * @param experimentId
+   *  *
+   *  *
+   *  * @return boolean
+   *  *      Identifier for the success or failure of the validation operation
    *  *
    * *
    * 
@@ -858,26 +948,112 @@ class AiravataHandler : virtual public AiravataIf {
     printf("launchExperiment\n");
   }
 
+  /**
+   * Get Experiment Status
+   * 
+   * Obtain the status os an experiment by providing the Experiment Id
+   * 
+   * @param authzToken
+   * 
+   * @param experiementId
+   *     Experiment ID of the experimnet you require the status
+   * 
+   * @return ExperimentStatus
+   *     ExperimentStatus model with current status will be returned.
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param airavataExperimentId
+   */
   void getExperimentStatus( ::apache::airavata::model::status::ExperimentStatus& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
     // Your implementation goes here
     printf("getExperimentStatus\n");
   }
 
+  /**
+   * Get Experiment Outputs
+   * This method to be used when need to obtain outputs of a certain Experiment
+   * 
+   * @param authzToken
+   * 
+   * @param experiementId
+   *     Experiment ID of the experimnet you need the outputs
+   * 
+   * @return list
+   *     List of experiment outputs will be returned. They will be returned as a list of OutputDataObjectType for the experiment
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param airavataExperimentId
+   */
   void getExperimentOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
     // Your implementation goes here
     printf("getExperimentOutputs\n");
   }
 
+  /**
+   * Get Intermediate Experiment Outputs
+   * This method to be used when need to obtain intermediate outputs of a certain Experiment
+   * 
+   * @param authzToken
+   * 
+   * @param experiementId
+   *     Experiment ID of the experimnet you need the intermediate outputs
+   * 
+   * @return list
+   *     List of intermediate experiment outputs will be returned. They will be returned as a list of OutputDataObjectType for the experiment
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param airavataExperimentId
+   */
   void getIntermediateOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
     // Your implementation goes here
     printf("getIntermediateOutputs\n");
   }
 
+  /**
+   * Get Job Status for an Experiment
+   * This method to be used when need to get the job status of an Experiment. An experiment may have one or many jobs; there for one or many job statuses may turnup
+   * 
+   * @param authzToken
+   * 
+   * @param experiementId
+   *     Experiment ID of the experimnet you need the intermediate outputs
+   * 
+   * @return JobStatus
+   *     Job status (string) for all all the existing jobs for the experiment will be returned in the form of a map
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param airavataExperimentId
+   */
   void getJobStatuses(std::map<std::string,  ::apache::airavata::model::status::JobStatus> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
     // Your implementation goes here
     printf("getJobStatuses\n");
   }
 
+  /**
+   * Get Job Details for all the jobs within an Experiment
+   * This method to be used when need to get the job details for one or many jobs of an Experiment.
+   * 
+   * @param authzToken
+   * 
+   * @param experiementId
+   *     Experiment ID of the experimnet you need job details
+   * 
+   * @return list of JobDetails
+   *     Job details
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param airavataExperimentId
+   */
   void getJobDetails(std::vector< ::apache::airavata::model::job::JobModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
     // Your implementation goes here
     printf("getJobDetails\n");
@@ -1739,7 +1915,7 @@ class AiravataHandler : virtual public AiravataIf {
    *   The SSHJobSubmission object to be updated.
    * 
    * @return status
-   *   Returns a success/failure of the deletion.
+   *   Returns a success/failure of the update.
    * 
    * 
    * @param authzToken
@@ -1761,7 +1937,7 @@ class AiravataHandler : virtual public AiravataIf {
    *   The CloudJobSubmission object to be updated.
    * 
    * @return status
-   *   Returns a success/failure of the deletion.
+   *   Returns a success/failure of the update.
    * 
    * 
    * @param authzToken
@@ -1773,6 +1949,24 @@ class AiravataHandler : virtual public AiravataIf {
     printf("updateCloudJobSubmissionDetails\n");
   }
 
+  /**
+   * Update the UNIOCRE Job Submission details
+   * 
+   * @param jobSubmissionInterfaceId
+   *   The identifier of the JobSubmission Interface to be updated.
+   * 
+   * @param UnicoreJobSubmission
+   *   The UnicoreJobSubmission object to be updated.
+   * 
+   * @return status
+   *   Returns a success/failure of the update.
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param jobSubmissionInterfaceId
+   * @param unicoreJobSubmission
+   */
   bool updateUnicoreJobSubmissionDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission) {
     // Your implementation goes here
     printf("updateUnicoreJobSubmissionDetails\n");
@@ -1782,8 +1976,11 @@ class AiravataHandler : virtual public AiravataIf {
    * Add a Local data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
-   * @param computeResourceId
+   * @param resourceId
    *   The identifier of the compute resource to which JobSubmission protocol to be added
+   * 
+   * @param DMType
+   *   DMType object to be added to the resource.
    * 
    * @param priorityOrder
    *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
@@ -1793,6 +1990,7 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * @return status
    *   Returns the unique job submission id.
+   * 
    * 
    * 
    * @param authzToken
@@ -1819,6 +2017,7 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the update.
    * 
    * 
+   * 
    * @param authzToken
    * @param dataMovementInterfaceId
    * @param localDataMovement
@@ -1829,11 +2028,14 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   *         * This method returns local datamovement object
-   *         * @param dataMovementId
-   *         *   The identifier of the datamovement Interface to be retrieved.
-   *         *  @return LOCALDataMovement instance
-   * *
+   * This method returns local datamovement object
+   * 
+   * @param dataMovementId
+   *   The identifier of the datamovement Interface to be retrieved.
+   * 
+   *  @return LOCALDataMovement instance
+   * 
+   * 
    * 
    * @param authzToken
    * @param dataMovementId
@@ -1847,7 +2049,7 @@ class AiravataHandler : virtual public AiravataIf {
    * Add a SCP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
-   * @param computeResourceId
+   * @param resourceId
    *   The identifier of the compute resource to which JobSubmission protocol to be added
    * 
    * @param priorityOrder
@@ -1895,11 +2097,14 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   *   * This method returns SCP datamovement object
-   *   * @param dataMovementId
-   *      *   The identifier of the datamovement Interface to be retrieved.
-   *      *  @return SCPDataMovement instance
-   * *
+   * This method returns SCP datamovement object
+   * 
+   * @param dataMovementId
+   *   The identifier of the datamovement Interface to be retrieved.
+   * 
+   * @return SCPDataMovement instance
+   * 
+   * 
    * 
    * @param authzToken
    * @param dataMovementId
@@ -1909,16 +2114,71 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getSCPDataMovement\n");
   }
 
+  /**
+   * Add a UNICORE data movement details to a compute resource
+   *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+   * 
+   * @param resourceId
+   *   The identifier of the compute resource to which data movement protocol to be added
+   * 
+   * @param priorityOrder
+   *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   * 
+   * @param UnicoreDataMovement
+   *   The UnicoreDataMovement object to be added to the resource.
+   * 
+   * @return status
+   *   Returns the unique data movement id.
+   * 
+   * 
+   * @param authzToken
+   * @param resourceId
+   * @param dataMoveType
+   * @param priorityOrder
+   * @param unicoreDataMovement
+   */
   void addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement) {
     // Your implementation goes here
     printf("addUnicoreDataMovementDetails\n");
   }
 
+  /**
+   * Update a selected UNICORE data movement details
+   *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+   * 
+   * @param dataMovementInterfaceId
+   *   The identifier of the data movement Interface to be updated.
+   * 
+   * @param UnicoreDataMovement
+   *   The UnicoreDataMovement object to be updated.
+   * 
+   * @return status
+   *   Returns a success/failure of the update.
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param dataMovementInterfaceId
+   * @param unicoreDataMovement
+   */
   bool updateUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement) {
     // Your implementation goes here
     printf("updateUnicoreDataMovementDetails\n");
   }
 
+  /**
+   * This method returns UNICORE datamovement object
+   * 
+   * @param dataMovementId
+   *   The identifier of the datamovement Interface to be retrieved.
+   * 
+   * @return UnicoreDataMovement instance
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param dataMovementId
+   */
   void getUnicoreDataMovement( ::apache::airavata::model::data::movement::UnicoreDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId) {
     // Your implementation goes here
     printf("getUnicoreDataMovement\n");
@@ -1928,8 +2188,11 @@ class AiravataHandler : virtual public AiravataIf {
    * Add a GridFTP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
-   * @param computeResourceId
-   *   The identifier of the compute resource to which JobSubmission protocol to be added
+   * @param resourceId
+   *   The identifier of the compute resource to which dataMovement protocol to be added
+   * 
+   * @param DMType
+   *    The DMType object to be added to the resource.
    * 
    * @param priorityOrder
    *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
@@ -1938,7 +2201,8 @@ class AiravataHandler : virtual public AiravataIf {
    *   The GridFTPDataMovement object to be added to the resource.
    * 
    * @return status
-   *   Returns the unique job submission id.
+   *   Returns the unique data movement id.
+   * 
    * 
    * 
    * @param authzToken
@@ -1962,8 +2226,9 @@ class AiravataHandler : virtual public AiravataIf {
    * @param gridFTPDataMovement
    *   The GridFTPDataMovement object to be updated.
    * 
-   * @return status
-   *   Returns a success/failure of the updation.
+   * @return boolean
+   *   Returns a success/failure of the update.
+   * 
    * 
    * 
    * @param authzToken
@@ -1976,11 +2241,14 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   *   * This method returns GridFTP datamovement object
-   *   * @param dataMovementId
-   *      *   The identifier of the datamovement Interface to be retrieved.
-   *   *  @return GridFTPDataMovement instance
-   * *
+   * This method returns GridFTP datamovement object
+   * 
+   * @param dataMovementId
+   *   The identifier of the datamovement Interface to be retrieved.
+   * 
+   *  @return GridFTPDataMovement instance
+   * 
+   * 
    * 
    * @param authzToken
    * @param dataMovementId
@@ -2003,6 +2271,7 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the change.
    * 
    * 
+   * 
    * @param authzToken
    * @param jobSubmissionInterfaceId
    * @param newPriorityOrder
@@ -2023,6 +2292,7 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * @return status
    *   Returns a success/failure of the change.
+   * 
    * 
    * 
    * @param authzToken
@@ -2062,6 +2332,7 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the changes.
    * 
    * 
+   * 
    * @param authzToken
    * @param dataMovementPriorityMap
    */
@@ -2078,6 +2349,7 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * @return status
    *   Returns a success/failure of the deletion.
+   * 
    * 
    * 
    * @param authzToken
@@ -2097,6 +2369,7 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * @return status
    *   Returns a success/failure of the deletion.
+   * 
    * 
    * 
    * @param authzToken
@@ -2128,6 +2401,24 @@ class AiravataHandler : virtual public AiravataIf {
     printf("deleteResourceJobManager\n");
   }
 
+  /**
+   * Delete a Compute Resource Queue
+   * 
+   * @param computeResourceId
+   *   The identifier of the compute resource which has the queue to be deleted
+   * 
+   * @param queueName
+   *   Name of the queue need to be deleted. Name is the uniqueue identifier for the queue within a compute resource
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param computeResourceId
+   * @param queueName
+   */
   bool deleteBatchQueue(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& queueName) {
     // Your implementation goes here
     printf("deleteBatchQueue\n");
