@@ -22,9 +22,7 @@
 namespace java org.apache.airavata.credential.store.datamodel
 namespace php Airavata.Model.Credential.Store
 
-
 const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
-
 
 struct SSHCredential {
     1: required string gatewayId,
