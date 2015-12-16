@@ -2268,6 +2268,7 @@ service Airavata {
     *  @return GridFTPDataMovement instance
     *
     **/
+
   data_movement_models.GridFTPDataMovement getGridFTPDataMovement(1: required security_model.AuthzToken authzToken, 2: required string dataMovementId)
                     throws (1: airavata_errors.InvalidRequestException ire,
                             2: airavata_errors.AiravataClientException ace,
@@ -2288,6 +2289,7 @@ service Airavata {
    *   Returns a success/failure of the change.
    *
    **/
+
   bool changeJobSubmissionPriority(1: required security_model.AuthzToken authzToken, 2: required string jobSubmissionInterfaceId,
             3: required i32 newPriorityOrder)
   	throws (1: airavata_errors.InvalidRequestException ire,
@@ -2295,7 +2297,7 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
-  /**
+   /**
    * Change the priority of a given data movement interface
    *
    * @param dataMovementInterfaceId
@@ -2307,7 +2309,8 @@ service Airavata {
    * @return status
    *   Returns a success/failure of the change.
    *
-  */
+   **/
+
   bool changeDataMovementPriority(1: required security_model.AuthzToken authzToken, 2: required string dataMovementInterfaceId,
             3: required i32 newPriorityOrder)
   	throws (1: airavata_errors.InvalidRequestException ire,
@@ -2325,13 +2328,14 @@ service Airavata {
    *   Returns a success/failure of the changes.
    *
   */
+
   bool changeJobSubmissionPriorities(1: required security_model.AuthzToken authzToken, 2: required map<string, i32> jobSubmissionPriorityMap)
   	throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.AiravataClientException ace,
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
-  /**
+   /**
    * Change the priorities of a given set of data movement interfaces
    *
    * @param dataMovementPriorityMap
@@ -2340,14 +2344,15 @@ service Airavata {
    * @return status
    *   Returns a success/failure of the changes.
    *
-  */
+   **/
+
   bool changeDataMovementPriorities(1: required security_model.AuthzToken authzToken, 2: required map<string, i32> dataMovementPriorityMap)
   	throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.AiravataClientException ace,
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
-  /**
+   /**
    * Delete a given job submisison interface
    *
    * @param jobSubmissionInterfaceId
@@ -2356,7 +2361,8 @@ service Airavata {
    * @return status
    *   Returns a success/failure of the deletion.
    *
-  */
+   **/
+
   bool deleteJobSubmissionInterface(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId,
             3: required string jobSubmissionInterfaceId)
   	throws (1: airavata_errors.InvalidRequestException ire,
@@ -2364,7 +2370,7 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
-  /**
+   /**
    * Delete a given data movement interface
    *
    * @param dataMovementInterfaceId
@@ -2373,7 +2379,8 @@ service Airavata {
    * @return status
    *   Returns a success/failure of the deletion.
    *
-  */
+   **/
+
   bool deleteDataMovementInterface(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId,
             3: required string dataMovementInterfaceId)
   	throws (1: airavata_errors.InvalidRequestException ire,
@@ -2405,6 +2412,20 @@ service Airavata {
                2: airavata_errors.AiravataClientException ace,
                3: airavata_errors.AiravataSystemException ase,
                4: airavata_errors.AuthorizationException ae)
+
+  /**
+   * Delete a Compute Resource Queue
+   *
+   * @param computeResourceId
+   *   The identifier of the compute resource which has the queue to be deleted
+   *
+   * @param queueName
+   *   Name of the queue need to be deleted. Name is the uniqueue identifier for the queue within a compute resource
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+   **/
 
   bool deleteBatchQueue(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId, 3: required string queueName)
         throws (1: airavata_errors.InvalidRequestException ire,
@@ -2445,6 +2466,7 @@ service Airavata {
    *    Gateway Resource Profile Object.
    *
   */
+
   gateway_resource_profile_model.GatewayResourceProfile getGatewayResourceProfile(1: required security_model.AuthzToken authzToken,
                 2: required string gatewayID)
       	throws (1: airavata_errors.InvalidRequestException ire,
@@ -2465,6 +2487,7 @@ service Airavata {
    *   Returns a success/failure of the update.
    *
   */
+
   bool updateGatewayResourceProfile(1: required security_model.AuthzToken authzToken, 2: required string gatewayID,
             3: required gateway_resource_profile_model.GatewayResourceProfile gatewayResourceProfile)
       	throws (1: airavata_errors.InvalidRequestException ire,
@@ -2482,6 +2505,7 @@ service Airavata {
    *   Returns a success/failure of the deletion.
    *
   */
+
   bool deleteGatewayResourceProfile(1: required security_model.AuthzToken authzToken, 2: required string gatewayID)
          	throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
