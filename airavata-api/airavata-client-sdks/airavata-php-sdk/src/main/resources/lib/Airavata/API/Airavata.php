@@ -3164,6 +3164,18 @@ interface AiravataIf {
    * @throws \Airavata\API\Error\AuthorizationException
    */
   public function getDataResource(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId);
+  /**
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @param string $resourceId
+   * @param string $destStorageResourceId
+   * @param string $destinationParentPath
+   * @return string
+   * @throws \Airavata\API\Error\InvalidRequestException
+   * @throws \Airavata\API\Error\AiravataClientException
+   * @throws \Airavata\API\Error\AiravataSystemException
+   * @throws \Airavata\API\Error\AuthorizationException
+   */
+  public function copyDataResource(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $destStorageResourceId, $destinationParentPath);
 }
 
 class AiravataClient implements \Airavata\API\AiravataIf {
@@ -11971,6 +11983,72 @@ class AiravataClient implements \Airavata\API\AiravataIf {
       throw $result->ae;
     }
     throw new \Exception("getDataResource failed: unknown result");
+  }
+
+  public function copyDataResource(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $destStorageResourceId, $destinationParentPath)
+  {
+    $this->send_copyDataResource($authzToken, $resourceId, $destStorageResourceId, $destinationParentPath);
+    return $this->recv_copyDataResource();
+  }
+
+  public function send_copyDataResource(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $destStorageResourceId, $destinationParentPath)
+  {
+    $args = new \Airavata\API\Airavata_copyDataResource_args();
+    $args->authzToken = $authzToken;
+    $args->resourceId = $resourceId;
+    $args->destStorageResourceId = $destStorageResourceId;
+    $args->destinationParentPath = $destinationParentPath;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'copyDataResource', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('copyDataResource', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_copyDataResource()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_copyDataResource_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_copyDataResource_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    if ($result->ae !== null) {
+      throw $result->ae;
+    }
+    throw new \Exception("copyDataResource failed: unknown result");
   }
 
 }
@@ -53556,6 +53634,330 @@ class Airavata_getDataResource_result {
       }
       $xfer += $output->writeFieldBegin('success', TType::STRUCT, 0);
       $xfer += $this->success->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ae !== null) {
+      $xfer += $output->writeFieldBegin('ae', TType::STRUCT, 4);
+      $xfer += $this->ae->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_copyDataResource_args {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+  /**
+   * @var string
+   */
+  public $resourceId = null;
+  /**
+   * @var string
+   */
+  public $destStorageResourceId = null;
+  /**
+   * @var string
+   */
+  public $destinationParentPath = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        2 => array(
+          'var' => 'resourceId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'destStorageResourceId',
+          'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'destinationParentPath',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
+      if (isset($vals['resourceId'])) {
+        $this->resourceId = $vals['resourceId'];
+      }
+      if (isset($vals['destStorageResourceId'])) {
+        $this->destStorageResourceId = $vals['destStorageResourceId'];
+      }
+      if (isset($vals['destinationParentPath'])) {
+        $this->destinationParentPath = $vals['destinationParentPath'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_copyDataResource_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->resourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->destStorageResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->destinationParentPath);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_copyDataResource_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->resourceId !== null) {
+      $xfer += $output->writeFieldBegin('resourceId', TType::STRING, 2);
+      $xfer += $output->writeString($this->resourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->destStorageResourceId !== null) {
+      $xfer += $output->writeFieldBegin('destStorageResourceId', TType::STRING, 3);
+      $xfer += $output->writeString($this->destStorageResourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->destinationParentPath !== null) {
+      $xfer += $output->writeFieldBegin('destinationParentPath', TType::STRING, 4);
+      $xfer += $output->writeString($this->destinationParentPath);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_copyDataResource_result {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\API\Error\InvalidRequestException
+   */
+  public $ire = null;
+  /**
+   * @var \Airavata\API\Error\AiravataClientException
+   */
+  public $ace = null;
+  /**
+   * @var \Airavata\API\Error\AiravataSystemException
+   */
+  public $ase = null;
+  /**
+   * @var \Airavata\API\Error\AuthorizationException
+   */
+  public $ae = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        4 => array(
+          'var' => 'ae',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AuthorizationException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+      if (isset($vals['ae'])) {
+        $this->ae = $vals['ae'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_copyDataResource_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRUCT) {
+            $this->ae = new \Airavata\API\Error\AuthorizationException();
+            $xfer += $this->ae->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_copyDataResource_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->ire !== null) {

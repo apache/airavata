@@ -2658,6 +2658,16 @@ class Iface:
     """
     pass
 
+  def copyDataResource(self, authzToken, resourceId, destStorageResourceId, destinationParentPath):
+    """
+    Parameters:
+     - authzToken
+     - resourceId
+     - destStorageResourceId
+     - destinationParentPath
+    """
+    pass
+
 
 class Client(Iface):
   def __init__(self, iprot, oprot=None):
@@ -9891,6 +9901,51 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getDataResource failed: unknown result")
 
+  def copyDataResource(self, authzToken, resourceId, destStorageResourceId, destinationParentPath):
+    """
+    Parameters:
+     - authzToken
+     - resourceId
+     - destStorageResourceId
+     - destinationParentPath
+    """
+    self.send_copyDataResource(authzToken, resourceId, destStorageResourceId, destinationParentPath)
+    return self.recv_copyDataResource()
+
+  def send_copyDataResource(self, authzToken, resourceId, destStorageResourceId, destinationParentPath):
+    self._oprot.writeMessageBegin('copyDataResource', TMessageType.CALL, self._seqid)
+    args = copyDataResource_args()
+    args.authzToken = authzToken
+    args.resourceId = resourceId
+    args.destStorageResourceId = destStorageResourceId
+    args.destinationParentPath = destinationParentPath
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_copyDataResource(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = copyDataResource_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "copyDataResource failed: unknown result")
+
 
 class Processor(Iface, TProcessor):
   def __init__(self, handler):
@@ -10032,6 +10087,7 @@ class Processor(Iface, TProcessor):
     self._processMap["updateDataResource"] = Processor.process_updateDataResource
     self._processMap["removeDataResource"] = Processor.process_removeDataResource
     self._processMap["getDataResource"] = Processor.process_getDataResource
+    self._processMap["copyDataResource"] = Processor.process_copyDataResource
 
   def process(self, iprot, oprot):
     (name, type, seqid) = iprot.readMessageBegin()
@@ -14275,6 +14331,37 @@ class Processor(Iface, TProcessor):
       logging.exception(ex)
       result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
     oprot.writeMessageBegin("getDataResource", msg_type, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_copyDataResource(self, seqid, iprot, oprot):
+    args = copyDataResource_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = copyDataResource_result()
+    try:
+      result.success = self._handler.copyDataResource(args.authzToken, args.resourceId, args.destStorageResourceId, args.destinationParentPath)
+      msg_type = TMessageType.REPLY
+    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+      raise
+    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
+      msg_type = TMessageType.REPLY
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
+      msg_type = TMessageType.REPLY
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
+      msg_type = TMessageType.REPLY
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException as ae:
+      msg_type = TMessageType.REPLY
+      result.ae = ae
+    except Exception as ex:
+      msg_type = TMessageType.EXCEPTION
+      logging.exception(ex)
+      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+    oprot.writeMessageBegin("copyDataResource", msg_type, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -43820,6 +43907,239 @@ class getDataResource_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.STRUCT, 0)
       self.success.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class copyDataResource_args:
+  """
+  Attributes:
+   - authzToken
+   - resourceId
+   - destStorageResourceId
+   - destinationParentPath
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'resourceId', None, None, ), # 2
+    (3, TType.STRING, 'destStorageResourceId', None, None, ), # 3
+    (4, TType.STRING, 'destinationParentPath', None, None, ), # 4
+  )
+
+  def __init__(self, authzToken=None, resourceId=None, destStorageResourceId=None, destinationParentPath=None,):
+    self.authzToken = authzToken
+    self.resourceId = resourceId
+    self.destStorageResourceId = destStorageResourceId
+    self.destinationParentPath = destinationParentPath
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.resourceId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.destStorageResourceId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRING:
+          self.destinationParentPath = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('copyDataResource_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.resourceId is not None:
+      oprot.writeFieldBegin('resourceId', TType.STRING, 2)
+      oprot.writeString(self.resourceId)
+      oprot.writeFieldEnd()
+    if self.destStorageResourceId is not None:
+      oprot.writeFieldBegin('destStorageResourceId', TType.STRING, 3)
+      oprot.writeString(self.destStorageResourceId)
+      oprot.writeFieldEnd()
+    if self.destinationParentPath is not None:
+      oprot.writeFieldBegin('destinationParentPath', TType.STRING, 4)
+      oprot.writeString(self.destinationParentPath)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.resourceId is None:
+      raise TProtocol.TProtocolException(message='Required field resourceId is unset!')
+    if self.destStorageResourceId is None:
+      raise TProtocol.TProtocolException(message='Required field destStorageResourceId is unset!')
+    if self.destinationParentPath is None:
+      raise TProtocol.TProtocolException(message='Required field destinationParentPath is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.resourceId)
+    value = (value * 31) ^ hash(self.destStorageResourceId)
+    value = (value * 31) ^ hash(self.destinationParentPath)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class copyDataResource_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.STRING, 'success', None, None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRING:
+          self.success = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('copyDataResource_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     if self.ire is not None:
       oprot.writeFieldBegin('ire', TType.STRUCT, 1)

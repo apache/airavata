@@ -15,6 +15,10 @@
     <name>Airavata Data Manager</name>
     <url>http://airavata.apache.org/</url>
 
+    <modules>
+        <module>data-manager-cpi</module>
+        <module>data-manager-core</module>
+    </modules>
     <dependencies>
         <dependency>
             <groupId>org.apache.airavata</groupId>
