@@ -18,12 +18,42 @@
  * under the License.
  *
 */
+package org.apache.airavata.registry.core.data.catalog.model;
 
-package org.apache.airavata.registry.cpi;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public interface Registry {
-    public ExperimentCatalog getExperimentCatalog() throws RegistryException;
-    public ExperimentCatalog getExperimentCatalog(String gatewayId, String username, String password) throws RegistryException;
-    public AppCatalog getAppCatalog() throws RegistryException;
-    public DataCatalog getDataCatalog() throws RegistryException;
+import java.io.Serializable;
+
+public class DataReplicaMetaData_PK implements Serializable {
+    private final static Logger logger = LoggerFactory.getLogger(DataReplicaMetaData_PK.class);
+
+    private String replicaId;
+    private String key;
+
+    public String getReplicaId() {
+        return replicaId;
+    }
+
+    public void setReplicaId(String replicaId) {
+        this.replicaId = replicaId;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return 1;
+    }
 }

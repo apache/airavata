@@ -1,5 +1,4 @@
-/*
- *
+/**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,14 +15,22 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 
 package org.apache.airavata.registry.cpi;
 
-public interface Registry {
-    public ExperimentCatalog getExperimentCatalog() throws RegistryException;
-    public ExperimentCatalog getExperimentCatalog(String gatewayId, String username, String password) throws RegistryException;
-    public AppCatalog getAppCatalog() throws RegistryException;
-    public DataCatalog getDataCatalog() throws RegistryException;
+public class DataCatalogException extends Exception{
+    private static final long serialVersionUID = -2849422320739447602L;
+
+    public DataCatalogException(Throwable e) {
+        super(e);
+    }
+
+    public DataCatalogException(String message) {
+        super(message, null);
+    }
+
+    public DataCatalogException(String message, Throwable e) {
+        super(message, e);
+    }
 }
