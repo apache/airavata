@@ -57,14 +57,17 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
 
   private static final org.apache.thrift.protocol.TField RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField RESOURCE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceName", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField RESOURCE_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceDescription", org.apache.thrift.protocol.TType.STRING, (short)4);
-  private static final org.apache.thrift.protocol.TField OWNER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("ownerName", org.apache.thrift.protocol.TType.STRING, (short)5);
-  private static final org.apache.thrift.protocol.TField RESOURCE_SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceSize", org.apache.thrift.protocol.TType.I32, (short)6);
-  private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)7);
-  private static final org.apache.thrift.protocol.TField LAST_MODIFIED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("lastModifiedTime", org.apache.thrift.protocol.TType.I64, (short)8);
-  private static final org.apache.thrift.protocol.TField RESOURCE_METADATA_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceMetadata", org.apache.thrift.protocol.TType.MAP, (short)9);
-  private static final org.apache.thrift.protocol.TField DATA_REPLICA_LOCATIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("dataReplicaLocations", org.apache.thrift.protocol.TType.LIST, (short)10);
+  private static final org.apache.thrift.protocol.TField PARENT_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("parentResourceId", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField RESOURCE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceName", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField RESOURCE_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceDescription", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField OWNER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("ownerName", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField DATA_RESOURCE_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("dataResourceType", org.apache.thrift.protocol.TType.I32, (short)7);
+  private static final org.apache.thrift.protocol.TField RESOURCE_SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceSize", org.apache.thrift.protocol.TType.I32, (short)8);
+  private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)9);
+  private static final org.apache.thrift.protocol.TField LAST_MODIFIED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("lastModifiedTime", org.apache.thrift.protocol.TType.I64, (short)10);
+  private static final org.apache.thrift.protocol.TField RESOURCE_METADATA_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceMetadata", org.apache.thrift.protocol.TType.MAP, (short)11);
+  private static final org.apache.thrift.protocol.TField REPLICA_LOCATIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("replicaLocations", org.apache.thrift.protocol.TType.LIST, (short)12);
+  private static final org.apache.thrift.protocol.TField CHILD_RESOURCES_FIELD_DESC = new org.apache.thrift.protocol.TField("childResources", org.apache.thrift.protocol.TType.LIST, (short)13);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -74,27 +77,37 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
 
   private String resourceId; // optional
   private String gatewayId; // optional
+  private String parentResourceId; // optional
   private String resourceName; // optional
   private String resourceDescription; // optional
   private String ownerName; // optional
+  private DataResourceType dataResourceType; // optional
   private int resourceSize; // optional
   private long creationTime; // optional
   private long lastModifiedTime; // optional
   private Map<String,String> resourceMetadata; // optional
-  private List<DataReplicaLocationModel> dataReplicaLocations; // optional
+  private List<DataReplicaLocationModel> replicaLocations; // optional
+  private List<DataResourceModel> childResources; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     RESOURCE_ID((short)1, "resourceId"),
     GATEWAY_ID((short)2, "gatewayId"),
-    RESOURCE_NAME((short)3, "resourceName"),
-    RESOURCE_DESCRIPTION((short)4, "resourceDescription"),
-    OWNER_NAME((short)5, "ownerName"),
-    RESOURCE_SIZE((short)6, "resourceSize"),
-    CREATION_TIME((short)7, "creationTime"),
-    LAST_MODIFIED_TIME((short)8, "lastModifiedTime"),
-    RESOURCE_METADATA((short)9, "resourceMetadata"),
-    DATA_REPLICA_LOCATIONS((short)10, "dataReplicaLocations");
+    PARENT_RESOURCE_ID((short)3, "parentResourceId"),
+    RESOURCE_NAME((short)4, "resourceName"),
+    RESOURCE_DESCRIPTION((short)5, "resourceDescription"),
+    OWNER_NAME((short)6, "ownerName"),
+    /**
+     * 
+     * @see DataResourceType
+     */
+    DATA_RESOURCE_TYPE((short)7, "dataResourceType"),
+    RESOURCE_SIZE((short)8, "resourceSize"),
+    CREATION_TIME((short)9, "creationTime"),
+    LAST_MODIFIED_TIME((short)10, "lastModifiedTime"),
+    RESOURCE_METADATA((short)11, "resourceMetadata"),
+    REPLICA_LOCATIONS((short)12, "replicaLocations"),
+    CHILD_RESOURCES((short)13, "childResources");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -113,22 +126,28 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
           return RESOURCE_ID;
         case 2: // GATEWAY_ID
           return GATEWAY_ID;
-        case 3: // RESOURCE_NAME
+        case 3: // PARENT_RESOURCE_ID
+          return PARENT_RESOURCE_ID;
+        case 4: // RESOURCE_NAME
           return RESOURCE_NAME;
-        case 4: // RESOURCE_DESCRIPTION
+        case 5: // RESOURCE_DESCRIPTION
           return RESOURCE_DESCRIPTION;
-        case 5: // OWNER_NAME
+        case 6: // OWNER_NAME
           return OWNER_NAME;
-        case 6: // RESOURCE_SIZE
+        case 7: // DATA_RESOURCE_TYPE
+          return DATA_RESOURCE_TYPE;
+        case 8: // RESOURCE_SIZE
           return RESOURCE_SIZE;
-        case 7: // CREATION_TIME
+        case 9: // CREATION_TIME
           return CREATION_TIME;
-        case 8: // LAST_MODIFIED_TIME
+        case 10: // LAST_MODIFIED_TIME
           return LAST_MODIFIED_TIME;
-        case 9: // RESOURCE_METADATA
+        case 11: // RESOURCE_METADATA
           return RESOURCE_METADATA;
-        case 10: // DATA_REPLICA_LOCATIONS
-          return DATA_REPLICA_LOCATIONS;
+        case 12: // REPLICA_LOCATIONS
+          return REPLICA_LOCATIONS;
+        case 13: // CHILD_RESOURCES
+          return CHILD_RESOURCES;
         default:
           return null;
       }
@@ -173,7 +192,7 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
   private static final int __CREATIONTIME_ISSET_ID = 1;
   private static final int __LASTMODIFIEDTIME_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.RESOURCE_ID,_Fields.GATEWAY_ID,_Fields.RESOURCE_NAME,_Fields.RESOURCE_DESCRIPTION,_Fields.OWNER_NAME,_Fields.RESOURCE_SIZE,_Fields.CREATION_TIME,_Fields.LAST_MODIFIED_TIME,_Fields.RESOURCE_METADATA,_Fields.DATA_REPLICA_LOCATIONS};
+  private static final _Fields optionals[] = {_Fields.RESOURCE_ID,_Fields.GATEWAY_ID,_Fields.PARENT_RESOURCE_ID,_Fields.RESOURCE_NAME,_Fields.RESOURCE_DESCRIPTION,_Fields.OWNER_NAME,_Fields.DATA_RESOURCE_TYPE,_Fields.RESOURCE_SIZE,_Fields.CREATION_TIME,_Fields.LAST_MODIFIED_TIME,_Fields.RESOURCE_METADATA,_Fields.REPLICA_LOCATIONS,_Fields.CHILD_RESOURCES};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -181,12 +200,16 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.PARENT_RESOURCE_ID, new org.apache.thrift.meta_data.FieldMetaData("parentResourceId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.RESOURCE_NAME, new org.apache.thrift.meta_data.FieldMetaData("resourceName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.RESOURCE_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("resourceDescription", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.OWNER_NAME, new org.apache.thrift.meta_data.FieldMetaData("ownerName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.DATA_RESOURCE_TYPE, new org.apache.thrift.meta_data.FieldMetaData("dataResourceType", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, DataResourceType.class)));
     tmpMap.put(_Fields.RESOURCE_SIZE, new org.apache.thrift.meta_data.FieldMetaData("resourceSize", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.CREATION_TIME, new org.apache.thrift.meta_data.FieldMetaData("creationTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -197,9 +220,12 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
         new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING), 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
-    tmpMap.put(_Fields.DATA_REPLICA_LOCATIONS, new org.apache.thrift.meta_data.FieldMetaData("dataReplicaLocations", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.REPLICA_LOCATIONS, new org.apache.thrift.meta_data.FieldMetaData("replicaLocations", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT            , "DataReplicaLocationModel"))));
+    tmpMap.put(_Fields.CHILD_RESOURCES, new org.apache.thrift.meta_data.FieldMetaData("childResources", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT            , "DataResourceModel"))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(DataResourceModel.class, metaDataMap);
   }
@@ -218,6 +244,9 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
     if (other.isSetGatewayId()) {
       this.gatewayId = other.gatewayId;
     }
+    if (other.isSetParentResourceId()) {
+      this.parentResourceId = other.parentResourceId;
+    }
     if (other.isSetResourceName()) {
       this.resourceName = other.resourceName;
     }
@@ -227,6 +256,9 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
     if (other.isSetOwnerName()) {
       this.ownerName = other.ownerName;
     }
+    if (other.isSetDataResourceType()) {
+      this.dataResourceType = other.dataResourceType;
+    }
     this.resourceSize = other.resourceSize;
     this.creationTime = other.creationTime;
     this.lastModifiedTime = other.lastModifiedTime;
@@ -234,12 +266,19 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
       Map<String,String> __this__resourceMetadata = new HashMap<String,String>(other.resourceMetadata);
       this.resourceMetadata = __this__resourceMetadata;
     }
-    if (other.isSetDataReplicaLocations()) {
-      List<DataReplicaLocationModel> __this__dataReplicaLocations = new ArrayList<DataReplicaLocationModel>(other.dataReplicaLocations.size());
-      for (DataReplicaLocationModel other_element : other.dataReplicaLocations) {
-        __this__dataReplicaLocations.add(other_element);
+    if (other.isSetReplicaLocations()) {
+      List<DataReplicaLocationModel> __this__replicaLocations = new ArrayList<DataReplicaLocationModel>(other.replicaLocations.size());
+      for (DataReplicaLocationModel other_element : other.replicaLocations) {
+        __this__replicaLocations.add(other_element);
       }
-      this.dataReplicaLocations = __this__dataReplicaLocations;
+      this.replicaLocations = __this__replicaLocations;
+    }
+    if (other.isSetChildResources()) {
+      List<DataResourceModel> __this__childResources = new ArrayList<DataResourceModel>(other.childResources.size());
+      for (DataResourceModel other_element : other.childResources) {
+        __this__childResources.add(other_element);
+      }
+      this.childResources = __this__childResources;
     }
   }
 
@@ -251,9 +290,11 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
   public void clear() {
     this.resourceId = null;
     this.gatewayId = null;
+    this.parentResourceId = null;
     this.resourceName = null;
     this.resourceDescription = null;
     this.ownerName = null;
+    this.dataResourceType = null;
     setResourceSizeIsSet(false);
     this.resourceSize = 0;
     setCreationTimeIsSet(false);
@@ -261,7 +302,8 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
     setLastModifiedTimeIsSet(false);
     this.lastModifiedTime = 0;
     this.resourceMetadata = null;
-    this.dataReplicaLocations = null;
+    this.replicaLocations = null;
+    this.childResources = null;
   }
 
   public String getResourceId() {
@@ -307,6 +349,29 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
   public void setGatewayIdIsSet(boolean value) {
     if (!value) {
       this.gatewayId = null;
+    }
+  }
+
+  public String getParentResourceId() {
+    return this.parentResourceId;
+  }
+
+  public void setParentResourceId(String parentResourceId) {
+    this.parentResourceId = parentResourceId;
+  }
+
+  public void unsetParentResourceId() {
+    this.parentResourceId = null;
+  }
+
+  /** Returns true if field parentResourceId is set (has been assigned a value) and false otherwise */
+  public boolean isSetParentResourceId() {
+    return this.parentResourceId != null;
+  }
+
+  public void setParentResourceIdIsSet(boolean value) {
+    if (!value) {
+      this.parentResourceId = null;
     }
   }
 
@@ -376,6 +441,37 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
   public void setOwnerNameIsSet(boolean value) {
     if (!value) {
       this.ownerName = null;
+    }
+  }
+
+  /**
+   * 
+   * @see DataResourceType
+   */
+  public DataResourceType getDataResourceType() {
+    return this.dataResourceType;
+  }
+
+  /**
+   * 
+   * @see DataResourceType
+   */
+  public void setDataResourceType(DataResourceType dataResourceType) {
+    this.dataResourceType = dataResourceType;
+  }
+
+  public void unsetDataResourceType() {
+    this.dataResourceType = null;
+  }
+
+  /** Returns true if field dataResourceType is set (has been assigned a value) and false otherwise */
+  public boolean isSetDataResourceType() {
+    return this.dataResourceType != null;
+  }
+
+  public void setDataResourceTypeIsSet(boolean value) {
+    if (!value) {
+      this.dataResourceType = null;
     }
   }
 
@@ -479,41 +575,79 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
     }
   }
 
-  public int getDataReplicaLocationsSize() {
-    return (this.dataReplicaLocations == null) ? 0 : this.dataReplicaLocations.size();
+  public int getReplicaLocationsSize() {
+    return (this.replicaLocations == null) ? 0 : this.replicaLocations.size();
   }
 
-  public java.util.Iterator<DataReplicaLocationModel> getDataReplicaLocationsIterator() {
-    return (this.dataReplicaLocations == null) ? null : this.dataReplicaLocations.iterator();
+  public java.util.Iterator<DataReplicaLocationModel> getReplicaLocationsIterator() {
+    return (this.replicaLocations == null) ? null : this.replicaLocations.iterator();
   }
 
-  public void addToDataReplicaLocations(DataReplicaLocationModel elem) {
-    if (this.dataReplicaLocations == null) {
-      this.dataReplicaLocations = new ArrayList<DataReplicaLocationModel>();
+  public void addToReplicaLocations(DataReplicaLocationModel elem) {
+    if (this.replicaLocations == null) {
+      this.replicaLocations = new ArrayList<DataReplicaLocationModel>();
     }
-    this.dataReplicaLocations.add(elem);
+    this.replicaLocations.add(elem);
   }
 
-  public List<DataReplicaLocationModel> getDataReplicaLocations() {
-    return this.dataReplicaLocations;
+  public List<DataReplicaLocationModel> getReplicaLocations() {
+    return this.replicaLocations;
   }
 
-  public void setDataReplicaLocations(List<DataReplicaLocationModel> dataReplicaLocations) {
-    this.dataReplicaLocations = dataReplicaLocations;
+  public void setReplicaLocations(List<DataReplicaLocationModel> replicaLocations) {
+    this.replicaLocations = replicaLocations;
   }
 
-  public void unsetDataReplicaLocations() {
-    this.dataReplicaLocations = null;
+  public void unsetReplicaLocations() {
+    this.replicaLocations = null;
   }
 
-  /** Returns true if field dataReplicaLocations is set (has been assigned a value) and false otherwise */
-  public boolean isSetDataReplicaLocations() {
-    return this.dataReplicaLocations != null;
+  /** Returns true if field replicaLocations is set (has been assigned a value) and false otherwise */
+  public boolean isSetReplicaLocations() {
+    return this.replicaLocations != null;
   }
 
-  public void setDataReplicaLocationsIsSet(boolean value) {
+  public void setReplicaLocationsIsSet(boolean value) {
     if (!value) {
-      this.dataReplicaLocations = null;
+      this.replicaLocations = null;
+    }
+  }
+
+  public int getChildResourcesSize() {
+    return (this.childResources == null) ? 0 : this.childResources.size();
+  }
+
+  public java.util.Iterator<DataResourceModel> getChildResourcesIterator() {
+    return (this.childResources == null) ? null : this.childResources.iterator();
+  }
+
+  public void addToChildResources(DataResourceModel elem) {
+    if (this.childResources == null) {
+      this.childResources = new ArrayList<DataResourceModel>();
+    }
+    this.childResources.add(elem);
+  }
+
+  public List<DataResourceModel> getChildResources() {
+    return this.childResources;
+  }
+
+  public void setChildResources(List<DataResourceModel> childResources) {
+    this.childResources = childResources;
+  }
+
+  public void unsetChildResources() {
+    this.childResources = null;
+  }
+
+  /** Returns true if field childResources is set (has been assigned a value) and false otherwise */
+  public boolean isSetChildResources() {
+    return this.childResources != null;
+  }
+
+  public void setChildResourcesIsSet(boolean value) {
+    if (!value) {
+      this.childResources = null;
     }
   }
 
@@ -532,6 +666,14 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
         unsetGatewayId();
       } else {
         setGatewayId((String)value);
+      }
+      break;
+
+    case PARENT_RESOURCE_ID:
+      if (value == null) {
+        unsetParentResourceId();
+      } else {
+        setParentResourceId((String)value);
       }
       break;
 
@@ -556,6 +698,14 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
         unsetOwnerName();
       } else {
         setOwnerName((String)value);
+      }
+      break;
+
+    case DATA_RESOURCE_TYPE:
+      if (value == null) {
+        unsetDataResourceType();
+      } else {
+        setDataResourceType((DataResourceType)value);
       }
       break;
 
@@ -591,11 +741,19 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
       }
       break;
 
-    case DATA_REPLICA_LOCATIONS:
+    case REPLICA_LOCATIONS:
       if (value == null) {
-        unsetDataReplicaLocations();
+        unsetReplicaLocations();
       } else {
-        setDataReplicaLocations((List<DataReplicaLocationModel>)value);
+        setReplicaLocations((List<DataReplicaLocationModel>)value);
+      }
+      break;
+
+    case CHILD_RESOURCES:
+      if (value == null) {
+        unsetChildResources();
+      } else {
+        setChildResources((List<DataResourceModel>)value);
       }
       break;
 
@@ -610,6 +768,9 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
     case GATEWAY_ID:
       return getGatewayId();
 
+    case PARENT_RESOURCE_ID:
+      return getParentResourceId();
+
     case RESOURCE_NAME:
       return getResourceName();
 
@@ -618,6 +779,9 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
 
     case OWNER_NAME:
       return getOwnerName();
+
+    case DATA_RESOURCE_TYPE:
+      return getDataResourceType();
 
     case RESOURCE_SIZE:
       return Integer.valueOf(getResourceSize());
@@ -631,8 +795,11 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
     case RESOURCE_METADATA:
       return getResourceMetadata();
 
-    case DATA_REPLICA_LOCATIONS:
-      return getDataReplicaLocations();
+    case REPLICA_LOCATIONS:
+      return getReplicaLocations();
+
+    case CHILD_RESOURCES:
+      return getChildResources();
 
     }
     throw new IllegalStateException();
@@ -649,12 +816,16 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
       return isSetResourceId();
     case GATEWAY_ID:
       return isSetGatewayId();
+    case PARENT_RESOURCE_ID:
+      return isSetParentResourceId();
     case RESOURCE_NAME:
       return isSetResourceName();
     case RESOURCE_DESCRIPTION:
       return isSetResourceDescription();
     case OWNER_NAME:
       return isSetOwnerName();
+    case DATA_RESOURCE_TYPE:
+      return isSetDataResourceType();
     case RESOURCE_SIZE:
       return isSetResourceSize();
     case CREATION_TIME:
@@ -663,8 +834,10 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
       return isSetLastModifiedTime();
     case RESOURCE_METADATA:
       return isSetResourceMetadata();
-    case DATA_REPLICA_LOCATIONS:
-      return isSetDataReplicaLocations();
+    case REPLICA_LOCATIONS:
+      return isSetReplicaLocations();
+    case CHILD_RESOURCES:
+      return isSetChildResources();
     }
     throw new IllegalStateException();
   }
@@ -700,6 +873,15 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
         return false;
     }
 
+    boolean this_present_parentResourceId = true && this.isSetParentResourceId();
+    boolean that_present_parentResourceId = true && that.isSetParentResourceId();
+    if (this_present_parentResourceId || that_present_parentResourceId) {
+      if (!(this_present_parentResourceId && that_present_parentResourceId))
+        return false;
+      if (!this.parentResourceId.equals(that.parentResourceId))
+        return false;
+    }
+
     boolean this_present_resourceName = true && this.isSetResourceName();
     boolean that_present_resourceName = true && that.isSetResourceName();
     if (this_present_resourceName || that_present_resourceName) {
@@ -724,6 +906,15 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
       if (!(this_present_ownerName && that_present_ownerName))
         return false;
       if (!this.ownerName.equals(that.ownerName))
+        return false;
+    }
+
+    boolean this_present_dataResourceType = true && this.isSetDataResourceType();
+    boolean that_present_dataResourceType = true && that.isSetDataResourceType();
+    if (this_present_dataResourceType || that_present_dataResourceType) {
+      if (!(this_present_dataResourceType && that_present_dataResourceType))
+        return false;
+      if (!this.dataResourceType.equals(that.dataResourceType))
         return false;
     }
 
@@ -763,12 +954,21 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
         return false;
     }
 
-    boolean this_present_dataReplicaLocations = true && this.isSetDataReplicaLocations();
-    boolean that_present_dataReplicaLocations = true && that.isSetDataReplicaLocations();
-    if (this_present_dataReplicaLocations || that_present_dataReplicaLocations) {
-      if (!(this_present_dataReplicaLocations && that_present_dataReplicaLocations))
+    boolean this_present_replicaLocations = true && this.isSetReplicaLocations();
+    boolean that_present_replicaLocations = true && that.isSetReplicaLocations();
+    if (this_present_replicaLocations || that_present_replicaLocations) {
+      if (!(this_present_replicaLocations && that_present_replicaLocations))
         return false;
-      if (!this.dataReplicaLocations.equals(that.dataReplicaLocations))
+      if (!this.replicaLocations.equals(that.replicaLocations))
+        return false;
+    }
+
+    boolean this_present_childResources = true && this.isSetChildResources();
+    boolean that_present_childResources = true && that.isSetChildResources();
+    if (this_present_childResources || that_present_childResources) {
+      if (!(this_present_childResources && that_present_childResources))
+        return false;
+      if (!this.childResources.equals(that.childResources))
         return false;
     }
 
@@ -789,6 +989,11 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
     if (present_gatewayId)
       list.add(gatewayId);
 
+    boolean present_parentResourceId = true && (isSetParentResourceId());
+    list.add(present_parentResourceId);
+    if (present_parentResourceId)
+      list.add(parentResourceId);
+
     boolean present_resourceName = true && (isSetResourceName());
     list.add(present_resourceName);
     if (present_resourceName)
@@ -803,6 +1008,11 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
     list.add(present_ownerName);
     if (present_ownerName)
       list.add(ownerName);
+
+    boolean present_dataResourceType = true && (isSetDataResourceType());
+    list.add(present_dataResourceType);
+    if (present_dataResourceType)
+      list.add(dataResourceType.getValue());
 
     boolean present_resourceSize = true && (isSetResourceSize());
     list.add(present_resourceSize);
@@ -824,10 +1034,15 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
     if (present_resourceMetadata)
       list.add(resourceMetadata);
 
-    boolean present_dataReplicaLocations = true && (isSetDataReplicaLocations());
-    list.add(present_dataReplicaLocations);
-    if (present_dataReplicaLocations)
-      list.add(dataReplicaLocations);
+    boolean present_replicaLocations = true && (isSetReplicaLocations());
+    list.add(present_replicaLocations);
+    if (present_replicaLocations)
+      list.add(replicaLocations);
+
+    boolean present_childResources = true && (isSetChildResources());
+    list.add(present_childResources);
+    if (present_childResources)
+      list.add(childResources);
 
     return list.hashCode();
   }
@@ -860,6 +1075,16 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetParentResourceId()).compareTo(other.isSetParentResourceId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetParentResourceId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parentResourceId, other.parentResourceId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetResourceName()).compareTo(other.isSetResourceName());
     if (lastComparison != 0) {
       return lastComparison;
@@ -886,6 +1111,16 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
     }
     if (isSetOwnerName()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ownerName, other.ownerName);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDataResourceType()).compareTo(other.isSetDataResourceType());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDataResourceType()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dataResourceType, other.dataResourceType);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -930,12 +1165,22 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetDataReplicaLocations()).compareTo(other.isSetDataReplicaLocations());
+    lastComparison = Boolean.valueOf(isSetReplicaLocations()).compareTo(other.isSetReplicaLocations());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetDataReplicaLocations()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dataReplicaLocations, other.dataReplicaLocations);
+    if (isSetReplicaLocations()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.replicaLocations, other.replicaLocations);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetChildResources()).compareTo(other.isSetChildResources());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetChildResources()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.childResources, other.childResources);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -979,6 +1224,16 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
       }
       first = false;
     }
+    if (isSetParentResourceId()) {
+      if (!first) sb.append(", ");
+      sb.append("parentResourceId:");
+      if (this.parentResourceId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.parentResourceId);
+      }
+      first = false;
+    }
     if (isSetResourceName()) {
       if (!first) sb.append(", ");
       sb.append("resourceName:");
@@ -1006,6 +1261,16 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
         sb.append("null");
       } else {
         sb.append(this.ownerName);
+      }
+      first = false;
+    }
+    if (isSetDataResourceType()) {
+      if (!first) sb.append(", ");
+      sb.append("dataResourceType:");
+      if (this.dataResourceType == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.dataResourceType);
       }
       first = false;
     }
@@ -1037,13 +1302,23 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
       }
       first = false;
     }
-    if (isSetDataReplicaLocations()) {
+    if (isSetReplicaLocations()) {
       if (!first) sb.append(", ");
-      sb.append("dataReplicaLocations:");
-      if (this.dataReplicaLocations == null) {
+      sb.append("replicaLocations:");
+      if (this.replicaLocations == null) {
         sb.append("null");
       } else {
-        sb.append(this.dataReplicaLocations);
+        sb.append(this.replicaLocations);
+      }
+      first = false;
+    }
+    if (isSetChildResources()) {
+      if (!first) sb.append(", ");
+      sb.append("childResources:");
+      if (this.childResources == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.childResources);
       }
       first = false;
     }
@@ -1108,7 +1383,15 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // RESOURCE_NAME
+          case 3: // PARENT_RESOURCE_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.parentResourceId = iprot.readString();
+              struct.setParentResourceIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // RESOURCE_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.resourceName = iprot.readString();
               struct.setResourceNameIsSet(true);
@@ -1116,7 +1399,7 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // RESOURCE_DESCRIPTION
+          case 5: // RESOURCE_DESCRIPTION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.resourceDescription = iprot.readString();
               struct.setResourceDescriptionIsSet(true);
@@ -1124,7 +1407,7 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // OWNER_NAME
+          case 6: // OWNER_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.ownerName = iprot.readString();
               struct.setOwnerNameIsSet(true);
@@ -1132,7 +1415,15 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // RESOURCE_SIZE
+          case 7: // DATA_RESOURCE_TYPE
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.dataResourceType = org.apache.airavata.model.data.resource.DataResourceType.findByValue(iprot.readI32());
+              struct.setDataResourceTypeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 8: // RESOURCE_SIZE
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.resourceSize = iprot.readI32();
               struct.setResourceSizeIsSet(true);
@@ -1140,7 +1431,7 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // CREATION_TIME
+          case 9: // CREATION_TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.creationTime = iprot.readI64();
               struct.setCreationTimeIsSet(true);
@@ -1148,7 +1439,7 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // LAST_MODIFIED_TIME
+          case 10: // LAST_MODIFIED_TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.lastModifiedTime = iprot.readI64();
               struct.setLastModifiedTimeIsSet(true);
@@ -1156,7 +1447,7 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // RESOURCE_METADATA
+          case 11: // RESOURCE_METADATA
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
                 org.apache.thrift.protocol.TMap _map0 = iprot.readMapBegin();
@@ -1176,21 +1467,40 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // DATA_REPLICA_LOCATIONS
+          case 12: // REPLICA_LOCATIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list4 = iprot.readListBegin();
-                struct.dataReplicaLocations = new ArrayList<DataReplicaLocationModel>(_list4.size);
+                struct.replicaLocations = new ArrayList<DataReplicaLocationModel>(_list4.size);
                 DataReplicaLocationModel _elem5;
                 for (int _i6 = 0; _i6 < _list4.size; ++_i6)
                 {
                   _elem5 = new DataReplicaLocationModel();
                   _elem5.read(iprot);
-                  struct.dataReplicaLocations.add(_elem5);
+                  struct.replicaLocations.add(_elem5);
                 }
                 iprot.readListEnd();
               }
-              struct.setDataReplicaLocationsIsSet(true);
+              struct.setReplicaLocationsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 13: // CHILD_RESOURCES
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list7 = iprot.readListBegin();
+                struct.childResources = new ArrayList<DataResourceModel>(_list7.size);
+                DataResourceModel _elem8;
+                for (int _i9 = 0; _i9 < _list7.size; ++_i9)
+                {
+                  _elem8 = new DataResourceModel();
+                  _elem8.read(iprot);
+                  struct.childResources.add(_elem8);
+                }
+                iprot.readListEnd();
+              }
+              struct.setChildResourcesIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1222,6 +1532,13 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
           oprot.writeFieldEnd();
         }
       }
+      if (struct.parentResourceId != null) {
+        if (struct.isSetParentResourceId()) {
+          oprot.writeFieldBegin(PARENT_RESOURCE_ID_FIELD_DESC);
+          oprot.writeString(struct.parentResourceId);
+          oprot.writeFieldEnd();
+        }
+      }
       if (struct.resourceName != null) {
         if (struct.isSetResourceName()) {
           oprot.writeFieldBegin(RESOURCE_NAME_FIELD_DESC);
@@ -1240,6 +1557,13 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
         if (struct.isSetOwnerName()) {
           oprot.writeFieldBegin(OWNER_NAME_FIELD_DESC);
           oprot.writeString(struct.ownerName);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.dataResourceType != null) {
+        if (struct.isSetDataResourceType()) {
+          oprot.writeFieldBegin(DATA_RESOURCE_TYPE_FIELD_DESC);
+          oprot.writeI32(struct.dataResourceType.getValue());
           oprot.writeFieldEnd();
         }
       }
@@ -1263,24 +1587,38 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
           oprot.writeFieldBegin(RESOURCE_METADATA_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, struct.resourceMetadata.size()));
-            for (Map.Entry<String, String> _iter7 : struct.resourceMetadata.entrySet())
+            for (Map.Entry<String, String> _iter10 : struct.resourceMetadata.entrySet())
             {
-              oprot.writeString(_iter7.getKey());
-              oprot.writeString(_iter7.getValue());
+              oprot.writeString(_iter10.getKey());
+              oprot.writeString(_iter10.getValue());
             }
             oprot.writeMapEnd();
           }
           oprot.writeFieldEnd();
         }
       }
-      if (struct.dataReplicaLocations != null) {
-        if (struct.isSetDataReplicaLocations()) {
-          oprot.writeFieldBegin(DATA_REPLICA_LOCATIONS_FIELD_DESC);
+      if (struct.replicaLocations != null) {
+        if (struct.isSetReplicaLocations()) {
+          oprot.writeFieldBegin(REPLICA_LOCATIONS_FIELD_DESC);
           {
-            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.dataReplicaLocations.size()));
-            for (DataReplicaLocationModel _iter8 : struct.dataReplicaLocations)
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.replicaLocations.size()));
+            for (DataReplicaLocationModel _iter11 : struct.replicaLocations)
             {
-              _iter8.write(oprot);
+              _iter11.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.childResources != null) {
+        if (struct.isSetChildResources()) {
+          oprot.writeFieldBegin(CHILD_RESOURCES_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.childResources.size()));
+            for (DataResourceModel _iter12 : struct.childResources)
+            {
+              _iter12.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1311,36 +1649,48 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
       if (struct.isSetGatewayId()) {
         optionals.set(1);
       }
-      if (struct.isSetResourceName()) {
+      if (struct.isSetParentResourceId()) {
         optionals.set(2);
       }
-      if (struct.isSetResourceDescription()) {
+      if (struct.isSetResourceName()) {
         optionals.set(3);
       }
-      if (struct.isSetOwnerName()) {
+      if (struct.isSetResourceDescription()) {
         optionals.set(4);
       }
-      if (struct.isSetResourceSize()) {
+      if (struct.isSetOwnerName()) {
         optionals.set(5);
       }
-      if (struct.isSetCreationTime()) {
+      if (struct.isSetDataResourceType()) {
         optionals.set(6);
       }
-      if (struct.isSetLastModifiedTime()) {
+      if (struct.isSetResourceSize()) {
         optionals.set(7);
       }
-      if (struct.isSetResourceMetadata()) {
+      if (struct.isSetCreationTime()) {
         optionals.set(8);
       }
-      if (struct.isSetDataReplicaLocations()) {
+      if (struct.isSetLastModifiedTime()) {
         optionals.set(9);
       }
-      oprot.writeBitSet(optionals, 10);
+      if (struct.isSetResourceMetadata()) {
+        optionals.set(10);
+      }
+      if (struct.isSetReplicaLocations()) {
+        optionals.set(11);
+      }
+      if (struct.isSetChildResources()) {
+        optionals.set(12);
+      }
+      oprot.writeBitSet(optionals, 13);
       if (struct.isSetResourceId()) {
         oprot.writeString(struct.resourceId);
       }
       if (struct.isSetGatewayId()) {
         oprot.writeString(struct.gatewayId);
+      }
+      if (struct.isSetParentResourceId()) {
+        oprot.writeString(struct.parentResourceId);
       }
       if (struct.isSetResourceName()) {
         oprot.writeString(struct.resourceName);
@@ -1350,6 +1700,9 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
       }
       if (struct.isSetOwnerName()) {
         oprot.writeString(struct.ownerName);
+      }
+      if (struct.isSetDataResourceType()) {
+        oprot.writeI32(struct.dataResourceType.getValue());
       }
       if (struct.isSetResourceSize()) {
         oprot.writeI32(struct.resourceSize);
@@ -1363,19 +1716,28 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
       if (struct.isSetResourceMetadata()) {
         {
           oprot.writeI32(struct.resourceMetadata.size());
-          for (Map.Entry<String, String> _iter9 : struct.resourceMetadata.entrySet())
+          for (Map.Entry<String, String> _iter13 : struct.resourceMetadata.entrySet())
           {
-            oprot.writeString(_iter9.getKey());
-            oprot.writeString(_iter9.getValue());
+            oprot.writeString(_iter13.getKey());
+            oprot.writeString(_iter13.getValue());
           }
         }
       }
-      if (struct.isSetDataReplicaLocations()) {
+      if (struct.isSetReplicaLocations()) {
         {
-          oprot.writeI32(struct.dataReplicaLocations.size());
-          for (DataReplicaLocationModel _iter10 : struct.dataReplicaLocations)
+          oprot.writeI32(struct.replicaLocations.size());
+          for (DataReplicaLocationModel _iter14 : struct.replicaLocations)
           {
-            _iter10.write(oprot);
+            _iter14.write(oprot);
+          }
+        }
+      }
+      if (struct.isSetChildResources()) {
+        {
+          oprot.writeI32(struct.childResources.size());
+          for (DataResourceModel _iter15 : struct.childResources)
+          {
+            _iter15.write(oprot);
           }
         }
       }
@@ -1384,7 +1746,7 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, DataResourceModel struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(10);
+      BitSet incoming = iprot.readBitSet(13);
       if (incoming.get(0)) {
         struct.resourceId = iprot.readString();
         struct.setResourceIdIsSet(true);
@@ -1394,57 +1756,79 @@ public class DataResourceModel implements org.apache.thrift.TBase<DataResourceMo
         struct.setGatewayIdIsSet(true);
       }
       if (incoming.get(2)) {
+        struct.parentResourceId = iprot.readString();
+        struct.setParentResourceIdIsSet(true);
+      }
+      if (incoming.get(3)) {
         struct.resourceName = iprot.readString();
         struct.setResourceNameIsSet(true);
       }
-      if (incoming.get(3)) {
+      if (incoming.get(4)) {
         struct.resourceDescription = iprot.readString();
         struct.setResourceDescriptionIsSet(true);
       }
-      if (incoming.get(4)) {
+      if (incoming.get(5)) {
         struct.ownerName = iprot.readString();
         struct.setOwnerNameIsSet(true);
       }
-      if (incoming.get(5)) {
+      if (incoming.get(6)) {
+        struct.dataResourceType = org.apache.airavata.model.data.resource.DataResourceType.findByValue(iprot.readI32());
+        struct.setDataResourceTypeIsSet(true);
+      }
+      if (incoming.get(7)) {
         struct.resourceSize = iprot.readI32();
         struct.setResourceSizeIsSet(true);
       }
-      if (incoming.get(6)) {
+      if (incoming.get(8)) {
         struct.creationTime = iprot.readI64();
         struct.setCreationTimeIsSet(true);
       }
-      if (incoming.get(7)) {
+      if (incoming.get(9)) {
         struct.lastModifiedTime = iprot.readI64();
         struct.setLastModifiedTimeIsSet(true);
       }
-      if (incoming.get(8)) {
+      if (incoming.get(10)) {
         {
-          org.apache.thrift.protocol.TMap _map11 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.resourceMetadata = new HashMap<String,String>(2*_map11.size);
-          String _key12;
-          String _val13;
-          for (int _i14 = 0; _i14 < _map11.size; ++_i14)
+          org.apache.thrift.protocol.TMap _map16 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.resourceMetadata = new HashMap<String,String>(2*_map16.size);
+          String _key17;
+          String _val18;
+          for (int _i19 = 0; _i19 < _map16.size; ++_i19)
           {
-            _key12 = iprot.readString();
-            _val13 = iprot.readString();
-            struct.resourceMetadata.put(_key12, _val13);
+            _key17 = iprot.readString();
+            _val18 = iprot.readString();
+            struct.resourceMetadata.put(_key17, _val18);
           }
         }
         struct.setResourceMetadataIsSet(true);
       }
-      if (incoming.get(9)) {
+      if (incoming.get(11)) {
         {
-          org.apache.thrift.protocol.TList _list15 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.dataReplicaLocations = new ArrayList<DataReplicaLocationModel>(_list15.size);
-          DataReplicaLocationModel _elem16;
-          for (int _i17 = 0; _i17 < _list15.size; ++_i17)
+          org.apache.thrift.protocol.TList _list20 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.replicaLocations = new ArrayList<DataReplicaLocationModel>(_list20.size);
+          DataReplicaLocationModel _elem21;
+          for (int _i22 = 0; _i22 < _list20.size; ++_i22)
           {
-            _elem16 = new DataReplicaLocationModel();
-            _elem16.read(iprot);
-            struct.dataReplicaLocations.add(_elem16);
+            _elem21 = new DataReplicaLocationModel();
+            _elem21.read(iprot);
+            struct.replicaLocations.add(_elem21);
           }
         }
-        struct.setDataReplicaLocationsIsSet(true);
+        struct.setReplicaLocationsIsSet(true);
+      }
+      if (incoming.get(12)) {
+        {
+          org.apache.thrift.protocol.TList _list23 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.childResources = new ArrayList<DataResourceModel>(_list23.size);
+          DataResourceModel _elem24;
+          for (int _i25 = 0; _i25 < _list23.size; ++_i25)
+          {
+            _elem24 = new DataResourceModel();
+            _elem24.read(iprot);
+            struct.childResources.add(_elem24);
+          }
+        }
+        struct.setChildResourcesIsSet(true);
       }
     }
   }

@@ -18,12 +18,17 @@
  * under the License.
  *
 */
+package org.apache.airavata.data.catalog.core;
 
-package org.apache.airavata.registry.cpi;
+import org.apache.airavata.data.catalog.cpi.DataManager;
+import org.apache.airavata.data.catalog.cpi.DataManagerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public interface Registry {
-    public ExperimentCatalog getExperimentCatalog() throws RegistryException;
-    public ExperimentCatalog getExperimentCatalog(String gatewayId, String username, String password) throws RegistryException;
-    public AppCatalog getAppCatalog() throws RegistryException;
-    public DataCatalog getDataCatalog() throws RegistryException;
+public class DataManagerFactory {
+    private final static Logger logger = LoggerFactory.getLogger(DataManagerFactory.class);
+
+    public static DataManager getDataManager() throws DataManagerException {
+        return new DataManagerImpl();
+    }
 }
