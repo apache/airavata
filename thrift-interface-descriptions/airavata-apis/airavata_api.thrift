@@ -340,6 +340,18 @@ service Airavata {
                 4: airavata_errors.ProjectNotFoundException pnfe,
                 5: airavata_errors.AuthorizationException ae)
 
+/**
+   * Delete a Project
+   *    This method is used to delete an existing Project
+   *
+   * @param projectId
+   *    projectId of the project you want to delete
+   *
+   * @return boolean
+   *    Boolean identifier for the success or failure of the deletion operation.
+   *
+  */
+
   bool deleteProject (1: required security_model.AuthzToken authzToken, 2: required string projectId)
           throws (1: airavata_errors.InvalidRequestException ire,
                   2: airavata_errors.AiravataClientException ace,
