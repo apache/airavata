@@ -32,6 +32,9 @@ import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.datamodel.SSHCredential;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.data.catalog.core.DataManagerFactory;
+import org.apache.airavata.data.catalog.cpi.DataManager;
+import org.apache.airavata.data.catalog.cpi.DataManagerException;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
@@ -73,9 +76,6 @@ import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 
-import org.apache.airavata.replica.catalog.core.DataManagerFactory;
-import org.apache.airavata.replica.catalog.cpi.DataManager;
-import org.apache.airavata.replica.catalog.cpi.DataManagerException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
