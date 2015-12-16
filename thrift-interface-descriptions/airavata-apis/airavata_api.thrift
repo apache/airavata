@@ -50,7 +50,7 @@ namespace py apache.airavata.api
 namespace js ApacheAiravataAPI
 
 /**
- * Airavata Interface Versions depend upon this Thrift Interface File. When Making changes, please edit the
+ * Airavata Interface Versions depend upon this Thrift Interface File. When making changes, please edit the
  *  Version Constants according to Semantic Versioning Specification (SemVer) http://semver.org.
  *
  * Note: The Airavata API version may be different from the Airavata software release versions.
@@ -71,20 +71,42 @@ service Airavata {
  * Apache Airavata API Service Methods. For data structures associated in the signatures, please see included thrift files
 */
 
-  /**
+   /**
    * Fetch Apache Airavata API version
-  */
+   **/
   string getAPIVersion(1: required security_model.AuthzToken authzToken)
         throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
                 3: airavata_errors.AiravataSystemException ase,
                 4: airavata_errors.AuthorizationException ae)
 
+   /**
+   * Register a Gateway with Airavata.
+   *
+   * @param gateway
+   *    The gateway data model.
+   * 
+   * @return gatewayId
+   *   Th unique identifier of the  newly registered gateway.
+   *
+   **/
+  
   string addGateway(1: required security_model.AuthzToken authzToken, 2: required workspace_model.Gateway gateway)
          throws (1: airavata_errors.InvalidRequestException ire,
                  2: airavata_errors.AiravataClientException ace,
                  3: airavata_errors.AiravataSystemException ase,
                  4: airavata_errors.AuthorizationException ae)
+
+   /**
+   * Update previously registered Gateway metadata.
+   *
+   * @param gatewayId
+   *    The gateway Id of the Gateway which require an update.
+   *
+   * @return gateway
+   *    Modified gateway obejct.
+   *
+   **/
 
   void updateGateway(1: required security_model.AuthzToken authzToken, 2: required string gatewayId, 3: required workspace_model.Gateway updatedGateway)
          throws (1: airavata_errors.InvalidRequestException ire,
@@ -92,17 +114,43 @@ service Airavata {
                  3: airavata_errors.AiravataSystemException ase,
                  4: airavata_errors.AuthorizationException ae)
 
+    /**
+    * Get Gateway details by providing gatewayId
+    *
+    * @param gatewayId
+    *    The gateway Id of the Gateway.
+    *
+    * @return gateway
+    *    Gateway obejct.
+    *
+    **/
+
   workspace_model.Gateway getGateway(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase,
                    4: airavata_errors.AuthorizationException ae)
 
+    /**
+    * Delete a Gateway
+    *
+    * @param gatewayId
+    *    The gateway Id of the Gateway to be deleted.
+    *
+    * @return boolean
+    *    Boolean identifier for the success or failure of the deletion operation.
+    *
+    **/
+
   bool deleteGateway(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase,
                      4: airavata_errors.AuthorizationException ae)
+
+    /**
+    * Get All the Gateways Connected to Airavata.
+    **/
 
   list<workspace_model.Gateway> getAllGateways(1: required security_model.AuthzToken authzToken)
              throws (1: airavata_errors.InvalidRequestException ire,
@@ -117,16 +165,16 @@ service Airavata {
                    4: airavata_errors.AuthorizationException ae)
 
 
-  /**
+    /**
     * Airavata Adminstrative Funcationality
-  **/
+    **/
 
 
-  /**
+   /**
    * Generate and Register SSH Key Pair with Airavata Credential Store.
    *
    * @param gatewayId
-   *    The identifier for the requested gateway.
+   *    The identifier for the requested Gateway.
    *
    * @param userName
    *    The User for which the credential should be registered. For community accounts, this user is the name of the
@@ -134,7 +182,7 @@ service Airavata {
    *
    * @return airavataCredStoreToken
    *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
-   *   belonging to a gateway.
+   *   belonging to a Gateway.
    *
    **/
 
@@ -145,6 +193,19 @@ service Airavata {
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
 
+   /**
+   * Get a Public Key by Providing the Token
+   *
+   * @param CredStoreToken
+   *    Credential Store Token which you want to find the Public Key for.
+   *
+   * @param gatewayId
+   *    This is the unique identifier of your gateway where the token and public key was generated from.
+   *
+   * @return publicKey
+   *
+   **/
+
    string getSSHPubKey (1: required security_model.AuthzToken authzToken,
                         2: required string airavataCredStoreToken,
                         3: required string gatewayId)
@@ -152,11 +213,37 @@ service Airavata {
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
 
+   /**
+   * Get a Public Key by Providing the Token
+   *
+   * @param CredStoreToken
+   *    Credential Store Token which you want to find the Public Key for.
+   *
+   * @param gatewayId
+   *    This is the unique identifier of your gateway where the token and public key was generated from.
+   *
+   * @return SSHpubKey
+   *
+   **/
+
    map<string, string> getAllUserSSHPubKeys (1: required security_model.AuthzToken authzToken,
                                              2: required string userName)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
+
+   /**
+   * Get all Public Keys of the Gateway
+   *
+   * @param CredStoreToken
+   *    Credential Store Token which you want to find the Public Key for.
+   *
+   * @param gatewayId
+   *    This is the unique identifier of your gateway where the token and public key was generated from.
+   *
+   * @return publicKey
+   *
+   **/
 
   map<string, string> getAllGatewaySSHPubKeys (1: required security_model.AuthzToken authzToken,
                                                2: required string gatewayId)
@@ -1043,6 +1130,7 @@ service Airavata {
    *   Returns a application Deployment Object.
    *
   */
+
   application_deployment_model.ApplicationDeploymentDescription getApplicationDeployment(1: required security_model.AuthzToken authzToken,
                 2: required string appDeploymentId)
       	throws (1: airavata_errors.InvalidRequestException ire,
