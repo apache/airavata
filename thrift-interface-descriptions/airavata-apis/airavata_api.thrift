@@ -106,6 +106,8 @@ service Airavata {
    * @return gateway
    *    Modified gateway obejct.
    *
+   * @exception AiravataClientException
+   *
    **/
 
   void updateGateway(1: required security_model.AuthzToken authzToken, 2: required string gatewayId, 3: required workspace_model.Gateway updatedGateway)
@@ -157,6 +159,20 @@ service Airavata {
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase,
                      4: airavata_errors.AuthorizationException ae)
+
+    /**
+    * Check for the Existance of a Gateway within Airavata
+    *
+    * @param gatewayId
+    *   Provide the gatewayId of the gateway you want to check the existancy
+    *
+    * @return boolean
+    *   Boolean idetifier for the existance or non-existane of the gatewayId
+    *
+    * @return gatewayId
+    *   return the gatewayId of the existing gateway.
+    *
+    **/
 
   bool isGatewayExist(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
            throws (1: airavata_errors.InvalidRequestException ire,
@@ -250,6 +266,17 @@ service Airavata {
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
+
+    /**
+    * Delete a Gateway
+    *
+    * @param gatewayId
+    *    The gateway Id of the Gateway to be deleted.
+    *
+    * @return boolean
+    *    Boolean identifier for the success or failure of the deletion operation.
+    *
+    **/
 
   bool deleteSSHPubKey (1: required security_model.AuthzToken authzToken,
                           2: required string airavataCredStoreToken,
