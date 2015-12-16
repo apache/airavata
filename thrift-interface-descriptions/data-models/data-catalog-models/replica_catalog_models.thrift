@@ -18,6 +18,8 @@
  *
  */
 
+ include "../resource-catalog-models/data_movement_models.thrift"
+
   namespace java org.apache.airavata.model.data.resource
   namespace php Airavata.Model.Data.Resource
   namespace cpp apache.airavata.model.data.resource
@@ -35,17 +37,25 @@ enum ReplicaPersistentType {
     PERSISTENT
 }
 
+enum DataResourceType {
+    COLLECTION,
+    FILE
+}
+
 struct DataResourceModel {
     1: optional string resourceId,
     2: optional string gatewayId,
-    3: optional string resourceName,
-    4: optional string resourceDescription,
-    5: optional string ownerName,
-    6: optional i32 resourceSize,
-    7: optional i64 creationTime,
-    8: optional i64 lastModifiedTime,
-    9: optional map<string, string> resourceMetadata,
-    10: optional list<DataReplicaLocationModel> dataReplicaLocations
+    3: optional string parentResourceId,
+    4: optional string resourceName,
+    5: optional string resourceDescription,
+    6: optional string ownerName,
+    7: optional DataResourceType dataResourceType,
+    8: optional i32 resourceSize,
+    9: optional i64 creationTime,
+    10: optional i64 lastModifiedTime,
+    11: optional map<string, string> resourceMetadata,
+    12: optional list<DataReplicaLocationModel> replicaLocations,
+    13: optional list<DataResourceModel> childResources
 }
 
 struct DataReplicaLocationModel {
@@ -57,6 +67,11 @@ struct DataReplicaLocationModel {
     6: optional i64 lastModifiedTime,
     7: optional ReplicaLocationCategory replicaLocationCategory,
     8: optional ReplicaPersistentType replicaPersistentType,
-    9: optional list<string> dataLocations,
-    10: optional map<string, string> replicaMetadata
+    9: optional string storageResourceId,
+    10: optional string storageResourceHostName,
+    11: optional data_movement_models.DataMovementProtocol dataMovementProtocol,
+    12: optional i64 hostPort,
+    13: optional string filePath,
+    14: optional string replicaUrl,
+    15: optional map<string, string> replicaMetadata
 }

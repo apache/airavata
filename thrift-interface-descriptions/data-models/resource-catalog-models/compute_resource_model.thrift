@@ -196,6 +196,11 @@ enum MonitorMode {
    FORK
 }
 
+enum DMType {
+    COMPUTE_RESOURCE,
+    STORAGE_RESOURCE
+}
+
 /**
  * Locally Fork Jobs as OS processes
  *

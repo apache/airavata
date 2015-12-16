@@ -21,6 +21,7 @@ package org.apache.airavata.registry.cpi;
 
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.data.movement.*;
+import org.apache.airavata.model.data.movement.DMType;
 
 import java.util.List;
 import java.util.Map;
