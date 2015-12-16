@@ -43,7 +43,7 @@ fi
 # Generation of thrift files will require installing Apache Thrift. Please add thrift to your path.
 #  Verify is thrift is installed, is in the path is at a specified version.
 
-REQUIRED_THRIFT_VERSION='0.9.2'
+REQUIRED_THRIFT_VERSION='0.9.3'
 if hash thrift &> /dev/null; then
   THRIFT_EXEC=$(which thrift)
 else
@@ -168,9 +168,9 @@ for arg in "$@"
 do
     case "$arg" in
     all)    echo "Generate all (credential store, orchestrator, gfac) Stubs"
-            generate_cs_stubs
             generate_thrift_stubs ${CS_THRIFT_FILE} ${CS_SRC_DIR}
-            generate_gfac_stubs
+            generate_thrift_stubs ${ORCHESTRATOR_THRIFT_FILE} ${ORCHESTRATOR_SRC_DIR}
+            generate_thrift_stubs ${GFAC_THRIFT_FILE} ${GFAC_SRC_DIR}
             ;;
     cs)   echo "Generating Credential Store Stubs"
             generate_thrift_stubs ${CS_THRIFT_FILE} ${CS_SRC_DIR}
