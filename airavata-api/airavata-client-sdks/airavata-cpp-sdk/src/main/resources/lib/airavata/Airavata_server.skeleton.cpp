@@ -2715,6 +2715,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getDataResource\n");
   }
 
+  void copyDataResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& destStorageResourceId, const std::string& destinationParentPath) {
+    // Your implementation goes here
+    printf("copyDataResource\n");
+  }
+
 };
 
 int main(int argc, char **argv) {

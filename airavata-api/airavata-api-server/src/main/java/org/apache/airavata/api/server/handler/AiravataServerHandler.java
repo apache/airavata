@@ -32,9 +32,9 @@ import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.datamodel.SSHCredential;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
-import org.apache.airavata.data.catalog.core.DataManagerFactory;
-import org.apache.airavata.data.catalog.cpi.DataManager;
-import org.apache.airavata.data.catalog.cpi.DataManagerException;
+import org.apache.airavata.data.manager.core.DataManagerFactory;
+import org.apache.airavata.data.manager.cpi.DataManager;
+import org.apache.airavata.data.manager.cpi.DataManagerException;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
@@ -4069,17 +4069,6 @@ public class AiravataServerHandler implements Airavata.Iface {
      * *
      */
 
-    /**
-     * Create new data resource. Resourse ID is returned
-     * @param authzToken
-     * @param dataResourceModel
-     * @return
-     * @throws InvalidRequestException
-     * @throws AiravataClientException
-     * @throws AiravataSystemException
-     * @throws AuthorizationException
-     * @throws TException
-     */
     @Override
     @SecurityCheck
     public String registerDataResource(AuthzToken authzToken, DataResourceModel dataResourceModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
@@ -4095,16 +4084,6 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    /**
-     * Update exisiting data resource
-     * @param authzToken
-     * @param dataResourceModel
-     * @throws InvalidRequestException
-     * @throws AiravataClientException
-     * @throws AiravataSystemException
-     * @throws AuthorizationException
-     * @throws TException
-     */
     @Override
     @SecurityCheck
     public void updateDataResource(AuthzToken authzToken, DataResourceModel dataResourceModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
@@ -4120,16 +4099,6 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    /**
-     * Remove existing data resource
-     * @param authzToken
-     * @param resourceId
-     * @throws InvalidRequestException
-     * @throws AiravataClientException
-     * @throws AiravataSystemException
-     * @throws AuthorizationException
-     * @throws TException
-     */
     @Override
     @SecurityCheck
     public void removeDataResource(AuthzToken authzToken, String resourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
@@ -4145,17 +4114,6 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    /**
-     * Retreive existing data resource
-     * @param authzToken
-     * @param resourceId
-     * @return
-     * @throws InvalidRequestException
-     * @throws AiravataClientException
-     * @throws AiravataSystemException
-     * @throws AuthorizationException
-     * @throws TException
-     */
     @Override
     @SecurityCheck
     public DataResourceModel getDataResource(AuthzToken authzToken, String resourceId) throws InvalidRequestException,
@@ -4165,6 +4123,20 @@ public class AiravataServerHandler implements Airavata.Iface {
             return dataManager.getResource(resourceId);
         } catch (DataManagerException e) {
             String msg = "Error in retreiving the data resource "+resourceId+".";
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public String copyDataResource(AuthzToken authzToken, String resourceId, String destStorageResourceId, String destinationParentPath) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            DataManager dataManager = DataManagerFactory.getDataManager();
+            return dataManager.copyResource(resourceId, destStorageResourceId, destinationParentPath);
+        } catch (DataManagerException e) {
+            String msg = "Error in copying the data resource "+resourceId+".";
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg+" More info : " + e.getMessage());
