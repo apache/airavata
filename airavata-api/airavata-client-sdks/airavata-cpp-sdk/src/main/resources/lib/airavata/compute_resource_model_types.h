@@ -101,6 +101,15 @@ struct MonitorMode {
 
 extern const std::map<int, const char*> _MonitorMode_VALUES_TO_NAMES;
 
+struct DMType {
+  enum type {
+    COMPUTE_RESOURCE = 0,
+    STORAGE_RESOURCE = 1
+  };
+};
+
+extern const std::map<int, const char*> _DMType_VALUES_TO_NAMES;
+
 struct ProviderName {
   enum type {
     EC2 = 0,
