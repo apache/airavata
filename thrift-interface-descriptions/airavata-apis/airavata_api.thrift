@@ -718,8 +718,6 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
-
-
   /**
   * Delete an Experiment
   *
@@ -948,6 +946,20 @@ service Airavata {
             4: airavata_errors.AiravataSystemException ase,
             5: airavata_errors.AuthorizationException ae)
 
+  /**
+  * Get Experiment Status
+  *
+  * Obtain the status os an experiment by providing the Experiment Id
+  *
+  * @param authzToken
+  *
+  * @param experiementId
+  *     Experiment ID of the experimnet you require the status
+  *
+  * @return ExperimentStatus
+  *     ExperimentStatus model with current status will be returned.
+  *
+  **/
 
    status_models.ExperimentStatus getExperimentStatus(1: required security_model.AuthzToken authzToken,
                                                       2: required string airavataExperimentId)
@@ -957,6 +969,20 @@ service Airavata {
               4: airavata_errors.AiravataSystemException ase,
               5: airavata_errors.AuthorizationException ae)
 
+  /**
+  * Get Experiment Outputs
+  * This method to be used when need to obtain outputs of a certain Experiment
+  *
+  * @param authzToken
+  *
+  * @param experiementId
+  *     Experiment ID of the experimnet you need the outputs
+  *
+  * @return list
+  *     List of experiment outputs will be returned. They will be returned as a list of OutputDataObjectType for the experiment
+  *
+  **/
+
   list<application_io_models.OutputDataObjectType> getExperimentOutputs (1: required security_model.AuthzToken authzToken,
                 2: required string airavataExperimentId)
       throws (1: airavata_errors.InvalidRequestException ire,
@@ -964,6 +990,20 @@ service Airavata {
               3: airavata_errors.AiravataClientException ace,
               4: airavata_errors.AiravataSystemException ase,
               5: airavata_errors.AuthorizationException ae)
+
+  /**
+  * Get Intermediate Experiment Outputs
+  * This method to be used when need to obtain intermediate outputs of a certain Experiment
+  *
+  * @param authzToken
+  *
+  * @param experiementId
+  *     Experiment ID of the experimnet you need the intermediate outputs
+  *
+  * @return list
+  *     List of intermediate experiment outputs will be returned. They will be returned as a list of OutputDataObjectType for the experiment
+  *
+  **/
 
    list<application_io_models.OutputDataObjectType> getIntermediateOutputs (1: required security_model.AuthzToken authzToken,
                 2: required string airavataExperimentId)
@@ -973,6 +1013,19 @@ service Airavata {
                 4: airavata_errors.AiravataSystemException ase,
                 5: airavata_errors.AuthorizationException ae)
 
+  /**
+  * Get Job Status for an Experiment
+  * This method to be used when need to get the job status of an Experiment. An experiment may have one or many jobs; there for one or many job statuses may turnup
+  *
+  * @param authzToken
+  *
+  * @param experiementId
+  *     Experiment ID of the experimnet you need the intermediate outputs
+  *
+  * @return JobStatus
+  *     Job status (string) for all all the existing jobs for the experiment will be returned in the form of a map
+  *
+  **/
 
   map<string, status_models.JobStatus> getJobStatuses(1: required security_model.AuthzToken authzToken,
                       2: required string airavataExperimentId)
