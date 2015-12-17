@@ -65,6 +65,8 @@ public class DataManagerSample {
                     "/var/www/portals/gateway-user-data/testdrive/test-dest");
             System.out.println(replicaId);
 
+            dataResourceModel = client.getDataResource(authzToken, resourceId);
+            System.out.println(dataResourceModel.getReplicaLocations().size());
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
             e.printStackTrace();
