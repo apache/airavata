@@ -18,7 +18,7 @@
  * under the License.
  *
  */
-package org.apache.airavata.secure.sample;
+package org.apache.airavata.client.secure.client;
 
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.util.TrustStoreManager;
@@ -31,7 +31,6 @@ import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceStub;
 import org.wso2.carbon.identity.oauth.stub.dto.OAuthConsumerAppDTO;
 import org.wso2.carbon.utils.CarbonUtils;
 
-import javax.net.ssl.*;
 import java.rmi.RemoteException;
 
 public class OAuthAppRegisteringClient {
