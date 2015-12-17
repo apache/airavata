@@ -279,12 +279,12 @@ public class DataManagerImpl implements DataManager {
             GatewayResourceProfile gatewayProfile = appCatalog.getGatewayProfile().getGatewayProfile(dataResourceModel.getGatewayId());
             List<StoragePreference> storagePreferences = gatewayProfile.getStoragePreferences();
             Optional<StoragePreference> sourceResourcePreference = storagePreferences.stream()
-                    .filter(sp -> sp.getStorageResourceId() == sourceStorageResource.getStorageResourceId()).findFirst();
+                    .filter(sp -> sp.getStorageResourceId().equals(sourceStorageResource.getStorageResourceId())).findFirst();
             if(!sourceResourcePreference.isPresent())
                 throw new DataCatalogException("Could not find storage preference for storage resource id:"
                         + sourceStorageResource.getStorageResourceId());
             Optional<StoragePreference> destResourcePreference = storagePreferences.stream()
-                    .filter(sp -> sp.getStorageResourceId() == destinationStorageResource.getStorageResourceId()).findFirst();
+                    .filter(sp -> sp.getStorageResourceId().equals(destinationStorageResource.getStorageResourceId())).findFirst();
             if(!destResourcePreference.isPresent())
                 throw new DataCatalogException("Could not find storage preference for storage resource id:"
                         + destinationStorageResource.getStorageResourceId());
