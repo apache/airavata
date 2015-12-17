@@ -55,6 +55,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.UUID;
 
 public class DataManagerImpl implements DataManager {
@@ -344,6 +345,9 @@ public class DataManagerImpl implements DataManager {
             throws TException, ApplicationSettingsException, AppCatalogException, JSchException, IOException {
         //Creating JSch sessions
         //Source session
+        Properties config = new java.util.Properties();
+        config.put("StrictHostKeyChecking", "no");
+
         CredentialStoreService.Client credentialStoreServiceClient = getCredentialStoreServiceClient();
         String sourceHostName =  sourceStorageResource.getHostName();
         SCPDataMovement sourceSCPDMI = appCatalog.getComputeResource().getSCPDataMovement(sourceDataMovementInterface.getDataMovementInterfaceId());
@@ -362,6 +366,7 @@ public class DataManagerImpl implements DataManager {
         sourceJSch.addIdentity(UUID.randomUUID().toString(), sourceSshCredential.getPrivateKey().getBytes(),
                 sourceSshCredential.getPublicKey().getBytes(), sourceSshCredential.getPassphrase().getBytes());
         Session sourceSession = sourceJSch.getSession(sourceLoginUserName, sourceHostName, sourcePort);
+        sourceSession.setConfig(config);
         sourceSession.connect();
         String sourceFilePath = sourceReplica.getFileAbsolutePath();
 
@@ -384,6 +389,7 @@ public class DataManagerImpl implements DataManager {
         destJSch.addIdentity(UUID.randomUUID().toString(), destSshCredential.getPrivateKey().getBytes(),
                 destSshCredential.getPublicKey().getBytes(), destSshCredential.getPassphrase().getBytes());
         Session destSession = destJSch.getSession(destLoginUserName, destHostName, destPort);
+        destSession.setConfig(config);
         destSession.connect();
         if(!destinationParentPath.endsWith(File.separator))
             destinationParentPath += File.separator;
