@@ -22,7 +22,6 @@ package org.apache.airavata.client.samples;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.data.resource.*;
 import org.apache.airavata.model.security.AuthzToken;
 import org.slf4j.Logger;
@@ -62,7 +61,8 @@ public class DataManagerSample {
             String resourceId = client.registerDataResource(authzToken, dataResourceModel);
             System.out.println(resourceId);
 
-            String replicaId = client.copyDataResource(authzToken, resourceId, STORAGE_RESOURCE_ID, "/var/www/portals/gateway-user-data/test-dest");
+            String replicaId = client.copyDataResource(authzToken, resourceId, STORAGE_RESOURCE_ID,
+                    "/var/www/portals/gateway-user-data/testdrive/test-dest");
             System.out.println(replicaId);
 
         } catch (Exception e) {
