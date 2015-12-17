@@ -267,7 +267,7 @@ public class SSHUtils {
      * @return returns the final local file path of the new file came from the remote resource
      */
     public static void scpThirdParty(String sourceFile, Session sourceSession, String destinationFile, Session destinationSession) throws
-            IOException, JSchException {
+            Exception{
         OutputStream sout = null;
         InputStream sin = null;
         OutputStream dout = null;
@@ -390,6 +390,7 @@ public class SSHUtils {
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+            throw e;
         } finally {
             try {
                 if (dout != null) dout.close();

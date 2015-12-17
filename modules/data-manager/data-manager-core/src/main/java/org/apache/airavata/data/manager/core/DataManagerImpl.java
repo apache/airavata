@@ -342,7 +342,7 @@ public class DataManagerImpl implements DataManager {
                               DataReplicaLocationModel sourceReplica, StorageResourceDescription destStorageResource,
                               DataMovementInterface destDataMovementInterface, StoragePreference destResourcePreference,
                               String destinationParentPath)
-            throws TException, ApplicationSettingsException, AppCatalogException, JSchException, IOException {
+            throws Exception {
         //Creating JSch sessions
         //Source session
         Properties config = new java.util.Properties();
@@ -391,11 +391,11 @@ public class DataManagerImpl implements DataManager {
         Session destSession = destJSch.getSession(destLoginUserName, destHostName, destPort);
         destSession.setConfig(config);
         destSession.connect();
+
+        SSHUtils.scpThirdParty(sourceFilePath, sourceSession, destinationParentPath, destSession);
         if(!destinationParentPath.endsWith(File.separator))
             destinationParentPath += File.separator;
         String destFilePath = destinationParentPath + (new File(sourceFilePath).getName());
-
-        SSHUtils.scpThirdParty(sourceFilePath, sourceSession, destFilePath, destSession);
         return destFilePath;
     }
 
