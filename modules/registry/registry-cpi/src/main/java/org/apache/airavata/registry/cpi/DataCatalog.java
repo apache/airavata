@@ -25,7 +25,7 @@ import java.util.List;
 
 public interface DataCatalog {
 
-    String publishResource(DataResourceModel resource) throws DataCatalogException;
+    String registerResource(DataResourceModel resource) throws DataCatalogException;
 
     boolean removeResource(String resourceId) throws DataCatalogException;
 
@@ -33,7 +33,7 @@ public interface DataCatalog {
 
     DataResourceModel getResource(String resourceId) throws DataCatalogException;
 
-    String publishReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws DataCatalogException;
+    String registerReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws DataCatalogException;
 
     boolean removeReplicaLocation(String replicaId) throws DataCatalogException;
 

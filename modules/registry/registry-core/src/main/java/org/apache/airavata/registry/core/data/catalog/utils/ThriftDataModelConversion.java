@@ -21,7 +21,6 @@
 
 package org.apache.airavata.registry.core.data.catalog.utils;
 
-import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.model.data.resource.*;
 import org.apache.airavata.registry.core.data.catalog.model.DataReplicaLocation;
 import org.apache.airavata.registry.core.data.catalog.model.DataReplicaMetaData;
@@ -93,8 +92,10 @@ public class ThriftDataModelConversion {
         dataResource.setResourceDescription(dataResourceModel.getResourceDescription());
         dataResource.setOwnerName(dataResourceModel.getOwnerName());
         dataResource.setResourceSize(dataResourceModel.getResourceSize());
-        dataResource.setCreationTime(new Timestamp(dataResourceModel.getCreationTime()));
-        dataResource.setLastModifiedTime(new Timestamp(dataResourceModel.getLastModifiedTime()));
+        if(dataResourceModel.getCreationTime() > 0)
+            dataResource.setCreationTime(new Timestamp(dataResourceModel.getCreationTime()));
+        if(dataResourceModel.getLastModifiedTime() > 0)
+            dataResource.setLastModifiedTime(new Timestamp(dataResourceModel.getLastModifiedTime()));
         ArrayList<DataResourceMetaData> dataResourceMetaData = new ArrayList<>();
         if(dataResourceModel.getResourceMetadata() != null) {
             dataResourceModel.getResourceMetadata().keySet().stream().forEach(k -> {
@@ -164,9 +165,12 @@ public class ThriftDataModelConversion {
         dataReplicaLocation.setReplicaDescription(dataReplicaLocationModel.getReplicaDescription());
         dataReplicaLocation.setStorageResourceId(dataReplicaLocationModel.getStorageResourceId());
         dataReplicaLocation.setFileAbsolutePath(dataReplicaLocationModel.getFileAbsolutePath());
-        dataReplicaLocation.setValidUntilTime(new Timestamp(dataReplicaLocationModel.getValidUntilTime()));
-        dataReplicaLocation.setCreationTime(new Timestamp(dataReplicaLocationModel.getCreationTime()));
-        dataReplicaLocation.setLastModifiedTime(new Timestamp(dataReplicaLocationModel.getLastModifiedTime()));
+        if(dataReplicaLocationModel.getCreationTime() > 0)
+            dataReplicaLocation.setValidUntilTime(new Timestamp(dataReplicaLocationModel.getValidUntilTime()));
+        if(dataReplicaLocationModel.getLastModifiedTime() > 0)
+            dataReplicaLocation.setCreationTime(new Timestamp(dataReplicaLocationModel.getCreationTime()));
+        if(dataReplicaLocationModel.getValidUntilTime() > 0)
+            dataReplicaLocation.setLastModifiedTime(new Timestamp(dataReplicaLocationModel.getLastModifiedTime()));
         if(dataReplicaLocationModel.getReplicaLocationCategory() != null)
             dataReplicaLocation.setReplicaLocationCategory(dataReplicaLocationModel.getReplicaLocationCategory().toString());
         if(dataReplicaLocationModel.getReplicaPersistentType() != null)

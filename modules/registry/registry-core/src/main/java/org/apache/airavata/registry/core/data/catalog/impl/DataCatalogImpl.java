@@ -41,14 +41,23 @@ public class DataCatalogImpl implements DataCatalog {
 
     private final static Logger logger = LoggerFactory.getLogger(DataCatalogImpl.class);
 
+    private final static long DEFAULT_REPLICA_VALID_TIME = 1000 * 60 * 60 * 24 * 365 + 10;
+
     @Override
-    public String publishResource(DataResourceModel resourceModel) throws DataCatalogException {
+    public String registerResource(DataResourceModel resourceModel) throws DataCatalogException {
         String resourceId = UUID.randomUUID().toString();
         resourceModel.setResourceId(resourceId);
+        long currentTime = System.currentTimeMillis();
+        resourceModel.setCreationTime(currentTime);
+        resourceModel.setLastModifiedTime(currentTime);
         if(resourceModel.getReplicaLocations() != null){
             resourceModel.getReplicaLocations().stream().forEach(r-> {
                 r.setResourceId(resourceId);
                 r.setReplicaId(UUID.randomUUID().toString());
+                r.setCreationTime(currentTime);
+                r.setLastModifiedTime(currentTime);
+                if(r.getValidUntilTime() <= 0)
+                    r.setValidUntilTime(currentTime + DEFAULT_REPLICA_VALID_TIME);
             });
         }
         resourceModel.setCreationTime(System.currentTimeMillis());
@@ -150,9 +159,14 @@ public class DataCatalogImpl implements DataCatalog {
     }
 
     @Override
-    public String publishReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws DataCatalogException {
+    public String registerReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws DataCatalogException {
         String replicaId = UUID.randomUUID().toString();
         dataReplicaLocationModel.setReplicaId(replicaId);
+        long currentTime = System.currentTimeMillis();
+        dataReplicaLocationModel.setCreationTime(currentTime);
+        dataReplicaLocationModel.setLastModifiedTime(currentTime);
+        if(dataReplicaLocationModel.getValidUntilTime() <= 0)
+            dataReplicaLocationModel.setValidUntilTime(currentTime + DEFAULT_REPLICA_VALID_TIME);
         dataReplicaLocationModel.setCreationTime(System.currentTimeMillis());
         dataReplicaLocationModel.setLastModifiedTime(System.currentTimeMillis());
         DataReplicaLocation replicaLocation = ThriftDataModelConversion.getDataReplicaLocation(dataReplicaLocationModel);

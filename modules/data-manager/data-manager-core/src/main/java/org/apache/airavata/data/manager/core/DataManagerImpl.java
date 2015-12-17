@@ -86,7 +86,7 @@ public class DataManagerImpl implements DataManager {
     @Override
     public String registerResource(DataResourceModel dataResourceModel) throws DataManagerException {
         try {
-            String resourceId = dataCatalog.publishResource(dataResourceModel);
+            String resourceId = dataCatalog.registerResource(dataResourceModel);
             return resourceId;
         } catch (DataCatalogException e) {
             logger.error(e.getMessage(), e);
@@ -153,7 +153,7 @@ public class DataManagerImpl implements DataManager {
     @Override
     public String registerReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws DataManagerException {
         try {
-            String replicaId = dataCatalog.publishReplicaLocation(dataReplicaLocationModel);
+            String replicaId = dataCatalog.registerReplicaLocation(dataReplicaLocationModel);
             return replicaId;
         } catch (DataCatalogException e) {
             logger.error(e.getMessage(), e);
