@@ -53,8 +53,10 @@ public class ThriftDataModelConversion {
             dataResourceModel.setResourceDescription(dataResource.getResourceDescription());
             dataResourceModel.setOwnerName(dataResource.getOwnerName());
             dataResourceModel.setResourceSize(dataResource.getResourceSize());
-            dataResourceModel.setCreationTime(dataResource.getCreationTime().getTime());
-            dataResourceModel.setLastModifiedTime(dataResource.getLastModifiedTime().getTime());
+            if(dataResource.getCreationTime() != null)
+                dataResourceModel.setCreationTime(dataResource.getCreationTime().getTime());
+            if(dataResource.getLastModifiedTime() != null)
+                dataResourceModel.setLastModifiedTime(dataResource.getLastModifiedTime().getTime());
             dataResourceModel.setResourceMetadata(getResourceMetaData(dataResource.getDataResourceMetaData()));
             if(dataResource.getDataReplicaLocations() != null){
                 ArrayList<DataReplicaLocationModel> dataReplicaLocationModels = new ArrayList<>();
@@ -133,10 +135,13 @@ public class ThriftDataModelConversion {
             replicaLocationModel.setReplicaName(replicaLocation.getReplicaName());
             replicaLocationModel.setReplicaDescription(replicaLocation.getReplicaDescription());
             replicaLocationModel.setStorageResourceId(replicaLocation.getStorageResourceId());
-            replicaLocationModel.setValidUntilTime(replicaLocation.getValidUntilTime().getTime());
+            if(replicaLocation.getValidUntilTime() != null)
+                replicaLocationModel.setValidUntilTime(replicaLocation.getValidUntilTime().getTime());
             replicaLocationModel.setFileAbsolutePath(replicaLocation.getFileAbsolutePath());
-            replicaLocationModel.setCreationTime(replicaLocation.getCreationTime().getTime());
-            replicaLocationModel.setLastModifiedTime(replicaLocation.getLastModifiedTime().getTime());
+            if(replicaLocation.getCreationTime() != null)
+                replicaLocationModel.setCreationTime(replicaLocation.getCreationTime().getTime());
+            if(replicaLocation.getLastModifiedTime() != null)
+                replicaLocationModel.setLastModifiedTime(replicaLocation.getLastModifiedTime().getTime());
             if(replicaLocation.getReplicaLocationCategory() != null)
                 replicaLocationModel.setReplicaLocationCategory(ReplicaLocationCategory.valueOf(replicaLocation
                     .getReplicaLocationCategory().toString()));
