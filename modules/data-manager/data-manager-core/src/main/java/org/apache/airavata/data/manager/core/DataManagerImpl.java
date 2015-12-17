@@ -55,6 +55,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class DataManagerImpl implements DataManager {
     private final static Logger logger = LoggerFactory.getLogger(DataManagerImpl.class);
@@ -358,8 +359,8 @@ public class DataManagerImpl implements DataManager {
         }
         SSHCredential sourceSshCredential = credentialStoreServiceClient.getSSHCredential(sourceCredentialStoreToken,
                 gatewayProfile.getGatewayID());
-        sourceJSch.addIdentity(sourceSshCredential.getPrivateKey(), sourceSshCredential.getPublicKey(), sourceSshCredential.
-                getPassphrase().getBytes());
+        sourceJSch.addIdentity(UUID.randomUUID().toString(), sourceSshCredential.getPrivateKey().getBytes(),
+                sourceSshCredential.getPublicKey().getBytes(), sourceSshCredential.getPassphrase().getBytes());
         Session sourceSession = sourceJSch.getSession(sourceLoginUserName, sourceHostName, sourcePort);
         String sourceFilePath = sourceReplica.getFileAbsolutePath();
 
@@ -379,8 +380,8 @@ public class DataManagerImpl implements DataManager {
         }
         SSHCredential destSshCredential = credentialStoreServiceClient.getSSHCredential(destCredentialStoreToken,
                 gatewayProfile.getGatewayID());
-        destJSch.addIdentity(destSshCredential.getPrivateKey(), destSshCredential.getPublicKey(), destSshCredential.
-                getPassphrase().getBytes());
+        destJSch.addIdentity(UUID.randomUUID().toString(), destSshCredential.getPrivateKey().getBytes(),
+                destSshCredential.getPublicKey().getBytes(), destSshCredential.getPassphrase().getBytes());
         Session destSession = destJSch.getSession(destLoginUserName, destHostName, destPort);
         if(!destinationParentPath.endsWith(File.separator))
             destinationParentPath += File.separator;
