@@ -22,9 +22,7 @@ package org.apache.airavata.client.samples;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.model.data.resource.DataReplicaLocationModel;
-import org.apache.airavata.model.data.resource.DataResourceModel;
-import org.apache.airavata.model.data.resource.DataResourceType;
+import org.apache.airavata.model.data.resource.*;
 import org.apache.airavata.model.security.AuthzToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +51,9 @@ public class DataManagerSample {
 
             DataReplicaLocationModel replicaLocationModel = new DataReplicaLocationModel();
             replicaLocationModel.setStorageResourceId(STORAGE_RESOURCE_ID);
+            replicaLocationModel.setReplicaName("test-1-replica-1");
+            replicaLocationModel.setReplicaLocationCategory(ReplicaLocationCategory.GATEWAY_DATA_STORE);
+            replicaLocationModel.setReplicaPersistentType(ReplicaPersistentType.PERSISTENT);
             replicaLocationModel.setFileAbsolutePath("/var/www/portal/");
 
             dataResourceModel.addToReplicaLocations(replicaLocationModel);
