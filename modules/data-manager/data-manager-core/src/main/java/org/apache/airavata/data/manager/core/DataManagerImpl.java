@@ -362,6 +362,7 @@ public class DataManagerImpl implements DataManager {
         sourceJSch.addIdentity(UUID.randomUUID().toString(), sourceSshCredential.getPrivateKey().getBytes(),
                 sourceSshCredential.getPublicKey().getBytes(), sourceSshCredential.getPassphrase().getBytes());
         Session sourceSession = sourceJSch.getSession(sourceLoginUserName, sourceHostName, sourcePort);
+        sourceSession.connect();
         String sourceFilePath = sourceReplica.getFileAbsolutePath();
 
         //Destination session
@@ -383,6 +384,7 @@ public class DataManagerImpl implements DataManager {
         destJSch.addIdentity(UUID.randomUUID().toString(), destSshCredential.getPrivateKey().getBytes(),
                 destSshCredential.getPublicKey().getBytes(), destSshCredential.getPassphrase().getBytes());
         Session destSession = destJSch.getSession(destLoginUserName, destHostName, destPort);
+        destSession.connect();
         if(!destinationParentPath.endsWith(File.separator))
             destinationParentPath += File.separator;
         String destFilePath = destinationParentPath + (new File(sourceFilePath).getName());
