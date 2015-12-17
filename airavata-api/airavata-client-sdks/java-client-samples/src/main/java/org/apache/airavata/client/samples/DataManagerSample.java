@@ -34,7 +34,7 @@ public class DataManagerSample {
     public static final int THRIFT_SERVER_PORT = 8930;
     private static final String USER_NAME = "master";
     private static final String DEFAULT_GATEWAY = "default";
-    private static final String STORAGE_RESOURCE_ID = "";
+    private static final String STORAGE_RESOURCE_ID = "gw75.iu.xsede.org_3e40e62b-be11-4590-bf24-b1b6796c3572";
     private static final AuthzToken authzToken = new AuthzToken("empty-token");
     private static Airavata.Client client;
 
@@ -54,12 +54,14 @@ public class DataManagerSample {
             replicaLocationModel.setReplicaName("test-1-replica-1");
             replicaLocationModel.setReplicaLocationCategory(ReplicaLocationCategory.GATEWAY_DATA_STORE);
             replicaLocationModel.setReplicaPersistentType(ReplicaPersistentType.PERSISTENT);
-            replicaLocationModel.setFileAbsolutePath("/var/www/portal/");
+            replicaLocationModel.setFileAbsolutePath("/var/www/portals/gateway-user-data/testdrive/test.txt");
 
             dataResourceModel.addToReplicaLocations(replicaLocationModel);
 
             String resourceId = client.registerDataResource(authzToken, dataResourceModel);
             System.out.println(resourceId);
+
+            client.copyDataResource(authzToken, resourceId, STORAGE_RESOURCE_ID, "/var/www/portals/gateway-user-data/test-dest");
 
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
