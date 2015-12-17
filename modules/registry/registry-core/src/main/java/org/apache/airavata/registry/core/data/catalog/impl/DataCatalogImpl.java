@@ -41,7 +41,7 @@ public class DataCatalogImpl implements DataCatalog {
 
     private final static Logger logger = LoggerFactory.getLogger(DataCatalogImpl.class);
 
-    private final static long DEFAULT_REPLICA_VALID_TIME = 1000 * 60 * 60 * 24 * 365 + 10;
+    private final static long DEFAULT_REPLICA_VALID_TIME = 1000 * 60 * 60 * 24 * 365 * 10;
 
     @Override
     public String registerResource(DataResourceModel resourceModel) throws DataCatalogException {
