@@ -99,8 +99,12 @@ public class GFacEngineImpl implements GFacEngine {
             if (storagePreference != null) {
                 processContext.setStoragePreference(storagePreference);
             } else {
+                // we need to fail the process which will fail the experiment
+                processContext.setProcessStatus(new ProcessStatus(ProcessState.FAILED));
+                GFacUtils.saveAndPublishProcessStatus(processContext);
                 throw new GFacException("expId: " + processModel.getExperimentId() + ", processId: " + processId +
                         ":- Couldn't find storage preference for storage resource id :" + processModel.getStorageResourceId());
+
             }
 
 
