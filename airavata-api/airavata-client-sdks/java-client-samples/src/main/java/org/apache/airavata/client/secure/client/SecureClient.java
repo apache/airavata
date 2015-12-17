@@ -18,16 +18,16 @@
  * under the License.
  *
  */
-package org.apache.airavata.secure.sample;
+package org.apache.airavata.client.secure.client;
 
+import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
-import org.apache.airavata.model.error.*;
-import org.apache.airavata.api.Airavata;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.security.AiravataSecurityException;
-import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.thrift.TException;

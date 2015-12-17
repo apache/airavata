@@ -18,7 +18,7 @@
  * under the License.
  *
  */
-package org.apache.airavata.secure.sample;
+package org.apache.airavata.client.secure.client;
 
 public class Properties {
     //Airavata server host, port
