@@ -278,21 +278,30 @@ public class DataManagerImpl implements DataManager {
             //Finding the gateway specific storage preferences for resources
             GatewayResourceProfile gatewayProfile = appCatalog.getGatewayProfile().getGatewayProfile(dataResourceModel.getGatewayId());
             List<StoragePreference> storagePreferences = gatewayProfile.getStoragePreferences();
-            Optional<StoragePreference> sourceResourcePreference = storagePreferences.stream()
-                    .filter(sp -> sp.getStorageResourceId().equals(sourceStorageResource.getStorageResourceId())).findFirst();
-            if(!sourceResourcePreference.isPresent())
+            StoragePreference sourceResourcePreference = null;
+            for(StoragePreference sp : storagePreferences) {
+                if (sp.getStorageResourceId().equals(sourceStorageResource.getStorageResourceId())) {
+                    sourceResourcePreference = sp;
+                    break;
+                }
+            }
+            if(sourceResourcePreference == null)
                 throw new DataCatalogException("Could not find storage preference for storage resource id:"
                         + sourceStorageResource.getStorageResourceId());
-            Optional<StoragePreference> destResourcePreference = storagePreferences.stream()
-                    .filter(sp -> sp.getStorageResourceId().equals(destinationStorageResource.getStorageResourceId())).findFirst();
-            if(!destResourcePreference.isPresent())
+            StoragePreference destResourcePreference = null;
+            for(StoragePreference sp : storagePreferences) {
+                if (sp.getStorageResourceId().equals(destStorageResourceId)) {
+                    destResourcePreference = sp;
+                    break;
+                }
+            }
+            if(destResourcePreference == null)
                 throw new DataCatalogException("Could not find storage preference for storage resource id:"
                         + destinationStorageResource.getStorageResourceId());
 
-
             String destFilePath = copyUsingScp(gatewayProfile, sourceStorageResource, sourceDataMovementInterface.get(),
-                    sourceResourcePreference.get(), sourceReplica, destinationStorageResource, destDataMovementInterface.get(),
-                    destResourcePreference.get(), destinationParentPath);
+                    sourceResourcePreference, sourceReplica, destinationStorageResource, destDataMovementInterface.get(),
+                    destResourcePreference, destinationParentPath);
 
             DataReplicaLocationModel dataReplicaLocationModel = new DataReplicaLocationModel();
             dataReplicaLocationModel.setResourceId(dataResourceId);
