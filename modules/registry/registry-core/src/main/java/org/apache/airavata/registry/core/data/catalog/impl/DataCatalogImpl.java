@@ -41,8 +41,6 @@ public class DataCatalogImpl implements DataCatalog {
 
     private final static Logger logger = LoggerFactory.getLogger(DataCatalogImpl.class);
 
-    private final static long DEFAULT_REPLICA_VALID_TIME = 1000 * 60 * 60 * 24 * 365 * 10;
-
     @Override
     public String registerResource(DataResourceModel resourceModel) throws DataCatalogException {
         String resourceId = UUID.randomUUID().toString();
@@ -56,8 +54,6 @@ public class DataCatalogImpl implements DataCatalog {
                 r.setReplicaId(UUID.randomUUID().toString());
                 r.setCreationTime(currentTime);
                 r.setLastModifiedTime(currentTime);
-                if(r.getValidUntilTime() <= 0)
-                    r.setValidUntilTime(currentTime + DEFAULT_REPLICA_VALID_TIME);
             });
         }
         resourceModel.setCreationTime(System.currentTimeMillis());
@@ -165,8 +161,6 @@ public class DataCatalogImpl implements DataCatalog {
         long currentTime = System.currentTimeMillis();
         dataReplicaLocationModel.setCreationTime(currentTime);
         dataReplicaLocationModel.setLastModifiedTime(currentTime);
-        if(dataReplicaLocationModel.getValidUntilTime() <= 0)
-            dataReplicaLocationModel.setValidUntilTime(currentTime + DEFAULT_REPLICA_VALID_TIME);
         dataReplicaLocationModel.setCreationTime(System.currentTimeMillis());
         dataReplicaLocationModel.setLastModifiedTime(System.currentTimeMillis());
         DataReplicaLocation replicaLocation = ThriftDataModelConversion.getDataReplicaLocation(dataReplicaLocationModel);
