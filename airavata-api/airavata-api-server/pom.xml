@@ -14,8 +14,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>airavata-api</artifactId>
         <groupId>org.apache.airavata</groupId>
+        <artifactId>airavata-api</artifactId>
         <version>0.16-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
