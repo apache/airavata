@@ -75,7 +75,7 @@ public class DataCatalogTest {
     @Test
     public void testPublishDataResource(){
         try {
-            String resourceId = datacatalog.publishResource(dataResourceModel);
+            String resourceId = datacatalog.registerResource(dataResourceModel);
             org.junit.Assert.assertNotNull(resourceId);
         } catch (DataCatalogException e) {
             e.printStackTrace();
@@ -88,7 +88,7 @@ public class DataCatalogTest {
         try {
             boolean result = datacatalog.removeResource("234234234");
             Assert.assertFalse(result);
-            String resourceId = datacatalog.publishResource(dataResourceModel);
+            String resourceId = datacatalog.registerResource(dataResourceModel);
             Assert.assertNotNull(resourceId);
             result = datacatalog.removeResource(resourceId);
             Assert.assertTrue(result);
@@ -104,14 +104,14 @@ public class DataCatalogTest {
     public void testGetDataResource(){
         try {
             dataResourceModel.setDataResourceType(DataResourceType.COLLECTION);
-            String resourceId = datacatalog.publishResource(dataResourceModel);
+            String resourceId = datacatalog.registerResource(dataResourceModel);
             Assert.assertNotNull(resourceId);
             DataResourceModel persistedCopy = datacatalog.getResource(resourceId);
             Assert.assertNotNull(persistedCopy);
             dataResourceModel.setParentResourceId(resourceId);
             dataResourceModel.setDataResourceType(DataResourceType.FILE);
-            datacatalog.publishResource(dataResourceModel);
-            datacatalog.publishResource(dataResourceModel);
+            datacatalog.registerResource(dataResourceModel);
+            datacatalog.registerResource(dataResourceModel);
             persistedCopy = datacatalog.getResource(resourceId);
             Assert.assertTrue(persistedCopy.getChildResources().size()==2);
         } catch (DataCatalogException e) {
@@ -126,7 +126,7 @@ public class DataCatalogTest {
             dataResourceModel.setResourceId(UUID.randomUUID().toString());
             boolean result = datacatalog.updateResource(dataResourceModel);
             Assert.assertFalse(result);
-            datacatalog.publishResource(dataResourceModel);
+            datacatalog.registerResource(dataResourceModel);
             dataResourceModel.setResourceName("updated-name");
             datacatalog.updateResource(dataResourceModel);
             dataResourceModel = datacatalog.getResource(dataResourceModel.getResourceId());
@@ -145,9 +145,9 @@ public class DataCatalogTest {
     @Test
     public void testPublishReplicaLocation(){
         try {
-            String resourceId = datacatalog.publishResource(dataResourceModel);
+            String resourceId = datacatalog.registerResource(dataResourceModel);
             replicaLocationModel.setResourceId(resourceId);
-            String replicaId = datacatalog.publishReplicaLocation(replicaLocationModel);
+            String replicaId = datacatalog.registerReplicaLocation(replicaLocationModel);
             Assert.assertNotNull(replicaId);;
         } catch (DataCatalogException e) {
             e.printStackTrace();
@@ -158,9 +158,9 @@ public class DataCatalogTest {
     @Test
     public void testRemoveReplicaLocation(){
         try {
-            String resourceId = datacatalog.publishResource(dataResourceModel);
+            String resourceId = datacatalog.registerResource(dataResourceModel);
             replicaLocationModel.setResourceId(resourceId);
-            String replicaId = datacatalog.publishReplicaLocation(replicaLocationModel);
+            String replicaId = datacatalog.registerReplicaLocation(replicaLocationModel);
             boolean result = datacatalog.removeReplicaLocation(replicaId);
             Assert.assertTrue(result);
             result = datacatalog.removeReplicaLocation(replicaLocationModel.getReplicaId());
@@ -174,9 +174,9 @@ public class DataCatalogTest {
     @Test
     public void testGetReplicaLocation(){
         try {
-            String resourceId = datacatalog.publishResource(dataResourceModel);
+            String resourceId = datacatalog.registerResource(dataResourceModel);
             replicaLocationModel.setResourceId(resourceId);
-            String replicaId = datacatalog.publishReplicaLocation(replicaLocationModel);
+            String replicaId = datacatalog.registerReplicaLocation(replicaLocationModel);
             DataReplicaLocationModel persistedCopy = datacatalog.getReplicaLocation(replicaId);
             Assert.assertNotNull(persistedCopy);
         } catch (DataCatalogException e) {
@@ -188,9 +188,9 @@ public class DataCatalogTest {
     @Test
     public void testUpdateReplicaLocation(){
         try {
-            String resourceId = datacatalog.publishResource(dataResourceModel);
+            String resourceId = datacatalog.registerResource(dataResourceModel);
             replicaLocationModel.setResourceId(resourceId);
-            String replicaId = datacatalog.publishReplicaLocation(replicaLocationModel);
+            String replicaId = datacatalog.registerReplicaLocation(replicaLocationModel);
             DataReplicaLocationModel persistedCopy = datacatalog.getReplicaLocation(replicaId);
             persistedCopy.setReplicaDescription("updated-description");
             datacatalog.updateReplicaLocation(persistedCopy);
@@ -206,9 +206,9 @@ public class DataCatalogTest {
     @Test
     public void testGetAllReplicaLocations(){
         try {
-            String resourceId = datacatalog.publishResource(dataResourceModel);
+            String resourceId = datacatalog.registerResource(dataResourceModel);
             replicaLocationModel.setResourceId(resourceId);
-            datacatalog.publishReplicaLocation(replicaLocationModel);
+            datacatalog.registerReplicaLocation(replicaLocationModel);
             List<DataReplicaLocationModel> replicaLocationModelList = datacatalog.getAllReplicaLocations(resourceId);
             Assert.assertNotNull(replicaLocationModelList.get(0).getReplicaId());
         } catch (DataCatalogException e) {
