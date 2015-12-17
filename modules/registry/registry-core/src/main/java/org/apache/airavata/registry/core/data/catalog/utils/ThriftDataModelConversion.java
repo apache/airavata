@@ -170,11 +170,11 @@ public class ThriftDataModelConversion {
         dataReplicaLocation.setReplicaDescription(dataReplicaLocationModel.getReplicaDescription());
         dataReplicaLocation.setStorageResourceId(dataReplicaLocationModel.getStorageResourceId());
         dataReplicaLocation.setFileAbsolutePath(dataReplicaLocationModel.getFileAbsolutePath());
-        if(dataReplicaLocationModel.getCreationTime() > 0)
-            dataReplicaLocation.setValidUntilTime(new Timestamp(dataReplicaLocationModel.getValidUntilTime()));
-        if(dataReplicaLocationModel.getLastModifiedTime() > 0)
-            dataReplicaLocation.setCreationTime(new Timestamp(dataReplicaLocationModel.getCreationTime()));
         if(dataReplicaLocationModel.getValidUntilTime() > 0)
+            dataReplicaLocation.setValidUntilTime(new Timestamp(dataReplicaLocationModel.getValidUntilTime()));
+        if(dataReplicaLocationModel.getCreationTime() > 0)
+            dataReplicaLocation.setCreationTime(new Timestamp(dataReplicaLocationModel.getCreationTime()));
+        if(dataReplicaLocationModel.getLastModifiedTime() > 0)
             dataReplicaLocation.setLastModifiedTime(new Timestamp(dataReplicaLocationModel.getLastModifiedTime()));
         if(dataReplicaLocationModel.getReplicaLocationCategory() != null)
             dataReplicaLocation.setReplicaLocationCategory(dataReplicaLocationModel.getReplicaLocationCategory().toString());

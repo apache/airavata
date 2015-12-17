@@ -61,8 +61,8 @@ public class DataManagerSample {
             String resourceId = client.registerDataResource(authzToken, dataResourceModel);
             System.out.println(resourceId);
 
-            client.copyDataResource(authzToken, resourceId, STORAGE_RESOURCE_ID, "/var/www/portals/gateway-user-data/test-dest");
-
+            String replicaId = client.copyDataResource(authzToken, resourceId, STORAGE_RESOURCE_ID, "/var/www/portals/gateway-user-data/test-dest");
+            System.out.println(replicaId);
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
             e.printStackTrace();

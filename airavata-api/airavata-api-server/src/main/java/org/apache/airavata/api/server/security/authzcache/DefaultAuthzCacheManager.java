@@ -25,8 +25,6 @@ import org.apache.airavata.security.AiravataSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
-
 public class DefaultAuthzCacheManager implements AuthzCacheManager {
 
     private final static Logger logger = LoggerFactory.getLogger(DefaultAuthzCacheManager.class);
