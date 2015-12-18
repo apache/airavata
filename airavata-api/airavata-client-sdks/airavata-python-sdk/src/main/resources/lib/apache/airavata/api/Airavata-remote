@@ -161,6 +161,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  void removeDataResource(AuthzToken authzToken, string resourceId)')
   print('  DataResourceModel getDataResource(AuthzToken authzToken, string resourceId)')
   print('  string copyDataResource(AuthzToken authzToken, string resourceId, string destStorageResourceId, string destinationParentPath)')
+  print('  string copyDataReplica(AuthzToken authzToken, string resourceId, string replicaId, string destStorageResourceId, string destinationParentPath)')
   print('')
   sys.exit(0)
 
@@ -1038,6 +1039,12 @@ elif cmd == 'copyDataResource':
     print('copyDataResource requires 4 args')
     sys.exit(1)
   pp.pprint(client.copyDataResource(eval(args[0]),args[1],args[2],args[3],))
+
+elif cmd == 'copyDataReplica':
+  if len(args) != 5:
+    print('copyDataReplica requires 5 args')
+    sys.exit(1)
+  pp.pprint(client.copyDataReplica(eval(args[0]),args[1],args[2],args[3],args[4],))
 
 else:
   print('Unrecognized method %s' % cmd)
