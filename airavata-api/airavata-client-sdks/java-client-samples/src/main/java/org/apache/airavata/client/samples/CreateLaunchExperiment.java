@@ -55,8 +55,8 @@ import java.util.Map;
 public class CreateLaunchExperiment {
 
     //FIXME: Read from a config file
-    public static final String THRIFT_SERVER_HOST = "gw56.iu.xsede.org";
-    public static final int THRIFT_SERVER_PORT = 10930;
+    public static final String THRIFT_SERVER_HOST = "gw77.iu.xsede.org";
+    public static final int THRIFT_SERVER_PORT = 8930;
 //	public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
 //	public static final int THRIFT_SERVER_PORT = 9930;
 
@@ -94,14 +94,14 @@ public class CreateLaunchExperiment {
         AuthzToken token = new AuthzToken("empty_token");
         System.out.println("API version is " + airavataClient.getAPIVersion(token));
 //        registerApplications(); // run this only the first time
-        Map<String, String> master = airavataClient.getAllUserSSHPubKeys(token, "master");
-        System.out.println(master.size());
-//        Map<String, JobStatus> jobStatuses = airavataClient.getJobStatuses(token, "exp_5_19ea743b-c9c9-4b79-9374-cc8420ca1062");
-//        for (String jobId : jobStatuses.keySet()){
-//            JobStatus jobStatus = jobStatuses.get(jobId);
-//            System.out.println(jobId);
-//            System.out.println(jobStatus.getJobState().toString());
-//        }
+//        Map<String, String> master = airavataClient.getAllUserSSHPubKeys(token, "master");
+//        System.out.println(master.size());
+        Map<String, JobStatus> jobStatuses = airavataClient.getJobStatuses(token, "SLM4-Gamess-Comet_af8957e4-05cb-4fd4-b9b3-499ca8e67d3d");
+        for (String jobId : jobStatuses.keySet()){
+            JobStatus jobStatus = jobStatuses.get(jobId);
+            System.out.println(jobId);
+            System.out.println(jobStatus.getJobState().toString());
+        }
 //        createAndLaunchExp();
     }
 
