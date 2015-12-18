@@ -21,6 +21,7 @@
 
 package org.apache.airavata.registry.core.experiment.catalog.resources;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
@@ -136,6 +137,10 @@ public class ProcessStatusResource extends AbstractExpCatResource {
             processStatus.setProcessId(processId);
             processStatus.setState(state);
             processStatus.setReason(reason);
+            if (timeOfStateChange == null){
+                timeOfStateChange = AiravataUtils.getCurrentTimestamp();
+            }
+            processStatus.setTimeOfStateChange(timeOfStateChange);
             if (existingStatus == null){
                 em.persist(processStatus);
             }else {
