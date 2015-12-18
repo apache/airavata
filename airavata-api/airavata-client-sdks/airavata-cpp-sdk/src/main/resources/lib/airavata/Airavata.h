@@ -2285,6 +2285,7 @@ class AiravataIf {
   virtual void removeDataResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId) = 0;
   virtual void getDataResource( ::apache::airavata::model::data::resource::DataResourceModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId) = 0;
   virtual void copyDataResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& destStorageResourceId, const std::string& destinationParentPath) = 0;
+  virtual void copyDataReplica(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& replicaId, const std::string& destStorageResourceId, const std::string& destinationParentPath) = 0;
 };
 
 class AiravataIfFactory {
@@ -2765,6 +2766,9 @@ class AiravataNull : virtual public AiravataIf {
     return;
   }
   void copyDataResource(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* resourceId */, const std::string& /* destStorageResourceId */, const std::string& /* destinationParentPath */) {
+    return;
+  }
+  void copyDataReplica(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* resourceId */, const std::string& /* replicaId */, const std::string& /* destStorageResourceId */, const std::string& /* destinationParentPath */) {
     return;
   }
 };
@@ -22045,6 +22049,160 @@ class Airavata_copyDataResource_presult {
 
 };
 
+
+class Airavata_copyDataReplica_args {
+ public:
+
+  Airavata_copyDataReplica_args(const Airavata_copyDataReplica_args&);
+  Airavata_copyDataReplica_args& operator=(const Airavata_copyDataReplica_args&);
+  Airavata_copyDataReplica_args() : resourceId(), replicaId(), destStorageResourceId(), destinationParentPath() {
+  }
+
+  virtual ~Airavata_copyDataReplica_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string resourceId;
+  std::string replicaId;
+  std::string destStorageResourceId;
+  std::string destinationParentPath;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_resourceId(const std::string& val);
+
+  void __set_replicaId(const std::string& val);
+
+  void __set_destStorageResourceId(const std::string& val);
+
+  void __set_destinationParentPath(const std::string& val);
+
+  bool operator == (const Airavata_copyDataReplica_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(resourceId == rhs.resourceId))
+      return false;
+    if (!(replicaId == rhs.replicaId))
+      return false;
+    if (!(destStorageResourceId == rhs.destStorageResourceId))
+      return false;
+    if (!(destinationParentPath == rhs.destinationParentPath))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_copyDataReplica_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_copyDataReplica_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_copyDataReplica_pargs {
+ public:
+
+
+  virtual ~Airavata_copyDataReplica_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* resourceId;
+  const std::string* replicaId;
+  const std::string* destStorageResourceId;
+  const std::string* destinationParentPath;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_copyDataReplica_result__isset {
+  _Airavata_copyDataReplica_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_copyDataReplica_result__isset;
+
+class Airavata_copyDataReplica_result {
+ public:
+
+  Airavata_copyDataReplica_result(const Airavata_copyDataReplica_result&);
+  Airavata_copyDataReplica_result& operator=(const Airavata_copyDataReplica_result&);
+  Airavata_copyDataReplica_result() : success() {
+  }
+
+  virtual ~Airavata_copyDataReplica_result() throw();
+  std::string success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_copyDataReplica_result__isset __isset;
+
+  void __set_success(const std::string& val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_copyDataReplica_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_copyDataReplica_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_copyDataReplica_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_copyDataReplica_presult__isset {
+  _Airavata_copyDataReplica_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_copyDataReplica_presult__isset;
+
+class Airavata_copyDataReplica_presult {
+ public:
+
+
+  virtual ~Airavata_copyDataReplica_presult() throw();
+  std::string* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_copyDataReplica_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class AiravataClient : virtual public AiravataIf {
  public:
   AiravataClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) {
@@ -22481,6 +22639,9 @@ class AiravataClient : virtual public AiravataIf {
   void copyDataResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& destStorageResourceId, const std::string& destinationParentPath);
   void send_copyDataResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& destStorageResourceId, const std::string& destinationParentPath);
   void recv_copyDataResource(std::string& _return);
+  void copyDataReplica(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& replicaId, const std::string& destStorageResourceId, const std::string& destinationParentPath);
+  void send_copyDataReplica(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& replicaId, const std::string& destStorageResourceId, const std::string& destinationParentPath);
+  void recv_copyDataReplica(std::string& _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -22633,6 +22794,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_removeDataResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getDataResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_copyDataResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_copyDataReplica(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   AiravataProcessor(boost::shared_ptr<AiravataIf> iface) :
     iface_(iface) {
@@ -22773,6 +22935,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["removeDataResource"] = &AiravataProcessor::process_removeDataResource;
     processMap_["getDataResource"] = &AiravataProcessor::process_getDataResource;
     processMap_["copyDataResource"] = &AiravataProcessor::process_copyDataResource;
+    processMap_["copyDataReplica"] = &AiravataProcessor::process_copyDataReplica;
   }
 
   virtual ~AiravataProcessor() {}
@@ -24118,6 +24281,16 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
+  void copyDataReplica(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& replicaId, const std::string& destStorageResourceId, const std::string& destinationParentPath) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->copyDataReplica(_return, authzToken, resourceId, replicaId, destStorageResourceId, destinationParentPath);
+    }
+    ifaces_[i]->copyDataReplica(_return, authzToken, resourceId, replicaId, destStorageResourceId, destinationParentPath);
+    return;
+  }
+
 };
 
 // The 'concurrent' client is a thread safe client that correctly handles
@@ -24559,6 +24732,9 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void copyDataResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& destStorageResourceId, const std::string& destinationParentPath);
   int32_t send_copyDataResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& destStorageResourceId, const std::string& destinationParentPath);
   void recv_copyDataResource(std::string& _return, const int32_t seqid);
+  void copyDataReplica(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& replicaId, const std::string& destStorageResourceId, const std::string& destinationParentPath);
+  int32_t send_copyDataReplica(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& replicaId, const std::string& destStorageResourceId, const std::string& destinationParentPath);
+  void recv_copyDataReplica(std::string& _return, const int32_t seqid);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;

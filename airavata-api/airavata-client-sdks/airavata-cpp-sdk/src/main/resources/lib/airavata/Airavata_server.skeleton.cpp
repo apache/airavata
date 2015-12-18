@@ -2720,6 +2720,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("copyDataResource\n");
   }
 
+  void copyDataReplica(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& replicaId, const std::string& destStorageResourceId, const std::string& destinationParentPath) {
+    // Your implementation goes here
+    printf("copyDataReplica\n");
+  }
+
 };
 
 int main(int argc, char **argv) {

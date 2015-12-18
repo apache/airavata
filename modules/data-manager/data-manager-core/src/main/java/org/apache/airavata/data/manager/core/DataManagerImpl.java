@@ -39,7 +39,6 @@ import org.apache.airavata.model.data.movement.SCPDataMovement;
 import org.apache.airavata.model.data.resource.DataReplicaLocationModel;
 import org.apache.airavata.model.data.resource.DataResourceModel;
 import org.apache.airavata.model.data.resource.DataResourceType;
-import org.apache.airavata.registry.core.data.catalog.model.DataReplicaLocation;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
@@ -246,7 +245,7 @@ public class DataManagerImpl implements DataManager {
     @Override
     public String copyResource(String dataResourceId, String destStorageResourceId, String destinationParentPath) throws DataManagerException {
         try {
-            return copyResource(dataResourceId, null, destStorageResourceId, destinationParentPath);
+            return copyReplica(dataResourceId, null, destStorageResourceId, destinationParentPath);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new DataManagerException(e);
@@ -265,7 +264,7 @@ public class DataManagerImpl implements DataManager {
      * @throws DataManagerException
      */
     @Override
-    public String copyResource(String dataResourceId, String replicaId, String destStorageResourceId, String destinationParentPath) throws DataManagerException {
+    public String copyReplica(String dataResourceId, String replicaId, String destStorageResourceId, String destinationParentPath) throws DataManagerException {
         try{
             DataResourceModel dataResourceModel = dataCatalog.getResource(dataResourceId);
             if(dataResourceModel.getDataResourceType() != DataResourceType.FILE)

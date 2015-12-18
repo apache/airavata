@@ -65,6 +65,10 @@ public class DataManagerSample {
                     "/var/www/portals/gateway-user-data/testdrive/test-dest");
             System.out.println(replicaId);
 
+            replicaId = client.copyDataReplica(authzToken, resourceId, replicaId, STORAGE_RESOURCE_ID,
+                    "/var/www/portals/gateway-user-data/testdrive/test-dest");
+            System.out.println(replicaId);
+
             dataResourceModel = client.getDataResource(authzToken, resourceId);
             System.out.println(dataResourceModel.getReplicaLocations().size());
         } catch (Exception e) {

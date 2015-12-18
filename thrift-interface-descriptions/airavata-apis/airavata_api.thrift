@@ -2747,6 +2747,16 @@ service Airavata {
                    3: airavata_errors.AiravataSystemException ase,
                    4: airavata_errors.AuthorizationException ae)
 
+ string copyDataReplica(1: required security_model.AuthzToken authzToken,
+                         2: required string resourceId,
+                         3: required string replicaId,
+                         4: required string destStorageResourceId,
+                         5: required string destinationParentPath)
+           throws (1: airavata_errors.InvalidRequestException ire,
+                   2: airavata_errors.AiravataClientException ace,
+                   3: airavata_errors.AiravataSystemException ase,
+                   4: airavata_errors.AuthorizationException ae)
+
  //End of API
  }
 

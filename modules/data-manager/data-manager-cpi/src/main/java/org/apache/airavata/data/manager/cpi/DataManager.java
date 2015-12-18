@@ -117,5 +117,5 @@ public interface DataManager {
      * @return
      * @throws DataManagerException
      */
-    String copyResource(String dataResourceId, String replicaId, String destStorageResourceId, String destinationParentPath) throws DataManagerException;
+    String copyReplica(String dataResourceId, String replicaId, String destStorageResourceId, String destinationParentPath) throws DataManagerException;
 }

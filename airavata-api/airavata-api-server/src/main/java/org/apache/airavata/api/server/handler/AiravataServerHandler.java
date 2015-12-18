@@ -4144,6 +4144,20 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    @Override
+    public String copyDataReplica(AuthzToken authzToken, String resourceId, String replicaId, String destStorageResourceId, String destinationParentPath) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            DataManager dataManager = DataManagerFactory.getDataManager();
+            return dataManager.copyReplica(resourceId, replicaId, destStorageResourceId, destinationParentPath);
+        } catch (DataManagerException e) {
+            String msg = "Error in copying the data replica "+replicaId+".";
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     private WorkflowCatalog getWorkflowCatalog() {
 		if (workflowCatalog == null) {
 			try {
