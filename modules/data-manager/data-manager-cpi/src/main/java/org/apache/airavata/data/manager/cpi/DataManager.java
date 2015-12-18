@@ -106,4 +106,16 @@ public interface DataManager {
      * @return
      */
     String copyResource(String dataResourceId, String destStorageResourceId, String destinationParentPath) throws DataManagerException;
+
+    /**
+     * API method to copy the specified replica to the provided destination storage resource. Only resources of type FILE
+     * can be copied using this API method. Method returns the new replicaId
+     * @param dataResourceId
+     * @param replicaId
+     * @param destStorageResourceId
+     * @param destinationParentPath
+     * @return
+     * @throws DataManagerException
+     */
+    String copyResource(String dataResourceId, String replicaId, String destStorageResourceId, String destinationParentPath) throws DataManagerException;
 }

@@ -39,6 +39,7 @@ import org.apache.airavata.model.data.movement.SCPDataMovement;
 import org.apache.airavata.model.data.resource.DataReplicaLocationModel;
 import org.apache.airavata.model.data.resource.DataResourceModel;
 import org.apache.airavata.model.data.resource.DataResourceType;
+import org.apache.airavata.registry.core.data.catalog.model.DataReplicaLocation;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
@@ -245,6 +246,27 @@ public class DataManagerImpl implements DataManager {
     @Override
     public String copyResource(String dataResourceId, String destStorageResourceId, String destinationParentPath) throws DataManagerException {
         try {
+            return copyResource(dataResourceId, null, destStorageResourceId, destinationParentPath);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new DataManagerException(e);
+        }
+    }
+
+    /**
+     * API method to copy the specified replica to the provided destination storage resource. Only resources of type FILE
+     * can be copied using this API method. Method returns the new replicaId
+     *
+     * @param dataResourceId
+     * @param replicaId
+     * @param destStorageResourceId
+     * @param destinationParentPath
+     * @return
+     * @throws DataManagerException
+     */
+    @Override
+    public String copyResource(String dataResourceId, String replicaId, String destStorageResourceId, String destinationParentPath) throws DataManagerException {
+        try{
             DataResourceModel dataResourceModel = dataCatalog.getResource(dataResourceId);
             if(dataResourceModel.getDataResourceType() != DataResourceType.FILE)
                 throw new DataCatalogException("Only resources of type FILE can be transferred using this method");
@@ -257,8 +279,20 @@ public class DataManagerImpl implements DataManager {
             List<DataReplicaLocationModel> replicaLocationModels = dataResourceModel.getReplicaLocations();
             if(replicaLocationModels == null || replicaLocationModels.size() == 0)
                 throw new DataCatalogException("No replicas available for the given data resource");
-            //FIXME This should be an intelligent selection
-            DataReplicaLocationModel sourceReplica = replicaLocationModels.get(0);
+
+            DataReplicaLocationModel sourceReplica = null;
+            if(replicaId == null || replicaId.isEmpty()) {
+                //FIXME This should be an intelligent selection
+                sourceReplica = replicaLocationModels.get(0);
+            }else{
+                for(DataReplicaLocationModel rp : replicaLocationModels){
+                    if(rp.getReplicaId().equals(replicaId)){
+                        sourceReplica = rp;
+                    }
+                }
+            }
+            if(sourceReplica == null)
+                throw new DataManagerException("No matching source replica found");
 
             StorageResourceDescription sourceStorageResource = appCatalog.getStorageResource()
                     .getStorageResource(sourceReplica.getStorageResourceId());
@@ -308,9 +342,9 @@ public class DataManagerImpl implements DataManager {
             DataReplicaLocationModel dataReplicaLocationModel = new DataReplicaLocationModel();
             dataReplicaLocationModel.setResourceId(dataResourceId);
             dataReplicaLocationModel.setFileAbsolutePath(destFilePath);
-            String replicaId = this.registerReplicaLocation(dataReplicaLocationModel);
-            return replicaId;
-        } catch (Exception e) {
+            String newReplicaId = this.registerReplicaLocation(dataReplicaLocationModel);
+            return newReplicaId;
+        }catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new DataManagerException(e);
         }
