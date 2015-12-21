@@ -261,7 +261,7 @@ class Iface:
 
   def getAllGatewayClientCredentials(self, gatewayId):
     """
-     * Get all gateway credentials
+     * Get all gateway client credentials
     *
 
     Parameters:
@@ -3403,7 +3403,7 @@ class Client(Iface):
 
   def getAllGatewayClientCredentials(self, gatewayId):
     """
-     * Get all gateway credentials
+     * Get all gateway client credentials
     *
 
     Parameters:

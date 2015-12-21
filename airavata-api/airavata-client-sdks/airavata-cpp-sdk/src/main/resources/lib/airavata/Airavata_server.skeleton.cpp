@@ -294,7 +294,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   *  * Get all gateway credentials
+   *  * Get all gateway client credentials
    * *
    * 
    * @param gatewayId

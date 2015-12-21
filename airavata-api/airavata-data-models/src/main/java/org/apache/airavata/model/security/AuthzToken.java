@@ -56,7 +56,9 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("AuthzToken");
 
   private static final org.apache.thrift.protocol.TField ACCESS_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("accessToken", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField CLAIMS_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("claimsMap", org.apache.thrift.protocol.TType.MAP, (short)2);
+  private static final org.apache.thrift.protocol.TField CLIEN_KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("clienKey", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField CLIENT_SECRET_FIELD_DESC = new org.apache.thrift.protocol.TField("clientSecret", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField CLAIMS_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("claimsMap", org.apache.thrift.protocol.TType.MAP, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -64,13 +66,17 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
     schemes.put(TupleScheme.class, new AuthzTokenTupleSchemeFactory());
   }
 
-  private String accessToken; // required
+  private String accessToken; // optional
+  private String clienKey; // optional
+  private String clientSecret; // optional
   private Map<String,String> claimsMap; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ACCESS_TOKEN((short)1, "accessToken"),
-    CLAIMS_MAP((short)2, "claimsMap");
+    CLIEN_KEY((short)2, "clienKey"),
+    CLIENT_SECRET((short)3, "clientSecret"),
+    CLAIMS_MAP((short)4, "claimsMap");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -87,7 +93,11 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
       switch(fieldId) {
         case 1: // ACCESS_TOKEN
           return ACCESS_TOKEN;
-        case 2: // CLAIMS_MAP
+        case 2: // CLIEN_KEY
+          return CLIEN_KEY;
+        case 3: // CLIENT_SECRET
+          return CLIENT_SECRET;
+        case 4: // CLAIMS_MAP
           return CLAIMS_MAP;
         default:
           return null;
@@ -129,11 +139,15 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
   }
 
   // isset id assignments
-  private static final _Fields optionals[] = {_Fields.CLAIMS_MAP};
+  private static final _Fields optionals[] = {_Fields.ACCESS_TOKEN,_Fields.CLIEN_KEY,_Fields.CLIENT_SECRET,_Fields.CLAIMS_MAP};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.ACCESS_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("accessToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.ACCESS_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("accessToken", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.CLIEN_KEY, new org.apache.thrift.meta_data.FieldMetaData("clienKey", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.CLIENT_SECRET, new org.apache.thrift.meta_data.FieldMetaData("clientSecret", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.CLAIMS_MAP, new org.apache.thrift.meta_data.FieldMetaData("claimsMap", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
@@ -146,19 +160,18 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
   public AuthzToken() {
   }
 
-  public AuthzToken(
-    String accessToken)
-  {
-    this();
-    this.accessToken = accessToken;
-  }
-
   /**
    * Performs a deep copy on <i>other</i>.
    */
   public AuthzToken(AuthzToken other) {
     if (other.isSetAccessToken()) {
       this.accessToken = other.accessToken;
+    }
+    if (other.isSetClienKey()) {
+      this.clienKey = other.clienKey;
+    }
+    if (other.isSetClientSecret()) {
+      this.clientSecret = other.clientSecret;
     }
     if (other.isSetClaimsMap()) {
       Map<String,String> __this__claimsMap = new HashMap<String,String>(other.claimsMap);
@@ -173,6 +186,8 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
   @Override
   public void clear() {
     this.accessToken = null;
+    this.clienKey = null;
+    this.clientSecret = null;
     this.claimsMap = null;
   }
 
@@ -196,6 +211,52 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
   public void setAccessTokenIsSet(boolean value) {
     if (!value) {
       this.accessToken = null;
+    }
+  }
+
+  public String getClienKey() {
+    return this.clienKey;
+  }
+
+  public void setClienKey(String clienKey) {
+    this.clienKey = clienKey;
+  }
+
+  public void unsetClienKey() {
+    this.clienKey = null;
+  }
+
+  /** Returns true if field clienKey is set (has been assigned a value) and false otherwise */
+  public boolean isSetClienKey() {
+    return this.clienKey != null;
+  }
+
+  public void setClienKeyIsSet(boolean value) {
+    if (!value) {
+      this.clienKey = null;
+    }
+  }
+
+  public String getClientSecret() {
+    return this.clientSecret;
+  }
+
+  public void setClientSecret(String clientSecret) {
+    this.clientSecret = clientSecret;
+  }
+
+  public void unsetClientSecret() {
+    this.clientSecret = null;
+  }
+
+  /** Returns true if field clientSecret is set (has been assigned a value) and false otherwise */
+  public boolean isSetClientSecret() {
+    return this.clientSecret != null;
+  }
+
+  public void setClientSecretIsSet(boolean value) {
+    if (!value) {
+      this.clientSecret = null;
     }
   }
 
@@ -243,6 +304,22 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
       }
       break;
 
+    case CLIEN_KEY:
+      if (value == null) {
+        unsetClienKey();
+      } else {
+        setClienKey((String)value);
+      }
+      break;
+
+    case CLIENT_SECRET:
+      if (value == null) {
+        unsetClientSecret();
+      } else {
+        setClientSecret((String)value);
+      }
+      break;
+
     case CLAIMS_MAP:
       if (value == null) {
         unsetClaimsMap();
@@ -258,6 +335,12 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
     switch (field) {
     case ACCESS_TOKEN:
       return getAccessToken();
+
+    case CLIEN_KEY:
+      return getClienKey();
+
+    case CLIENT_SECRET:
+      return getClientSecret();
 
     case CLAIMS_MAP:
       return getClaimsMap();
@@ -275,6 +358,10 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
     switch (field) {
     case ACCESS_TOKEN:
       return isSetAccessToken();
+    case CLIEN_KEY:
+      return isSetClienKey();
+    case CLIENT_SECRET:
+      return isSetClientSecret();
     case CLAIMS_MAP:
       return isSetClaimsMap();
     }
@@ -303,6 +390,24 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
         return false;
     }
 
+    boolean this_present_clienKey = true && this.isSetClienKey();
+    boolean that_present_clienKey = true && that.isSetClienKey();
+    if (this_present_clienKey || that_present_clienKey) {
+      if (!(this_present_clienKey && that_present_clienKey))
+        return false;
+      if (!this.clienKey.equals(that.clienKey))
+        return false;
+    }
+
+    boolean this_present_clientSecret = true && this.isSetClientSecret();
+    boolean that_present_clientSecret = true && that.isSetClientSecret();
+    if (this_present_clientSecret || that_present_clientSecret) {
+      if (!(this_present_clientSecret && that_present_clientSecret))
+        return false;
+      if (!this.clientSecret.equals(that.clientSecret))
+        return false;
+    }
+
     boolean this_present_claimsMap = true && this.isSetClaimsMap();
     boolean that_present_claimsMap = true && that.isSetClaimsMap();
     if (this_present_claimsMap || that_present_claimsMap) {
@@ -323,6 +428,16 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
     list.add(present_accessToken);
     if (present_accessToken)
       list.add(accessToken);
+
+    boolean present_clienKey = true && (isSetClienKey());
+    list.add(present_clienKey);
+    if (present_clienKey)
+      list.add(clienKey);
+
+    boolean present_clientSecret = true && (isSetClientSecret());
+    list.add(present_clientSecret);
+    if (present_clientSecret)
+      list.add(clientSecret);
 
     boolean present_claimsMap = true && (isSetClaimsMap());
     list.add(present_claimsMap);
@@ -346,6 +461,26 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
     }
     if (isSetAccessToken()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.accessToken, other.accessToken);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetClienKey()).compareTo(other.isSetClienKey());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetClienKey()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.clienKey, other.clienKey);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetClientSecret()).compareTo(other.isSetClientSecret());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetClientSecret()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.clientSecret, other.clientSecret);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -380,13 +515,35 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
     StringBuilder sb = new StringBuilder("AuthzToken(");
     boolean first = true;
 
-    sb.append("accessToken:");
-    if (this.accessToken == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.accessToken);
+    if (isSetAccessToken()) {
+      sb.append("accessToken:");
+      if (this.accessToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.accessToken);
+      }
+      first = false;
     }
-    first = false;
+    if (isSetClienKey()) {
+      if (!first) sb.append(", ");
+      sb.append("clienKey:");
+      if (this.clienKey == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.clienKey);
+      }
+      first = false;
+    }
+    if (isSetClientSecret()) {
+      if (!first) sb.append(", ");
+      sb.append("clientSecret:");
+      if (this.clientSecret == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.clientSecret);
+      }
+      first = false;
+    }
     if (isSetClaimsMap()) {
       if (!first) sb.append(", ");
       sb.append("claimsMap:");
@@ -403,10 +560,6 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetAccessToken()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'accessToken' is unset! Struct:" + toString());
-    }
-
     // check for sub-struct validity
   }
 
@@ -452,7 +605,23 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // CLAIMS_MAP
+          case 2: // CLIEN_KEY
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.clienKey = iprot.readString();
+              struct.setClienKeyIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 3: // CLIENT_SECRET
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.clientSecret = iprot.readString();
+              struct.setClientSecretIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // CLAIMS_MAP
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
                 org.apache.thrift.protocol.TMap _map0 = iprot.readMapBegin();
@@ -486,9 +655,25 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
 
       oprot.writeStructBegin(STRUCT_DESC);
       if (struct.accessToken != null) {
-        oprot.writeFieldBegin(ACCESS_TOKEN_FIELD_DESC);
-        oprot.writeString(struct.accessToken);
-        oprot.writeFieldEnd();
+        if (struct.isSetAccessToken()) {
+          oprot.writeFieldBegin(ACCESS_TOKEN_FIELD_DESC);
+          oprot.writeString(struct.accessToken);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.clienKey != null) {
+        if (struct.isSetClienKey()) {
+          oprot.writeFieldBegin(CLIEN_KEY_FIELD_DESC);
+          oprot.writeString(struct.clienKey);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.clientSecret != null) {
+        if (struct.isSetClientSecret()) {
+          oprot.writeFieldBegin(CLIENT_SECRET_FIELD_DESC);
+          oprot.writeString(struct.clientSecret);
+          oprot.writeFieldEnd();
+        }
       }
       if (struct.claimsMap != null) {
         if (struct.isSetClaimsMap()) {
@@ -522,12 +707,29 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, AuthzToken struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeString(struct.accessToken);
       BitSet optionals = new BitSet();
-      if (struct.isSetClaimsMap()) {
+      if (struct.isSetAccessToken()) {
         optionals.set(0);
       }
-      oprot.writeBitSet(optionals, 1);
+      if (struct.isSetClienKey()) {
+        optionals.set(1);
+      }
+      if (struct.isSetClientSecret()) {
+        optionals.set(2);
+      }
+      if (struct.isSetClaimsMap()) {
+        optionals.set(3);
+      }
+      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetAccessToken()) {
+        oprot.writeString(struct.accessToken);
+      }
+      if (struct.isSetClienKey()) {
+        oprot.writeString(struct.clienKey);
+      }
+      if (struct.isSetClientSecret()) {
+        oprot.writeString(struct.clientSecret);
+      }
       if (struct.isSetClaimsMap()) {
         {
           oprot.writeI32(struct.claimsMap.size());
@@ -543,10 +745,20 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, AuthzToken struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.accessToken = iprot.readString();
-      struct.setAccessTokenIsSet(true);
-      BitSet incoming = iprot.readBitSet(1);
+      BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
+        struct.accessToken = iprot.readString();
+        struct.setAccessTokenIsSet(true);
+      }
+      if (incoming.get(1)) {
+        struct.clienKey = iprot.readString();
+        struct.setClienKeyIsSet(true);
+      }
+      if (incoming.get(2)) {
+        struct.clientSecret = iprot.readString();
+        struct.setClientSecretIsSet(true);
+      }
+      if (incoming.get(3)) {
         {
           org.apache.thrift.protocol.TMap _map6 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
           struct.claimsMap = new HashMap<String,String>(2*_map6.size);

@@ -277,7 +277,7 @@ interface AiravataIf {
    */
   public function deleteGatewayClientCredential($clientKey);
   /**
-   *  * Get all gateway credentials
+   *  * Get all gateway client credentials
    * *
    * 
    * @param string $gatewayId
