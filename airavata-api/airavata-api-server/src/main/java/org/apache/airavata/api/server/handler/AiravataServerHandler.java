@@ -30,7 +30,6 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.datamodel.APICredential;
 import org.apache.airavata.credential.store.datamodel.SSHCredential;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.data.manager.core.DataManagerFactory;
@@ -357,87 +356,6 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error occurred while deleting SSH credential. More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    /**
-     * * Create new API key, API secret pair for a gateway.
-     * *
-     * * @param gatewayId
-     * *         Id of the gateway that a new API credential is needed to be created
-     * *
-     * * @return APICredential
-     * *         API key and API secret pair
-     * *
-     *
-     * @param authzToken
-     * @param gatewayId
-     */
-    @Override
-    public Map<String, String> createNewAPIKey(AuthzToken authzToken, String gatewayId, String username) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException{
-        APICredential apiCredential = null;
-        try {
-            apiCredential = getCredentialStoreServiceClient().generateNewAPICredential(gatewayId, username);
-            HashMap<String, String> map = new HashMap<>();
-            map.put(apiCredential.getApiKey(),apiCredential.getApiSecret());
-            return map;
-        }catch (Exception e){
-            logger.error("Error occurred while creating API credential", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while creating API credential. More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    /**
-     * * Delete an existing API key
-     * *
-     * * @param apiKey
-     * *      api key of the APICredential that needs to be deleted
-     * *
-     * * @return void
-     * *
-     *
-     * @param authzToken
-     * @param apiKey
-     */
-    @Override
-    public void deleteAPIKey(AuthzToken authzToken, String apiKey) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        try {
-            getCredentialStoreServiceClient().removeAPICredential(apiKey);
-        }catch (Exception e){
-            logger.error("Error occurred while removing API credential", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while removing API credential. More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    /**
-     * Get all API keys for the given gateway
-     *
-     * @param authzToken
-     * @param gatewayId  The identifier for the requested gateway.
-     * @return Map of API key and API secret pairs
-     */
-    @Override
-    public Map<String, String> getAllGatewayAPIKeys(AuthzToken authzToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        List<APICredential> apiCredentials;
-        try {
-            apiCredentials = getCredentialStoreServiceClient().getAllGatewayAPICredentials(gatewayId);
-            HashMap<String, String> map = new HashMap<>();
-            apiCredentials.stream().forEach(apiCredential -> {
-                map.put(apiCredential.getApiKey(),apiCredential.getApiSecret());
-            });
-            return map;
-        }catch (Exception e){
-            logger.error("Error occurred while retreiving API credential", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while retreiving API credential. More info : " + e.getMessage());
             throw exception;
         }
     }
