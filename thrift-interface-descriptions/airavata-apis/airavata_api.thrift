@@ -284,6 +284,32 @@ service Airavata {
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
+
+  /**
+   * Create new gateway client credential
+  **/
+  map<string, string> createNewGatewayClientCredential(1: required string gatewayId)
+             throws (1: airavata_errors.InvalidRequestException ire,
+                       2: airavata_errors.AiravataClientException ace,
+                       3: airavata_errors.AiravataSystemException ase)
+
+ /**
+  * Delete existing gateway credential
+ **/
+  void deleteGatewayClientCredential(1: required string clientKey)
+             throws (1: airavata_errors.InvalidRequestException ire,
+                         2: airavata_errors.AiravataClientException ace,
+                         3: airavata_errors.AiravataSystemException ase)
+
+  /**
+    * Get all gateway client credentials
+   **/
+   map<string, string> getAllGatewayClientCredentials(1: required string gatewayId)
+              throws (1: airavata_errors.InvalidRequestException ire,
+                        2: airavata_errors.AiravataClientException ace,
+                        3: airavata_errors.AiravataSystemException ase)
+
+
    /**
    * Creates a Project with basic metadata.
    *    A Project is a container of experiments.

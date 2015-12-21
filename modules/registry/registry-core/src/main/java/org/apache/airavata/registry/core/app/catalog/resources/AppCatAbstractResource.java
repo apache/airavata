@@ -69,6 +69,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
     public static final String CLOUD_JOB_SUBMISSION = "CloudJobSubmission";
     public static final String MODULE_LOAD_CMD = "ModuleLoadCmd";
     public static final String WORKFLOW = "Workflow";
+    public static final String GATEWAY_CLIENT_CREDENTIAL = "GatewayClientCredential";
 
     public final class EmailMonitorPropertyConstants {
         public static final String JOB_SUBMISSION_INTERFACE_ID = "jobSubmissionId";
@@ -81,6 +82,11 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
 		public static final String HOST_NAME = "hostName";
 	}
 
+    public final class GatewayClientCredentialConstants {
+        public static final String CLIENT_KEY = "clientKey";
+        public static final String CLIENT_SECRET = "clientSecret";
+        public static final String GATEWAY_ID = "gatewayId";
+    }
 
 
     // Host Alias Table
