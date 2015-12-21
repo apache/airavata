@@ -272,39 +272,6 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   *  * Create new gateway client credential
-   * *
-   * 
-   * @param gatewayId
-   */
-  void createNewGatewayClientCredential(std::map<std::string, std::string> & _return, const std::string& gatewayId) {
-    // Your implementation goes here
-    printf("createNewGatewayClientCredential\n");
-  }
-
-  /**
-   *  * Delete existing gateway credential
-   * *
-   * 
-   * @param clientKey
-   */
-  void deleteGatewayClientCredential(const std::string& clientKey) {
-    // Your implementation goes here
-    printf("deleteGatewayClientCredential\n");
-  }
-
-  /**
-   *  * Get all gateway client credentials
-   * *
-   * 
-   * @param gatewayId
-   */
-  void getAllGatewayClientCredentials(std::map<std::string, std::string> & _return, const std::string& gatewayId) {
-    // Your implementation goes here
-    printf("getAllGatewayClientCredentials\n");
-  }
-
-  /**
    * Creates a Project with basic metadata.
    *    A Project is a container of experiments.
    * 

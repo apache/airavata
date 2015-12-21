@@ -25,14 +25,6 @@ class AuthzToken {
    */
   public $accessToken = null;
   /**
-   * @var string
-   */
-  public $clienKey = null;
-  /**
-   * @var string
-   */
-  public $clientSecret = null;
-  /**
    * @var array
    */
   public $claimsMap = null;
@@ -45,14 +37,6 @@ class AuthzToken {
           'type' => TType::STRING,
           ),
         2 => array(
-          'var' => 'clienKey',
-          'type' => TType::STRING,
-          ),
-        3 => array(
-          'var' => 'clientSecret',
-          'type' => TType::STRING,
-          ),
-        4 => array(
           'var' => 'claimsMap',
           'type' => TType::MAP,
           'ktype' => TType::STRING,
@@ -69,12 +53,6 @@ class AuthzToken {
     if (is_array($vals)) {
       if (isset($vals['accessToken'])) {
         $this->accessToken = $vals['accessToken'];
-      }
-      if (isset($vals['clienKey'])) {
-        $this->clienKey = $vals['clienKey'];
-      }
-      if (isset($vals['clientSecret'])) {
-        $this->clientSecret = $vals['clientSecret'];
       }
       if (isset($vals['claimsMap'])) {
         $this->claimsMap = $vals['claimsMap'];
@@ -109,20 +87,6 @@ class AuthzToken {
           }
           break;
         case 2:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->clienKey);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 3:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->clientSecret);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 4:
           if ($ftype == TType::MAP) {
             $this->claimsMap = array();
             $_size0 = 0;
@@ -160,21 +124,11 @@ class AuthzToken {
       $xfer += $output->writeString($this->accessToken);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->clienKey !== null) {
-      $xfer += $output->writeFieldBegin('clienKey', TType::STRING, 2);
-      $xfer += $output->writeString($this->clienKey);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->clientSecret !== null) {
-      $xfer += $output->writeFieldBegin('clientSecret', TType::STRING, 3);
-      $xfer += $output->writeString($this->clientSecret);
-      $xfer += $output->writeFieldEnd();
-    }
     if ($this->claimsMap !== null) {
       if (!is_array($this->claimsMap)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('claimsMap', TType::MAP, 4);
+      $xfer += $output->writeFieldBegin('claimsMap', TType::MAP, 2);
       {
         $output->writeMapBegin(TType::STRING, TType::STRING, count($this->claimsMap));
         {
