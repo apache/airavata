@@ -127,6 +127,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
             gatewayResourceProfile.setGatewayID(gatewayId);
             appCatalog.getGatewayProfile().addGatewayResourceProfile(gatewayResourceProfile);
+            logger.info("Airavata added gateway with gateway id : " + gateway.getGatewayId());
             return gatewayId;
         } catch (RegistryException e) {
             logger.error("Error while adding gateway", e);
@@ -157,6 +158,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw exception;
             }
             experimentCatalog.update(ExperimentCatalogModelType.GATEWAY, updatedGateway, gatewayId);
+            logger.info("Airavata update gateway with gateway id : " + gatewayId);
         } catch (RegistryException e) {
             logger.error("Error while updating the gateway", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -179,7 +181,9 @@ public class AiravataServerHandler implements Airavata.Iface {
                 exception.setMessage("Gateway does not exist in the system. Please provide a valid gateway ID...");
                 throw exception;
             }
-            return (Gateway) experimentCatalog.get(ExperimentCatalogModelType.GATEWAY, gatewayId);
+            Gateway gateway = (Gateway) experimentCatalog.get(ExperimentCatalogModelType.GATEWAY, gatewayId);
+            logger.info("Airavata retrieved gateway with gateway id : " + gateway.getGatewayId());
+            return gateway;
         } catch (RegistryException e) {
             logger.error("Error while getting the gateway", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -193,7 +197,6 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public boolean deleteGateway(AuthzToken authzToken, String gatewayId) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-
         try {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.GATEWAY, gatewayId)){
@@ -203,6 +206,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw exception;
             }
             experimentCatalog.remove(ExperimentCatalogModelType.GATEWAY, gatewayId);
+            logger.info("Airavata deleted gateway with gateway id : " + gatewayId);
             return true;
         } catch (RegistryException e) {
             logger.error("Error while deleting the gateway", e);
@@ -217,7 +221,6 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public List<Gateway> getAllGateways(AuthzToken authzToken) throws InvalidRequestException, AiravataClientException,
             AiravataSystemException, AuthorizationException, TException {
-
         try {
             List<Gateway> gateways = new ArrayList<Gateway>();
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
@@ -225,6 +228,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             for (Object gateway : list){
                 gateways.add((Gateway)gateway);
             }
+            logger.info("Airavata retrieved all available gateways...");
             return gateways;
         } catch (RegistryException e) {
             logger.error("Error while getting all the gateways", e);
@@ -277,7 +281,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             SSHCredential sshCredential = new SSHCredential();
             sshCredential.setUsername(userName);
             sshCredential.setGatewayId(gatewayId);
-            return csClient.addSSHCredential(sshCredential);
+            String key = csClient.addSSHCredential(sshCredential);
+            logger.info("Airavata generated SSH keys for gateway : " + gatewayId + " and for user : " + userName);
+            return key;
         }catch (Exception e){
             logger.error("Error occurred while registering SSH Credential", e);
             AiravataSystemException exception = new AiravataSystemException();
