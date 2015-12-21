@@ -43,7 +43,7 @@ fi
 # Generation of thrift files will require installing Apache Thrift. Please add thrift to your path.
 #  Verify is thrift is installed, is in the path is at a specified version.
 
-REQUIRED_THRIFT_VERSION='0.9.2'
+REQUIRED_THRIFT_VERSION='0.9.3'
 if hash thrift &> /dev/null; then
   THRIFT_EXEC=$(which thrift)
 else
