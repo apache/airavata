@@ -20,7 +20,6 @@
 */
 package org.apache.airavata.registry.core.app.catalog.impl;
 
-import org.apache.airavata.model.security.GatewayClientCredential;
 import org.apache.airavata.registry.core.app.catalog.resources.AppCatAbstractResource;
 import org.apache.airavata.registry.core.app.catalog.resources.AppCatalogResource;
 import org.apache.airavata.registry.core.app.catalog.resources.GatewayClientCredentialResource;

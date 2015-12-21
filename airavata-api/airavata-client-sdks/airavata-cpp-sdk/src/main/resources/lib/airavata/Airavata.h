@@ -252,7 +252,7 @@ class AiravataIf {
   virtual void deleteGatewayClientCredential(const std::string& clientKey) = 0;
 
   /**
-   *  * Get all gateway credentials
+   *  * Get all gateway client credentials
    * *
    * 
    * @param gatewayId
