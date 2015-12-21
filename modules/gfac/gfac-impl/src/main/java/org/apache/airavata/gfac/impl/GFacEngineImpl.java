@@ -627,18 +627,7 @@ public class GFacEngineImpl implements GFacEngine {
     private void executeCancel(TaskContext taskContext, JobSubmissionTask jSTask) throws GFacException {
         try {
             JobStatus oldJobStatus = jSTask.cancel(taskContext);
-
-/*            if (oldJobStatus != null && oldJobStatus.getJobState() == JobState.QUEUED) {
-                ProcessContext pc = taskContext.getParentProcessContext();
-                JobStatus newJobStatus = new JobStatus(JobState.CANCELED);
-                newJobStatus.setReason("Job cancelled");
-                newJobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                pc.getJobModel().setJobStatus(newJobStatus);
-                GFacUtils.saveJobStatus(pc, pc.getJobModel());
-                JobMonitor monitorService = Factory.getMonitorService(pc.getMonitorMode());
-                monitorService.stopMonitor(pc.getJobModel().getJobId(), true);
-            }*/
-
+            // If Job was in Queued state when cancel command runs, then there won't be any email from this job.
             ProcessContext pc = taskContext.getParentProcessContext();
             JobMonitor monitorService = Factory.getMonitorService(pc.getMonitorMode());
             monitorService.canceledJob(pc.getJobModel().getJobId());
