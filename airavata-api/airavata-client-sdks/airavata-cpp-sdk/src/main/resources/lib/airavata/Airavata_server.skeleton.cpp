@@ -272,6 +272,61 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   *  * Create new API key, API secret pair for a gateway.
+   *  *
+   *  * @param gatewayId
+   *  *         Id of the gateway that a new API credential is needed to be created
+   *  * @param username
+   *  *         Username of the user who is creating this APICredential
+   *  *
+   *  * @return APICredential
+   *  *         API key and API secret pair
+   * *
+   * 
+   * @param authzToken
+   * @param gatewayId
+   * @param username
+   */
+  void createNewAPIKey(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& username) {
+    // Your implementation goes here
+    printf("createNewAPIKey\n");
+  }
+
+  /**
+   *  * Delete an existing API key
+   *  *
+   *  * @param apiKey
+   *  *      api key of the APICredential that needs to be deleted
+   *  *
+   *  * @return void
+   * *
+   * 
+   * @param authzToken
+   * @param apiKey
+   */
+  void deleteAPIKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& apiKey) {
+    // Your implementation goes here
+    printf("deleteAPIKey\n");
+  }
+
+  /**
+   * Get all API keys for the given gateway
+   * @param gatewayId
+   *    The identifier for the requested gateway.
+   * 
+   * @return Map of API key and API secret pairs
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   */
+  void getAllGatewayAPIKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("getAllGatewayAPIKeys\n");
+  }
+
+  /**
    * Creates a Project with basic metadata.
    *    A Project is a container of experiments.
    * 
