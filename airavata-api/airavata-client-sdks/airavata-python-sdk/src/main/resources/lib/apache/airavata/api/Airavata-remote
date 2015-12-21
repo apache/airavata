@@ -36,9 +36,6 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('   getAllUserSSHPubKeys(AuthzToken authzToken, string userName)')
   print('   getAllGatewaySSHPubKeys(AuthzToken authzToken, string gatewayId)')
   print('  bool deleteSSHPubKey(AuthzToken authzToken, string airavataCredStoreToken, string gatewayId)')
-  print('   createNewGatewayClientCredential(string gatewayId)')
-  print('  void deleteGatewayClientCredential(string clientKey)')
-  print('   getAllGatewayClientCredentials(string gatewayId)')
   print('  string createProject(AuthzToken authzToken, string gatewayId, Project project)')
   print('  void updateProject(AuthzToken authzToken, string projectId, Project updatedProject)')
   print('  Project getProject(AuthzToken authzToken, string projectId)')
@@ -292,24 +289,6 @@ elif cmd == 'deleteSSHPubKey':
     print('deleteSSHPubKey requires 3 args')
     sys.exit(1)
   pp.pprint(client.deleteSSHPubKey(eval(args[0]),args[1],args[2],))
-
-elif cmd == 'createNewGatewayClientCredential':
-  if len(args) != 1:
-    print('createNewGatewayClientCredential requires 1 args')
-    sys.exit(1)
-  pp.pprint(client.createNewGatewayClientCredential(args[0],))
-
-elif cmd == 'deleteGatewayClientCredential':
-  if len(args) != 1:
-    print('deleteGatewayClientCredential requires 1 args')
-    sys.exit(1)
-  pp.pprint(client.deleteGatewayClientCredential(args[0],))
-
-elif cmd == 'getAllGatewayClientCredentials':
-  if len(args) != 1:
-    print('getAllGatewayClientCredentials requires 1 args')
-    sys.exit(1)
-  pp.pprint(client.getAllGatewayClientCredentials(args[0],))
 
 elif cmd == 'createProject':
   if len(args) != 3:

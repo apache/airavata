@@ -236,30 +236,6 @@ class AiravataIf {
   virtual bool deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) = 0;
 
   /**
-   *  * Create new gateway client credential
-   * *
-   * 
-   * @param gatewayId
-   */
-  virtual void createNewGatewayClientCredential(std::map<std::string, std::string> & _return, const std::string& gatewayId) = 0;
-
-  /**
-   *  * Delete existing gateway credential
-   * *
-   * 
-   * @param clientKey
-   */
-  virtual void deleteGatewayClientCredential(const std::string& clientKey) = 0;
-
-  /**
-   *  * Get all gateway client credentials
-   * *
-   * 
-   * @param gatewayId
-   */
-  virtual void getAllGatewayClientCredentials(std::map<std::string, std::string> & _return, const std::string& gatewayId) = 0;
-
-  /**
    * Creates a Project with basic metadata.
    *    A Project is a container of experiments.
    * 
@@ -2378,15 +2354,6 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  void createNewGatewayClientCredential(std::map<std::string, std::string> & /* _return */, const std::string& /* gatewayId */) {
-    return;
-  }
-  void deleteGatewayClientCredential(const std::string& /* clientKey */) {
-    return;
-  }
-  void getAllGatewayClientCredentials(std::map<std::string, std::string> & /* _return */, const std::string& /* gatewayId */) {
-    return;
-  }
   void createProject(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const  ::apache::airavata::model::workspace::Project& /* project */) {
     return;
   }
@@ -4397,364 +4364,6 @@ class Airavata_deleteSSHPubKey_presult {
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_deleteSSHPubKey_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
-class Airavata_createNewGatewayClientCredential_args {
- public:
-
-  Airavata_createNewGatewayClientCredential_args(const Airavata_createNewGatewayClientCredential_args&);
-  Airavata_createNewGatewayClientCredential_args& operator=(const Airavata_createNewGatewayClientCredential_args&);
-  Airavata_createNewGatewayClientCredential_args() : gatewayId() {
-  }
-
-  virtual ~Airavata_createNewGatewayClientCredential_args() throw();
-  std::string gatewayId;
-
-  void __set_gatewayId(const std::string& val);
-
-  bool operator == (const Airavata_createNewGatewayClientCredential_args & rhs) const
-  {
-    if (!(gatewayId == rhs.gatewayId))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_createNewGatewayClientCredential_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_createNewGatewayClientCredential_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class Airavata_createNewGatewayClientCredential_pargs {
- public:
-
-
-  virtual ~Airavata_createNewGatewayClientCredential_pargs() throw();
-  const std::string* gatewayId;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_createNewGatewayClientCredential_result__isset {
-  _Airavata_createNewGatewayClientCredential_result__isset() : success(false), ire(false), ace(false), ase(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_createNewGatewayClientCredential_result__isset;
-
-class Airavata_createNewGatewayClientCredential_result {
- public:
-
-  Airavata_createNewGatewayClientCredential_result(const Airavata_createNewGatewayClientCredential_result&);
-  Airavata_createNewGatewayClientCredential_result& operator=(const Airavata_createNewGatewayClientCredential_result&);
-  Airavata_createNewGatewayClientCredential_result() {
-  }
-
-  virtual ~Airavata_createNewGatewayClientCredential_result() throw();
-  std::map<std::string, std::string>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_createNewGatewayClientCredential_result__isset __isset;
-
-  void __set_success(const std::map<std::string, std::string> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  bool operator == (const Airavata_createNewGatewayClientCredential_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_createNewGatewayClientCredential_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_createNewGatewayClientCredential_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_createNewGatewayClientCredential_presult__isset {
-  _Airavata_createNewGatewayClientCredential_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_createNewGatewayClientCredential_presult__isset;
-
-class Airavata_createNewGatewayClientCredential_presult {
- public:
-
-
-  virtual ~Airavata_createNewGatewayClientCredential_presult() throw();
-  std::map<std::string, std::string> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_createNewGatewayClientCredential_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
-class Airavata_deleteGatewayClientCredential_args {
- public:
-
-  Airavata_deleteGatewayClientCredential_args(const Airavata_deleteGatewayClientCredential_args&);
-  Airavata_deleteGatewayClientCredential_args& operator=(const Airavata_deleteGatewayClientCredential_args&);
-  Airavata_deleteGatewayClientCredential_args() : clientKey() {
-  }
-
-  virtual ~Airavata_deleteGatewayClientCredential_args() throw();
-  std::string clientKey;
-
-  void __set_clientKey(const std::string& val);
-
-  bool operator == (const Airavata_deleteGatewayClientCredential_args & rhs) const
-  {
-    if (!(clientKey == rhs.clientKey))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_deleteGatewayClientCredential_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_deleteGatewayClientCredential_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class Airavata_deleteGatewayClientCredential_pargs {
- public:
-
-
-  virtual ~Airavata_deleteGatewayClientCredential_pargs() throw();
-  const std::string* clientKey;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_deleteGatewayClientCredential_result__isset {
-  _Airavata_deleteGatewayClientCredential_result__isset() : ire(false), ace(false), ase(false) {}
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_deleteGatewayClientCredential_result__isset;
-
-class Airavata_deleteGatewayClientCredential_result {
- public:
-
-  Airavata_deleteGatewayClientCredential_result(const Airavata_deleteGatewayClientCredential_result&);
-  Airavata_deleteGatewayClientCredential_result& operator=(const Airavata_deleteGatewayClientCredential_result&);
-  Airavata_deleteGatewayClientCredential_result() {
-  }
-
-  virtual ~Airavata_deleteGatewayClientCredential_result() throw();
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_deleteGatewayClientCredential_result__isset __isset;
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  bool operator == (const Airavata_deleteGatewayClientCredential_result & rhs) const
-  {
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_deleteGatewayClientCredential_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_deleteGatewayClientCredential_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_deleteGatewayClientCredential_presult__isset {
-  _Airavata_deleteGatewayClientCredential_presult__isset() : ire(false), ace(false), ase(false) {}
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_deleteGatewayClientCredential_presult__isset;
-
-class Airavata_deleteGatewayClientCredential_presult {
- public:
-
-
-  virtual ~Airavata_deleteGatewayClientCredential_presult() throw();
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_deleteGatewayClientCredential_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
-class Airavata_getAllGatewayClientCredentials_args {
- public:
-
-  Airavata_getAllGatewayClientCredentials_args(const Airavata_getAllGatewayClientCredentials_args&);
-  Airavata_getAllGatewayClientCredentials_args& operator=(const Airavata_getAllGatewayClientCredentials_args&);
-  Airavata_getAllGatewayClientCredentials_args() : gatewayId() {
-  }
-
-  virtual ~Airavata_getAllGatewayClientCredentials_args() throw();
-  std::string gatewayId;
-
-  void __set_gatewayId(const std::string& val);
-
-  bool operator == (const Airavata_getAllGatewayClientCredentials_args & rhs) const
-  {
-    if (!(gatewayId == rhs.gatewayId))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_getAllGatewayClientCredentials_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_getAllGatewayClientCredentials_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class Airavata_getAllGatewayClientCredentials_pargs {
- public:
-
-
-  virtual ~Airavata_getAllGatewayClientCredentials_pargs() throw();
-  const std::string* gatewayId;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_getAllGatewayClientCredentials_result__isset {
-  _Airavata_getAllGatewayClientCredentials_result__isset() : success(false), ire(false), ace(false), ase(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_getAllGatewayClientCredentials_result__isset;
-
-class Airavata_getAllGatewayClientCredentials_result {
- public:
-
-  Airavata_getAllGatewayClientCredentials_result(const Airavata_getAllGatewayClientCredentials_result&);
-  Airavata_getAllGatewayClientCredentials_result& operator=(const Airavata_getAllGatewayClientCredentials_result&);
-  Airavata_getAllGatewayClientCredentials_result() {
-  }
-
-  virtual ~Airavata_getAllGatewayClientCredentials_result() throw();
-  std::map<std::string, std::string>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_getAllGatewayClientCredentials_result__isset __isset;
-
-  void __set_success(const std::map<std::string, std::string> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  bool operator == (const Airavata_getAllGatewayClientCredentials_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_getAllGatewayClientCredentials_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_getAllGatewayClientCredentials_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_getAllGatewayClientCredentials_presult__isset {
-  _Airavata_getAllGatewayClientCredentials_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_getAllGatewayClientCredentials_presult__isset;
-
-class Airavata_getAllGatewayClientCredentials_presult {
- public:
-
-
-  virtual ~Airavata_getAllGatewayClientCredentials_presult() throw();
-  std::map<std::string, std::string> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_getAllGatewayClientCredentials_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -22655,15 +22264,6 @@ class AiravataClient : virtual public AiravataIf {
   bool deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
   void send_deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
   bool recv_deleteSSHPubKey();
-  void createNewGatewayClientCredential(std::map<std::string, std::string> & _return, const std::string& gatewayId);
-  void send_createNewGatewayClientCredential(const std::string& gatewayId);
-  void recv_createNewGatewayClientCredential(std::map<std::string, std::string> & _return);
-  void deleteGatewayClientCredential(const std::string& clientKey);
-  void send_deleteGatewayClientCredential(const std::string& clientKey);
-  void recv_deleteGatewayClientCredential();
-  void getAllGatewayClientCredentials(std::map<std::string, std::string> & _return, const std::string& gatewayId);
-  void send_getAllGatewayClientCredentials(const std::string& gatewayId);
-  void recv_getAllGatewayClientCredentials(std::map<std::string, std::string> & _return);
   void createProject(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project);
   void send_createProject(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project);
   void recv_createProject(std::string& _return);
@@ -23069,9 +22669,6 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_getAllUserSSHPubKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllGatewaySSHPubKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteSSHPubKey(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_createNewGatewayClientCredential(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_deleteGatewayClientCredential(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_getAllGatewayClientCredentials(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_createProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -23213,9 +22810,6 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["getAllUserSSHPubKeys"] = &AiravataProcessor::process_getAllUserSSHPubKeys;
     processMap_["getAllGatewaySSHPubKeys"] = &AiravataProcessor::process_getAllGatewaySSHPubKeys;
     processMap_["deleteSSHPubKey"] = &AiravataProcessor::process_deleteSSHPubKey;
-    processMap_["createNewGatewayClientCredential"] = &AiravataProcessor::process_createNewGatewayClientCredential;
-    processMap_["deleteGatewayClientCredential"] = &AiravataProcessor::process_deleteGatewayClientCredential;
-    processMap_["getAllGatewayClientCredentials"] = &AiravataProcessor::process_getAllGatewayClientCredentials;
     processMap_["createProject"] = &AiravataProcessor::process_createProject;
     processMap_["updateProject"] = &AiravataProcessor::process_updateProject;
     processMap_["getProject"] = &AiravataProcessor::process_getProject;
@@ -23484,35 +23078,6 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->deleteSSHPubKey(authzToken, airavataCredStoreToken, gatewayId);
     }
     return ifaces_[i]->deleteSSHPubKey(authzToken, airavataCredStoreToken, gatewayId);
-  }
-
-  void createNewGatewayClientCredential(std::map<std::string, std::string> & _return, const std::string& gatewayId) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->createNewGatewayClientCredential(_return, gatewayId);
-    }
-    ifaces_[i]->createNewGatewayClientCredential(_return, gatewayId);
-    return;
-  }
-
-  void deleteGatewayClientCredential(const std::string& clientKey) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->deleteGatewayClientCredential(clientKey);
-    }
-    ifaces_[i]->deleteGatewayClientCredential(clientKey);
-  }
-
-  void getAllGatewayClientCredentials(std::map<std::string, std::string> & _return, const std::string& gatewayId) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllGatewayClientCredentials(_return, gatewayId);
-    }
-    ifaces_[i]->getAllGatewayClientCredentials(_return, gatewayId);
-    return;
   }
 
   void createProject(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project) {
@@ -24792,15 +24357,6 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   bool deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
   int32_t send_deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
   bool recv_deleteSSHPubKey(const int32_t seqid);
-  void createNewGatewayClientCredential(std::map<std::string, std::string> & _return, const std::string& gatewayId);
-  int32_t send_createNewGatewayClientCredential(const std::string& gatewayId);
-  void recv_createNewGatewayClientCredential(std::map<std::string, std::string> & _return, const int32_t seqid);
-  void deleteGatewayClientCredential(const std::string& clientKey);
-  int32_t send_deleteGatewayClientCredential(const std::string& clientKey);
-  void recv_deleteGatewayClientCredential(const int32_t seqid);
-  void getAllGatewayClientCredentials(std::map<std::string, std::string> & _return, const std::string& gatewayId);
-  int32_t send_getAllGatewayClientCredentials(const std::string& gatewayId);
-  void recv_getAllGatewayClientCredentials(std::map<std::string, std::string> & _return, const int32_t seqid);
   void createProject(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project);
   int32_t send_createProject(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project);
   void recv_createProject(std::string& _return, const int32_t seqid);

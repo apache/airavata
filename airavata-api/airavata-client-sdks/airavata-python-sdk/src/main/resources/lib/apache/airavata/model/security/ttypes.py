@@ -21,23 +21,17 @@ class AuthzToken:
   """
   Attributes:
    - accessToken
-   - clienKey
-   - clientSecret
    - claimsMap
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'accessToken', None, None, ), # 1
-    (2, TType.STRING, 'clienKey', None, None, ), # 2
-    (3, TType.STRING, 'clientSecret', None, None, ), # 3
-    (4, TType.MAP, 'claimsMap', (TType.STRING,None,TType.STRING,None), None, ), # 4
+    (2, TType.MAP, 'claimsMap', (TType.STRING,None,TType.STRING,None), None, ), # 2
   )
 
-  def __init__(self, accessToken=None, clienKey=None, clientSecret=None, claimsMap=None,):
+  def __init__(self, accessToken=None, claimsMap=None,):
     self.accessToken = accessToken
-    self.clienKey = clienKey
-    self.clientSecret = clientSecret
     self.claimsMap = claimsMap
 
   def read(self, iprot):
@@ -55,16 +49,6 @@ class AuthzToken:
         else:
           iprot.skip(ftype)
       elif fid == 2:
-        if ftype == TType.STRING:
-          self.clienKey = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.clientSecret = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 4:
         if ftype == TType.MAP:
           self.claimsMap = {}
           (_ktype1, _vtype2, _size0 ) = iprot.readMapBegin()
@@ -89,16 +73,8 @@ class AuthzToken:
       oprot.writeFieldBegin('accessToken', TType.STRING, 1)
       oprot.writeString(self.accessToken)
       oprot.writeFieldEnd()
-    if self.clienKey is not None:
-      oprot.writeFieldBegin('clienKey', TType.STRING, 2)
-      oprot.writeString(self.clienKey)
-      oprot.writeFieldEnd()
-    if self.clientSecret is not None:
-      oprot.writeFieldBegin('clientSecret', TType.STRING, 3)
-      oprot.writeString(self.clientSecret)
-      oprot.writeFieldEnd()
     if self.claimsMap is not None:
-      oprot.writeFieldBegin('claimsMap', TType.MAP, 4)
+      oprot.writeFieldBegin('claimsMap', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.claimsMap))
       for kiter7,viter8 in self.claimsMap.items():
         oprot.writeString(kiter7)
@@ -115,8 +91,6 @@ class AuthzToken:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.accessToken)
-    value = (value * 31) ^ hash(self.clienKey)
-    value = (value * 31) ^ hash(self.clientSecret)
     value = (value * 31) ^ hash(self.claimsMap)
     return value
 
