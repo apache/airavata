@@ -1231,18 +1231,7 @@ public class ExperimentRegistry {
                 List<JobResource> resources = processResource.getJobList();
                 for (JobResource jobResource : resources) {
                     JobModel jobModel = ThriftDataModelConversion.getJobModel(jobResource);
-	                List<ExperimentCatResource> jobStatuses = jobResource.get(ResourceType.JOB_STATUS);
-	                JobStatusResource latestSR  = null;
-	                for (ExperimentCatResource jobStatuse : jobStatuses) {
-		                JobStatusResource jobSR = (JobStatusResource) jobStatuse;
-		                if (latestSR == null) {
-			                latestSR = jobSR;
-		                } else {
-                            if (jobSR.getTimeOfStateChange().after(latestSR.getTimeOfStateChange()) || jobSR.getTimeOfStateChange().equals(latestSR.getTimeOfStateChange())){
-                                latestSR = jobSR;
-                            }
-		                }
-	                }
+                    JobStatusResource latestSR = jobResource.getJobStatus();
 	                if (latestSR != null) {
 		                JobStatus jobStatus = new JobStatus(JobState.valueOf(latestSR.getState()));
 		                jobStatus.setReason(latestSR.getReason());
@@ -1257,17 +1246,7 @@ public class ExperimentRegistry {
                 List<JobResource> resources = taskResource.getJobList();
                 for (JobResource jobResource : resources) {
                     JobModel jobModel = ThriftDataModelConversion.getJobModel(jobResource);
-                    List<ExperimentCatResource> jobStatuses = jobResource.get(ResourceType.JOB_STATUS);
-                    JobStatusResource latestSR = null;
-                    for (ExperimentCatResource jobStatuse : jobStatuses) {
-                        JobStatusResource jobSR = (JobStatusResource) jobStatuse;
-                        if (latestSR == null) {
-                            latestSR = jobSR;
-                        } else {
-                            latestSR = (jobSR.getTimeOfStateChange().after(latestSR.getTimeOfStateChange()) ? jobSR :
-                                    latestSR);
-                        }
-                    }
+                    JobStatusResource latestSR = jobResource.getJobStatus();
                     if (latestSR != null) {
                         JobStatus jobStatus = new JobStatus(JobState.valueOf(latestSR.getState()));
                         jobStatus.setReason(latestSR.getReason());
