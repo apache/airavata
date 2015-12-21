@@ -579,7 +579,7 @@ public class GFacUtils {
         }
         List<CommandObject> preJobCommands = appDepDescription.getPreJobCommands();
         if (preJobCommands != null) {
-            Collections.sort(moduleCmds,
+            Collections.sort(preJobCommands,
                     (o1, o2) -> ((CommandObject) o1).getCommandOrder() - ((CommandObject) o2).getCommandOrder());
             for (CommandObject preJobCommand : preJobCommands) {
                 jobDescriptor.addPreJobCommand(parseCommand(preJobCommand.getCommand(), processContext));
@@ -588,7 +588,7 @@ public class GFacUtils {
 
         List<CommandObject> postJobCommands = appDepDescription.getPostJobCommands();
         if (postJobCommands != null) {
-            Collections.sort(moduleCmds,
+            Collections.sort(postJobCommands,
                     (o1, o2) -> ((CommandObject) o1).getCommandOrder() - ((CommandObject) o2).getCommandOrder());
             for (CommandObject postJobCommand : postJobCommands) {
                 jobDescriptor.addPostJobCommand(parseCommand(postJobCommand.getCommand(), processContext));
