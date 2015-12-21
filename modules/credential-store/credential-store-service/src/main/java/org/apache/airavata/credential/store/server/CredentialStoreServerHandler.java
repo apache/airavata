@@ -24,7 +24,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.cpi.credentialStoreCPIConstants;
+import org.apache.airavata.credential.store.cpi.credential_store_cpiConstants;
 import org.apache.airavata.credential.store.credential.CommunityUser;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.datamodel.CertificateCredential;
@@ -72,7 +72,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
 
     @Override
     public String getCSServiceVersion() throws TException {
-        return credentialStoreCPIConstants.CS_CPI_VERSION;
+        return credential_store_cpiConstants.CS_CPI_VERSION;
     }
 
     @Override

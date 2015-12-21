@@ -57,3 +57,10 @@ struct PasswordCredential {
     3: optional i64 persistedTime,
     4: optional string token
 }
+
+struct APICredential {
+    1: required string apiKey,
+    2: required string apiSecret,
+    3: optional i64 persistedTime,
+    4: optional string token
+}
