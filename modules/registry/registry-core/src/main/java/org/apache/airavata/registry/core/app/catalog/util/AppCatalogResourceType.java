@@ -65,5 +65,6 @@ public enum AppCatalogResourceType {
     ClOUD_SUBMISSION,
     WORKFLOW,
     WORKFLOW_INPUT,
-    WORKFLOW_OUTPUT
+    WORKFLOW_OUTPUT,
+    GATEWAY_CLIENT_CREDENTIAL,
 }

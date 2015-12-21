@@ -65,6 +65,7 @@
         <class>org.apache.airavata.registry.core.app.catalog.model.WorkflowInput</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.WorkflowOutput</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.Configuration</class>
+        <class>org.apache.airavata.registry.core.app.catalog.model.GatewayClientCredential</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
     <persistence-unit name="experiment_data">

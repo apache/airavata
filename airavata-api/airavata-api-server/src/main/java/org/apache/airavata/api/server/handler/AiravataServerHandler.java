@@ -361,6 +361,69 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
+     * * Create new gateway client credential
+     * *
+     *
+     * @param gatewayId
+     */
+    @Override
+    public Map<String, String> createNewGatewayClientCredential(String gatewayId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, TException {
+        try {
+            Map.Entry<String, String> credential = appCatalog.getGatewayClientCredential().generateNewGatewayClientCredential(gatewayId);
+            HashMap<String, String> returnCredential = new HashMap<>();
+            returnCredential.put(credential.getKey(), credential.getValue());
+            return returnCredential;
+        } catch (AppCatalogException e) {
+            logger.error("Error occurred while generating gateway credential", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while generating gateway client credential. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * * Delete existing gateway credential
+     * *
+     *
+     * @param clientKey
+     */
+    @Override
+    public void deleteGatewayClientCredential(String clientKey) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, TException {
+        try {
+            appCatalog.getGatewayClientCredential().removeGatewayClientCredential(clientKey);
+        } catch (AppCatalogException e) {
+            logger.error("Error occurred while removing gateway credential", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while removing gateway client credential. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * * Get all gateway client credentials
+     * *
+     *
+     * @param gatewayId
+     */
+    @Override
+    public Map<String, String> getAllGatewayClientCredentials(String gatewayId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, TException {
+        try {
+            return appCatalog.getGatewayClientCredential().getAllGatewayClientCredentials(gatewayId);
+        } catch (AppCatalogException e) {
+            logger.error("Error occurred while removing gateway credential", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while removing gateway client credential. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
      * Create a Project
      *
      * @param project
