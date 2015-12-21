@@ -122,6 +122,7 @@ public class CredentialsDAO extends ParentDAO {
         }
     }
 
+
     public void deleteCredentials(String gatewayName, String tokenId, Connection connection)
             throws CredentialStoreException {
 
@@ -136,7 +137,7 @@ public class CredentialsDAO extends ParentDAO {
             preparedStatement.setString(2, tokenId);
 
             preparedStatement.executeUpdate();
-
+            connection.commit();
         } catch (SQLException e) {
             StringBuilder stringBuilder = new StringBuilder("Error deleting credentials for .");
             stringBuilder.append("gateway - ").append(gatewayName);

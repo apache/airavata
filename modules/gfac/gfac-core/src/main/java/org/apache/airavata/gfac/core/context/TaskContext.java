@@ -39,6 +39,7 @@ public class TaskContext {
     private InputDataObjectType processInput;
     private OutputDataObjectType processOutput;
     private Object subTaskModel = null;
+	private boolean isCancel = false;
 
 	public TaskModel getTaskModel() {
 		return taskModel;
@@ -117,4 +118,12 @@ public class TaskContext {
         }
         return subTaskModel;
     }
+
+	public boolean isCancel() {
+		return isCancel;
+	}
+
+	public void setCancel(boolean cancel) {
+		isCancel = cancel;
+	}
 }

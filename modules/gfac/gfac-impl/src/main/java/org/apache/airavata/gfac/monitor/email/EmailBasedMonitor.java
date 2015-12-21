@@ -130,7 +130,18 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 		TaskContext taskContext = jobMonitorMap.remove(jobId);
 		if (taskContext != null && runOutflow) {
 			try {
-				GFacThreadPoolExecutor.getCachedThreadPool().execute(new GFacWorker(taskContext.getParentProcessContext()));
+                ProcessContext pc = taskContext.getParentProcessContext();
+                if (taskContext.isCancel()) {
+                    // Moved job status to cancel
+                    JobModel jobModel = pc.getJobModel();
+                    JobStatus newJobStatus = new JobStatus(JobState.CANCELED);
+                    newJobStatus.setReason("Moving job status to cancel, as we didn't see any email from this job " +
+                            "for a while after execute job cancel command. This may happen if job was in queued state " +
+                            "when we run the cancel command");
+                    jobModel.setJobStatus(newJobStatus);
+                    GFacUtils.saveJobStatus(pc, jobModel);
+                }
+                GFacThreadPoolExecutor.getCachedThreadPool().execute(new GFacWorker(pc));
 			} catch (GFacException e) {
 				log.info("[EJM]: Error while running output tasks", e);
 			}
@@ -317,13 +328,13 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
     }
 
     private void process(JobStatusResult jobStatusResult, TaskContext taskContext){
-        JobState resultState = jobStatusResult.getState();
-	    // TODO : update job state on process context
-        boolean runOutflowTasks = false;
-	    JobStatus jobStatus = new JobStatus();
-	    JobModel jobModel = taskContext.getParentProcessContext().getJobModel();
-        String jobDetails = "JobName : " + jobStatusResult.getJobName() + ", JobId : " + jobStatusResult.getJobId();
         canceledJobs.remove(jobStatusResult.getJobId());
+        JobState resultState = jobStatusResult.getState();
+        // TODO : update job state on process context
+        boolean runOutflowTasks = false;
+        JobStatus jobStatus = new JobStatus();
+        JobModel jobModel = taskContext.getParentProcessContext().getJobModel();
+        String jobDetails = "JobName : " + jobStatusResult.getJobName() + ", JobId : " + jobStatusResult.getJobId();
         // TODO - Handle all other valid JobStates
         if (resultState == JobState.COMPLETE) {
             jobMonitorMap.remove(jobStatusResult.getJobId());
@@ -423,6 +434,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
                     } else {
                         TaskContext taskContext = jobMonitorMap.get(cancelJobIdWithFlag.getKey());
                         if (taskContext != null) {
+                            taskContext.setCancel(true);
                             stopMonitor(cancelJobIdWithFlag.getKey(), true);
                         }
                         cancelJobIter.remove();
