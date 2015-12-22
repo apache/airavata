@@ -21,6 +21,7 @@
 
 package org.apache.airavata.registry.core.experiment.catalog.resources;
 
+import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
@@ -373,7 +374,7 @@ public class JobResource extends AbstractExpCatResource {
             JobStatusResource max = jobStatusResources.get(0);
             for(int i=1; i<jobStatusResources.size();i++) {
                 if (jobStatusResources.get(i).getTimeOfStateChange().after(max.getTimeOfStateChange())
-                        || jobStatusResources.get(i).getTimeOfStateChange().equals(max.getTimeOfStateChange())) {
+                        || (jobStatusResources.get(i).getTimeOfStateChange().equals(max.getTimeOfStateChange()) && jobStatusResources.get(i).getState().equals(JobState.COMPLETE.toString()))) {
                     max = jobStatusResources.get(i);
                 }
             }
