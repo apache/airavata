@@ -99,6 +99,11 @@ void DataResourceModel::__set_ownerName(const std::string& val) {
 __isset.ownerName = true;
 }
 
+void DataResourceModel::__set_sha256Checksum(const std::string& val) {
+  this->sha256Checksum = val;
+__isset.sha256Checksum = true;
+}
+
 void DataResourceModel::__set_dataResourceType(const DataResourceType::type val) {
   this->dataResourceType = val;
 __isset.dataResourceType = true;
@@ -107,6 +112,11 @@ __isset.dataResourceType = true;
 void DataResourceModel::__set_resourceSize(const int32_t val) {
   this->resourceSize = val;
 __isset.resourceSize = true;
+}
+
+void DataResourceModel::__set_nativeFormat(const std::string& val) {
+  this->nativeFormat = val;
+__isset.nativeFormat = true;
 }
 
 void DataResourceModel::__set_creationTime(const int64_t val) {
@@ -204,6 +214,14 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 7:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->sha256Checksum);
+          this->__isset.sha256Checksum = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 8:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast0;
           xfer += iprot->readI32(ecast0);
@@ -213,7 +231,7 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 8:
+      case 9:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->resourceSize);
           this->__isset.resourceSize = true;
@@ -221,7 +239,15 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 9:
+      case 10:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->nativeFormat);
+          this->__isset.nativeFormat = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 11:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->creationTime);
           this->__isset.creationTime = true;
@@ -229,7 +255,7 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 10:
+      case 12:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->lastModifiedTime);
           this->__isset.lastModifiedTime = true;
@@ -237,7 +263,7 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 11:
+      case 13:
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->resourceMetadata.clear();
@@ -260,7 +286,7 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 12:
+      case 14:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->replicaLocations.clear();
@@ -280,7 +306,7 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 13:
+      case 15:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->childResources.clear();
@@ -347,28 +373,38 @@ uint32_t DataResourceModel::write(::apache::thrift::protocol::TProtocol* oprot) 
     xfer += oprot->writeString(this->ownerName);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.sha256Checksum) {
+    xfer += oprot->writeFieldBegin("sha256Checksum", ::apache::thrift::protocol::T_STRING, 7);
+    xfer += oprot->writeString(this->sha256Checksum);
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.dataResourceType) {
-    xfer += oprot->writeFieldBegin("dataResourceType", ::apache::thrift::protocol::T_I32, 7);
+    xfer += oprot->writeFieldBegin("dataResourceType", ::apache::thrift::protocol::T_I32, 8);
     xfer += oprot->writeI32((int32_t)this->dataResourceType);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.resourceSize) {
-    xfer += oprot->writeFieldBegin("resourceSize", ::apache::thrift::protocol::T_I32, 8);
+    xfer += oprot->writeFieldBegin("resourceSize", ::apache::thrift::protocol::T_I32, 9);
     xfer += oprot->writeI32(this->resourceSize);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.nativeFormat) {
+    xfer += oprot->writeFieldBegin("nativeFormat", ::apache::thrift::protocol::T_STRING, 10);
+    xfer += oprot->writeString(this->nativeFormat);
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.creationTime) {
-    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 9);
+    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 11);
     xfer += oprot->writeI64(this->creationTime);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.lastModifiedTime) {
-    xfer += oprot->writeFieldBegin("lastModifiedTime", ::apache::thrift::protocol::T_I64, 10);
+    xfer += oprot->writeFieldBegin("lastModifiedTime", ::apache::thrift::protocol::T_I64, 12);
     xfer += oprot->writeI64(this->lastModifiedTime);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.resourceMetadata) {
-    xfer += oprot->writeFieldBegin("resourceMetadata", ::apache::thrift::protocol::T_MAP, 11);
+    xfer += oprot->writeFieldBegin("resourceMetadata", ::apache::thrift::protocol::T_MAP, 13);
     {
       xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->resourceMetadata.size()));
       std::map<std::string, std::string> ::const_iterator _iter18;
@@ -382,7 +418,7 @@ uint32_t DataResourceModel::write(::apache::thrift::protocol::TProtocol* oprot) 
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.replicaLocations) {
-    xfer += oprot->writeFieldBegin("replicaLocations", ::apache::thrift::protocol::T_LIST, 12);
+    xfer += oprot->writeFieldBegin("replicaLocations", ::apache::thrift::protocol::T_LIST, 14);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->replicaLocations.size()));
       std::vector<DataReplicaLocationModel> ::const_iterator _iter19;
@@ -395,7 +431,7 @@ uint32_t DataResourceModel::write(::apache::thrift::protocol::TProtocol* oprot) 
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.childResources) {
-    xfer += oprot->writeFieldBegin("childResources", ::apache::thrift::protocol::T_LIST, 13);
+    xfer += oprot->writeFieldBegin("childResources", ::apache::thrift::protocol::T_LIST, 15);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->childResources.size()));
       std::vector<DataResourceModel> ::const_iterator _iter20;
@@ -420,8 +456,10 @@ void swap(DataResourceModel &a, DataResourceModel &b) {
   swap(a.resourceName, b.resourceName);
   swap(a.resourceDescription, b.resourceDescription);
   swap(a.ownerName, b.ownerName);
+  swap(a.sha256Checksum, b.sha256Checksum);
   swap(a.dataResourceType, b.dataResourceType);
   swap(a.resourceSize, b.resourceSize);
+  swap(a.nativeFormat, b.nativeFormat);
   swap(a.creationTime, b.creationTime);
   swap(a.lastModifiedTime, b.lastModifiedTime);
   swap(a.resourceMetadata, b.resourceMetadata);
@@ -437,8 +475,10 @@ DataResourceModel::DataResourceModel(const DataResourceModel& other21) {
   resourceName = other21.resourceName;
   resourceDescription = other21.resourceDescription;
   ownerName = other21.ownerName;
+  sha256Checksum = other21.sha256Checksum;
   dataResourceType = other21.dataResourceType;
   resourceSize = other21.resourceSize;
+  nativeFormat = other21.nativeFormat;
   creationTime = other21.creationTime;
   lastModifiedTime = other21.lastModifiedTime;
   resourceMetadata = other21.resourceMetadata;
@@ -453,8 +493,10 @@ DataResourceModel& DataResourceModel::operator=(const DataResourceModel& other22
   resourceName = other22.resourceName;
   resourceDescription = other22.resourceDescription;
   ownerName = other22.ownerName;
+  sha256Checksum = other22.sha256Checksum;
   dataResourceType = other22.dataResourceType;
   resourceSize = other22.resourceSize;
+  nativeFormat = other22.nativeFormat;
   creationTime = other22.creationTime;
   lastModifiedTime = other22.lastModifiedTime;
   resourceMetadata = other22.resourceMetadata;
@@ -472,8 +514,10 @@ void DataResourceModel::printTo(std::ostream& out) const {
   out << ", " << "resourceName="; (__isset.resourceName ? (out << to_string(resourceName)) : (out << "<null>"));
   out << ", " << "resourceDescription="; (__isset.resourceDescription ? (out << to_string(resourceDescription)) : (out << "<null>"));
   out << ", " << "ownerName="; (__isset.ownerName ? (out << to_string(ownerName)) : (out << "<null>"));
+  out << ", " << "sha256Checksum="; (__isset.sha256Checksum ? (out << to_string(sha256Checksum)) : (out << "<null>"));
   out << ", " << "dataResourceType="; (__isset.dataResourceType ? (out << to_string(dataResourceType)) : (out << "<null>"));
   out << ", " << "resourceSize="; (__isset.resourceSize ? (out << to_string(resourceSize)) : (out << "<null>"));
+  out << ", " << "nativeFormat="; (__isset.nativeFormat ? (out << to_string(nativeFormat)) : (out << "<null>"));
   out << ", " << "creationTime="; (__isset.creationTime ? (out << to_string(creationTime)) : (out << "<null>"));
   out << ", " << "lastModifiedTime="; (__isset.lastModifiedTime ? (out << to_string(lastModifiedTime)) : (out << "<null>"));
   out << ", " << "resourceMetadata="; (__isset.resourceMetadata ? (out << to_string(resourceMetadata)) : (out << "<null>"));
@@ -505,6 +549,11 @@ __isset.replicaName = true;
 void DataReplicaLocationModel::__set_replicaDescription(const std::string& val) {
   this->replicaDescription = val;
 __isset.replicaDescription = true;
+}
+
+void DataReplicaLocationModel::__set_sourceReplicaId(const std::string& val) {
+  this->sourceReplicaId = val;
+__isset.sourceReplicaId = true;
 }
 
 void DataReplicaLocationModel::__set_creationTime(const int64_t val) {
@@ -601,6 +650,14 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
         }
         break;
       case 5:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->sourceReplicaId);
+          this->__isset.sourceReplicaId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 6:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->creationTime);
           this->__isset.creationTime = true;
@@ -608,7 +665,7 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
           xfer += iprot->skip(ftype);
         }
         break;
-      case 6:
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->lastModifiedTime);
           this->__isset.lastModifiedTime = true;
@@ -616,7 +673,7 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
           xfer += iprot->skip(ftype);
         }
         break;
-      case 7:
+      case 8:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->validUntilTime);
           this->__isset.validUntilTime = true;
@@ -624,7 +681,7 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
           xfer += iprot->skip(ftype);
         }
         break;
-      case 8:
+      case 9:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast23;
           xfer += iprot->readI32(ecast23);
@@ -634,7 +691,7 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
           xfer += iprot->skip(ftype);
         }
         break;
-      case 9:
+      case 10:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast24;
           xfer += iprot->readI32(ecast24);
@@ -644,7 +701,7 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
           xfer += iprot->skip(ftype);
         }
         break;
-      case 10:
+      case 11:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->storageResourceId);
           this->__isset.storageResourceId = true;
@@ -652,7 +709,7 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
           xfer += iprot->skip(ftype);
         }
         break;
-      case 11:
+      case 12:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->fileAbsolutePath);
           this->__isset.fileAbsolutePath = true;
@@ -660,7 +717,7 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
           xfer += iprot->skip(ftype);
         }
         break;
-      case 12:
+      case 13:
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->replicaMetadata.clear();
@@ -720,43 +777,48 @@ uint32_t DataReplicaLocationModel::write(::apache::thrift::protocol::TProtocol* 
     xfer += oprot->writeString(this->replicaDescription);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.sourceReplicaId) {
+    xfer += oprot->writeFieldBegin("sourceReplicaId", ::apache::thrift::protocol::T_STRING, 5);
+    xfer += oprot->writeString(this->sourceReplicaId);
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.creationTime) {
-    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 5);
+    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 6);
     xfer += oprot->writeI64(this->creationTime);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.lastModifiedTime) {
-    xfer += oprot->writeFieldBegin("lastModifiedTime", ::apache::thrift::protocol::T_I64, 6);
+    xfer += oprot->writeFieldBegin("lastModifiedTime", ::apache::thrift::protocol::T_I64, 7);
     xfer += oprot->writeI64(this->lastModifiedTime);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.validUntilTime) {
-    xfer += oprot->writeFieldBegin("validUntilTime", ::apache::thrift::protocol::T_I64, 7);
+    xfer += oprot->writeFieldBegin("validUntilTime", ::apache::thrift::protocol::T_I64, 8);
     xfer += oprot->writeI64(this->validUntilTime);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.replicaLocationCategory) {
-    xfer += oprot->writeFieldBegin("replicaLocationCategory", ::apache::thrift::protocol::T_I32, 8);
+    xfer += oprot->writeFieldBegin("replicaLocationCategory", ::apache::thrift::protocol::T_I32, 9);
     xfer += oprot->writeI32((int32_t)this->replicaLocationCategory);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.replicaPersistentType) {
-    xfer += oprot->writeFieldBegin("replicaPersistentType", ::apache::thrift::protocol::T_I32, 9);
+    xfer += oprot->writeFieldBegin("replicaPersistentType", ::apache::thrift::protocol::T_I32, 10);
     xfer += oprot->writeI32((int32_t)this->replicaPersistentType);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.storageResourceId) {
-    xfer += oprot->writeFieldBegin("storageResourceId", ::apache::thrift::protocol::T_STRING, 10);
+    xfer += oprot->writeFieldBegin("storageResourceId", ::apache::thrift::protocol::T_STRING, 11);
     xfer += oprot->writeString(this->storageResourceId);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.fileAbsolutePath) {
-    xfer += oprot->writeFieldBegin("fileAbsolutePath", ::apache::thrift::protocol::T_STRING, 11);
+    xfer += oprot->writeFieldBegin("fileAbsolutePath", ::apache::thrift::protocol::T_STRING, 12);
     xfer += oprot->writeString(this->fileAbsolutePath);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.replicaMetadata) {
-    xfer += oprot->writeFieldBegin("replicaMetadata", ::apache::thrift::protocol::T_MAP, 12);
+    xfer += oprot->writeFieldBegin("replicaMetadata", ::apache::thrift::protocol::T_MAP, 13);
     {
       xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->replicaMetadata.size()));
       std::map<std::string, std::string> ::const_iterator _iter32;
@@ -780,6 +842,7 @@ void swap(DataReplicaLocationModel &a, DataReplicaLocationModel &b) {
   swap(a.resourceId, b.resourceId);
   swap(a.replicaName, b.replicaName);
   swap(a.replicaDescription, b.replicaDescription);
+  swap(a.sourceReplicaId, b.sourceReplicaId);
   swap(a.creationTime, b.creationTime);
   swap(a.lastModifiedTime, b.lastModifiedTime);
   swap(a.validUntilTime, b.validUntilTime);
@@ -796,6 +859,7 @@ DataReplicaLocationModel::DataReplicaLocationModel(const DataReplicaLocationMode
   resourceId = other33.resourceId;
   replicaName = other33.replicaName;
   replicaDescription = other33.replicaDescription;
+  sourceReplicaId = other33.sourceReplicaId;
   creationTime = other33.creationTime;
   lastModifiedTime = other33.lastModifiedTime;
   validUntilTime = other33.validUntilTime;
@@ -811,6 +875,7 @@ DataReplicaLocationModel& DataReplicaLocationModel::operator=(const DataReplicaL
   resourceId = other34.resourceId;
   replicaName = other34.replicaName;
   replicaDescription = other34.replicaDescription;
+  sourceReplicaId = other34.sourceReplicaId;
   creationTime = other34.creationTime;
   lastModifiedTime = other34.lastModifiedTime;
   validUntilTime = other34.validUntilTime;
@@ -829,6 +894,7 @@ void DataReplicaLocationModel::printTo(std::ostream& out) const {
   out << ", " << "resourceId="; (__isset.resourceId ? (out << to_string(resourceId)) : (out << "<null>"));
   out << ", " << "replicaName="; (__isset.replicaName ? (out << to_string(replicaName)) : (out << "<null>"));
   out << ", " << "replicaDescription="; (__isset.replicaDescription ? (out << to_string(replicaDescription)) : (out << "<null>"));
+  out << ", " << "sourceReplicaId="; (__isset.sourceReplicaId ? (out << to_string(sourceReplicaId)) : (out << "<null>"));
   out << ", " << "creationTime="; (__isset.creationTime ? (out << to_string(creationTime)) : (out << "<null>"));
   out << ", " << "lastModifiedTime="; (__isset.lastModifiedTime ? (out << to_string(lastModifiedTime)) : (out << "<null>"));
   out << ", " << "validUntilTime="; (__isset.validUntilTime ? (out << to_string(validUntilTime)) : (out << "<null>"));

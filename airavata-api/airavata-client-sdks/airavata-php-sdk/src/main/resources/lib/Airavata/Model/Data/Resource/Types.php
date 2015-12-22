@@ -76,6 +76,10 @@ class DataResourceModel {
    */
   public $ownerName = null;
   /**
+   * @var string
+   */
+  public $sha256Checksum = null;
+  /**
    * @var int
    */
   public $dataResourceType = null;
@@ -83,6 +87,10 @@ class DataResourceModel {
    * @var int
    */
   public $resourceSize = null;
+  /**
+   * @var string
+   */
+  public $nativeFormat = null;
   /**
    * @var int
    */
@@ -132,22 +140,30 @@ class DataResourceModel {
           'type' => TType::STRING,
           ),
         7 => array(
+          'var' => 'sha256Checksum',
+          'type' => TType::STRING,
+          ),
+        8 => array(
           'var' => 'dataResourceType',
           'type' => TType::I32,
           ),
-        8 => array(
+        9 => array(
           'var' => 'resourceSize',
           'type' => TType::I32,
           ),
-        9 => array(
+        10 => array(
+          'var' => 'nativeFormat',
+          'type' => TType::STRING,
+          ),
+        11 => array(
           'var' => 'creationTime',
           'type' => TType::I64,
           ),
-        10 => array(
+        12 => array(
           'var' => 'lastModifiedTime',
           'type' => TType::I64,
           ),
-        11 => array(
+        13 => array(
           'var' => 'resourceMetadata',
           'type' => TType::MAP,
           'ktype' => TType::STRING,
@@ -159,7 +175,7 @@ class DataResourceModel {
             'type' => TType::STRING,
             ),
           ),
-        12 => array(
+        14 => array(
           'var' => 'replicaLocations',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -168,7 +184,7 @@ class DataResourceModel {
             'class' => '\Airavata\Model\Data\Resource\DataReplicaLocationModel',
             ),
           ),
-        13 => array(
+        15 => array(
           'var' => 'childResources',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -198,11 +214,17 @@ class DataResourceModel {
       if (isset($vals['ownerName'])) {
         $this->ownerName = $vals['ownerName'];
       }
+      if (isset($vals['sha256Checksum'])) {
+        $this->sha256Checksum = $vals['sha256Checksum'];
+      }
       if (isset($vals['dataResourceType'])) {
         $this->dataResourceType = $vals['dataResourceType'];
       }
       if (isset($vals['resourceSize'])) {
         $this->resourceSize = $vals['resourceSize'];
+      }
+      if (isset($vals['nativeFormat'])) {
+        $this->nativeFormat = $vals['nativeFormat'];
       }
       if (isset($vals['creationTime'])) {
         $this->creationTime = $vals['creationTime'];
@@ -284,34 +306,48 @@ class DataResourceModel {
           }
           break;
         case 7:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->dataResourceType);
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->sha256Checksum);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 8:
           if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->resourceSize);
+            $xfer += $input->readI32($this->dataResourceType);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 9:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->resourceSize);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 10:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->nativeFormat);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 11:
           if ($ftype == TType::I64) {
             $xfer += $input->readI64($this->creationTime);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 10:
+        case 12:
           if ($ftype == TType::I64) {
             $xfer += $input->readI64($this->lastModifiedTime);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 11:
+        case 13:
           if ($ftype == TType::MAP) {
             $this->resourceMetadata = array();
             $_size0 = 0;
@@ -331,7 +367,7 @@ class DataResourceModel {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 12:
+        case 14:
           if ($ftype == TType::LST) {
             $this->replicaLocations = array();
             $_size7 = 0;
@@ -349,7 +385,7 @@ class DataResourceModel {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 13:
+        case 15:
           if ($ftype == TType::LST) {
             $this->childResources = array();
             $_size13 = 0;
@@ -410,23 +446,33 @@ class DataResourceModel {
       $xfer += $output->writeString($this->ownerName);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->sha256Checksum !== null) {
+      $xfer += $output->writeFieldBegin('sha256Checksum', TType::STRING, 7);
+      $xfer += $output->writeString($this->sha256Checksum);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->dataResourceType !== null) {
-      $xfer += $output->writeFieldBegin('dataResourceType', TType::I32, 7);
+      $xfer += $output->writeFieldBegin('dataResourceType', TType::I32, 8);
       $xfer += $output->writeI32($this->dataResourceType);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->resourceSize !== null) {
-      $xfer += $output->writeFieldBegin('resourceSize', TType::I32, 8);
+      $xfer += $output->writeFieldBegin('resourceSize', TType::I32, 9);
       $xfer += $output->writeI32($this->resourceSize);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->nativeFormat !== null) {
+      $xfer += $output->writeFieldBegin('nativeFormat', TType::STRING, 10);
+      $xfer += $output->writeString($this->nativeFormat);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->creationTime !== null) {
-      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 9);
+      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 11);
       $xfer += $output->writeI64($this->creationTime);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->lastModifiedTime !== null) {
-      $xfer += $output->writeFieldBegin('lastModifiedTime', TType::I64, 10);
+      $xfer += $output->writeFieldBegin('lastModifiedTime', TType::I64, 12);
       $xfer += $output->writeI64($this->lastModifiedTime);
       $xfer += $output->writeFieldEnd();
     }
@@ -434,7 +480,7 @@ class DataResourceModel {
       if (!is_array($this->resourceMetadata)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('resourceMetadata', TType::MAP, 11);
+      $xfer += $output->writeFieldBegin('resourceMetadata', TType::MAP, 13);
       {
         $output->writeMapBegin(TType::STRING, TType::STRING, count($this->resourceMetadata));
         {
@@ -452,7 +498,7 @@ class DataResourceModel {
       if (!is_array($this->replicaLocations)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('replicaLocations', TType::LST, 12);
+      $xfer += $output->writeFieldBegin('replicaLocations', TType::LST, 14);
       {
         $output->writeListBegin(TType::STRUCT, count($this->replicaLocations));
         {
@@ -469,7 +515,7 @@ class DataResourceModel {
       if (!is_array($this->childResources)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('childResources', TType::LST, 13);
+      $xfer += $output->writeFieldBegin('childResources', TType::LST, 15);
       {
         $output->writeListBegin(TType::STRUCT, count($this->childResources));
         {
@@ -508,6 +554,10 @@ class DataReplicaLocationModel {
    * @var string
    */
   public $replicaDescription = null;
+  /**
+   * @var string
+   */
+  public $sourceReplicaId = null;
   /**
    * @var int
    */
@@ -561,34 +611,38 @@ class DataReplicaLocationModel {
           'type' => TType::STRING,
           ),
         5 => array(
+          'var' => 'sourceReplicaId',
+          'type' => TType::STRING,
+          ),
+        6 => array(
           'var' => 'creationTime',
           'type' => TType::I64,
           ),
-        6 => array(
+        7 => array(
           'var' => 'lastModifiedTime',
           'type' => TType::I64,
           ),
-        7 => array(
+        8 => array(
           'var' => 'validUntilTime',
           'type' => TType::I64,
           ),
-        8 => array(
+        9 => array(
           'var' => 'replicaLocationCategory',
           'type' => TType::I32,
           ),
-        9 => array(
+        10 => array(
           'var' => 'replicaPersistentType',
           'type' => TType::I32,
           ),
-        10 => array(
+        11 => array(
           'var' => 'storageResourceId',
           'type' => TType::STRING,
           ),
-        11 => array(
+        12 => array(
           'var' => 'fileAbsolutePath',
           'type' => TType::STRING,
           ),
-        12 => array(
+        13 => array(
           'var' => 'replicaMetadata',
           'type' => TType::MAP,
           'ktype' => TType::STRING,
@@ -614,6 +668,9 @@ class DataReplicaLocationModel {
       }
       if (isset($vals['replicaDescription'])) {
         $this->replicaDescription = $vals['replicaDescription'];
+      }
+      if (isset($vals['sourceReplicaId'])) {
+        $this->sourceReplicaId = $vals['sourceReplicaId'];
       }
       if (isset($vals['creationTime'])) {
         $this->creationTime = $vals['creationTime'];
@@ -690,55 +747,62 @@ class DataReplicaLocationModel {
           }
           break;
         case 5:
-          if ($ftype == TType::I64) {
-            $xfer += $input->readI64($this->creationTime);
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->sourceReplicaId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 6:
           if ($ftype == TType::I64) {
-            $xfer += $input->readI64($this->lastModifiedTime);
+            $xfer += $input->readI64($this->creationTime);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 7:
           if ($ftype == TType::I64) {
-            $xfer += $input->readI64($this->validUntilTime);
+            $xfer += $input->readI64($this->lastModifiedTime);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 8:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->replicaLocationCategory);
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->validUntilTime);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 9:
           if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->replicaPersistentType);
+            $xfer += $input->readI32($this->replicaLocationCategory);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 10:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->storageResourceId);
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->replicaPersistentType);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 11:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->fileAbsolutePath);
+            $xfer += $input->readString($this->storageResourceId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 12:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->fileAbsolutePath);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 13:
           if ($ftype == TType::MAP) {
             $this->replicaMetadata = array();
             $_size23 = 0;
@@ -791,38 +855,43 @@ class DataReplicaLocationModel {
       $xfer += $output->writeString($this->replicaDescription);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->sourceReplicaId !== null) {
+      $xfer += $output->writeFieldBegin('sourceReplicaId', TType::STRING, 5);
+      $xfer += $output->writeString($this->sourceReplicaId);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->creationTime !== null) {
-      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 5);
+      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 6);
       $xfer += $output->writeI64($this->creationTime);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->lastModifiedTime !== null) {
-      $xfer += $output->writeFieldBegin('lastModifiedTime', TType::I64, 6);
+      $xfer += $output->writeFieldBegin('lastModifiedTime', TType::I64, 7);
       $xfer += $output->writeI64($this->lastModifiedTime);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->validUntilTime !== null) {
-      $xfer += $output->writeFieldBegin('validUntilTime', TType::I64, 7);
+      $xfer += $output->writeFieldBegin('validUntilTime', TType::I64, 8);
       $xfer += $output->writeI64($this->validUntilTime);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->replicaLocationCategory !== null) {
-      $xfer += $output->writeFieldBegin('replicaLocationCategory', TType::I32, 8);
+      $xfer += $output->writeFieldBegin('replicaLocationCategory', TType::I32, 9);
       $xfer += $output->writeI32($this->replicaLocationCategory);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->replicaPersistentType !== null) {
-      $xfer += $output->writeFieldBegin('replicaPersistentType', TType::I32, 9);
+      $xfer += $output->writeFieldBegin('replicaPersistentType', TType::I32, 10);
       $xfer += $output->writeI32($this->replicaPersistentType);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->storageResourceId !== null) {
-      $xfer += $output->writeFieldBegin('storageResourceId', TType::STRING, 10);
+      $xfer += $output->writeFieldBegin('storageResourceId', TType::STRING, 11);
       $xfer += $output->writeString($this->storageResourceId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->fileAbsolutePath !== null) {
-      $xfer += $output->writeFieldBegin('fileAbsolutePath', TType::STRING, 11);
+      $xfer += $output->writeFieldBegin('fileAbsolutePath', TType::STRING, 12);
       $xfer += $output->writeString($this->fileAbsolutePath);
       $xfer += $output->writeFieldEnd();
     }
@@ -830,7 +899,7 @@ class DataReplicaLocationModel {
       if (!is_array($this->replicaMetadata)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('replicaMetadata', TType::MAP, 12);
+      $xfer += $output->writeFieldBegin('replicaMetadata', TType::MAP, 13);
       {
         $output->writeMapBegin(TType::STRING, TType::STRING, count($this->replicaMetadata));
         {

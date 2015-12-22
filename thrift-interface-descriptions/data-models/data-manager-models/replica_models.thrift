@@ -20,10 +20,10 @@
 
  include "../resource-catalog-models/data_movement_models.thrift"
 
-  namespace java org.apache.airavata.model.data.resource
-  namespace php Airavata.Model.Data.Resource
-  namespace cpp apache.airavata.model.data.resource
-  namespace py apache.airavata.model.data.resource
+  namespace java org.apache.airavata.model.replica
+  namespace php Airavata.Model.Replica
+  namespace cpp apache.airavata.model.replica
+  namespace py apache.airavata.model.replica
 
 enum ReplicaLocationCategory {
     GATEWAY_DATA_STORE,
@@ -49,13 +49,15 @@ struct DataResourceModel {
     4: optional string resourceName,
     5: optional string resourceDescription,
     6: optional string ownerName,
-    7: optional DataResourceType dataResourceType,
-    8: optional i32 resourceSize,
-    9: optional i64 creationTime,
-    10: optional i64 lastModifiedTime,
-    11: optional map<string, string> resourceMetadata,
-    12: optional list<DataReplicaLocationModel> replicaLocations,
-    13: optional list<DataResourceModel> childResources
+    7: optional string sha256Checksum,
+    8: optional DataResourceType dataResourceType,
+    9: optional i32 resourceSize,
+    10: optional string nativeFormat,
+    11: optional i64 creationTime,
+    12: optional i64 lastModifiedTime,
+    13: optional map<string, string> resourceMetadata,
+    14: optional list<DataReplicaLocationModel> replicaLocations,
+    15: optional list<DataResourceModel> childResources
 }
 
 struct DataReplicaLocationModel {
@@ -63,12 +65,13 @@ struct DataReplicaLocationModel {
     2: optional string resourceId,
     3: optional string replicaName,
     4: optional string replicaDescription,
-    5: optional i64 creationTime,
-    6: optional i64 lastModifiedTime,
-    7: optional i64 validUntilTime,
-    8: optional ReplicaLocationCategory replicaLocationCategory,
-    9: optional ReplicaPersistentType replicaPersistentType,
-    10: optional string storageResourceId,
-    11: optional string fileAbsolutePath,
-    12: optional map<string, string> replicaMetadata
+    5: optional string sourceReplicaId,
+    6: optional i64 creationTime,
+    7: optional i64 lastModifiedTime,
+    8: optional i64 validUntilTime,
+    9: optional ReplicaLocationCategory replicaLocationCategory,
+    10: optional ReplicaPersistentType replicaPersistentType,
+    11: optional string storageResourceId,
+    12: optional string fileAbsolutePath,
+    13: optional map<string, string> replicaMetadata
 }

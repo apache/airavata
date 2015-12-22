@@ -76,8 +76,10 @@ class DataResourceModel:
    - resourceName
    - resourceDescription
    - ownerName
+   - sha256Checksum
    - dataResourceType
    - resourceSize
+   - nativeFormat
    - creationTime
    - lastModifiedTime
    - resourceMetadata
@@ -93,24 +95,28 @@ class DataResourceModel:
     (4, TType.STRING, 'resourceName', None, None, ), # 4
     (5, TType.STRING, 'resourceDescription', None, None, ), # 5
     (6, TType.STRING, 'ownerName', None, None, ), # 6
-    (7, TType.I32, 'dataResourceType', None, None, ), # 7
-    (8, TType.I32, 'resourceSize', None, None, ), # 8
-    (9, TType.I64, 'creationTime', None, None, ), # 9
-    (10, TType.I64, 'lastModifiedTime', None, None, ), # 10
-    (11, TType.MAP, 'resourceMetadata', (TType.STRING,None,TType.STRING,None), None, ), # 11
-    (12, TType.LIST, 'replicaLocations', (TType.STRUCT,(DataReplicaLocationModel, DataReplicaLocationModel.thrift_spec)), None, ), # 12
-    (13, TType.LIST, 'childResources', (TType.STRUCT,(DataResourceModel, DataResourceModel.thrift_spec)), None, ), # 13
+    (7, TType.STRING, 'sha256Checksum', None, None, ), # 7
+    (8, TType.I32, 'dataResourceType', None, None, ), # 8
+    (9, TType.I32, 'resourceSize', None, None, ), # 9
+    (10, TType.STRING, 'nativeFormat', None, None, ), # 10
+    (11, TType.I64, 'creationTime', None, None, ), # 11
+    (12, TType.I64, 'lastModifiedTime', None, None, ), # 12
+    (13, TType.MAP, 'resourceMetadata', (TType.STRING,None,TType.STRING,None), None, ), # 13
+    (14, TType.LIST, 'replicaLocations', (TType.STRUCT,(DataReplicaLocationModel, DataReplicaLocationModel.thrift_spec)), None, ), # 14
+    (15, TType.LIST, 'childResources', (TType.STRUCT,(DataResourceModel, DataResourceModel.thrift_spec)), None, ), # 15
   )
 
-  def __init__(self, resourceId=None, gatewayId=None, parentResourceId=None, resourceName=None, resourceDescription=None, ownerName=None, dataResourceType=None, resourceSize=None, creationTime=None, lastModifiedTime=None, resourceMetadata=None, replicaLocations=None, childResources=None,):
+  def __init__(self, resourceId=None, gatewayId=None, parentResourceId=None, resourceName=None, resourceDescription=None, ownerName=None, sha256Checksum=None, dataResourceType=None, resourceSize=None, nativeFormat=None, creationTime=None, lastModifiedTime=None, resourceMetadata=None, replicaLocations=None, childResources=None,):
     self.resourceId = resourceId
     self.gatewayId = gatewayId
     self.parentResourceId = parentResourceId
     self.resourceName = resourceName
     self.resourceDescription = resourceDescription
     self.ownerName = ownerName
+    self.sha256Checksum = sha256Checksum
     self.dataResourceType = dataResourceType
     self.resourceSize = resourceSize
+    self.nativeFormat = nativeFormat
     self.creationTime = creationTime
     self.lastModifiedTime = lastModifiedTime
     self.resourceMetadata = resourceMetadata
@@ -157,26 +163,36 @@ class DataResourceModel:
         else:
           iprot.skip(ftype)
       elif fid == 7:
-        if ftype == TType.I32:
-          self.dataResourceType = iprot.readI32()
+        if ftype == TType.STRING:
+          self.sha256Checksum = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 8:
         if ftype == TType.I32:
-          self.resourceSize = iprot.readI32()
+          self.dataResourceType = iprot.readI32()
         else:
           iprot.skip(ftype)
       elif fid == 9:
+        if ftype == TType.I32:
+          self.resourceSize = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 10:
+        if ftype == TType.STRING:
+          self.nativeFormat = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 11:
         if ftype == TType.I64:
           self.creationTime = iprot.readI64()
         else:
           iprot.skip(ftype)
-      elif fid == 10:
+      elif fid == 12:
         if ftype == TType.I64:
           self.lastModifiedTime = iprot.readI64()
         else:
           iprot.skip(ftype)
-      elif fid == 11:
+      elif fid == 13:
         if ftype == TType.MAP:
           self.resourceMetadata = {}
           (_ktype1, _vtype2, _size0 ) = iprot.readMapBegin()
@@ -187,7 +203,7 @@ class DataResourceModel:
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 12:
+      elif fid == 14:
         if ftype == TType.LIST:
           self.replicaLocations = []
           (_etype10, _size7) = iprot.readListBegin()
@@ -198,7 +214,7 @@ class DataResourceModel:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 13:
+      elif fid == 15:
         if ftype == TType.LIST:
           self.childResources = []
           (_etype16, _size13) = iprot.readListBegin()
@@ -243,24 +259,32 @@ class DataResourceModel:
       oprot.writeFieldBegin('ownerName', TType.STRING, 6)
       oprot.writeString(self.ownerName)
       oprot.writeFieldEnd()
+    if self.sha256Checksum is not None:
+      oprot.writeFieldBegin('sha256Checksum', TType.STRING, 7)
+      oprot.writeString(self.sha256Checksum)
+      oprot.writeFieldEnd()
     if self.dataResourceType is not None:
-      oprot.writeFieldBegin('dataResourceType', TType.I32, 7)
+      oprot.writeFieldBegin('dataResourceType', TType.I32, 8)
       oprot.writeI32(self.dataResourceType)
       oprot.writeFieldEnd()
     if self.resourceSize is not None:
-      oprot.writeFieldBegin('resourceSize', TType.I32, 8)
+      oprot.writeFieldBegin('resourceSize', TType.I32, 9)
       oprot.writeI32(self.resourceSize)
       oprot.writeFieldEnd()
+    if self.nativeFormat is not None:
+      oprot.writeFieldBegin('nativeFormat', TType.STRING, 10)
+      oprot.writeString(self.nativeFormat)
+      oprot.writeFieldEnd()
     if self.creationTime is not None:
-      oprot.writeFieldBegin('creationTime', TType.I64, 9)
+      oprot.writeFieldBegin('creationTime', TType.I64, 11)
       oprot.writeI64(self.creationTime)
       oprot.writeFieldEnd()
     if self.lastModifiedTime is not None:
-      oprot.writeFieldBegin('lastModifiedTime', TType.I64, 10)
+      oprot.writeFieldBegin('lastModifiedTime', TType.I64, 12)
       oprot.writeI64(self.lastModifiedTime)
       oprot.writeFieldEnd()
     if self.resourceMetadata is not None:
-      oprot.writeFieldBegin('resourceMetadata', TType.MAP, 11)
+      oprot.writeFieldBegin('resourceMetadata', TType.MAP, 13)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.resourceMetadata))
       for kiter19,viter20 in self.resourceMetadata.items():
         oprot.writeString(kiter19)
@@ -268,14 +292,14 @@ class DataResourceModel:
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.replicaLocations is not None:
-      oprot.writeFieldBegin('replicaLocations', TType.LIST, 12)
+      oprot.writeFieldBegin('replicaLocations', TType.LIST, 14)
       oprot.writeListBegin(TType.STRUCT, len(self.replicaLocations))
       for iter21 in self.replicaLocations:
         iter21.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.childResources is not None:
-      oprot.writeFieldBegin('childResources', TType.LIST, 13)
+      oprot.writeFieldBegin('childResources', TType.LIST, 15)
       oprot.writeListBegin(TType.STRUCT, len(self.childResources))
       for iter22 in self.childResources:
         iter22.write(oprot)
@@ -296,8 +320,10 @@ class DataResourceModel:
     value = (value * 31) ^ hash(self.resourceName)
     value = (value * 31) ^ hash(self.resourceDescription)
     value = (value * 31) ^ hash(self.ownerName)
+    value = (value * 31) ^ hash(self.sha256Checksum)
     value = (value * 31) ^ hash(self.dataResourceType)
     value = (value * 31) ^ hash(self.resourceSize)
+    value = (value * 31) ^ hash(self.nativeFormat)
     value = (value * 31) ^ hash(self.creationTime)
     value = (value * 31) ^ hash(self.lastModifiedTime)
     value = (value * 31) ^ hash(self.resourceMetadata)
@@ -323,6 +349,7 @@ class DataReplicaLocationModel:
    - resourceId
    - replicaName
    - replicaDescription
+   - sourceReplicaId
    - creationTime
    - lastModifiedTime
    - validUntilTime
@@ -339,21 +366,23 @@ class DataReplicaLocationModel:
     (2, TType.STRING, 'resourceId', None, None, ), # 2
     (3, TType.STRING, 'replicaName', None, None, ), # 3
     (4, TType.STRING, 'replicaDescription', None, None, ), # 4
-    (5, TType.I64, 'creationTime', None, None, ), # 5
-    (6, TType.I64, 'lastModifiedTime', None, None, ), # 6
-    (7, TType.I64, 'validUntilTime', None, None, ), # 7
-    (8, TType.I32, 'replicaLocationCategory', None, None, ), # 8
-    (9, TType.I32, 'replicaPersistentType', None, None, ), # 9
-    (10, TType.STRING, 'storageResourceId', None, None, ), # 10
-    (11, TType.STRING, 'fileAbsolutePath', None, None, ), # 11
-    (12, TType.MAP, 'replicaMetadata', (TType.STRING,None,TType.STRING,None), None, ), # 12
+    (5, TType.STRING, 'sourceReplicaId', None, None, ), # 5
+    (6, TType.I64, 'creationTime', None, None, ), # 6
+    (7, TType.I64, 'lastModifiedTime', None, None, ), # 7
+    (8, TType.I64, 'validUntilTime', None, None, ), # 8
+    (9, TType.I32, 'replicaLocationCategory', None, None, ), # 9
+    (10, TType.I32, 'replicaPersistentType', None, None, ), # 10
+    (11, TType.STRING, 'storageResourceId', None, None, ), # 11
+    (12, TType.STRING, 'fileAbsolutePath', None, None, ), # 12
+    (13, TType.MAP, 'replicaMetadata', (TType.STRING,None,TType.STRING,None), None, ), # 13
   )
 
-  def __init__(self, replicaId=None, resourceId=None, replicaName=None, replicaDescription=None, creationTime=None, lastModifiedTime=None, validUntilTime=None, replicaLocationCategory=None, replicaPersistentType=None, storageResourceId=None, fileAbsolutePath=None, replicaMetadata=None,):
+  def __init__(self, replicaId=None, resourceId=None, replicaName=None, replicaDescription=None, sourceReplicaId=None, creationTime=None, lastModifiedTime=None, validUntilTime=None, replicaLocationCategory=None, replicaPersistentType=None, storageResourceId=None, fileAbsolutePath=None, replicaMetadata=None,):
     self.replicaId = replicaId
     self.resourceId = resourceId
     self.replicaName = replicaName
     self.replicaDescription = replicaDescription
+    self.sourceReplicaId = sourceReplicaId
     self.creationTime = creationTime
     self.lastModifiedTime = lastModifiedTime
     self.validUntilTime = validUntilTime
@@ -393,41 +422,46 @@ class DataReplicaLocationModel:
         else:
           iprot.skip(ftype)
       elif fid == 5:
-        if ftype == TType.I64:
-          self.creationTime = iprot.readI64()
+        if ftype == TType.STRING:
+          self.sourceReplicaId = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 6:
         if ftype == TType.I64:
-          self.lastModifiedTime = iprot.readI64()
+          self.creationTime = iprot.readI64()
         else:
           iprot.skip(ftype)
       elif fid == 7:
         if ftype == TType.I64:
-          self.validUntilTime = iprot.readI64()
+          self.lastModifiedTime = iprot.readI64()
         else:
           iprot.skip(ftype)
       elif fid == 8:
-        if ftype == TType.I32:
-          self.replicaLocationCategory = iprot.readI32()
+        if ftype == TType.I64:
+          self.validUntilTime = iprot.readI64()
         else:
           iprot.skip(ftype)
       elif fid == 9:
         if ftype == TType.I32:
-          self.replicaPersistentType = iprot.readI32()
+          self.replicaLocationCategory = iprot.readI32()
         else:
           iprot.skip(ftype)
       elif fid == 10:
-        if ftype == TType.STRING:
-          self.storageResourceId = iprot.readString()
+        if ftype == TType.I32:
+          self.replicaPersistentType = iprot.readI32()
         else:
           iprot.skip(ftype)
       elif fid == 11:
         if ftype == TType.STRING:
-          self.fileAbsolutePath = iprot.readString()
+          self.storageResourceId = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 12:
+        if ftype == TType.STRING:
+          self.fileAbsolutePath = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 13:
         if ftype == TType.MAP:
           self.replicaMetadata = {}
           (_ktype24, _vtype25, _size23 ) = iprot.readMapBegin()
@@ -464,36 +498,40 @@ class DataReplicaLocationModel:
       oprot.writeFieldBegin('replicaDescription', TType.STRING, 4)
       oprot.writeString(self.replicaDescription)
       oprot.writeFieldEnd()
+    if self.sourceReplicaId is not None:
+      oprot.writeFieldBegin('sourceReplicaId', TType.STRING, 5)
+      oprot.writeString(self.sourceReplicaId)
+      oprot.writeFieldEnd()
     if self.creationTime is not None:
-      oprot.writeFieldBegin('creationTime', TType.I64, 5)
+      oprot.writeFieldBegin('creationTime', TType.I64, 6)
       oprot.writeI64(self.creationTime)
       oprot.writeFieldEnd()
     if self.lastModifiedTime is not None:
-      oprot.writeFieldBegin('lastModifiedTime', TType.I64, 6)
+      oprot.writeFieldBegin('lastModifiedTime', TType.I64, 7)
       oprot.writeI64(self.lastModifiedTime)
       oprot.writeFieldEnd()
     if self.validUntilTime is not None:
-      oprot.writeFieldBegin('validUntilTime', TType.I64, 7)
+      oprot.writeFieldBegin('validUntilTime', TType.I64, 8)
       oprot.writeI64(self.validUntilTime)
       oprot.writeFieldEnd()
     if self.replicaLocationCategory is not None:
-      oprot.writeFieldBegin('replicaLocationCategory', TType.I32, 8)
+      oprot.writeFieldBegin('replicaLocationCategory', TType.I32, 9)
       oprot.writeI32(self.replicaLocationCategory)
       oprot.writeFieldEnd()
     if self.replicaPersistentType is not None:
-      oprot.writeFieldBegin('replicaPersistentType', TType.I32, 9)
+      oprot.writeFieldBegin('replicaPersistentType', TType.I32, 10)
       oprot.writeI32(self.replicaPersistentType)
       oprot.writeFieldEnd()
     if self.storageResourceId is not None:
-      oprot.writeFieldBegin('storageResourceId', TType.STRING, 10)
+      oprot.writeFieldBegin('storageResourceId', TType.STRING, 11)
       oprot.writeString(self.storageResourceId)
       oprot.writeFieldEnd()
     if self.fileAbsolutePath is not None:
-      oprot.writeFieldBegin('fileAbsolutePath', TType.STRING, 11)
+      oprot.writeFieldBegin('fileAbsolutePath', TType.STRING, 12)
       oprot.writeString(self.fileAbsolutePath)
       oprot.writeFieldEnd()
     if self.replicaMetadata is not None:
-      oprot.writeFieldBegin('replicaMetadata', TType.MAP, 12)
+      oprot.writeFieldBegin('replicaMetadata', TType.MAP, 13)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.replicaMetadata))
       for kiter30,viter31 in self.replicaMetadata.items():
         oprot.writeString(kiter30)
@@ -513,6 +551,7 @@ class DataReplicaLocationModel:
     value = (value * 31) ^ hash(self.resourceId)
     value = (value * 31) ^ hash(self.replicaName)
     value = (value * 31) ^ hash(self.replicaDescription)
+    value = (value * 31) ^ hash(self.sourceReplicaId)
     value = (value * 31) ^ hash(self.creationTime)
     value = (value * 31) ^ hash(self.lastModifiedTime)
     value = (value * 31) ^ hash(self.validUntilTime)

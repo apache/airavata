@@ -71,15 +71,17 @@ class DataResourceModel;
 class DataReplicaLocationModel;
 
 typedef struct _DataResourceModel__isset {
-  _DataResourceModel__isset() : resourceId(false), gatewayId(false), parentResourceId(false), resourceName(false), resourceDescription(false), ownerName(false), dataResourceType(false), resourceSize(false), creationTime(false), lastModifiedTime(false), resourceMetadata(false), replicaLocations(false), childResources(false) {}
+  _DataResourceModel__isset() : resourceId(false), gatewayId(false), parentResourceId(false), resourceName(false), resourceDescription(false), ownerName(false), sha256Checksum(false), dataResourceType(false), resourceSize(false), nativeFormat(false), creationTime(false), lastModifiedTime(false), resourceMetadata(false), replicaLocations(false), childResources(false) {}
   bool resourceId :1;
   bool gatewayId :1;
   bool parentResourceId :1;
   bool resourceName :1;
   bool resourceDescription :1;
   bool ownerName :1;
+  bool sha256Checksum :1;
   bool dataResourceType :1;
   bool resourceSize :1;
+  bool nativeFormat :1;
   bool creationTime :1;
   bool lastModifiedTime :1;
   bool resourceMetadata :1;
@@ -92,7 +94,7 @@ class DataResourceModel {
 
   DataResourceModel(const DataResourceModel&);
   DataResourceModel& operator=(const DataResourceModel&);
-  DataResourceModel() : resourceId(), gatewayId(), parentResourceId(), resourceName(), resourceDescription(), ownerName(), dataResourceType((DataResourceType::type)0), resourceSize(0), creationTime(0), lastModifiedTime(0) {
+  DataResourceModel() : resourceId(), gatewayId(), parentResourceId(), resourceName(), resourceDescription(), ownerName(), sha256Checksum(), dataResourceType((DataResourceType::type)0), resourceSize(0), nativeFormat(), creationTime(0), lastModifiedTime(0) {
   }
 
   virtual ~DataResourceModel() throw();
@@ -102,8 +104,10 @@ class DataResourceModel {
   std::string resourceName;
   std::string resourceDescription;
   std::string ownerName;
+  std::string sha256Checksum;
   DataResourceType::type dataResourceType;
   int32_t resourceSize;
+  std::string nativeFormat;
   int64_t creationTime;
   int64_t lastModifiedTime;
   std::map<std::string, std::string>  resourceMetadata;
@@ -124,9 +128,13 @@ class DataResourceModel {
 
   void __set_ownerName(const std::string& val);
 
+  void __set_sha256Checksum(const std::string& val);
+
   void __set_dataResourceType(const DataResourceType::type val);
 
   void __set_resourceSize(const int32_t val);
+
+  void __set_nativeFormat(const std::string& val);
 
   void __set_creationTime(const int64_t val);
 
@@ -164,6 +172,10 @@ class DataResourceModel {
       return false;
     else if (__isset.ownerName && !(ownerName == rhs.ownerName))
       return false;
+    if (__isset.sha256Checksum != rhs.__isset.sha256Checksum)
+      return false;
+    else if (__isset.sha256Checksum && !(sha256Checksum == rhs.sha256Checksum))
+      return false;
     if (__isset.dataResourceType != rhs.__isset.dataResourceType)
       return false;
     else if (__isset.dataResourceType && !(dataResourceType == rhs.dataResourceType))
@@ -171,6 +183,10 @@ class DataResourceModel {
     if (__isset.resourceSize != rhs.__isset.resourceSize)
       return false;
     else if (__isset.resourceSize && !(resourceSize == rhs.resourceSize))
+      return false;
+    if (__isset.nativeFormat != rhs.__isset.nativeFormat)
+      return false;
+    else if (__isset.nativeFormat && !(nativeFormat == rhs.nativeFormat))
       return false;
     if (__isset.creationTime != rhs.__isset.creationTime)
       return false;
@@ -215,11 +231,12 @@ inline std::ostream& operator<<(std::ostream& out, const DataResourceModel& obj)
 }
 
 typedef struct _DataReplicaLocationModel__isset {
-  _DataReplicaLocationModel__isset() : replicaId(false), resourceId(false), replicaName(false), replicaDescription(false), creationTime(false), lastModifiedTime(false), validUntilTime(false), replicaLocationCategory(false), replicaPersistentType(false), storageResourceId(false), fileAbsolutePath(false), replicaMetadata(false) {}
+  _DataReplicaLocationModel__isset() : replicaId(false), resourceId(false), replicaName(false), replicaDescription(false), sourceReplicaId(false), creationTime(false), lastModifiedTime(false), validUntilTime(false), replicaLocationCategory(false), replicaPersistentType(false), storageResourceId(false), fileAbsolutePath(false), replicaMetadata(false) {}
   bool replicaId :1;
   bool resourceId :1;
   bool replicaName :1;
   bool replicaDescription :1;
+  bool sourceReplicaId :1;
   bool creationTime :1;
   bool lastModifiedTime :1;
   bool validUntilTime :1;
@@ -235,7 +252,7 @@ class DataReplicaLocationModel {
 
   DataReplicaLocationModel(const DataReplicaLocationModel&);
   DataReplicaLocationModel& operator=(const DataReplicaLocationModel&);
-  DataReplicaLocationModel() : replicaId(), resourceId(), replicaName(), replicaDescription(), creationTime(0), lastModifiedTime(0), validUntilTime(0), replicaLocationCategory((ReplicaLocationCategory::type)0), replicaPersistentType((ReplicaPersistentType::type)0), storageResourceId(), fileAbsolutePath() {
+  DataReplicaLocationModel() : replicaId(), resourceId(), replicaName(), replicaDescription(), sourceReplicaId(), creationTime(0), lastModifiedTime(0), validUntilTime(0), replicaLocationCategory((ReplicaLocationCategory::type)0), replicaPersistentType((ReplicaPersistentType::type)0), storageResourceId(), fileAbsolutePath() {
   }
 
   virtual ~DataReplicaLocationModel() throw();
@@ -243,6 +260,7 @@ class DataReplicaLocationModel {
   std::string resourceId;
   std::string replicaName;
   std::string replicaDescription;
+  std::string sourceReplicaId;
   int64_t creationTime;
   int64_t lastModifiedTime;
   int64_t validUntilTime;
@@ -261,6 +279,8 @@ class DataReplicaLocationModel {
   void __set_replicaName(const std::string& val);
 
   void __set_replicaDescription(const std::string& val);
+
+  void __set_sourceReplicaId(const std::string& val);
 
   void __set_creationTime(const int64_t val);
 
@@ -295,6 +315,10 @@ class DataReplicaLocationModel {
     if (__isset.replicaDescription != rhs.__isset.replicaDescription)
       return false;
     else if (__isset.replicaDescription && !(replicaDescription == rhs.replicaDescription))
+      return false;
+    if (__isset.sourceReplicaId != rhs.__isset.sourceReplicaId)
+      return false;
+    else if (__isset.sourceReplicaId && !(sourceReplicaId == rhs.sourceReplicaId))
       return false;
     if (__isset.creationTime != rhs.__isset.creationTime)
       return false;
