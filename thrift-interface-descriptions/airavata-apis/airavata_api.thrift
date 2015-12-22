@@ -284,6 +284,7 @@ service Airavata {
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
+
    /**
    * Creates a Project with basic metadata.
    *    A Project is a container of experiments.

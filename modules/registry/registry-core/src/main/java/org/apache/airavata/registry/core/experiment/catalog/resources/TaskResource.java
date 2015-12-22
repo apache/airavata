@@ -21,6 +21,7 @@
 
 package org.apache.airavata.registry.core.experiment.catalog.resources;
 
+import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
@@ -404,7 +405,7 @@ public class TaskResource extends AbstractExpCatResource {
             TaskStatusResource max = taskStatusResources.get(0);
             for(int i=1; i<taskStatusResources.size();i++) {
                 if (taskStatusResources.get(i).getTimeOfStateChange().after(max.getTimeOfStateChange())
-                        || taskStatusResources.get(i).getTimeOfStateChange().equals(max.getTimeOfStateChange())) {
+                        || (taskStatusResources.get(i).getTimeOfStateChange().equals(max.getTimeOfStateChange()) && taskStatusResources.get(i).getState().equals(TaskState.COMPLETED.toString()) )) {
                     max = taskStatusResources.get(i);
                 }
             }
