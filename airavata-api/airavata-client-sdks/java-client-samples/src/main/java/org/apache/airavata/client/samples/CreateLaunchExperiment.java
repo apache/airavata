@@ -96,7 +96,7 @@ public class CreateLaunchExperiment {
 //        registerApplications(); // run this only the first time
 //        Map<String, String> master = airavataClient.getAllUserSSHPubKeys(token, "master");
 //        System.out.println(master.size());
-        Map<String, JobStatus> jobStatuses = airavataClient.getJobStatuses(token, "SLM4-Gamess-Comet_af8957e4-05cb-4fd4-b9b3-499ca8e67d3d");
+        Map<String, JobStatus> jobStatuses = airavataClient.getJobStatuses(token, "SLM3-QEspresso-Stampede_dc2af008-a832-4fba-ab0a-4b61fa79f5b9");
         for (String jobId : jobStatuses.keySet()){
             JobStatus jobStatus = jobStatuses.get(jobId);
             System.out.println(jobId);
