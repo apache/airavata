@@ -39,8 +39,7 @@ namespace apache { namespace airavata { namespace model { namespace security {
 class AuthzToken;
 
 typedef struct _AuthzToken__isset {
-  _AuthzToken__isset() : accessToken(false), claimsMap(false) {}
-  bool accessToken :1;
+  _AuthzToken__isset() : claimsMap(false) {}
   bool claimsMap :1;
 } _AuthzToken__isset;
 
@@ -64,9 +63,7 @@ class AuthzToken {
 
   bool operator == (const AuthzToken & rhs) const
   {
-    if (__isset.accessToken != rhs.__isset.accessToken)
-      return false;
-    else if (__isset.accessToken && !(accessToken == rhs.accessToken))
+    if (!(accessToken == rhs.accessToken))
       return false;
     if (__isset.claimsMap != rhs.__isset.claimsMap)
       return false;

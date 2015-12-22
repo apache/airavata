@@ -37,7 +37,6 @@ AuthzToken::~AuthzToken() throw() {
 
 void AuthzToken::__set_accessToken(const std::string& val) {
   this->accessToken = val;
-__isset.accessToken = true;
 }
 
 void AuthzToken::__set_claimsMap(const std::map<std::string, std::string> & val) {
@@ -57,6 +56,7 @@ uint32_t AuthzToken::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_accessToken = false;
 
   while (true)
   {
@@ -69,7 +69,7 @@ uint32_t AuthzToken::read(::apache::thrift::protocol::TProtocol* iprot) {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->accessToken);
-          this->__isset.accessToken = true;
+          isset_accessToken = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -106,6 +106,8 @@ uint32_t AuthzToken::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_accessToken)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
@@ -114,11 +116,10 @@ uint32_t AuthzToken::write(::apache::thrift::protocol::TProtocol* oprot) const {
   apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
   xfer += oprot->writeStructBegin("AuthzToken");
 
-  if (this->__isset.accessToken) {
-    xfer += oprot->writeFieldBegin("accessToken", ::apache::thrift::protocol::T_STRING, 1);
-    xfer += oprot->writeString(this->accessToken);
-    xfer += oprot->writeFieldEnd();
-  }
+  xfer += oprot->writeFieldBegin("accessToken", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->accessToken);
+  xfer += oprot->writeFieldEnd();
+
   if (this->__isset.claimsMap) {
     xfer += oprot->writeFieldBegin("claimsMap", ::apache::thrift::protocol::T_MAP, 2);
     {
@@ -159,7 +160,7 @@ AuthzToken& AuthzToken::operator=(const AuthzToken& other9) {
 void AuthzToken::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
   out << "AuthzToken(";
-  out << "accessToken="; (__isset.accessToken ? (out << to_string(accessToken)) : (out << "<null>"));
+  out << "accessToken=" << to_string(accessToken);
   out << ", " << "claimsMap="; (__isset.claimsMap ? (out << to_string(claimsMap)) : (out << "<null>"));
   out << ")";
 }
