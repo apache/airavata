@@ -388,6 +388,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
                 TaskStatus taskStatus = new TaskStatus(TaskState.COMPLETED);
                 taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                 taskStatus.setReason("Job monitoring completed with final state: " + TaskState.COMPLETED.name());
+                taskContext.setTaskStatus(taskStatus);
                 GFacUtils.saveAndPublishTaskStatus(taskContext);
 		        GFacThreadPoolExecutor.getCachedThreadPool().execute(new GFacWorker(taskContext.getParentProcessContext()));
 	        } catch (GFacException e) {
