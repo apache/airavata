@@ -85,6 +85,8 @@ class AuthzToken:
     oprot.writeStructEnd()
 
   def validate(self):
+    if self.accessToken is None:
+      raise TProtocol.TProtocolException(message='Required field accessToken is unset!')
     return
 
 
