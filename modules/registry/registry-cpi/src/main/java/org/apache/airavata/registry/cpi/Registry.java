@@ -25,5 +25,4 @@ public interface Registry {
     public ExperimentCatalog getExperimentCatalog() throws RegistryException;
     public ExperimentCatalog getExperimentCatalog(String gatewayId, String username, String password) throws RegistryException;
     public AppCatalog getAppCatalog() throws RegistryException;
-    public DataCatalog getDataCatalog() throws RegistryException;
 }

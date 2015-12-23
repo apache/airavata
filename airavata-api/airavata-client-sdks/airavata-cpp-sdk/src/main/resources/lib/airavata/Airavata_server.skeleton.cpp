@@ -2688,43 +2688,6 @@ class AiravataHandler : virtual public AiravataIf {
     printf("isWorkflowExistWithName\n");
   }
 
-  /**
-   *  * Data Manager Related API Methods
-   * *
-   * 
-   * @param authzToken
-   * @param dataResourceModel
-   */
-  void registerDataResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::DataResourceModel& dataResourceModel) {
-    // Your implementation goes here
-    printf("registerDataResource\n");
-  }
-
-  void updateDataResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::DataResourceModel& dataResourceModel) {
-    // Your implementation goes here
-    printf("updateDataResource\n");
-  }
-
-  void removeDataResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId) {
-    // Your implementation goes here
-    printf("removeDataResource\n");
-  }
-
-  void getDataResource( ::apache::airavata::model::data::resource::DataResourceModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId) {
-    // Your implementation goes here
-    printf("getDataResource\n");
-  }
-
-  void copyDataResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& destStorageResourceId, const std::string& destinationParentPath) {
-    // Your implementation goes here
-    printf("copyDataResource\n");
-  }
-
-  void copyDataReplica(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& replicaId, const std::string& destStorageResourceId, const std::string& destinationParentPath) {
-    // Your implementation goes here
-    printf("copyDataReplica\n");
-  }
-
 };
 
 int main(int argc, char **argv) {

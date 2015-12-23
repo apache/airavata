@@ -10,14 +10,14 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>data-manager</artifactId>
+    <artifactId>file-manager</artifactId>
     <packaging>pom</packaging>
-    <name>Airavata Data Manager</name>
+    <name>Airavata File Manager</name>
     <url>http://airavata.apache.org/</url>
 
     <modules>
-        <module>data-manager-cpi</module>
-        <module>data-manager-core</module>
+        <module>file-manager-cpi</module>
+        <module>file-manager-core</module>
     </modules>
     <dependencies>
         <dependency>

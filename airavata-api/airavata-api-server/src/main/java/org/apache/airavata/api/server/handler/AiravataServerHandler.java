@@ -32,9 +32,6 @@ import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.datamodel.SSHCredential;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
-import org.apache.airavata.data.manager.core.DataManagerFactory;
-import org.apache.airavata.data.manager.cpi.DataManager;
-import org.apache.airavata.data.manager.cpi.DataManagerException;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
@@ -51,7 +48,6 @@ import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.data.movement.DMType;
-import org.apache.airavata.model.data.resource.DataResourceModel;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.model.job.JobModel;
@@ -4069,100 +4065,6 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw exception;
 		}
 	}
-
-    /**
-     * * Data Manager Related API Methods
-     * *
-     */
-
-    @Override
-    @SecurityCheck
-    public String registerDataResource(AuthzToken authzToken, DataResourceModel dataResourceModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        try {
-            DataManager dataManager = DataManagerFactory.getDataManager();
-            return dataManager.registerResource(dataResourceModel);
-        } catch (DataManagerException e) {
-            String msg = "Error in publishing the data resource"+dataResourceModel.getResourceName()+".";
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg+" More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public void updateDataResource(AuthzToken authzToken, DataResourceModel dataResourceModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        try {
-            DataManager dataManager = DataManagerFactory.getDataManager();
-            dataManager.updateResource(dataResourceModel);
-        } catch (DataManagerException e) {
-            String msg = "Error in updating the data resource"+dataResourceModel.getResourceName()+".";
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg+" More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public void removeDataResource(AuthzToken authzToken, String resourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        try {
-            DataManager dataManager = DataManagerFactory.getDataManager();
-            dataManager.removeResource(resourceId);
-        } catch (DataManagerException e) {
-            String msg = "Error in removing the data resource "+resourceId+".";
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg+" More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public DataResourceModel getDataResource(AuthzToken authzToken, String resourceId) throws InvalidRequestException,
-            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        try {
-            DataManager dataManager = DataManagerFactory.getDataManager();
-            return dataManager.getResource(resourceId);
-        } catch (DataManagerException e) {
-            String msg = "Error in retreiving the data resource "+resourceId+".";
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg+" More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    public String copyDataResource(AuthzToken authzToken, String resourceId, String destStorageResourceId, String destinationParentPath) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        try {
-            DataManager dataManager = DataManagerFactory.getDataManager();
-            return dataManager.copyResource(resourceId, destStorageResourceId, destinationParentPath);
-        } catch (DataManagerException e) {
-            String msg = "Error in copying the data resource "+resourceId+".";
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg+" More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    public String copyDataReplica(AuthzToken authzToken, String resourceId, String replicaId, String destStorageResourceId, String destinationParentPath) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        try {
-            DataManager dataManager = DataManagerFactory.getDataManager();
-            return dataManager.copyReplica(resourceId, replicaId, destStorageResourceId, destinationParentPath);
-        } catch (DataManagerException e) {
-            String msg = "Error in copying the data replica "+replicaId+".";
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg+" More info : " + e.getMessage());
-            throw exception;
-        }
-    }
 
     private WorkflowCatalog getWorkflowCatalog() {
 		if (workflowCatalog == null) {

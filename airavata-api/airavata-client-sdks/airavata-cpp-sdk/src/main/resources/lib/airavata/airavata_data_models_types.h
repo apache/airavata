@@ -44,7 +44,8 @@
 #include "scheduling_model_types.h"
 #include "status_models_types.h"
 #include "data_movement_models_types.h"
-#include "replica_catalog_models_types.h"
+#include "replica_models_types.h"
+#include "file__transfer_models_types.h"
 
 
 namespace apache { namespace airavata { namespace model {

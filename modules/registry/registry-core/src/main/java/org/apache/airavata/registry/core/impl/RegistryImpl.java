@@ -22,7 +22,6 @@
 package org.apache.airavata.registry.core.impl;
 
 import org.apache.airavata.registry.core.app.catalog.impl.AppCatalogImpl;
-import org.apache.airavata.registry.core.data.catalog.impl.DataCatalogImpl;
 import org.apache.airavata.registry.core.experiment.catalog.impl.ExperimentCatalogImpl;
 import org.apache.airavata.registry.cpi.*;
 
@@ -40,10 +39,5 @@ public class RegistryImpl implements Registry {
     @Override
     public AppCatalog getAppCatalog() throws RegistryException {
         return new AppCatalogImpl();
-    }
-
-    @Override
-    public DataCatalog getDataCatalog() throws RegistryException {
-        return new DataCatalogImpl();
     }
 }
