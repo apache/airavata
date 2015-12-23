@@ -21,6 +21,7 @@
 
 package org.apache.airavata.registry.core.experiment.catalog.resources;
 
+import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
@@ -644,7 +645,7 @@ public class ProcessResource extends AbstractExpCatResource {
                 Timestamp timeOfStateChange = processStatusResources.get(i).getTimeOfStateChange();
                 if (timeOfStateChange != null) {
                     if (timeOfStateChange.after(max.getTimeOfStateChange())
-                            || timeOfStateChange.equals(max.getTimeOfStateChange())) {
+                            || (timeOfStateChange.equals(max.getTimeOfStateChange()) && processStatusResources.get(i).getState().equals(ProcessState.COMPLETED.toString()))) {
                         max = processStatusResources.get(i);
                     }
                 }
