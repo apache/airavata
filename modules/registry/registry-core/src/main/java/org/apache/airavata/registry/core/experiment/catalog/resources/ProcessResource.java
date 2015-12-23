@@ -645,7 +645,9 @@ public class ProcessResource extends AbstractExpCatResource {
                 Timestamp timeOfStateChange = processStatusResources.get(i).getTimeOfStateChange();
                 if (timeOfStateChange != null) {
                     if (timeOfStateChange.after(max.getTimeOfStateChange())
-                            || (timeOfStateChange.equals(max.getTimeOfStateChange()) && processStatusResources.get(i).getState().equals(ProcessState.COMPLETED.toString()))) {
+                      || (timeOfStateChange.equals(max.getTimeOfStateChange()) && processStatusResources.get(i).getState().equals(ProcessState.COMPLETED.toString()))
+                      || (timeOfStateChange.equals(max.getTimeOfStateChange()) && processStatusResources.get(i).getState().equals(ProcessState.FAILED.toString()))
+                      || (timeOfStateChange.equals(max.getTimeOfStateChange()) && processStatusResources.get(i).getState().equals(ProcessState.CANCELED.toString()))) {
                         max = processStatusResources.get(i);
                     }
                 }
