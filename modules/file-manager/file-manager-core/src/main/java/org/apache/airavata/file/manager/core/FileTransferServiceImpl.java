@@ -29,7 +29,7 @@ import org.apache.airavata.file.manager.core.remote.client.scp.SCPStorageClient;
 import org.apache.airavata.file.manager.core.remote.client.sftp.SFTPStorageClient;
 import org.apache.airavata.file.manager.cpi.FileManagerException;
 import org.apache.airavata.file.manager.cpi.FileTransferService;
-import org.apache.airavata.model.file.*;
+import org.apache.airavata.model.file.transfer.*;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +55,8 @@ public class FileTransferServiceImpl implements FileTransferService {
     /**
      * Method to upload the give bytes to the destination storage system
      *
+     * @param gatewayId
+     * @param username
      * @param fileData
      * @param destHostName
      * @param destLoginName
@@ -66,7 +68,7 @@ public class FileTransferServiceImpl implements FileTransferService {
      * @throws FileManagerException
      */
     @Override
-    public String uploadFile(byte[] fileData, String destHostName, String destLoginName, int destPort,
+    public String uploadFile(String gatewayId, String username, byte[] fileData, String destHostName, String destLoginName, int destPort,
                              StorageResourceProtocol destProtocol,
                              String destinationPath, String destHostCredToken) throws FileManagerException {
         long transferTime = System.currentTimeMillis();
@@ -77,7 +79,7 @@ public class FileTransferServiceImpl implements FileTransferService {
                 sshCredential = (SSHCredential) credential;
                 File srcFile = null;
                 FileWriter fileWriter = null;
-                FileTransferRequest fileTransferRequest = null;
+                FileTransferRequestModel fileTransferRequestModel = null;
                 try {
                     String srcFilePath = System.getProperty("java.io.tmpdir")+File.separator+ UUID.randomUUID().toString();
                     srcFile = new File(srcFilePath);
@@ -94,31 +96,33 @@ public class FileTransferServiceImpl implements FileTransferService {
                                 sshCredential.getPrivateKey(),
                                 sshCredential.getPublicKey(), sshCredential.getPassphrase().getBytes());
 
-                    fileTransferRequest = new FileTransferRequest();
-                    fileTransferRequest.setSrcHostname(InetAddress.getLocalHost().getHostName());
-                    fileTransferRequest.setSrcProtocol(StorageResourceProtocol.LOCAL);
-                    fileTransferRequest.setDestHostname(destHostName);
-                    fileTransferRequest.setDestLoginName(destLoginName);
-                    fileTransferRequest.setDestPort(destPort);
-                    fileTransferRequest.setDestProtocol(destProtocol);
-                    fileTransferRequest.setDestFilePath(destinationPath);
-                    fileTransferRequest.setDestHostCredToken(destHostCredToken);
-                    fileTransferRequest.setFileTransferMode(FileTransferMode.SYNC);
+                    fileTransferRequestModel = new FileTransferRequestModel();
+                    fileTransferRequestModel.setGatewayId(gatewayId);
+                    fileTransferRequestModel.setUsername(username);
+                    fileTransferRequestModel.setSrcHostname(InetAddress.getLocalHost().getHostName());
+                    fileTransferRequestModel.setSrcProtocol(StorageResourceProtocol.LOCAL);
+                    fileTransferRequestModel.setDestHostname(destHostName);
+                    fileTransferRequestModel.setDestLoginName(destLoginName);
+                    fileTransferRequestModel.setDestPort(destPort);
+                    fileTransferRequestModel.setDestProtocol(destProtocol);
+                    fileTransferRequestModel.setDestFilePath(destinationPath);
+                    fileTransferRequestModel.setDestHostCredToken(destHostCredToken);
+                    fileTransferRequestModel.setFileTransferMode(FileTransferMode.SYNC);
                     remoteStorageClient.writeFile(srcFile, destinationPath);
                     transferTime = System.currentTimeMillis() - transferTime;
-                    fileTransferRequest.setTransferTime(transferTime);
-                    fileTransferRequest.setTransferStatus(FileTransferStatus.COMPLETED);
-                    fileTransferRequest.setCreatedTime(System.currentTimeMillis());
-                    fileTransferRequest.setLastModifiedType(fileTransferRequest.getCreatedTime());
-                    fileTransferRequest.setFileSize(srcFile.length());
-                    String transferId = fileTransferRequestDao.createFileTransferRequest(fileTransferRequest);
+                    fileTransferRequestModel.setTransferTime(transferTime);
+                    fileTransferRequestModel.setTransferStatus(FileTransferStatus.COMPLETED);
+                    fileTransferRequestModel.setCreatedTime(System.currentTimeMillis());
+                    fileTransferRequestModel.setLastModifiedType(fileTransferRequestModel.getCreatedTime());
+                    fileTransferRequestModel.setFileSize(srcFile.length());
+                    String transferId = fileTransferRequestDao.createFileTransferRequest(fileTransferRequestModel);
                     return transferId;
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
-                    if(fileTransferRequest != null) {
-                        fileTransferRequest.setTransferStatus(FileTransferStatus.FAILED);
+                    if(fileTransferRequestModel != null) {
+                        fileTransferRequestModel.setTransferStatus(FileTransferStatus.FAILED);
                         try {
-                            fileTransferRequestDao.createFileTransferRequest(fileTransferRequest);
+                            fileTransferRequestDao.createFileTransferRequest(fileTransferRequestModel);
                         } catch (JsonProcessingException e1) {
                             logger.error(e.getMessage(), e);
                             throw new FileManagerException(e);
@@ -147,6 +151,8 @@ public class FileTransferServiceImpl implements FileTransferService {
     /**
      * Transfer file between two storage resources synchronously. Returns the file transfer request id
      *
+     * @param gatewayId
+     * @param username
      * @param srcHostname
      * @param srcLoginName
      * @param srcPort
@@ -163,30 +169,32 @@ public class FileTransferServiceImpl implements FileTransferService {
      * @throws FileManagerException
      */
     @Override
-    public String transferFile(String srcHostname, String srcLoginName, int srcPort, StorageResourceProtocol srcProtocol,
+    public String transferFile(String gatewayId, String username, String srcHostname, String srcLoginName, int srcPort, StorageResourceProtocol srcProtocol,
                                String srcPath, String srcHostCredToken, String destHostname, String destLoginName, int destPort,
                                StorageResourceProtocol destProtocol, String destinationPath, String destHostCredToken)
             throws FileManagerException {
         long transferTime = System.currentTimeMillis();
         File srcFile = null;
-        FileTransferRequest fileTransferRequest = null;
+        FileTransferRequestModel fileTransferRequestModel = null;
         try{
-            fileTransferRequest = new FileTransferRequest();
-            fileTransferRequest.setSrcHostname(srcHostname);
-            fileTransferRequest.setSrcPort(srcPort);
-            fileTransferRequest.setSrcLoginName(srcLoginName);
-            fileTransferRequest.setSrcFilePath(srcPath);
-            fileTransferRequest.setSrcProtocol(srcProtocol);
-            fileTransferRequest.setSrcHostCredToken(srcHostCredToken);
-            fileTransferRequest.setDestHostname(destHostname);
-            fileTransferRequest.setDestPort(destPort);
-            fileTransferRequest.setDestLoginName(destLoginName);
-            fileTransferRequest.setDestFilePath(destinationPath);
-            fileTransferRequest.setDestProtocol(destProtocol);
-            fileTransferRequest.setDestHostCredToken(destHostCredToken);
-            fileTransferRequest.setCreatedTime(System.currentTimeMillis());
-            fileTransferRequest.setLastModifiedType(fileTransferRequest.getCreatedTime());
-            fileTransferRequest.setFileTransferMode(FileTransferMode.SYNC);
+            fileTransferRequestModel = new FileTransferRequestModel();
+            fileTransferRequestModel.setGatewayId(gatewayId);
+            fileTransferRequestModel.setUsername(username);
+            fileTransferRequestModel.setSrcHostname(srcHostname);
+            fileTransferRequestModel.setSrcPort(srcPort);
+            fileTransferRequestModel.setSrcLoginName(srcLoginName);
+            fileTransferRequestModel.setSrcFilePath(srcPath);
+            fileTransferRequestModel.setSrcProtocol(srcProtocol);
+            fileTransferRequestModel.setSrcHostCredToken(srcHostCredToken);
+            fileTransferRequestModel.setDestHostname(destHostname);
+            fileTransferRequestModel.setDestPort(destPort);
+            fileTransferRequestModel.setDestLoginName(destLoginName);
+            fileTransferRequestModel.setDestFilePath(destinationPath);
+            fileTransferRequestModel.setDestProtocol(destProtocol);
+            fileTransferRequestModel.setDestHostCredToken(destHostCredToken);
+            fileTransferRequestModel.setCreatedTime(System.currentTimeMillis());
+            fileTransferRequestModel.setLastModifiedType(fileTransferRequestModel.getCreatedTime());
+            fileTransferRequestModel.setFileTransferMode(FileTransferMode.SYNC);
 
             if(srcProtocol == StorageResourceProtocol.HTTP || srcProtocol == StorageResourceProtocol.HTTPS ||
                     srcProtocol == StorageResourceProtocol.SCP || srcProtocol == StorageResourceProtocol.SFTP){
@@ -214,7 +222,7 @@ public class FileTransferServiceImpl implements FileTransferService {
                         throw new FileManagerException("Only support SSHCredentials for SFTP host");
                     }
                 }
-                fileTransferRequest.setTransferStatus(FileTransferStatus.RUNNING);
+                fileTransferRequestModel.setTransferStatus(FileTransferStatus.RUNNING);
                 srcFile = srcClient.readFile(srcPath);
             }else{
                 throw new FileManagerException("Unsupported src protocol " + srcProtocol);
@@ -243,20 +251,20 @@ public class FileTransferServiceImpl implements FileTransferService {
                 }
                 destClient.writeFile(srcFile, destinationPath);
                 transferTime = System.currentTimeMillis() - transferTime;
-                fileTransferRequest.setTransferTime(transferTime);
-                fileTransferRequest.setFileSize(srcFile.length());
-                fileTransferRequest.setTransferStatus(FileTransferStatus.COMPLETED);
-                String transferId = fileTransferRequestDao.createFileTransferRequest(fileTransferRequest);
+                fileTransferRequestModel.setTransferTime(transferTime);
+                fileTransferRequestModel.setFileSize(srcFile.length());
+                fileTransferRequestModel.setTransferStatus(FileTransferStatus.COMPLETED);
+                String transferId = fileTransferRequestDao.createFileTransferRequest(fileTransferRequestModel);
                 return transferId;
             }else{
                 throw new FileManagerException("Unsupported src protocol " + srcProtocol);
             }
         }catch (Exception e){
             logger.error(e.getMessage(), e);
-            if(fileTransferRequest != null) {
-                fileTransferRequest.setTransferStatus(FileTransferStatus.FAILED);
+            if(fileTransferRequestModel != null) {
+                fileTransferRequestModel.setTransferStatus(FileTransferStatus.FAILED);
                 try {
-                    fileTransferRequestDao.createFileTransferRequest(fileTransferRequest);
+                    fileTransferRequestDao.createFileTransferRequest(fileTransferRequestModel);
                 } catch (JsonProcessingException ex) {
                     logger.error(ex.getMessage(), ex);
                     throw new FileManagerException(ex);
@@ -272,6 +280,8 @@ public class FileTransferServiceImpl implements FileTransferService {
     /**
      * Transfer file between two storage resources asynchronously. Returns the file transfer request id
      *
+     * @param gatewayId
+     * @param username
      * @param srcHostname
      * @param srcLoginName
      * @param srcPort
@@ -289,7 +299,7 @@ public class FileTransferServiceImpl implements FileTransferService {
      * @throws FileManagerException
      */
     @Override
-    public String transferFileAsync(String srcHostname, String srcLoginName, int srcPort, StorageResourceProtocol srcProtocol,
+    public String transferFileAsync(String gatewayId, String username, String srcHostname, String srcLoginName, int srcPort, StorageResourceProtocol srcProtocol,
                                     String srcPath, String srcHostCredToken, String destHostname, String destLoginName,
                                     int destPort, StorageResourceProtocol destProtocol, String destinationPath,
                                     String destHostCredToken, String[] callbackEmails) throws FileManagerException {
@@ -309,7 +319,7 @@ public class FileTransferServiceImpl implements FileTransferService {
      * @throws FileManagerException
      */
     @Override
-    public List<FileNode> getDirectoryListing(String hostname, String loginName, int port, StorageResourceProtocol protocol,
+    public List<LSEntryModel> getDirectoryListing(String hostname, String loginName, int port, StorageResourceProtocol protocol,
                                               String path, String hostCredential) throws FileManagerException {
         return null;
     }
@@ -428,7 +438,7 @@ public class FileTransferServiceImpl implements FileTransferService {
      * @throws FileManagerException
      */
     @Override
-    public FileTransferRequest getFileTransferRequestStatus(String transferId) throws FileManagerException {
+    public FileTransferRequestModel getFileTransferRequestStatus(String transferId) throws FileManagerException {
         try{
             return fileTransferRequestDao.getFileTransferRequest(transferId);
         }catch (Exception ex){
@@ -460,15 +470,15 @@ public class FileTransferServiceImpl implements FileTransferService {
     public static void main(String[] args) throws IOException, FileManagerException {
         FileTransferServiceImpl fileTransferService = new FileTransferServiceImpl();
         String sourceFile = "fsgsdgsdgsdgsdg";
-        String transferId = fileTransferService.uploadFile(sourceFile.getBytes(), "gw75.iu.xsede.org", "pga", 22,
-                StorageResourceProtocol.SCP, "/var/www/portals/test.file", null);
-        FileTransferRequest fileTransferRequest = fileTransferService.fileTransferRequestDao.getFileTransferRequest(transferId);
-        System.out.println("file transfer id:" + fileTransferRequest.getTransferId());
+        String transferId = fileTransferService.uploadFile("default", "supun", sourceFile.getBytes(), "gw75.iu.xsede.org",
+                "pga", 22, StorageResourceProtocol.SCP, "/var/www/portals/test.file", null);
+        FileTransferRequestModel fileTransferRequestModel = fileTransferService.fileTransferRequestDao.getFileTransferRequest(transferId);
+        System.out.println("file transfer id:" + fileTransferRequestModel.getTransferId());
 
-        transferId = fileTransferService.transferFile("gw75.iu.xsede.org", "pga", 22, StorageResourceProtocol.SCP,
+        transferId = fileTransferService.transferFile("default", "supun", "gw75.iu.xsede.org", "pga", 22, StorageResourceProtocol.SCP,
                 "/var/www/portals/test.file", null, "gw75.iu.xsede.org", "pga", 22, StorageResourceProtocol.SCP,
                 "/var/www/portals/test2.file", null);
-        fileTransferRequest = fileTransferService.fileTransferRequestDao.getFileTransferRequest(transferId);
-        System.out.println("file transfer id:" + fileTransferRequest.getTransferId());
+        fileTransferRequestModel = fileTransferService.fileTransferRequestDao.getFileTransferRequest(transferId);
+        System.out.println("file transfer id:" + fileTransferRequestModel.getTransferId());
     }
 }

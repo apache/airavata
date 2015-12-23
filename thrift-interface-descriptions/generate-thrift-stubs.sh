@@ -139,9 +139,12 @@ copy_changed_files() {
     echo "Generated sources are in ${GENERATED_CODE_DIR}"
     echo "Destination workspace is in ${WORKSPACE_SRC_DIR}"
 
-    # Check if the newly generated files exist in the targeted workspace, if not copy. Only changed files will be synced.
-    #  the extra slash to GENERATED_CODE_DIR is needed to ensure the parent directory itself is not copied.
-    rsync -auv ${GENERATED_CODE_DIR}/ ${WORKSPACE_SRC_DIR}
+    # Remove the existing directory (if exists) and then copies the files
+    if [ -d ${WORKSPACE_SRC_DIR} ]; then
+        rm -r ${WORKSPACE_SRC_DIR}
+    fi
+    cp -r ${GENERATED_CODE_DIR} ${WORKSPACE_SRC_DIR}
+
 }
 
 #######################################

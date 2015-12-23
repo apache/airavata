@@ -18,16 +18,16 @@
  *
  */
 
-  namespace java org.apache.airavata.model.file
-  namespace php Airavata.Model.File
-  namespace cpp apache.airavata.model.file
-  namespace py apache.airavata.model.file
+  namespace java org.apache.airavata.model.file.transfer
+  namespace php Airavata.Model.File.Transfer
+  namespace cpp apache.airavata.model.file.transfer
+  namespace py apache.airavata.model.file.transfer
 
   enum StorageResourceProtocol{
         SCP,SFTP,HTTP,HTTPS,GridFTP,LOCAL
   }
 
-  enum FileNodeTypes{
+  enum LSEntryType{
     DIRECTORY,
     FILE
   }
@@ -40,30 +40,33 @@
       CREATED, QUEUED, RUNNING, COMPLETED, FAILED
   }
 
-  struct FileTransferRequest{
+  struct FileTransferRequestModel{
       1: optional string transferId,
-      2: optional string srcHostname,
-      3: optional string srcLoginName,
-      4: optional i64 srcPort,
-      5: optional StorageResourceProtocol srcProtocol,
-      6: optional string srcFilePath,
-      7: optional string srcHostCredToken,
-      8: optional string destHostname,
-      9: optional string destLoginName,
-     10: optional i64 destPort,
-     11: optional StorageResourceProtocol destProtocol,
-     12: optional string destFilePath,
-     13: optional string destHostCredToken,
-     14: optional FileTransferMode fileTransferMode,
-     15: optional FileTransferStatus transferStatus,
-     16: optional i64 fileSize,
-     17: optional i64 transferTime,
-     18: optional i64 createdTime,
-     19: optional i64 lastModifiedType
+      2: optional string gatewayId,
+      3: optional string username,
+      4: optional string srcHostname,
+      5: optional string srcLoginName,
+      6: optional i64 srcPort,
+      7: optional StorageResourceProtocol srcProtocol,
+      8: optional string srcFilePath,
+      9: optional string srcHostCredToken,
+     10: optional string destHostname,
+     11: optional string destLoginName,
+     12: optional i64 destPort,
+     13: optional StorageResourceProtocol destProtocol,
+     14: optional string destFilePath,
+     15: optional string destHostCredToken,
+     16: optional FileTransferMode fileTransferMode,
+     17: optional FileTransferStatus transferStatus,
+     18: optional i64 fileSize,
+     19: optional i64 transferTime,
+     20: optional i64 createdTime,
+     21: optional i64 lastModifiedType,
+     22: optional list<string> callbackEmails
   }
 
-  struct FileNode {
-      1: optional FileNodeTypes type,
+  struct LSEntryModel {
+      1: optional LSEntryType type,
       2: optional i64 size,
       3: optional string nativeType,
       4: optional string name,

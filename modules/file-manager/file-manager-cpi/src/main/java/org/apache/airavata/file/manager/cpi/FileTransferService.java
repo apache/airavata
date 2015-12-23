@@ -20,9 +20,9 @@
 */
 package org.apache.airavata.file.manager.cpi;
 
-import org.apache.airavata.model.file.FileNode;
-import org.apache.airavata.model.file.FileTransferRequest;
-import org.apache.airavata.model.file.StorageResourceProtocol;
+import org.apache.airavata.model.file.transfer.FileTransferRequestModel;
+import org.apache.airavata.model.file.transfer.LSEntryModel;
+import org.apache.airavata.model.file.transfer.StorageResourceProtocol;
 
 import java.util.List;
 
@@ -30,6 +30,8 @@ public interface FileTransferService {
 
     /**
      * Method to upload the give bytes to the destination storage system
+     * @param gatewayId
+     * @param username
      * @param fileData
      * @param destHostname
      * @param destLoginName
@@ -40,12 +42,14 @@ public interface FileTransferService {
      * @return
      * @throws FileManagerException
      */
-    String uploadFile(byte[] fileData, String destHostname, String destLoginName, int destPort,
+    String uploadFile(String gatewayId, String username, byte[] fileData, String destHostname, String destLoginName, int destPort,
                     StorageResourceProtocol destProtocol, String destinationPath, String destHostCredToken)
             throws FileManagerException;
 
     /**
      * Transfer file between two storage resources synchronously. Returns the file transfer request id
+     * @param gatewayId
+     * @param username
      * @param srcHostname
      * @param srcPort
      * @param srcLoginName
@@ -61,7 +65,7 @@ public interface FileTransferService {
      * @return
      * @throws FileManagerException
      */
-    String transferFile(String srcHostname, String srcLoginName, int srcPort,
+    String transferFile(String gatewayId, String username, String srcHostname, String srcLoginName, int srcPort,
                       StorageResourceProtocol srcProtocol, String srcPath, String srcHostCredToken,
                       String destHostname, String destLoginName, int destPort,
                       StorageResourceProtocol destProtocol, String destinationPath, String destHostCredToken)
@@ -69,6 +73,8 @@ public interface FileTransferService {
 
     /**
      * Transfer file between two storage resources asynchronously. Returns the file transfer request id
+     * @param gatewayId
+     * @param username
      * @param srcHostname
      * @param srcLoginName
      * @param srcPort
@@ -85,7 +91,7 @@ public interface FileTransferService {
      * @return
      * @throws FileManagerException
      */
-    String transferFileAsync(String srcHostname, String srcLoginName, int srcPort,
+    String transferFileAsync(String gatewayId, String username, String srcHostname, String srcLoginName, int srcPort,
                            StorageResourceProtocol srcProtocol, String srcPath, String srcHostCredToken,
                            String destHostname, String destLoginName, int destPort,
                            StorageResourceProtocol destProtocol, String destinationPath, String destHostCredToken,
@@ -103,7 +109,7 @@ public interface FileTransferService {
      * @return
      * @throws FileManagerException
      */
-    List<FileNode> getDirectoryListing(String hostname, String loginName, int port,
+    List<LSEntryModel> getDirectoryListing(String hostname, String loginName, int port,
                                        StorageResourceProtocol protocol, String path, String hostCredential)
             throws FileManagerException;
 
@@ -201,6 +207,6 @@ public interface FileTransferService {
      * @return
      * @throws FileManagerException
      */
-    FileTransferRequest getFileTransferRequestStatus(String transferId)
+    FileTransferRequestModel getFileTransferRequestStatus(String transferId)
             throws FileManagerException;
 }

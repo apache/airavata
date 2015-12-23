@@ -28,7 +28,7 @@
 
 #include <thrift/TToString.h>
 
-namespace apache { namespace airavata { namespace model { namespace file {
+namespace apache { namespace airavata { namespace model { namespace file { namespace transfer {
 
 int _kStorageResourceProtocolValues[] = {
   StorageResourceProtocol::SCP,
@@ -48,15 +48,15 @@ const char* _kStorageResourceProtocolNames[] = {
 };
 const std::map<int, const char*> _StorageResourceProtocol_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kStorageResourceProtocolValues, _kStorageResourceProtocolNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
-int _kFileNodeTypesValues[] = {
-  FileNodeTypes::DIRECTORY,
-  FileNodeTypes::FILE
+int _kLSEntryTypeValues[] = {
+  LSEntryType::DIRECTORY,
+  LSEntryType::FILE
 };
-const char* _kFileNodeTypesNames[] = {
+const char* _kLSEntryTypeNames[] = {
   "DIRECTORY",
   "FILE"
 };
-const std::map<int, const char*> _FileNodeTypes_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kFileNodeTypesValues, _kFileNodeTypesNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _LSEntryType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kLSEntryTypeValues, _kLSEntryTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kFileTransferModeValues[] = {
   FileTransferMode::SYNC,
@@ -85,106 +85,121 @@ const char* _kFileTransferStatusNames[] = {
 const std::map<int, const char*> _FileTransferStatus_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(5, _kFileTransferStatusValues, _kFileTransferStatusNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 
-FileTransferRequest::~FileTransferRequest() throw() {
+FileTransferRequestModel::~FileTransferRequestModel() throw() {
 }
 
 
-void FileTransferRequest::__set_transferId(const std::string& val) {
+void FileTransferRequestModel::__set_transferId(const std::string& val) {
   this->transferId = val;
 __isset.transferId = true;
 }
 
-void FileTransferRequest::__set_srcHostname(const std::string& val) {
+void FileTransferRequestModel::__set_gatewayId(const std::string& val) {
+  this->gatewayId = val;
+__isset.gatewayId = true;
+}
+
+void FileTransferRequestModel::__set_username(const std::string& val) {
+  this->username = val;
+__isset.username = true;
+}
+
+void FileTransferRequestModel::__set_srcHostname(const std::string& val) {
   this->srcHostname = val;
 __isset.srcHostname = true;
 }
 
-void FileTransferRequest::__set_srcLoginName(const std::string& val) {
+void FileTransferRequestModel::__set_srcLoginName(const std::string& val) {
   this->srcLoginName = val;
 __isset.srcLoginName = true;
 }
 
-void FileTransferRequest::__set_srcPort(const int64_t val) {
+void FileTransferRequestModel::__set_srcPort(const int64_t val) {
   this->srcPort = val;
 __isset.srcPort = true;
 }
 
-void FileTransferRequest::__set_srcProtocol(const StorageResourceProtocol::type val) {
+void FileTransferRequestModel::__set_srcProtocol(const StorageResourceProtocol::type val) {
   this->srcProtocol = val;
 __isset.srcProtocol = true;
 }
 
-void FileTransferRequest::__set_srcFilePath(const std::string& val) {
+void FileTransferRequestModel::__set_srcFilePath(const std::string& val) {
   this->srcFilePath = val;
 __isset.srcFilePath = true;
 }
 
-void FileTransferRequest::__set_srcHostCredToken(const std::string& val) {
+void FileTransferRequestModel::__set_srcHostCredToken(const std::string& val) {
   this->srcHostCredToken = val;
 __isset.srcHostCredToken = true;
 }
 
-void FileTransferRequest::__set_destHostname(const std::string& val) {
+void FileTransferRequestModel::__set_destHostname(const std::string& val) {
   this->destHostname = val;
 __isset.destHostname = true;
 }
 
-void FileTransferRequest::__set_destLoginName(const std::string& val) {
+void FileTransferRequestModel::__set_destLoginName(const std::string& val) {
   this->destLoginName = val;
 __isset.destLoginName = true;
 }
 
-void FileTransferRequest::__set_destPort(const int64_t val) {
+void FileTransferRequestModel::__set_destPort(const int64_t val) {
   this->destPort = val;
 __isset.destPort = true;
 }
 
-void FileTransferRequest::__set_destProtocol(const StorageResourceProtocol::type val) {
+void FileTransferRequestModel::__set_destProtocol(const StorageResourceProtocol::type val) {
   this->destProtocol = val;
 __isset.destProtocol = true;
 }
 
-void FileTransferRequest::__set_destFilePath(const std::string& val) {
+void FileTransferRequestModel::__set_destFilePath(const std::string& val) {
   this->destFilePath = val;
 __isset.destFilePath = true;
 }
 
-void FileTransferRequest::__set_destHostCredToken(const std::string& val) {
+void FileTransferRequestModel::__set_destHostCredToken(const std::string& val) {
   this->destHostCredToken = val;
 __isset.destHostCredToken = true;
 }
 
-void FileTransferRequest::__set_fileTransferMode(const FileTransferMode::type val) {
+void FileTransferRequestModel::__set_fileTransferMode(const FileTransferMode::type val) {
   this->fileTransferMode = val;
 __isset.fileTransferMode = true;
 }
 
-void FileTransferRequest::__set_transferStatus(const FileTransferStatus::type val) {
+void FileTransferRequestModel::__set_transferStatus(const FileTransferStatus::type val) {
   this->transferStatus = val;
 __isset.transferStatus = true;
 }
 
-void FileTransferRequest::__set_fileSize(const int64_t val) {
+void FileTransferRequestModel::__set_fileSize(const int64_t val) {
   this->fileSize = val;
 __isset.fileSize = true;
 }
 
-void FileTransferRequest::__set_transferTime(const int64_t val) {
+void FileTransferRequestModel::__set_transferTime(const int64_t val) {
   this->transferTime = val;
 __isset.transferTime = true;
 }
 
-void FileTransferRequest::__set_createdTime(const int64_t val) {
+void FileTransferRequestModel::__set_createdTime(const int64_t val) {
   this->createdTime = val;
 __isset.createdTime = true;
 }
 
-void FileTransferRequest::__set_lastModifiedType(const int64_t val) {
+void FileTransferRequestModel::__set_lastModifiedType(const int64_t val) {
   this->lastModifiedType = val;
 __isset.lastModifiedType = true;
 }
 
-uint32_t FileTransferRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
+void FileTransferRequestModel::__set_callbackEmails(const std::vector<std::string> & val) {
+  this->callbackEmails = val;
+__isset.callbackEmails = true;
+}
+
+uint32_t FileTransferRequestModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
   uint32_t xfer = 0;
@@ -215,13 +230,29 @@ uint32_t FileTransferRequest::read(::apache::thrift::protocol::TProtocol* iprot)
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          this->__isset.gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->username);
+          this->__isset.username = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->srcHostname);
           this->__isset.srcHostname = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 3:
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->srcLoginName);
           this->__isset.srcLoginName = true;
@@ -229,7 +260,7 @@ uint32_t FileTransferRequest::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 6:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->srcPort);
           this->__isset.srcPort = true;
@@ -237,7 +268,7 @@ uint32_t FileTransferRequest::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 5:
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast0;
           xfer += iprot->readI32(ecast0);
@@ -247,7 +278,7 @@ uint32_t FileTransferRequest::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 6:
+      case 8:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->srcFilePath);
           this->__isset.srcFilePath = true;
@@ -255,7 +286,7 @@ uint32_t FileTransferRequest::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 7:
+      case 9:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->srcHostCredToken);
           this->__isset.srcHostCredToken = true;
@@ -263,7 +294,7 @@ uint32_t FileTransferRequest::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 8:
+      case 10:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->destHostname);
           this->__isset.destHostname = true;
@@ -271,7 +302,7 @@ uint32_t FileTransferRequest::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 9:
+      case 11:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->destLoginName);
           this->__isset.destLoginName = true;
@@ -279,7 +310,7 @@ uint32_t FileTransferRequest::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 10:
+      case 12:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->destPort);
           this->__isset.destPort = true;
@@ -287,7 +318,7 @@ uint32_t FileTransferRequest::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 11:
+      case 13:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast1;
           xfer += iprot->readI32(ecast1);
@@ -297,7 +328,7 @@ uint32_t FileTransferRequest::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 12:
+      case 14:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->destFilePath);
           this->__isset.destFilePath = true;
@@ -305,7 +336,7 @@ uint32_t FileTransferRequest::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 13:
+      case 15:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->destHostCredToken);
           this->__isset.destHostCredToken = true;
@@ -313,7 +344,7 @@ uint32_t FileTransferRequest::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 14:
+      case 16:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast2;
           xfer += iprot->readI32(ecast2);
@@ -323,7 +354,7 @@ uint32_t FileTransferRequest::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 15:
+      case 17:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast3;
           xfer += iprot->readI32(ecast3);
@@ -333,7 +364,7 @@ uint32_t FileTransferRequest::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 16:
+      case 18:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->fileSize);
           this->__isset.fileSize = true;
@@ -341,7 +372,7 @@ uint32_t FileTransferRequest::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 17:
+      case 19:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->transferTime);
           this->__isset.transferTime = true;
@@ -349,7 +380,7 @@ uint32_t FileTransferRequest::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 18:
+      case 20:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->createdTime);
           this->__isset.createdTime = true;
@@ -357,10 +388,30 @@ uint32_t FileTransferRequest::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 19:
+      case 21:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->lastModifiedType);
           this->__isset.lastModifiedType = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 22:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->callbackEmails.clear();
+            uint32_t _size4;
+            ::apache::thrift::protocol::TType _etype7;
+            xfer += iprot->readListBegin(_etype7, _size4);
+            this->callbackEmails.resize(_size4);
+            uint32_t _i8;
+            for (_i8 = 0; _i8 < _size4; ++_i8)
+            {
+              xfer += iprot->readString(this->callbackEmails[_i8]);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.callbackEmails = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -377,104 +428,127 @@ uint32_t FileTransferRequest::read(::apache::thrift::protocol::TProtocol* iprot)
   return xfer;
 }
 
-uint32_t FileTransferRequest::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t FileTransferRequestModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("FileTransferRequest");
+  xfer += oprot->writeStructBegin("FileTransferRequestModel");
 
   if (this->__isset.transferId) {
     xfer += oprot->writeFieldBegin("transferId", ::apache::thrift::protocol::T_STRING, 1);
     xfer += oprot->writeString(this->transferId);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.gatewayId) {
+    xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 2);
+    xfer += oprot->writeString(this->gatewayId);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.username) {
+    xfer += oprot->writeFieldBegin("username", ::apache::thrift::protocol::T_STRING, 3);
+    xfer += oprot->writeString(this->username);
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.srcHostname) {
-    xfer += oprot->writeFieldBegin("srcHostname", ::apache::thrift::protocol::T_STRING, 2);
+    xfer += oprot->writeFieldBegin("srcHostname", ::apache::thrift::protocol::T_STRING, 4);
     xfer += oprot->writeString(this->srcHostname);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.srcLoginName) {
-    xfer += oprot->writeFieldBegin("srcLoginName", ::apache::thrift::protocol::T_STRING, 3);
+    xfer += oprot->writeFieldBegin("srcLoginName", ::apache::thrift::protocol::T_STRING, 5);
     xfer += oprot->writeString(this->srcLoginName);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.srcPort) {
-    xfer += oprot->writeFieldBegin("srcPort", ::apache::thrift::protocol::T_I64, 4);
+    xfer += oprot->writeFieldBegin("srcPort", ::apache::thrift::protocol::T_I64, 6);
     xfer += oprot->writeI64(this->srcPort);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.srcProtocol) {
-    xfer += oprot->writeFieldBegin("srcProtocol", ::apache::thrift::protocol::T_I32, 5);
+    xfer += oprot->writeFieldBegin("srcProtocol", ::apache::thrift::protocol::T_I32, 7);
     xfer += oprot->writeI32((int32_t)this->srcProtocol);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.srcFilePath) {
-    xfer += oprot->writeFieldBegin("srcFilePath", ::apache::thrift::protocol::T_STRING, 6);
+    xfer += oprot->writeFieldBegin("srcFilePath", ::apache::thrift::protocol::T_STRING, 8);
     xfer += oprot->writeString(this->srcFilePath);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.srcHostCredToken) {
-    xfer += oprot->writeFieldBegin("srcHostCredToken", ::apache::thrift::protocol::T_STRING, 7);
+    xfer += oprot->writeFieldBegin("srcHostCredToken", ::apache::thrift::protocol::T_STRING, 9);
     xfer += oprot->writeString(this->srcHostCredToken);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.destHostname) {
-    xfer += oprot->writeFieldBegin("destHostname", ::apache::thrift::protocol::T_STRING, 8);
+    xfer += oprot->writeFieldBegin("destHostname", ::apache::thrift::protocol::T_STRING, 10);
     xfer += oprot->writeString(this->destHostname);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.destLoginName) {
-    xfer += oprot->writeFieldBegin("destLoginName", ::apache::thrift::protocol::T_STRING, 9);
+    xfer += oprot->writeFieldBegin("destLoginName", ::apache::thrift::protocol::T_STRING, 11);
     xfer += oprot->writeString(this->destLoginName);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.destPort) {
-    xfer += oprot->writeFieldBegin("destPort", ::apache::thrift::protocol::T_I64, 10);
+    xfer += oprot->writeFieldBegin("destPort", ::apache::thrift::protocol::T_I64, 12);
     xfer += oprot->writeI64(this->destPort);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.destProtocol) {
-    xfer += oprot->writeFieldBegin("destProtocol", ::apache::thrift::protocol::T_I32, 11);
+    xfer += oprot->writeFieldBegin("destProtocol", ::apache::thrift::protocol::T_I32, 13);
     xfer += oprot->writeI32((int32_t)this->destProtocol);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.destFilePath) {
-    xfer += oprot->writeFieldBegin("destFilePath", ::apache::thrift::protocol::T_STRING, 12);
+    xfer += oprot->writeFieldBegin("destFilePath", ::apache::thrift::protocol::T_STRING, 14);
     xfer += oprot->writeString(this->destFilePath);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.destHostCredToken) {
-    xfer += oprot->writeFieldBegin("destHostCredToken", ::apache::thrift::protocol::T_STRING, 13);
+    xfer += oprot->writeFieldBegin("destHostCredToken", ::apache::thrift::protocol::T_STRING, 15);
     xfer += oprot->writeString(this->destHostCredToken);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.fileTransferMode) {
-    xfer += oprot->writeFieldBegin("fileTransferMode", ::apache::thrift::protocol::T_I32, 14);
+    xfer += oprot->writeFieldBegin("fileTransferMode", ::apache::thrift::protocol::T_I32, 16);
     xfer += oprot->writeI32((int32_t)this->fileTransferMode);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.transferStatus) {
-    xfer += oprot->writeFieldBegin("transferStatus", ::apache::thrift::protocol::T_I32, 15);
+    xfer += oprot->writeFieldBegin("transferStatus", ::apache::thrift::protocol::T_I32, 17);
     xfer += oprot->writeI32((int32_t)this->transferStatus);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.fileSize) {
-    xfer += oprot->writeFieldBegin("fileSize", ::apache::thrift::protocol::T_I64, 16);
+    xfer += oprot->writeFieldBegin("fileSize", ::apache::thrift::protocol::T_I64, 18);
     xfer += oprot->writeI64(this->fileSize);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.transferTime) {
-    xfer += oprot->writeFieldBegin("transferTime", ::apache::thrift::protocol::T_I64, 17);
+    xfer += oprot->writeFieldBegin("transferTime", ::apache::thrift::protocol::T_I64, 19);
     xfer += oprot->writeI64(this->transferTime);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.createdTime) {
-    xfer += oprot->writeFieldBegin("createdTime", ::apache::thrift::protocol::T_I64, 18);
+    xfer += oprot->writeFieldBegin("createdTime", ::apache::thrift::protocol::T_I64, 20);
     xfer += oprot->writeI64(this->createdTime);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.lastModifiedType) {
-    xfer += oprot->writeFieldBegin("lastModifiedType", ::apache::thrift::protocol::T_I64, 19);
+    xfer += oprot->writeFieldBegin("lastModifiedType", ::apache::thrift::protocol::T_I64, 21);
     xfer += oprot->writeI64(this->lastModifiedType);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.callbackEmails) {
+    xfer += oprot->writeFieldBegin("callbackEmails", ::apache::thrift::protocol::T_LIST, 22);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->callbackEmails.size()));
+      std::vector<std::string> ::const_iterator _iter9;
+      for (_iter9 = this->callbackEmails.begin(); _iter9 != this->callbackEmails.end(); ++_iter9)
+      {
+        xfer += oprot->writeString((*_iter9));
+      }
+      xfer += oprot->writeListEnd();
+    }
     xfer += oprot->writeFieldEnd();
   }
   xfer += oprot->writeFieldStop();
@@ -482,9 +556,11 @@ uint32_t FileTransferRequest::write(::apache::thrift::protocol::TProtocol* oprot
   return xfer;
 }
 
-void swap(FileTransferRequest &a, FileTransferRequest &b) {
+void swap(FileTransferRequestModel &a, FileTransferRequestModel &b) {
   using ::std::swap;
   swap(a.transferId, b.transferId);
+  swap(a.gatewayId, b.gatewayId);
+  swap(a.username, b.username);
   swap(a.srcHostname, b.srcHostname);
   swap(a.srcLoginName, b.srcLoginName);
   swap(a.srcPort, b.srcPort);
@@ -503,58 +579,67 @@ void swap(FileTransferRequest &a, FileTransferRequest &b) {
   swap(a.transferTime, b.transferTime);
   swap(a.createdTime, b.createdTime);
   swap(a.lastModifiedType, b.lastModifiedType);
+  swap(a.callbackEmails, b.callbackEmails);
   swap(a.__isset, b.__isset);
 }
 
-FileTransferRequest::FileTransferRequest(const FileTransferRequest& other4) {
-  transferId = other4.transferId;
-  srcHostname = other4.srcHostname;
-  srcLoginName = other4.srcLoginName;
-  srcPort = other4.srcPort;
-  srcProtocol = other4.srcProtocol;
-  srcFilePath = other4.srcFilePath;
-  srcHostCredToken = other4.srcHostCredToken;
-  destHostname = other4.destHostname;
-  destLoginName = other4.destLoginName;
-  destPort = other4.destPort;
-  destProtocol = other4.destProtocol;
-  destFilePath = other4.destFilePath;
-  destHostCredToken = other4.destHostCredToken;
-  fileTransferMode = other4.fileTransferMode;
-  transferStatus = other4.transferStatus;
-  fileSize = other4.fileSize;
-  transferTime = other4.transferTime;
-  createdTime = other4.createdTime;
-  lastModifiedType = other4.lastModifiedType;
-  __isset = other4.__isset;
+FileTransferRequestModel::FileTransferRequestModel(const FileTransferRequestModel& other10) {
+  transferId = other10.transferId;
+  gatewayId = other10.gatewayId;
+  username = other10.username;
+  srcHostname = other10.srcHostname;
+  srcLoginName = other10.srcLoginName;
+  srcPort = other10.srcPort;
+  srcProtocol = other10.srcProtocol;
+  srcFilePath = other10.srcFilePath;
+  srcHostCredToken = other10.srcHostCredToken;
+  destHostname = other10.destHostname;
+  destLoginName = other10.destLoginName;
+  destPort = other10.destPort;
+  destProtocol = other10.destProtocol;
+  destFilePath = other10.destFilePath;
+  destHostCredToken = other10.destHostCredToken;
+  fileTransferMode = other10.fileTransferMode;
+  transferStatus = other10.transferStatus;
+  fileSize = other10.fileSize;
+  transferTime = other10.transferTime;
+  createdTime = other10.createdTime;
+  lastModifiedType = other10.lastModifiedType;
+  callbackEmails = other10.callbackEmails;
+  __isset = other10.__isset;
 }
-FileTransferRequest& FileTransferRequest::operator=(const FileTransferRequest& other5) {
-  transferId = other5.transferId;
-  srcHostname = other5.srcHostname;
-  srcLoginName = other5.srcLoginName;
-  srcPort = other5.srcPort;
-  srcProtocol = other5.srcProtocol;
-  srcFilePath = other5.srcFilePath;
-  srcHostCredToken = other5.srcHostCredToken;
-  destHostname = other5.destHostname;
-  destLoginName = other5.destLoginName;
-  destPort = other5.destPort;
-  destProtocol = other5.destProtocol;
-  destFilePath = other5.destFilePath;
-  destHostCredToken = other5.destHostCredToken;
-  fileTransferMode = other5.fileTransferMode;
-  transferStatus = other5.transferStatus;
-  fileSize = other5.fileSize;
-  transferTime = other5.transferTime;
-  createdTime = other5.createdTime;
-  lastModifiedType = other5.lastModifiedType;
-  __isset = other5.__isset;
+FileTransferRequestModel& FileTransferRequestModel::operator=(const FileTransferRequestModel& other11) {
+  transferId = other11.transferId;
+  gatewayId = other11.gatewayId;
+  username = other11.username;
+  srcHostname = other11.srcHostname;
+  srcLoginName = other11.srcLoginName;
+  srcPort = other11.srcPort;
+  srcProtocol = other11.srcProtocol;
+  srcFilePath = other11.srcFilePath;
+  srcHostCredToken = other11.srcHostCredToken;
+  destHostname = other11.destHostname;
+  destLoginName = other11.destLoginName;
+  destPort = other11.destPort;
+  destProtocol = other11.destProtocol;
+  destFilePath = other11.destFilePath;
+  destHostCredToken = other11.destHostCredToken;
+  fileTransferMode = other11.fileTransferMode;
+  transferStatus = other11.transferStatus;
+  fileSize = other11.fileSize;
+  transferTime = other11.transferTime;
+  createdTime = other11.createdTime;
+  lastModifiedType = other11.lastModifiedType;
+  callbackEmails = other11.callbackEmails;
+  __isset = other11.__isset;
   return *this;
 }
-void FileTransferRequest::printTo(std::ostream& out) const {
+void FileTransferRequestModel::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
-  out << "FileTransferRequest(";
+  out << "FileTransferRequestModel(";
   out << "transferId="; (__isset.transferId ? (out << to_string(transferId)) : (out << "<null>"));
+  out << ", " << "gatewayId="; (__isset.gatewayId ? (out << to_string(gatewayId)) : (out << "<null>"));
+  out << ", " << "username="; (__isset.username ? (out << to_string(username)) : (out << "<null>"));
   out << ", " << "srcHostname="; (__isset.srcHostname ? (out << to_string(srcHostname)) : (out << "<null>"));
   out << ", " << "srcLoginName="; (__isset.srcLoginName ? (out << to_string(srcLoginName)) : (out << "<null>"));
   out << ", " << "srcPort="; (__isset.srcPort ? (out << to_string(srcPort)) : (out << "<null>"));
@@ -573,55 +658,56 @@ void FileTransferRequest::printTo(std::ostream& out) const {
   out << ", " << "transferTime="; (__isset.transferTime ? (out << to_string(transferTime)) : (out << "<null>"));
   out << ", " << "createdTime="; (__isset.createdTime ? (out << to_string(createdTime)) : (out << "<null>"));
   out << ", " << "lastModifiedType="; (__isset.lastModifiedType ? (out << to_string(lastModifiedType)) : (out << "<null>"));
+  out << ", " << "callbackEmails="; (__isset.callbackEmails ? (out << to_string(callbackEmails)) : (out << "<null>"));
   out << ")";
 }
 
 
-FileNode::~FileNode() throw() {
+LSEntryModel::~LSEntryModel() throw() {
 }
 
 
-void FileNode::__set_type(const FileNodeTypes::type val) {
+void LSEntryModel::__set_type(const LSEntryType::type val) {
   this->type = val;
 __isset.type = true;
 }
 
-void FileNode::__set_size(const int64_t val) {
+void LSEntryModel::__set_size(const int64_t val) {
   this->size = val;
 __isset.size = true;
 }
 
-void FileNode::__set_nativeType(const std::string& val) {
+void LSEntryModel::__set_nativeType(const std::string& val) {
   this->nativeType = val;
 __isset.nativeType = true;
 }
 
-void FileNode::__set_name(const std::string& val) {
+void LSEntryModel::__set_name(const std::string& val) {
   this->name = val;
 __isset.name = true;
 }
 
-void FileNode::__set_path(const std::string& val) {
+void LSEntryModel::__set_path(const std::string& val) {
   this->path = val;
 __isset.path = true;
 }
 
-void FileNode::__set_storageHostName(const std::string& val) {
+void LSEntryModel::__set_storageHostName(const std::string& val) {
   this->storageHostName = val;
 __isset.storageHostName = true;
 }
 
-void FileNode::__set_lastModifiedType(const int64_t val) {
+void LSEntryModel::__set_lastModifiedType(const int64_t val) {
   this->lastModifiedType = val;
 __isset.lastModifiedType = true;
 }
 
-void FileNode::__set_createdTime(const int64_t val) {
+void LSEntryModel::__set_createdTime(const int64_t val) {
   this->createdTime = val;
 __isset.createdTime = true;
 }
 
-uint32_t FileNode::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t LSEntryModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
   uint32_t xfer = 0;
@@ -644,9 +730,9 @@ uint32_t FileNode::read(::apache::thrift::protocol::TProtocol* iprot) {
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast6;
-          xfer += iprot->readI32(ecast6);
-          this->type = (FileNodeTypes::type)ecast6;
+          int32_t ecast12;
+          xfer += iprot->readI32(ecast12);
+          this->type = (LSEntryType::type)ecast12;
           this->__isset.type = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -720,10 +806,10 @@ uint32_t FileNode::read(::apache::thrift::protocol::TProtocol* iprot) {
   return xfer;
 }
 
-uint32_t FileNode::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t LSEntryModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("FileNode");
+  xfer += oprot->writeStructBegin("LSEntryModel");
 
   if (this->__isset.type) {
     xfer += oprot->writeFieldBegin("type", ::apache::thrift::protocol::T_I32, 1);
@@ -770,7 +856,7 @@ uint32_t FileNode::write(::apache::thrift::protocol::TProtocol* oprot) const {
   return xfer;
 }
 
-void swap(FileNode &a, FileNode &b) {
+void swap(LSEntryModel &a, LSEntryModel &b) {
   using ::std::swap;
   swap(a.type, b.type);
   swap(a.size, b.size);
@@ -783,32 +869,32 @@ void swap(FileNode &a, FileNode &b) {
   swap(a.__isset, b.__isset);
 }
 
-FileNode::FileNode(const FileNode& other7) {
-  type = other7.type;
-  size = other7.size;
-  nativeType = other7.nativeType;
-  name = other7.name;
-  path = other7.path;
-  storageHostName = other7.storageHostName;
-  lastModifiedType = other7.lastModifiedType;
-  createdTime = other7.createdTime;
-  __isset = other7.__isset;
+LSEntryModel::LSEntryModel(const LSEntryModel& other13) {
+  type = other13.type;
+  size = other13.size;
+  nativeType = other13.nativeType;
+  name = other13.name;
+  path = other13.path;
+  storageHostName = other13.storageHostName;
+  lastModifiedType = other13.lastModifiedType;
+  createdTime = other13.createdTime;
+  __isset = other13.__isset;
 }
-FileNode& FileNode::operator=(const FileNode& other8) {
-  type = other8.type;
-  size = other8.size;
-  nativeType = other8.nativeType;
-  name = other8.name;
-  path = other8.path;
-  storageHostName = other8.storageHostName;
-  lastModifiedType = other8.lastModifiedType;
-  createdTime = other8.createdTime;
-  __isset = other8.__isset;
+LSEntryModel& LSEntryModel::operator=(const LSEntryModel& other14) {
+  type = other14.type;
+  size = other14.size;
+  nativeType = other14.nativeType;
+  name = other14.name;
+  path = other14.path;
+  storageHostName = other14.storageHostName;
+  lastModifiedType = other14.lastModifiedType;
+  createdTime = other14.createdTime;
+  __isset = other14.__isset;
   return *this;
 }
-void FileNode::printTo(std::ostream& out) const {
+void LSEntryModel::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
-  out << "FileNode(";
+  out << "LSEntryModel(";
   out << "type="; (__isset.type ? (out << to_string(type)) : (out << "<null>"));
   out << ", " << "size="; (__isset.size ? (out << to_string(size)) : (out << "<null>"));
   out << ", " << "nativeType="; (__isset.nativeType ? (out << to_string(nativeType)) : (out << "<null>"));
@@ -820,4 +906,4 @@ void FileNode::printTo(std::ostream& out) const {
   out << ")";
 }
 
-}}}} // namespace
+}}}}} // namespace

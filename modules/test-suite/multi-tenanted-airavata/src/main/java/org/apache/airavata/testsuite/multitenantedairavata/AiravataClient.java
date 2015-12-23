@@ -22,7 +22,7 @@
 package org.apache.airavata.testsuite.multitenantedairavata;
 
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.client.AiravataClientFactory;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyFileType;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyReader;

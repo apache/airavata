@@ -40,7 +40,6 @@ include "../data-models/resource-catalog-models/storage_resource_model.thrift"
 include "../data-models/resource-catalog-models/gateway_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
 include "../data-models/workflow-models/workflow_data_model.thrift"
-include "../data-models/data-catalog-models/replica_models.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API

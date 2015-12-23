@@ -24,7 +24,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.apache.airavata.model.file.FileTransferRequest;
+import org.apache.airavata.file.manager.core.db.conversion.metadata.MetadataDeserializer;
+import org.apache.airavata.file.manager.core.db.conversion.metadata.MetadataSerializer;
+import org.apache.airavata.file.manager.core.db.conversion.transfer.FileTransferRequestDeserializer;
+import org.apache.airavata.file.manager.core.db.conversion.transfer.FileTransferRequestSerializer;
+import org.apache.airavata.file.manager.core.db.conversion.replica.FileCollectionDeserializer;
+import org.apache.airavata.file.manager.core.db.conversion.replica.FileCollectionSerializer;
+import org.apache.airavata.file.manager.core.db.conversion.replica.FileDeserializer;
+import org.apache.airavata.file.manager.core.db.conversion.replica.FileSerializer;
+import org.apache.airavata.model.file.metadata.MetadataModel;
+import org.apache.airavata.model.file.transfer.FileTransferRequestModel;
+import org.apache.airavata.model.file.replica.FileCollectionModel;
+import org.apache.airavata.model.file.replica.FileModel;
 import org.apache.thrift.TBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +63,17 @@ public class ModelConversionHelper {
         SimpleModule module = new SimpleModule("FileManager",
                 new Version(1,0,0,null,null,null));
 
-        module.addSerializer(FileTransferRequest.class, new FileTransferRequestSerializer());
-        module.addDeserializer(FileTransferRequest.class, new FileTransferRequestDeserializer());
+        module.addSerializer(FileTransferRequestModel.class, new FileTransferRequestSerializer());
+        module.addDeserializer(FileTransferRequestModel.class, new FileTransferRequestDeserializer());
+
+        module.addSerializer(FileModel.class, new FileSerializer());
+        module.addDeserializer(FileModel.class, new FileDeserializer());
+
+        module.addSerializer(FileCollectionModel.class, new FileCollectionSerializer());
+        module.addDeserializer(FileCollectionModel.class, new FileCollectionDeserializer());
+
+        module.addSerializer(MetadataModel.class, new MetadataSerializer());
+        module.addDeserializer(MetadataModel.class, new MetadataDeserializer());
 
         objectMapper.registerModule(module);
     }

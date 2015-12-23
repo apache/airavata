@@ -17,3 +17,25 @@
  * under the License.
  *
  */
+
+  namespace java org.apache.airavata.model.file.metadata
+  namespace php Airavata.Model.file.metadata
+  namespace cpp apache.airavata.model.file.metadata
+  namespace py apache.airavata.model.file.metadata
+
+  enum MetadataType{
+    FILE, COLLECTION
+  }
+
+  struct MetadataModel{
+    1: optional string metadataId,
+    2: optional string gatewayId,
+    3: optional string username,
+    4: optional list<string> sharedUsers,
+    5: optional bool sharedPublic,
+    6: optional string userFriendlyName,
+    7: optional string userFriendlyDescription,
+    8: optional MetadataType metadataType,
+    9: optional string associatedEntityId,
+   10: optional map<string,string> customInformation
+  }

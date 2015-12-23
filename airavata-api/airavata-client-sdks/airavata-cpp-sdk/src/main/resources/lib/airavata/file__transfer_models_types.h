@@ -34,7 +34,7 @@
 #include <thrift/cxxfunctional.h>
 
 
-namespace apache { namespace airavata { namespace model { namespace file {
+namespace apache { namespace airavata { namespace model { namespace file { namespace transfer {
 
 struct StorageResourceProtocol {
   enum type {
@@ -49,14 +49,14 @@ struct StorageResourceProtocol {
 
 extern const std::map<int, const char*> _StorageResourceProtocol_VALUES_TO_NAMES;
 
-struct FileNodeTypes {
+struct LSEntryType {
   enum type {
     DIRECTORY = 0,
     FILE = 1
   };
 };
 
-extern const std::map<int, const char*> _FileNodeTypes_VALUES_TO_NAMES;
+extern const std::map<int, const char*> _LSEntryType_VALUES_TO_NAMES;
 
 struct FileTransferMode {
   enum type {
@@ -79,13 +79,15 @@ struct FileTransferStatus {
 
 extern const std::map<int, const char*> _FileTransferStatus_VALUES_TO_NAMES;
 
-class FileTransferRequest;
+class FileTransferRequestModel;
 
-class FileNode;
+class LSEntryModel;
 
-typedef struct _FileTransferRequest__isset {
-  _FileTransferRequest__isset() : transferId(false), srcHostname(false), srcLoginName(false), srcPort(false), srcProtocol(false), srcFilePath(false), srcHostCredToken(false), destHostname(false), destLoginName(false), destPort(false), destProtocol(false), destFilePath(false), destHostCredToken(false), fileTransferMode(false), transferStatus(false), fileSize(false), transferTime(false), createdTime(false), lastModifiedType(false) {}
+typedef struct _FileTransferRequestModel__isset {
+  _FileTransferRequestModel__isset() : transferId(false), gatewayId(false), username(false), srcHostname(false), srcLoginName(false), srcPort(false), srcProtocol(false), srcFilePath(false), srcHostCredToken(false), destHostname(false), destLoginName(false), destPort(false), destProtocol(false), destFilePath(false), destHostCredToken(false), fileTransferMode(false), transferStatus(false), fileSize(false), transferTime(false), createdTime(false), lastModifiedType(false), callbackEmails(false) {}
   bool transferId :1;
+  bool gatewayId :1;
+  bool username :1;
   bool srcHostname :1;
   bool srcLoginName :1;
   bool srcPort :1;
@@ -104,18 +106,21 @@ typedef struct _FileTransferRequest__isset {
   bool transferTime :1;
   bool createdTime :1;
   bool lastModifiedType :1;
-} _FileTransferRequest__isset;
+  bool callbackEmails :1;
+} _FileTransferRequestModel__isset;
 
-class FileTransferRequest {
+class FileTransferRequestModel {
  public:
 
-  FileTransferRequest(const FileTransferRequest&);
-  FileTransferRequest& operator=(const FileTransferRequest&);
-  FileTransferRequest() : transferId(), srcHostname(), srcLoginName(), srcPort(0), srcProtocol((StorageResourceProtocol::type)0), srcFilePath(), srcHostCredToken(), destHostname(), destLoginName(), destPort(0), destProtocol((StorageResourceProtocol::type)0), destFilePath(), destHostCredToken(), fileTransferMode((FileTransferMode::type)0), transferStatus((FileTransferStatus::type)0), fileSize(0), transferTime(0), createdTime(0), lastModifiedType(0) {
+  FileTransferRequestModel(const FileTransferRequestModel&);
+  FileTransferRequestModel& operator=(const FileTransferRequestModel&);
+  FileTransferRequestModel() : transferId(), gatewayId(), username(), srcHostname(), srcLoginName(), srcPort(0), srcProtocol((StorageResourceProtocol::type)0), srcFilePath(), srcHostCredToken(), destHostname(), destLoginName(), destPort(0), destProtocol((StorageResourceProtocol::type)0), destFilePath(), destHostCredToken(), fileTransferMode((FileTransferMode::type)0), transferStatus((FileTransferStatus::type)0), fileSize(0), transferTime(0), createdTime(0), lastModifiedType(0) {
   }
 
-  virtual ~FileTransferRequest() throw();
+  virtual ~FileTransferRequestModel() throw();
   std::string transferId;
+  std::string gatewayId;
+  std::string username;
   std::string srcHostname;
   std::string srcLoginName;
   int64_t srcPort;
@@ -134,10 +139,15 @@ class FileTransferRequest {
   int64_t transferTime;
   int64_t createdTime;
   int64_t lastModifiedType;
+  std::vector<std::string>  callbackEmails;
 
-  _FileTransferRequest__isset __isset;
+  _FileTransferRequestModel__isset __isset;
 
   void __set_transferId(const std::string& val);
+
+  void __set_gatewayId(const std::string& val);
+
+  void __set_username(const std::string& val);
 
   void __set_srcHostname(const std::string& val);
 
@@ -175,11 +185,21 @@ class FileTransferRequest {
 
   void __set_lastModifiedType(const int64_t val);
 
-  bool operator == (const FileTransferRequest & rhs) const
+  void __set_callbackEmails(const std::vector<std::string> & val);
+
+  bool operator == (const FileTransferRequestModel & rhs) const
   {
     if (__isset.transferId != rhs.__isset.transferId)
       return false;
     else if (__isset.transferId && !(transferId == rhs.transferId))
+      return false;
+    if (__isset.gatewayId != rhs.__isset.gatewayId)
+      return false;
+    else if (__isset.gatewayId && !(gatewayId == rhs.gatewayId))
+      return false;
+    if (__isset.username != rhs.__isset.username)
+      return false;
+    else if (__isset.username && !(username == rhs.username))
       return false;
     if (__isset.srcHostname != rhs.__isset.srcHostname)
       return false;
@@ -253,13 +273,17 @@ class FileTransferRequest {
       return false;
     else if (__isset.lastModifiedType && !(lastModifiedType == rhs.lastModifiedType))
       return false;
+    if (__isset.callbackEmails != rhs.__isset.callbackEmails)
+      return false;
+    else if (__isset.callbackEmails && !(callbackEmails == rhs.callbackEmails))
+      return false;
     return true;
   }
-  bool operator != (const FileTransferRequest &rhs) const {
+  bool operator != (const FileTransferRequestModel &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const FileTransferRequest & ) const;
+  bool operator < (const FileTransferRequestModel & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -267,16 +291,16 @@ class FileTransferRequest {
   virtual void printTo(std::ostream& out) const;
 };
 
-void swap(FileTransferRequest &a, FileTransferRequest &b);
+void swap(FileTransferRequestModel &a, FileTransferRequestModel &b);
 
-inline std::ostream& operator<<(std::ostream& out, const FileTransferRequest& obj)
+inline std::ostream& operator<<(std::ostream& out, const FileTransferRequestModel& obj)
 {
   obj.printTo(out);
   return out;
 }
 
-typedef struct _FileNode__isset {
-  _FileNode__isset() : type(false), size(false), nativeType(false), name(false), path(false), storageHostName(false), lastModifiedType(false), createdTime(false) {}
+typedef struct _LSEntryModel__isset {
+  _LSEntryModel__isset() : type(false), size(false), nativeType(false), name(false), path(false), storageHostName(false), lastModifiedType(false), createdTime(false) {}
   bool type :1;
   bool size :1;
   bool nativeType :1;
@@ -285,18 +309,18 @@ typedef struct _FileNode__isset {
   bool storageHostName :1;
   bool lastModifiedType :1;
   bool createdTime :1;
-} _FileNode__isset;
+} _LSEntryModel__isset;
 
-class FileNode {
+class LSEntryModel {
  public:
 
-  FileNode(const FileNode&);
-  FileNode& operator=(const FileNode&);
-  FileNode() : type((FileNodeTypes::type)0), size(0), nativeType(), name(), path(), storageHostName(), lastModifiedType(0), createdTime(0) {
+  LSEntryModel(const LSEntryModel&);
+  LSEntryModel& operator=(const LSEntryModel&);
+  LSEntryModel() : type((LSEntryType::type)0), size(0), nativeType(), name(), path(), storageHostName(), lastModifiedType(0), createdTime(0) {
   }
 
-  virtual ~FileNode() throw();
-  FileNodeTypes::type type;
+  virtual ~LSEntryModel() throw();
+  LSEntryType::type type;
   int64_t size;
   std::string nativeType;
   std::string name;
@@ -305,9 +329,9 @@ class FileNode {
   int64_t lastModifiedType;
   int64_t createdTime;
 
-  _FileNode__isset __isset;
+  _LSEntryModel__isset __isset;
 
-  void __set_type(const FileNodeTypes::type val);
+  void __set_type(const LSEntryType::type val);
 
   void __set_size(const int64_t val);
 
@@ -323,7 +347,7 @@ class FileNode {
 
   void __set_createdTime(const int64_t val);
 
-  bool operator == (const FileNode & rhs) const
+  bool operator == (const LSEntryModel & rhs) const
   {
     if (__isset.type != rhs.__isset.type)
       return false;
@@ -359,11 +383,11 @@ class FileNode {
       return false;
     return true;
   }
-  bool operator != (const FileNode &rhs) const {
+  bool operator != (const LSEntryModel &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const FileNode & ) const;
+  bool operator < (const LSEntryModel & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -371,14 +395,14 @@ class FileNode {
   virtual void printTo(std::ostream& out) const;
 };
 
-void swap(FileNode &a, FileNode &b);
+void swap(LSEntryModel &a, LSEntryModel &b);
 
-inline std::ostream& operator<<(std::ostream& out, const FileNode& obj)
+inline std::ostream& operator<<(std::ostream& out, const LSEntryModel& obj)
 {
   obj.printTo(out);
   return out;
 }
 
-}}}} // namespace
+}}}}} // namespace
 
 #endif

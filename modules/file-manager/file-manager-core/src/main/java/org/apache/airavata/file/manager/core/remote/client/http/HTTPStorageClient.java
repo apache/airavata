@@ -21,7 +21,7 @@
 package org.apache.airavata.file.manager.core.remote.client.http;
 
 import org.apache.airavata.file.manager.core.remote.client.RemoteStorageClient;
-import org.apache.airavata.model.file.FileNode;
+import org.apache.airavata.model.file.transfer.LSEntryModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,14 +31,12 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Security;
 import java.util.List;
 import java.util.UUID;
 
@@ -131,7 +129,7 @@ public class HTTPStorageClient implements RemoteStorageClient {
      * @throws Exception
      */
     @Override
-    public List<FileNode> getDirectoryListing(String directoryPath) throws Exception {
+    public List<LSEntryModel> getDirectoryListing(String directoryPath) throws Exception {
         throw new UnsupportedOperationException();
     }
 

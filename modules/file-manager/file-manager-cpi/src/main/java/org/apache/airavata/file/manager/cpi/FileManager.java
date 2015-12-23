@@ -21,4 +21,22 @@
 package org.apache.airavata.file.manager.cpi;
 
 public interface FileManager {
+
+    /**
+     * Return file transfer service instance
+     * @return
+     */
+    FileTransferService getFileTransferService() throws FileManagerException;
+
+    /**
+     * Return replica catalog service instance
+     * @return
+     */
+    ReplicaCatalogService getReplicaCatalogService() throws FileManagerException;
+
+    /**
+     * Return metadata catalog service
+     * @return
+     */
+    MetadataCatalogService getMetadataCatalogService() throws FileManagerException;
 }

@@ -21,7 +21,7 @@
 package org.apache.airavata.client.tools;
 
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.client.AiravataClientFactory;
 import org.apache.airavata.client.samples.CreateLaunchExperiment;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;

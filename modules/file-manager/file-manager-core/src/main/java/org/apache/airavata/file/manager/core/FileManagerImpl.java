@@ -20,10 +20,56 @@
 */
 package org.apache.airavata.file.manager.core;
 
-import org.apache.airavata.file.manager.cpi.FileManager;
+import org.apache.airavata.file.manager.cpi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 public class FileManagerImpl implements FileManager {
     private final static Logger logger = LoggerFactory.getLogger(FileManagerImpl.class);
+
+    /**
+     * Return file transfer service instance
+     *
+     * @return
+     */
+    @Override
+    public FileTransferService getFileTransferService()  throws FileManagerException {
+        try{
+            return new FileTransferServiceImpl();
+        }catch (Exception e){
+            logger.error(e.getMessage(), e);
+            throw new FileManagerException(e);
+        }
+    }
+
+    /**
+     * Return replica catalog service instance
+     *
+     * @return
+     */
+    @Override
+    public ReplicaCatalogService getReplicaCatalogService()  throws FileManagerException{
+        try{
+            return new ReplicaCatalogServiceImpl();
+        }catch (Exception e){
+            logger.error(e.getMessage(), e);
+            throw new FileManagerException(e);
+        }
+    }
+
+    /**
+     * Return metadata catalog service
+     *
+     * @return
+     */
+    @Override
+    public MetadataCatalogService getMetadataCatalogService()  throws FileManagerException{
+        try{
+            return new MetadataCatalogServiceImpl();
+        }catch (Exception e){
+            logger.error(e.getMessage(), e);
+            throw new FileManagerException(e);
+        }
+    }
 }

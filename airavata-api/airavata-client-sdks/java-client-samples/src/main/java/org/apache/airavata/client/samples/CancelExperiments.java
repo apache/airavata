@@ -23,7 +23,7 @@ package org.apache.airavata.client.samples;
 
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.client.AiravataClientFactory;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;

@@ -20,7 +20,7 @@
 package org.apache.airavata.client.samples;
 
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.client.AiravataClientFactory;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;

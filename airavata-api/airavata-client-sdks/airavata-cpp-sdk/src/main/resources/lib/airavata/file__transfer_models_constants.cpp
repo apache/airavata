@@ -23,12 +23,12 @@
  */
 #include "file__transfer_models_constants.h"
 
-namespace apache { namespace airavata { namespace model { namespace file {
+namespace apache { namespace airavata { namespace model { namespace file { namespace transfer {
 
 const file__transfer_modelsConstants g_file__transfer_models_constants;
 
 file__transfer_modelsConstants::file__transfer_modelsConstants() {
 }
 
-}}}} // namespace
+}}}}} // namespace
 

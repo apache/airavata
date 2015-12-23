@@ -22,7 +22,7 @@ package org.apache.airavata.file.manager.core.remote.client.scp;
 
 import com.jcraft.jsch.*;
 import org.apache.airavata.file.manager.core.remote.client.RemoteStorageClient;
-import org.apache.airavata.model.file.FileNode;
+import org.apache.airavata.model.file.transfer.LSEntryModel;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -297,7 +297,7 @@ public class SCPStorageClient implements RemoteStorageClient {
      * @throws Exception
      */
     @Override
-    public List<FileNode> getDirectoryListing(String directoryPath) throws Exception {
+    public List<LSEntryModel> getDirectoryListing(String directoryPath) throws Exception {
         return null;
     }
 

@@ -26,7 +26,7 @@
 
 #include "replica_models_types.h"
 
-namespace apache { namespace airavata { namespace model { namespace replica {
+namespace apache { namespace airavata { namespace model { namespace file { namespace replica {
 
 class replica_modelsConstants {
  public:
@@ -36,6 +36,6 @@ class replica_modelsConstants {
 
 extern const replica_modelsConstants g_replica_models_constants;
 
-}}}} // namespace
+}}}}} // namespace
 
 #endif

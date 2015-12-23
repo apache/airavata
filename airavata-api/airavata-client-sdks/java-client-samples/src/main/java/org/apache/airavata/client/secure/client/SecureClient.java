@@ -21,7 +21,7 @@
 package org.apache.airavata.client.secure.client;
 
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.client.AiravataClientFactory;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.InvalidRequestException;

@@ -20,8 +20,7 @@
 */
 package org.apache.airavata.file.manager.core.remote.client;
 
-
-import org.apache.airavata.model.file.FileNode;
+import org.apache.airavata.model.file.transfer.LSEntryModel;
 
 import java.io.File;
 import java.util.List;
@@ -50,7 +49,7 @@ public interface RemoteStorageClient {
      * @return
      * @throws Exception
      */
-    List<FileNode> getDirectoryListing(String directoryPath) throws Exception;
+    List<LSEntryModel> getDirectoryListing(String directoryPath) throws Exception;
 
     /**
      * Move the specified file from source to destination within the same storage resource

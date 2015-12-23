@@ -25,16 +25,11 @@ import com.mongodb.*;
 import com.mongodb.util.JSON;
 import org.apache.airavata.file.manager.core.db.conversion.ModelConversionHelper;
 import org.apache.airavata.file.manager.core.db.utils.MongoUtils;
-import org.apache.airavata.model.file.FileTransferRequest;
-import org.apache.airavata.registry.core.experiment.catalog.model.Gateway;
-import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.model.file.transfer.FileTransferRequestModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class FileTransferRequestDao {
@@ -60,58 +55,48 @@ public class FileTransferRequestDao {
         collection.createIndex(new BasicDBObject(TRANSFER_ID, 1), new BasicDBObject("unique", true));
     }
 
-    public List<FileTransferRequest> getAllFileTransferRequests() throws IOException {
-        List<FileTransferRequest> fileTransferRequestList = new ArrayList();
-        DBCursor cursor = collection.find();
-        for (DBObject document : cursor) {
-            fileTransferRequestList.add((FileTransferRequest) modelConversionHelper.deserializeObject(
-                    FileTransferRequest.class, document.toString()));
-        }
-        return fileTransferRequestList;
-    }
-
-    public String createFileTransferRequest(FileTransferRequest fileTransferRequest) throws JsonProcessingException {
-        fileTransferRequest.setTransferId(UUID.randomUUID().toString());
+    public String createFileTransferRequest(FileTransferRequestModel fileTransferRequestModel) throws JsonProcessingException {
+        fileTransferRequestModel.setTransferId(UUID.randomUUID().toString());
         WriteResult result = collection.insert((DBObject) JSON.parse(
-                modelConversionHelper.serializeObject(fileTransferRequest)));
+                modelConversionHelper.serializeObject(fileTransferRequestModel)));
         logger.debug("No of inserted results " + result.getN());
-        return fileTransferRequest.getTransferId();
+        return fileTransferRequestModel.getTransferId();
     }
 
-    public void updateFileTransferRequest(FileTransferRequest fileTransferRequest) throws JsonProcessingException {
+    public void updateFileTransferRequest(FileTransferRequestModel fileTransferRequestModel) throws JsonProcessingException {
         DBObject query = BasicDBObjectBuilder.start().add(
-                TRANSFER_ID, fileTransferRequest.getTransferId()).get();
+                TRANSFER_ID, fileTransferRequestModel.getTransferId()).get();
         WriteResult result = collection.update(query, (DBObject) JSON.parse(
-                modelConversionHelper.serializeObject(fileTransferRequest)));
+                modelConversionHelper.serializeObject(fileTransferRequestModel)));
         logger.debug("No of updated results " + result.getN());
     }
 
-    public void deleteFileTransferRequest(FileTransferRequest fileTransferRequest){
+    public void deleteFileTransferRequest(String trasnferId){
         DBObject query = BasicDBObjectBuilder.start().add(
-                TRANSFER_ID, fileTransferRequest.getTransferId()).get();
+                TRANSFER_ID, trasnferId).get();
         WriteResult result = collection.remove(query);
         logger.debug("No of removed file transfer requests " + result.getN());
     }
 
-    public FileTransferRequest getFileTransferRequest(String transferId) throws IOException {
+    public FileTransferRequestModel getFileTransferRequest(String transferId) throws IOException {
 
         DBObject criteria = new BasicDBObject(TRANSFER_ID, transferId);
         DBObject doc = collection.findOne(criteria);
         if (doc != null) {
             String json = doc.toString();
-            return (FileTransferRequest) modelConversionHelper.deserializeObject(
-                    FileTransferRequest.class, json);
+            return (FileTransferRequestModel) modelConversionHelper.deserializeObject(
+                    FileTransferRequestModel.class, json);
         }
         return null;
     }
 
     public static void main(String[] args) throws IOException {
-        FileTransferRequest fileTransferRequest = new FileTransferRequest();
-        fileTransferRequest.setSrcHostCredToken("djkalbsbdaslfbalsfbslf");
-        fileTransferRequest.setSrcFilePath("test-file-path");
+        FileTransferRequestModel fileTransferRequestModel = new FileTransferRequestModel();
+        fileTransferRequestModel.setSrcHostCredToken("djkalbsbdaslfbalsfbslf");
+        fileTransferRequestModel.setSrcFilePath("test-file-path");
         FileTransferRequestDao fileTransferRequestDao = new FileTransferRequestDao();
-        String transferId = fileTransferRequestDao.createFileTransferRequest(fileTransferRequest);
-        fileTransferRequest = fileTransferRequestDao.getFileTransferRequest(transferId);
-        System.out.println("Transfer Id:" + fileTransferRequest.getTransferId());
+        String transferId = fileTransferRequestDao.createFileTransferRequest(fileTransferRequestModel);
+        fileTransferRequestModel = fileTransferRequestDao.getFileTransferRequest(transferId);
+        System.out.println("Transfer Id:" + fileTransferRequestModel.getTransferId());
     }
 }

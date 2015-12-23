@@ -25,8 +25,8 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.airavata.file.manager.core.remote.client.RemoteStorageClient;
-import org.apache.airavata.model.file.FileNode;
-import org.apache.airavata.model.file.FileNodeTypes;
+import org.apache.airavata.model.file.transfer.LSEntryModel;
+import org.apache.airavata.model.file.transfer.LSEntryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,7 +100,7 @@ public class SFTPStorageClient implements RemoteStorageClient {
      * @throws Exception
      */
     @Override
-    public List<FileNode> getDirectoryListing(String directoryPath) throws Exception {
+    public List<LSEntryModel> getDirectoryListing(String directoryPath) throws Exception {
         if(directoryPath.endsWith(File.separator)){
             directoryPath = directoryPath.substring(0, directoryPath.length() -1);
         }
@@ -111,17 +111,17 @@ public class SFTPStorageClient implements RemoteStorageClient {
         }
         sftpChannel.cd(directoryPath);
         Vector<ChannelSftp.LsEntry> lsEntryVector = sftpChannel.ls(directoryPath);
-        ArrayList<FileNode> fileNodeList = new ArrayList<>();
+        ArrayList<LSEntryModel> fileNodeList = new ArrayList<>();
         lsEntryVector.stream().forEach(lsEntry -> {
-            FileNode fileNode = new FileNode();
+            LSEntryModel fileNode = new LSEntryModel();
             fileNode.setName(lsEntry.getFilename());
             fileNode.setPath(finalDirPath + File.separator + lsEntry.getFilename());
             fileNode.setStorageHostName(hostName);
             fileNode.setSize(lsEntry.getAttrs().getSize());
             if(lsEntry.getAttrs().isDir())
-                fileNode.setType(FileNodeTypes.DIRECTORY);
+                fileNode.setType(LSEntryType.DIRECTORY);
             else
-                fileNode.setType(FileNodeTypes.FILE);
+                fileNode.setType(LSEntryType.FILE);
             fileNodeList.add(fileNode);
         });
         return fileNodeList;

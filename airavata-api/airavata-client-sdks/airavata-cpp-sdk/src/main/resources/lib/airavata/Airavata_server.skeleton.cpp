@@ -230,11 +230,6 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllUserSSHPubKeys\n");
   }
 
-  void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
-    // Your implementation goes here
-    printf("getAllGatewaySSHPubKeys\n");
-  }
-
   /**
    * Get all Public Keys of the Gateway
    * 

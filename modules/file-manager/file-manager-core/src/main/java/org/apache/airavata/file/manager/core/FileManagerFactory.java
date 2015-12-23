@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 public class FileManagerFactory {
     private final static Logger logger = LoggerFactory.getLogger(FileManagerFactory.class);
 
-    public static FileManager getDataManager() throws FileManagerException {
+    public static FileManager getFileManager() throws FileManagerException {
         return new FileManagerImpl();
     }
 }

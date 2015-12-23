@@ -46,6 +46,7 @@
 #include "data_movement_models_types.h"
 #include "replica_models_types.h"
 #include "file__transfer_models_types.h"
+#include "metadata_models_types.h"
 
 
 namespace apache { namespace airavata { namespace model {

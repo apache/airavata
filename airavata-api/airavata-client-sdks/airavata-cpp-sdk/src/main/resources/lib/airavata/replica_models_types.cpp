@@ -28,21 +28,33 @@
 
 #include <thrift/TToString.h>
 
-namespace apache { namespace airavata { namespace model { namespace replica {
+namespace apache { namespace airavata { namespace model { namespace file { namespace replica {
 
-int _kReplicaLocationCategoryValues[] = {
-  ReplicaLocationCategory::GATEWAY_DATA_STORE,
-  ReplicaLocationCategory::COMPUTE_RESOURCE,
-  ReplicaLocationCategory::LONG_TERM_STORAGE_RESOURCE,
-  ReplicaLocationCategory::OTHER
+int _kFileModelTypeValues[] = {
+  FileModelType::FILE,
+  FileModelType::DIRECTORY
 };
-const char* _kReplicaLocationCategoryNames[] = {
+const char* _kFileModelTypeNames[] = {
+  "FILE",
+  "DIRECTORY"
+};
+const std::map<int, const char*> _FileModelType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kFileModelTypeValues, _kFileModelTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
+int _kStorageResourceTypeValues[] = {
+  StorageResourceType::GATEWAY_DATA_STORE,
+  StorageResourceType::BACKUP_GATEWAY_DATA_STORE,
+  StorageResourceType::COMPUTE_RESOURCE,
+  StorageResourceType::LONG_TERM_STORAGE_RESOURCE,
+  StorageResourceType::OTHER
+};
+const char* _kStorageResourceTypeNames[] = {
   "GATEWAY_DATA_STORE",
+  "BACKUP_GATEWAY_DATA_STORE",
   "COMPUTE_RESOURCE",
   "LONG_TERM_STORAGE_RESOURCE",
   "OTHER"
 };
-const std::map<int, const char*> _ReplicaLocationCategory_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(4, _kReplicaLocationCategoryValues, _kReplicaLocationCategoryNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _StorageResourceType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(5, _kStorageResourceTypeValues, _kStorageResourceTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kReplicaPersistentTypeValues[] = {
   ReplicaPersistentType::TRANSIENT,
@@ -54,97 +66,52 @@ const char* _kReplicaPersistentTypeNames[] = {
 };
 const std::map<int, const char*> _ReplicaPersistentType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kReplicaPersistentTypeValues, _kReplicaPersistentTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
-int _kDataResourceTypeValues[] = {
-  DataResourceType::COLLECTION,
-  DataResourceType::FILE
-};
-const char* _kDataResourceTypeNames[] = {
-  "COLLECTION",
-  "FILE"
-};
-const std::map<int, const char*> _DataResourceType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kDataResourceTypeValues, _kDataResourceTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
-
-DataResourceModel::~DataResourceModel() throw() {
+FileCollectionModel::~FileCollectionModel() throw() {
 }
 
 
-void DataResourceModel::__set_resourceId(const std::string& val) {
-  this->resourceId = val;
-__isset.resourceId = true;
+void FileCollectionModel::__set_collectionId(const std::string& val) {
+  this->collectionId = val;
+__isset.collectionId = true;
 }
 
-void DataResourceModel::__set_gatewayId(const std::string& val) {
+void FileCollectionModel::__set_gatewayId(const std::string& val) {
   this->gatewayId = val;
 __isset.gatewayId = true;
 }
 
-void DataResourceModel::__set_parentResourceId(const std::string& val) {
-  this->parentResourceId = val;
-__isset.parentResourceId = true;
+void FileCollectionModel::__set_username(const std::string& val) {
+  this->username = val;
+__isset.username = true;
 }
 
-void DataResourceModel::__set_resourceName(const std::string& val) {
-  this->resourceName = val;
-__isset.resourceName = true;
+void FileCollectionModel::__set_sharedUsers(const std::vector<std::string> & val) {
+  this->sharedUsers = val;
+__isset.sharedUsers = true;
 }
 
-void DataResourceModel::__set_resourceDescription(const std::string& val) {
-  this->resourceDescription = val;
-__isset.resourceDescription = true;
+void FileCollectionModel::__set_sharedPublic(const bool val) {
+  this->sharedPublic = val;
+__isset.sharedPublic = true;
 }
 
-void DataResourceModel::__set_ownerName(const std::string& val) {
-  this->ownerName = val;
-__isset.ownerName = true;
+void FileCollectionModel::__set_collectionName(const std::string& val) {
+  this->collectionName = val;
+__isset.collectionName = true;
 }
 
-void DataResourceModel::__set_sha256Checksum(const std::string& val) {
-  this->sha256Checksum = val;
-__isset.sha256Checksum = true;
+void FileCollectionModel::__set_collectionDescription(const std::string& val) {
+  this->collectionDescription = val;
+__isset.collectionDescription = true;
 }
 
-void DataResourceModel::__set_dataResourceType(const DataResourceType::type val) {
-  this->dataResourceType = val;
-__isset.dataResourceType = true;
+void FileCollectionModel::__set_fileIdList(const std::vector<std::string> & val) {
+  this->fileIdList = val;
+__isset.fileIdList = true;
 }
 
-void DataResourceModel::__set_resourceSize(const int32_t val) {
-  this->resourceSize = val;
-__isset.resourceSize = true;
-}
-
-void DataResourceModel::__set_nativeFormat(const std::string& val) {
-  this->nativeFormat = val;
-__isset.nativeFormat = true;
-}
-
-void DataResourceModel::__set_creationTime(const int64_t val) {
-  this->creationTime = val;
-__isset.creationTime = true;
-}
-
-void DataResourceModel::__set_lastModifiedTime(const int64_t val) {
-  this->lastModifiedTime = val;
-__isset.lastModifiedTime = true;
-}
-
-void DataResourceModel::__set_resourceMetadata(const std::map<std::string, std::string> & val) {
-  this->resourceMetadata = val;
-__isset.resourceMetadata = true;
-}
-
-void DataResourceModel::__set_replicaLocations(const std::vector<DataReplicaLocationModel> & val) {
-  this->replicaLocations = val;
-__isset.replicaLocations = true;
-}
-
-void DataResourceModel::__set_childResources(const std::vector<DataResourceModel> & val) {
-  this->childResources = val;
-__isset.childResources = true;
-}
-
-uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t FileCollectionModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
   uint32_t xfer = 0;
@@ -167,8 +134,8 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->resourceId);
-          this->__isset.resourceId = true;
+          xfer += iprot->readString(this->collectionId);
+          this->__isset.collectionId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -183,145 +150,72 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->parentResourceId);
-          this->__isset.parentResourceId = true;
+          xfer += iprot->readString(this->username);
+          this->__isset.username = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 4:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->resourceName);
-          this->__isset.resourceName = true;
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->sharedUsers.clear();
+            uint32_t _size0;
+            ::apache::thrift::protocol::TType _etype3;
+            xfer += iprot->readListBegin(_etype3, _size0);
+            this->sharedUsers.resize(_size0);
+            uint32_t _i4;
+            for (_i4 = 0; _i4 < _size0; ++_i4)
+            {
+              xfer += iprot->readString(this->sharedUsers[_i4]);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.sharedUsers = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 5:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->resourceDescription);
-          this->__isset.resourceDescription = true;
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->sharedPublic);
+          this->__isset.sharedPublic = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 6:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->ownerName);
-          this->__isset.ownerName = true;
+          xfer += iprot->readString(this->collectionName);
+          this->__isset.collectionName = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 7:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->sha256Checksum);
-          this->__isset.sha256Checksum = true;
+          xfer += iprot->readString(this->collectionDescription);
+          this->__isset.collectionDescription = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 8:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast0;
-          xfer += iprot->readI32(ecast0);
-          this->dataResourceType = (DataResourceType::type)ecast0;
-          this->__isset.dataResourceType = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 9:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->resourceSize);
-          this->__isset.resourceSize = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 10:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->nativeFormat);
-          this->__isset.nativeFormat = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 11:
-        if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64(this->creationTime);
-          this->__isset.creationTime = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 12:
-        if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64(this->lastModifiedTime);
-          this->__isset.lastModifiedTime = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 13:
-        if (ftype == ::apache::thrift::protocol::T_MAP) {
-          {
-            this->resourceMetadata.clear();
-            uint32_t _size1;
-            ::apache::thrift::protocol::TType _ktype2;
-            ::apache::thrift::protocol::TType _vtype3;
-            xfer += iprot->readMapBegin(_ktype2, _vtype3, _size1);
-            uint32_t _i5;
-            for (_i5 = 0; _i5 < _size1; ++_i5)
-            {
-              std::string _key6;
-              xfer += iprot->readString(_key6);
-              std::string& _val7 = this->resourceMetadata[_key6];
-              xfer += iprot->readString(_val7);
-            }
-            xfer += iprot->readMapEnd();
-          }
-          this->__isset.resourceMetadata = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 14:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
-            this->replicaLocations.clear();
-            uint32_t _size8;
-            ::apache::thrift::protocol::TType _etype11;
-            xfer += iprot->readListBegin(_etype11, _size8);
-            this->replicaLocations.resize(_size8);
-            uint32_t _i12;
-            for (_i12 = 0; _i12 < _size8; ++_i12)
+            this->fileIdList.clear();
+            uint32_t _size5;
+            ::apache::thrift::protocol::TType _etype8;
+            xfer += iprot->readListBegin(_etype8, _size5);
+            this->fileIdList.resize(_size5);
+            uint32_t _i9;
+            for (_i9 = 0; _i9 < _size5; ++_i9)
             {
-              xfer += this->replicaLocations[_i12].read(iprot);
+              xfer += iprot->readString(this->fileIdList[_i9]);
             }
             xfer += iprot->readListEnd();
           }
-          this->__isset.replicaLocations = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 15:
-        if (ftype == ::apache::thrift::protocol::T_LIST) {
-          {
-            this->childResources.clear();
-            uint32_t _size13;
-            ::apache::thrift::protocol::TType _etype16;
-            xfer += iprot->readListBegin(_etype16, _size13);
-            this->childResources.resize(_size13);
-            uint32_t _i17;
-            for (_i17 = 0; _i17 < _size13; ++_i17)
-            {
-              xfer += this->childResources[_i17].read(iprot);
-            }
-            xfer += iprot->readListEnd();
-          }
-          this->__isset.childResources = true;
+          this->__isset.fileIdList = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -338,14 +232,14 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
   return xfer;
 }
 
-uint32_t DataResourceModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t FileCollectionModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("DataResourceModel");
+  xfer += oprot->writeStructBegin("FileCollectionModel");
 
-  if (this->__isset.resourceId) {
-    xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 1);
-    xfer += oprot->writeString(this->resourceId);
+  if (this->__isset.collectionId) {
+    xfer += oprot->writeFieldBegin("collectionId", ::apache::thrift::protocol::T_STRING, 1);
+    xfer += oprot->writeString(this->collectionId);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.gatewayId) {
@@ -353,91 +247,47 @@ uint32_t DataResourceModel::write(::apache::thrift::protocol::TProtocol* oprot) 
     xfer += oprot->writeString(this->gatewayId);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.parentResourceId) {
-    xfer += oprot->writeFieldBegin("parentResourceId", ::apache::thrift::protocol::T_STRING, 3);
-    xfer += oprot->writeString(this->parentResourceId);
+  if (this->__isset.username) {
+    xfer += oprot->writeFieldBegin("username", ::apache::thrift::protocol::T_STRING, 3);
+    xfer += oprot->writeString(this->username);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.resourceName) {
-    xfer += oprot->writeFieldBegin("resourceName", ::apache::thrift::protocol::T_STRING, 4);
-    xfer += oprot->writeString(this->resourceName);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.resourceDescription) {
-    xfer += oprot->writeFieldBegin("resourceDescription", ::apache::thrift::protocol::T_STRING, 5);
-    xfer += oprot->writeString(this->resourceDescription);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.ownerName) {
-    xfer += oprot->writeFieldBegin("ownerName", ::apache::thrift::protocol::T_STRING, 6);
-    xfer += oprot->writeString(this->ownerName);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.sha256Checksum) {
-    xfer += oprot->writeFieldBegin("sha256Checksum", ::apache::thrift::protocol::T_STRING, 7);
-    xfer += oprot->writeString(this->sha256Checksum);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.dataResourceType) {
-    xfer += oprot->writeFieldBegin("dataResourceType", ::apache::thrift::protocol::T_I32, 8);
-    xfer += oprot->writeI32((int32_t)this->dataResourceType);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.resourceSize) {
-    xfer += oprot->writeFieldBegin("resourceSize", ::apache::thrift::protocol::T_I32, 9);
-    xfer += oprot->writeI32(this->resourceSize);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.nativeFormat) {
-    xfer += oprot->writeFieldBegin("nativeFormat", ::apache::thrift::protocol::T_STRING, 10);
-    xfer += oprot->writeString(this->nativeFormat);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.creationTime) {
-    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 11);
-    xfer += oprot->writeI64(this->creationTime);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.lastModifiedTime) {
-    xfer += oprot->writeFieldBegin("lastModifiedTime", ::apache::thrift::protocol::T_I64, 12);
-    xfer += oprot->writeI64(this->lastModifiedTime);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.resourceMetadata) {
-    xfer += oprot->writeFieldBegin("resourceMetadata", ::apache::thrift::protocol::T_MAP, 13);
+  if (this->__isset.sharedUsers) {
+    xfer += oprot->writeFieldBegin("sharedUsers", ::apache::thrift::protocol::T_LIST, 4);
     {
-      xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->resourceMetadata.size()));
-      std::map<std::string, std::string> ::const_iterator _iter18;
-      for (_iter18 = this->resourceMetadata.begin(); _iter18 != this->resourceMetadata.end(); ++_iter18)
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->sharedUsers.size()));
+      std::vector<std::string> ::const_iterator _iter10;
+      for (_iter10 = this->sharedUsers.begin(); _iter10 != this->sharedUsers.end(); ++_iter10)
       {
-        xfer += oprot->writeString(_iter18->first);
-        xfer += oprot->writeString(_iter18->second);
-      }
-      xfer += oprot->writeMapEnd();
-    }
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.replicaLocations) {
-    xfer += oprot->writeFieldBegin("replicaLocations", ::apache::thrift::protocol::T_LIST, 14);
-    {
-      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->replicaLocations.size()));
-      std::vector<DataReplicaLocationModel> ::const_iterator _iter19;
-      for (_iter19 = this->replicaLocations.begin(); _iter19 != this->replicaLocations.end(); ++_iter19)
-      {
-        xfer += (*_iter19).write(oprot);
+        xfer += oprot->writeString((*_iter10));
       }
       xfer += oprot->writeListEnd();
     }
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.childResources) {
-    xfer += oprot->writeFieldBegin("childResources", ::apache::thrift::protocol::T_LIST, 15);
+  if (this->__isset.sharedPublic) {
+    xfer += oprot->writeFieldBegin("sharedPublic", ::apache::thrift::protocol::T_BOOL, 5);
+    xfer += oprot->writeBool(this->sharedPublic);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.collectionName) {
+    xfer += oprot->writeFieldBegin("collectionName", ::apache::thrift::protocol::T_STRING, 6);
+    xfer += oprot->writeString(this->collectionName);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.collectionDescription) {
+    xfer += oprot->writeFieldBegin("collectionDescription", ::apache::thrift::protocol::T_STRING, 7);
+    xfer += oprot->writeString(this->collectionDescription);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.fileIdList) {
+    xfer += oprot->writeFieldBegin("fileIdList", ::apache::thrift::protocol::T_LIST, 8);
     {
-      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->childResources.size()));
-      std::vector<DataResourceModel> ::const_iterator _iter20;
-      for (_iter20 = this->childResources.begin(); _iter20 != this->childResources.end(); ++_iter20)
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->fileIdList.size()));
+      std::vector<std::string> ::const_iterator _iter11;
+      for (_iter11 = this->fileIdList.begin(); _iter11 != this->fileIdList.end(); ++_iter11)
       {
-        xfer += (*_iter20).write(oprot);
+        xfer += oprot->writeString((*_iter11));
       }
       xfer += oprot->writeListEnd();
     }
@@ -448,155 +298,132 @@ uint32_t DataResourceModel::write(::apache::thrift::protocol::TProtocol* oprot) 
   return xfer;
 }
 
-void swap(DataResourceModel &a, DataResourceModel &b) {
+void swap(FileCollectionModel &a, FileCollectionModel &b) {
   using ::std::swap;
-  swap(a.resourceId, b.resourceId);
+  swap(a.collectionId, b.collectionId);
   swap(a.gatewayId, b.gatewayId);
-  swap(a.parentResourceId, b.parentResourceId);
-  swap(a.resourceName, b.resourceName);
-  swap(a.resourceDescription, b.resourceDescription);
-  swap(a.ownerName, b.ownerName);
-  swap(a.sha256Checksum, b.sha256Checksum);
-  swap(a.dataResourceType, b.dataResourceType);
-  swap(a.resourceSize, b.resourceSize);
-  swap(a.nativeFormat, b.nativeFormat);
-  swap(a.creationTime, b.creationTime);
-  swap(a.lastModifiedTime, b.lastModifiedTime);
-  swap(a.resourceMetadata, b.resourceMetadata);
-  swap(a.replicaLocations, b.replicaLocations);
-  swap(a.childResources, b.childResources);
+  swap(a.username, b.username);
+  swap(a.sharedUsers, b.sharedUsers);
+  swap(a.sharedPublic, b.sharedPublic);
+  swap(a.collectionName, b.collectionName);
+  swap(a.collectionDescription, b.collectionDescription);
+  swap(a.fileIdList, b.fileIdList);
   swap(a.__isset, b.__isset);
 }
 
-DataResourceModel::DataResourceModel(const DataResourceModel& other21) {
-  resourceId = other21.resourceId;
-  gatewayId = other21.gatewayId;
-  parentResourceId = other21.parentResourceId;
-  resourceName = other21.resourceName;
-  resourceDescription = other21.resourceDescription;
-  ownerName = other21.ownerName;
-  sha256Checksum = other21.sha256Checksum;
-  dataResourceType = other21.dataResourceType;
-  resourceSize = other21.resourceSize;
-  nativeFormat = other21.nativeFormat;
-  creationTime = other21.creationTime;
-  lastModifiedTime = other21.lastModifiedTime;
-  resourceMetadata = other21.resourceMetadata;
-  replicaLocations = other21.replicaLocations;
-  childResources = other21.childResources;
-  __isset = other21.__isset;
+FileCollectionModel::FileCollectionModel(const FileCollectionModel& other12) {
+  collectionId = other12.collectionId;
+  gatewayId = other12.gatewayId;
+  username = other12.username;
+  sharedUsers = other12.sharedUsers;
+  sharedPublic = other12.sharedPublic;
+  collectionName = other12.collectionName;
+  collectionDescription = other12.collectionDescription;
+  fileIdList = other12.fileIdList;
+  __isset = other12.__isset;
 }
-DataResourceModel& DataResourceModel::operator=(const DataResourceModel& other22) {
-  resourceId = other22.resourceId;
-  gatewayId = other22.gatewayId;
-  parentResourceId = other22.parentResourceId;
-  resourceName = other22.resourceName;
-  resourceDescription = other22.resourceDescription;
-  ownerName = other22.ownerName;
-  sha256Checksum = other22.sha256Checksum;
-  dataResourceType = other22.dataResourceType;
-  resourceSize = other22.resourceSize;
-  nativeFormat = other22.nativeFormat;
-  creationTime = other22.creationTime;
-  lastModifiedTime = other22.lastModifiedTime;
-  resourceMetadata = other22.resourceMetadata;
-  replicaLocations = other22.replicaLocations;
-  childResources = other22.childResources;
-  __isset = other22.__isset;
+FileCollectionModel& FileCollectionModel::operator=(const FileCollectionModel& other13) {
+  collectionId = other13.collectionId;
+  gatewayId = other13.gatewayId;
+  username = other13.username;
+  sharedUsers = other13.sharedUsers;
+  sharedPublic = other13.sharedPublic;
+  collectionName = other13.collectionName;
+  collectionDescription = other13.collectionDescription;
+  fileIdList = other13.fileIdList;
+  __isset = other13.__isset;
   return *this;
 }
-void DataResourceModel::printTo(std::ostream& out) const {
+void FileCollectionModel::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
-  out << "DataResourceModel(";
-  out << "resourceId="; (__isset.resourceId ? (out << to_string(resourceId)) : (out << "<null>"));
+  out << "FileCollectionModel(";
+  out << "collectionId="; (__isset.collectionId ? (out << to_string(collectionId)) : (out << "<null>"));
   out << ", " << "gatewayId="; (__isset.gatewayId ? (out << to_string(gatewayId)) : (out << "<null>"));
-  out << ", " << "parentResourceId="; (__isset.parentResourceId ? (out << to_string(parentResourceId)) : (out << "<null>"));
-  out << ", " << "resourceName="; (__isset.resourceName ? (out << to_string(resourceName)) : (out << "<null>"));
-  out << ", " << "resourceDescription="; (__isset.resourceDescription ? (out << to_string(resourceDescription)) : (out << "<null>"));
-  out << ", " << "ownerName="; (__isset.ownerName ? (out << to_string(ownerName)) : (out << "<null>"));
-  out << ", " << "sha256Checksum="; (__isset.sha256Checksum ? (out << to_string(sha256Checksum)) : (out << "<null>"));
-  out << ", " << "dataResourceType="; (__isset.dataResourceType ? (out << to_string(dataResourceType)) : (out << "<null>"));
-  out << ", " << "resourceSize="; (__isset.resourceSize ? (out << to_string(resourceSize)) : (out << "<null>"));
-  out << ", " << "nativeFormat="; (__isset.nativeFormat ? (out << to_string(nativeFormat)) : (out << "<null>"));
-  out << ", " << "creationTime="; (__isset.creationTime ? (out << to_string(creationTime)) : (out << "<null>"));
-  out << ", " << "lastModifiedTime="; (__isset.lastModifiedTime ? (out << to_string(lastModifiedTime)) : (out << "<null>"));
-  out << ", " << "resourceMetadata="; (__isset.resourceMetadata ? (out << to_string(resourceMetadata)) : (out << "<null>"));
-  out << ", " << "replicaLocations="; (__isset.replicaLocations ? (out << to_string(replicaLocations)) : (out << "<null>"));
-  out << ", " << "childResources="; (__isset.childResources ? (out << to_string(childResources)) : (out << "<null>"));
+  out << ", " << "username="; (__isset.username ? (out << to_string(username)) : (out << "<null>"));
+  out << ", " << "sharedUsers="; (__isset.sharedUsers ? (out << to_string(sharedUsers)) : (out << "<null>"));
+  out << ", " << "sharedPublic="; (__isset.sharedPublic ? (out << to_string(sharedPublic)) : (out << "<null>"));
+  out << ", " << "collectionName="; (__isset.collectionName ? (out << to_string(collectionName)) : (out << "<null>"));
+  out << ", " << "collectionDescription="; (__isset.collectionDescription ? (out << to_string(collectionDescription)) : (out << "<null>"));
+  out << ", " << "fileIdList="; (__isset.fileIdList ? (out << to_string(fileIdList)) : (out << "<null>"));
   out << ")";
 }
 
 
-DataReplicaLocationModel::~DataReplicaLocationModel() throw() {
+FileModel::~FileModel() throw() {
 }
 
 
-void DataReplicaLocationModel::__set_replicaId(const std::string& val) {
-  this->replicaId = val;
-__isset.replicaId = true;
+void FileModel::__set_fileId(const std::string& val) {
+  this->fileId = val;
+__isset.fileId = true;
 }
 
-void DataReplicaLocationModel::__set_resourceId(const std::string& val) {
-  this->resourceId = val;
-__isset.resourceId = true;
+void FileModel::__set_gatewayId(const std::string& val) {
+  this->gatewayId = val;
+__isset.gatewayId = true;
 }
 
-void DataReplicaLocationModel::__set_replicaName(const std::string& val) {
-  this->replicaName = val;
-__isset.replicaName = true;
+void FileModel::__set_username(const std::string& val) {
+  this->username = val;
+__isset.username = true;
 }
 
-void DataReplicaLocationModel::__set_replicaDescription(const std::string& val) {
-  this->replicaDescription = val;
-__isset.replicaDescription = true;
+void FileModel::__set_sharedUsers(const std::vector<std::string> & val) {
+  this->sharedUsers = val;
+__isset.sharedUsers = true;
 }
 
-void DataReplicaLocationModel::__set_sourceReplicaId(const std::string& val) {
-  this->sourceReplicaId = val;
-__isset.sourceReplicaId = true;
+void FileModel::__set_sharedPublic(const bool val) {
+  this->sharedPublic = val;
+__isset.sharedPublic = true;
 }
 
-void DataReplicaLocationModel::__set_creationTime(const int64_t val) {
+void FileModel::__set_fileName(const std::string& val) {
+  this->fileName = val;
+__isset.fileName = true;
+}
+
+void FileModel::__set_fileDescription(const std::string& val) {
+  this->fileDescription = val;
+__isset.fileDescription = true;
+}
+
+void FileModel::__set_sha256Checksum(const std::string& val) {
+  this->sha256Checksum = val;
+__isset.sha256Checksum = true;
+}
+
+void FileModel::__set_fileType(const FileModelType::type val) {
+  this->fileType = val;
+__isset.fileType = true;
+}
+
+void FileModel::__set_fileSize(const int32_t val) {
+  this->fileSize = val;
+__isset.fileSize = true;
+}
+
+void FileModel::__set_nativeFormat(const std::string& val) {
+  this->nativeFormat = val;
+__isset.nativeFormat = true;
+}
+
+void FileModel::__set_creationTime(const int64_t val) {
   this->creationTime = val;
 __isset.creationTime = true;
 }
 
-void DataReplicaLocationModel::__set_lastModifiedTime(const int64_t val) {
+void FileModel::__set_lastModifiedTime(const int64_t val) {
   this->lastModifiedTime = val;
 __isset.lastModifiedTime = true;
 }
 
-void DataReplicaLocationModel::__set_validUntilTime(const int64_t val) {
-  this->validUntilTime = val;
-__isset.validUntilTime = true;
+void FileModel::__set_fileReplicas(const std::vector<FileReplicaModel> & val) {
+  this->fileReplicas = val;
+__isset.fileReplicas = true;
 }
 
-void DataReplicaLocationModel::__set_replicaLocationCategory(const ReplicaLocationCategory::type val) {
-  this->replicaLocationCategory = val;
-__isset.replicaLocationCategory = true;
-}
-
-void DataReplicaLocationModel::__set_replicaPersistentType(const ReplicaPersistentType::type val) {
-  this->replicaPersistentType = val;
-__isset.replicaPersistentType = true;
-}
-
-void DataReplicaLocationModel::__set_storageResourceId(const std::string& val) {
-  this->storageResourceId = val;
-__isset.storageResourceId = true;
-}
-
-void DataReplicaLocationModel::__set_fileAbsolutePath(const std::string& val) {
-  this->fileAbsolutePath = val;
-__isset.fileAbsolutePath = true;
-}
-
-void DataReplicaLocationModel::__set_replicaMetadata(const std::map<std::string, std::string> & val) {
-  this->replicaMetadata = val;
-__isset.replicaMetadata = true;
-}
-
-uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t FileModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
   uint32_t xfer = 0;
@@ -619,45 +446,107 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->replicaId);
-          this->__isset.replicaId = true;
+          xfer += iprot->readString(this->fileId);
+          this->__isset.fileId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->resourceId);
-          this->__isset.resourceId = true;
+          xfer += iprot->readString(this->gatewayId);
+          this->__isset.gatewayId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->replicaName);
-          this->__isset.replicaName = true;
+          xfer += iprot->readString(this->username);
+          this->__isset.username = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 4:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->replicaDescription);
-          this->__isset.replicaDescription = true;
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->sharedUsers.clear();
+            uint32_t _size14;
+            ::apache::thrift::protocol::TType _etype17;
+            xfer += iprot->readListBegin(_etype17, _size14);
+            this->sharedUsers.resize(_size14);
+            uint32_t _i18;
+            for (_i18 = 0; _i18 < _size14; ++_i18)
+            {
+              xfer += iprot->readString(this->sharedUsers[_i18]);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.sharedUsers = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 5:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->sourceReplicaId);
-          this->__isset.sourceReplicaId = true;
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->sharedPublic);
+          this->__isset.sharedPublic = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 6:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->fileName);
+          this->__isset.fileName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 7:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->fileDescription);
+          this->__isset.fileDescription = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 8:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->sha256Checksum);
+          this->__isset.sha256Checksum = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 9:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast19;
+          xfer += iprot->readI32(ecast19);
+          this->fileType = (FileModelType::type)ecast19;
+          this->__isset.fileType = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 10:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->fileSize);
+          this->__isset.fileSize = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 11:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->nativeFormat);
+          this->__isset.nativeFormat = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 12:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->creationTime);
           this->__isset.creationTime = true;
@@ -665,7 +554,7 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
           xfer += iprot->skip(ftype);
         }
         break;
-      case 7:
+      case 13:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->lastModifiedTime);
           this->__isset.lastModifiedTime = true;
@@ -673,69 +562,22 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
           xfer += iprot->skip(ftype);
         }
         break;
-      case 8:
-        if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64(this->validUntilTime);
-          this->__isset.validUntilTime = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 9:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast23;
-          xfer += iprot->readI32(ecast23);
-          this->replicaLocationCategory = (ReplicaLocationCategory::type)ecast23;
-          this->__isset.replicaLocationCategory = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 10:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast24;
-          xfer += iprot->readI32(ecast24);
-          this->replicaPersistentType = (ReplicaPersistentType::type)ecast24;
-          this->__isset.replicaPersistentType = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 11:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->storageResourceId);
-          this->__isset.storageResourceId = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 12:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->fileAbsolutePath);
-          this->__isset.fileAbsolutePath = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 13:
-        if (ftype == ::apache::thrift::protocol::T_MAP) {
+      case 14:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
-            this->replicaMetadata.clear();
-            uint32_t _size25;
-            ::apache::thrift::protocol::TType _ktype26;
-            ::apache::thrift::protocol::TType _vtype27;
-            xfer += iprot->readMapBegin(_ktype26, _vtype27, _size25);
-            uint32_t _i29;
-            for (_i29 = 0; _i29 < _size25; ++_i29)
+            this->fileReplicas.clear();
+            uint32_t _size20;
+            ::apache::thrift::protocol::TType _etype23;
+            xfer += iprot->readListBegin(_etype23, _size20);
+            this->fileReplicas.resize(_size20);
+            uint32_t _i24;
+            for (_i24 = 0; _i24 < _size20; ++_i24)
             {
-              std::string _key30;
-              xfer += iprot->readString(_key30);
-              std::string& _val31 = this->replicaMetadata[_key30];
-              xfer += iprot->readString(_val31);
+              xfer += this->fileReplicas[_i24].read(iprot);
             }
-            xfer += iprot->readMapEnd();
+            xfer += iprot->readListEnd();
           }
-          this->__isset.replicaMetadata = true;
+          this->__isset.fileReplicas = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -752,82 +594,94 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
   return xfer;
 }
 
-uint32_t DataReplicaLocationModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t FileModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("DataReplicaLocationModel");
+  xfer += oprot->writeStructBegin("FileModel");
 
-  if (this->__isset.replicaId) {
-    xfer += oprot->writeFieldBegin("replicaId", ::apache::thrift::protocol::T_STRING, 1);
-    xfer += oprot->writeString(this->replicaId);
+  if (this->__isset.fileId) {
+    xfer += oprot->writeFieldBegin("fileId", ::apache::thrift::protocol::T_STRING, 1);
+    xfer += oprot->writeString(this->fileId);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.resourceId) {
-    xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
-    xfer += oprot->writeString(this->resourceId);
+  if (this->__isset.gatewayId) {
+    xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 2);
+    xfer += oprot->writeString(this->gatewayId);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.replicaName) {
-    xfer += oprot->writeFieldBegin("replicaName", ::apache::thrift::protocol::T_STRING, 3);
-    xfer += oprot->writeString(this->replicaName);
+  if (this->__isset.username) {
+    xfer += oprot->writeFieldBegin("username", ::apache::thrift::protocol::T_STRING, 3);
+    xfer += oprot->writeString(this->username);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.replicaDescription) {
-    xfer += oprot->writeFieldBegin("replicaDescription", ::apache::thrift::protocol::T_STRING, 4);
-    xfer += oprot->writeString(this->replicaDescription);
+  if (this->__isset.sharedUsers) {
+    xfer += oprot->writeFieldBegin("sharedUsers", ::apache::thrift::protocol::T_LIST, 4);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->sharedUsers.size()));
+      std::vector<std::string> ::const_iterator _iter25;
+      for (_iter25 = this->sharedUsers.begin(); _iter25 != this->sharedUsers.end(); ++_iter25)
+      {
+        xfer += oprot->writeString((*_iter25));
+      }
+      xfer += oprot->writeListEnd();
+    }
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.sourceReplicaId) {
-    xfer += oprot->writeFieldBegin("sourceReplicaId", ::apache::thrift::protocol::T_STRING, 5);
-    xfer += oprot->writeString(this->sourceReplicaId);
+  if (this->__isset.sharedPublic) {
+    xfer += oprot->writeFieldBegin("sharedPublic", ::apache::thrift::protocol::T_BOOL, 5);
+    xfer += oprot->writeBool(this->sharedPublic);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.fileName) {
+    xfer += oprot->writeFieldBegin("fileName", ::apache::thrift::protocol::T_STRING, 6);
+    xfer += oprot->writeString(this->fileName);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.fileDescription) {
+    xfer += oprot->writeFieldBegin("fileDescription", ::apache::thrift::protocol::T_STRING, 7);
+    xfer += oprot->writeString(this->fileDescription);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.sha256Checksum) {
+    xfer += oprot->writeFieldBegin("sha256Checksum", ::apache::thrift::protocol::T_STRING, 8);
+    xfer += oprot->writeString(this->sha256Checksum);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.fileType) {
+    xfer += oprot->writeFieldBegin("fileType", ::apache::thrift::protocol::T_I32, 9);
+    xfer += oprot->writeI32((int32_t)this->fileType);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.fileSize) {
+    xfer += oprot->writeFieldBegin("fileSize", ::apache::thrift::protocol::T_I32, 10);
+    xfer += oprot->writeI32(this->fileSize);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.nativeFormat) {
+    xfer += oprot->writeFieldBegin("nativeFormat", ::apache::thrift::protocol::T_STRING, 11);
+    xfer += oprot->writeString(this->nativeFormat);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.creationTime) {
-    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 6);
+    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 12);
     xfer += oprot->writeI64(this->creationTime);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.lastModifiedTime) {
-    xfer += oprot->writeFieldBegin("lastModifiedTime", ::apache::thrift::protocol::T_I64, 7);
+    xfer += oprot->writeFieldBegin("lastModifiedTime", ::apache::thrift::protocol::T_I64, 13);
     xfer += oprot->writeI64(this->lastModifiedTime);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.validUntilTime) {
-    xfer += oprot->writeFieldBegin("validUntilTime", ::apache::thrift::protocol::T_I64, 8);
-    xfer += oprot->writeI64(this->validUntilTime);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.replicaLocationCategory) {
-    xfer += oprot->writeFieldBegin("replicaLocationCategory", ::apache::thrift::protocol::T_I32, 9);
-    xfer += oprot->writeI32((int32_t)this->replicaLocationCategory);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.replicaPersistentType) {
-    xfer += oprot->writeFieldBegin("replicaPersistentType", ::apache::thrift::protocol::T_I32, 10);
-    xfer += oprot->writeI32((int32_t)this->replicaPersistentType);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.storageResourceId) {
-    xfer += oprot->writeFieldBegin("storageResourceId", ::apache::thrift::protocol::T_STRING, 11);
-    xfer += oprot->writeString(this->storageResourceId);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.fileAbsolutePath) {
-    xfer += oprot->writeFieldBegin("fileAbsolutePath", ::apache::thrift::protocol::T_STRING, 12);
-    xfer += oprot->writeString(this->fileAbsolutePath);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.replicaMetadata) {
-    xfer += oprot->writeFieldBegin("replicaMetadata", ::apache::thrift::protocol::T_MAP, 13);
+  if (this->__isset.fileReplicas) {
+    xfer += oprot->writeFieldBegin("fileReplicas", ::apache::thrift::protocol::T_LIST, 14);
     {
-      xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->replicaMetadata.size()));
-      std::map<std::string, std::string> ::const_iterator _iter32;
-      for (_iter32 = this->replicaMetadata.begin(); _iter32 != this->replicaMetadata.end(); ++_iter32)
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->fileReplicas.size()));
+      std::vector<FileReplicaModel> ::const_iterator _iter26;
+      for (_iter26 = this->fileReplicas.begin(); _iter26 != this->fileReplicas.end(); ++_iter26)
       {
-        xfer += oprot->writeString(_iter32->first);
-        xfer += oprot->writeString(_iter32->second);
+        xfer += (*_iter26).write(oprot);
       }
-      xfer += oprot->writeMapEnd();
+      xfer += oprot->writeListEnd();
     }
     xfer += oprot->writeFieldEnd();
   }
@@ -836,74 +690,346 @@ uint32_t DataReplicaLocationModel::write(::apache::thrift::protocol::TProtocol* 
   return xfer;
 }
 
-void swap(DataReplicaLocationModel &a, DataReplicaLocationModel &b) {
+void swap(FileModel &a, FileModel &b) {
   using ::std::swap;
-  swap(a.replicaId, b.replicaId);
-  swap(a.resourceId, b.resourceId);
-  swap(a.replicaName, b.replicaName);
-  swap(a.replicaDescription, b.replicaDescription);
-  swap(a.sourceReplicaId, b.sourceReplicaId);
+  swap(a.fileId, b.fileId);
+  swap(a.gatewayId, b.gatewayId);
+  swap(a.username, b.username);
+  swap(a.sharedUsers, b.sharedUsers);
+  swap(a.sharedPublic, b.sharedPublic);
+  swap(a.fileName, b.fileName);
+  swap(a.fileDescription, b.fileDescription);
+  swap(a.sha256Checksum, b.sha256Checksum);
+  swap(a.fileType, b.fileType);
+  swap(a.fileSize, b.fileSize);
+  swap(a.nativeFormat, b.nativeFormat);
   swap(a.creationTime, b.creationTime);
   swap(a.lastModifiedTime, b.lastModifiedTime);
-  swap(a.validUntilTime, b.validUntilTime);
-  swap(a.replicaLocationCategory, b.replicaLocationCategory);
-  swap(a.replicaPersistentType, b.replicaPersistentType);
-  swap(a.storageResourceId, b.storageResourceId);
-  swap(a.fileAbsolutePath, b.fileAbsolutePath);
-  swap(a.replicaMetadata, b.replicaMetadata);
+  swap(a.fileReplicas, b.fileReplicas);
   swap(a.__isset, b.__isset);
 }
 
-DataReplicaLocationModel::DataReplicaLocationModel(const DataReplicaLocationModel& other33) {
-  replicaId = other33.replicaId;
-  resourceId = other33.resourceId;
-  replicaName = other33.replicaName;
-  replicaDescription = other33.replicaDescription;
-  sourceReplicaId = other33.sourceReplicaId;
-  creationTime = other33.creationTime;
-  lastModifiedTime = other33.lastModifiedTime;
-  validUntilTime = other33.validUntilTime;
-  replicaLocationCategory = other33.replicaLocationCategory;
-  replicaPersistentType = other33.replicaPersistentType;
-  storageResourceId = other33.storageResourceId;
-  fileAbsolutePath = other33.fileAbsolutePath;
-  replicaMetadata = other33.replicaMetadata;
-  __isset = other33.__isset;
+FileModel::FileModel(const FileModel& other27) {
+  fileId = other27.fileId;
+  gatewayId = other27.gatewayId;
+  username = other27.username;
+  sharedUsers = other27.sharedUsers;
+  sharedPublic = other27.sharedPublic;
+  fileName = other27.fileName;
+  fileDescription = other27.fileDescription;
+  sha256Checksum = other27.sha256Checksum;
+  fileType = other27.fileType;
+  fileSize = other27.fileSize;
+  nativeFormat = other27.nativeFormat;
+  creationTime = other27.creationTime;
+  lastModifiedTime = other27.lastModifiedTime;
+  fileReplicas = other27.fileReplicas;
+  __isset = other27.__isset;
 }
-DataReplicaLocationModel& DataReplicaLocationModel::operator=(const DataReplicaLocationModel& other34) {
-  replicaId = other34.replicaId;
-  resourceId = other34.resourceId;
-  replicaName = other34.replicaName;
-  replicaDescription = other34.replicaDescription;
-  sourceReplicaId = other34.sourceReplicaId;
-  creationTime = other34.creationTime;
-  lastModifiedTime = other34.lastModifiedTime;
-  validUntilTime = other34.validUntilTime;
-  replicaLocationCategory = other34.replicaLocationCategory;
-  replicaPersistentType = other34.replicaPersistentType;
-  storageResourceId = other34.storageResourceId;
-  fileAbsolutePath = other34.fileAbsolutePath;
-  replicaMetadata = other34.replicaMetadata;
-  __isset = other34.__isset;
+FileModel& FileModel::operator=(const FileModel& other28) {
+  fileId = other28.fileId;
+  gatewayId = other28.gatewayId;
+  username = other28.username;
+  sharedUsers = other28.sharedUsers;
+  sharedPublic = other28.sharedPublic;
+  fileName = other28.fileName;
+  fileDescription = other28.fileDescription;
+  sha256Checksum = other28.sha256Checksum;
+  fileType = other28.fileType;
+  fileSize = other28.fileSize;
+  nativeFormat = other28.nativeFormat;
+  creationTime = other28.creationTime;
+  lastModifiedTime = other28.lastModifiedTime;
+  fileReplicas = other28.fileReplicas;
+  __isset = other28.__isset;
   return *this;
 }
-void DataReplicaLocationModel::printTo(std::ostream& out) const {
+void FileModel::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
-  out << "DataReplicaLocationModel(";
-  out << "replicaId="; (__isset.replicaId ? (out << to_string(replicaId)) : (out << "<null>"));
-  out << ", " << "resourceId="; (__isset.resourceId ? (out << to_string(resourceId)) : (out << "<null>"));
-  out << ", " << "replicaName="; (__isset.replicaName ? (out << to_string(replicaName)) : (out << "<null>"));
-  out << ", " << "replicaDescription="; (__isset.replicaDescription ? (out << to_string(replicaDescription)) : (out << "<null>"));
-  out << ", " << "sourceReplicaId="; (__isset.sourceReplicaId ? (out << to_string(sourceReplicaId)) : (out << "<null>"));
+  out << "FileModel(";
+  out << "fileId="; (__isset.fileId ? (out << to_string(fileId)) : (out << "<null>"));
+  out << ", " << "gatewayId="; (__isset.gatewayId ? (out << to_string(gatewayId)) : (out << "<null>"));
+  out << ", " << "username="; (__isset.username ? (out << to_string(username)) : (out << "<null>"));
+  out << ", " << "sharedUsers="; (__isset.sharedUsers ? (out << to_string(sharedUsers)) : (out << "<null>"));
+  out << ", " << "sharedPublic="; (__isset.sharedPublic ? (out << to_string(sharedPublic)) : (out << "<null>"));
+  out << ", " << "fileName="; (__isset.fileName ? (out << to_string(fileName)) : (out << "<null>"));
+  out << ", " << "fileDescription="; (__isset.fileDescription ? (out << to_string(fileDescription)) : (out << "<null>"));
+  out << ", " << "sha256Checksum="; (__isset.sha256Checksum ? (out << to_string(sha256Checksum)) : (out << "<null>"));
+  out << ", " << "fileType="; (__isset.fileType ? (out << to_string(fileType)) : (out << "<null>"));
+  out << ", " << "fileSize="; (__isset.fileSize ? (out << to_string(fileSize)) : (out << "<null>"));
+  out << ", " << "nativeFormat="; (__isset.nativeFormat ? (out << to_string(nativeFormat)) : (out << "<null>"));
   out << ", " << "creationTime="; (__isset.creationTime ? (out << to_string(creationTime)) : (out << "<null>"));
   out << ", " << "lastModifiedTime="; (__isset.lastModifiedTime ? (out << to_string(lastModifiedTime)) : (out << "<null>"));
-  out << ", " << "validUntilTime="; (__isset.validUntilTime ? (out << to_string(validUntilTime)) : (out << "<null>"));
-  out << ", " << "replicaLocationCategory="; (__isset.replicaLocationCategory ? (out << to_string(replicaLocationCategory)) : (out << "<null>"));
-  out << ", " << "replicaPersistentType="; (__isset.replicaPersistentType ? (out << to_string(replicaPersistentType)) : (out << "<null>"));
-  out << ", " << "storageResourceId="; (__isset.storageResourceId ? (out << to_string(storageResourceId)) : (out << "<null>"));
-  out << ", " << "fileAbsolutePath="; (__isset.fileAbsolutePath ? (out << to_string(fileAbsolutePath)) : (out << "<null>"));
-  out << ", " << "replicaMetadata="; (__isset.replicaMetadata ? (out << to_string(replicaMetadata)) : (out << "<null>"));
+  out << ", " << "fileReplicas="; (__isset.fileReplicas ? (out << to_string(fileReplicas)) : (out << "<null>"));
   out << ")";
 }
 
-}}}} // namespace
+
+FileReplicaModel::~FileReplicaModel() throw() {
+}
+
+
+void FileReplicaModel::__set_replicaName(const std::string& val) {
+  this->replicaName = val;
+__isset.replicaName = true;
+}
+
+void FileReplicaModel::__set_replicaDescription(const std::string& val) {
+  this->replicaDescription = val;
+__isset.replicaDescription = true;
+}
+
+void FileReplicaModel::__set_storageHostname(const std::string& val) {
+  this->storageHostname = val;
+__isset.storageHostname = true;
+}
+
+void FileReplicaModel::__set_storageResourceId(const std::string& val) {
+  this->storageResourceId = val;
+__isset.storageResourceId = true;
+}
+
+void FileReplicaModel::__set_filePath(const std::string& val) {
+  this->filePath = val;
+__isset.filePath = true;
+}
+
+void FileReplicaModel::__set_creationTime(const int64_t val) {
+  this->creationTime = val;
+__isset.creationTime = true;
+}
+
+void FileReplicaModel::__set_validUntilTime(const int64_t val) {
+  this->validUntilTime = val;
+__isset.validUntilTime = true;
+}
+
+void FileReplicaModel::__set_storageResourceType(const StorageResourceType::type val) {
+  this->storageResourceType = val;
+__isset.storageResourceType = true;
+}
+
+void FileReplicaModel::__set_replicaPersistentType(const ReplicaPersistentType::type val) {
+  this->replicaPersistentType = val;
+__isset.replicaPersistentType = true;
+}
+
+uint32_t FileReplicaModel::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->replicaName);
+          this->__isset.replicaName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->replicaDescription);
+          this->__isset.replicaDescription = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->storageHostname);
+          this->__isset.storageHostname = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->storageResourceId);
+          this->__isset.storageResourceId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->filePath);
+          this->__isset.filePath = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 6:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->creationTime);
+          this->__isset.creationTime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 7:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->validUntilTime);
+          this->__isset.validUntilTime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 8:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast29;
+          xfer += iprot->readI32(ecast29);
+          this->storageResourceType = (StorageResourceType::type)ecast29;
+          this->__isset.storageResourceType = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 9:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast30;
+          xfer += iprot->readI32(ecast30);
+          this->replicaPersistentType = (ReplicaPersistentType::type)ecast30;
+          this->__isset.replicaPersistentType = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t FileReplicaModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("FileReplicaModel");
+
+  if (this->__isset.replicaName) {
+    xfer += oprot->writeFieldBegin("replicaName", ::apache::thrift::protocol::T_STRING, 1);
+    xfer += oprot->writeString(this->replicaName);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.replicaDescription) {
+    xfer += oprot->writeFieldBegin("replicaDescription", ::apache::thrift::protocol::T_STRING, 2);
+    xfer += oprot->writeString(this->replicaDescription);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.storageHostname) {
+    xfer += oprot->writeFieldBegin("storageHostname", ::apache::thrift::protocol::T_STRING, 3);
+    xfer += oprot->writeString(this->storageHostname);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.storageResourceId) {
+    xfer += oprot->writeFieldBegin("storageResourceId", ::apache::thrift::protocol::T_STRING, 4);
+    xfer += oprot->writeString(this->storageResourceId);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.filePath) {
+    xfer += oprot->writeFieldBegin("filePath", ::apache::thrift::protocol::T_STRING, 5);
+    xfer += oprot->writeString(this->filePath);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.creationTime) {
+    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 6);
+    xfer += oprot->writeI64(this->creationTime);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.validUntilTime) {
+    xfer += oprot->writeFieldBegin("validUntilTime", ::apache::thrift::protocol::T_I64, 7);
+    xfer += oprot->writeI64(this->validUntilTime);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.storageResourceType) {
+    xfer += oprot->writeFieldBegin("storageResourceType", ::apache::thrift::protocol::T_I32, 8);
+    xfer += oprot->writeI32((int32_t)this->storageResourceType);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.replicaPersistentType) {
+    xfer += oprot->writeFieldBegin("replicaPersistentType", ::apache::thrift::protocol::T_I32, 9);
+    xfer += oprot->writeI32((int32_t)this->replicaPersistentType);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(FileReplicaModel &a, FileReplicaModel &b) {
+  using ::std::swap;
+  swap(a.replicaName, b.replicaName);
+  swap(a.replicaDescription, b.replicaDescription);
+  swap(a.storageHostname, b.storageHostname);
+  swap(a.storageResourceId, b.storageResourceId);
+  swap(a.filePath, b.filePath);
+  swap(a.creationTime, b.creationTime);
+  swap(a.validUntilTime, b.validUntilTime);
+  swap(a.storageResourceType, b.storageResourceType);
+  swap(a.replicaPersistentType, b.replicaPersistentType);
+  swap(a.__isset, b.__isset);
+}
+
+FileReplicaModel::FileReplicaModel(const FileReplicaModel& other31) {
+  replicaName = other31.replicaName;
+  replicaDescription = other31.replicaDescription;
+  storageHostname = other31.storageHostname;
+  storageResourceId = other31.storageResourceId;
+  filePath = other31.filePath;
+  creationTime = other31.creationTime;
+  validUntilTime = other31.validUntilTime;
+  storageResourceType = other31.storageResourceType;
+  replicaPersistentType = other31.replicaPersistentType;
+  __isset = other31.__isset;
+}
+FileReplicaModel& FileReplicaModel::operator=(const FileReplicaModel& other32) {
+  replicaName = other32.replicaName;
+  replicaDescription = other32.replicaDescription;
+  storageHostname = other32.storageHostname;
+  storageResourceId = other32.storageResourceId;
+  filePath = other32.filePath;
+  creationTime = other32.creationTime;
+  validUntilTime = other32.validUntilTime;
+  storageResourceType = other32.storageResourceType;
+  replicaPersistentType = other32.replicaPersistentType;
+  __isset = other32.__isset;
+  return *this;
+}
+void FileReplicaModel::printTo(std::ostream& out) const {
+  using ::apache::thrift::to_string;
+  out << "FileReplicaModel(";
+  out << "replicaName="; (__isset.replicaName ? (out << to_string(replicaName)) : (out << "<null>"));
+  out << ", " << "replicaDescription="; (__isset.replicaDescription ? (out << to_string(replicaDescription)) : (out << "<null>"));
+  out << ", " << "storageHostname="; (__isset.storageHostname ? (out << to_string(storageHostname)) : (out << "<null>"));
+  out << ", " << "storageResourceId="; (__isset.storageResourceId ? (out << to_string(storageResourceId)) : (out << "<null>"));
+  out << ", " << "filePath="; (__isset.filePath ? (out << to_string(filePath)) : (out << "<null>"));
+  out << ", " << "creationTime="; (__isset.creationTime ? (out << to_string(creationTime)) : (out << "<null>"));
+  out << ", " << "validUntilTime="; (__isset.validUntilTime ? (out << to_string(validUntilTime)) : (out << "<null>"));
+  out << ", " << "storageResourceType="; (__isset.storageResourceType ? (out << to_string(storageResourceType)) : (out << "<null>"));
+  out << ", " << "replicaPersistentType="; (__isset.replicaPersistentType ? (out << to_string(replicaPersistentType)) : (out << "<null>"));
+  out << ")";
+}
+
+}}}}} // namespace

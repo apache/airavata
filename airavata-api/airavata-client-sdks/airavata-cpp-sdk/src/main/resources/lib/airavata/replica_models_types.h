@@ -35,18 +35,28 @@
 #include "data_movement_models_types.h"
 
 
-namespace apache { namespace airavata { namespace model { namespace replica {
+namespace apache { namespace airavata { namespace model { namespace file { namespace replica {
 
-struct ReplicaLocationCategory {
+struct FileModelType {
   enum type {
-    GATEWAY_DATA_STORE = 0,
-    COMPUTE_RESOURCE = 1,
-    LONG_TERM_STORAGE_RESOURCE = 2,
-    OTHER = 3
+    FILE = 0,
+    DIRECTORY = 1
   };
 };
 
-extern const std::map<int, const char*> _ReplicaLocationCategory_VALUES_TO_NAMES;
+extern const std::map<int, const char*> _FileModelType_VALUES_TO_NAMES;
+
+struct StorageResourceType {
+  enum type {
+    GATEWAY_DATA_STORE = 0,
+    BACKUP_GATEWAY_DATA_STORE = 1,
+    COMPUTE_RESOURCE = 2,
+    LONG_TERM_STORAGE_RESOURCE = 3,
+    OTHER = 4
+  };
+};
+
+extern const std::map<int, const char*> _StorageResourceType_VALUES_TO_NAMES;
 
 struct ReplicaPersistentType {
   enum type {
@@ -57,82 +67,179 @@ struct ReplicaPersistentType {
 
 extern const std::map<int, const char*> _ReplicaPersistentType_VALUES_TO_NAMES;
 
-struct DataResourceType {
-  enum type {
-    COLLECTION = 0,
-    FILE = 1
-  };
-};
+class FileCollectionModel;
 
-extern const std::map<int, const char*> _DataResourceType_VALUES_TO_NAMES;
+class FileModel;
 
-class DataResourceModel;
+class FileReplicaModel;
 
-class DataReplicaLocationModel;
-
-typedef struct _DataResourceModel__isset {
-  _DataResourceModel__isset() : resourceId(false), gatewayId(false), parentResourceId(false), resourceName(false), resourceDescription(false), ownerName(false), sha256Checksum(false), dataResourceType(false), resourceSize(false), nativeFormat(false), creationTime(false), lastModifiedTime(false), resourceMetadata(false), replicaLocations(false), childResources(false) {}
-  bool resourceId :1;
+typedef struct _FileCollectionModel__isset {
+  _FileCollectionModel__isset() : collectionId(false), gatewayId(false), username(false), sharedUsers(false), sharedPublic(false), collectionName(false), collectionDescription(false), fileIdList(false) {}
+  bool collectionId :1;
   bool gatewayId :1;
-  bool parentResourceId :1;
-  bool resourceName :1;
-  bool resourceDescription :1;
-  bool ownerName :1;
-  bool sha256Checksum :1;
-  bool dataResourceType :1;
-  bool resourceSize :1;
-  bool nativeFormat :1;
-  bool creationTime :1;
-  bool lastModifiedTime :1;
-  bool resourceMetadata :1;
-  bool replicaLocations :1;
-  bool childResources :1;
-} _DataResourceModel__isset;
+  bool username :1;
+  bool sharedUsers :1;
+  bool sharedPublic :1;
+  bool collectionName :1;
+  bool collectionDescription :1;
+  bool fileIdList :1;
+} _FileCollectionModel__isset;
 
-class DataResourceModel {
+class FileCollectionModel {
  public:
 
-  DataResourceModel(const DataResourceModel&);
-  DataResourceModel& operator=(const DataResourceModel&);
-  DataResourceModel() : resourceId(), gatewayId(), parentResourceId(), resourceName(), resourceDescription(), ownerName(), sha256Checksum(), dataResourceType((DataResourceType::type)0), resourceSize(0), nativeFormat(), creationTime(0), lastModifiedTime(0) {
+  FileCollectionModel(const FileCollectionModel&);
+  FileCollectionModel& operator=(const FileCollectionModel&);
+  FileCollectionModel() : collectionId(), gatewayId(), username(), sharedPublic(0), collectionName(), collectionDescription() {
   }
 
-  virtual ~DataResourceModel() throw();
-  std::string resourceId;
+  virtual ~FileCollectionModel() throw();
+  std::string collectionId;
   std::string gatewayId;
-  std::string parentResourceId;
-  std::string resourceName;
-  std::string resourceDescription;
-  std::string ownerName;
-  std::string sha256Checksum;
-  DataResourceType::type dataResourceType;
-  int32_t resourceSize;
-  std::string nativeFormat;
-  int64_t creationTime;
-  int64_t lastModifiedTime;
-  std::map<std::string, std::string>  resourceMetadata;
-  std::vector<DataReplicaLocationModel>  replicaLocations;
-  std::vector<DataResourceModel>  childResources;
+  std::string username;
+  std::vector<std::string>  sharedUsers;
+  bool sharedPublic;
+  std::string collectionName;
+  std::string collectionDescription;
+  std::vector<std::string>  fileIdList;
 
-  _DataResourceModel__isset __isset;
+  _FileCollectionModel__isset __isset;
 
-  void __set_resourceId(const std::string& val);
+  void __set_collectionId(const std::string& val);
 
   void __set_gatewayId(const std::string& val);
 
-  void __set_parentResourceId(const std::string& val);
+  void __set_username(const std::string& val);
 
-  void __set_resourceName(const std::string& val);
+  void __set_sharedUsers(const std::vector<std::string> & val);
 
-  void __set_resourceDescription(const std::string& val);
+  void __set_sharedPublic(const bool val);
 
-  void __set_ownerName(const std::string& val);
+  void __set_collectionName(const std::string& val);
+
+  void __set_collectionDescription(const std::string& val);
+
+  void __set_fileIdList(const std::vector<std::string> & val);
+
+  bool operator == (const FileCollectionModel & rhs) const
+  {
+    if (__isset.collectionId != rhs.__isset.collectionId)
+      return false;
+    else if (__isset.collectionId && !(collectionId == rhs.collectionId))
+      return false;
+    if (__isset.gatewayId != rhs.__isset.gatewayId)
+      return false;
+    else if (__isset.gatewayId && !(gatewayId == rhs.gatewayId))
+      return false;
+    if (__isset.username != rhs.__isset.username)
+      return false;
+    else if (__isset.username && !(username == rhs.username))
+      return false;
+    if (__isset.sharedUsers != rhs.__isset.sharedUsers)
+      return false;
+    else if (__isset.sharedUsers && !(sharedUsers == rhs.sharedUsers))
+      return false;
+    if (__isset.sharedPublic != rhs.__isset.sharedPublic)
+      return false;
+    else if (__isset.sharedPublic && !(sharedPublic == rhs.sharedPublic))
+      return false;
+    if (__isset.collectionName != rhs.__isset.collectionName)
+      return false;
+    else if (__isset.collectionName && !(collectionName == rhs.collectionName))
+      return false;
+    if (__isset.collectionDescription != rhs.__isset.collectionDescription)
+      return false;
+    else if (__isset.collectionDescription && !(collectionDescription == rhs.collectionDescription))
+      return false;
+    if (__isset.fileIdList != rhs.__isset.fileIdList)
+      return false;
+    else if (__isset.fileIdList && !(fileIdList == rhs.fileIdList))
+      return false;
+    return true;
+  }
+  bool operator != (const FileCollectionModel &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const FileCollectionModel & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(FileCollectionModel &a, FileCollectionModel &b);
+
+inline std::ostream& operator<<(std::ostream& out, const FileCollectionModel& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+typedef struct _FileModel__isset {
+  _FileModel__isset() : fileId(false), gatewayId(false), username(false), sharedUsers(false), sharedPublic(false), fileName(false), fileDescription(false), sha256Checksum(false), fileType(false), fileSize(false), nativeFormat(false), creationTime(false), lastModifiedTime(false), fileReplicas(false) {}
+  bool fileId :1;
+  bool gatewayId :1;
+  bool username :1;
+  bool sharedUsers :1;
+  bool sharedPublic :1;
+  bool fileName :1;
+  bool fileDescription :1;
+  bool sha256Checksum :1;
+  bool fileType :1;
+  bool fileSize :1;
+  bool nativeFormat :1;
+  bool creationTime :1;
+  bool lastModifiedTime :1;
+  bool fileReplicas :1;
+} _FileModel__isset;
+
+class FileModel {
+ public:
+
+  FileModel(const FileModel&);
+  FileModel& operator=(const FileModel&);
+  FileModel() : fileId(), gatewayId(), username(), sharedPublic(0), fileName(), fileDescription(), sha256Checksum(), fileType((FileModelType::type)0), fileSize(0), nativeFormat(), creationTime(0), lastModifiedTime(0) {
+  }
+
+  virtual ~FileModel() throw();
+  std::string fileId;
+  std::string gatewayId;
+  std::string username;
+  std::vector<std::string>  sharedUsers;
+  bool sharedPublic;
+  std::string fileName;
+  std::string fileDescription;
+  std::string sha256Checksum;
+  FileModelType::type fileType;
+  int32_t fileSize;
+  std::string nativeFormat;
+  int64_t creationTime;
+  int64_t lastModifiedTime;
+  std::vector<FileReplicaModel>  fileReplicas;
+
+  _FileModel__isset __isset;
+
+  void __set_fileId(const std::string& val);
+
+  void __set_gatewayId(const std::string& val);
+
+  void __set_username(const std::string& val);
+
+  void __set_sharedUsers(const std::vector<std::string> & val);
+
+  void __set_sharedPublic(const bool val);
+
+  void __set_fileName(const std::string& val);
+
+  void __set_fileDescription(const std::string& val);
 
   void __set_sha256Checksum(const std::string& val);
 
-  void __set_dataResourceType(const DataResourceType::type val);
+  void __set_fileType(const FileModelType::type val);
 
-  void __set_resourceSize(const int32_t val);
+  void __set_fileSize(const int32_t val);
 
   void __set_nativeFormat(const std::string& val);
 
@@ -140,49 +247,49 @@ class DataResourceModel {
 
   void __set_lastModifiedTime(const int64_t val);
 
-  void __set_resourceMetadata(const std::map<std::string, std::string> & val);
+  void __set_fileReplicas(const std::vector<FileReplicaModel> & val);
 
-  void __set_replicaLocations(const std::vector<DataReplicaLocationModel> & val);
-
-  void __set_childResources(const std::vector<DataResourceModel> & val);
-
-  bool operator == (const DataResourceModel & rhs) const
+  bool operator == (const FileModel & rhs) const
   {
-    if (__isset.resourceId != rhs.__isset.resourceId)
+    if (__isset.fileId != rhs.__isset.fileId)
       return false;
-    else if (__isset.resourceId && !(resourceId == rhs.resourceId))
+    else if (__isset.fileId && !(fileId == rhs.fileId))
       return false;
     if (__isset.gatewayId != rhs.__isset.gatewayId)
       return false;
     else if (__isset.gatewayId && !(gatewayId == rhs.gatewayId))
       return false;
-    if (__isset.parentResourceId != rhs.__isset.parentResourceId)
+    if (__isset.username != rhs.__isset.username)
       return false;
-    else if (__isset.parentResourceId && !(parentResourceId == rhs.parentResourceId))
+    else if (__isset.username && !(username == rhs.username))
       return false;
-    if (__isset.resourceName != rhs.__isset.resourceName)
+    if (__isset.sharedUsers != rhs.__isset.sharedUsers)
       return false;
-    else if (__isset.resourceName && !(resourceName == rhs.resourceName))
+    else if (__isset.sharedUsers && !(sharedUsers == rhs.sharedUsers))
       return false;
-    if (__isset.resourceDescription != rhs.__isset.resourceDescription)
+    if (__isset.sharedPublic != rhs.__isset.sharedPublic)
       return false;
-    else if (__isset.resourceDescription && !(resourceDescription == rhs.resourceDescription))
+    else if (__isset.sharedPublic && !(sharedPublic == rhs.sharedPublic))
       return false;
-    if (__isset.ownerName != rhs.__isset.ownerName)
+    if (__isset.fileName != rhs.__isset.fileName)
       return false;
-    else if (__isset.ownerName && !(ownerName == rhs.ownerName))
+    else if (__isset.fileName && !(fileName == rhs.fileName))
+      return false;
+    if (__isset.fileDescription != rhs.__isset.fileDescription)
+      return false;
+    else if (__isset.fileDescription && !(fileDescription == rhs.fileDescription))
       return false;
     if (__isset.sha256Checksum != rhs.__isset.sha256Checksum)
       return false;
     else if (__isset.sha256Checksum && !(sha256Checksum == rhs.sha256Checksum))
       return false;
-    if (__isset.dataResourceType != rhs.__isset.dataResourceType)
+    if (__isset.fileType != rhs.__isset.fileType)
       return false;
-    else if (__isset.dataResourceType && !(dataResourceType == rhs.dataResourceType))
+    else if (__isset.fileType && !(fileType == rhs.fileType))
       return false;
-    if (__isset.resourceSize != rhs.__isset.resourceSize)
+    if (__isset.fileSize != rhs.__isset.fileSize)
       return false;
-    else if (__isset.resourceSize && !(resourceSize == rhs.resourceSize))
+    else if (__isset.fileSize && !(fileSize == rhs.fileSize))
       return false;
     if (__isset.nativeFormat != rhs.__isset.nativeFormat)
       return false;
@@ -196,25 +303,17 @@ class DataResourceModel {
       return false;
     else if (__isset.lastModifiedTime && !(lastModifiedTime == rhs.lastModifiedTime))
       return false;
-    if (__isset.resourceMetadata != rhs.__isset.resourceMetadata)
+    if (__isset.fileReplicas != rhs.__isset.fileReplicas)
       return false;
-    else if (__isset.resourceMetadata && !(resourceMetadata == rhs.resourceMetadata))
-      return false;
-    if (__isset.replicaLocations != rhs.__isset.replicaLocations)
-      return false;
-    else if (__isset.replicaLocations && !(replicaLocations == rhs.replicaLocations))
-      return false;
-    if (__isset.childResources != rhs.__isset.childResources)
-      return false;
-    else if (__isset.childResources && !(childResources == rhs.childResources))
+    else if (__isset.fileReplicas && !(fileReplicas == rhs.fileReplicas))
       return false;
     return true;
   }
-  bool operator != (const DataResourceModel &rhs) const {
+  bool operator != (const FileModel &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DataResourceModel & ) const;
+  bool operator < (const FileModel & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -222,92 +321,68 @@ class DataResourceModel {
   virtual void printTo(std::ostream& out) const;
 };
 
-void swap(DataResourceModel &a, DataResourceModel &b);
+void swap(FileModel &a, FileModel &b);
 
-inline std::ostream& operator<<(std::ostream& out, const DataResourceModel& obj)
+inline std::ostream& operator<<(std::ostream& out, const FileModel& obj)
 {
   obj.printTo(out);
   return out;
 }
 
-typedef struct _DataReplicaLocationModel__isset {
-  _DataReplicaLocationModel__isset() : replicaId(false), resourceId(false), replicaName(false), replicaDescription(false), sourceReplicaId(false), creationTime(false), lastModifiedTime(false), validUntilTime(false), replicaLocationCategory(false), replicaPersistentType(false), storageResourceId(false), fileAbsolutePath(false), replicaMetadata(false) {}
-  bool replicaId :1;
-  bool resourceId :1;
+typedef struct _FileReplicaModel__isset {
+  _FileReplicaModel__isset() : replicaName(false), replicaDescription(false), storageHostname(false), storageResourceId(false), filePath(false), creationTime(false), validUntilTime(false), storageResourceType(false), replicaPersistentType(false) {}
   bool replicaName :1;
   bool replicaDescription :1;
-  bool sourceReplicaId :1;
-  bool creationTime :1;
-  bool lastModifiedTime :1;
-  bool validUntilTime :1;
-  bool replicaLocationCategory :1;
-  bool replicaPersistentType :1;
+  bool storageHostname :1;
   bool storageResourceId :1;
-  bool fileAbsolutePath :1;
-  bool replicaMetadata :1;
-} _DataReplicaLocationModel__isset;
+  bool filePath :1;
+  bool creationTime :1;
+  bool validUntilTime :1;
+  bool storageResourceType :1;
+  bool replicaPersistentType :1;
+} _FileReplicaModel__isset;
 
-class DataReplicaLocationModel {
+class FileReplicaModel {
  public:
 
-  DataReplicaLocationModel(const DataReplicaLocationModel&);
-  DataReplicaLocationModel& operator=(const DataReplicaLocationModel&);
-  DataReplicaLocationModel() : replicaId(), resourceId(), replicaName(), replicaDescription(), sourceReplicaId(), creationTime(0), lastModifiedTime(0), validUntilTime(0), replicaLocationCategory((ReplicaLocationCategory::type)0), replicaPersistentType((ReplicaPersistentType::type)0), storageResourceId(), fileAbsolutePath() {
+  FileReplicaModel(const FileReplicaModel&);
+  FileReplicaModel& operator=(const FileReplicaModel&);
+  FileReplicaModel() : replicaName(), replicaDescription(), storageHostname(), storageResourceId(), filePath(), creationTime(0), validUntilTime(0), storageResourceType((StorageResourceType::type)0), replicaPersistentType((ReplicaPersistentType::type)0) {
   }
 
-  virtual ~DataReplicaLocationModel() throw();
-  std::string replicaId;
-  std::string resourceId;
+  virtual ~FileReplicaModel() throw();
   std::string replicaName;
   std::string replicaDescription;
-  std::string sourceReplicaId;
-  int64_t creationTime;
-  int64_t lastModifiedTime;
-  int64_t validUntilTime;
-  ReplicaLocationCategory::type replicaLocationCategory;
-  ReplicaPersistentType::type replicaPersistentType;
+  std::string storageHostname;
   std::string storageResourceId;
-  std::string fileAbsolutePath;
-  std::map<std::string, std::string>  replicaMetadata;
+  std::string filePath;
+  int64_t creationTime;
+  int64_t validUntilTime;
+  StorageResourceType::type storageResourceType;
+  ReplicaPersistentType::type replicaPersistentType;
 
-  _DataReplicaLocationModel__isset __isset;
-
-  void __set_replicaId(const std::string& val);
-
-  void __set_resourceId(const std::string& val);
+  _FileReplicaModel__isset __isset;
 
   void __set_replicaName(const std::string& val);
 
   void __set_replicaDescription(const std::string& val);
 
-  void __set_sourceReplicaId(const std::string& val);
-
-  void __set_creationTime(const int64_t val);
-
-  void __set_lastModifiedTime(const int64_t val);
-
-  void __set_validUntilTime(const int64_t val);
-
-  void __set_replicaLocationCategory(const ReplicaLocationCategory::type val);
-
-  void __set_replicaPersistentType(const ReplicaPersistentType::type val);
+  void __set_storageHostname(const std::string& val);
 
   void __set_storageResourceId(const std::string& val);
 
-  void __set_fileAbsolutePath(const std::string& val);
+  void __set_filePath(const std::string& val);
 
-  void __set_replicaMetadata(const std::map<std::string, std::string> & val);
+  void __set_creationTime(const int64_t val);
 
-  bool operator == (const DataReplicaLocationModel & rhs) const
+  void __set_validUntilTime(const int64_t val);
+
+  void __set_storageResourceType(const StorageResourceType::type val);
+
+  void __set_replicaPersistentType(const ReplicaPersistentType::type val);
+
+  bool operator == (const FileReplicaModel & rhs) const
   {
-    if (__isset.replicaId != rhs.__isset.replicaId)
-      return false;
-    else if (__isset.replicaId && !(replicaId == rhs.replicaId))
-      return false;
-    if (__isset.resourceId != rhs.__isset.resourceId)
-      return false;
-    else if (__isset.resourceId && !(resourceId == rhs.resourceId))
-      return false;
     if (__isset.replicaName != rhs.__isset.replicaName)
       return false;
     else if (__isset.replicaName && !(replicaName == rhs.replicaName))
@@ -316,49 +391,41 @@ class DataReplicaLocationModel {
       return false;
     else if (__isset.replicaDescription && !(replicaDescription == rhs.replicaDescription))
       return false;
-    if (__isset.sourceReplicaId != rhs.__isset.sourceReplicaId)
+    if (__isset.storageHostname != rhs.__isset.storageHostname)
       return false;
-    else if (__isset.sourceReplicaId && !(sourceReplicaId == rhs.sourceReplicaId))
-      return false;
-    if (__isset.creationTime != rhs.__isset.creationTime)
-      return false;
-    else if (__isset.creationTime && !(creationTime == rhs.creationTime))
-      return false;
-    if (__isset.lastModifiedTime != rhs.__isset.lastModifiedTime)
-      return false;
-    else if (__isset.lastModifiedTime && !(lastModifiedTime == rhs.lastModifiedTime))
-      return false;
-    if (__isset.validUntilTime != rhs.__isset.validUntilTime)
-      return false;
-    else if (__isset.validUntilTime && !(validUntilTime == rhs.validUntilTime))
-      return false;
-    if (__isset.replicaLocationCategory != rhs.__isset.replicaLocationCategory)
-      return false;
-    else if (__isset.replicaLocationCategory && !(replicaLocationCategory == rhs.replicaLocationCategory))
-      return false;
-    if (__isset.replicaPersistentType != rhs.__isset.replicaPersistentType)
-      return false;
-    else if (__isset.replicaPersistentType && !(replicaPersistentType == rhs.replicaPersistentType))
+    else if (__isset.storageHostname && !(storageHostname == rhs.storageHostname))
       return false;
     if (__isset.storageResourceId != rhs.__isset.storageResourceId)
       return false;
     else if (__isset.storageResourceId && !(storageResourceId == rhs.storageResourceId))
       return false;
-    if (__isset.fileAbsolutePath != rhs.__isset.fileAbsolutePath)
+    if (__isset.filePath != rhs.__isset.filePath)
       return false;
-    else if (__isset.fileAbsolutePath && !(fileAbsolutePath == rhs.fileAbsolutePath))
+    else if (__isset.filePath && !(filePath == rhs.filePath))
       return false;
-    if (__isset.replicaMetadata != rhs.__isset.replicaMetadata)
+    if (__isset.creationTime != rhs.__isset.creationTime)
       return false;
-    else if (__isset.replicaMetadata && !(replicaMetadata == rhs.replicaMetadata))
+    else if (__isset.creationTime && !(creationTime == rhs.creationTime))
+      return false;
+    if (__isset.validUntilTime != rhs.__isset.validUntilTime)
+      return false;
+    else if (__isset.validUntilTime && !(validUntilTime == rhs.validUntilTime))
+      return false;
+    if (__isset.storageResourceType != rhs.__isset.storageResourceType)
+      return false;
+    else if (__isset.storageResourceType && !(storageResourceType == rhs.storageResourceType))
+      return false;
+    if (__isset.replicaPersistentType != rhs.__isset.replicaPersistentType)
+      return false;
+    else if (__isset.replicaPersistentType && !(replicaPersistentType == rhs.replicaPersistentType))
       return false;
     return true;
   }
-  bool operator != (const DataReplicaLocationModel &rhs) const {
+  bool operator != (const FileReplicaModel &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DataReplicaLocationModel & ) const;
+  bool operator < (const FileReplicaModel & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -366,14 +433,14 @@ class DataReplicaLocationModel {
   virtual void printTo(std::ostream& out) const;
 };
 
-void swap(DataReplicaLocationModel &a, DataReplicaLocationModel &b);
+void swap(FileReplicaModel &a, FileReplicaModel &b);
 
-inline std::ostream& operator<<(std::ostream& out, const DataReplicaLocationModel& obj)
+inline std::ostream& operator<<(std::ostream& out, const FileReplicaModel& obj)
 {
   obj.printTo(out);
   return out;
 }
 
-}}}} // namespace
+}}}}} // namespace
 
 #endif

@@ -25,4 +25,8 @@ import org.slf4j.LoggerFactory;
 
 public class FileManagerConstants {
     private final static Logger logger = LoggerFactory.getLogger(FileManagerConstants.class);
+
+    public static String AIRAVATA_FILE_ID_PREFIX = "airavata-file://";
+    public static String AIRAVATA_COLLECTION_ID_PREFIX = "airavata-collection://";
+    public static final String AIRAVATA_METADATA_ID_PREFIX = "airavata-metadata://";
 }
