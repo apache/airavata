@@ -22,6 +22,7 @@
 package org.apache.airavata.registry.core.app.catalog.impl;
 
 import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.data.movement.DMType;
 import org.apache.airavata.registry.core.app.catalog.resources.*;
@@ -43,7 +44,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public String addComputeResource(ComputeResourceDescription description) throws AppCatalogException {
         try {
-            if (description.getComputeResourceId().equals("") || description.getComputeResourceId().equals(compute_resource_modelConstants.DEFAULT_ID)){
+            if (description.getComputeResourceId().equals("") || description.getComputeResourceId().equals(airavata_commonsConstants.DEFAULT_ID)){
                 description.setComputeResourceId(AppCatalogUtils.getID(description.getHostName()));
             }
         	return saveComputeResourceDescriptorData(description);

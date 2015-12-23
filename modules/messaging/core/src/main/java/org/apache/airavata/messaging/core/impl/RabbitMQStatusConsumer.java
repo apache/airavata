@@ -193,23 +193,25 @@ public class RabbitMQStatusConsumer implements Consumer {
                                     jobStatusChangeEvent.getState());
                             event = jobStatusChangeEvent;
                             gatewayId = jobStatusChangeEvent.getJobIdentity().getGatewayId();
-                        } else if (message.getMessageType().equals(MessageType.LAUNCHPROCESS)) {
-                            TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent();
-                            ThriftUtils.createThriftFromBytes(message.getEvent(), taskSubmitEvent);
-                            log.debug(" Message Received with message id '" + message.getMessageId()
-                                    + "' and with message type '" + message.getMessageType() + "'  for experimentId: " +
-                                    taskSubmitEvent.getExperimentId() + "and taskId: " + taskSubmitEvent.getTaskId());
-                            event = taskSubmitEvent;
-                            gatewayId = taskSubmitEvent.getGatewayId();
-                        } else if (message.getMessageType().equals(MessageType.TERMINATEPROCESS)) {
-                            TaskTerminateEvent taskTerminateEvent = new TaskTerminateEvent();
-                            ThriftUtils.createThriftFromBytes(message.getEvent(), taskTerminateEvent);
-                            log.debug(" Message Received with message id '" + message.getMessageId()
-                                    + "' and with message type '" + message.getMessageType() + "'  for experimentId: " +
-                                    taskTerminateEvent.getExperimentId() + "and taskId: " + taskTerminateEvent.getTaskId());
-                            event = taskTerminateEvent;
-                            gatewayId = null;
                         }
+//                        FIXME TaskSubmit is no longer in the data models
+//                        else if (message.getMessageType().equals(MessageType.LAUNCHPROCESS)) {
+//                            TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent();
+//                            ThriftUtils.createThriftFromBytes(message.getEvent(), taskSubmitEvent);
+//                            log.debug(" Message Received with message id '" + message.getMessageId()
+//                                    + "' and with message type '" + message.getMessageType() + "'  for experimentId: " +
+//                                    taskSubmitEvent.getExperimentId() + "and taskId: " + taskSubmitEvent.getTaskId());
+//                            event = taskSubmitEvent;
+//                            gatewayId = taskSubmitEvent.getGatewayId();
+//                        } else if (message.getMessageType().equals(MessageType.TERMINATEPROCESS)) {
+//                            TaskTerminateEvent taskTerminateEvent = new TaskTerminateEvent();
+//                            ThriftUtils.createThriftFromBytes(message.getEvent(), taskTerminateEvent);
+//                            log.debug(" Message Received with message id '" + message.getMessageId()
+//                                    + "' and with message type '" + message.getMessageType() + "'  for experimentId: " +
+//                                    taskTerminateEvent.getExperimentId() + "and taskId: " + taskTerminateEvent.getTaskId());
+//                            event = taskTerminateEvent;
+//                            gatewayId = null;
+//                        }
                         MessageContext messageContext = new MessageContext(event, message.getMessageType(), message.getMessageId(), gatewayId);
                         messageContext.setUpdatedTime(AiravataUtils.getTime(message.getUpdatedTime()));
 	                    messageContext.setIsRedeliver(envelope.isRedeliver());

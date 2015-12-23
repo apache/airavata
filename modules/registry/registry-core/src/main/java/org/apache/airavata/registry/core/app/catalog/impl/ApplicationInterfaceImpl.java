@@ -23,9 +23,9 @@ package org.apache.airavata.registry.core.app.catalog.impl;
 
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.appinterface.application_interface_modelConstants;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogUtils;
@@ -48,7 +48,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             AppModuleResource moduleResource = new AppModuleResource();
             moduleResource.setModuleName(applicationModule.getAppModuleName());
             moduleResource.setGatewayId(gatewayId);
-            if (!applicationModule.getAppModuleId().equals("") && !applicationModule.getAppModuleId().equals(application_interface_modelConstants.DEFAULT_ID)){
+            if (!applicationModule.getAppModuleId().equals("") && !applicationModule.getAppModuleId().equals(airavata_commonsConstants.DEFAULT_ID)){
                 moduleResource.setModuleId(applicationModule.getAppModuleId());
             }else {
                 moduleResource.setModuleId(AppCatalogUtils.getID(applicationModule.getAppModuleName()));
@@ -69,7 +69,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
         try {
             AppInterfaceResource resource = new AppInterfaceResource();
             resource.setAppName(applicationInterfaceDescription.getApplicationName());
-            if (!applicationInterfaceDescription.getApplicationInterfaceId().equals("") && !applicationInterfaceDescription.getApplicationInterfaceId().equals(application_interface_modelConstants.DEFAULT_ID)){
+            if (!applicationInterfaceDescription.getApplicationInterfaceId().equals("") && !applicationInterfaceDescription.getApplicationInterfaceId().equals(airavata_commonsConstants.DEFAULT_ID)){
                 resource.setInterfaceId(applicationInterfaceDescription.getApplicationInterfaceId());
             }else {
                 resource.setInterfaceId(AppCatalogUtils.getID(applicationInterfaceDescription.getApplicationName()));

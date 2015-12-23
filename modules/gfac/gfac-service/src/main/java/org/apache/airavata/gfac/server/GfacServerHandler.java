@@ -78,7 +78,7 @@ public class GfacServerHandler implements GfacService.Iface {
     private CuratorFramework curatorClient;
     private Publisher statusPublisher;
     private String airavataServerHostPort;
-    private BlockingQueue<TaskSubmitEvent> taskSubmitEvents;
+//    private BlockingQueue<TaskSubmitEvent> taskSubmitEvents;
     private static List<AbstractActivityListener> activityListeners = new ArrayList<AbstractActivityListener>();
     private ExecutorService executorService;
 
