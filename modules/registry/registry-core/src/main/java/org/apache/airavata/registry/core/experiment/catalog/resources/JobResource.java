@@ -374,7 +374,9 @@ public class JobResource extends AbstractExpCatResource {
             JobStatusResource max = jobStatusResources.get(0);
             for(int i=1; i<jobStatusResources.size();i++) {
                 if (jobStatusResources.get(i).getTimeOfStateChange().after(max.getTimeOfStateChange())
-                        || (jobStatusResources.get(i).getTimeOfStateChange().equals(max.getTimeOfStateChange()) && jobStatusResources.get(i).getState().equals(JobState.COMPLETE.toString()))) {
+                   || (jobStatusResources.get(i).getTimeOfStateChange().equals(max.getTimeOfStateChange()) && jobStatusResources.get(i).getState().equals(JobState.COMPLETE.toString()))
+                   || (jobStatusResources.get(i).getTimeOfStateChange().equals(max.getTimeOfStateChange()) && jobStatusResources.get(i).getState().equals(JobState.FAILED.toString()))
+                   || (jobStatusResources.get(i).getTimeOfStateChange().equals(max.getTimeOfStateChange()) && jobStatusResources.get(i).getState().equals(JobState.CANCELED.toString()))) {
                     max = jobStatusResources.get(i);
                 }
             }
