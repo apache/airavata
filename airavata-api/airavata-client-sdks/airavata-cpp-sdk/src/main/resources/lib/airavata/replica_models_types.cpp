@@ -403,9 +403,9 @@ void FileModel::__set_fileSize(const int32_t val) {
 __isset.fileSize = true;
 }
 
-void FileModel::__set_nativeFormat(const std::string& val) {
-  this->nativeFormat = val;
-__isset.nativeFormat = true;
+void FileModel::__set_dataType(const std::string& val) {
+  this->dataType = val;
+__isset.dataType = true;
 }
 
 void FileModel::__set_creationTime(const int64_t val) {
@@ -540,8 +540,8 @@ uint32_t FileModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 11:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->nativeFormat);
-          this->__isset.nativeFormat = true;
+          xfer += iprot->readString(this->dataType);
+          this->__isset.dataType = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -657,9 +657,9 @@ uint32_t FileModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeI32(this->fileSize);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.nativeFormat) {
-    xfer += oprot->writeFieldBegin("nativeFormat", ::apache::thrift::protocol::T_STRING, 11);
-    xfer += oprot->writeString(this->nativeFormat);
+  if (this->__isset.dataType) {
+    xfer += oprot->writeFieldBegin("dataType", ::apache::thrift::protocol::T_STRING, 11);
+    xfer += oprot->writeString(this->dataType);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.creationTime) {
@@ -702,7 +702,7 @@ void swap(FileModel &a, FileModel &b) {
   swap(a.sha256Checksum, b.sha256Checksum);
   swap(a.fileType, b.fileType);
   swap(a.fileSize, b.fileSize);
-  swap(a.nativeFormat, b.nativeFormat);
+  swap(a.dataType, b.dataType);
   swap(a.creationTime, b.creationTime);
   swap(a.lastModifiedTime, b.lastModifiedTime);
   swap(a.fileReplicas, b.fileReplicas);
@@ -720,7 +720,7 @@ FileModel::FileModel(const FileModel& other27) {
   sha256Checksum = other27.sha256Checksum;
   fileType = other27.fileType;
   fileSize = other27.fileSize;
-  nativeFormat = other27.nativeFormat;
+  dataType = other27.dataType;
   creationTime = other27.creationTime;
   lastModifiedTime = other27.lastModifiedTime;
   fileReplicas = other27.fileReplicas;
@@ -737,7 +737,7 @@ FileModel& FileModel::operator=(const FileModel& other28) {
   sha256Checksum = other28.sha256Checksum;
   fileType = other28.fileType;
   fileSize = other28.fileSize;
-  nativeFormat = other28.nativeFormat;
+  dataType = other28.dataType;
   creationTime = other28.creationTime;
   lastModifiedTime = other28.lastModifiedTime;
   fileReplicas = other28.fileReplicas;
@@ -757,7 +757,7 @@ void FileModel::printTo(std::ostream& out) const {
   out << ", " << "sha256Checksum="; (__isset.sha256Checksum ? (out << to_string(sha256Checksum)) : (out << "<null>"));
   out << ", " << "fileType="; (__isset.fileType ? (out << to_string(fileType)) : (out << "<null>"));
   out << ", " << "fileSize="; (__isset.fileSize ? (out << to_string(fileSize)) : (out << "<null>"));
-  out << ", " << "nativeFormat="; (__isset.nativeFormat ? (out << to_string(nativeFormat)) : (out << "<null>"));
+  out << ", " << "dataType="; (__isset.dataType ? (out << to_string(dataType)) : (out << "<null>"));
   out << ", " << "creationTime="; (__isset.creationTime ? (out << to_string(creationTime)) : (out << "<null>"));
   out << ", " << "lastModifiedTime="; (__isset.lastModifiedTime ? (out << to_string(lastModifiedTime)) : (out << "<null>"));
   out << ", " << "fileReplicas="; (__isset.fileReplicas ? (out << to_string(fileReplicas)) : (out << "<null>"));

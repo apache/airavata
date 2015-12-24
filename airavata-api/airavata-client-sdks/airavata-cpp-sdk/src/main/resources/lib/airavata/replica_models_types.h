@@ -178,7 +178,7 @@ inline std::ostream& operator<<(std::ostream& out, const FileCollectionModel& ob
 }
 
 typedef struct _FileModel__isset {
-  _FileModel__isset() : fileId(false), gatewayId(false), username(false), sharedUsers(false), sharedPublic(false), fileName(false), fileDescription(false), sha256Checksum(false), fileType(false), fileSize(false), nativeFormat(false), creationTime(false), lastModifiedTime(false), fileReplicas(false) {}
+  _FileModel__isset() : fileId(false), gatewayId(false), username(false), sharedUsers(false), sharedPublic(false), fileName(false), fileDescription(false), sha256Checksum(false), fileType(false), fileSize(false), dataType(false), creationTime(false), lastModifiedTime(false), fileReplicas(false) {}
   bool fileId :1;
   bool gatewayId :1;
   bool username :1;
@@ -189,7 +189,7 @@ typedef struct _FileModel__isset {
   bool sha256Checksum :1;
   bool fileType :1;
   bool fileSize :1;
-  bool nativeFormat :1;
+  bool dataType :1;
   bool creationTime :1;
   bool lastModifiedTime :1;
   bool fileReplicas :1;
@@ -200,7 +200,7 @@ class FileModel {
 
   FileModel(const FileModel&);
   FileModel& operator=(const FileModel&);
-  FileModel() : fileId(), gatewayId(), username(), sharedPublic(0), fileName(), fileDescription(), sha256Checksum(), fileType((FileModelType::type)0), fileSize(0), nativeFormat(), creationTime(0), lastModifiedTime(0) {
+  FileModel() : fileId(), gatewayId(), username(), sharedPublic(0), fileName(), fileDescription(), sha256Checksum(), fileType((FileModelType::type)0), fileSize(0), dataType(), creationTime(0), lastModifiedTime(0) {
   }
 
   virtual ~FileModel() throw();
@@ -214,7 +214,7 @@ class FileModel {
   std::string sha256Checksum;
   FileModelType::type fileType;
   int32_t fileSize;
-  std::string nativeFormat;
+  std::string dataType;
   int64_t creationTime;
   int64_t lastModifiedTime;
   std::vector<FileReplicaModel>  fileReplicas;
@@ -241,7 +241,7 @@ class FileModel {
 
   void __set_fileSize(const int32_t val);
 
-  void __set_nativeFormat(const std::string& val);
+  void __set_dataType(const std::string& val);
 
   void __set_creationTime(const int64_t val);
 
@@ -291,9 +291,9 @@ class FileModel {
       return false;
     else if (__isset.fileSize && !(fileSize == rhs.fileSize))
       return false;
-    if (__isset.nativeFormat != rhs.__isset.nativeFormat)
+    if (__isset.dataType != rhs.__isset.dataType)
       return false;
-    else if (__isset.nativeFormat && !(nativeFormat == rhs.nativeFormat))
+    else if (__isset.dataType && !(dataType == rhs.dataType))
       return false;
     if (__isset.creationTime != rhs.__isset.creationTime)
       return false;

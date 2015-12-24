@@ -59,6 +59,29 @@
         </dependency>
 
         <dependency>
+            <groupId>org.jglobus</groupId>
+            <artifactId>gss</artifactId>
+            <version>${jglobus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jglobus</groupId>
+            <artifactId>gridftp</artifactId>
+            <version>${jglobus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jglobus</groupId>
+            <artifactId>myproxy</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk16</artifactId>
+            <version>1.44</version>
+        </dependency>
+
+
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.5.3</version>

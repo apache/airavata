@@ -64,7 +64,7 @@ struct FileModel {
     8: optional string sha256Checksum,
     9: optional FileModelType fileType,
    10: optional i32 fileSize,
-   11: optional string nativeFormat,
+   11: optional string dataType,
    12: optional i64 creationTime,
    13: optional i64 lastModifiedTime,
    14: optional list<FileReplicaModel> fileReplicas

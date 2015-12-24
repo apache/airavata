@@ -384,7 +384,7 @@ class FileModel {
   /**
    * @var string
    */
-  public $nativeFormat = null;
+  public $dataType = null;
   /**
    * @var int
    */
@@ -446,7 +446,7 @@ class FileModel {
           'type' => TType::I32,
           ),
         11 => array(
-          'var' => 'nativeFormat',
+          'var' => 'dataType',
           'type' => TType::STRING,
           ),
         12 => array(
@@ -499,8 +499,8 @@ class FileModel {
       if (isset($vals['fileSize'])) {
         $this->fileSize = $vals['fileSize'];
       }
-      if (isset($vals['nativeFormat'])) {
-        $this->nativeFormat = $vals['nativeFormat'];
+      if (isset($vals['dataType'])) {
+        $this->dataType = $vals['dataType'];
       }
       if (isset($vals['creationTime'])) {
         $this->creationTime = $vals['creationTime'];
@@ -615,7 +615,7 @@ class FileModel {
           break;
         case 11:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->nativeFormat);
+            $xfer += $input->readString($this->dataType);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -727,9 +727,9 @@ class FileModel {
       $xfer += $output->writeI32($this->fileSize);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->nativeFormat !== null) {
-      $xfer += $output->writeFieldBegin('nativeFormat', TType::STRING, 11);
-      $xfer += $output->writeString($this->nativeFormat);
+    if ($this->dataType !== null) {
+      $xfer += $output->writeFieldBegin('dataType', TType::STRING, 11);
+      $xfer += $output->writeString($this->dataType);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->creationTime !== null) {

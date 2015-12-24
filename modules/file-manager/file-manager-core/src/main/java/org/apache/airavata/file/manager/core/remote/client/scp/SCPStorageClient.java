@@ -403,23 +403,4 @@ public class SCPStorageClient implements RemoteStorageClient {
         }
         return b;
     }
-
-    public static void main(String[] args) throws Exception {
-        File privateKey = new File("/Users/supun/.ssh/id_rsa");
-        byte[] privateKeyBytes = IOUtils.toByteArray(new FileInputStream(privateKey));
-
-        File publicKey = new File("/Users/supun/.ssh/id_rsa.pub");
-        byte[] publicKeyBytes = IOUtils.toByteArray(new FileInputStream(publicKey));
-
-        String passPhrase = "";
-        byte[] passPhraseBytes = passPhrase.getBytes();
-
-        SCPStorageClient scpStorageClient = new SCPStorageClient("gw75.iu.xsede.org", 22, "pga", privateKeyBytes,
-                publicKeyBytes, passPhraseBytes);
-        File file = scpStorageClient.readFile("/var/www/portals/gateway-user-data/testdrive/test.txt");
-        System.out.println("File exists ? " + file.exists());
-        scpStorageClient.writeFile(file, "/var/www/portals/gateway-user-data/testdrive/test2.txt");
-        file.delete();
-        System.out.println("File exists ? " + file.exists());
-    }
 }

@@ -65,7 +65,7 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
   private static final org.apache.thrift.protocol.TField SHA256_CHECKSUM_FIELD_DESC = new org.apache.thrift.protocol.TField("sha256Checksum", org.apache.thrift.protocol.TType.STRING, (short)8);
   private static final org.apache.thrift.protocol.TField FILE_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("fileType", org.apache.thrift.protocol.TType.I32, (short)9);
   private static final org.apache.thrift.protocol.TField FILE_SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("fileSize", org.apache.thrift.protocol.TType.I32, (short)10);
-  private static final org.apache.thrift.protocol.TField NATIVE_FORMAT_FIELD_DESC = new org.apache.thrift.protocol.TField("nativeFormat", org.apache.thrift.protocol.TType.STRING, (short)11);
+  private static final org.apache.thrift.protocol.TField DATA_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("dataType", org.apache.thrift.protocol.TType.STRING, (short)11);
   private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)12);
   private static final org.apache.thrift.protocol.TField LAST_MODIFIED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("lastModifiedTime", org.apache.thrift.protocol.TType.I64, (short)13);
   private static final org.apache.thrift.protocol.TField FILE_REPLICAS_FIELD_DESC = new org.apache.thrift.protocol.TField("fileReplicas", org.apache.thrift.protocol.TType.LIST, (short)14);
@@ -86,7 +86,7 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
   private String sha256Checksum; // optional
   private FileModelType fileType; // optional
   private int fileSize; // optional
-  private String nativeFormat; // optional
+  private String dataType; // optional
   private long creationTime; // optional
   private long lastModifiedTime; // optional
   private List<FileReplicaModel> fileReplicas; // optional
@@ -107,7 +107,7 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
      */
     FILE_TYPE((short)9, "fileType"),
     FILE_SIZE((short)10, "fileSize"),
-    NATIVE_FORMAT((short)11, "nativeFormat"),
+    DATA_TYPE((short)11, "dataType"),
     CREATION_TIME((short)12, "creationTime"),
     LAST_MODIFIED_TIME((short)13, "lastModifiedTime"),
     FILE_REPLICAS((short)14, "fileReplicas");
@@ -145,8 +145,8 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
           return FILE_TYPE;
         case 10: // FILE_SIZE
           return FILE_SIZE;
-        case 11: // NATIVE_FORMAT
-          return NATIVE_FORMAT;
+        case 11: // DATA_TYPE
+          return DATA_TYPE;
         case 12: // CREATION_TIME
           return CREATION_TIME;
         case 13: // LAST_MODIFIED_TIME
@@ -198,7 +198,7 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
   private static final int __CREATIONTIME_ISSET_ID = 2;
   private static final int __LASTMODIFIEDTIME_ISSET_ID = 3;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.FILE_ID,_Fields.GATEWAY_ID,_Fields.USERNAME,_Fields.SHARED_USERS,_Fields.SHARED_PUBLIC,_Fields.FILE_NAME,_Fields.FILE_DESCRIPTION,_Fields.SHA256_CHECKSUM,_Fields.FILE_TYPE,_Fields.FILE_SIZE,_Fields.NATIVE_FORMAT,_Fields.CREATION_TIME,_Fields.LAST_MODIFIED_TIME,_Fields.FILE_REPLICAS};
+  private static final _Fields optionals[] = {_Fields.FILE_ID,_Fields.GATEWAY_ID,_Fields.USERNAME,_Fields.SHARED_USERS,_Fields.SHARED_PUBLIC,_Fields.FILE_NAME,_Fields.FILE_DESCRIPTION,_Fields.SHA256_CHECKSUM,_Fields.FILE_TYPE,_Fields.FILE_SIZE,_Fields.DATA_TYPE,_Fields.CREATION_TIME,_Fields.LAST_MODIFIED_TIME,_Fields.FILE_REPLICAS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -223,7 +223,7 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, FileModelType.class)));
     tmpMap.put(_Fields.FILE_SIZE, new org.apache.thrift.meta_data.FieldMetaData("fileSize", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-    tmpMap.put(_Fields.NATIVE_FORMAT, new org.apache.thrift.meta_data.FieldMetaData("nativeFormat", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.DATA_TYPE, new org.apache.thrift.meta_data.FieldMetaData("dataType", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.CREATION_TIME, new org.apache.thrift.meta_data.FieldMetaData("creationTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
@@ -271,8 +271,8 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
       this.fileType = other.fileType;
     }
     this.fileSize = other.fileSize;
-    if (other.isSetNativeFormat()) {
-      this.nativeFormat = other.nativeFormat;
+    if (other.isSetDataType()) {
+      this.dataType = other.dataType;
     }
     this.creationTime = other.creationTime;
     this.lastModifiedTime = other.lastModifiedTime;
@@ -303,7 +303,7 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
     this.fileType = null;
     setFileSizeIsSet(false);
     this.fileSize = 0;
-    this.nativeFormat = null;
+    this.dataType = null;
     setCreationTimeIsSet(false);
     this.creationTime = 0;
     setLastModifiedTimeIsSet(false);
@@ -562,26 +562,26 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __FILESIZE_ISSET_ID, value);
   }
 
-  public String getNativeFormat() {
-    return this.nativeFormat;
+  public String getDataType() {
+    return this.dataType;
   }
 
-  public void setNativeFormat(String nativeFormat) {
-    this.nativeFormat = nativeFormat;
+  public void setDataType(String dataType) {
+    this.dataType = dataType;
   }
 
-  public void unsetNativeFormat() {
-    this.nativeFormat = null;
+  public void unsetDataType() {
+    this.dataType = null;
   }
 
-  /** Returns true if field nativeFormat is set (has been assigned a value) and false otherwise */
-  public boolean isSetNativeFormat() {
-    return this.nativeFormat != null;
+  /** Returns true if field dataType is set (has been assigned a value) and false otherwise */
+  public boolean isSetDataType() {
+    return this.dataType != null;
   }
 
-  public void setNativeFormatIsSet(boolean value) {
+  public void setDataTypeIsSet(boolean value) {
     if (!value) {
-      this.nativeFormat = null;
+      this.dataType = null;
     }
   }
 
@@ -749,11 +749,11 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
       }
       break;
 
-    case NATIVE_FORMAT:
+    case DATA_TYPE:
       if (value == null) {
-        unsetNativeFormat();
+        unsetDataType();
       } else {
-        setNativeFormat((String)value);
+        setDataType((String)value);
       }
       break;
 
@@ -816,8 +816,8 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
     case FILE_SIZE:
       return getFileSize();
 
-    case NATIVE_FORMAT:
-      return getNativeFormat();
+    case DATA_TYPE:
+      return getDataType();
 
     case CREATION_TIME:
       return getCreationTime();
@@ -859,8 +859,8 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
       return isSetFileType();
     case FILE_SIZE:
       return isSetFileSize();
-    case NATIVE_FORMAT:
-      return isSetNativeFormat();
+    case DATA_TYPE:
+      return isSetDataType();
     case CREATION_TIME:
       return isSetCreationTime();
     case LAST_MODIFIED_TIME:
@@ -974,12 +974,12 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
         return false;
     }
 
-    boolean this_present_nativeFormat = true && this.isSetNativeFormat();
-    boolean that_present_nativeFormat = true && that.isSetNativeFormat();
-    if (this_present_nativeFormat || that_present_nativeFormat) {
-      if (!(this_present_nativeFormat && that_present_nativeFormat))
+    boolean this_present_dataType = true && this.isSetDataType();
+    boolean that_present_dataType = true && that.isSetDataType();
+    if (this_present_dataType || that_present_dataType) {
+      if (!(this_present_dataType && that_present_dataType))
         return false;
-      if (!this.nativeFormat.equals(that.nativeFormat))
+      if (!this.dataType.equals(that.dataType))
         return false;
     }
 
@@ -1067,10 +1067,10 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
     if (present_fileSize)
       list.add(fileSize);
 
-    boolean present_nativeFormat = true && (isSetNativeFormat());
-    list.add(present_nativeFormat);
-    if (present_nativeFormat)
-      list.add(nativeFormat);
+    boolean present_dataType = true && (isSetDataType());
+    list.add(present_dataType);
+    if (present_dataType)
+      list.add(dataType);
 
     boolean present_creationTime = true && (isSetCreationTime());
     list.add(present_creationTime);
@@ -1198,12 +1198,12 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetNativeFormat()).compareTo(other.isSetNativeFormat());
+    lastComparison = Boolean.valueOf(isSetDataType()).compareTo(other.isSetDataType());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetNativeFormat()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.nativeFormat, other.nativeFormat);
+    if (isSetDataType()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dataType, other.dataType);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1349,13 +1349,13 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
       sb.append(this.fileSize);
       first = false;
     }
-    if (isSetNativeFormat()) {
+    if (isSetDataType()) {
       if (!first) sb.append(", ");
-      sb.append("nativeFormat:");
-      if (this.nativeFormat == null) {
+      sb.append("dataType:");
+      if (this.dataType == null) {
         sb.append("null");
       } else {
-        sb.append(this.nativeFormat);
+        sb.append(this.dataType);
       }
       first = false;
     }
@@ -1516,10 +1516,10 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 11: // NATIVE_FORMAT
+          case 11: // DATA_TYPE
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.nativeFormat = iprot.readString();
-              struct.setNativeFormatIsSet(true);
+              struct.dataType = iprot.readString();
+              struct.setDataTypeIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1645,10 +1645,10 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
         oprot.writeI32(struct.fileSize);
         oprot.writeFieldEnd();
       }
-      if (struct.nativeFormat != null) {
-        if (struct.isSetNativeFormat()) {
-          oprot.writeFieldBegin(NATIVE_FORMAT_FIELD_DESC);
-          oprot.writeString(struct.nativeFormat);
+      if (struct.dataType != null) {
+        if (struct.isSetDataType()) {
+          oprot.writeFieldBegin(DATA_TYPE_FIELD_DESC);
+          oprot.writeString(struct.dataType);
           oprot.writeFieldEnd();
         }
       }
@@ -1724,7 +1724,7 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
       if (struct.isSetFileSize()) {
         optionals.set(9);
       }
-      if (struct.isSetNativeFormat()) {
+      if (struct.isSetDataType()) {
         optionals.set(10);
       }
       if (struct.isSetCreationTime()) {
@@ -1773,8 +1773,8 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
       if (struct.isSetFileSize()) {
         oprot.writeI32(struct.fileSize);
       }
-      if (struct.isSetNativeFormat()) {
-        oprot.writeString(struct.nativeFormat);
+      if (struct.isSetDataType()) {
+        oprot.writeString(struct.dataType);
       }
       if (struct.isSetCreationTime()) {
         oprot.writeI64(struct.creationTime);
@@ -1847,8 +1847,8 @@ public class FileModel implements org.apache.thrift.TBase<FileModel, FileModel._
         struct.setFileSizeIsSet(true);
       }
       if (incoming.get(10)) {
-        struct.nativeFormat = iprot.readString();
-        struct.setNativeFormatIsSet(true);
+        struct.dataType = iprot.readString();
+        struct.setDataTypeIsSet(true);
       }
       if (incoming.get(11)) {
         struct.creationTime = iprot.readI64();

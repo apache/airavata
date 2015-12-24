@@ -89,14 +89,4 @@ public class FileTransferRequestDao {
         }
         return null;
     }
-
-    public static void main(String[] args) throws IOException {
-        FileTransferRequestModel fileTransferRequestModel = new FileTransferRequestModel();
-        fileTransferRequestModel.setSrcHostCredToken("djkalbsbdaslfbalsfbslf");
-        fileTransferRequestModel.setSrcFilePath("test-file-path");
-        FileTransferRequestDao fileTransferRequestDao = new FileTransferRequestDao();
-        String transferId = fileTransferRequestDao.createFileTransferRequest(fileTransferRequestModel);
-        fileTransferRequestModel = fileTransferRequestDao.getFileTransferRequest(transferId);
-        System.out.println("Transfer Id:" + fileTransferRequestModel.getTransferId());
-    }
 }

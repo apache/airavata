@@ -255,7 +255,7 @@ class FileModel:
    - sha256Checksum
    - fileType
    - fileSize
-   - nativeFormat
+   - dataType
    - creationTime
    - lastModifiedTime
    - fileReplicas
@@ -273,13 +273,13 @@ class FileModel:
     (8, TType.STRING, 'sha256Checksum', None, None, ), # 8
     (9, TType.I32, 'fileType', None, None, ), # 9
     (10, TType.I32, 'fileSize', None, None, ), # 10
-    (11, TType.STRING, 'nativeFormat', None, None, ), # 11
+    (11, TType.STRING, 'dataType', None, None, ), # 11
     (12, TType.I64, 'creationTime', None, None, ), # 12
     (13, TType.I64, 'lastModifiedTime', None, None, ), # 13
     (14, TType.LIST, 'fileReplicas', (TType.STRUCT,(FileReplicaModel, FileReplicaModel.thrift_spec)), None, ), # 14
   )
 
-  def __init__(self, fileId=None, gatewayId=None, username=None, sharedUsers=None, sharedPublic=None, fileName=None, fileDescription=None, sha256Checksum=None, fileType=None, fileSize=None, nativeFormat=None, creationTime=None, lastModifiedTime=None, fileReplicas=None,):
+  def __init__(self, fileId=None, gatewayId=None, username=None, sharedUsers=None, sharedPublic=None, fileName=None, fileDescription=None, sha256Checksum=None, fileType=None, fileSize=None, dataType=None, creationTime=None, lastModifiedTime=None, fileReplicas=None,):
     self.fileId = fileId
     self.gatewayId = gatewayId
     self.username = username
@@ -290,7 +290,7 @@ class FileModel:
     self.sha256Checksum = sha256Checksum
     self.fileType = fileType
     self.fileSize = fileSize
-    self.nativeFormat = nativeFormat
+    self.dataType = dataType
     self.creationTime = creationTime
     self.lastModifiedTime = lastModifiedTime
     self.fileReplicas = fileReplicas
@@ -361,7 +361,7 @@ class FileModel:
           iprot.skip(ftype)
       elif fid == 11:
         if ftype == TType.STRING:
-          self.nativeFormat = iprot.readString()
+          self.dataType = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 12:
@@ -438,9 +438,9 @@ class FileModel:
       oprot.writeFieldBegin('fileSize', TType.I32, 10)
       oprot.writeI32(self.fileSize)
       oprot.writeFieldEnd()
-    if self.nativeFormat is not None:
-      oprot.writeFieldBegin('nativeFormat', TType.STRING, 11)
-      oprot.writeString(self.nativeFormat)
+    if self.dataType is not None:
+      oprot.writeFieldBegin('dataType', TType.STRING, 11)
+      oprot.writeString(self.dataType)
       oprot.writeFieldEnd()
     if self.creationTime is not None:
       oprot.writeFieldBegin('creationTime', TType.I64, 12)
@@ -476,7 +476,7 @@ class FileModel:
     value = (value * 31) ^ hash(self.sha256Checksum)
     value = (value * 31) ^ hash(self.fileType)
     value = (value * 31) ^ hash(self.fileSize)
-    value = (value * 31) ^ hash(self.nativeFormat)
+    value = (value * 31) ^ hash(self.dataType)
     value = (value * 31) ^ hash(self.creationTime)
     value = (value * 31) ^ hash(self.lastModifiedTime)
     value = (value * 31) ^ hash(self.fileReplicas)
