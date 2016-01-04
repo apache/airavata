@@ -513,7 +513,7 @@ public class WorkerResource extends AbstractExpCatResource {
         List<org.apache.airavata.registry.core.experiment.catalog.resources.ProjectResource> result = new ArrayList<org.apache.airavata.registry.core.experiment.catalog.resources.ProjectResource>();
         EntityManager em = null;
         try {
-            String query = "SELECT p from Project p WHERE ";
+            String query = "SELECT DISTINCT p from Project p WHERE ";
             if (filters != null && filters.size() != 0) {
                 for (String field : filters.keySet()) {
                     String filterVal = filters.get(field);
