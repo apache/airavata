@@ -85,7 +85,7 @@ public class ExpCatResourceUtils {
     }
 
     public static UserResource createUser(String username, String password, String gatewayId) throws RegistryException {
-        if (!isUserExist(username)) {
+        if (!isUserExist(username, gatewayId)) {
             UserResource userResource = new UserResource();
             userResource.setUserName(username);
             userResource.setPassword(password);
@@ -129,13 +129,14 @@ public class ExpCatResourceUtils {
         resource.save();
     }
 
-    public static boolean isUserExist (String username) throws RegistryException{
+    public static boolean isUserExist (String username, String gatewayId) throws RegistryException{
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
             QueryGenerator generator = new QueryGenerator(AbstractExpCatResource.USERS);
             generator.setParameter(AbstractExpCatResource.UserConstants.USERNAME, username);
+            generator.setParameter(AbstractExpCatResource.UserConstants.GATEWAY_ID, gatewayId);
             Query q = generator.selectQuery(em);
             int size = q.getResultList().size();
             em.getTransaction().commit();
@@ -158,7 +159,7 @@ public class ExpCatResourceUtils {
     public static ExperimentCatResource getUser(String userName, String gatewayId) throws RegistryException{
         EntityManager em = null;
         try {
-            if (isUserExist(userName)) {
+            if (isUserExist(userName, gatewayId)) {
                 em = getEntityManager();
                 UserPK userPK = new UserPK();
                 userPK.setUserName(userName);
@@ -314,7 +315,7 @@ public class ExpCatResourceUtils {
             if (!isGatewayExist(gatewayResource.getGatewayName())){
                 gatewayResource.save();
             }
-            if (!isUserExist(userResource.getUserName())){
+            if (!isUserExist(userResource.getUserName(), gatewayResource.getGatewayId())){
                 userResource.save();
             }
             Gateway gateway = em.find(Gateway.class, gatewayResource.getGatewayId());

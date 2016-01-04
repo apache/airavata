@@ -41,7 +41,7 @@ public class MetadataCatalogService implements org.apache.airavata.file.manager.
     }
 
     /**
-     * Update exisiting metadata model
+     * Update existing metadata model
      *
      * @param metadataModel
      * @throws FileManagerException

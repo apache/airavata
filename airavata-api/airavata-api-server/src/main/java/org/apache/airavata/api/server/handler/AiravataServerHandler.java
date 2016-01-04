@@ -509,7 +509,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
         List<Project> projects = new ArrayList<Project>();
         try {
-            if (!ExpCatResourceUtils.isUserExist(userName)){
+            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
                 logger.error("User does not exist in the system. Please provide a valid user..");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -569,7 +569,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
         try {
-            if (!ExpCatResourceUtils.isUserExist(userName)){
+            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
                 logger.error("User does not exist in the system. Please provide a valid user..");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -629,7 +629,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
         try {
-            if (!ExpCatResourceUtils.isUserExist(userName)){
+            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
                 logger.error("User does not exist in the system. Please provide a valid user..");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -689,7 +689,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
         try {
-            if (!ExpCatResourceUtils.isUserExist(userName)){
+            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
                 logger.error("User does not exist in the system. Please provide a valid user..");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -749,7 +749,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
         try {
-            if (!ExpCatResourceUtils.isUserExist(userName)){
+            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
                 logger.error("User does not exist in the system. Please provide a valid user..");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -810,7 +810,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
         try {
-            if (!ExpCatResourceUtils.isUserExist(userName)){
+            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
                 logger.error("User does not exist in the system. Please provide a valid user..");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -871,7 +871,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
         try {
-            if (!ExpCatResourceUtils.isUserExist(userName)){
+            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
                 logger.error("User does not exist in the system. Please provide a valid user..");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -934,7 +934,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
         try {
-            if (!ExpCatResourceUtils.isUserExist(userName)){
+            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
                 logger.error("User does not exist in the system. Please provide a valid user..");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -995,7 +995,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
         try {
-            if (!ExpCatResourceUtils.isUserExist(userName)){
+            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
                 logger.error("User does not exist in the system. Please provide a valid user..");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -1158,7 +1158,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
         try {
-            if (!ExpCatResourceUtils.isUserExist(userName)){
+            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
                 logger.error("User does not exist in the system. Please provide a valid user..");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
