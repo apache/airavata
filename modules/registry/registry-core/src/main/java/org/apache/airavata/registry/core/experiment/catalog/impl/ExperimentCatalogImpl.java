@@ -68,7 +68,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 gatewayResource = (GatewayResource) ExpCatResourceUtils.getGateway(ServerSettings.getDefaultUserGateway());
             }
 
-            if (!ExpCatResourceUtils.isUserExist(ServerSettings.getDefaultUser())){
+            if (!ExpCatResourceUtils.isUserExist(ServerSettings.getDefaultUser(), ServerSettings.getDefaultUserGateway())){
                 user = ExpCatResourceUtils.createUser(ServerSettings.getDefaultUser(), ServerSettings.getDefaultUserPassword(), ServerSettings.getDefaultUserGateway());
                 user.save();
             }else {
@@ -91,7 +91,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
             gatewayResource = (GatewayResource) ExpCatResourceUtils.getGateway(gateway);
         }
 
-        if (!ExpCatResourceUtils.isUserExist(username)){
+        if (!ExpCatResourceUtils.isUserExist(username, gatewayResource.getGatewayId())){
             user = ExpCatResourceUtils.createUser(username, password, gateway);
             user.save();
         }else {
