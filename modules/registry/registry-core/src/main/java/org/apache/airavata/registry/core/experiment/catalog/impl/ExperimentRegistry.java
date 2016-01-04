@@ -70,7 +70,7 @@ public class ExperimentRegistry {
     public String addExperiment(ExperimentModel experiment) throws RegistryException {
         String experimentId;
         try {
-            if (!ExpCatResourceUtils.isUserExist(experiment.getUserName())) {
+            if (!ExpCatResourceUtils.isUserExist(experiment.getUserName(), experiment.getGatewayId())) {
                 ExpCatResourceUtils.addUser(experiment.getUserName(), null, experiment.getGatewayId());
             }
             if (!workerResource.isProjectExists(experiment.getProjectId())) {

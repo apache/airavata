@@ -93,7 +93,7 @@ public class RegistryInitUtil {
                 }
 
                 UserResource user;
-                if (!ExpCatResourceUtils.isUserExist(ServerSettings.getDefaultUser())){
+                if (!ExpCatResourceUtils.isUserExist(ServerSettings.getDefaultUser(), ServerSettings.getDefaultUserGateway())){
                     user = ExpCatResourceUtils.createUser(ServerSettings.getDefaultUser(), ServerSettings.getDefaultUserPassword(), ServerSettings.getDefaultUserGateway());
                     user.save();
                 }else {

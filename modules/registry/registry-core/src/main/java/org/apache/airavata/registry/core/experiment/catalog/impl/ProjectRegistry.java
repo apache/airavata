@@ -57,7 +57,7 @@ public class ProjectRegistry {
     public String addProject (Project project, String gatewayId) throws RegistryException{
         String projectId;
         try {
-            if (!ExpCatResourceUtils.isUserExist(project.getOwner())){
+            if (!ExpCatResourceUtils.isUserExist(project.getOwner(), gatewayId)){
                 ExpCatResourceUtils.addUser(project.getOwner(), null, gatewayId);
             }
             ProjectResource projectResource = new ProjectResource();
