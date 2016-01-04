@@ -38,7 +38,6 @@ public class Project {
     private String description;
     private Timestamp creationTime;
     private Collection<Experiment> experiments;
-    private Users user;
     private Gateway gateway;
     private Collection<ProjectUser> projectUsers;
 
@@ -135,16 +134,6 @@ public class Project {
 
     public void setExperiments(Collection<Experiment> experimentByProjectId) {
         this.experiments = experimentByProjectId;
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "USER_NAME", referencedColumnName = "USER_NAME")
-    public Users getUser() {
-        return user;
-    }
-
-    public void setUser(Users userByOwnerName) {
-        this.user = userByOwnerName;
     }
 
     @ManyToOne

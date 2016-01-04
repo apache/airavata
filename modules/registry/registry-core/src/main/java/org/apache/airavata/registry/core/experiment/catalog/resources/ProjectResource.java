@@ -339,20 +339,14 @@ public class ProjectResource extends AbstractExpCatResource {
             project.setProjectId(id);
             project.setProjectName(name);
             project.setGatewayId(gatewayId);
-            UserPK userPK = new UserPK();
-            userPK.setUserName(worker.getUser());
-            userPK.setGatewayId(getGatewayId());
-            Users user = em.find(Users.class, userPK);
-            project.setUser(user);
-            project.setUserName(user.getUserName());
+            project.setUserName(worker.getUser());
             project.setDescription(description);
             project.setCreationTime(creationTime);
 
             if (existingProject != null) {
                 existingProject.setProjectName(name);
                 existingProject.setGatewayId(gatewayId);
-                existingProject.setUser(user);
-                existingProject.setUserName(user.getUserName());
+                existingProject.setUserName(worker.getUser());
                 existingProject.setDescription(description);
                 existingProject.setCreationTime(creationTime);
                 em.merge(existingProject);
