@@ -301,6 +301,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 csClient = getCredentialStoreServiceClient();
             }
             SSHCredential sshCredential = csClient.getSSHCredential(airavataCredStoreToken, gatewayId);
+            logger.info("Airavata retrieved SSH pub key for gateway id : " + gatewayId + " and for token : " + airavataCredStoreToken);
             return sshCredential.getPublicKey();
         }catch (Exception e){
             logger.error("Error occurred while retrieving SSH credential", e);
@@ -318,6 +319,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             if (csClient == null){
                 csClient = getCredentialStoreServiceClient();
             }
+            logger.info("Airavata retrieved all SSH pub keys for user name : " + userName);
             return csClient.getAllSSHKeysForUser(userName);
         }catch (Exception e){
             logger.error("Error occurred while retrieving SSH public keys for user : " + userName , e);
@@ -334,6 +336,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             if (csClient == null){
                 csClient = getCredentialStoreServiceClient();
             }
+            logger.info("Airavata retrieved all SSH pub keys for gateway Id : " + gatewayId);
             return csClient.getAllSSHKeysForGateway(gatewayId);
         }catch (Exception e){
             logger.error("Error occurred while retrieving SSH public keys for gateway : " + gatewayId , e);
@@ -350,6 +353,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             if (csClient == null){
                 csClient = getCredentialStoreServiceClient();
             }
+            logger.info("Airavata deleted SSH pub key for gateway Id : " + gatewayId + " and with token id : " + airavataCredStoreToken);
             return csClient.deleteSSHCredential(airavataCredStoreToken, gatewayId);
         }catch (Exception e){
             logger.error("Error occurred while deleting SSH credential", e);
@@ -384,7 +388,9 @@ public class AiravataServerHandler implements Airavata.Iface {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
-            return (String) experimentCatalog.add(ExpCatParentDataType.PROJECT, project, gatewayId);
+            String projectId = (String) experimentCatalog.add(ExpCatParentDataType.PROJECT, project, gatewayId);
+            logger.info("Airavata created project with project Id : " + projectId + " for gateway Id : " + gatewayId);
+            return projectId;
         } catch (RegistryException e) {
             logger.error("Error while creating the project", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -414,6 +420,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw exception;
             }
             experimentCatalog.update(ExperimentCatalogModelType.PROJECT, updatedProject, projectId);
+            logger.info("Airavata updated project with project Id : " + projectId );
         } catch (RegistryException e) {
             logger.error("Error while updating the project", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -438,6 +445,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw exception;
             }
             experimentCatalog.remove(ExperimentCatalogModelType.PROJECT, projectId);
+            logger.info("Airavata deleted project with project Id : " + projectId );
             return true;
         } catch (RegistryException e) {
             logger.error("Error while removing the project", e);
@@ -472,6 +480,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
                 throw exception;
             }
+            logger.info("Airavata retrieved project with project Id : " + projectId );
             return (Project) experimentCatalog.get(ExperimentCatalogModelType.PROJECT, projectId);
         } catch (RegistryException e) {
             logger.error("Error while retrieving the project", e);
@@ -531,6 +540,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                     projects.add((Project) o);
                 }
             }
+            logger.info("Airavata retrieved projects for user : " + userName + " and gateway id : " + gatewayId );
             return projects;
         } catch (RegistryException e) {
             logger.error("Error while retrieving projects", e);
@@ -591,6 +601,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             for (Object object : results) {
                 projects.add((Project)object);
             }
+            logger.info("Airavata retrieved projects for user : " + userName + " and gateway id : " + gatewayId  + " with project name : " + projectName);
             return projects;
         }catch (Exception e) {
             logger.error("Error while retrieving projects", e);
@@ -651,6 +662,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             for (Object object : results) {
                 projects.add((Project)object);
             }
+            logger.info("Airavata retrieved projects for user : " + userName + " and gateway id : " + gatewayId + " with project description : " + description);
             return projects;
         }catch (Exception e) {
             logger.error("Error while retrieving projects", e);
@@ -711,6 +723,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             for (Object object : results) {
                 summaries.add((ExperimentSummaryModel) object);
             }
+            logger.info("Airavata retrieved experiments for user : " + userName + " and gateway id : " + gatewayId + " with experiment name : " + expName);
             return summaries;
         }catch (Exception e) {
             logger.error("Error while retrieving experiments", e);
@@ -771,6 +784,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             for (Object object : results) {
                 summaries.add((ExperimentSummaryModel) object);
             }
+            logger.info("Airavata retrieved experiments for user : " + userName + " and gateway id : " + gatewayId + " with experiment description : " + description);
             return summaries;
         }catch (Exception e) {
             logger.error("Error while retrieving experiments", e);
@@ -832,6 +846,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             for (Object object : results) {
                 summaries.add((ExperimentSummaryModel) object);
             }
+            logger.info("Airavata retrieved experiments for user : " + userName + " and gateway id : " + gatewayId + " with application id : " + applicationId);
             return summaries;
         }catch (Exception e) {
             logger.error("Error while retrieving experiments", e);
@@ -893,6 +908,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             for (Object object : results) {
                 summaries.add((ExperimentSummaryModel) object);
             }
+            logger.info("Airavata retrieved experiments for user : " + userName + " and gateway id : " + gatewayId + " with experiment status : " + experimentState);
             return summaries;
         }catch (Exception e) {
             logger.error("Error while retrieving experiments", e);
@@ -957,6 +973,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             for (Object object : results) {
                 summaries.add((ExperimentSummaryModel) object);
             }
+            logger.info("Airavata retrieved experiments for user : " + userName + " and gateway id : " + gatewayId + " with experiment creation time : " + AiravataUtils.getTime(fromTime));
             return summaries;
         }catch (Exception e) {
             logger.error("Error while retrieving experiments", e);
@@ -1034,6 +1051,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             for (Object object : results) {
                 summaries.add((ExperimentSummaryModel) object);
             }
+            logger.info("Airavata retrieved experiments for user : " + userName + " and gateway id : " + gatewayId );
             return summaries;
         }catch (Exception e) {
             logger.error("Error while retrieving experiments", e);
@@ -1072,6 +1090,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             filters.put(Constants.FieldConstants.ExperimentConstants.TO_DATE, toTime+"");
 
             List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT_STATISTICS, filters);
+            logger.info("Airavata retrieved experiments for gateway id : " + gatewayId + " between : " + AiravataUtils.getTime(fromTime) + " and " + AiravataUtils.getTime(toTime));
             return (ExperimentStatistics) results.get(0);
         }catch (Exception e) {
             logger.error("Error while retrieving experiments", e);
@@ -1122,6 +1141,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                     experiments.add((ExperimentModel) o);
                 }
             }
+            logger.info("Airavata retrieved experiments for project : " + projectId);
             return experiments;
         } catch (Exception e) {
             logger.error("Error while retrieving the experiments", e);
@@ -1179,6 +1199,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                     experiments.add((ExperimentModel)o);
                 }
             }
+            logger.info("Airavata retrieved experiments for user : " + userName);
             return experiments;
         } catch (Exception e) {
             logger.error("Error while retrieving the experiments", e);
@@ -1290,6 +1311,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw new ExperimentCatalogException("Experiment is not in CREATED state. Hence cannot deleted. ID:"+ experimentId);
             }
             experimentCatalog.remove(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            logger.info("Airavata removed experiment with experiment id : " + experimentId);
             return true;
         } catch (Exception e) {
             logger.error("Error while deleting the experiment", e);
