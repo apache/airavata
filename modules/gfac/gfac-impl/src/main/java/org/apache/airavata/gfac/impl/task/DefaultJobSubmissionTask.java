@@ -46,7 +46,8 @@ import java.io.IOException;
 import java.util.Map;
 
 public class DefaultJobSubmissionTask implements JobSubmissionTask {
-    private static final Logger log = LoggerFactory.getLogger(DefaultJobSubmissionTask.class);
+	private static final Logger log = LoggerFactory.getLogger(DefaultJobSubmissionTask.class);
+	public static final String DEFAULT_JOB_ID = "DEFAULT_JOB_ID";
 	private static int waitForProcessIdmillis = 5000;
 	private static int pauseTimeInSec = waitForProcessIdmillis / 1000;
 
@@ -80,8 +81,10 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 				jobModel.setExitCode(exitCode);
 				jobModel.setStdErr(jobSubmissionOutput.getStdErr());
 				jobModel.setStdOut(jobSubmissionOutput.getStdOut());
-				GFacUtils.saveJobModel(processContext, jobModel);
-				if (exitCode != 0) {
+				String jobId = jobSubmissionOutput.getJobId();
+				if (exitCode != 0 && jobId == null) {
+					jobModel.setJobId(DEFAULT_JOB_ID);
+					GFacUtils.saveJobModel(processContext, jobModel);
 					String msg;
 					if (exitCode != Integer.MIN_VALUE) {
 						msg = "expId:" + processContext.getProcessModel().getExperimentId() + ", processId:" +
@@ -98,7 +101,6 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 					ErrorModel errorModel = new ErrorModel();
 					errorModel.setUserFriendlyMessage(msg);
 					errorModel.setActualErrorMessage(msg);
-					GFacUtils.saveJobModel(processContext, jobModel);
 					GFacUtils.saveExperimentError(processContext, errorModel);
 					GFacUtils.saveProcessError(processContext, errorModel);
 					GFacUtils.saveTaskError(taskContext, errorModel);
@@ -113,7 +115,6 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 					}
 					return taskStatus;
 				}
-			    String jobId = jobSubmissionOutput.getJobId();
 			    if (jobId != null && !jobId.isEmpty()) {
 				    jobModel.setJobId(jobId);
 				    GFacUtils.saveJobModel(processContext, jobModel);
@@ -158,7 +159,9 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 			    }
 
 			    if (jobId == null || jobId.isEmpty()) {
-				    String msg = "expId:" + processContext.getProcessModel().getExperimentId() + " Couldn't find " +
+					jobModel.setJobId(DEFAULT_JOB_ID);
+					GFacUtils.saveJobModel(processContext, jobModel);
+					String msg = "expId:" + processContext.getProcessModel().getExperimentId() + " Couldn't find " +
 						    "remote jobId for JobName:" + jobModel.getJobName() + ", both submit and verify steps " +
 						    "doesn't return a valid JobId. " + "Hence changing experiment state to Failed";
 				    log.error(msg);
