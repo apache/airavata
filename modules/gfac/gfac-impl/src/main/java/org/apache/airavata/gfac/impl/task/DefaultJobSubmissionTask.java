@@ -76,9 +76,43 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 			    jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
 			    JobSubmissionOutput jobSubmissionOutput = remoteCluster.submitBatchJob(jobFile.getPath(),
 					    processContext.getWorkingDir());
-			    jobModel.setExitCode(jobSubmissionOutput.getExitCode());
-			    jobModel.setStdErr(jobSubmissionOutput.getStdErr());
-			    jobModel.setStdOut(jobSubmissionOutput.getStdOut());
+				int exitCode = jobSubmissionOutput.getExitCode();
+				jobModel.setExitCode(exitCode);
+				jobModel.setStdErr(jobSubmissionOutput.getStdErr());
+				jobModel.setStdOut(jobSubmissionOutput.getStdOut());
+				GFacUtils.saveJobModel(processContext, jobModel);
+				if (exitCode != 0) {
+					String msg;
+					if (exitCode != Integer.MIN_VALUE) {
+						msg = "expId:" + processContext.getProcessModel().getExperimentId() + ", processId:" +
+								processContext.getProcessId() + ", taskId: " + taskContext.getTaskId() +
+								" return non zero exit code:" + exitCode + "  for JobName:" + jobModel.getJobName() +
+								", Hence changing job state to Failed";
+					} else {
+						msg = "expId:" + processContext.getProcessModel().getExperimentId() + ", processId:" +
+								processContext.getProcessId() + ", taskId: " + taskContext.getTaskId() +
+								" doesn't  return valid job submission exit code for JobName:" + jobModel.getJobName() +
+								", Hence changing job state to Failed";
+					}
+					log.error(msg);
+					ErrorModel errorModel = new ErrorModel();
+					errorModel.setUserFriendlyMessage(msg);
+					errorModel.setActualErrorMessage(msg);
+					GFacUtils.saveJobModel(processContext, jobModel);
+					GFacUtils.saveExperimentError(processContext, errorModel);
+					GFacUtils.saveProcessError(processContext, errorModel);
+					GFacUtils.saveTaskError(taskContext, errorModel);
+					taskStatus.setState(TaskState.FAILED);
+					taskStatus.setReason("Job submission command exit with non zero exit code");
+					taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+					taskContext.setTaskStatus(taskStatus);
+					try {
+						GFacUtils.saveAndPublishTaskStatus(taskContext);
+					} catch (GFacException e) {
+						log.error("Error while saving task status", e);
+					}
+					return taskStatus;
+				}
 			    String jobId = jobSubmissionOutput.getJobId();
 			    if (jobId != null && !jobId.isEmpty()) {
 				    jobModel.setJobId(jobId);
@@ -159,17 +193,7 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);
 		    taskContext.getTaskModel().setTaskError(errorModel);
-	    } catch (ApplicationSettingsException e) {
-		    String msg = "Error occurred while creating job descriptor";
-		    log.error(msg, e);
-		    taskStatus.setState(TaskState.FAILED);
-		    taskStatus.setReason(msg);
-            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-		    ErrorModel errorModel = new ErrorModel();
-		    errorModel.setActualErrorMessage(e.getMessage());
-		    errorModel.setUserFriendlyMessage(msg);
-		    taskContext.getTaskModel().setTaskError(errorModel);
-	    } catch (GFacException e) {
+	    } catch (ApplicationSettingsException | GFacException e) {
 		    String msg = "Error occurred while creating job descriptor";
 		    log.error(msg, e);
 		    taskStatus.setState(TaskState.FAILED);
