@@ -1404,6 +1404,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 });
                 experimentModel.setProcesses(processList);
             }
+            logger.info("Airavata retrieved detailed experiment with experiment id : " + airavataExperimentId);
             return experimentModel;
         } catch (Exception e) {
             logger.error("Error while retrieving the experiment", e);
