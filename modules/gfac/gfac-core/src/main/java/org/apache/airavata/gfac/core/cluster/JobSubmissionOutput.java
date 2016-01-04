@@ -22,7 +22,7 @@ package org.apache.airavata.gfac.core.cluster;
 
 public class JobSubmissionOutput {
 
-	private int exitCode;
+	private int exitCode = Integer.MIN_VALUE;
 	private String stdOut;
 	private String stdErr;
 	private String command;
