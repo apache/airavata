@@ -1668,7 +1668,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public ExperimentStatus getExperimentStatus(AuthzToken authzToken, String airavataExperimentId) throws InvalidRequestException,
             ExperimentNotFoundException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        return getExperimentStatusInternal(airavataExperimentId);
+        ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
+        logger.info("Airavata retrieved experiment status for experiment id : " + airavataExperimentId);
+        return experimentStatus;
     }
 
     /*Private method wraps the logic of getExperimentStatus method since this method is called internally.*/
@@ -1701,6 +1703,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 logger.error(airavataExperimentId, "Get experiment outputs failed, experiment {} doesn't exit.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
+            logger.info("Airavata retrieved experiment outputs for experiment id : " + airavataExperimentId);
             return (List<OutputDataObjectType>) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT_OUTPUT, airavataExperimentId);
         } catch (Exception e) {
             logger.error(airavataExperimentId, "Error while retrieving the experiment outputs", e);
@@ -1751,6 +1754,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                     }
                 }
             }
+            logger.info("Airavata retrieved job statuses for experiment with experiment id : " + airavataExperimentId);
             return jobStatus;
         } catch (Exception e) {
             logger.error(airavataExperimentId, "Error while retrieving the job statuses", e);
@@ -1788,6 +1792,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                     }
                 }
             }
+            logger.info("Airavata retrieved job models for experiment with experiment id : " + airavataExperimentId);
             return jobList;
         } catch (Exception e) {
             logger.error(airavataExperimentId, "Error while retrieving the job details", e);
@@ -1851,6 +1856,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     	OrchestratorService.Client orchestratorClient = getOrchestratorClient();
     	if (orchestratorClient.validateExperiment(airavataExperimentId)) {
     		orchestratorClient.launchExperiment(airavataExperimentId, gatewayId);
+            logger.info("Airavata launched experiment with experiment id : " + airavataExperimentId);
     	}else {
             logger.error(airavataExperimentId, "Couldn't identify experiment type, experiment {} is neither single application nor workflow.", airavataExperimentId);
             throw new InvalidRequestException("Experiment '" + airavataExperimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getExecutionId());
@@ -1944,6 +1950,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                     existingExperiment.getUserConfigurationData().setComputationalResourceScheduling(null);
                 }
             }
+            logger.info("Airavata cloned experiment with experiment id : " + existingExperimentID);
             return (String) experimentCatalog.add(ExpCatParentDataType.EXPERIMENT, existingExperiment, gatewayId);
         } catch (Exception e) {
             logger.error(existingExperimentID, "Error while cloning the experiment with existing configuration...", e);
@@ -1986,6 +1993,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             Client client = getOrchestratorClient();
             client.terminateExperiment(airavataExperimentId, gatewayId);
+            logger.info("Airavata cancelled experiment with experiment id : " + airavataExperimentId);
         } catch (RegistryException e) {
             logger.error(airavataExperimentId, "Error while cancelling the experiment...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -2012,7 +2020,9 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
         try {
             appCatalog = RegistryFactory.getAppCatalog();
-            return appCatalog.getApplicationInterface().addApplicationModule(applicationModule, gatewayId);
+            String module = appCatalog.getApplicationInterface().addApplicationModule(applicationModule, gatewayId);
+            logger.info("Airavata registered application module for gateway id : " + gatewayId);
+            return module;
         } catch (AppCatalogException e) {
             logger.error("Error while adding application module...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -2035,7 +2045,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
-            return appCatalog.getApplicationInterface().getApplicationModule(appModuleId);
+            ApplicationModule module = appCatalog.getApplicationInterface().getApplicationModule(appModuleId);
+            logger.info("Airavata retrieved application module with module id : " + appModuleId);
+            return module;
         } catch (AppCatalogException e) {
             logger.error(appModuleId, "Error while retrieving application module...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -2060,6 +2072,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             appCatalog.getApplicationInterface().updateApplicationModule(appModuleId, applicationModule);
+            logger.info("Airavata updated application module with module id: " + appModuleId);
             return true;
         } catch (AppCatalogException e) {
             logger.error(appModuleId, "Error while updating application module...", e);
@@ -2080,7 +2093,9 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
         try {
             appCatalog = RegistryFactory.getAppCatalog();
-            return appCatalog.getApplicationInterface().getAllApplicationModules(gatewayId);
+            List<ApplicationModule> moduleList = appCatalog.getApplicationInterface().getAllApplicationModules(gatewayId);
+            logger.info("Airavata retrieved modules for gateway id : " + gatewayId);
+            return moduleList;
         } catch (AppCatalogException e) {
             logger.error("Error while retrieving all application modules...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -2103,6 +2118,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
+            logger.info("Airavata deleted application module with module id : " + appModuleId);
             return appCatalog.getApplicationInterface().removeApplicationModule(appModuleId);
         } catch (AppCatalogException e) {
             logger.error(appModuleId, "Error while deleting application module...", e);
@@ -2129,7 +2145,9 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
         try {
             appCatalog = RegistryFactory.getAppCatalog();
-            return appCatalog.getApplicationDeployment().addApplicationDeployment(applicationDeployment, gatewayId);
+            String deployment = appCatalog.getApplicationDeployment().addApplicationDeployment(applicationDeployment, gatewayId);
+            logger.info("Airavata registered application deployment for gateway id : " + gatewayId);
+            return deployment;
         } catch (AppCatalogException e) {
             logger.error("Error while adding application deployment...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -2152,7 +2170,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
-            return appCatalog.getApplicationDeployment().getApplicationDeployement(appDeploymentId);
+            ApplicationDeploymentDescription deployement = appCatalog.getApplicationDeployment().getApplicationDeployement(appDeploymentId);
+            logger.info("Airavata registered application deployment for deployment id : " + appDeploymentId);
+            return deployement;
         } catch (AppCatalogException e) {
             logger.error(appDeploymentId, "Error while retrieving application deployment...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -2178,6 +2198,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             appCatalog.getApplicationDeployment().updateApplicationDeployment(appDeploymentId, applicationDeployment);
+            logger.info("Airavata updated application deployment for deployment id : " + appDeploymentId);
             return true;
         } catch (AppCatalogException e) {
             logger.error(appDeploymentId, "Error while updating application deployment...", e);
@@ -2202,6 +2223,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             appCatalog.getApplicationDeployment().removeAppDeployment(appDeploymentId);
+            logger.info("Airavata removed application deployment with deployment id : " + appDeploymentId);
             return true;
         } catch (AppCatalogException e) {
             logger.error(appDeploymentId, "Error while deleting application deployment...", e);
@@ -2228,7 +2250,9 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
         try {
             appCatalog = RegistryFactory.getAppCatalog();
-            return appCatalog.getApplicationDeployment().getAllApplicationDeployements(gatewayId);
+            List<ApplicationDeploymentDescription> deployements = appCatalog.getApplicationDeployment().getAllApplicationDeployements(gatewayId);
+            logger.info("Airavata retrieved application deployments for gateway id : " + gatewayId);
+            return deployements;
         } catch (AppCatalogException e) {
             logger.error("Error while retrieving application deployments...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -2258,6 +2282,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             for (ApplicationDeploymentDescription description : applicationDeployments){
                 appDeployments.add(description.getAppDeploymentId());
             }
+            logger.info("Airavata retrieved application deployments for module id : " + appModuleId);
             return appDeployments;
         } catch (AppCatalogException e) {
             logger.error(appModuleId, "Error while retrieving application deployments...", e);
@@ -2285,7 +2310,9 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
         try {
             appCatalog = RegistryFactory.getAppCatalog();
-            return appCatalog.getApplicationInterface().addApplicationInterface(applicationInterface, gatewayId);
+            String interfaceId = appCatalog.getApplicationInterface().addApplicationInterface(applicationInterface, gatewayId);
+            logger.info("Airavata registered application interface for gateway id : " + gatewayId);
+            return interfaceId;
         } catch (AppCatalogException e) {
             logger.error("Error while adding application interface...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -2308,7 +2335,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
-            return appCatalog.getApplicationInterface().getApplicationInterface(appInterfaceId);
+            ApplicationInterfaceDescription interfaceDescription = appCatalog.getApplicationInterface().getApplicationInterface(appInterfaceId);
+            logger.info("Airavata retrieved application interface with interface id : " + appInterfaceId);
+            return interfaceDescription;
         } catch (AppCatalogException e) {
             logger.error(appInterfaceId, "Error while retrieving application interface...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -2334,6 +2363,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             appCatalog.getApplicationInterface().updateApplicationInterface(appInterfaceId, applicationInterface);
+            logger.info("Airavata updated application interface with interface id : " + appInterfaceId);
             return true;
         } catch (AppCatalogException e) {
             logger.error(appInterfaceId, "Error while updating application interface...", e);
@@ -2357,7 +2387,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
-            return appCatalog.getApplicationInterface().removeApplicationInterface(appInterfaceId);
+            boolean removeApplicationInterface = appCatalog.getApplicationInterface().removeApplicationInterface(appInterfaceId);
+            logger.info("Airavata removed application interface with interface id : " + appInterfaceId);
+            return removeApplicationInterface;
         } catch (AppCatalogException e) {
             logger.error(appInterfaceId, "Error while deleting application interface...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -2390,6 +2422,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                     allApplicationInterfacesMap.put(interfaceDescription.getApplicationInterfaceId(), interfaceDescription.getApplicationName());
                 }
             }
+            logger.info("Airavata retrieved application interfaces for gateway id : " + gatewayId);
             return allApplicationInterfacesMap;
         } catch (AppCatalogException e) {
             logger.error("Error while retrieving application interfaces...", e);
@@ -2416,7 +2449,9 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
         try {
             appCatalog = RegistryFactory.getAppCatalog();
-            return appCatalog.getApplicationInterface().getAllApplicationInterfaces(gatewayId);
+            List<ApplicationInterfaceDescription> interfaces = appCatalog.getApplicationInterface().getAllApplicationInterfaces(gatewayId);
+            logger.info("Airavata retrieved application interfaces for gateway id : " + gatewayId);
+            return interfaces;
         } catch (AppCatalogException e) {
             logger.error("Error while retrieving application interfaces...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -2439,7 +2474,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
-            return appCatalog.getApplicationInterface().getApplicationInputs(appInterfaceId);
+            List<InputDataObjectType> applicationInputs = appCatalog.getApplicationInterface().getApplicationInputs(appInterfaceId);
+            logger.info("Airavata retrieved application inputs for application interface id : " + appInterfaceId);
+            return applicationInputs;
         } catch (AppCatalogException e) {
             logger.error(appInterfaceId, "Error while retrieving application inputs...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -2460,7 +2497,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public List<OutputDataObjectType> getApplicationOutputs(AuthzToken authzToken, String appInterfaceId) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        return getApplicationOutputsInternal(appInterfaceId);
+        List<OutputDataObjectType> list = getApplicationOutputsInternal(appInterfaceId);
+        logger.info("Airavata retrieved application outputs for app interface id : " + appInterfaceId);
+        return list;
     }
 
     /*This private method wraps the logic of getApplicationOutputs method as this method is called internally in the API.*/
@@ -2511,6 +2550,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                     }
                 }
             }
+            logger.info("Airavata retrieved available compute resources for application interface id : " + appInterfaceId);
             return availableComputeResources;
         } catch (AppCatalogException e) {
             logger.error(appInterfaceId, "Error while saving compute resource...", e);
