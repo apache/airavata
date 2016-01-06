@@ -28,10 +28,8 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
-import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
-import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
 import org.apache.airavata.gfac.cpi.GfacService;
 import org.apache.airavata.gfac.cpi.gfac_cpiConstants;
 import org.apache.airavata.gfac.impl.Factory;
@@ -250,7 +248,13 @@ public class GfacServerHandler implements GfacService.Iface {
 	                publishProcessStatus(event, status);
                     try {
 	                    createProcessZKNode(curatorClient, gfacServerName, event, message);
-	                    submitProcess(event.getProcessId(), event.getGatewayId(), event.getTokenId());
+                        boolean isCancel = setCancelWatcher(curatorClient, event.getExperimentId(), event.getProcessId());
+                        submitProcess(event.getProcessId(), event.getGatewayId(), event.getTokenId());
+                        if (isCancel) {
+                            // Need to trigger process cancel watcher, wait till process recover and then set zk data.
+                            Thread.sleep(10000);
+                            setCancelData(event.getExperimentId());
+                        }
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         rabbitMQProcessLaunchConsumer.sendAck(message.getDeliveryTag());
@@ -262,7 +266,9 @@ public class GfacServerHandler implements GfacService.Iface {
                 } catch (AiravataException e) {
 	                log.error("Error while publishing process status", e);
                 }
-            } else if (message.getType().equals(MessageType.TERMINATEPROCESS)) {
+            }
+            // TODO - Now there is no process termination type messages, use zookeeper instead of rabbitmq to do that. it is safe to remove this else part.
+            else if (message.getType().equals(MessageType.TERMINATEPROCESS)) {
                 ProcessTerminateEvent event = new ProcessTerminateEvent();
                 TBase messageEvent = message.getEvent();
                 try {
@@ -289,7 +295,26 @@ public class GfacServerHandler implements GfacService.Iface {
         }
     }
 
-	private void publishProcessStatus(ProcessSubmitEvent event, ProcessStatus status) throws AiravataException {
+    private void setCancelData(String experimentId) throws Exception {
+        String expCancelNodePath = ZKPaths.makePath(ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE,
+                experimentId), ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+        curatorClient.setData().withVersion(-1).forPath(expCancelNodePath, ZkConstants.ZOOKEEPER_CANCEL_REQEUST
+                .getBytes());
+    }
+
+    private boolean setCancelWatcher(CuratorFramework curatorClient,
+                                     String experimentId,
+                                     String processId) throws Exception {
+
+        String experimentNodePath = GFacUtils.getExperimentNodePath(experimentId);
+        // create /experiments/{experimentId}/cancel node and set watcher for data changes
+        String experimentCancelNode = ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+        byte[] bytes = curatorClient.getData().usingWatcher(Factory.getCancelRequestWatcher(experimentId, processId)).forPath(experimentCancelNode);
+        return bytes != null && new String(bytes).equalsIgnoreCase(ZkConstants.ZOOKEEPER_CANCEL_REQEUST);
+
+    }
+
+    private void publishProcessStatus(ProcessSubmitEvent event, ProcessStatus status) throws AiravataException {
 		ProcessIdentifier identifier = new ProcessIdentifier(event.getProcessId(),
 				event.getExperimentId(),
 				event.getGatewayId());
@@ -323,15 +348,6 @@ public class GfacServerHandler implements GfacService.Iface {
 		String tokenNodePath = ZKPaths.makePath(zkProcessNodePath, ZkConstants.ZOOKEEPER_TOKEN_NODE);
 		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), tokenNodePath);
 		curatorClient.setData().withVersion(-1).forPath(tokenNodePath, token.getBytes());
-
-		// create /experiments/{experimentId}/{processId}/cancelListener node and set watcher for data changes
-/*		String cancelListenerNode = ZKPaths.makePath(zkProcessNodePath, GFacConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
-		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), cancelListenerNode);
-		curatorClient.getData().usingWatcher(Factory.getCancelRequestWatcher()).forPath(cancelListenerNode);*/
-
-		// create /experiments/{experimentId}/cancel node and set watcher for data changes
-		String experimentCancelNode = ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
-		curatorClient.getData().usingWatcher(Factory.getCancelRequestWatcher(experimentId, processId)).forPath (experimentCancelNode);
 
 	}
 

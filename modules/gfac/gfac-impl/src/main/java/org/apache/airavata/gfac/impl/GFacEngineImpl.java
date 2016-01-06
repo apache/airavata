@@ -509,8 +509,9 @@ public class GFacEngineImpl implements GFacEngine {
         processContext.setTaskExecutionOrder(taskExecutionOrder);
         Map<String, TaskModel> taskMap = processContext.getTaskMap();
         String recoverTaskId = null;
+        TaskModel taskModel = null;
         for (String taskId : taskExecutionOrder) {
-            TaskModel taskModel = taskMap.get(taskId);
+            taskModel = taskMap.get(taskId);
             TaskState state = taskModel.getTaskStatus().getState();
             if (state == TaskState.CREATED || state == TaskState.EXECUTING) {
                 recoverTaskId = taskId;
