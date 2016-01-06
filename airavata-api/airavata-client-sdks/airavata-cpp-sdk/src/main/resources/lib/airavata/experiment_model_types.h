@@ -73,13 +73,14 @@ class ExperimentSummaryModel;
 class ExperimentStatistics;
 
 typedef struct _UserConfigurationDataModel__isset {
-  _UserConfigurationDataModel__isset() : shareExperimentPublicly(true), computationalResourceScheduling(false), throttleResources(true), userDN(false), generateCert(true), storageId(false) {}
+  _UserConfigurationDataModel__isset() : shareExperimentPublicly(true), computationalResourceScheduling(false), throttleResources(true), userDN(false), generateCert(true), storageId(false), experimentDataDir(false) {}
   bool shareExperimentPublicly :1;
   bool computationalResourceScheduling :1;
   bool throttleResources :1;
   bool userDN :1;
   bool generateCert :1;
   bool storageId :1;
+  bool experimentDataDir :1;
 } _UserConfigurationDataModel__isset;
 
 class UserConfigurationDataModel {
@@ -87,7 +88,7 @@ class UserConfigurationDataModel {
 
   UserConfigurationDataModel(const UserConfigurationDataModel&);
   UserConfigurationDataModel& operator=(const UserConfigurationDataModel&);
-  UserConfigurationDataModel() : airavataAutoSchedule(false), overrideManualScheduledParams(false), shareExperimentPublicly(false), throttleResources(false), userDN(), generateCert(false), storageId() {
+  UserConfigurationDataModel() : airavataAutoSchedule(false), overrideManualScheduledParams(false), shareExperimentPublicly(false), throttleResources(false), userDN(), generateCert(false), storageId(), experimentDataDir() {
   }
 
   virtual ~UserConfigurationDataModel() throw();
@@ -99,6 +100,7 @@ class UserConfigurationDataModel {
   std::string userDN;
   bool generateCert;
   std::string storageId;
+  std::string experimentDataDir;
 
   _UserConfigurationDataModel__isset __isset;
 
@@ -117,6 +119,8 @@ class UserConfigurationDataModel {
   void __set_generateCert(const bool val);
 
   void __set_storageId(const std::string& val);
+
+  void __set_experimentDataDir(const std::string& val);
 
   bool operator == (const UserConfigurationDataModel & rhs) const
   {
@@ -147,6 +151,10 @@ class UserConfigurationDataModel {
     if (__isset.storageId != rhs.__isset.storageId)
       return false;
     else if (__isset.storageId && !(storageId == rhs.storageId))
+      return false;
+    if (__isset.experimentDataDir != rhs.__isset.experimentDataDir)
+      return false;
+    else if (__isset.experimentDataDir && !(experimentDataDir == rhs.experimentDataDir))
       return false;
     return true;
   }
