@@ -78,14 +78,6 @@ public class GFacWorker implements Runnable {
 	@Override
 	public void run() {
 		try {
-			if (processContext.isInterrupted()) {
-				GFacUtils.handleProcessInterrupt(processContext);
-				if (processContext.isCancel()) {
-					sendAck();
-					Factory.getGfacContext().removeProcess(processContext.getProcessId());
-				}
-				return;
-			}
 			ProcessState processState = processContext.getProcessStatus().getState();
 			switch (processState) {
 				case CREATED:
@@ -206,7 +198,13 @@ public class GFacWorker implements Runnable {
     }
 
 	private void executeProcess() throws GFacException {
+		// checkpoint
+		if (processContext.isInterrupted()) {
+			return;
+		}
+
 		engine.executeProcess(processContext);
+		// checkpoint
 		if (processContext.isInterrupted()) {
 			return;
 		}
@@ -215,24 +213,6 @@ public class GFacWorker implements Runnable {
             completeProcess();
         }
 	}
-
-//	private void monitorProcess() throws GFacException {
-//		try {
-//			JobMonitor monitorService = Factory.getMonitorService(processContext.getMonitorMode());
-//			if (monitorService != null) {
-//				monitorService.monitor(processContext.getJobModel().getJobId(), processContext);
-//                ProcessStatus status = new ProcessStatus(ProcessState.MONITORING);
-//                status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-//                processContext.setProcessStatus(status);
-//				GFacUtils.saveAndPublishProcessStatus(processContext);
-//			} else {
-//				// we directly invoke outflow
-//				continueTaskExecution();
-//			}
-//		} catch (AiravataException e) {
-//			throw new GFacException("Error while retrieving moniot service", e);
-//		}
-//	}
 
 	private void sendAck() {
 		// this ensure, gfac doesn't send ack more than once for a process. which cause to remove gfac rabbitmq consumer from rabbitmq server.
