@@ -513,6 +513,7 @@ public class Utils {
             configurationDataResource.setTotalPhysicalMemory(o.getTotalPhysicalMemory());
             configurationDataResource.setStaticWorkingDir(o.getStaticWorkingDir());
             configurationDataResource.setStorageId(o.getStorageId());
+            configurationDataResource.setExperimentDataDir(o.getExperimentDataDir());
         }
         return configurationDataResource;
     }

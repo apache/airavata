@@ -85,6 +85,10 @@ class UserConfigurationDataModel {
    * @var string
    */
   public $storageId = null;
+  /**
+   * @var string
+   */
+  public $experimentDataDir = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -122,6 +126,10 @@ class UserConfigurationDataModel {
           'var' => 'storageId',
           'type' => TType::STRING,
           ),
+        9 => array(
+          'var' => 'experimentDataDir',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -148,6 +156,9 @@ class UserConfigurationDataModel {
       }
       if (isset($vals['storageId'])) {
         $this->storageId = $vals['storageId'];
+      }
+      if (isset($vals['experimentDataDir'])) {
+        $this->experimentDataDir = $vals['experimentDataDir'];
       }
     }
   }
@@ -228,6 +239,13 @@ class UserConfigurationDataModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 9:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->experimentDataDir);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -282,6 +300,11 @@ class UserConfigurationDataModel {
     if ($this->storageId !== null) {
       $xfer += $output->writeFieldBegin('storageId', TType::STRING, 8);
       $xfer += $output->writeString($this->storageId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->experimentDataDir !== null) {
+      $xfer += $output->writeFieldBegin('experimentDataDir', TType::STRING, 9);
+      $xfer += $output->writeString($this->experimentDataDir);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

@@ -138,6 +138,11 @@ void ProcessModel::__set_generateCert(const bool val) {
 __isset.generateCert = true;
 }
 
+void ProcessModel::__set_experimentDataDir(const std::string& val) {
+  this->experimentDataDir = val;
+__isset.experimentDataDir = true;
+}
+
 uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -377,6 +382,14 @@ uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 22:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->experimentDataDir);
+          this->__isset.experimentDataDir = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -533,6 +546,11 @@ uint32_t ProcessModel::write(::apache::thrift::protocol::TProtocol* oprot) const
     xfer += oprot->writeBool(this->generateCert);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.experimentDataDir) {
+    xfer += oprot->writeFieldBegin("experimentDataDir", ::apache::thrift::protocol::T_STRING, 22);
+    xfer += oprot->writeString(this->experimentDataDir);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -561,6 +579,7 @@ void swap(ProcessModel &a, ProcessModel &b) {
   swap(a.storageResourceId, b.storageResourceId);
   swap(a.userDn, b.userDn);
   swap(a.generateCert, b.generateCert);
+  swap(a.experimentDataDir, b.experimentDataDir);
   swap(a.__isset, b.__isset);
 }
 
@@ -586,6 +605,7 @@ ProcessModel::ProcessModel(const ProcessModel& other24) {
   storageResourceId = other24.storageResourceId;
   userDn = other24.userDn;
   generateCert = other24.generateCert;
+  experimentDataDir = other24.experimentDataDir;
   __isset = other24.__isset;
 }
 ProcessModel& ProcessModel::operator=(const ProcessModel& other25) {
@@ -610,6 +630,7 @@ ProcessModel& ProcessModel::operator=(const ProcessModel& other25) {
   storageResourceId = other25.storageResourceId;
   userDn = other25.userDn;
   generateCert = other25.generateCert;
+  experimentDataDir = other25.experimentDataDir;
   __isset = other25.__isset;
   return *this;
 }
@@ -637,6 +658,7 @@ void ProcessModel::printTo(std::ostream& out) const {
   out << ", " << "storageResourceId="; (__isset.storageResourceId ? (out << to_string(storageResourceId)) : (out << "<null>"));
   out << ", " << "userDn="; (__isset.userDn ? (out << to_string(userDn)) : (out << "<null>"));
   out << ", " << "generateCert="; (__isset.generateCert ? (out << to_string(generateCert)) : (out << "<null>"));
+  out << ", " << "experimentDataDir="; (__isset.experimentDataDir ? (out << to_string(experimentDataDir)) : (out << "<null>"));
   out << ")";
 }
 

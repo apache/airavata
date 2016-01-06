@@ -146,6 +146,7 @@ public class ExperimentRegistry {
             configDataResource.setTotalPhysicalMemory(configurationData.getComputationalResourceScheduling().getTotalPhysicalMemory());
             configDataResource.setStaticWorkingDir(configurationData.getComputationalResourceScheduling().getStaticWorkingDir());
             configDataResource.setStorageId(configurationData.getStorageId());
+            configDataResource.setExperimentDataDir(configurationData.getExperimentDataDir());
             configDataResource.save();
         } catch (Exception e) {
             logger.error("Unable to save user config data", e);
@@ -277,6 +278,7 @@ public class ExperimentRegistry {
             processResource.setStorageResourceId(process.getStorageResourceId());
             processResource.setUserDn(process.getUserDn());
             processResource.setGenerateCert(process.isGenerateCert());
+            processResource.setExperimentDataDir(process.getExperimentDataDir());
             if(process.isEnableEmailNotification()){
                 processResource.setEnableEmailNotification(true);
                 if(process.getEmailAddresses() != null){
@@ -703,6 +705,7 @@ public class ExperimentRegistry {
             configDataResource.setWallTimeLimit(configurationData.getComputationalResourceScheduling().getWallTimeLimit());
             configDataResource.setTotalPhysicalMemory(configurationData.getComputationalResourceScheduling().getTotalPhysicalMemory());
             configDataResource.setStaticWorkingDir(configurationData.getComputationalResourceScheduling().getStaticWorkingDir());
+            configDataResource.setExperimentDataDir(configurationData.getExperimentDataDir());
             configDataResource.save();
         } catch (Exception e) {
             logger.error("Unable to save user config data", e);
@@ -728,6 +731,7 @@ public class ExperimentRegistry {
             processResource.setStorageResourceId(process.getStorageResourceId());
             processResource.setUserDn(process.getUserDn());
             processResource.setGenerateCert(process.isGenerateCert());
+            processResource.setExperimentDataDir(process.getExperimentDataDir());
             if(process.isEnableEmailNotification()){
                 processResource.setEnableEmailNotification(true);
                 if(process.getEmailAddresses() != null){
