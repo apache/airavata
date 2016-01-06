@@ -55,6 +55,7 @@ class ProcessModel:
    - storageResourceId
    - userDn
    - generateCert
+   - experimentDataDir
   """
 
   thrift_spec = (
@@ -80,9 +81,10 @@ class ProcessModel:
     (19, TType.STRING, 'storageResourceId', None, None, ), # 19
     (20, TType.STRING, 'userDn', None, None, ), # 20
     (21, TType.BOOL, 'generateCert', None, False, ), # 21
+    (22, TType.STRING, 'experimentDataDir', None, None, ), # 22
   )
 
-  def __init__(self, processId=thrift_spec[1][4], experimentId=None, creationTime=None, lastUpdateTime=None, processStatus=None, processDetail=None, applicationInterfaceId=None, applicationDeploymentId=None, computeResourceId=None, processInputs=None, processOutputs=None, resourceSchedule=None, tasks=None, taskDag=None, processError=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None, storageResourceId=None, userDn=None, generateCert=thrift_spec[21][4],):
+  def __init__(self, processId=thrift_spec[1][4], experimentId=None, creationTime=None, lastUpdateTime=None, processStatus=None, processDetail=None, applicationInterfaceId=None, applicationDeploymentId=None, computeResourceId=None, processInputs=None, processOutputs=None, resourceSchedule=None, tasks=None, taskDag=None, processError=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None, storageResourceId=None, userDn=None, generateCert=thrift_spec[21][4], experimentDataDir=None,):
     self.processId = processId
     self.experimentId = experimentId
     self.creationTime = creationTime
@@ -104,6 +106,7 @@ class ProcessModel:
     self.storageResourceId = storageResourceId
     self.userDn = userDn
     self.generateCert = generateCert
+    self.experimentDataDir = experimentDataDir
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -245,6 +248,11 @@ class ProcessModel:
           self.generateCert = iprot.readBool()
         else:
           iprot.skip(ftype)
+      elif fid == 22:
+        if ftype == TType.STRING:
+          self.experimentDataDir = iprot.readString()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -351,6 +359,10 @@ class ProcessModel:
       oprot.writeFieldBegin('generateCert', TType.BOOL, 21)
       oprot.writeBool(self.generateCert)
       oprot.writeFieldEnd()
+    if self.experimentDataDir is not None:
+      oprot.writeFieldBegin('experimentDataDir', TType.STRING, 22)
+      oprot.writeString(self.experimentDataDir)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -385,6 +397,7 @@ class ProcessModel:
     value = (value * 31) ^ hash(self.storageResourceId)
     value = (value * 31) ^ hash(self.userDn)
     value = (value * 31) ^ hash(self.generateCert)
+    value = (value * 31) ^ hash(self.experimentDataDir)
     return value
 
   def __repr__(self):

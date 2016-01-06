@@ -278,6 +278,7 @@ public class ExperimentRegistry {
             processResource.setStorageResourceId(process.getStorageResourceId());
             processResource.setUserDn(process.getUserDn());
             processResource.setGenerateCert(process.isGenerateCert());
+            processResource.setExperimentDataDir(process.getExperimentDataDir());
             if(process.isEnableEmailNotification()){
                 processResource.setEnableEmailNotification(true);
                 if(process.getEmailAddresses() != null){
@@ -730,6 +731,7 @@ public class ExperimentRegistry {
             processResource.setStorageResourceId(process.getStorageResourceId());
             processResource.setUserDn(process.getUserDn());
             processResource.setGenerateCert(process.isGenerateCert());
+            processResource.setExperimentDataDir(process.getExperimentDataDir());
             if(process.isEnableEmailNotification()){
                 processResource.setEnableEmailNotification(true);
                 if(process.getEmailAddresses() != null){

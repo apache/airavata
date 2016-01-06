@@ -85,6 +85,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private static final org.apache.thrift.protocol.TField STORAGE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("storageResourceId", org.apache.thrift.protocol.TType.STRING, (short)19);
   private static final org.apache.thrift.protocol.TField USER_DN_FIELD_DESC = new org.apache.thrift.protocol.TField("userDn", org.apache.thrift.protocol.TType.STRING, (short)20);
   private static final org.apache.thrift.protocol.TField GENERATE_CERT_FIELD_DESC = new org.apache.thrift.protocol.TField("generateCert", org.apache.thrift.protocol.TType.BOOL, (short)21);
+  private static final org.apache.thrift.protocol.TField EXPERIMENT_DATA_DIR_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentDataDir", org.apache.thrift.protocol.TType.STRING, (short)22);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -113,6 +114,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private String storageResourceId; // optional
   private String userDn; // optional
   private boolean generateCert; // optional
+  private String experimentDataDir; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -136,7 +138,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     EMAIL_ADDRESSES((short)18, "emailAddresses"),
     STORAGE_RESOURCE_ID((short)19, "storageResourceId"),
     USER_DN((short)20, "userDn"),
-    GENERATE_CERT((short)21, "generateCert");
+    GENERATE_CERT((short)21, "generateCert"),
+    EXPERIMENT_DATA_DIR((short)22, "experimentDataDir");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -193,6 +196,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           return USER_DN;
         case 21: // GENERATE_CERT
           return GENERATE_CERT;
+        case 22: // EXPERIMENT_DATA_DIR
+          return EXPERIMENT_DATA_DIR;
         default:
           return null;
       }
@@ -238,7 +243,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private static final int __ENABLEEMAILNOTIFICATION_ISSET_ID = 2;
   private static final int __GENERATECERT_ISSET_ID = 3;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.LAST_UPDATE_TIME,_Fields.PROCESS_STATUS,_Fields.PROCESS_DETAIL,_Fields.APPLICATION_INTERFACE_ID,_Fields.APPLICATION_DEPLOYMENT_ID,_Fields.COMPUTE_RESOURCE_ID,_Fields.PROCESS_INPUTS,_Fields.PROCESS_OUTPUTS,_Fields.RESOURCE_SCHEDULE,_Fields.TASKS,_Fields.TASK_DAG,_Fields.PROCESS_ERROR,_Fields.GATEWAY_EXECUTION_ID,_Fields.ENABLE_EMAIL_NOTIFICATION,_Fields.EMAIL_ADDRESSES,_Fields.STORAGE_RESOURCE_ID,_Fields.USER_DN,_Fields.GENERATE_CERT};
+  private static final _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.LAST_UPDATE_TIME,_Fields.PROCESS_STATUS,_Fields.PROCESS_DETAIL,_Fields.APPLICATION_INTERFACE_ID,_Fields.APPLICATION_DEPLOYMENT_ID,_Fields.COMPUTE_RESOURCE_ID,_Fields.PROCESS_INPUTS,_Fields.PROCESS_OUTPUTS,_Fields.RESOURCE_SCHEDULE,_Fields.TASKS,_Fields.TASK_DAG,_Fields.PROCESS_ERROR,_Fields.GATEWAY_EXECUTION_ID,_Fields.ENABLE_EMAIL_NOTIFICATION,_Fields.EMAIL_ADDRESSES,_Fields.STORAGE_RESOURCE_ID,_Fields.USER_DN,_Fields.GENERATE_CERT,_Fields.EXPERIMENT_DATA_DIR};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -288,6 +293,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.GENERATE_CERT, new org.apache.thrift.meta_data.FieldMetaData("generateCert", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+    tmpMap.put(_Fields.EXPERIMENT_DATA_DIR, new org.apache.thrift.meta_data.FieldMetaData("experimentDataDir", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ProcessModel.class, metaDataMap);
   }
@@ -381,6 +388,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       this.userDn = other.userDn;
     }
     this.generateCert = other.generateCert;
+    if (other.isSetExperimentDataDir()) {
+      this.experimentDataDir = other.experimentDataDir;
+    }
   }
 
   public ProcessModel deepCopy() {
@@ -415,6 +425,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     this.userDn = null;
     this.generateCert = false;
 
+    this.experimentDataDir = null;
   }
 
   public String getProcessId() {
@@ -956,6 +967,29 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __GENERATECERT_ISSET_ID, value);
   }
 
+  public String getExperimentDataDir() {
+    return this.experimentDataDir;
+  }
+
+  public void setExperimentDataDir(String experimentDataDir) {
+    this.experimentDataDir = experimentDataDir;
+  }
+
+  public void unsetExperimentDataDir() {
+    this.experimentDataDir = null;
+  }
+
+  /** Returns true if field experimentDataDir is set (has been assigned a value) and false otherwise */
+  public boolean isSetExperimentDataDir() {
+    return this.experimentDataDir != null;
+  }
+
+  public void setExperimentDataDirIsSet(boolean value) {
+    if (!value) {
+      this.experimentDataDir = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case PROCESS_ID:
@@ -1126,6 +1160,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       }
       break;
 
+    case EXPERIMENT_DATA_DIR:
+      if (value == null) {
+        unsetExperimentDataDir();
+      } else {
+        setExperimentDataDir((String)value);
+      }
+      break;
+
     }
   }
 
@@ -1194,6 +1236,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     case GENERATE_CERT:
       return isGenerateCert();
 
+    case EXPERIMENT_DATA_DIR:
+      return getExperimentDataDir();
+
     }
     throw new IllegalStateException();
   }
@@ -1247,6 +1292,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       return isSetUserDn();
     case GENERATE_CERT:
       return isSetGenerateCert();
+    case EXPERIMENT_DATA_DIR:
+      return isSetExperimentDataDir();
     }
     throw new IllegalStateException();
   }
@@ -1453,6 +1500,15 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         return false;
     }
 
+    boolean this_present_experimentDataDir = true && this.isSetExperimentDataDir();
+    boolean that_present_experimentDataDir = true && that.isSetExperimentDataDir();
+    if (this_present_experimentDataDir || that_present_experimentDataDir) {
+      if (!(this_present_experimentDataDir && that_present_experimentDataDir))
+        return false;
+      if (!this.experimentDataDir.equals(that.experimentDataDir))
+        return false;
+    }
+
     return true;
   }
 
@@ -1564,6 +1620,11 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     list.add(present_generateCert);
     if (present_generateCert)
       list.add(generateCert);
+
+    boolean present_experimentDataDir = true && (isSetExperimentDataDir());
+    list.add(present_experimentDataDir);
+    if (present_experimentDataDir)
+      list.add(experimentDataDir);
 
     return list.hashCode();
   }
@@ -1786,6 +1847,16 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetExperimentDataDir()).compareTo(other.isSetExperimentDataDir());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetExperimentDataDir()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.experimentDataDir, other.experimentDataDir);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1993,6 +2064,16 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (!first) sb.append(", ");
       sb.append("generateCert:");
       sb.append(this.generateCert);
+      first = false;
+    }
+    if (isSetExperimentDataDir()) {
+      if (!first) sb.append(", ");
+      sb.append("experimentDataDir:");
+      if (this.experimentDataDir == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.experimentDataDir);
+      }
       first = false;
     }
     sb.append(")");
@@ -2271,6 +2352,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 22: // EXPERIMENT_DATA_DIR
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.experimentDataDir = iprot.readString();
+              struct.setExperimentDataDirIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -2447,6 +2536,13 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         oprot.writeBool(struct.generateCert);
         oprot.writeFieldEnd();
       }
+      if (struct.experimentDataDir != null) {
+        if (struct.isSetExperimentDataDir()) {
+          oprot.writeFieldBegin(EXPERIMENT_DATA_DIR_FIELD_DESC);
+          oprot.writeString(struct.experimentDataDir);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -2524,7 +2620,10 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetGenerateCert()) {
         optionals.set(18);
       }
-      oprot.writeBitSet(optionals, 19);
+      if (struct.isSetExperimentDataDir()) {
+        optionals.set(19);
+      }
+      oprot.writeBitSet(optionals, 20);
       if (struct.isSetCreationTime()) {
         oprot.writeI64(struct.creationTime);
       }
@@ -2606,6 +2705,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetGenerateCert()) {
         oprot.writeBool(struct.generateCert);
       }
+      if (struct.isSetExperimentDataDir()) {
+        oprot.writeString(struct.experimentDataDir);
+      }
     }
 
     @Override
@@ -2615,7 +2717,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       struct.setProcessIdIsSet(true);
       struct.experimentId = iprot.readString();
       struct.setExperimentIdIsSet(true);
-      BitSet incoming = iprot.readBitSet(19);
+      BitSet incoming = iprot.readBitSet(20);
       if (incoming.get(0)) {
         struct.creationTime = iprot.readI64();
         struct.setCreationTimeIsSet(true);
@@ -2733,6 +2835,10 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (incoming.get(18)) {
         struct.generateCert = iprot.readBool();
         struct.setGenerateCertIsSet(true);
+      }
+      if (incoming.get(19)) {
+        struct.experimentDataDir = iprot.readString();
+        struct.setExperimentDataDirIsSet(true);
       }
     }
   }

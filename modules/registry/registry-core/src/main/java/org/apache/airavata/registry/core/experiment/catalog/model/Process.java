@@ -44,6 +44,7 @@ public class Process {
     private boolean enableEmailNotification;
     private String emailAddresses;
     private String storageId;
+    private String experimentDataDir;
     private Experiment experiment;
     private Collection<ProcessError> processErrors;
     private Collection<ProcessInput> processInputs;
@@ -191,6 +192,15 @@ public class Process {
 
     public void setGenerateCert(boolean generateCert) {
         this.generateCert = generateCert;
+    }
+
+    @Column(name = "EXPERIMENT_DATA_DIR")
+    public String getExperimentDataDir() {
+        return experimentDataDir;
+    }
+
+    public void setExperimentDataDir(String experimentDataDir) {
+        this.experimentDataDir = experimentDataDir;
     }
 
 //    @Override
