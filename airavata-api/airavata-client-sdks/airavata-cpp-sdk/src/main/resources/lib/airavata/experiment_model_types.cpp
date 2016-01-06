@@ -103,6 +103,11 @@ void UserConfigurationDataModel::__set_storageId(const std::string& val) {
 __isset.storageId = true;
 }
 
+void UserConfigurationDataModel::__set_experimentDataDir(const std::string& val) {
+  this->experimentDataDir = val;
+__isset.experimentDataDir = true;
+}
+
 uint32_t UserConfigurationDataModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -190,6 +195,14 @@ uint32_t UserConfigurationDataModel::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
+      case 9:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->experimentDataDir);
+          this->__isset.experimentDataDir = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -249,6 +262,11 @@ uint32_t UserConfigurationDataModel::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeString(this->storageId);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.experimentDataDir) {
+    xfer += oprot->writeFieldBegin("experimentDataDir", ::apache::thrift::protocol::T_STRING, 9);
+    xfer += oprot->writeString(this->experimentDataDir);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -264,6 +282,7 @@ void swap(UserConfigurationDataModel &a, UserConfigurationDataModel &b) {
   swap(a.userDN, b.userDN);
   swap(a.generateCert, b.generateCert);
   swap(a.storageId, b.storageId);
+  swap(a.experimentDataDir, b.experimentDataDir);
   swap(a.__isset, b.__isset);
 }
 
@@ -276,6 +295,7 @@ UserConfigurationDataModel::UserConfigurationDataModel(const UserConfigurationDa
   userDN = other0.userDN;
   generateCert = other0.generateCert;
   storageId = other0.storageId;
+  experimentDataDir = other0.experimentDataDir;
   __isset = other0.__isset;
 }
 UserConfigurationDataModel& UserConfigurationDataModel::operator=(const UserConfigurationDataModel& other1) {
@@ -287,6 +307,7 @@ UserConfigurationDataModel& UserConfigurationDataModel::operator=(const UserConf
   userDN = other1.userDN;
   generateCert = other1.generateCert;
   storageId = other1.storageId;
+  experimentDataDir = other1.experimentDataDir;
   __isset = other1.__isset;
   return *this;
 }
@@ -301,6 +322,7 @@ void UserConfigurationDataModel::printTo(std::ostream& out) const {
   out << ", " << "userDN="; (__isset.userDN ? (out << to_string(userDN)) : (out << "<null>"));
   out << ", " << "generateCert="; (__isset.generateCert ? (out << to_string(generateCert)) : (out << "<null>"));
   out << ", " << "storageId="; (__isset.storageId ? (out << to_string(storageId)) : (out << "<null>"));
+  out << ", " << "experimentDataDir="; (__isset.experimentDataDir ? (out << to_string(experimentDataDir)) : (out << "<null>"));
   out << ")";
 }
 

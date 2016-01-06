@@ -60,5 +60,6 @@ struct ProcessModel {
     18: optional list<string> emailAddresses,
     19: optional string storageResourceId,
     20: optional string userDn,
-    21: optional bool generateCert = 0
+    21: optional bool generateCert = 0,
+    22: optional string experimentDataDir
 }
