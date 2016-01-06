@@ -349,6 +349,7 @@ public class ThriftDataModelConversion {
             processModel.setApplicationDeploymentId(processResource.getApplicationDeploymentId());
             processModel.setComputeResourceId(processResource.getComputeResourceId());
             processModel.setEnableEmailNotification(processResource.getEnableEmailNotification());
+            processModel.setExperimentDataDir(processResource.getExperimentDataDir());
             if (processModel.isEnableEmailNotification()){
                 String notificationEmails = processResource.getEmailAddresses();
                 processModel.setEmailAddresses(getEmailAddresses(notificationEmails.split(",")));
