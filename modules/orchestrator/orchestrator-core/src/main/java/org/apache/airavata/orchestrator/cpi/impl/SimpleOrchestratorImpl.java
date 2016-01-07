@@ -554,7 +554,21 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             taskModel.setTaskType(TaskTypes.DATA_STAGING);
             ComputeResourcePreference computeResourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
             ComputeResourceDescription computeResource = orchestratorContext.getRegistry().getAppCatalog().getComputeResource().getComputeResource(processModel.getComputeResourceId());
-            String remoteOutputDir = computeResourcePreference.getScratchLocation() + File.separator + processModel.getProcessId();
+
+            String experimentDataDir = processModel.getExperimentDataDir();
+            String remoteOutputDir;
+            if(experimentDataDir != null && !experimentDataDir.isEmpty()) {
+                if(experimentDataDir.startsWith(File.separator)){
+                    experimentDataDir = experimentDataDir.substring(1);
+                }
+                if(!experimentDataDir.endsWith(File.separator)){
+                    experimentDataDir += File.separator;
+                }
+                remoteOutputDir = computeResourcePreference.getScratchLocation() + File.separator +
+                        experimentDataDir + processModel.getProcessId();
+            } else {
+                remoteOutputDir = computeResourcePreference.getScratchLocation() + File.separator + processModel.getProcessId();
+            }
             remoteOutputDir = remoteOutputDir.endsWith("/") ? remoteOutputDir : remoteOutputDir + "/";
             DataStagingTaskModel submodel = new DataStagingTaskModel();
             submodel.setType(DataStageType.OUPUT);
