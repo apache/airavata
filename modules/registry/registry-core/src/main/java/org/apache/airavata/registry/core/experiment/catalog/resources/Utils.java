@@ -536,6 +536,7 @@ public class Utils {
             processResource.setStorageResourceId(o.getStorageId());
             processResource.setUserDn(o.getUserDn());
             processResource.setGenerateCert(o.getGenerateCert());
+            processResource.setExperimentDataDir(o.getExperimentDataDir());
         }
         return processResource;
     }
