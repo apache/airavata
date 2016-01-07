@@ -408,16 +408,21 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
         private boolean launchSingleAppExperiment() throws TException {
             try {
-                List<String> processIds = experimentCatalog.getIds(ExperimentCatalogModelType.PROCESS, AbstractExpCatResource.ProcessConstants.EXPERIMENT_ID, experimentId);
+                List<String> processIds = experimentCatalog.getIds(ExperimentCatalogModelType.PROCESS,
+						AbstractExpCatResource.ProcessConstants.EXPERIMENT_ID, experimentId);
                 for (String processId : processIds) {
                     launchProcess(processId, airavataCredStoreToken, gatewayId);
                 }
-
-            } catch (Exception e) {
+				ExperimentStatus status = new ExperimentStatus(ExperimentState.LAUNCHED);
+				status.setReason("submitted all processes");
+				status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+				OrchestratorUtils.updageExperimentStatus(experimentId, status);
+				log.info("expId: {}, Launched experiment ", experimentId);
+			} catch (Exception e) {
 	            ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
 	            status.setReason("Error while updating task status");
 	            OrchestratorUtils.updageExperimentStatus(experimentId, status);
-	            log.error(experimentId, "Error while updating task status, hence updated experiment status to " +
+	            log.error("expId: " + experimentId + ", Error while updating task status, hence updated experiment status to " +
 			            ExperimentState.FAILED, e);
 	            throw new TException(e);
             }
@@ -465,7 +470,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 										.getExperimentId());
 								if (stat.getState() == ExperimentState.CANCELING) {
 									status.setState(ExperimentState.CANCELING);
-									status.setReason("Process competed but experiment cancelling is triggered");
+									status.setReason("Process started but experiment cancelling is triggered");
 								} else {
 									status.setState(ExperimentState.EXECUTING);
 									status.setReason("process  started");

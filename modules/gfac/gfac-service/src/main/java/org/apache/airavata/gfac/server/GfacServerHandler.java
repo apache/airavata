@@ -28,6 +28,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
+import org.apache.airavata.gfac.core.GFac;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.cpi.GfacService;
@@ -247,14 +248,29 @@ public class GfacServerHandler implements GfacService.Iface {
 			                .getProcessId());
 	                publishProcessStatus(event, status);
                     try {
-	                    createProcessZKNode(curatorClient, gfacServerName, event, message);
+                        createProcessZKNode(curatorClient, gfacServerName, event, message);
                         boolean isCancel = setCancelWatcher(curatorClient, event.getExperimentId(), event.getProcessId());
-                        submitProcess(event.getProcessId(), event.getGatewayId(), event.getTokenId());
                         if (isCancel) {
-                            // Need to trigger process cancel watcher, wait till process recover and then set zk data.
-                            Thread.sleep(10000);
-                            setCancelData(event.getExperimentId());
+                            if (status.getState() == ProcessState.STARTED) {
+                                status.setState(ProcessState.CANCELLING);
+                                status.setReason("Process Cancel is triggered");
+                                status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                                Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
+                                publishProcessStatus(event, status);
+
+                                // do cancel operation here
+
+                                status.setState(ProcessState.CANCELED);
+                                status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                                Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
+                                publishProcessStatus(event, status);
+                                rabbitMQProcessLaunchConsumer.sendAck(message.getDeliveryTag());
+                                return;
+                            } else {
+                                setCancelData(event.getExperimentId(),event.getProcessId());
+                            }
                         }
+                        submitProcess(event.getProcessId(), event.getGatewayId(), event.getTokenId());
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         rabbitMQProcessLaunchConsumer.sendAck(message.getDeliveryTag());
@@ -295,10 +311,11 @@ public class GfacServerHandler implements GfacService.Iface {
         }
     }
 
-    private void setCancelData(String experimentId) throws Exception {
-        String expCancelNodePath = ZKPaths.makePath(ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE,
-                experimentId), ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
-        curatorClient.setData().withVersion(-1).forPath(expCancelNodePath, ZkConstants.ZOOKEEPER_CANCEL_REQEUST
+    private void setCancelData(String experimentId, String processId) throws Exception {
+        String processCancelNodePath = ZKPaths.makePath(ZKPaths.makePath(ZKPaths.makePath(
+                ZkConstants.ZOOKEEPER_EXPERIMENT_NODE, experimentId), processId), ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+        log.info("expId: {}, processId: {}, set process cancel data to zookeeper node {}", experimentId, processId, processCancelNodePath);
+        curatorClient.setData().withVersion(-1).forPath(processCancelNodePath, ZkConstants.ZOOKEEPER_CANCEL_REQEUST
                 .getBytes());
     }
 
@@ -307,10 +324,15 @@ public class GfacServerHandler implements GfacService.Iface {
                                      String processId) throws Exception {
 
         String experimentNodePath = GFacUtils.getExperimentNodePath(experimentId);
-        // create /experiments/{experimentId}/cancel node and set watcher for data changes
+        // /experiments/{experimentId}/cancelListener, set watcher for data changes
         String experimentCancelNode = ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
-        byte[] bytes = curatorClient.getData().usingWatcher(Factory.getCancelRequestWatcher(experimentId, processId)).forPath(experimentCancelNode);
-        return bytes != null && new String(bytes).equalsIgnoreCase(ZkConstants.ZOOKEEPER_CANCEL_REQEUST);
+        byte[] bytes = curatorClient.getData().forPath(experimentCancelNode);
+        if (bytes != null && new String(bytes).equalsIgnoreCase(ZkConstants.ZOOKEEPER_CANCEL_REQEUST)) {
+            return true;
+        } else {
+            bytes = curatorClient.getData().usingWatcher(Factory.getCancelRequestWatcher(experimentId, processId)).forPath(experimentCancelNode);
+            return bytes != null && new String(bytes).equalsIgnoreCase(ZkConstants.ZOOKEEPER_CANCEL_REQEUST);
+        }
 
     }
 
@@ -338,6 +360,10 @@ public class GfacServerHandler implements GfacService.Iface {
 		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), zkProcessNodePath);
 		curatorClient.setData().withVersion(-1).forPath(zkProcessNodePath, gfacServerName.getBytes());
 		curatorClient.getData().usingWatcher(Factory.getRedeliveryReqeustWatcher(experimentId, processId)).forPath(zkProcessNodePath);
+
+        // create /experiments//{experimentId}{processId}/cancelListener
+        String zkProcessCancelPath = ZKPaths.makePath(zkProcessNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+        ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), zkProcessCancelPath);
 
 		// create /experiments/{experimentId}/{processId}/deliveryTag node and set data - deliveryTag
 		String deliveryTagPath = ZKPaths.makePath(zkProcessNodePath, ZkConstants.ZOOKEEPER_DELIVERYTAG_NODE);
