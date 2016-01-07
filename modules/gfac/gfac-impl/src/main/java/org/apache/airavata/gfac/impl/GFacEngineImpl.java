@@ -25,6 +25,7 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -61,6 +62,9 @@ import org.apache.airavata.registry.cpi.ExpCatChildDataType;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.utils.Constants;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.utils.ZKPaths;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,6 +95,14 @@ public class GFacEngineImpl implements GFacEngine {
 
             ProcessModel processModel = (ProcessModel) expCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
             processContext.setProcessModel(processModel);
+
+            try {
+                checkRecoveryWithCancel(processContext);
+            } catch (Exception e) {
+                log.error("expId: {}, processId: {}, Error while checking process cancel data in zookeeper",
+                        processContext.getExperimentId(), processContext.getProcessId());
+            }
+
             GatewayResourceProfile gatewayProfile = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
             processContext.setGatewayResourceProfile(gatewayProfile);
             processContext.setComputeResourcePreference(appCatalog.getGatewayProfile().getComputeResourcePreference
@@ -173,6 +185,19 @@ public class GFacEngineImpl implements GFacEngine {
             throw new GFacException("Registry access exception", e);
         } catch (AiravataException e) {
             throw new GFacException("Remote cluster initialization error", e);
+        }
+    }
+
+    private void checkRecoveryWithCancel(ProcessContext processContext) throws Exception {
+        CuratorFramework curatorClient = processContext.getCuratorClient();
+        String experimentId = processContext.getExperimentId();
+        String processId = processContext.getProcessId();
+        String processCancelNodePath = ZKPaths.makePath(ZKPaths.makePath(ZKPaths.makePath(
+                ZkConstants.ZOOKEEPER_EXPERIMENT_NODE, experimentId), processId), ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+        log.info("expId: {}, processId: {}, get process cancel data from zookeeper node {}", experimentId, processId, processCancelNodePath);
+        byte[] bytes = curatorClient.getData().forPath(processCancelNodePath);
+        if (bytes != null && new String(bytes).equalsIgnoreCase(ZkConstants.ZOOKEEPER_CANCEL_REQEUST)) {
+            processContext.setRecoveryWithCancel(true);
         }
     }
 
@@ -509,6 +534,7 @@ public class GFacEngineImpl implements GFacEngine {
         processContext.setTaskExecutionOrder(taskExecutionOrder);
         Map<String, TaskModel> taskMap = processContext.getTaskMap();
         String recoverTaskId = null;
+        String previousTaskId = null;
         TaskModel taskModel = null;
         for (String taskId : taskExecutionOrder) {
             taskModel = taskMap.get(taskId);
@@ -517,9 +543,56 @@ public class GFacEngineImpl implements GFacEngine {
                 recoverTaskId = taskId;
                 break;
             }
+            previousTaskId = taskId;
         }
+        final String rTaskId = recoverTaskId;
+        final String pTaskId = previousTaskId;
+        if (recoverTaskId != null) {
+            if (processContext.isRecoveryWithCancel()) {
+                cancelJobSubmission(processContext, rTaskId, pTaskId);
+            }
+            continueProcess(processContext, recoverTaskId);
+        }
+    }
 
-        continueProcess(processContext, recoverTaskId);
+    private void cancelJobSubmission(ProcessContext processContext, String rTaskId, String pTaskId) {
+        new Thread(() -> {
+            try {
+                processContext.setCancel(true);
+                ProcessState processState = processContext.getProcessState();
+                List<Object> jobModels = null;
+                switch (processState) {
+                    case EXECUTING:
+                        jobModels = processContext.getExperimentCatalog().get(
+                                ExperimentCatalogModelType.JOB, Constants.FieldConstants.TaskConstants.TASK_ID,
+                                rTaskId);
+                        break;
+                    case MONITORING:
+                        if (pTaskId != null) {
+                            jobModels = processContext.getExperimentCatalog().get(
+                                    ExperimentCatalogModelType.JOB, Constants.FieldConstants.TaskConstants.TASK_ID,
+                                    pTaskId);
+                        }
+                }
+
+                if (jobModels != null && !jobModels.isEmpty()) {
+                    JobModel jobModel = (JobModel) jobModels.get(jobModels.size() - 1);
+                    processContext.setJobModel(jobModel);
+                    log.info("expId: {}, processId: {}, Canceling jobId {}", processContext.getExperimentId(),
+                            processContext.getProcessId(), jobModel.getJobId());
+                    cancelProcess(processContext);
+                    log.info("expId: {}, processId: {}, Canceled jobId {}", processContext.getExperimentId(),
+                            processContext.getProcessId(), jobModel.getJobId());
+                }
+            } catch (GFacException e) {
+                log.error("expId: {}, processId: {}, Error while canceling process which is in recovery mode",
+                        processContext.getExperimentId(), processContext.getProcessId());
+            } catch (RegistryException e) {
+                log.error("expId: {}, processId: {}, Error while getting job model for taskId {}, " +
+                                "couldn't cancel process which is in recovery mode", processContext.getExperimentId(),
+                        processContext.getProcessId(), rTaskId);
+            }
+        }).start();
     }
 
     private JobModel getJobModel(ProcessContext processContext) {
