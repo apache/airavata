@@ -115,6 +115,13 @@ public class SlurmOutputParser implements OutputParser {
 	    return "";
     }
 
+    @Override
+    public boolean isJobSubmissionFailed(String rawOutput) {
+        Pattern pattern = Pattern.compile("FAILED");
+        Matcher matcher = pattern.matcher(rawOutput);
+        return matcher.find();
+    }
+
     public JobStatus parseJobStatus(String jobID, String rawOutput) throws SSHApiException {
         log.info(rawOutput);
         Pattern pattern = Pattern.compile(jobID + "(?=\\s+\\S+\\s+\\S+\\s+\\S+\\s+(?<" + STATUS + ">\\w+))");

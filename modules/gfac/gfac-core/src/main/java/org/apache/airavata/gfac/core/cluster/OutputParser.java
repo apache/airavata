@@ -44,6 +44,14 @@ public interface OutputParser {
 
 
     /**
+     * Parse output return by job submission task and identify jobSubmission failures.
+     * @param rawOutput
+     * @return true if job submission has been failed, false otherwise.
+     */
+    public boolean isJobSubmissionFailed(String rawOutput);
+
+
+    /**
      * This can be used to get the job status from the output
      * @param jobID
      * @param rawOutput

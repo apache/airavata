@@ -52,6 +52,11 @@ public class LSFOutputParser implements OutputParser {
     }
 
     @Override
+    public boolean isJobSubmissionFailed(String rawOutput) {
+        return false;
+    }
+
+    @Override
     public JobStatus parseJobStatus(String jobID, String rawOutput) throws SSHApiException {
         boolean jobFount = false;
         logger.debug(rawOutput);
