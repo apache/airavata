@@ -177,6 +177,11 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             if (executionType == ExperimentType.SINGLE_APPLICATION) {
                 //its an single application execution experiment
                 log.debug(experimentId, "Launching single application experiment {}.", experimentId);
+                ExperimentStatus status = new ExperimentStatus(ExperimentState.LAUNCHED);
+                status.setReason("submitted all processes");
+                status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                OrchestratorUtils.updageExperimentStatus(experimentId, status);
+                log.info("expId: {}, Launched experiment ", experimentId);
 	            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.LAUNCHED,
 			            experimentId,
 			            gatewayId);
@@ -402,28 +407,37 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             try {
                 launchSingleAppExperiment();
             } catch (TException e) {
-                e.printStackTrace();
+                log.error("Unable to launch experiment..", e);
+            } catch (AiravataException e) {
+                log.error("Unable to publish experiment status..", e);
             }
         }
 
-        private boolean launchSingleAppExperiment() throws TException {
+        private boolean launchSingleAppExperiment() throws TException, AiravataException {
             try {
                 List<String> processIds = experimentCatalog.getIds(ExperimentCatalogModelType.PROCESS,
 						AbstractExpCatResource.ProcessConstants.EXPERIMENT_ID, experimentId);
                 for (String processId : processIds) {
                     launchProcess(processId, airavataCredStoreToken, gatewayId);
                 }
-				ExperimentStatus status = new ExperimentStatus(ExperimentState.LAUNCHED);
-				status.setReason("submitted all processes");
-				status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-				OrchestratorUtils.updageExperimentStatus(experimentId, status);
-				log.info("expId: {}, Launched experiment ", experimentId);
+//				ExperimentStatus status = new ExperimentStatus(ExperimentState.LAUNCHED);
+//				status.setReason("submitted all processes");
+//				status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+//				OrchestratorUtils.updageExperimentStatus(experimentId, status);
+//				log.info("expId: {}, Launched experiment ", experimentId);
 			} catch (Exception e) {
 	            ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
 	            status.setReason("Error while updating task status");
 	            OrchestratorUtils.updageExperimentStatus(experimentId, status);
 	            log.error("expId: " + experimentId + ", Error while updating task status, hence updated experiment status to " +
 			            ExperimentState.FAILED, e);
+                ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.FAILED,
+                        experimentId,
+                        gatewayId);
+                String messageId = AiravataUtils.getId("EXPERIMENT");
+                MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
+                messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+                publisher.publish(messageContext);
 	            throw new TException(e);
             }
             return true;
