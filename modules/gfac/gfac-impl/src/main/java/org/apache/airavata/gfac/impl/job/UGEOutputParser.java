@@ -135,6 +135,11 @@ public class UGEOutputParser implements OutputParser {
 		}
 	}
 
+    @Override
+    public boolean isJobSubmissionFailed(String rawOutput) {
+        return false;
+    }
+
     public JobStatus parseJobStatus(String jobID, String rawOutput) {
         Pattern pattern = Pattern.compile("job_number:[\\s]+" + jobID);
         Matcher matcher = pattern.matcher(rawOutput);

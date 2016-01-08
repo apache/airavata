@@ -135,6 +135,11 @@ public class PBSOutputParser implements OutputParser {
         return jobId;  //In PBS stdout is going to be directly the jobID
     }
 
+    @Override
+    public boolean isJobSubmissionFailed(String rawOutput) {
+        return false;
+    }
+
     public JobStatus parseJobStatus(String jobID, String rawOutput) {
         boolean jobFount = false;
         log.debug(rawOutput);
