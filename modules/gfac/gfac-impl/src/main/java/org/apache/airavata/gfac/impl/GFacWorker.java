@@ -29,6 +29,7 @@ import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
+import org.apache.airavata.registry.core.experiment.catalog.model.Process;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,7 @@ public class GFacWorker implements Runnable {
 	 */
 	public GFacWorker(ProcessContext processContext) throws GFacException {
 		if (processContext == null) {
-			throw new GFacException("Worker must initialize with valide processContext, Process context is null");
+			throw new GFacException("Worker must initialize with valid processContext, Process context is null");
 		}
 		this.processId = processContext.getProcessId();
 		this.gatewayId = processContext.getGatewayId();
@@ -78,7 +79,7 @@ public class GFacWorker implements Runnable {
 	@Override
 	public void run() {
 		try {
-			ProcessState processState = processContext.getProcessStatus().getState();
+			ProcessState processState = processContext.getProcessState();
 			switch (processState) {
 				case CREATED:
 				case VALIDATED:
@@ -101,6 +102,9 @@ public class GFacWorker implements Runnable {
 				case COMPLETED:
 					completeProcess();
 					break;
+				case CANCELLING:
+					cancelProcess();
+					break;
 				case CANCELED:
 					// TODO - implement cancel scenario
 					break;
@@ -111,12 +115,18 @@ public class GFacWorker implements Runnable {
 					throw new GFacException("process Id : " + processId + " Couldn't identify process type");
 			}
 			if (processContext.isCancel()) {
-				if (processContext.getProcessState() == ProcessState.MONITORING
-						|| processContext.getProcessState() == ProcessState.EXECUTING) {
-					// don't send ack if the process is in MONITORING state, wait until cancel email comes to airavata.
-				} else {
-					sendAck();
-					Factory.getGfacContext().removeProcess(processContext.getProcessId());
+				processState = processContext.getProcessState();
+				switch (processState) {
+					case MONITORING: case EXECUTING:
+						// don't send ack if the process is in MONITORING or EXECUTING states, wait until cancel email comes to airavata
+						break;
+					case CANCELLING:
+						cancelProcess();
+						break;
+					default:
+						sendAck();
+						Factory.getGfacContext().removeProcess(processContext.getProcessId());
+						break;
 				}
 			}
 		} catch (GFacException e) {
@@ -141,6 +151,16 @@ public class GFacWorker implements Runnable {
 			}
 			sendAck();
 		}
+	}
+
+	private void cancelProcess() throws GFacException {
+		// do cleanup works before cancel the process.
+		ProcessStatus processStatus = new ProcessStatus(ProcessState.CANCELED);
+		processStatus.setReason("Process cancellation has been triggered");
+		processContext.setProcessStatus(processStatus);
+		GFacUtils.saveAndPublishProcessStatus(processContext);
+		sendAck();
+		Factory.getGfacContext().removeProcess(processContext.getProcessId());
 	}
 
 	private void completeProcess() throws GFacException {

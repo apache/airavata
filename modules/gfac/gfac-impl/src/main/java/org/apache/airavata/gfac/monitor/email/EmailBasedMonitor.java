@@ -35,10 +35,7 @@ import org.apache.airavata.gfac.core.monitor.JobStatusResult;
 import org.apache.airavata.gfac.impl.GFacWorker;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.status.JobState;
-import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.model.status.TaskState;
-import org.apache.airavata.model.status.TaskStatus;
+import org.apache.airavata.model.status.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -333,7 +330,8 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
         // TODO : update job state on process context
         boolean runOutflowTasks = false;
         JobStatus jobStatus = new JobStatus();
-        JobModel jobModel = taskContext.getParentProcessContext().getJobModel();
+        ProcessContext parentProcessContext = taskContext.getParentProcessContext();
+        JobModel jobModel = parentProcessContext.getJobModel();
         String jobDetails = "JobName : " + jobStatusResult.getJobName() + ", JobId : " + jobStatusResult.getJobId();
         // TODO - Handle all other valid JobStates
         if (resultState == JobState.COMPLETE) {
@@ -374,7 +372,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 		    try {
 			    jobModel.setJobStatus(jobStatus);
 			    log.info("[EJM]: Publishing status changes to amqp. " + jobDetails);
-			    GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
+			    GFacUtils.saveJobStatus(parentProcessContext, jobModel);
 		    } catch (GFacException e) {
 			    log.error("expId: {}, processId: {}, taskId: {}, jobId: {} :- Error while save and publishing Job " +
                         "status {}", taskContext.getExperimentId(), taskContext.getProcessId(), jobModel
@@ -390,7 +388,13 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
                 taskStatus.setReason("Job monitoring completed with final state: " + TaskState.COMPLETED.name());
                 taskContext.setTaskStatus(taskStatus);
                 GFacUtils.saveAndPublishTaskStatus(taskContext);
-		        GFacThreadPoolExecutor.getCachedThreadPool().execute(new GFacWorker(taskContext.getParentProcessContext()));
+                if (parentProcessContext.isCancel()) {
+                    ProcessStatus processStatus = new ProcessStatus(ProcessState.CANCELLING);
+                    processStatus.setReason("Process has been cancelled");
+                    parentProcessContext.setProcessStatus(processStatus);
+                    GFacUtils.saveAndPublishProcessStatus(parentProcessContext);
+                }
+		        GFacThreadPoolExecutor.getCachedThreadPool().execute(new GFacWorker(parentProcessContext));
 	        } catch (GFacException e) {
 		        log.info("[EJM]: Error while running output tasks", e);
 	        }

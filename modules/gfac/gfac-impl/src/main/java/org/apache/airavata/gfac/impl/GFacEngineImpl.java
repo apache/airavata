@@ -215,7 +215,7 @@ public class GFacEngineImpl implements GFacEngine {
 
     private void executeTaskListFrom(ProcessContext processContext, String startingTaskId) throws GFacException {
         // checkpoint
-        if (processContext.isInterrupted()) {
+        if (processContext.isInterrupted() && processContext.getProcessState() != ProcessState.MONITORING) {
             GFacUtils.handleProcessInterrupt(processContext);
             return;
         }
@@ -552,7 +552,12 @@ public class GFacEngineImpl implements GFacEngine {
                 cancelJobSubmission(processContext, rTaskId, pTaskId);
             }
             continueProcess(processContext, recoverTaskId);
+        } else {
+            log.error("expId: {}, processId: {}, Error while recovering process, couldn't find recovery task",
+                    processContext.getExperimentId(), processContext.getProcessId());
         }
+
+
     }
 
     private void cancelJobSubmission(ProcessContext processContext, String rTaskId, String pTaskId) {
@@ -577,12 +582,17 @@ public class GFacEngineImpl implements GFacEngine {
 
                 if (jobModels != null && !jobModels.isEmpty()) {
                     JobModel jobModel = (JobModel) jobModels.get(jobModels.size() - 1);
-                    processContext.setJobModel(jobModel);
-                    log.info("expId: {}, processId: {}, Canceling jobId {}", processContext.getExperimentId(),
-                            processContext.getProcessId(), jobModel.getJobId());
-                    cancelProcess(processContext);
-                    log.info("expId: {}, processId: {}, Canceled jobId {}", processContext.getExperimentId(),
-                            processContext.getProcessId(), jobModel.getJobId());
+                    if (jobModel.getJobId() != null) {
+                        processContext.setJobModel(jobModel);
+                        log.info("expId: {}, processId: {}, Canceling jobId {}", processContext.getExperimentId(),
+                                processContext.getProcessId(), jobModel.getJobId());
+                        cancelProcess(processContext);
+                        log.info("expId: {}, processId: {}, Canceled jobId {}", processContext.getExperimentId(),
+                                processContext.getProcessId(), jobModel.getJobId());
+                    } else {
+                        log.error("expId: {}, processId: {}, Couldn't find jobId in jobModel, aborting process recovery",
+                                processContext.getExperimentId(), processContext.getProcessId());
+                    }
                 }
             } catch (GFacException e) {
                 log.error("expId: {}, processId: {}, Error while canceling process which is in recovery mode",
@@ -606,10 +616,6 @@ public class GFacEngineImpl implements GFacEngine {
 
     @Override
     public void continueProcess(ProcessContext processContext, String taskId) throws GFacException {
-        if (processContext.isInterrupted()) {
-            GFacUtils.handleProcessInterrupt(processContext);
-            return;
-        }
         executeTaskListFrom(processContext, taskId);
     }
 
