@@ -42,6 +42,7 @@ import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDes
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -108,6 +109,16 @@ public class GFacEngineImpl implements GFacEngine {
             processContext.setComputeResourcePreference(appCatalog.getGatewayProfile().getComputeResourcePreference
                     (gatewayId, processModel.getComputeResourceId()));
             StoragePreference storagePreference = appCatalog.getGatewayProfile().getStoragePreference(gatewayId, processModel.getStorageResourceId());
+            StorageResourceDescription storageResource = appCatalog.getStorageResource().getStorageResource(processModel.getStorageResourceId());
+            if (storageResource != null){
+                processContext.setStorageResource(storageResource);
+            }else {
+                // we need to fail the process which will fail the experiment
+                processContext.setProcessStatus(new ProcessStatus(ProcessState.FAILED));
+                GFacUtils.saveAndPublishProcessStatus(processContext);
+                throw new GFacException("expId: " + processModel.getExperimentId() + ", processId: " + processId +
+                        ":- Couldn't find storage resource for storage resource id :" + processModel.getStorageResourceId());
+            }
             if (storagePreference != null) {
                 processContext.setStoragePreference(storagePreference);
             } else {
