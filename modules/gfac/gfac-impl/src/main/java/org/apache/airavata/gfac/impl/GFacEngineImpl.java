@@ -40,6 +40,7 @@ import org.apache.airavata.gfac.impl.task.DataStreamingTask;
 import org.apache.airavata.gfac.impl.task.EnvironmentSetupTask;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
@@ -70,6 +71,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -106,8 +108,11 @@ public class GFacEngineImpl implements GFacEngine {
 
             GatewayResourceProfile gatewayProfile = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
             processContext.setGatewayResourceProfile(gatewayProfile);
-            processContext.setComputeResourcePreference(appCatalog.getGatewayProfile().getComputeResourcePreference
-                    (gatewayId, processModel.getComputeResourceId()));
+            ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().getComputeResourcePreference
+                    (gatewayId, processModel.getComputeResourceId());
+            String scratchLocation = computeResourcePreference.getScratchLocation();
+            scratchLocation = scratchLocation + File.separator + processId + File.separator;
+            processContext.setComputeResourcePreference(computeResourcePreference);
             StoragePreference storagePreference = appCatalog.getGatewayProfile().getStoragePreference(gatewayId, processModel.getStorageResourceId());
             StorageResourceDescription storageResource = appCatalog.getStorageResource().getStorageResource(processModel.getStorageResourceId());
             if (storageResource != null){
@@ -151,15 +156,15 @@ public class GFacEngineImpl implements GFacEngine {
                 for (OutputDataObjectType outputDataObjectType : applicationOutputs) {
                     if (outputDataObjectType.getType().equals(DataType.STDOUT)) {
                         if (outputDataObjectType.getValue() == null || outputDataObjectType.getValue().equals("")) {
-                            outputDataObjectType.setValue(applicationInterface.getApplicationName() + ".stdout");
-                            processContext.setStdoutLocation(applicationInterface.getApplicationName() + ".stdout");
+                            outputDataObjectType.setValue(scratchLocation + applicationInterface.getApplicationName() + ".stdout");
+                            processContext.setStdoutLocation(scratchLocation + applicationInterface.getApplicationName() + ".stdout");
                         } else {
                             processContext.setStdoutLocation(outputDataObjectType.getValue());
                         }
                     }
                     if (outputDataObjectType.getType().equals(DataType.STDERR)) {
                         if (outputDataObjectType.getValue() == null || outputDataObjectType.getValue().equals("")) {
-                            String stderrLocation = applicationInterface.getApplicationName() + ".stderr";
+                            String stderrLocation = scratchLocation + applicationInterface.getApplicationName() + ".stderr";
                             outputDataObjectType.setValue(stderrLocation);
                             processContext.setStderrLocation(stderrLocation);
                         } else {
