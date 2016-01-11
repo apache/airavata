@@ -170,10 +170,10 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
     private ResourceJobManagerType getJobMonitorType(String addressStr) throws AiravataException {
 //        System.out.println("*********** address ******** : " + addressStr);
 	    for (Map.Entry<String, ResourceJobManagerType> addressEntry : addressMap.entrySet()) {
-		    if (addressEntry.getKey().matches(addressStr)) {
-			    return addressEntry.getValue();
-		    }
-	    }
+            if (addressStr.contains(addressEntry.getKey())) {
+                return addressEntry.getValue();
+            }
+        }
 	    throw new AiravataException("[EJM]: Couldn't identify Resource job manager type from address " + addressStr);
     }
 
