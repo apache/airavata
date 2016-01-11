@@ -486,9 +486,9 @@ public class GFacUtils {
                 if (inputDataObjectType.getValue() != null
                         && !inputDataObjectType.getValue().equals("")) {
                     if (inputDataObjectType.getType() == DataType.URI) {
-                        // set only the relative path
+                        // set only the relative path : relative path does not work with lonestar
                         String filePath = inputDataObjectType.getValue();
-                        filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
+//                        filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
                         inputValues.add(filePath);
                     } else {
                         inputValues.add(inputDataObjectType.getValue());
