@@ -29,8 +29,8 @@ public class AiravataUtils {
 
     public static Timestamp getCurrentTimestamp() {
         Calendar calender = Calendar.getInstance();
-        java.util.Date d = calender.getTime();
-        return new Timestamp(d.getTime());
+//        java.util.Date d = calender.getTimeInMillis();
+        return new Timestamp(calender.getTimeInMillis());
     }
 
     public static Timestamp getTime(long time) {
