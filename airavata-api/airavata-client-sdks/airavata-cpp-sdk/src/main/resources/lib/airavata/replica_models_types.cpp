@@ -28,7 +28,7 @@
 
 #include <thrift/TToString.h>
 
-namespace apache { namespace airavata { namespace model { namespace file { namespace replica {
+namespace apache { namespace airavata { namespace model { namespace data { namespace replica {
 
 int _kFileModelTypeValues[] = {
   FileModelType::FILE,

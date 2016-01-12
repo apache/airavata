@@ -35,7 +35,7 @@
 #include "data_movement_models_types.h"
 
 
-namespace apache { namespace airavata { namespace model { namespace file { namespace replica {
+namespace apache { namespace airavata { namespace model { namespace data { namespace replica {
 
 struct FileModelType {
   enum type {

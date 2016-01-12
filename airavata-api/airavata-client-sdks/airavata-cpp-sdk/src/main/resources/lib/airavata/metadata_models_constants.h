@@ -26,7 +26,7 @@
 
 #include "metadata_models_types.h"
 
-namespace apache { namespace airavata { namespace model { namespace file { namespace metadata {
+namespace apache { namespace airavata { namespace model { namespace data { namespace metadata {
 
 class metadata_modelsConstants {
  public:

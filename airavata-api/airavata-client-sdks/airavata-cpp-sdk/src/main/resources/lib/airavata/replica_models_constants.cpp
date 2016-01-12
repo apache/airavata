@@ -23,7 +23,7 @@
  */
 #include "replica_models_constants.h"
 
-namespace apache { namespace airavata { namespace model { namespace file { namespace replica {
+namespace apache { namespace airavata { namespace model { namespace data { namespace replica {
 
 const replica_modelsConstants g_replica_models_constants;
 

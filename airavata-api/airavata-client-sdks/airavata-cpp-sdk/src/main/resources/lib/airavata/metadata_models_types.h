@@ -34,7 +34,7 @@
 #include <thrift/cxxfunctional.h>
 
 
-namespace apache { namespace airavata { namespace model { namespace file { namespace metadata {
+namespace apache { namespace airavata { namespace model { namespace data { namespace metadata {
 
 struct MetadataType {
   enum type {

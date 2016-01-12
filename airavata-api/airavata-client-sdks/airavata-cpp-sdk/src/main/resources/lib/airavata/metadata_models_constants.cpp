@@ -23,7 +23,7 @@
  */
 #include "metadata_models_constants.h"
 
-namespace apache { namespace airavata { namespace model { namespace file { namespace metadata {
+namespace apache { namespace airavata { namespace model { namespace data { namespace metadata {
 
 const metadata_modelsConstants g_metadata_models_constants;
 

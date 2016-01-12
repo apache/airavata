@@ -26,7 +26,7 @@
 
 #include "file__transfer_models_types.h"
 
-namespace apache { namespace airavata { namespace model { namespace file { namespace transfer {
+namespace apache { namespace airavata { namespace model { namespace data { namespace transfer {
 
 class file__transfer_modelsConstants {
  public:

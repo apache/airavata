@@ -551,7 +551,7 @@
 				<module>modules/commons</module>
                 <module>modules/messaging</module>
 				<module>modules/gfac</module>
-				<module>modules/file-manager</module>
+				<module>modules/data-manager</module>
 				<module>modules/registry</module>
 				<module>modules/security</module>
 				<module>modules/credential-store</module>

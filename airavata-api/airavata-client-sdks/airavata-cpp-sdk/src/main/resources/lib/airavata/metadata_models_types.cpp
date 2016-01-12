@@ -28,7 +28,7 @@
 
 #include <thrift/TToString.h>
 
-namespace apache { namespace airavata { namespace model { namespace file { namespace metadata {
+namespace apache { namespace airavata { namespace model { namespace data { namespace metadata {
 
 int _kMetadataTypeValues[] = {
   MetadataType::FILE,

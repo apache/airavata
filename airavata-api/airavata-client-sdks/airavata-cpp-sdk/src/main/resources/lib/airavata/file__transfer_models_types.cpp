@@ -28,7 +28,7 @@
 
 #include <thrift/TToString.h>
 
-namespace apache { namespace airavata { namespace model { namespace file { namespace transfer {
+namespace apache { namespace airavata { namespace model { namespace data { namespace transfer {
 
 int _kStorageResourceProtocolValues[] = {
   StorageResourceProtocol::SCP,

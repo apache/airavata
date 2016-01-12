@@ -30,9 +30,9 @@ include "experiment-catalog-models/process_model.thrift"
 include "experiment-catalog-models/scheduling_model.thrift"
 include "experiment-catalog-models/status_models.thrift"
 include "resource-catalog-models/data_movement_models.thrift"
-include "file-manager-models/replica_models.thrift"
-include "file-manager-models/file__transfer_models.thrift"
-include "file-manager-models/metadata_models.thrift"
+include "data-manager-models/replica_models.thrift"
+include "data-manager-models/file__transfer_models.thrift"
+include "data-manager-models/metadata_models.thrift"
 
 namespace java org.apache.airavata.model
 namespace php Airavata.Model

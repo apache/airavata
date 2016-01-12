@@ -34,7 +34,7 @@
 #include <thrift/cxxfunctional.h>
 
 
-namespace apache { namespace airavata { namespace model { namespace file { namespace transfer {
+namespace apache { namespace airavata { namespace model { namespace data { namespace transfer {
 
 struct StorageResourceProtocol {
   enum type {
