@@ -18,6 +18,8 @@
     <modules>
         <module>data-manager-cpi</module>
         <module>data-manager-core</module>
+        <module>data-manager-service</module>
+        <module>data-manager-stubs</module>
     </modules>
     <dependencies>
         <dependency>

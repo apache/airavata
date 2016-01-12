@@ -18,19 +18,22 @@
  * under the License.
  *
 */
-package org.apache.airavata.data.manager;
+package org.apache.airavata.data.manager.server;
 
-import junit.framework.Assert;
-import org.junit.Test;
+import org.apache.airavata.data.manager.cpi.DataManagerService;
+import org.apache.airavata.data.manager.cpi.data_manager_cpiConstants;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DataManagerFactoryTest {
-    private final static Logger logger = LoggerFactory.getLogger(DataManagerFactoryTest.class);
+public class DataManagerServerHandler implements DataManagerService.Iface {
+    private final static Logger logger = LoggerFactory.getLogger(DataManagerServerHandler.class);
 
-    @Test
-    public void testCreateDataManager(){
-        DataManager dataManager = DataManagerFactory.getDataManager();
-        Assert.assertNotNull(dataManager);
+    /**
+     * Query DM server to fetch the CPI version
+     */
+    @Override
+    public String getDMServiceVersion() throws TException {
+        return data_manager_cpiConstants.DM_CPI_VERSION;
     }
 }

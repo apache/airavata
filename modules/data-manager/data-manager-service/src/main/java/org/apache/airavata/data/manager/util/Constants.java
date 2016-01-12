@@ -18,15 +18,10 @@
  * under the License.
  *
 */
-package org.apache.airavata.data.manager;
+package org.apache.airavata.data.manager.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class DataManagerFactory {
-    private final static Logger logger = LoggerFactory.getLogger(DataManagerFactory.class);
-
-    public static DataManager getDataManager(){
-        return new DataManagerImpl();
-    }
+public class Constants {
+    public static final java.lang.String DATA_MANAGER_SERVER_PORT = "data.manager.port";
+    public static final java.lang.String DATA_MANAGER_SERVER_HOST = "data.manager.host";
+    public static final java.lang.String DATA_MANAGER_SERVER_MIN_THREADS = "data.manager.min.threads";
 }

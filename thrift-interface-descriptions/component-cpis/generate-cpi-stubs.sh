@@ -24,6 +24,7 @@ show_usage() {
 	echo -e "\tcs Generate/Update Credential Store Stubs"
 	echo -e "\torch Generate/Update Orchestrator Stubs"
 	echo -e "\tgfac Generate/Update GFac Stubs"
+	echo -e "\tdm Generate/Update Data Manager Stubs"
 	echo -e "\tall Generate/Update all stubs (Credential Store, Orchestrator, GFac)."
 	echo -e "\t-h[elp] Print the usage options of this script"
 }
@@ -62,6 +63,9 @@ BASE_TARGET_DIR='target'
 
 CS_THRIFT_FILE='credential-store-cpi.thrift'
 CS_SRC_DIR='../../modules/credential-store/credential-store-stubs/src/main/java'
+
+DM_THRIFT_FILE='data-manager-cpi.thrift'
+DM_SRC_DIR='../../modules/data-manager/data-manager-stubs/src/main/java'
 
 ORCHESTRATOR_THRIFT_FILE='orchestrator-cpi.thrift'
 ORCHESTRATOR_SRC_DIR='../../modules/orchestrator/orchestrator-client/src/main/java'
@@ -171,6 +175,7 @@ do
             generate_thrift_stubs ${CS_THRIFT_FILE} ${CS_SRC_DIR}
             generate_thrift_stubs ${ORCHESTRATOR_THRIFT_FILE} ${ORCHESTRATOR_SRC_DIR}
             generate_thrift_stubs ${GFAC_THRIFT_FILE} ${GFAC_SRC_DIR}
+            generate_thrift_stubs ${DM_THRIFT_FILE} ${DM_SRC_DIR}
             ;;
     cs)   echo "Generating Credential Store Stubs"
             generate_thrift_stubs ${CS_THRIFT_FILE} ${CS_SRC_DIR}
@@ -180,6 +185,9 @@ do
             ;;
     gfac)    echo "Generate GFac Stubs"
             generate_thrift_stubs ${GFAC_THRIFT_FILE} ${GFAC_SRC_DIR}
+            ;;
+    dm)    echo "Generate Data Manager Stubs"
+            generate_thrift_stubs ${DM_THRIFT_FILE} ${DM_SRC_DIR}
             ;;
     *)      echo "Invalid or unsupported option"
     	    show_usage
