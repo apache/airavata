@@ -2272,7 +2272,6 @@ class AiravataIf {
   virtual void updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::Workflow& workflow) = 0;
   virtual void getWorkflowTemplateId(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName) = 0;
   virtual bool isWorkflowExistWithName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName) = 0;
-  virtual void publishDataResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::DataResourceModel& resourceModel) = 0;
 };
 
 class AiravataIfFactory {
@@ -2739,9 +2738,6 @@ class AiravataNull : virtual public AiravataIf {
   bool isWorkflowExistWithName(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* workflowName */) {
     bool _return = false;
     return _return;
-  }
-  void publishDataResource(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::apache::airavata::model::data::resource::DataResourceModel& /* resourceModel */) {
-    return;
   }
 };
 
@@ -21345,164 +21341,6 @@ class Airavata_isWorkflowExistWithName_presult {
 
 };
 
-typedef struct _Airavata_publishDataResource_args__isset {
-  _Airavata_publishDataResource_args__isset() : resourceModel(false) {}
-  bool resourceModel :1;
-} _Airavata_publishDataResource_args__isset;
-
-class Airavata_publishDataResource_args {
- public:
-
-  static const char* ascii_fingerprint; // = "3CA987536633345DF8FE6263AF84A8FF";
-  static const uint8_t binary_fingerprint[16]; // = {0x3C,0xA9,0x87,0x53,0x66,0x33,0x34,0x5D,0xF8,0xFE,0x62,0x63,0xAF,0x84,0xA8,0xFF};
-
-  Airavata_publishDataResource_args(const Airavata_publishDataResource_args&);
-  Airavata_publishDataResource_args& operator=(const Airavata_publishDataResource_args&);
-  Airavata_publishDataResource_args() {
-  }
-
-  virtual ~Airavata_publishDataResource_args() throw();
-   ::apache::airavata::model::security::AuthzToken authzToken;
-   ::apache::airavata::model::data::resource::DataResourceModel resourceModel;
-
-  _Airavata_publishDataResource_args__isset __isset;
-
-  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
-
-  void __set_resourceModel(const  ::apache::airavata::model::data::resource::DataResourceModel& val);
-
-  bool operator == (const Airavata_publishDataResource_args & rhs) const
-  {
-    if (!(authzToken == rhs.authzToken))
-      return false;
-    if (!(resourceModel == rhs.resourceModel))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_publishDataResource_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_publishDataResource_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_publishDataResource_args& obj);
-};
-
-
-class Airavata_publishDataResource_pargs {
- public:
-
-  static const char* ascii_fingerprint; // = "3CA987536633345DF8FE6263AF84A8FF";
-  static const uint8_t binary_fingerprint[16]; // = {0x3C,0xA9,0x87,0x53,0x66,0x33,0x34,0x5D,0xF8,0xFE,0x62,0x63,0xAF,0x84,0xA8,0xFF};
-
-
-  virtual ~Airavata_publishDataResource_pargs() throw();
-  const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const  ::apache::airavata::model::data::resource::DataResourceModel* resourceModel;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_publishDataResource_pargs& obj);
-};
-
-typedef struct _Airavata_publishDataResource_result__isset {
-  _Airavata_publishDataResource_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_publishDataResource_result__isset;
-
-class Airavata_publishDataResource_result {
- public:
-
-  static const char* ascii_fingerprint; // = "21BF57A9FE5AAA661540804D4FB9F023";
-  static const uint8_t binary_fingerprint[16]; // = {0x21,0xBF,0x57,0xA9,0xFE,0x5A,0xAA,0x66,0x15,0x40,0x80,0x4D,0x4F,0xB9,0xF0,0x23};
-
-  Airavata_publishDataResource_result(const Airavata_publishDataResource_result&);
-  Airavata_publishDataResource_result& operator=(const Airavata_publishDataResource_result&);
-  Airavata_publishDataResource_result() : success() {
-  }
-
-  virtual ~Airavata_publishDataResource_result() throw();
-  std::string success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_publishDataResource_result__isset __isset;
-
-  void __set_success(const std::string& val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
-
-  bool operator == (const Airavata_publishDataResource_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    if (!(ae == rhs.ae))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_publishDataResource_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_publishDataResource_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_publishDataResource_result& obj);
-};
-
-typedef struct _Airavata_publishDataResource_presult__isset {
-  _Airavata_publishDataResource_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_publishDataResource_presult__isset;
-
-class Airavata_publishDataResource_presult {
- public:
-
-  static const char* ascii_fingerprint; // = "21BF57A9FE5AAA661540804D4FB9F023";
-  static const uint8_t binary_fingerprint[16]; // = {0x21,0xBF,0x57,0xA9,0xFE,0x5A,0xAA,0x66,0x15,0x40,0x80,0x4D,0x4F,0xB9,0xF0,0x23};
-
-
-  virtual ~Airavata_publishDataResource_presult() throw();
-  std::string* success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_publishDataResource_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_publishDataResource_presult& obj);
-};
-
 class AiravataClient : virtual public AiravataIf {
  public:
   AiravataClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) {
@@ -21924,9 +21762,6 @@ class AiravataClient : virtual public AiravataIf {
   bool isWorkflowExistWithName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName);
   void send_isWorkflowExistWithName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName);
   bool recv_isWorkflowExistWithName();
-  void publishDataResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::DataResourceModel& resourceModel);
-  void send_publishDataResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::DataResourceModel& resourceModel);
-  void recv_publishDataResource(std::string& _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -22074,7 +21909,6 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_updateWorkflow(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getWorkflowTemplateId(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_isWorkflowExistWithName(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_publishDataResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   AiravataProcessor(boost::shared_ptr<AiravataIf> iface) :
     iface_(iface) {
@@ -22210,7 +22044,6 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["updateWorkflow"] = &AiravataProcessor::process_updateWorkflow;
     processMap_["getWorkflowTemplateId"] = &AiravataProcessor::process_getWorkflowTemplateId;
     processMap_["isWorkflowExistWithName"] = &AiravataProcessor::process_isWorkflowExistWithName;
-    processMap_["publishDataResource"] = &AiravataProcessor::process_publishDataResource;
   }
 
   virtual ~AiravataProcessor() {}
@@ -23506,16 +23339,6 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->isWorkflowExistWithName(authzToken, workflowName);
     }
     return ifaces_[i]->isWorkflowExistWithName(authzToken, workflowName);
-  }
-
-  void publishDataResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::resource::DataResourceModel& resourceModel) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->publishDataResource(_return, authzToken, resourceModel);
-    }
-    ifaces_[i]->publishDataResource(_return, authzToken, resourceModel);
-    return;
   }
 
 };
