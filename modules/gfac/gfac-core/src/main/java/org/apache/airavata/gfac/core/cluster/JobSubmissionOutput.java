@@ -27,6 +27,8 @@ public class JobSubmissionOutput {
 	private String stdErr;
 	private String command;
 	private String jobId;
+	private boolean isJobSubmissionFailed;
+	private String failureReason;
 
 	public int getExitCode() {
 		return exitCode;
@@ -66,5 +68,21 @@ public class JobSubmissionOutput {
 
 	public void setJobId(String jobId) {
 		this.jobId = jobId;
+	}
+
+	public boolean isJobSubmissionFailed() {
+		return isJobSubmissionFailed;
+	}
+
+	public void setJobSubmissionFailed(boolean jobSubmissionFailed) {
+		isJobSubmissionFailed = jobSubmissionFailed;
+	}
+
+	public String getFailureReason() {
+		return failureReason;
+	}
+
+	public void setFailureReason(String failureReason) {
+		this.failureReason = failureReason;
 	}
 }

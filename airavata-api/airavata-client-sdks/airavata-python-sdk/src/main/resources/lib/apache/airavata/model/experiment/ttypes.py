@@ -81,6 +81,7 @@ class UserConfigurationDataModel:
    - userDN
    - generateCert
    - storageId
+   - experimentDataDir
   """
 
   thrift_spec = (
@@ -93,9 +94,10 @@ class UserConfigurationDataModel:
     (6, TType.STRING, 'userDN', None, None, ), # 6
     (7, TType.BOOL, 'generateCert', None, False, ), # 7
     (8, TType.STRING, 'storageId', None, None, ), # 8
+    (9, TType.STRING, 'experimentDataDir', None, None, ), # 9
   )
 
-  def __init__(self, airavataAutoSchedule=thrift_spec[1][4], overrideManualScheduledParams=thrift_spec[2][4], shareExperimentPublicly=thrift_spec[3][4], computationalResourceScheduling=None, throttleResources=thrift_spec[5][4], userDN=None, generateCert=thrift_spec[7][4], storageId=None,):
+  def __init__(self, airavataAutoSchedule=thrift_spec[1][4], overrideManualScheduledParams=thrift_spec[2][4], shareExperimentPublicly=thrift_spec[3][4], computationalResourceScheduling=None, throttleResources=thrift_spec[5][4], userDN=None, generateCert=thrift_spec[7][4], storageId=None, experimentDataDir=None,):
     self.airavataAutoSchedule = airavataAutoSchedule
     self.overrideManualScheduledParams = overrideManualScheduledParams
     self.shareExperimentPublicly = shareExperimentPublicly
@@ -104,6 +106,7 @@ class UserConfigurationDataModel:
     self.userDN = userDN
     self.generateCert = generateCert
     self.storageId = storageId
+    self.experimentDataDir = experimentDataDir
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -155,6 +158,11 @@ class UserConfigurationDataModel:
           self.storageId = iprot.readString()
         else:
           iprot.skip(ftype)
+      elif fid == 9:
+        if ftype == TType.STRING:
+          self.experimentDataDir = iprot.readString()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -197,6 +205,10 @@ class UserConfigurationDataModel:
       oprot.writeFieldBegin('storageId', TType.STRING, 8)
       oprot.writeString(self.storageId)
       oprot.writeFieldEnd()
+    if self.experimentDataDir is not None:
+      oprot.writeFieldBegin('experimentDataDir', TType.STRING, 9)
+      oprot.writeString(self.experimentDataDir)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -218,6 +230,7 @@ class UserConfigurationDataModel:
     value = (value * 31) ^ hash(self.userDN)
     value = (value * 31) ^ hash(self.generateCert)
     value = (value * 31) ^ hash(self.storageId)
+    value = (value * 31) ^ hash(self.experimentDataDir)
     return value
 
   def __repr__(self):

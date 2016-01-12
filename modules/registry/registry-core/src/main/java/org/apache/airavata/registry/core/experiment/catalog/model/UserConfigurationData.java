@@ -46,6 +46,7 @@ public class UserConfigurationData {
     private Experiment experiment;
     private String staticWorkingDir;
     private String storageId;
+    private String experimentDataDir;
 
     @Id
     @Column(name = "EXPERIMENT_ID")
@@ -191,6 +192,16 @@ public class UserConfigurationData {
     public void setStorageId(String storageId) {
         this.storageId = storageId;
     }
+
+    @Column(name = "EXPERIMENT_DATA_DIR")
+    public String getExperimentDataDir() {
+        return experimentDataDir;
+    }
+
+    public void setExperimentDataDir(String experimentDataDir) {
+        this.experimentDataDir = experimentDataDir;
+    }
+
 
     //    @Override
 //    public boolean equals(Object o) {

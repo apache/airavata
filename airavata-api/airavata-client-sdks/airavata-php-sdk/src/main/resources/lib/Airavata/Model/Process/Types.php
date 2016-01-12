@@ -113,6 +113,10 @@ class ProcessModel {
    * @var bool
    */
   public $generateCert = false;
+  /**
+   * @var string
+   */
+  public $experimentDataDir = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -223,6 +227,10 @@ class ProcessModel {
           'var' => 'generateCert',
           'type' => TType::BOOL,
           ),
+        22 => array(
+          'var' => 'experimentDataDir',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -288,6 +296,9 @@ class ProcessModel {
       }
       if (isset($vals['generateCert'])) {
         $this->generateCert = $vals['generateCert'];
+      }
+      if (isset($vals['experimentDataDir'])) {
+        $this->experimentDataDir = $vals['experimentDataDir'];
       }
     }
   }
@@ -504,6 +515,13 @@ class ProcessModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 22:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->experimentDataDir);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -677,6 +695,11 @@ class ProcessModel {
     if ($this->generateCert !== null) {
       $xfer += $output->writeFieldBegin('generateCert', TType::BOOL, 21);
       $xfer += $output->writeBool($this->generateCert);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->experimentDataDir !== null) {
+      $xfer += $output->writeFieldBegin('experimentDataDir', TType::STRING, 22);
+      $xfer += $output->writeString($this->experimentDataDir);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

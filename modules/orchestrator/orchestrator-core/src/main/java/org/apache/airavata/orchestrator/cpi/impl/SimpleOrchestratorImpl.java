@@ -554,6 +554,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             taskModel.setTaskType(TaskTypes.DATA_STAGING);
             ComputeResourcePreference computeResourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
             ComputeResourceDescription computeResource = orchestratorContext.getRegistry().getAppCatalog().getComputeResource().getComputeResource(processModel.getComputeResourceId());
+
             String remoteOutputDir = computeResourcePreference.getScratchLocation() + File.separator + processModel.getProcessId();
             remoteOutputDir = remoteOutputDir.endsWith("/") ? remoteOutputDir : remoteOutputDir + "/";
             DataStagingTaskModel submodel = new DataStagingTaskModel();

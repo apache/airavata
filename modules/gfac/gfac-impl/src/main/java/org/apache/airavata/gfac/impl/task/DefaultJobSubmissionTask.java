@@ -46,7 +46,8 @@ import java.io.IOException;
 import java.util.Map;
 
 public class DefaultJobSubmissionTask implements JobSubmissionTask {
-    private static final Logger log = LoggerFactory.getLogger(DefaultJobSubmissionTask.class);
+	private static final Logger log = LoggerFactory.getLogger(DefaultJobSubmissionTask.class);
+	public static final String DEFAULT_JOB_ID = "DEFAULT_JOB_ID";
 	private static int waitForProcessIdmillis = 5000;
 	private static int pauseTimeInSec = waitForProcessIdmillis / 1000;
 
@@ -80,41 +81,57 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 				jobModel.setExitCode(exitCode);
 				jobModel.setStdErr(jobSubmissionOutput.getStdErr());
 				jobModel.setStdOut(jobSubmissionOutput.getStdOut());
-				GFacUtils.saveJobModel(processContext, jobModel);
-				if (exitCode != 0) {
-					String msg;
-					if (exitCode != Integer.MIN_VALUE) {
-						msg = "expId:" + processContext.getProcessModel().getExperimentId() + ", processId:" +
-								processContext.getProcessId() + ", taskId: " + taskContext.getTaskId() +
-								" return non zero exit code:" + exitCode + "  for JobName:" + jobModel.getJobName() +
-								", Hence changing job state to Failed";
+				String jobId = jobSubmissionOutput.getJobId();
+				if (exitCode != 0 || jobSubmissionOutput.isJobSubmissionFailed()) {
+					jobModel.setJobId(DEFAULT_JOB_ID);
+					if (jobSubmissionOutput.isJobSubmissionFailed()) {
+						jobModel.setJobStatus(new JobStatus(JobState.FAILED));
+						jobModel.getJobStatus().setReason(jobSubmissionOutput.getFailureReason());
+						log.error("expId: {}, processid: {}, taskId: {} :- Job submission failed for job name {}",
+								taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(), jobModel.getJobName());
+						ErrorModel errorModel = new ErrorModel();
+						errorModel.setUserFriendlyMessage(jobSubmissionOutput.getFailureReason());
+						errorModel.setActualErrorMessage(jobSubmissionOutput.getFailureReason());
+						GFacUtils.saveExperimentError(processContext, errorModel);
+						GFacUtils.saveProcessError(processContext, errorModel);
+						GFacUtils.saveTaskError(taskContext, errorModel);
+						taskStatus.setState(TaskState.FAILED);
+						taskStatus.setReason("Job submission command exit with non zero exit code");
+						taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+						taskContext.setTaskStatus(taskStatus);
 					} else {
-						msg = "expId:" + processContext.getProcessModel().getExperimentId() + ", processId:" +
-								processContext.getProcessId() + ", taskId: " + taskContext.getTaskId() +
-								" doesn't  return valid job submission exit code for JobName:" + jobModel.getJobName() +
-								", Hence changing job state to Failed";
+						String msg;
+						GFacUtils.saveJobModel(processContext, jobModel);
+						if (exitCode != Integer.MIN_VALUE) {
+							msg = "expId:" + processContext.getProcessModel().getExperimentId() + ", processId:" +
+									processContext.getProcessId() + ", taskId: " + taskContext.getTaskId() +
+									" return non zero exit code:" + exitCode + "  for JobName:" + jobModel.getJobName() +
+									", Hence changing job state to Failed";
+						} else {
+							msg = "expId:" + processContext.getProcessModel().getExperimentId() + ", processId:" +
+									processContext.getProcessId() + ", taskId: " + taskContext.getTaskId() +
+									" doesn't  return valid job submission exit code for JobName:" + jobModel.getJobName() +
+									", Hence changing job state to Failed";
+						}
+						log.error(msg);
+						ErrorModel errorModel = new ErrorModel();
+						errorModel.setUserFriendlyMessage(msg);
+						errorModel.setActualErrorMessage(msg);
+						GFacUtils.saveExperimentError(processContext, errorModel);
+						GFacUtils.saveProcessError(processContext, errorModel);
+						GFacUtils.saveTaskError(taskContext, errorModel);
+						taskStatus.setState(TaskState.FAILED);
+						taskStatus.setReason("Job submission command exit with non zero exit code");
+						taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+						taskContext.setTaskStatus(taskStatus);
 					}
-					log.error(msg);
-					ErrorModel errorModel = new ErrorModel();
-					errorModel.setUserFriendlyMessage(msg);
-					errorModel.setActualErrorMessage(msg);
-					GFacUtils.saveJobModel(processContext, jobModel);
-					GFacUtils.saveExperimentError(processContext, errorModel);
-					GFacUtils.saveProcessError(processContext, errorModel);
-					GFacUtils.saveTaskError(taskContext, errorModel);
-					taskStatus.setState(TaskState.FAILED);
-					taskStatus.setReason("Job submission command exit with non zero exit code");
-					taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-					taskContext.setTaskStatus(taskStatus);
 					try {
 						GFacUtils.saveAndPublishTaskStatus(taskContext);
 					} catch (GFacException e) {
 						log.error("Error while saving task status", e);
 					}
 					return taskStatus;
-				}
-			    String jobId = jobSubmissionOutput.getJobId();
-			    if (jobId != null && !jobId.isEmpty()) {
+				} else if (jobId != null && !jobId.isEmpty()) {
 				    jobModel.setJobId(jobId);
 				    GFacUtils.saveJobModel(processContext, jobModel);
 				    jobStatus.setJobState(JobState.SUBMITTED);
@@ -133,32 +150,34 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 				    taskStatus = new TaskStatus(TaskState.COMPLETED);
 				    taskStatus.setReason("Submitted job to compute resource");
                     taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-			    } else {
-				    int verificationTryCount = 0;
-				    while (verificationTryCount++ < 3) {
-					    String verifyJobId = verifyJobSubmission(remoteCluster, jobModel);
-					    if (verifyJobId != null && !verifyJobId.isEmpty()) {
-						    // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
-						    jobId = verifyJobId;
-						    jobModel.setJobId(jobId);
-						    GFacUtils.saveJobModel(processContext,jobModel);
-						    jobStatus.setJobState(JobState.QUEUED);
-						    jobStatus.setReason("Verification step succeeded");
-                            jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-						    jobModel.setJobStatus(jobStatus);
-						    GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
-						    taskStatus.setState(TaskState.COMPLETED);
-						    taskStatus.setReason("Submitted job to compute resource");
-                            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-						    break;
-					    }
-					    log.info("Verify step return invalid jobId, retry verification step in {} secs", verificationTryCount * 10);
-					    Thread.sleep(verificationTryCount * 10000);
-				    }
-			    }
+				} else {
+					int verificationTryCount = 0;
+					while (verificationTryCount++ < 3) {
+						String verifyJobId = verifyJobSubmission(remoteCluster, jobModel);
+						if (verifyJobId != null && !verifyJobId.isEmpty()) {
+							// JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
+							jobId = verifyJobId;
+							jobModel.setJobId(jobId);
+							GFacUtils.saveJobModel(processContext, jobModel);
+							jobStatus.setJobState(JobState.QUEUED);
+							jobStatus.setReason("Verification step succeeded");
+							jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+							jobModel.setJobStatus(jobStatus);
+							GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
+							taskStatus.setState(TaskState.COMPLETED);
+							taskStatus.setReason("Submitted job to compute resource");
+							taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+							break;
+						}
+						log.info("Verify step return invalid jobId, retry verification step in {} secs", verificationTryCount * 10);
+						Thread.sleep(verificationTryCount * 10000);
+					}
+				}
 
 			    if (jobId == null || jobId.isEmpty()) {
-				    String msg = "expId:" + processContext.getProcessModel().getExperimentId() + " Couldn't find " +
+					jobModel.setJobId(DEFAULT_JOB_ID);
+					GFacUtils.saveJobModel(processContext, jobModel);
+					String msg = "expId:" + processContext.getProcessModel().getExperimentId() + " Couldn't find " +
 						    "remote jobId for JobName:" + jobModel.getJobName() + ", both submit and verify steps " +
 						    "doesn't return a valid JobId. " + "Hence changing experiment state to Failed";
 				    log.error(msg);

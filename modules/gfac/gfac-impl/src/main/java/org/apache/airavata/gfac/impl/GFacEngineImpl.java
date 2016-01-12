@@ -25,6 +25,7 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -39,8 +40,10 @@ import org.apache.airavata.gfac.impl.task.DataStreamingTask;
 import org.apache.airavata.gfac.impl.task.EnvironmentSetupTask;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -61,10 +64,14 @@ import org.apache.airavata.registry.cpi.ExpCatChildDataType;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.utils.Constants;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.utils.ZKPaths;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -91,11 +98,32 @@ public class GFacEngineImpl implements GFacEngine {
 
             ProcessModel processModel = (ProcessModel) expCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
             processContext.setProcessModel(processModel);
+
+            try {
+                checkRecoveryWithCancel(processContext);
+            } catch (Exception e) {
+                log.error("expId: {}, processId: {}, Error while checking process cancel data in zookeeper",
+                        processContext.getExperimentId(), processContext.getProcessId());
+            }
+
             GatewayResourceProfile gatewayProfile = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
             processContext.setGatewayResourceProfile(gatewayProfile);
-            processContext.setComputeResourcePreference(appCatalog.getGatewayProfile().getComputeResourcePreference
-                    (gatewayId, processModel.getComputeResourceId()));
+            ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().getComputeResourcePreference
+                    (gatewayId, processModel.getComputeResourceId());
+            String scratchLocation = computeResourcePreference.getScratchLocation();
+            scratchLocation = scratchLocation + File.separator + processId + File.separator;
+            processContext.setComputeResourcePreference(computeResourcePreference);
             StoragePreference storagePreference = appCatalog.getGatewayProfile().getStoragePreference(gatewayId, processModel.getStorageResourceId());
+            StorageResourceDescription storageResource = appCatalog.getStorageResource().getStorageResource(processModel.getStorageResourceId());
+            if (storageResource != null){
+                processContext.setStorageResource(storageResource);
+            }else {
+                // we need to fail the process which will fail the experiment
+                processContext.setProcessStatus(new ProcessStatus(ProcessState.FAILED));
+                GFacUtils.saveAndPublishProcessStatus(processContext);
+                throw new GFacException("expId: " + processModel.getExperimentId() + ", processId: " + processId +
+                        ":- Couldn't find storage resource for storage resource id :" + processModel.getStorageResourceId());
+            }
             if (storagePreference != null) {
                 processContext.setStoragePreference(storagePreference);
             } else {
@@ -128,15 +156,15 @@ public class GFacEngineImpl implements GFacEngine {
                 for (OutputDataObjectType outputDataObjectType : applicationOutputs) {
                     if (outputDataObjectType.getType().equals(DataType.STDOUT)) {
                         if (outputDataObjectType.getValue() == null || outputDataObjectType.getValue().equals("")) {
-                            outputDataObjectType.setValue(applicationInterface.getApplicationName() + ".stdout");
-                            processContext.setStdoutLocation(applicationInterface.getApplicationName() + ".stdout");
+                            outputDataObjectType.setValue(scratchLocation + applicationInterface.getApplicationName() + ".stdout");
+                            processContext.setStdoutLocation(scratchLocation + applicationInterface.getApplicationName() + ".stdout");
                         } else {
                             processContext.setStdoutLocation(outputDataObjectType.getValue());
                         }
                     }
                     if (outputDataObjectType.getType().equals(DataType.STDERR)) {
                         if (outputDataObjectType.getValue() == null || outputDataObjectType.getValue().equals("")) {
-                            String stderrLocation = applicationInterface.getApplicationName() + ".stderr";
+                            String stderrLocation = scratchLocation + applicationInterface.getApplicationName() + ".stderr";
                             outputDataObjectType.setValue(stderrLocation);
                             processContext.setStderrLocation(stderrLocation);
                         } else {
@@ -176,6 +204,19 @@ public class GFacEngineImpl implements GFacEngine {
         }
     }
 
+    private void checkRecoveryWithCancel(ProcessContext processContext) throws Exception {
+        CuratorFramework curatorClient = processContext.getCuratorClient();
+        String experimentId = processContext.getExperimentId();
+        String processId = processContext.getProcessId();
+        String processCancelNodePath = ZKPaths.makePath(ZKPaths.makePath(ZKPaths.makePath(
+                ZkConstants.ZOOKEEPER_EXPERIMENT_NODE, experimentId), processId), ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+        log.info("expId: {}, processId: {}, get process cancel data from zookeeper node {}", experimentId, processId, processCancelNodePath);
+        byte[] bytes = curatorClient.getData().forPath(processCancelNodePath);
+        if (bytes != null && new String(bytes).equalsIgnoreCase(ZkConstants.ZOOKEEPER_CANCEL_REQEUST)) {
+            processContext.setRecoveryWithCancel(true);
+        }
+    }
+
     @Override
     public void executeProcess(ProcessContext processContext) throws GFacException {
         if (processContext.isInterrupted()) {
@@ -190,7 +231,7 @@ public class GFacEngineImpl implements GFacEngine {
 
     private void executeTaskListFrom(ProcessContext processContext, String startingTaskId) throws GFacException {
         // checkpoint
-        if (processContext.isInterrupted()) {
+        if (processContext.isInterrupted() && processContext.getProcessState() != ProcessState.MONITORING) {
             GFacUtils.handleProcessInterrupt(processContext);
             return;
         }
@@ -509,16 +550,75 @@ public class GFacEngineImpl implements GFacEngine {
         processContext.setTaskExecutionOrder(taskExecutionOrder);
         Map<String, TaskModel> taskMap = processContext.getTaskMap();
         String recoverTaskId = null;
+        String previousTaskId = null;
+        TaskModel taskModel = null;
         for (String taskId : taskExecutionOrder) {
-            TaskModel taskModel = taskMap.get(taskId);
+            taskModel = taskMap.get(taskId);
             TaskState state = taskModel.getTaskStatus().getState();
             if (state == TaskState.CREATED || state == TaskState.EXECUTING) {
                 recoverTaskId = taskId;
                 break;
             }
+            previousTaskId = taskId;
+        }
+        final String rTaskId = recoverTaskId;
+        final String pTaskId = previousTaskId;
+        if (recoverTaskId != null) {
+            if (processContext.isRecoveryWithCancel()) {
+                cancelJobSubmission(processContext, rTaskId, pTaskId);
+            }
+            continueProcess(processContext, recoverTaskId);
+        } else {
+            log.error("expId: {}, processId: {}, Error while recovering process, couldn't find recovery task",
+                    processContext.getExperimentId(), processContext.getProcessId());
         }
 
-        continueProcess(processContext, recoverTaskId);
+
+    }
+
+    private void cancelJobSubmission(ProcessContext processContext, String rTaskId, String pTaskId) {
+        new Thread(() -> {
+            try {
+                processContext.setCancel(true);
+                ProcessState processState = processContext.getProcessState();
+                List<Object> jobModels = null;
+                switch (processState) {
+                    case EXECUTING:
+                        jobModels = processContext.getExperimentCatalog().get(
+                                ExperimentCatalogModelType.JOB, Constants.FieldConstants.TaskConstants.TASK_ID,
+                                rTaskId);
+                        break;
+                    case MONITORING:
+                        if (pTaskId != null) {
+                            jobModels = processContext.getExperimentCatalog().get(
+                                    ExperimentCatalogModelType.JOB, Constants.FieldConstants.TaskConstants.TASK_ID,
+                                    pTaskId);
+                        }
+                }
+
+                if (jobModels != null && !jobModels.isEmpty()) {
+                    JobModel jobModel = (JobModel) jobModels.get(jobModels.size() - 1);
+                    if (jobModel.getJobId() != null) {
+                        processContext.setJobModel(jobModel);
+                        log.info("expId: {}, processId: {}, Canceling jobId {}", processContext.getExperimentId(),
+                                processContext.getProcessId(), jobModel.getJobId());
+                        cancelProcess(processContext);
+                        log.info("expId: {}, processId: {}, Canceled jobId {}", processContext.getExperimentId(),
+                                processContext.getProcessId(), jobModel.getJobId());
+                    } else {
+                        log.error("expId: {}, processId: {}, Couldn't find jobId in jobModel, aborting process recovery",
+                                processContext.getExperimentId(), processContext.getProcessId());
+                    }
+                }
+            } catch (GFacException e) {
+                log.error("expId: {}, processId: {}, Error while canceling process which is in recovery mode",
+                        processContext.getExperimentId(), processContext.getProcessId());
+            } catch (RegistryException e) {
+                log.error("expId: {}, processId: {}, Error while getting job model for taskId {}, " +
+                                "couldn't cancel process which is in recovery mode", processContext.getExperimentId(),
+                        processContext.getProcessId(), rTaskId);
+            }
+        }).start();
     }
 
     private JobModel getJobModel(ProcessContext processContext) {
@@ -532,10 +632,6 @@ public class GFacEngineImpl implements GFacEngine {
 
     @Override
     public void continueProcess(ProcessContext processContext, String taskId) throws GFacException {
-        if (processContext.isInterrupted()) {
-            GFacUtils.handleProcessInterrupt(processContext);
-            return;
-        }
         executeTaskListFrom(processContext, taskId);
     }
 

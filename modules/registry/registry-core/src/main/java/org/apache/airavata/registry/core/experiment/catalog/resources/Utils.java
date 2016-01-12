@@ -351,7 +351,7 @@ public class Utils {
             projectResource.setGatewayId(o.getGatewayId());
             GatewayWorker gatewayWorker = new GatewayWorker();
             gatewayWorker.setGateway(o.getGateway());
-            gatewayWorker.setUserName(o.getUser().getUserName());
+            gatewayWorker.setUserName(o.getUserName());
             WorkerResource workerResource = (WorkerResource) createGatewayWorker(gatewayWorker);
             projectResource.setWorker(workerResource);
             projectResource.setDescription(o.getDescription());
@@ -513,6 +513,7 @@ public class Utils {
             configurationDataResource.setTotalPhysicalMemory(o.getTotalPhysicalMemory());
             configurationDataResource.setStaticWorkingDir(o.getStaticWorkingDir());
             configurationDataResource.setStorageId(o.getStorageId());
+            configurationDataResource.setExperimentDataDir(o.getExperimentDataDir());
         }
         return configurationDataResource;
     }
@@ -535,6 +536,7 @@ public class Utils {
             processResource.setStorageResourceId(o.getStorageId());
             processResource.setUserDn(o.getUserDn());
             processResource.setGenerateCert(o.getGenerateCert());
+            processResource.setExperimentDataDir(o.getExperimentDataDir());
         }
         return processResource;
     }

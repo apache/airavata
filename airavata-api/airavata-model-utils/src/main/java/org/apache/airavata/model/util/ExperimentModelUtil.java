@@ -98,6 +98,7 @@ public class ExperimentModelUtil {
         UserConfigurationDataModel configData = experiment.getUserConfigurationData();
         if (configData != null){
             processModel.setStorageResourceId(configData.getStorageId());
+            processModel.setExperimentDataDir(configData.getExperimentDataDir());
             processModel.setGenerateCert(configData.isGenerateCert());
             processModel.setUserDn(configData.getUserDN());
             ComputationalResourceSchedulingModel scheduling = configData.getComputationalResourceScheduling();

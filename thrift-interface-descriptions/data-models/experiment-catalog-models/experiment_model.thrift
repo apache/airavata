@@ -57,6 +57,7 @@ struct UserConfigurationDataModel {
     6: optional string userDN,
     7: optional bool generateCert = 0,
     8: optional string storageId;
+    9: optional string experimentDataDir;
 }
 
 /**

@@ -349,6 +349,7 @@ public class ThriftDataModelConversion {
             processModel.setApplicationDeploymentId(processResource.getApplicationDeploymentId());
             processModel.setComputeResourceId(processResource.getComputeResourceId());
             processModel.setEnableEmailNotification(processResource.getEnableEmailNotification());
+            processModel.setExperimentDataDir(processResource.getExperimentDataDir());
             if (processModel.isEnableEmailNotification()){
                 String notificationEmails = processResource.getEmailAddresses();
                 processModel.setEmailAddresses(getEmailAddresses(notificationEmails.split(",")));
@@ -497,6 +498,7 @@ public class ThriftDataModelConversion {
             data.setUserDN(resource.getUserDn());
             data.setGenerateCert(resource.getGenerateCert());
             data.setStorageId(resource.getStorageId());
+            data.setExperimentDataDir(resource.getExperimentDataDir());
 
             ComputationalResourceSchedulingModel resourceSchedulingModel = new ComputationalResourceSchedulingModel();
             resourceSchedulingModel.setResourceHostId(resource.getResourceHostId());
