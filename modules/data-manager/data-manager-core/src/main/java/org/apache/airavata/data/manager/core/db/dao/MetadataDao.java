@@ -31,6 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class MetadataDao {
@@ -58,6 +60,8 @@ public class MetadataDao {
 
     public String createMetadata(MetadataModel metadataModel) throws JsonProcessingException {
         metadataModel.setMetadataId(DataManagerConstants.AIRAVATA_METADATA_ID_PREFIX + UUID.randomUUID().toString());
+        metadataModel.setCreationTime(System.currentTimeMillis());
+        metadataModel.setLastModifiedTime(metadataModel.getCreationTime());
         WriteResult result = collection.insert((DBObject) JSON.parse(
                 modelConversionHelper.serializeObject(metadataModel)));
         logger.debug("No of inserted results " + result.getN());
@@ -67,6 +71,7 @@ public class MetadataDao {
     public void updateMetadata(MetadataModel metadataModel) throws JsonProcessingException {
         DBObject query = BasicDBObjectBuilder.start().add(
                 METADATA_ID, metadataModel.getMetadataId()).get();
+        metadataModel.setLastModifiedTime(System.currentTimeMillis());
         WriteResult result = collection.update(query, (DBObject) JSON.parse(
                 modelConversionHelper.serializeObject(metadataModel)));
         logger.debug("No of updated results " + result.getN());
@@ -90,4 +95,15 @@ public class MetadataDao {
         }
         return null;
     }
+
+    public List<MetadataModel> searchMetaDataModels(String username, String gatewayId, String searchText) throws IOException{
+        List<MetadataModel> metadataModels = new ArrayList<>();
+        DBCursor cursor = collection.find();
+        for(DBObject document: cursor){
+                metadataModels.add((MetadataModel) modelConversionHelper.deserializeObject(
+                        MetadataModel.class, document.toString()));
+        }
+        return metadataModels;
+    }
+
 }

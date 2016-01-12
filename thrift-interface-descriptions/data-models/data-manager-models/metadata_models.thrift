@@ -19,7 +19,7 @@
  */
 
   namespace java org.apache.airavata.model.data.metadata
-  namespace php Airavata.Model.data.metadata
+  namespace php Airavata.Model.Data.Metadata
   namespace cpp apache.airavata.model.data.metadata
   namespace py apache.airavata.model.data.metadata
 
@@ -31,11 +31,14 @@
     1: optional string metadataId,
     2: optional string gatewayId,
     3: optional string username,
-    4: optional list<string> sharedUsers,
-    5: optional bool sharedPublic,
-    6: optional string userFriendlyName,
-    7: optional string userFriendlyDescription,
-    8: optional MetadataType metadataType,
-    9: optional string associatedEntityId,
-   10: optional map<string,string> customInformation
+    4: optional double size,
+    5: optional list<string> sharedUsers,
+    6: optional bool sharedPublic,
+    7: optional string userFriendlyName,
+    8: optional string userFriendlyDescription,
+    9: optional MetadataType metadataType,
+   10: optional string associatedEntityId,
+   11: optional map<string,string> customInformation
+   12: optional i64 creationTime,
+   13: optional i64 lastModifiedTime
   }

@@ -58,13 +58,16 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
   private static final org.apache.thrift.protocol.TField METADATA_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("metadataId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField USERNAME_FIELD_DESC = new org.apache.thrift.protocol.TField("username", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField SHARED_USERS_FIELD_DESC = new org.apache.thrift.protocol.TField("sharedUsers", org.apache.thrift.protocol.TType.LIST, (short)4);
-  private static final org.apache.thrift.protocol.TField SHARED_PUBLIC_FIELD_DESC = new org.apache.thrift.protocol.TField("sharedPublic", org.apache.thrift.protocol.TType.BOOL, (short)5);
-  private static final org.apache.thrift.protocol.TField USER_FRIENDLY_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userFriendlyName", org.apache.thrift.protocol.TType.STRING, (short)6);
-  private static final org.apache.thrift.protocol.TField USER_FRIENDLY_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("userFriendlyDescription", org.apache.thrift.protocol.TType.STRING, (short)7);
-  private static final org.apache.thrift.protocol.TField METADATA_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("metadataType", org.apache.thrift.protocol.TType.I32, (short)8);
-  private static final org.apache.thrift.protocol.TField ASSOCIATED_ENTITY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("associatedEntityId", org.apache.thrift.protocol.TType.STRING, (short)9);
-  private static final org.apache.thrift.protocol.TField CUSTOM_INFORMATION_FIELD_DESC = new org.apache.thrift.protocol.TField("customInformation", org.apache.thrift.protocol.TType.MAP, (short)10);
+  private static final org.apache.thrift.protocol.TField SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("size", org.apache.thrift.protocol.TType.DOUBLE, (short)4);
+  private static final org.apache.thrift.protocol.TField SHARED_USERS_FIELD_DESC = new org.apache.thrift.protocol.TField("sharedUsers", org.apache.thrift.protocol.TType.LIST, (short)5);
+  private static final org.apache.thrift.protocol.TField SHARED_PUBLIC_FIELD_DESC = new org.apache.thrift.protocol.TField("sharedPublic", org.apache.thrift.protocol.TType.BOOL, (short)6);
+  private static final org.apache.thrift.protocol.TField USER_FRIENDLY_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userFriendlyName", org.apache.thrift.protocol.TType.STRING, (short)7);
+  private static final org.apache.thrift.protocol.TField USER_FRIENDLY_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("userFriendlyDescription", org.apache.thrift.protocol.TType.STRING, (short)8);
+  private static final org.apache.thrift.protocol.TField METADATA_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("metadataType", org.apache.thrift.protocol.TType.I32, (short)9);
+  private static final org.apache.thrift.protocol.TField ASSOCIATED_ENTITY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("associatedEntityId", org.apache.thrift.protocol.TType.STRING, (short)10);
+  private static final org.apache.thrift.protocol.TField CUSTOM_INFORMATION_FIELD_DESC = new org.apache.thrift.protocol.TField("customInformation", org.apache.thrift.protocol.TType.MAP, (short)11);
+  private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)12);
+  private static final org.apache.thrift.protocol.TField LAST_MODIFIED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("lastModifiedTime", org.apache.thrift.protocol.TType.I64, (short)13);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -75,6 +78,7 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
   private String metadataId; // optional
   private String gatewayId; // optional
   private String username; // optional
+  private double size; // optional
   private List<String> sharedUsers; // optional
   private boolean sharedPublic; // optional
   private String userFriendlyName; // optional
@@ -82,23 +86,28 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
   private MetadataType metadataType; // optional
   private String associatedEntityId; // optional
   private Map<String,String> customInformation; // optional
+  private long creationTime; // optional
+  private long lastModifiedTime; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     METADATA_ID((short)1, "metadataId"),
     GATEWAY_ID((short)2, "gatewayId"),
     USERNAME((short)3, "username"),
-    SHARED_USERS((short)4, "sharedUsers"),
-    SHARED_PUBLIC((short)5, "sharedPublic"),
-    USER_FRIENDLY_NAME((short)6, "userFriendlyName"),
-    USER_FRIENDLY_DESCRIPTION((short)7, "userFriendlyDescription"),
+    SIZE((short)4, "size"),
+    SHARED_USERS((short)5, "sharedUsers"),
+    SHARED_PUBLIC((short)6, "sharedPublic"),
+    USER_FRIENDLY_NAME((short)7, "userFriendlyName"),
+    USER_FRIENDLY_DESCRIPTION((short)8, "userFriendlyDescription"),
     /**
      * 
      * @see MetadataType
      */
-    METADATA_TYPE((short)8, "metadataType"),
-    ASSOCIATED_ENTITY_ID((short)9, "associatedEntityId"),
-    CUSTOM_INFORMATION((short)10, "customInformation");
+    METADATA_TYPE((short)9, "metadataType"),
+    ASSOCIATED_ENTITY_ID((short)10, "associatedEntityId"),
+    CUSTOM_INFORMATION((short)11, "customInformation"),
+    CREATION_TIME((short)12, "creationTime"),
+    LAST_MODIFIED_TIME((short)13, "lastModifiedTime");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -119,20 +128,26 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
           return GATEWAY_ID;
         case 3: // USERNAME
           return USERNAME;
-        case 4: // SHARED_USERS
+        case 4: // SIZE
+          return SIZE;
+        case 5: // SHARED_USERS
           return SHARED_USERS;
-        case 5: // SHARED_PUBLIC
+        case 6: // SHARED_PUBLIC
           return SHARED_PUBLIC;
-        case 6: // USER_FRIENDLY_NAME
+        case 7: // USER_FRIENDLY_NAME
           return USER_FRIENDLY_NAME;
-        case 7: // USER_FRIENDLY_DESCRIPTION
+        case 8: // USER_FRIENDLY_DESCRIPTION
           return USER_FRIENDLY_DESCRIPTION;
-        case 8: // METADATA_TYPE
+        case 9: // METADATA_TYPE
           return METADATA_TYPE;
-        case 9: // ASSOCIATED_ENTITY_ID
+        case 10: // ASSOCIATED_ENTITY_ID
           return ASSOCIATED_ENTITY_ID;
-        case 10: // CUSTOM_INFORMATION
+        case 11: // CUSTOM_INFORMATION
           return CUSTOM_INFORMATION;
+        case 12: // CREATION_TIME
+          return CREATION_TIME;
+        case 13: // LAST_MODIFIED_TIME
+          return LAST_MODIFIED_TIME;
         default:
           return null;
       }
@@ -173,9 +188,12 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
   }
 
   // isset id assignments
-  private static final int __SHAREDPUBLIC_ISSET_ID = 0;
+  private static final int __SIZE_ISSET_ID = 0;
+  private static final int __SHAREDPUBLIC_ISSET_ID = 1;
+  private static final int __CREATIONTIME_ISSET_ID = 2;
+  private static final int __LASTMODIFIEDTIME_ISSET_ID = 3;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.METADATA_ID,_Fields.GATEWAY_ID,_Fields.USERNAME,_Fields.SHARED_USERS,_Fields.SHARED_PUBLIC,_Fields.USER_FRIENDLY_NAME,_Fields.USER_FRIENDLY_DESCRIPTION,_Fields.METADATA_TYPE,_Fields.ASSOCIATED_ENTITY_ID,_Fields.CUSTOM_INFORMATION};
+  private static final _Fields optionals[] = {_Fields.METADATA_ID,_Fields.GATEWAY_ID,_Fields.USERNAME,_Fields.SIZE,_Fields.SHARED_USERS,_Fields.SHARED_PUBLIC,_Fields.USER_FRIENDLY_NAME,_Fields.USER_FRIENDLY_DESCRIPTION,_Fields.METADATA_TYPE,_Fields.ASSOCIATED_ENTITY_ID,_Fields.CUSTOM_INFORMATION,_Fields.CREATION_TIME,_Fields.LAST_MODIFIED_TIME};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -185,6 +203,8 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.USERNAME, new org.apache.thrift.meta_data.FieldMetaData("username", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.SIZE, new org.apache.thrift.meta_data.FieldMetaData("size", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
     tmpMap.put(_Fields.SHARED_USERS, new org.apache.thrift.meta_data.FieldMetaData("sharedUsers", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
@@ -202,6 +222,10 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
         new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING), 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+    tmpMap.put(_Fields.CREATION_TIME, new org.apache.thrift.meta_data.FieldMetaData("creationTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+    tmpMap.put(_Fields.LAST_MODIFIED_TIME, new org.apache.thrift.meta_data.FieldMetaData("lastModifiedTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(MetadataModel.class, metaDataMap);
   }
@@ -223,6 +247,7 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
     if (other.isSetUsername()) {
       this.username = other.username;
     }
+    this.size = other.size;
     if (other.isSetSharedUsers()) {
       List<String> __this__sharedUsers = new ArrayList<String>(other.sharedUsers);
       this.sharedUsers = __this__sharedUsers;
@@ -244,6 +269,8 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
       Map<String,String> __this__customInformation = new HashMap<String,String>(other.customInformation);
       this.customInformation = __this__customInformation;
     }
+    this.creationTime = other.creationTime;
+    this.lastModifiedTime = other.lastModifiedTime;
   }
 
   public MetadataModel deepCopy() {
@@ -255,6 +282,8 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
     this.metadataId = null;
     this.gatewayId = null;
     this.username = null;
+    setSizeIsSet(false);
+    this.size = 0.0;
     this.sharedUsers = null;
     setSharedPublicIsSet(false);
     this.sharedPublic = false;
@@ -263,6 +292,10 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
     this.metadataType = null;
     this.associatedEntityId = null;
     this.customInformation = null;
+    setCreationTimeIsSet(false);
+    this.creationTime = 0;
+    setLastModifiedTimeIsSet(false);
+    this.lastModifiedTime = 0;
   }
 
   public String getMetadataId() {
@@ -332,6 +365,28 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
     if (!value) {
       this.username = null;
     }
+  }
+
+  public double getSize() {
+    return this.size;
+  }
+
+  public void setSize(double size) {
+    this.size = size;
+    setSizeIsSet(true);
+  }
+
+  public void unsetSize() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SIZE_ISSET_ID);
+  }
+
+  /** Returns true if field size is set (has been assigned a value) and false otherwise */
+  public boolean isSetSize() {
+    return EncodingUtils.testBit(__isset_bitfield, __SIZE_ISSET_ID);
+  }
+
+  public void setSizeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SIZE_ISSET_ID, value);
   }
 
   public int getSharedUsersSize() {
@@ -528,6 +583,50 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
     }
   }
 
+  public long getCreationTime() {
+    return this.creationTime;
+  }
+
+  public void setCreationTime(long creationTime) {
+    this.creationTime = creationTime;
+    setCreationTimeIsSet(true);
+  }
+
+  public void unsetCreationTime() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __CREATIONTIME_ISSET_ID);
+  }
+
+  /** Returns true if field creationTime is set (has been assigned a value) and false otherwise */
+  public boolean isSetCreationTime() {
+    return EncodingUtils.testBit(__isset_bitfield, __CREATIONTIME_ISSET_ID);
+  }
+
+  public void setCreationTimeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __CREATIONTIME_ISSET_ID, value);
+  }
+
+  public long getLastModifiedTime() {
+    return this.lastModifiedTime;
+  }
+
+  public void setLastModifiedTime(long lastModifiedTime) {
+    this.lastModifiedTime = lastModifiedTime;
+    setLastModifiedTimeIsSet(true);
+  }
+
+  public void unsetLastModifiedTime() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __LASTMODIFIEDTIME_ISSET_ID);
+  }
+
+  /** Returns true if field lastModifiedTime is set (has been assigned a value) and false otherwise */
+  public boolean isSetLastModifiedTime() {
+    return EncodingUtils.testBit(__isset_bitfield, __LASTMODIFIEDTIME_ISSET_ID);
+  }
+
+  public void setLastModifiedTimeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __LASTMODIFIEDTIME_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case METADATA_ID:
@@ -551,6 +650,14 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
         unsetUsername();
       } else {
         setUsername((String)value);
+      }
+      break;
+
+    case SIZE:
+      if (value == null) {
+        unsetSize();
+      } else {
+        setSize((Double)value);
       }
       break;
 
@@ -610,6 +717,22 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
       }
       break;
 
+    case CREATION_TIME:
+      if (value == null) {
+        unsetCreationTime();
+      } else {
+        setCreationTime((Long)value);
+      }
+      break;
+
+    case LAST_MODIFIED_TIME:
+      if (value == null) {
+        unsetLastModifiedTime();
+      } else {
+        setLastModifiedTime((Long)value);
+      }
+      break;
+
     }
   }
 
@@ -623,6 +746,9 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
 
     case USERNAME:
       return getUsername();
+
+    case SIZE:
+      return getSize();
 
     case SHARED_USERS:
       return getSharedUsers();
@@ -645,6 +771,12 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
     case CUSTOM_INFORMATION:
       return getCustomInformation();
 
+    case CREATION_TIME:
+      return getCreationTime();
+
+    case LAST_MODIFIED_TIME:
+      return getLastModifiedTime();
+
     }
     throw new IllegalStateException();
   }
@@ -662,6 +794,8 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
       return isSetGatewayId();
     case USERNAME:
       return isSetUsername();
+    case SIZE:
+      return isSetSize();
     case SHARED_USERS:
       return isSetSharedUsers();
     case SHARED_PUBLIC:
@@ -676,6 +810,10 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
       return isSetAssociatedEntityId();
     case CUSTOM_INFORMATION:
       return isSetCustomInformation();
+    case CREATION_TIME:
+      return isSetCreationTime();
+    case LAST_MODIFIED_TIME:
+      return isSetLastModifiedTime();
     }
     throw new IllegalStateException();
   }
@@ -717,6 +855,15 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
       if (!(this_present_username && that_present_username))
         return false;
       if (!this.username.equals(that.username))
+        return false;
+    }
+
+    boolean this_present_size = true && this.isSetSize();
+    boolean that_present_size = true && that.isSetSize();
+    if (this_present_size || that_present_size) {
+      if (!(this_present_size && that_present_size))
+        return false;
+      if (this.size != that.size)
         return false;
     }
 
@@ -783,6 +930,24 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
         return false;
     }
 
+    boolean this_present_creationTime = true && this.isSetCreationTime();
+    boolean that_present_creationTime = true && that.isSetCreationTime();
+    if (this_present_creationTime || that_present_creationTime) {
+      if (!(this_present_creationTime && that_present_creationTime))
+        return false;
+      if (this.creationTime != that.creationTime)
+        return false;
+    }
+
+    boolean this_present_lastModifiedTime = true && this.isSetLastModifiedTime();
+    boolean that_present_lastModifiedTime = true && that.isSetLastModifiedTime();
+    if (this_present_lastModifiedTime || that_present_lastModifiedTime) {
+      if (!(this_present_lastModifiedTime && that_present_lastModifiedTime))
+        return false;
+      if (this.lastModifiedTime != that.lastModifiedTime)
+        return false;
+    }
+
     return true;
   }
 
@@ -804,6 +969,11 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
     list.add(present_username);
     if (present_username)
       list.add(username);
+
+    boolean present_size = true && (isSetSize());
+    list.add(present_size);
+    if (present_size)
+      list.add(size);
 
     boolean present_sharedUsers = true && (isSetSharedUsers());
     list.add(present_sharedUsers);
@@ -839,6 +1009,16 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
     list.add(present_customInformation);
     if (present_customInformation)
       list.add(customInformation);
+
+    boolean present_creationTime = true && (isSetCreationTime());
+    list.add(present_creationTime);
+    if (present_creationTime)
+      list.add(creationTime);
+
+    boolean present_lastModifiedTime = true && (isSetLastModifiedTime());
+    list.add(present_lastModifiedTime);
+    if (present_lastModifiedTime)
+      list.add(lastModifiedTime);
 
     return list.hashCode();
   }
@@ -877,6 +1057,16 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
     }
     if (isSetUsername()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.username, other.username);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetSize()).compareTo(other.isSetSize());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetSize()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.size, other.size);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -951,6 +1141,26 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetCreationTime()).compareTo(other.isSetCreationTime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetCreationTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.creationTime, other.creationTime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetLastModifiedTime()).compareTo(other.isSetLastModifiedTime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetLastModifiedTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.lastModifiedTime, other.lastModifiedTime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -998,6 +1208,12 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
       } else {
         sb.append(this.username);
       }
+      first = false;
+    }
+    if (isSetSize()) {
+      if (!first) sb.append(", ");
+      sb.append("size:");
+      sb.append(this.size);
       first = false;
     }
     if (isSetSharedUsers()) {
@@ -1064,6 +1280,18 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
       } else {
         sb.append(this.customInformation);
       }
+      first = false;
+    }
+    if (isSetCreationTime()) {
+      if (!first) sb.append(", ");
+      sb.append("creationTime:");
+      sb.append(this.creationTime);
+      first = false;
+    }
+    if (isSetLastModifiedTime()) {
+      if (!first) sb.append(", ");
+      sb.append("lastModifiedTime:");
+      sb.append(this.lastModifiedTime);
       first = false;
     }
     sb.append(")");
@@ -1135,7 +1363,15 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // SHARED_USERS
+          case 4: // SIZE
+            if (schemeField.type == org.apache.thrift.protocol.TType.DOUBLE) {
+              struct.size = iprot.readDouble();
+              struct.setSizeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 5: // SHARED_USERS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
@@ -1153,7 +1389,7 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // SHARED_PUBLIC
+          case 6: // SHARED_PUBLIC
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.sharedPublic = iprot.readBool();
               struct.setSharedPublicIsSet(true);
@@ -1161,7 +1397,7 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // USER_FRIENDLY_NAME
+          case 7: // USER_FRIENDLY_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.userFriendlyName = iprot.readString();
               struct.setUserFriendlyNameIsSet(true);
@@ -1169,7 +1405,7 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // USER_FRIENDLY_DESCRIPTION
+          case 8: // USER_FRIENDLY_DESCRIPTION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.userFriendlyDescription = iprot.readString();
               struct.setUserFriendlyDescriptionIsSet(true);
@@ -1177,7 +1413,7 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // METADATA_TYPE
+          case 9: // METADATA_TYPE
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.metadataType = org.apache.airavata.model.data.metadata.MetadataType.findByValue(iprot.readI32());
               struct.setMetadataTypeIsSet(true);
@@ -1185,7 +1421,7 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // ASSOCIATED_ENTITY_ID
+          case 10: // ASSOCIATED_ENTITY_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.associatedEntityId = iprot.readString();
               struct.setAssociatedEntityIdIsSet(true);
@@ -1193,7 +1429,7 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // CUSTOM_INFORMATION
+          case 11: // CUSTOM_INFORMATION
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
                 org.apache.thrift.protocol.TMap _map3 = iprot.readMapBegin();
@@ -1209,6 +1445,22 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
                 iprot.readMapEnd();
               }
               struct.setCustomInformationIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 12: // CREATION_TIME
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.creationTime = iprot.readI64();
+              struct.setCreationTimeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 13: // LAST_MODIFIED_TIME
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.lastModifiedTime = iprot.readI64();
+              struct.setLastModifiedTimeIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1246,6 +1498,11 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
           oprot.writeString(struct.username);
           oprot.writeFieldEnd();
         }
+      }
+      if (struct.isSetSize()) {
+        oprot.writeFieldBegin(SIZE_FIELD_DESC);
+        oprot.writeDouble(struct.size);
+        oprot.writeFieldEnd();
       }
       if (struct.sharedUsers != null) {
         if (struct.isSetSharedUsers()) {
@@ -1309,6 +1566,16 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
           oprot.writeFieldEnd();
         }
       }
+      if (struct.isSetCreationTime()) {
+        oprot.writeFieldBegin(CREATION_TIME_FIELD_DESC);
+        oprot.writeI64(struct.creationTime);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetLastModifiedTime()) {
+        oprot.writeFieldBegin(LAST_MODIFIED_TIME_FIELD_DESC);
+        oprot.writeI64(struct.lastModifiedTime);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1336,28 +1603,37 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
       if (struct.isSetUsername()) {
         optionals.set(2);
       }
-      if (struct.isSetSharedUsers()) {
+      if (struct.isSetSize()) {
         optionals.set(3);
       }
-      if (struct.isSetSharedPublic()) {
+      if (struct.isSetSharedUsers()) {
         optionals.set(4);
       }
-      if (struct.isSetUserFriendlyName()) {
+      if (struct.isSetSharedPublic()) {
         optionals.set(5);
       }
-      if (struct.isSetUserFriendlyDescription()) {
+      if (struct.isSetUserFriendlyName()) {
         optionals.set(6);
       }
-      if (struct.isSetMetadataType()) {
+      if (struct.isSetUserFriendlyDescription()) {
         optionals.set(7);
       }
-      if (struct.isSetAssociatedEntityId()) {
+      if (struct.isSetMetadataType()) {
         optionals.set(8);
       }
-      if (struct.isSetCustomInformation()) {
+      if (struct.isSetAssociatedEntityId()) {
         optionals.set(9);
       }
-      oprot.writeBitSet(optionals, 10);
+      if (struct.isSetCustomInformation()) {
+        optionals.set(10);
+      }
+      if (struct.isSetCreationTime()) {
+        optionals.set(11);
+      }
+      if (struct.isSetLastModifiedTime()) {
+        optionals.set(12);
+      }
+      oprot.writeBitSet(optionals, 13);
       if (struct.isSetMetadataId()) {
         oprot.writeString(struct.metadataId);
       }
@@ -1366,6 +1642,9 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
       }
       if (struct.isSetUsername()) {
         oprot.writeString(struct.username);
+      }
+      if (struct.isSetSize()) {
+        oprot.writeDouble(struct.size);
       }
       if (struct.isSetSharedUsers()) {
         {
@@ -1401,12 +1680,18 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
           }
         }
       }
+      if (struct.isSetCreationTime()) {
+        oprot.writeI64(struct.creationTime);
+      }
+      if (struct.isSetLastModifiedTime()) {
+        oprot.writeI64(struct.lastModifiedTime);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, MetadataModel struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(10);
+      BitSet incoming = iprot.readBitSet(13);
       if (incoming.get(0)) {
         struct.metadataId = iprot.readString();
         struct.setMetadataIdIsSet(true);
@@ -1420,6 +1705,10 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
         struct.setUsernameIsSet(true);
       }
       if (incoming.get(3)) {
+        struct.size = iprot.readDouble();
+        struct.setSizeIsSet(true);
+      }
+      if (incoming.get(4)) {
         {
           org.apache.thrift.protocol.TList _list11 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
           struct.sharedUsers = new ArrayList<String>(_list11.size);
@@ -1432,27 +1721,27 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
         }
         struct.setSharedUsersIsSet(true);
       }
-      if (incoming.get(4)) {
+      if (incoming.get(5)) {
         struct.sharedPublic = iprot.readBool();
         struct.setSharedPublicIsSet(true);
       }
-      if (incoming.get(5)) {
+      if (incoming.get(6)) {
         struct.userFriendlyName = iprot.readString();
         struct.setUserFriendlyNameIsSet(true);
       }
-      if (incoming.get(6)) {
+      if (incoming.get(7)) {
         struct.userFriendlyDescription = iprot.readString();
         struct.setUserFriendlyDescriptionIsSet(true);
       }
-      if (incoming.get(7)) {
+      if (incoming.get(8)) {
         struct.metadataType = org.apache.airavata.model.data.metadata.MetadataType.findByValue(iprot.readI32());
         struct.setMetadataTypeIsSet(true);
       }
-      if (incoming.get(8)) {
+      if (incoming.get(9)) {
         struct.associatedEntityId = iprot.readString();
         struct.setAssociatedEntityIdIsSet(true);
       }
-      if (incoming.get(9)) {
+      if (incoming.get(10)) {
         {
           org.apache.thrift.protocol.TMap _map14 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
           struct.customInformation = new HashMap<String,String>(2*_map14.size);
@@ -1466,6 +1755,14 @@ public class MetadataModel implements org.apache.thrift.TBase<MetadataModel, Met
           }
         }
         struct.setCustomInformationIsSet(true);
+      }
+      if (incoming.get(11)) {
+        struct.creationTime = iprot.readI64();
+        struct.setCreationTimeIsSet(true);
+      }
+      if (incoming.get(12)) {
+        struct.lastModifiedTime = iprot.readI64();
+        struct.setLastModifiedTimeIsSet(true);
       }
     }
   }

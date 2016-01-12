@@ -60,6 +60,11 @@ void MetadataModel::__set_username(const std::string& val) {
 __isset.username = true;
 }
 
+void MetadataModel::__set_size(const double val) {
+  this->size = val;
+__isset.size = true;
+}
+
 void MetadataModel::__set_sharedUsers(const std::vector<std::string> & val) {
   this->sharedUsers = val;
 __isset.sharedUsers = true;
@@ -93,6 +98,16 @@ __isset.associatedEntityId = true;
 void MetadataModel::__set_customInformation(const std::map<std::string, std::string> & val) {
   this->customInformation = val;
 __isset.customInformation = true;
+}
+
+void MetadataModel::__set_creationTime(const int64_t val) {
+  this->creationTime = val;
+__isset.creationTime = true;
+}
+
+void MetadataModel::__set_lastModifiedTime(const int64_t val) {
+  this->lastModifiedTime = val;
+__isset.lastModifiedTime = true;
 }
 
 uint32_t MetadataModel::read(::apache::thrift::protocol::TProtocol* iprot) {
@@ -141,6 +156,14 @@ uint32_t MetadataModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 4:
+        if (ftype == ::apache::thrift::protocol::T_DOUBLE) {
+          xfer += iprot->readDouble(this->size);
+          this->__isset.size = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->sharedUsers.clear();
@@ -160,7 +183,7 @@ uint32_t MetadataModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 5:
+      case 6:
         if (ftype == ::apache::thrift::protocol::T_BOOL) {
           xfer += iprot->readBool(this->sharedPublic);
           this->__isset.sharedPublic = true;
@@ -168,7 +191,7 @@ uint32_t MetadataModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 6:
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->userFriendlyName);
           this->__isset.userFriendlyName = true;
@@ -176,7 +199,7 @@ uint32_t MetadataModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 7:
+      case 8:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->userFriendlyDescription);
           this->__isset.userFriendlyDescription = true;
@@ -184,7 +207,7 @@ uint32_t MetadataModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 8:
+      case 9:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast5;
           xfer += iprot->readI32(ecast5);
@@ -194,7 +217,7 @@ uint32_t MetadataModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 9:
+      case 10:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->associatedEntityId);
           this->__isset.associatedEntityId = true;
@@ -202,7 +225,7 @@ uint32_t MetadataModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 10:
+      case 11:
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->customInformation.clear();
@@ -221,6 +244,22 @@ uint32_t MetadataModel::read(::apache::thrift::protocol::TProtocol* iprot) {
             xfer += iprot->readMapEnd();
           }
           this->__isset.customInformation = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 12:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->creationTime);
+          this->__isset.creationTime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 13:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->lastModifiedTime);
+          this->__isset.lastModifiedTime = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -257,8 +296,13 @@ uint32_t MetadataModel::write(::apache::thrift::protocol::TProtocol* oprot) cons
     xfer += oprot->writeString(this->username);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.size) {
+    xfer += oprot->writeFieldBegin("size", ::apache::thrift::protocol::T_DOUBLE, 4);
+    xfer += oprot->writeDouble(this->size);
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.sharedUsers) {
-    xfer += oprot->writeFieldBegin("sharedUsers", ::apache::thrift::protocol::T_LIST, 4);
+    xfer += oprot->writeFieldBegin("sharedUsers", ::apache::thrift::protocol::T_LIST, 5);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->sharedUsers.size()));
       std::vector<std::string> ::const_iterator _iter13;
@@ -271,32 +315,32 @@ uint32_t MetadataModel::write(::apache::thrift::protocol::TProtocol* oprot) cons
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.sharedPublic) {
-    xfer += oprot->writeFieldBegin("sharedPublic", ::apache::thrift::protocol::T_BOOL, 5);
+    xfer += oprot->writeFieldBegin("sharedPublic", ::apache::thrift::protocol::T_BOOL, 6);
     xfer += oprot->writeBool(this->sharedPublic);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.userFriendlyName) {
-    xfer += oprot->writeFieldBegin("userFriendlyName", ::apache::thrift::protocol::T_STRING, 6);
+    xfer += oprot->writeFieldBegin("userFriendlyName", ::apache::thrift::protocol::T_STRING, 7);
     xfer += oprot->writeString(this->userFriendlyName);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.userFriendlyDescription) {
-    xfer += oprot->writeFieldBegin("userFriendlyDescription", ::apache::thrift::protocol::T_STRING, 7);
+    xfer += oprot->writeFieldBegin("userFriendlyDescription", ::apache::thrift::protocol::T_STRING, 8);
     xfer += oprot->writeString(this->userFriendlyDescription);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.metadataType) {
-    xfer += oprot->writeFieldBegin("metadataType", ::apache::thrift::protocol::T_I32, 8);
+    xfer += oprot->writeFieldBegin("metadataType", ::apache::thrift::protocol::T_I32, 9);
     xfer += oprot->writeI32((int32_t)this->metadataType);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.associatedEntityId) {
-    xfer += oprot->writeFieldBegin("associatedEntityId", ::apache::thrift::protocol::T_STRING, 9);
+    xfer += oprot->writeFieldBegin("associatedEntityId", ::apache::thrift::protocol::T_STRING, 10);
     xfer += oprot->writeString(this->associatedEntityId);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.customInformation) {
-    xfer += oprot->writeFieldBegin("customInformation", ::apache::thrift::protocol::T_MAP, 10);
+    xfer += oprot->writeFieldBegin("customInformation", ::apache::thrift::protocol::T_MAP, 11);
     {
       xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->customInformation.size()));
       std::map<std::string, std::string> ::const_iterator _iter14;
@@ -309,6 +353,16 @@ uint32_t MetadataModel::write(::apache::thrift::protocol::TProtocol* oprot) cons
     }
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.creationTime) {
+    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 12);
+    xfer += oprot->writeI64(this->creationTime);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.lastModifiedTime) {
+    xfer += oprot->writeFieldBegin("lastModifiedTime", ::apache::thrift::protocol::T_I64, 13);
+    xfer += oprot->writeI64(this->lastModifiedTime);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -319,6 +373,7 @@ void swap(MetadataModel &a, MetadataModel &b) {
   swap(a.metadataId, b.metadataId);
   swap(a.gatewayId, b.gatewayId);
   swap(a.username, b.username);
+  swap(a.size, b.size);
   swap(a.sharedUsers, b.sharedUsers);
   swap(a.sharedPublic, b.sharedPublic);
   swap(a.userFriendlyName, b.userFriendlyName);
@@ -326,6 +381,8 @@ void swap(MetadataModel &a, MetadataModel &b) {
   swap(a.metadataType, b.metadataType);
   swap(a.associatedEntityId, b.associatedEntityId);
   swap(a.customInformation, b.customInformation);
+  swap(a.creationTime, b.creationTime);
+  swap(a.lastModifiedTime, b.lastModifiedTime);
   swap(a.__isset, b.__isset);
 }
 
@@ -333,6 +390,7 @@ MetadataModel::MetadataModel(const MetadataModel& other15) {
   metadataId = other15.metadataId;
   gatewayId = other15.gatewayId;
   username = other15.username;
+  size = other15.size;
   sharedUsers = other15.sharedUsers;
   sharedPublic = other15.sharedPublic;
   userFriendlyName = other15.userFriendlyName;
@@ -340,12 +398,15 @@ MetadataModel::MetadataModel(const MetadataModel& other15) {
   metadataType = other15.metadataType;
   associatedEntityId = other15.associatedEntityId;
   customInformation = other15.customInformation;
+  creationTime = other15.creationTime;
+  lastModifiedTime = other15.lastModifiedTime;
   __isset = other15.__isset;
 }
 MetadataModel& MetadataModel::operator=(const MetadataModel& other16) {
   metadataId = other16.metadataId;
   gatewayId = other16.gatewayId;
   username = other16.username;
+  size = other16.size;
   sharedUsers = other16.sharedUsers;
   sharedPublic = other16.sharedPublic;
   userFriendlyName = other16.userFriendlyName;
@@ -353,6 +414,8 @@ MetadataModel& MetadataModel::operator=(const MetadataModel& other16) {
   metadataType = other16.metadataType;
   associatedEntityId = other16.associatedEntityId;
   customInformation = other16.customInformation;
+  creationTime = other16.creationTime;
+  lastModifiedTime = other16.lastModifiedTime;
   __isset = other16.__isset;
   return *this;
 }
@@ -362,6 +425,7 @@ void MetadataModel::printTo(std::ostream& out) const {
   out << "metadataId="; (__isset.metadataId ? (out << to_string(metadataId)) : (out << "<null>"));
   out << ", " << "gatewayId="; (__isset.gatewayId ? (out << to_string(gatewayId)) : (out << "<null>"));
   out << ", " << "username="; (__isset.username ? (out << to_string(username)) : (out << "<null>"));
+  out << ", " << "size="; (__isset.size ? (out << to_string(size)) : (out << "<null>"));
   out << ", " << "sharedUsers="; (__isset.sharedUsers ? (out << to_string(sharedUsers)) : (out << "<null>"));
   out << ", " << "sharedPublic="; (__isset.sharedPublic ? (out << to_string(sharedPublic)) : (out << "<null>"));
   out << ", " << "userFriendlyName="; (__isset.userFriendlyName ? (out << to_string(userFriendlyName)) : (out << "<null>"));
@@ -369,6 +433,8 @@ void MetadataModel::printTo(std::ostream& out) const {
   out << ", " << "metadataType="; (__isset.metadataType ? (out << to_string(metadataType)) : (out << "<null>"));
   out << ", " << "associatedEntityId="; (__isset.associatedEntityId ? (out << to_string(associatedEntityId)) : (out << "<null>"));
   out << ", " << "customInformation="; (__isset.customInformation ? (out << to_string(customInformation)) : (out << "<null>"));
+  out << ", " << "creationTime="; (__isset.creationTime ? (out << to_string(creationTime)) : (out << "<null>"));
+  out << ", " << "lastModifiedTime="; (__isset.lastModifiedTime ? (out << to_string(lastModifiedTime)) : (out << "<null>"));
   out << ")";
 }
 

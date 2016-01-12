@@ -22,6 +22,8 @@ package org.apache.airavata.data.manager.cpi;
 
 import org.apache.airavata.model.data.metadata.MetadataModel;
 
+import java.util.List;
+
 public interface MetadataCatalogService {
 
     /**
@@ -53,4 +55,15 @@ public interface MetadataCatalogService {
      * @throws DataManagerException
      */
     MetadataModel getMetadata(String metadataId) throws DataManagerException;
+
+
+    /**
+     * Search Metadata
+     * @param username
+     * @param gatewayId
+     * @param searchText
+     * @return
+     * @throws DataManagerException
+     */
+    List<MetadataModel> searchMetadata(String username, String gatewayId, String searchText) throws DataManagerException;
 }

@@ -74,6 +74,8 @@ class LaunchValidationException;
 
 class AiravataSystemException;
 
+class DataManagerServiceException;
+
 
 class ExperimentNotFoundException : public ::apache::thrift::TException {
  public:
@@ -579,6 +581,48 @@ class AiravataSystemException : public ::apache::thrift::TException {
 void swap(AiravataSystemException &a, AiravataSystemException &b);
 
 inline std::ostream& operator<<(std::ostream& out, const AiravataSystemException& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+
+class DataManagerServiceException : public ::apache::thrift::TException {
+ public:
+
+  DataManagerServiceException(const DataManagerServiceException&);
+  DataManagerServiceException& operator=(const DataManagerServiceException&);
+  DataManagerServiceException() : message() {
+  }
+
+  virtual ~DataManagerServiceException() throw();
+  std::string message;
+
+  void __set_message(const std::string& val);
+
+  bool operator == (const DataManagerServiceException & rhs) const
+  {
+    if (!(message == rhs.message))
+      return false;
+    return true;
+  }
+  bool operator != (const DataManagerServiceException &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const DataManagerServiceException & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+  mutable std::string thriftTExceptionMessageHolder_;
+  const char* what() const throw();
+};
+
+void swap(DataManagerServiceException &a, DataManagerServiceException &b);
+
+inline std::ostream& operator<<(std::ostream& out, const DataManagerServiceException& obj)
 {
   obj.printTo(out);
   return out;

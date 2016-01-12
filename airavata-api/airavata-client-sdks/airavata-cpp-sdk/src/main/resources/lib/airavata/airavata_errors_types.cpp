@@ -1220,4 +1220,101 @@ const char* AiravataSystemException::what() const throw() {
   }
 }
 
+
+DataManagerServiceException::~DataManagerServiceException() throw() {
+}
+
+
+void DataManagerServiceException::__set_message(const std::string& val) {
+  this->message = val;
+}
+
+uint32_t DataManagerServiceException::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_message = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->message);
+          isset_message = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_message)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t DataManagerServiceException::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("DataManagerServiceException");
+
+  xfer += oprot->writeFieldBegin("message", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->message);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(DataManagerServiceException &a, DataManagerServiceException &b) {
+  using ::std::swap;
+  swap(a.message, b.message);
+}
+
+DataManagerServiceException::DataManagerServiceException(const DataManagerServiceException& other30) : TException() {
+  message = other30.message;
+}
+DataManagerServiceException& DataManagerServiceException::operator=(const DataManagerServiceException& other31) {
+  message = other31.message;
+  return *this;
+}
+void DataManagerServiceException::printTo(std::ostream& out) const {
+  using ::apache::thrift::to_string;
+  out << "DataManagerServiceException(";
+  out << "message=" << to_string(message);
+  out << ")";
+}
+
+const char* DataManagerServiceException::what() const throw() {
+  try {
+    std::stringstream ss;
+    ss << "TException - service has thrown: " << *this;
+    this->thriftTExceptionMessageHolder_ = ss.str();
+    return this->thriftTExceptionMessageHolder_.c_str();
+  } catch (const std::exception&) {
+    return "TException - service has thrown: DataManagerServiceException";
+  }
+}
+
 }}}} // namespace

@@ -65,7 +65,8 @@ public abstract class AbstractThriftDeserializer<E extends TFieldIdEnum, T exten
                  * number types, which in turn will make Thrift think the field
                  * has been set. Also we ignore the MongoDB specific _id field
                  */
-                if(currentField.getValue().getNodeType() != JsonNodeType.NULL) {
+                if(!currentField.getKey().equalsIgnoreCase("_id")
+                        && currentField.getValue().getNodeType() != JsonNodeType.NULL) {
                     final E field = getField(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_UNDERSCORE, currentField.getKey()));
                     final JsonParser parser = currentField.getValue().traverse();
                     parser.setCodec(mapper);

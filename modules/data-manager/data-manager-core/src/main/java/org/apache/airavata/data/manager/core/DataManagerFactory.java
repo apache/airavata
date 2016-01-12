@@ -25,10 +25,10 @@ import org.apache.airavata.data.manager.cpi.DataManagerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FileManagerFactory {
-    private final static Logger logger = LoggerFactory.getLogger(FileManagerFactory.class);
+public class DataManagerFactory {
+    private final static Logger logger = LoggerFactory.getLogger(DataManagerFactory.class);
 
-    public static DataManager getFileManager() throws DataManagerException {
-        return new FileManagerImpl();
+    public static DataManager getDataManager() throws DataManagerException {
+        return new DataManagerImpl();
     }
 }

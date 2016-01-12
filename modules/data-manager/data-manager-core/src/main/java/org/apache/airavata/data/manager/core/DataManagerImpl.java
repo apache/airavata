@@ -20,16 +20,13 @@
 */
 package org.apache.airavata.data.manager.core;
 
-import org.apache.airavata.data.manager.cpi.DataManager;
-import org.apache.airavata.data.manager.cpi.DataManagerException;
-import org.apache.airavata.data.manager.cpi.FileTransferService;
-import org.apache.airavata.data.manager.cpi.ReplicaCatalogService;
+import org.apache.airavata.data.manager.cpi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class FileManagerImpl implements DataManager {
-    private final static Logger logger = LoggerFactory.getLogger(FileManagerImpl.class);
+public class DataManagerImpl implements DataManager {
+    private final static Logger logger = LoggerFactory.getLogger(DataManagerImpl.class);
 
     /**
      * Return file transfer service instance
@@ -67,9 +64,11 @@ public class FileManagerImpl implements DataManager {
      * @return
      */
     @Override
+
+
     public MetadataCatalogService getMetadataCatalogService()  throws DataManagerException {
         try{
-            return new MetadataCatalogServiceImpl();
+            return  new MetadataCatalogServiceImpl();
         }catch (Exception e){
             logger.error(e.getMessage(), e);
             throw new DataManagerException(e);

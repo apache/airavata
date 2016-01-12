@@ -169,4 +169,8 @@ exception AiravataSystemException {
   2:  optional  string message,
 }
 
+exception DataManagerServiceException {
+  1:  required string message
+}
+
 

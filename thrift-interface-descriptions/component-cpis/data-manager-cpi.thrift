@@ -25,8 +25,10 @@
 
 include "../data-models/data-manager-models/metadata_models.thrift"
 include "../data-models/data-manager-models/replica_models.thrift"
+include "../airavata-apis/airavata_errors.thrift"
 
 namespace java org.apache.airavata.data.manager.cpi
+namespace php Airavata.Data.Manager.Cpi
 
 const string DM_CPI_VERSION = "0.16.0"
 
@@ -35,4 +37,9 @@ service DataManagerService {
   /** Query DM server to fetch the CPI version */
   string getDMServiceVersion(),
 
+  /**
+   * Query the DM server to fetch matching metadata models
+  **/
+  list<metadata_models.MetadataModel> searchMetadata(1: string username,2: string gatewayId,3: string searchText)
+      throws(1: airavata_errors.DataManagerServiceException dme)
 }

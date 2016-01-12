@@ -22,14 +22,13 @@
  */
 package org.apache.airavata.data.manager.cpi;
 
+import org.apache.airavata.model.error.DataManagerServiceException;
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
 import org.apache.thrift.scheme.StandardScheme;
 
 import org.apache.thrift.scheme.TupleScheme;
 import org.apache.thrift.protocol.TTupleProtocol;
-import org.apache.thrift.protocol.TProtocolException;
-import org.apache.thrift.EncodingUtils;
 import org.apache.thrift.TException;
 import org.apache.thrift.async.AsyncMethodCallback;
 import org.apache.thrift.server.AbstractNonblockingServer.*;
@@ -38,13 +37,9 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumMap;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 import javax.annotation.Generated;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,11 +55,23 @@ public class DataManagerService {
      */
     public String getDMServiceVersion() throws org.apache.thrift.TException;
 
+    /**
+     *  * Query the DM server to fetch matching metadata models
+     * *
+     * 
+     * @param username
+     * @param gatewayId
+     * @param searchText
+     */
+    public List<org.apache.airavata.model.data.metadata.MetadataModel> searchMetadata(String username, String gatewayId, String searchText) throws DataManagerServiceException, org.apache.thrift.TException;
+
   }
 
   public interface AsyncIface {
 
     public void getDMServiceVersion(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void searchMetadata(String username, String gatewayId, String searchText, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -108,6 +115,34 @@ public class DataManagerService {
         return result.success;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getDMServiceVersion failed: unknown result");
+    }
+
+    public List<org.apache.airavata.model.data.metadata.MetadataModel> searchMetadata(String username, String gatewayId, String searchText) throws DataManagerServiceException, org.apache.thrift.TException
+    {
+      send_searchMetadata(username, gatewayId, searchText);
+      return recv_searchMetadata();
+    }
+
+    public void send_searchMetadata(String username, String gatewayId, String searchText) throws org.apache.thrift.TException
+    {
+      searchMetadata_args args = new searchMetadata_args();
+      args.setUsername(username);
+      args.setGatewayId(gatewayId);
+      args.setSearchText(searchText);
+      sendBase("searchMetadata", args);
+    }
+
+    public List<org.apache.airavata.model.data.metadata.MetadataModel> recv_searchMetadata() throws DataManagerServiceException, org.apache.thrift.TException
+    {
+      searchMetadata_result result = new searchMetadata_result();
+      receiveBase(result, "searchMetadata");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.dme != null) {
+        throw result.dme;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "searchMetadata failed: unknown result");
     }
 
   }
@@ -157,6 +192,44 @@ public class DataManagerService {
       }
     }
 
+    public void searchMetadata(String username, String gatewayId, String searchText, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      searchMetadata_call method_call = new searchMetadata_call(username, gatewayId, searchText, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class searchMetadata_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String username;
+      private String gatewayId;
+      private String searchText;
+      public searchMetadata_call(String username, String gatewayId, String searchText, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.username = username;
+        this.gatewayId = gatewayId;
+        this.searchText = searchText;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("searchMetadata", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        searchMetadata_args args = new searchMetadata_args();
+        args.setUsername(username);
+        args.setGatewayId(gatewayId);
+        args.setSearchText(searchText);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public List<org.apache.airavata.model.data.metadata.MetadataModel> getResult() throws DataManagerServiceException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_searchMetadata();
+      }
+    }
+
   }
 
   public static class Processor<I extends Iface> extends org.apache.thrift.TBaseProcessor<I> implements org.apache.thrift.TProcessor {
@@ -171,6 +244,7 @@ public class DataManagerService {
 
     private static <I extends Iface> Map<String,  org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> getProcessMap(Map<String,  org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> processMap) {
       processMap.put("getDMServiceVersion", new getDMServiceVersion());
+      processMap.put("searchMetadata", new searchMetadata());
       return processMap;
     }
 
@@ -194,6 +268,30 @@ public class DataManagerService {
       }
     }
 
+    public static class searchMetadata<I extends Iface> extends org.apache.thrift.ProcessFunction<I, searchMetadata_args> {
+      public searchMetadata() {
+        super("searchMetadata");
+      }
+
+      public searchMetadata_args getEmptyArgsInstance() {
+        return new searchMetadata_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public searchMetadata_result getResult(I iface, searchMetadata_args args) throws org.apache.thrift.TException {
+        searchMetadata_result result = new searchMetadata_result();
+        try {
+          result.success = iface.searchMetadata(args.username, args.gatewayId, args.searchText);
+        } catch (DataManagerServiceException dme) {
+          result.dme = dme;
+        }
+        return result;
+      }
+    }
+
   }
 
   public static class AsyncProcessor<I extends AsyncIface> extends org.apache.thrift.TBaseAsyncProcessor<I> {
@@ -208,6 +306,7 @@ public class DataManagerService {
 
     private static <I extends AsyncIface> Map<String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase,?>> getProcessMap(Map<String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase, ?>> processMap) {
       processMap.put("getDMServiceVersion", new getDMServiceVersion());
+      processMap.put("searchMetadata", new searchMetadata());
       return processMap;
     }
 
@@ -259,6 +358,63 @@ public class DataManagerService {
 
       public void start(I iface, getDMServiceVersion_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
         iface.getDMServiceVersion(resultHandler);
+      }
+    }
+
+    public static class searchMetadata<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, searchMetadata_args, List<org.apache.airavata.model.data.metadata.MetadataModel>> {
+      public searchMetadata() {
+        super("searchMetadata");
+      }
+
+      public searchMetadata_args getEmptyArgsInstance() {
+        return new searchMetadata_args();
+      }
+
+      public AsyncMethodCallback<List<org.apache.airavata.model.data.metadata.MetadataModel>> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<List<org.apache.airavata.model.data.metadata.MetadataModel>>() { 
+          public void onComplete(List<org.apache.airavata.model.data.metadata.MetadataModel> o) {
+            searchMetadata_result result = new searchMetadata_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            searchMetadata_result result = new searchMetadata_result();
+            if (e instanceof DataManagerServiceException) {
+                        result.dme = (DataManagerServiceException) e;
+                        result.setDmeIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, searchMetadata_args args, org.apache.thrift.async.AsyncMethodCallback<List<org.apache.airavata.model.data.metadata.MetadataModel>> resultHandler) throws TException {
+        iface.searchMetadata(args.username, args.gatewayId, args.searchText,resultHandler);
       }
     }
 
@@ -867,6 +1023,1099 @@ public class DataManagerService {
         if (incoming.get(0)) {
           struct.success = iprot.readString();
           struct.setSuccessIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class searchMetadata_args implements org.apache.thrift.TBase<searchMetadata_args, searchMetadata_args._Fields>, java.io.Serializable, Cloneable, Comparable<searchMetadata_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("searchMetadata_args");
+
+    private static final org.apache.thrift.protocol.TField USERNAME_FIELD_DESC = new org.apache.thrift.protocol.TField("username", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField SEARCH_TEXT_FIELD_DESC = new org.apache.thrift.protocol.TField("searchText", org.apache.thrift.protocol.TType.STRING, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new searchMetadata_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new searchMetadata_argsTupleSchemeFactory());
+    }
+
+    public String username; // required
+    public String gatewayId; // required
+    public String searchText; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      USERNAME((short)1, "username"),
+      GATEWAY_ID((short)2, "gatewayId"),
+      SEARCH_TEXT((short)3, "searchText");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // USERNAME
+            return USERNAME;
+          case 2: // GATEWAY_ID
+            return GATEWAY_ID;
+          case 3: // SEARCH_TEXT
+            return SEARCH_TEXT;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.USERNAME, new org.apache.thrift.meta_data.FieldMetaData("username", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.SEARCH_TEXT, new org.apache.thrift.meta_data.FieldMetaData("searchText", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(searchMetadata_args.class, metaDataMap);
+    }
+
+    public searchMetadata_args() {
+    }
+
+    public searchMetadata_args(
+      String username,
+      String gatewayId,
+      String searchText)
+    {
+      this();
+      this.username = username;
+      this.gatewayId = gatewayId;
+      this.searchText = searchText;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public searchMetadata_args(searchMetadata_args other) {
+      if (other.isSetUsername()) {
+        this.username = other.username;
+      }
+      if (other.isSetGatewayId()) {
+        this.gatewayId = other.gatewayId;
+      }
+      if (other.isSetSearchText()) {
+        this.searchText = other.searchText;
+      }
+    }
+
+    public searchMetadata_args deepCopy() {
+      return new searchMetadata_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.username = null;
+      this.gatewayId = null;
+      this.searchText = null;
+    }
+
+    public String getUsername() {
+      return this.username;
+    }
+
+    public searchMetadata_args setUsername(String username) {
+      this.username = username;
+      return this;
+    }
+
+    public void unsetUsername() {
+      this.username = null;
+    }
+
+    /** Returns true if field username is set (has been assigned a value) and false otherwise */
+    public boolean isSetUsername() {
+      return this.username != null;
+    }
+
+    public void setUsernameIsSet(boolean value) {
+      if (!value) {
+        this.username = null;
+      }
+    }
+
+    public String getGatewayId() {
+      return this.gatewayId;
+    }
+
+    public searchMetadata_args setGatewayId(String gatewayId) {
+      this.gatewayId = gatewayId;
+      return this;
+    }
+
+    public void unsetGatewayId() {
+      this.gatewayId = null;
+    }
+
+    /** Returns true if field gatewayId is set (has been assigned a value) and false otherwise */
+    public boolean isSetGatewayId() {
+      return this.gatewayId != null;
+    }
+
+    public void setGatewayIdIsSet(boolean value) {
+      if (!value) {
+        this.gatewayId = null;
+      }
+    }
+
+    public String getSearchText() {
+      return this.searchText;
+    }
+
+    public searchMetadata_args setSearchText(String searchText) {
+      this.searchText = searchText;
+      return this;
+    }
+
+    public void unsetSearchText() {
+      this.searchText = null;
+    }
+
+    /** Returns true if field searchText is set (has been assigned a value) and false otherwise */
+    public boolean isSetSearchText() {
+      return this.searchText != null;
+    }
+
+    public void setSearchTextIsSet(boolean value) {
+      if (!value) {
+        this.searchText = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case USERNAME:
+        if (value == null) {
+          unsetUsername();
+        } else {
+          setUsername((String)value);
+        }
+        break;
+
+      case GATEWAY_ID:
+        if (value == null) {
+          unsetGatewayId();
+        } else {
+          setGatewayId((String)value);
+        }
+        break;
+
+      case SEARCH_TEXT:
+        if (value == null) {
+          unsetSearchText();
+        } else {
+          setSearchText((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case USERNAME:
+        return getUsername();
+
+      case GATEWAY_ID:
+        return getGatewayId();
+
+      case SEARCH_TEXT:
+        return getSearchText();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case USERNAME:
+        return isSetUsername();
+      case GATEWAY_ID:
+        return isSetGatewayId();
+      case SEARCH_TEXT:
+        return isSetSearchText();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof searchMetadata_args)
+        return this.equals((searchMetadata_args)that);
+      return false;
+    }
+
+    public boolean equals(searchMetadata_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_username = true && this.isSetUsername();
+      boolean that_present_username = true && that.isSetUsername();
+      if (this_present_username || that_present_username) {
+        if (!(this_present_username && that_present_username))
+          return false;
+        if (!this.username.equals(that.username))
+          return false;
+      }
+
+      boolean this_present_gatewayId = true && this.isSetGatewayId();
+      boolean that_present_gatewayId = true && that.isSetGatewayId();
+      if (this_present_gatewayId || that_present_gatewayId) {
+        if (!(this_present_gatewayId && that_present_gatewayId))
+          return false;
+        if (!this.gatewayId.equals(that.gatewayId))
+          return false;
+      }
+
+      boolean this_present_searchText = true && this.isSetSearchText();
+      boolean that_present_searchText = true && that.isSetSearchText();
+      if (this_present_searchText || that_present_searchText) {
+        if (!(this_present_searchText && that_present_searchText))
+          return false;
+        if (!this.searchText.equals(that.searchText))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      List<Object> list = new ArrayList<Object>();
+
+      boolean present_username = true && (isSetUsername());
+      list.add(present_username);
+      if (present_username)
+        list.add(username);
+
+      boolean present_gatewayId = true && (isSetGatewayId());
+      list.add(present_gatewayId);
+      if (present_gatewayId)
+        list.add(gatewayId);
+
+      boolean present_searchText = true && (isSetSearchText());
+      list.add(present_searchText);
+      if (present_searchText)
+        list.add(searchText);
+
+      return list.hashCode();
+    }
+
+    @Override
+    public int compareTo(searchMetadata_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetUsername()).compareTo(other.isSetUsername());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUsername()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.username, other.username);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetGatewayId()).compareTo(other.isSetGatewayId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetGatewayId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetSearchText()).compareTo(other.isSetSearchText());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSearchText()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.searchText, other.searchText);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("searchMetadata_args(");
+      boolean first = true;
+
+      sb.append("username:");
+      if (this.username == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.username);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("gatewayId:");
+      if (this.gatewayId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.gatewayId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("searchText:");
+      if (this.searchText == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.searchText);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class searchMetadata_argsStandardSchemeFactory implements SchemeFactory {
+      public searchMetadata_argsStandardScheme getScheme() {
+        return new searchMetadata_argsStandardScheme();
+      }
+    }
+
+    private static class searchMetadata_argsStandardScheme extends StandardScheme<searchMetadata_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, searchMetadata_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // USERNAME
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.username = iprot.readString();
+                struct.setUsernameIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // GATEWAY_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.gatewayId = iprot.readString();
+                struct.setGatewayIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // SEARCH_TEXT
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.searchText = iprot.readString();
+                struct.setSearchTextIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, searchMetadata_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.username != null) {
+          oprot.writeFieldBegin(USERNAME_FIELD_DESC);
+          oprot.writeString(struct.username);
+          oprot.writeFieldEnd();
+        }
+        if (struct.gatewayId != null) {
+          oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
+          oprot.writeString(struct.gatewayId);
+          oprot.writeFieldEnd();
+        }
+        if (struct.searchText != null) {
+          oprot.writeFieldBegin(SEARCH_TEXT_FIELD_DESC);
+          oprot.writeString(struct.searchText);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class searchMetadata_argsTupleSchemeFactory implements SchemeFactory {
+      public searchMetadata_argsTupleScheme getScheme() {
+        return new searchMetadata_argsTupleScheme();
+      }
+    }
+
+    private static class searchMetadata_argsTupleScheme extends TupleScheme<searchMetadata_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, searchMetadata_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetUsername()) {
+          optionals.set(0);
+        }
+        if (struct.isSetGatewayId()) {
+          optionals.set(1);
+        }
+        if (struct.isSetSearchText()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetUsername()) {
+          oprot.writeString(struct.username);
+        }
+        if (struct.isSetGatewayId()) {
+          oprot.writeString(struct.gatewayId);
+        }
+        if (struct.isSetSearchText()) {
+          oprot.writeString(struct.searchText);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, searchMetadata_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(3);
+        if (incoming.get(0)) {
+          struct.username = iprot.readString();
+          struct.setUsernameIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.gatewayId = iprot.readString();
+          struct.setGatewayIdIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.searchText = iprot.readString();
+          struct.setSearchTextIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class searchMetadata_result implements org.apache.thrift.TBase<searchMetadata_result, searchMetadata_result._Fields>, java.io.Serializable, Cloneable, Comparable<searchMetadata_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("searchMetadata_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.LIST, (short)0);
+    private static final org.apache.thrift.protocol.TField DME_FIELD_DESC = new org.apache.thrift.protocol.TField("dme", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new searchMetadata_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new searchMetadata_resultTupleSchemeFactory());
+    }
+
+    public List<org.apache.airavata.model.data.metadata.MetadataModel> success; // required
+    public DataManagerServiceException dme; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      DME((short)1, "dme");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // DME
+            return DME;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.data.metadata.MetadataModel.class))));
+      tmpMap.put(_Fields.DME, new org.apache.thrift.meta_data.FieldMetaData("dme", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(searchMetadata_result.class, metaDataMap);
+    }
+
+    public searchMetadata_result() {
+    }
+
+    public searchMetadata_result(
+      List<org.apache.airavata.model.data.metadata.MetadataModel> success,
+      DataManagerServiceException dme)
+    {
+      this();
+      this.success = success;
+      this.dme = dme;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public searchMetadata_result(searchMetadata_result other) {
+      if (other.isSetSuccess()) {
+        List<org.apache.airavata.model.data.metadata.MetadataModel> __this__success = new ArrayList<org.apache.airavata.model.data.metadata.MetadataModel>(other.success.size());
+        for (org.apache.airavata.model.data.metadata.MetadataModel other_element : other.success) {
+          __this__success.add(new org.apache.airavata.model.data.metadata.MetadataModel(other_element));
+        }
+        this.success = __this__success;
+      }
+      if (other.isSetDme()) {
+        this.dme = new DataManagerServiceException(other.dme);
+      }
+    }
+
+    public searchMetadata_result deepCopy() {
+      return new searchMetadata_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.dme = null;
+    }
+
+    public int getSuccessSize() {
+      return (this.success == null) ? 0 : this.success.size();
+    }
+
+    public java.util.Iterator<org.apache.airavata.model.data.metadata.MetadataModel> getSuccessIterator() {
+      return (this.success == null) ? null : this.success.iterator();
+    }
+
+    public void addToSuccess(org.apache.airavata.model.data.metadata.MetadataModel elem) {
+      if (this.success == null) {
+        this.success = new ArrayList<org.apache.airavata.model.data.metadata.MetadataModel>();
+      }
+      this.success.add(elem);
+    }
+
+    public List<org.apache.airavata.model.data.metadata.MetadataModel> getSuccess() {
+      return this.success;
+    }
+
+    public searchMetadata_result setSuccess(List<org.apache.airavata.model.data.metadata.MetadataModel> success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public DataManagerServiceException getDme() {
+      return this.dme;
+    }
+
+    public searchMetadata_result setDme(DataManagerServiceException dme) {
+      this.dme = dme;
+      return this;
+    }
+
+    public void unsetDme() {
+      this.dme = null;
+    }
+
+    /** Returns true if field dme is set (has been assigned a value) and false otherwise */
+    public boolean isSetDme() {
+      return this.dme != null;
+    }
+
+    public void setDmeIsSet(boolean value) {
+      if (!value) {
+        this.dme = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((List<org.apache.airavata.model.data.metadata.MetadataModel>)value);
+        }
+        break;
+
+      case DME:
+        if (value == null) {
+          unsetDme();
+        } else {
+          setDme((DataManagerServiceException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case DME:
+        return getDme();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case DME:
+        return isSetDme();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof searchMetadata_result)
+        return this.equals((searchMetadata_result)that);
+      return false;
+    }
+
+    public boolean equals(searchMetadata_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_dme = true && this.isSetDme();
+      boolean that_present_dme = true && that.isSetDme();
+      if (this_present_dme || that_present_dme) {
+        if (!(this_present_dme && that_present_dme))
+          return false;
+        if (!this.dme.equals(that.dme))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      List<Object> list = new ArrayList<Object>();
+
+      boolean present_success = true && (isSetSuccess());
+      list.add(present_success);
+      if (present_success)
+        list.add(success);
+
+      boolean present_dme = true && (isSetDme());
+      list.add(present_dme);
+      if (present_dme)
+        list.add(dme);
+
+      return list.hashCode();
+    }
+
+    @Override
+    public int compareTo(searchMetadata_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetDme()).compareTo(other.isSetDme());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetDme()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dme, other.dme);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("searchMetadata_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("dme:");
+      if (this.dme == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.dme);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class searchMetadata_resultStandardSchemeFactory implements SchemeFactory {
+      public searchMetadata_resultStandardScheme getScheme() {
+        return new searchMetadata_resultStandardScheme();
+      }
+    }
+
+    private static class searchMetadata_resultStandardScheme extends StandardScheme<searchMetadata_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, searchMetadata_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+                {
+                  org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
+                  struct.success = new ArrayList<org.apache.airavata.model.data.metadata.MetadataModel>(_list0.size);
+                  org.apache.airavata.model.data.metadata.MetadataModel _elem1;
+                  for (int _i2 = 0; _i2 < _list0.size; ++_i2)
+                  {
+                    _elem1 = new org.apache.airavata.model.data.metadata.MetadataModel();
+                    _elem1.read(iprot);
+                    struct.success.add(_elem1);
+                  }
+                  iprot.readListEnd();
+                }
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // DME
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.dme = new DataManagerServiceException();
+                struct.dme.read(iprot);
+                struct.setDmeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, searchMetadata_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
+            for (org.apache.airavata.model.data.metadata.MetadataModel _iter3 : struct.success)
+            {
+              _iter3.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+        if (struct.dme != null) {
+          oprot.writeFieldBegin(DME_FIELD_DESC);
+          struct.dme.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class searchMetadata_resultTupleSchemeFactory implements SchemeFactory {
+      public searchMetadata_resultTupleScheme getScheme() {
+        return new searchMetadata_resultTupleScheme();
+      }
+    }
+
+    private static class searchMetadata_resultTupleScheme extends TupleScheme<searchMetadata_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, searchMetadata_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetDme()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          {
+            oprot.writeI32(struct.success.size());
+            for (org.apache.airavata.model.data.metadata.MetadataModel _iter4 : struct.success)
+            {
+              _iter4.write(oprot);
+            }
+          }
+        }
+        if (struct.isSetDme()) {
+          struct.dme.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, searchMetadata_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          {
+            org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<org.apache.airavata.model.data.metadata.MetadataModel>(_list5.size);
+            org.apache.airavata.model.data.metadata.MetadataModel _elem6;
+            for (int _i7 = 0; _i7 < _list5.size; ++_i7)
+            {
+              _elem6 = new org.apache.airavata.model.data.metadata.MetadataModel();
+              _elem6.read(iprot);
+              struct.success.add(_elem6);
+            }
+          }
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.dme = new DataManagerServiceException();
+          struct.dme.read(iprot);
+          struct.setDmeIsSet(true);
         }
       }
     }

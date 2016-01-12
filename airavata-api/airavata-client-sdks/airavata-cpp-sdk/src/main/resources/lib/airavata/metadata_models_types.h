@@ -48,10 +48,11 @@ extern const std::map<int, const char*> _MetadataType_VALUES_TO_NAMES;
 class MetadataModel;
 
 typedef struct _MetadataModel__isset {
-  _MetadataModel__isset() : metadataId(false), gatewayId(false), username(false), sharedUsers(false), sharedPublic(false), userFriendlyName(false), userFriendlyDescription(false), metadataType(false), associatedEntityId(false), customInformation(false) {}
+  _MetadataModel__isset() : metadataId(false), gatewayId(false), username(false), size(false), sharedUsers(false), sharedPublic(false), userFriendlyName(false), userFriendlyDescription(false), metadataType(false), associatedEntityId(false), customInformation(false), creationTime(false), lastModifiedTime(false) {}
   bool metadataId :1;
   bool gatewayId :1;
   bool username :1;
+  bool size :1;
   bool sharedUsers :1;
   bool sharedPublic :1;
   bool userFriendlyName :1;
@@ -59,6 +60,8 @@ typedef struct _MetadataModel__isset {
   bool metadataType :1;
   bool associatedEntityId :1;
   bool customInformation :1;
+  bool creationTime :1;
+  bool lastModifiedTime :1;
 } _MetadataModel__isset;
 
 class MetadataModel {
@@ -66,13 +69,14 @@ class MetadataModel {
 
   MetadataModel(const MetadataModel&);
   MetadataModel& operator=(const MetadataModel&);
-  MetadataModel() : metadataId(), gatewayId(), username(), sharedPublic(0), userFriendlyName(), userFriendlyDescription(), metadataType((MetadataType::type)0), associatedEntityId() {
+  MetadataModel() : metadataId(), gatewayId(), username(), size(0), sharedPublic(0), userFriendlyName(), userFriendlyDescription(), metadataType((MetadataType::type)0), associatedEntityId(), creationTime(0), lastModifiedTime(0) {
   }
 
   virtual ~MetadataModel() throw();
   std::string metadataId;
   std::string gatewayId;
   std::string username;
+  double size;
   std::vector<std::string>  sharedUsers;
   bool sharedPublic;
   std::string userFriendlyName;
@@ -80,6 +84,8 @@ class MetadataModel {
   MetadataType::type metadataType;
   std::string associatedEntityId;
   std::map<std::string, std::string>  customInformation;
+  int64_t creationTime;
+  int64_t lastModifiedTime;
 
   _MetadataModel__isset __isset;
 
@@ -88,6 +94,8 @@ class MetadataModel {
   void __set_gatewayId(const std::string& val);
 
   void __set_username(const std::string& val);
+
+  void __set_size(const double val);
 
   void __set_sharedUsers(const std::vector<std::string> & val);
 
@@ -103,6 +111,10 @@ class MetadataModel {
 
   void __set_customInformation(const std::map<std::string, std::string> & val);
 
+  void __set_creationTime(const int64_t val);
+
+  void __set_lastModifiedTime(const int64_t val);
+
   bool operator == (const MetadataModel & rhs) const
   {
     if (__isset.metadataId != rhs.__isset.metadataId)
@@ -116,6 +128,10 @@ class MetadataModel {
     if (__isset.username != rhs.__isset.username)
       return false;
     else if (__isset.username && !(username == rhs.username))
+      return false;
+    if (__isset.size != rhs.__isset.size)
+      return false;
+    else if (__isset.size && !(size == rhs.size))
       return false;
     if (__isset.sharedUsers != rhs.__isset.sharedUsers)
       return false;
@@ -144,6 +160,14 @@ class MetadataModel {
     if (__isset.customInformation != rhs.__isset.customInformation)
       return false;
     else if (__isset.customInformation && !(customInformation == rhs.customInformation))
+      return false;
+    if (__isset.creationTime != rhs.__isset.creationTime)
+      return false;
+    else if (__isset.creationTime && !(creationTime == rhs.creationTime))
+      return false;
+    if (__isset.lastModifiedTime != rhs.__isset.lastModifiedTime)
+      return false;
+    else if (__isset.lastModifiedTime && !(lastModifiedTime == rhs.lastModifiedTime))
       return false;
     return true;
   }

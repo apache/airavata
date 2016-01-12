@@ -37,6 +37,7 @@ class MetadataModel:
    - metadataId
    - gatewayId
    - username
+   - size
    - sharedUsers
    - sharedPublic
    - userFriendlyName
@@ -44,6 +45,8 @@ class MetadataModel:
    - metadataType
    - associatedEntityId
    - customInformation
+   - creationTime
+   - lastModifiedTime
   """
 
   thrift_spec = (
@@ -51,19 +54,23 @@ class MetadataModel:
     (1, TType.STRING, 'metadataId', None, None, ), # 1
     (2, TType.STRING, 'gatewayId', None, None, ), # 2
     (3, TType.STRING, 'username', None, None, ), # 3
-    (4, TType.LIST, 'sharedUsers', (TType.STRING,None), None, ), # 4
-    (5, TType.BOOL, 'sharedPublic', None, None, ), # 5
-    (6, TType.STRING, 'userFriendlyName', None, None, ), # 6
-    (7, TType.STRING, 'userFriendlyDescription', None, None, ), # 7
-    (8, TType.I32, 'metadataType', None, None, ), # 8
-    (9, TType.STRING, 'associatedEntityId', None, None, ), # 9
-    (10, TType.MAP, 'customInformation', (TType.STRING,None,TType.STRING,None), None, ), # 10
+    (4, TType.DOUBLE, 'size', None, None, ), # 4
+    (5, TType.LIST, 'sharedUsers', (TType.STRING,None), None, ), # 5
+    (6, TType.BOOL, 'sharedPublic', None, None, ), # 6
+    (7, TType.STRING, 'userFriendlyName', None, None, ), # 7
+    (8, TType.STRING, 'userFriendlyDescription', None, None, ), # 8
+    (9, TType.I32, 'metadataType', None, None, ), # 9
+    (10, TType.STRING, 'associatedEntityId', None, None, ), # 10
+    (11, TType.MAP, 'customInformation', (TType.STRING,None,TType.STRING,None), None, ), # 11
+    (12, TType.I64, 'creationTime', None, None, ), # 12
+    (13, TType.I64, 'lastModifiedTime', None, None, ), # 13
   )
 
-  def __init__(self, metadataId=None, gatewayId=None, username=None, sharedUsers=None, sharedPublic=None, userFriendlyName=None, userFriendlyDescription=None, metadataType=None, associatedEntityId=None, customInformation=None,):
+  def __init__(self, metadataId=None, gatewayId=None, username=None, size=None, sharedUsers=None, sharedPublic=None, userFriendlyName=None, userFriendlyDescription=None, metadataType=None, associatedEntityId=None, customInformation=None, creationTime=None, lastModifiedTime=None,):
     self.metadataId = metadataId
     self.gatewayId = gatewayId
     self.username = username
+    self.size = size
     self.sharedUsers = sharedUsers
     self.sharedPublic = sharedPublic
     self.userFriendlyName = userFriendlyName
@@ -71,6 +78,8 @@ class MetadataModel:
     self.metadataType = metadataType
     self.associatedEntityId = associatedEntityId
     self.customInformation = customInformation
+    self.creationTime = creationTime
+    self.lastModifiedTime = lastModifiedTime
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -97,6 +106,11 @@ class MetadataModel:
         else:
           iprot.skip(ftype)
       elif fid == 4:
+        if ftype == TType.DOUBLE:
+          self.size = iprot.readDouble()
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
         if ftype == TType.LIST:
           self.sharedUsers = []
           (_etype3, _size0) = iprot.readListBegin()
@@ -106,32 +120,32 @@ class MetadataModel:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 5:
+      elif fid == 6:
         if ftype == TType.BOOL:
           self.sharedPublic = iprot.readBool()
         else:
           iprot.skip(ftype)
-      elif fid == 6:
+      elif fid == 7:
         if ftype == TType.STRING:
           self.userFriendlyName = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 7:
+      elif fid == 8:
         if ftype == TType.STRING:
           self.userFriendlyDescription = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 8:
+      elif fid == 9:
         if ftype == TType.I32:
           self.metadataType = iprot.readI32()
         else:
           iprot.skip(ftype)
-      elif fid == 9:
+      elif fid == 10:
         if ftype == TType.STRING:
           self.associatedEntityId = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 10:
+      elif fid == 11:
         if ftype == TType.MAP:
           self.customInformation = {}
           (_ktype7, _vtype8, _size6 ) = iprot.readMapBegin()
@@ -140,6 +154,16 @@ class MetadataModel:
             _val12 = iprot.readString()
             self.customInformation[_key11] = _val12
           iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 12:
+        if ftype == TType.I64:
+          self.creationTime = iprot.readI64()
+        else:
+          iprot.skip(ftype)
+      elif fid == 13:
+        if ftype == TType.I64:
+          self.lastModifiedTime = iprot.readI64()
         else:
           iprot.skip(ftype)
       else:
@@ -164,40 +188,52 @@ class MetadataModel:
       oprot.writeFieldBegin('username', TType.STRING, 3)
       oprot.writeString(self.username)
       oprot.writeFieldEnd()
+    if self.size is not None:
+      oprot.writeFieldBegin('size', TType.DOUBLE, 4)
+      oprot.writeDouble(self.size)
+      oprot.writeFieldEnd()
     if self.sharedUsers is not None:
-      oprot.writeFieldBegin('sharedUsers', TType.LIST, 4)
+      oprot.writeFieldBegin('sharedUsers', TType.LIST, 5)
       oprot.writeListBegin(TType.STRING, len(self.sharedUsers))
       for iter13 in self.sharedUsers:
         oprot.writeString(iter13)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.sharedPublic is not None:
-      oprot.writeFieldBegin('sharedPublic', TType.BOOL, 5)
+      oprot.writeFieldBegin('sharedPublic', TType.BOOL, 6)
       oprot.writeBool(self.sharedPublic)
       oprot.writeFieldEnd()
     if self.userFriendlyName is not None:
-      oprot.writeFieldBegin('userFriendlyName', TType.STRING, 6)
+      oprot.writeFieldBegin('userFriendlyName', TType.STRING, 7)
       oprot.writeString(self.userFriendlyName)
       oprot.writeFieldEnd()
     if self.userFriendlyDescription is not None:
-      oprot.writeFieldBegin('userFriendlyDescription', TType.STRING, 7)
+      oprot.writeFieldBegin('userFriendlyDescription', TType.STRING, 8)
       oprot.writeString(self.userFriendlyDescription)
       oprot.writeFieldEnd()
     if self.metadataType is not None:
-      oprot.writeFieldBegin('metadataType', TType.I32, 8)
+      oprot.writeFieldBegin('metadataType', TType.I32, 9)
       oprot.writeI32(self.metadataType)
       oprot.writeFieldEnd()
     if self.associatedEntityId is not None:
-      oprot.writeFieldBegin('associatedEntityId', TType.STRING, 9)
+      oprot.writeFieldBegin('associatedEntityId', TType.STRING, 10)
       oprot.writeString(self.associatedEntityId)
       oprot.writeFieldEnd()
     if self.customInformation is not None:
-      oprot.writeFieldBegin('customInformation', TType.MAP, 10)
+      oprot.writeFieldBegin('customInformation', TType.MAP, 11)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.customInformation))
       for kiter14,viter15 in self.customInformation.items():
         oprot.writeString(kiter14)
         oprot.writeString(viter15)
       oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    if self.creationTime is not None:
+      oprot.writeFieldBegin('creationTime', TType.I64, 12)
+      oprot.writeI64(self.creationTime)
+      oprot.writeFieldEnd()
+    if self.lastModifiedTime is not None:
+      oprot.writeFieldBegin('lastModifiedTime', TType.I64, 13)
+      oprot.writeI64(self.lastModifiedTime)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -211,6 +247,7 @@ class MetadataModel:
     value = (value * 31) ^ hash(self.metadataId)
     value = (value * 31) ^ hash(self.gatewayId)
     value = (value * 31) ^ hash(self.username)
+    value = (value * 31) ^ hash(self.size)
     value = (value * 31) ^ hash(self.sharedUsers)
     value = (value * 31) ^ hash(self.sharedPublic)
     value = (value * 31) ^ hash(self.userFriendlyName)
@@ -218,6 +255,8 @@ class MetadataModel:
     value = (value * 31) ^ hash(self.metadataType)
     value = (value * 31) ^ hash(self.associatedEntityId)
     value = (value * 31) ^ hash(self.customInformation)
+    value = (value * 31) ^ hash(self.creationTime)
+    value = (value * 31) ^ hash(self.lastModifiedTime)
     return value
 
   def __repr__(self):
