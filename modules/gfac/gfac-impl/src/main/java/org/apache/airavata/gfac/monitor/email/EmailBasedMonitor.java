@@ -138,6 +138,10 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
                     jobModel.setJobStatus(newJobStatus);
                     GFacUtils.saveJobStatus(pc, jobModel);
                 }
+                ProcessStatus pStatus = new ProcessStatus(ProcessState.CANCELLING);
+                pStatus.setReason("Job cancelled");
+                pc.setProcessStatus(pStatus);
+                GFacUtils.saveAndPublishProcessStatus(pc);
                 GFacThreadPoolExecutor.getCachedThreadPool().execute(new GFacWorker(pc));
 			} catch (GFacException e) {
 				log.info("[EJM]: Error while running output tasks", e);
