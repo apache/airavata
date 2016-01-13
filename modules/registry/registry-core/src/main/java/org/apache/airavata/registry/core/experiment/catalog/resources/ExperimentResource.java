@@ -21,6 +21,7 @@
 
 package org.apache.airavata.registry.core.experiment.catalog.resources;
 
+import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
@@ -573,7 +574,9 @@ public class ExperimentResource extends AbstractExpCatResource {
                 Timestamp timeOfStateChange = experimentStatusResources.get(i).getTimeOfStateChange();
                 if (timeOfStateChange != null) {
                     if (timeOfStateChange.after(max.getTimeOfStateChange())
-                            || timeOfStateChange.equals(max.getTimeOfStateChange())) {
+                            || (timeOfStateChange.equals(max.getTimeOfStateChange()) && experimentStatusResources.get(i).getState().equals(ExperimentState.COMPLETED.toString()))
+                            || (timeOfStateChange.equals(max.getTimeOfStateChange()) && experimentStatusResources.get(i).getState().equals(ExperimentState.FAILED.toString()))
+                            || (timeOfStateChange.equals(max.getTimeOfStateChange()) && experimentStatusResources.get(i).getState().equals(ExperimentState.CANCELED.toString()))){
                         max = experimentStatusResources.get(i);
                     }
                 }
