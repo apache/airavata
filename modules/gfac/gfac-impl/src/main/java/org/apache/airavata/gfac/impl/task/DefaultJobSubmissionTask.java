@@ -106,12 +106,12 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 							msg = "expId:" + processContext.getProcessModel().getExperimentId() + ", processId:" +
 									processContext.getProcessId() + ", taskId: " + taskContext.getTaskId() +
 									" return non zero exit code:" + exitCode + "  for JobName:" + jobModel.getJobName() +
-									", Hence changing job state to Failed";
+									", with failure reason :  " + jobSubmissionOutput.getStdOut() +  " Hence changing job state to Failed." ;
 						} else {
 							msg = "expId:" + processContext.getProcessModel().getExperimentId() + ", processId:" +
 									processContext.getProcessId() + ", taskId: " + taskContext.getTaskId() +
 									" doesn't  return valid job submission exit code for JobName:" + jobModel.getJobName() +
-									", Hence changing job state to Failed";
+                                    ", with failure reason :  " + jobSubmissionOutput.getStdOut() +  " Hence changing job state to Failed." ;
 						}
 						log.error(msg);
 						ErrorModel errorModel = new ErrorModel();
@@ -121,7 +121,7 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 						GFacUtils.saveProcessError(processContext, errorModel);
 						GFacUtils.saveTaskError(taskContext, errorModel);
 						taskStatus.setState(TaskState.FAILED);
-						taskStatus.setReason("Job submission command exit with non zero exit code");
+						taskStatus.setReason(msg);
 						taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 						taskContext.setTaskStatus(taskStatus);
 					}

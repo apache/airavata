@@ -524,21 +524,21 @@ public class GFacEngineImpl implements GFacEngine {
         return false;
     }
 
-    private void checkFailures(TaskContext taskContext, TaskStatus taskStatus, Task dMoveTask) throws GFacException {
+    private void checkFailures(TaskContext taskContext, TaskStatus taskStatus, Task task) throws GFacException {
         if (taskStatus.getState() == TaskState.FAILED) {
-            log.error("expId: {}, processId: {}, taskId: {} type: {},:- Input statging failed, " +
+            log.error("expId: {}, processId: {}, taskId: {} type: {},:- " + task.getType().toString() + " failed, " +
                     "reason:" + " {}", taskContext.getParentProcessContext().getExperimentId(), taskContext
-                    .getParentProcessContext().getProcessId(), taskContext.getTaskId(), dMoveTask.getType
+                    .getParentProcessContext().getProcessId(), taskContext.getTaskId(), task.getType
                     ().name(), taskStatus.getReason());
             String errorMsg = new StringBuilder("expId: ").append(taskContext.getParentProcessContext().getExperimentId()).append(", processId: ")
                     .append(taskContext.getParentProcessContext().getProcessId()).append(", taskId: ").append(taskContext.getTaskId())
-                    .append(", type: ").append(taskContext.getTaskType().name()).append(" :- Input staging failed. Reason: ")
+                    .append(", type: ").append(taskContext.getTaskType().name()).append(" :- " + task.getType().toString() + " failed. Reason: ")
                     .append(taskStatus.getReason()).toString();
             ErrorModel errorModel = new ErrorModel();
-            errorModel.setUserFriendlyMessage("Error while staging input data");
+            errorModel.setUserFriendlyMessage("Error while executing " + task.getType() + " task" );
             errorModel.setActualErrorMessage(errorMsg);
             GFacUtils.saveTaskError(taskContext, errorModel);
-            throw new GFacException("Error while staging input data");
+            throw new GFacException("Error while executing " + task.getType() + " task");
         }
     }
 
