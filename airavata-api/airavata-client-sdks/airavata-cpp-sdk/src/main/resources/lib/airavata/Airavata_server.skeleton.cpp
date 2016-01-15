@@ -1360,6 +1360,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("registerApplicationInterface\n");
   }
 
+  void cloneApplicationInterface(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingAppInterfaceID, const std::string& newApplicationName, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("cloneApplicationInterface\n");
+  }
+
   /**
    * Fetch a Application Interface.
    * 
