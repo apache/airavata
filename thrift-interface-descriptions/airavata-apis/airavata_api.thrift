@@ -1386,6 +1386,15 @@ service Airavata {
               3: airavata_errors.AiravataSystemException ase,
               4: airavata_errors.AuthorizationException ae)
 
+
+  string cloneApplicationInterface(1: required security_model.AuthzToken authzToken,
+                         2: string existingAppInterfaceID,
+                         3: string newApplicationName,
+                         4: string gatewayId)
+    throws (1: airavata_errors.InvalidRequestException ire,
+                  2: airavata_errors.AiravataClientException ace,
+                  3: airavata_errors.AiravataSystemException ase,
+                  4: airavata_errors.AuthorizationException ae)
   /**
    * Fetch a Application Interface.
    *

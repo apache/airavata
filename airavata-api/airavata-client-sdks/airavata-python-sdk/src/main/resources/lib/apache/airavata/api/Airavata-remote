@@ -80,6 +80,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('   getAllApplicationDeployments(AuthzToken authzToken, string gatewayId)')
   print('   getAppModuleDeployedResources(AuthzToken authzToken, string appModuleId)')
   print('  string registerApplicationInterface(AuthzToken authzToken, string gatewayId, ApplicationInterfaceDescription applicationInterface)')
+  print('  string cloneApplicationInterface(AuthzToken authzToken, string existingAppInterfaceID, string newApplicationName, string gatewayId)')
   print('  ApplicationInterfaceDescription getApplicationInterface(AuthzToken authzToken, string appInterfaceId)')
   print('  bool updateApplicationInterface(AuthzToken authzToken, string appInterfaceId, ApplicationInterfaceDescription applicationInterface)')
   print('  bool deleteApplicationInterface(AuthzToken authzToken, string appInterfaceId)')
@@ -553,6 +554,12 @@ elif cmd == 'registerApplicationInterface':
     print('registerApplicationInterface requires 3 args')
     sys.exit(1)
   pp.pprint(client.registerApplicationInterface(eval(args[0]),args[1],eval(args[2]),))
+
+elif cmd == 'cloneApplicationInterface':
+  if len(args) != 4:
+    print('cloneApplicationInterface requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.cloneApplicationInterface(eval(args[0]),args[1],args[2],args[3],))
 
 elif cmd == 'getApplicationInterface':
   if len(args) != 2:

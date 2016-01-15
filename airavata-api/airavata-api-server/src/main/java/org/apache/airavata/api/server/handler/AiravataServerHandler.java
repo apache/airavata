@@ -49,6 +49,7 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.data.movement.DMType;
 import org.apache.airavata.model.data.resource.DataResourceModel;
@@ -2312,6 +2313,33 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog = RegistryFactory.getAppCatalog();
             String interfaceId = appCatalog.getApplicationInterface().addApplicationInterface(applicationInterface, gatewayId);
             logger.info("Airavata registered application interface for gateway id : " + gatewayId);
+            return interfaceId;
+        } catch (AppCatalogException e) {
+            logger.error("Error while adding application interface...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding application interface. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public String cloneApplicationInterface(AuthzToken authzToken, String existingAppInterfaceID, String newApplicationName, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+        }
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            if (!appCatalog.getApplicationInterface().isApplicationInterfaceExists(existingAppInterfaceID)){
+                logger.error("Provided application interface does not exist.Please provide a valid application interface id...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
+            ApplicationInterfaceDescription existingInterface = appCatalog.getApplicationInterface().getApplicationInterface(existingAppInterfaceID);
+            existingInterface.setApplicationName(newApplicationName);
+            existingInterface.setApplicationInterfaceId(airavata_commonsConstants.DEFAULT_ID);
+            String interfaceId = appCatalog.getApplicationInterface().addApplicationInterface(existingInterface, gatewayId);
+            logger.info("Airavata cloned application interface : " + existingAppInterfaceID + " for gateway id : " + gatewayId );
             return interfaceId;
         } catch (AppCatalogException e) {
             logger.error("Error while adding application interface...", e);

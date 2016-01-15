@@ -1188,6 +1188,7 @@ class AiravataIf {
    * @param applicationInterface
    */
   virtual void registerApplicationInterface(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) = 0;
+  virtual void cloneApplicationInterface(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingAppInterfaceID, const std::string& newApplicationName, const std::string& gatewayId) = 0;
 
   /**
    * Fetch a Application Interface.
@@ -2491,6 +2492,9 @@ class AiravataNull : virtual public AiravataIf {
     return;
   }
   void registerApplicationInterface(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& /* applicationInterface */) {
+    return;
+  }
+  void cloneApplicationInterface(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* existingAppInterfaceID */, const std::string& /* newApplicationName */, const std::string& /* gatewayId */) {
     return;
   }
   void getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* appInterfaceId */) {
@@ -10742,6 +10746,162 @@ class Airavata_registerApplicationInterface_presult {
    ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_registerApplicationInterface_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _Airavata_cloneApplicationInterface_args__isset {
+  _Airavata_cloneApplicationInterface_args__isset() : existingAppInterfaceID(false), newApplicationName(false), gatewayId(false) {}
+  bool existingAppInterfaceID :1;
+  bool newApplicationName :1;
+  bool gatewayId :1;
+} _Airavata_cloneApplicationInterface_args__isset;
+
+class Airavata_cloneApplicationInterface_args {
+ public:
+
+  Airavata_cloneApplicationInterface_args(const Airavata_cloneApplicationInterface_args&);
+  Airavata_cloneApplicationInterface_args& operator=(const Airavata_cloneApplicationInterface_args&);
+  Airavata_cloneApplicationInterface_args() : existingAppInterfaceID(), newApplicationName(), gatewayId() {
+  }
+
+  virtual ~Airavata_cloneApplicationInterface_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string existingAppInterfaceID;
+  std::string newApplicationName;
+  std::string gatewayId;
+
+  _Airavata_cloneApplicationInterface_args__isset __isset;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_existingAppInterfaceID(const std::string& val);
+
+  void __set_newApplicationName(const std::string& val);
+
+  void __set_gatewayId(const std::string& val);
+
+  bool operator == (const Airavata_cloneApplicationInterface_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(existingAppInterfaceID == rhs.existingAppInterfaceID))
+      return false;
+    if (!(newApplicationName == rhs.newApplicationName))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_cloneApplicationInterface_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_cloneApplicationInterface_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_cloneApplicationInterface_pargs {
+ public:
+
+
+  virtual ~Airavata_cloneApplicationInterface_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* existingAppInterfaceID;
+  const std::string* newApplicationName;
+  const std::string* gatewayId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_cloneApplicationInterface_result__isset {
+  _Airavata_cloneApplicationInterface_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_cloneApplicationInterface_result__isset;
+
+class Airavata_cloneApplicationInterface_result {
+ public:
+
+  Airavata_cloneApplicationInterface_result(const Airavata_cloneApplicationInterface_result&);
+  Airavata_cloneApplicationInterface_result& operator=(const Airavata_cloneApplicationInterface_result&);
+  Airavata_cloneApplicationInterface_result() : success() {
+  }
+
+  virtual ~Airavata_cloneApplicationInterface_result() throw();
+  std::string success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_cloneApplicationInterface_result__isset __isset;
+
+  void __set_success(const std::string& val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_cloneApplicationInterface_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_cloneApplicationInterface_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_cloneApplicationInterface_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_cloneApplicationInterface_presult__isset {
+  _Airavata_cloneApplicationInterface_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_cloneApplicationInterface_presult__isset;
+
+class Airavata_cloneApplicationInterface_presult {
+ public:
+
+
+  virtual ~Airavata_cloneApplicationInterface_presult() throw();
+  std::string* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_cloneApplicationInterface_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -22396,6 +22556,9 @@ class AiravataClient : virtual public AiravataIf {
   void registerApplicationInterface(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface);
   void send_registerApplicationInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface);
   void recv_registerApplicationInterface(std::string& _return);
+  void cloneApplicationInterface(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingAppInterfaceID, const std::string& newApplicationName, const std::string& gatewayId);
+  void send_cloneApplicationInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingAppInterfaceID, const std::string& newApplicationName, const std::string& gatewayId);
+  void recv_cloneApplicationInterface(std::string& _return);
   void getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appInterfaceId);
   void send_getApplicationInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appInterfaceId);
   void recv_getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& _return);
@@ -22713,6 +22876,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_getAllApplicationDeployments(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAppModuleDeployedResources(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_registerApplicationInterface(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_cloneApplicationInterface(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getApplicationInterface(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateApplicationInterface(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteApplicationInterface(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -22854,6 +23018,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["getAllApplicationDeployments"] = &AiravataProcessor::process_getAllApplicationDeployments;
     processMap_["getAppModuleDeployedResources"] = &AiravataProcessor::process_getAppModuleDeployedResources;
     processMap_["registerApplicationInterface"] = &AiravataProcessor::process_registerApplicationInterface;
+    processMap_["cloneApplicationInterface"] = &AiravataProcessor::process_cloneApplicationInterface;
     processMap_["getApplicationInterface"] = &AiravataProcessor::process_getApplicationInterface;
     processMap_["updateApplicationInterface"] = &AiravataProcessor::process_updateApplicationInterface;
     processMap_["deleteApplicationInterface"] = &AiravataProcessor::process_deleteApplicationInterface;
@@ -23504,6 +23669,16 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->registerApplicationInterface(_return, authzToken, gatewayId, applicationInterface);
     }
     ifaces_[i]->registerApplicationInterface(_return, authzToken, gatewayId, applicationInterface);
+    return;
+  }
+
+  void cloneApplicationInterface(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingAppInterfaceID, const std::string& newApplicationName, const std::string& gatewayId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->cloneApplicationInterface(_return, authzToken, existingAppInterfaceID, newApplicationName, gatewayId);
+    }
+    ifaces_[i]->cloneApplicationInterface(_return, authzToken, existingAppInterfaceID, newApplicationName, gatewayId);
     return;
   }
 
@@ -24489,6 +24664,9 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void registerApplicationInterface(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface);
   int32_t send_registerApplicationInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface);
   void recv_registerApplicationInterface(std::string& _return, const int32_t seqid);
+  void cloneApplicationInterface(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingAppInterfaceID, const std::string& newApplicationName, const std::string& gatewayId);
+  int32_t send_cloneApplicationInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingAppInterfaceID, const std::string& newApplicationName, const std::string& gatewayId);
+  void recv_cloneApplicationInterface(std::string& _return, const int32_t seqid);
   void getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appInterfaceId);
   int32_t send_getApplicationInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appInterfaceId);
   void recv_getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& _return, const int32_t seqid);
