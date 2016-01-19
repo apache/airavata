@@ -66,7 +66,12 @@ public class JobManagerCommandResource extends AppCatAbstractResource {
 			Query q = generator.deleteQuery(em);
 			q.executeUpdate();
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -100,7 +105,12 @@ public class JobManagerCommandResource extends AppCatAbstractResource {
 			JobManagerCommand jobManagerCommand = (JobManagerCommand) q.getSingleResult();
 			JobManagerCommandResource jobManagerCommandResource = (JobManagerCommandResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.JOB_MANAGER_COMMAND, jobManagerCommand);
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return jobManagerCommandResource;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
@@ -135,12 +145,22 @@ public class JobManagerCommandResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Job Manager Command Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Job Manager Command Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -185,12 +205,22 @@ public class JobManagerCommandResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Job Manager Command Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Job Manager Command Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -211,7 +241,13 @@ public class JobManagerCommandResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			JobManagerCommand existingJobManagerCommand = em.find(JobManagerCommand.class, new JobManagerCommand_PK(resourceJobManagerId, commandType));
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+
 			JobManagerCommand jobManagerCommand;
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
@@ -231,7 +267,12 @@ public class JobManagerCommandResource extends AppCatAbstractResource {
 				em.merge(jobManagerCommand);
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -258,7 +299,12 @@ public class JobManagerCommandResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			JobManagerCommand jobManagerCommand = em.find(JobManagerCommand.class, new JobManagerCommand_PK(ids.get(JobManagerCommandConstants.RESOURCE_JOB_MANAGER_ID), ids.get(JobManagerCommandConstants.COMMAND_TYPE)));
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return jobManagerCommand != null;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);

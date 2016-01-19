@@ -66,7 +66,12 @@ public class PostJobCommandResource extends AppCatAbstractResource {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -103,7 +108,12 @@ public class PostJobCommandResource extends AppCatAbstractResource {
                     (PostJobCommandResource) AppCatalogJPAUtils.getResource(
                             AppCatalogResourceType.POST_JOBCOMMAND, postJobCommand);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return postJobCommandResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -144,12 +154,22 @@ public class PostJobCommandResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for Post Job Command Resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for Post Job Command Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -205,12 +225,22 @@ public class PostJobCommandResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for GSISSH Post Job resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for GSISSH Post JOb Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -231,7 +261,12 @@ public class PostJobCommandResource extends AppCatAbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             PostJobCommand existingPostJobCommand = em.find(PostJobCommand.class,
                     new PostJobCommandPK(appDeploymentId, command));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -251,7 +286,12 @@ public class PostJobCommandResource extends AppCatAbstractResource {
                 em.persist(postJobCommand);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -281,7 +321,12 @@ public class PostJobCommandResource extends AppCatAbstractResource {
                     ids.get(PostJobCommandConstants.DEPLOYMENT_ID),
                     ids.get(PostJobCommandConstants.COMMAND)));
 
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return postJobCommand != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);

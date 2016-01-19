@@ -116,7 +116,12 @@ public class StoragePreferenceResource extends AppCatAbstractResource {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -152,7 +157,12 @@ public class StoragePreferenceResource extends AppCatAbstractResource {
             StoragePreferenceResource preferenceResource =
                     (StoragePreferenceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.STORAGE_PREFERENCE, preference);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return preferenceResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -209,12 +219,22 @@ public class StoragePreferenceResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for data storage preference Resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for data storage preference Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -251,7 +271,12 @@ public class StoragePreferenceResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             StoragePreference existingPreference = em.find(StoragePreference.class, new StoragePreferencePK(gatewayId, storageResourceId));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -275,7 +300,12 @@ public class StoragePreferenceResource extends AppCatAbstractResource {
                 em.persist(resourcePreference);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -305,7 +335,12 @@ public class StoragePreferenceResource extends AppCatAbstractResource {
             StoragePreference existingPreference = em.find(StoragePreference.class,
                     new StoragePreferencePK(ids.get(StoragePreferenceConstants.GATEWAY_ID),
                             ids.get(StoragePreferenceConstants.STORAGE_ID)));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return existingPreference != null;
         }catch (Exception e) {
             logger.error(e.getMessage(), e);

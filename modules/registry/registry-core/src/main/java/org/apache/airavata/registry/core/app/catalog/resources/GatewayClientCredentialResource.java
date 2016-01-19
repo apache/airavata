@@ -89,7 +89,12 @@ public class GatewayClientCredentialResource extends AppCatAbstractResource {
 			Query q = generator.deleteQuery(em);
 			q.executeUpdate();
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -116,7 +121,12 @@ public class GatewayClientCredentialResource extends AppCatAbstractResource {
 			GatewayClientCredentialResource gatewayClientCredentialResource = (GatewayClientCredentialResource)
 					AppCatalogJPAUtils.getResource(AppCatalogResourceType.GATEWAY_CLIENT_CREDENTIAL, gatewayClientCredential);
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return gatewayClientCredentialResource;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
@@ -152,12 +162,22 @@ public class GatewayClientCredentialResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Gateway Client Credential Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Gateway Client Credential Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -188,7 +208,12 @@ public class GatewayClientCredentialResource extends AppCatAbstractResource {
                 computeResourceResources.add(computeResourceResource);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -218,7 +243,12 @@ public class GatewayClientCredentialResource extends AppCatAbstractResource {
                 gatewayClientCredentials.add(gatewayClientCredential.getClientKey());
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -252,12 +282,22 @@ public class GatewayClientCredentialResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Gateway Client Credential Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Gateway Client Credential Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -278,7 +318,13 @@ public class GatewayClientCredentialResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			GatewayClientCredential existingGatewayClientCredential = em.find(GatewayClientCredential.class, clientKey);
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+
 			GatewayClientCredential gatewayClientCredential;
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
@@ -296,7 +342,12 @@ public class GatewayClientCredentialResource extends AppCatAbstractResource {
 				em.merge(gatewayClientCredential);
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -316,7 +367,12 @@ public class GatewayClientCredentialResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			GatewayClientCredential gatewayClientCredential = em.find(GatewayClientCredential.class, identifier);
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return gatewayClientCredential != null;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);

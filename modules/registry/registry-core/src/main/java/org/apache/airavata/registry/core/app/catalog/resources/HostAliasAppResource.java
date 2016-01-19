@@ -53,7 +53,12 @@ public class HostAliasAppResource extends AppCatAbstractResource {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -88,7 +93,12 @@ public class HostAliasAppResource extends AppCatAbstractResource {
             HostAliasAppResource hostAliasResource =
                     (HostAliasAppResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.HOST_ALIAS, hostAlias);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return hostAliasResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -139,12 +149,22 @@ public class HostAliasAppResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for Host Alias Resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for Host Alias Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -201,12 +221,22 @@ public class HostAliasAppResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for Host Alias resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for Host Alias Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -226,7 +256,12 @@ public class HostAliasAppResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             HostAlias existingHostAlias = em.find(HostAlias.class, new HostAliasPK(resourceID, alias));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -245,7 +280,12 @@ public class HostAliasAppResource extends AppCatAbstractResource {
                 em.persist(hostAlias);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -275,7 +315,12 @@ public class HostAliasAppResource extends AppCatAbstractResource {
             HostAlias hostAlias = em.find(HostAlias.class, new HostAliasPK(ids.get(HostAliasConstants.RESOURCE_ID),
                     ids.get(HostAliasConstants.ALIAS)));
 
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return hostAlias != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);

@@ -99,7 +99,12 @@ public class LibraryApendPathResource extends AppCatAbstractResource {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -134,7 +139,12 @@ public class LibraryApendPathResource extends AppCatAbstractResource {
             LibraryApendPathResource resource =
                     (LibraryApendPathResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.LIBRARY_APEND_PATH, libraryApendPath);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return resource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -185,12 +195,22 @@ public class LibraryApendPathResource extends AppCatAbstractResource {
                 }
             }else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for libraryApendPath resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for libraryApendPath resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -227,7 +247,12 @@ public class LibraryApendPathResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             LibraryApendPath existigApendPath = em.find(LibraryApendPath.class, new LibraryApendPath_PK(deploymentId, name));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -246,7 +271,12 @@ public class LibraryApendPathResource extends AppCatAbstractResource {
                 em.persist(apendPath);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -275,7 +305,12 @@ public class LibraryApendPathResource extends AppCatAbstractResource {
             LibraryApendPath apendPath = em.find(LibraryApendPath.class,
                     new LibraryApendPath_PK(ids.get(LibraryApendPathConstants.DEPLOYMENT_ID),
                             ids.get(LibraryApendPathConstants.NAME)));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return apendPath != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);

@@ -80,7 +80,12 @@ public class StorageResourceResource extends AppCatAbstractResource {
 			Query q = generator.deleteQuery(em);
 			q.executeUpdate();
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -106,7 +111,12 @@ public class StorageResourceResource extends AppCatAbstractResource {
 			StorageResource storageResource = (StorageResource) q.getSingleResult();
 			StorageResourceResource storageResourceResource = (StorageResourceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.STORAGE_RESOURCE, storageResource);
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return storageResourceResource;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
@@ -141,12 +151,22 @@ public class StorageResourceResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Storage Resource Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Storage Resource Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -177,7 +197,12 @@ public class StorageResourceResource extends AppCatAbstractResource {
                 storageResourceResources.add(storageResourceResource);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -207,7 +232,12 @@ public class StorageResourceResource extends AppCatAbstractResource {
 				storageResourceResources.add(storageResource.getStorageResourceId());
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -242,12 +272,22 @@ public class StorageResourceResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Storage Resource Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Storage Resource Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -268,7 +308,12 @@ public class StorageResourceResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			StorageResource existingStorageResource = em.find(StorageResource.class, storageResourceId);
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			StorageResource storageResource;
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
@@ -289,7 +334,12 @@ public class StorageResourceResource extends AppCatAbstractResource {
 				em.merge(storageResource);
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -309,7 +359,12 @@ public class StorageResourceResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			StorageResource storageResource = em.find(StorageResource.class, identifier);
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return storageResource != null;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);

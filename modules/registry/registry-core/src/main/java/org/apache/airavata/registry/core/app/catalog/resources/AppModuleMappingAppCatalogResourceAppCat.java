@@ -101,7 +101,12 @@ public class AppModuleMappingAppCatalogResourceAppCat extends AppCatAbstractReso
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -124,7 +129,12 @@ public class AppModuleMappingAppCatalogResourceAppCat extends AppCatAbstractReso
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -159,7 +169,12 @@ public class AppModuleMappingAppCatalogResourceAppCat extends AppCatAbstractReso
             AppModuleMappingAppCatalogResourceAppCat resource =
                     (AppModuleMappingAppCatalogResourceAppCat) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APP_MODULE_MAPPING, result);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return resource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -210,12 +225,22 @@ public class AppModuleMappingAppCatalogResourceAppCat extends AppCatAbstractReso
                 }
             }else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for app module mapping resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for app module mapping resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -252,7 +277,12 @@ public class AppModuleMappingAppCatalogResourceAppCat extends AppCatAbstractReso
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             AppModuleMapping existngModuleMap = em.find(AppModuleMapping.class, new AppModuleMapping_PK(interfaceId, moduleId));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -271,7 +301,12 @@ public class AppModuleMappingAppCatalogResourceAppCat extends AppCatAbstractReso
                 em.persist(appModuleMapping);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -300,7 +335,12 @@ public class AppModuleMappingAppCatalogResourceAppCat extends AppCatAbstractReso
             AppModuleMapping moduleMapping = em.find(AppModuleMapping.class,
                     new AppModuleMapping_PK(ids.get(AppModuleMappingConstants.INTERFACE_ID),
                             ids.get(AppModuleMappingConstants.MODULE_ID)));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return moduleMapping != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);

@@ -87,7 +87,12 @@ public class DataMovementInterfaceResource extends AppCatAbstractResource {
 			Query q = generator.deleteQuery(em);
 			q.executeUpdate();
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -121,7 +126,12 @@ public class DataMovementInterfaceResource extends AppCatAbstractResource {
 			DataMovementInterface dataMovementInterface = (DataMovementInterface) q.getSingleResult();
 			DataMovementInterfaceResource dataMovementInterfaceResource = (DataMovementInterfaceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.DATA_MOVEMENT_INTERFACE, dataMovementInterface);
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return dataMovementInterfaceResource;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
@@ -161,7 +171,12 @@ public class DataMovementInterfaceResource extends AppCatAbstractResource {
 				throw new IllegalArgumentException("Unsupported field name for Data Movement Interface Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -206,12 +221,22 @@ public class DataMovementInterfaceResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Data Movement Interface Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Data Movement Interface Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -232,7 +257,12 @@ public class DataMovementInterfaceResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			DataMovementInterface existingDataMovementInterface = em.find(DataMovementInterface.class, new DataMovementInterface_PK(computeResourceId, dataMovementInterfaceId));
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			DataMovementInterface dataMovementInterface;
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
@@ -255,7 +285,12 @@ public class DataMovementInterfaceResource extends AppCatAbstractResource {
 				em.merge(dataMovementInterface);
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -282,7 +317,12 @@ public class DataMovementInterfaceResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			DataMovementInterface dataMovementInterface = em.find(DataMovementInterface.class, new DataMovementInterface_PK(ids.get(DataMovementInterfaceConstants.COMPUTE_RESOURCE_ID), ids.get(DataMovementInterfaceConstants.DATA_MOVEMENT_INTERFACE_ID)));
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return dataMovementInterface != null;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);

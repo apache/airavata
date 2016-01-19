@@ -83,7 +83,12 @@ public class GridftpEndpointResource extends AppCatAbstractResource {
 			Query q = generator.deleteQuery(em);
 			q.executeUpdate();
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -117,7 +122,12 @@ public class GridftpEndpointResource extends AppCatAbstractResource {
 			GridftpEndpoint gridftpEndpoint = (GridftpEndpoint) q.getSingleResult();
 			GridftpEndpointResource gridftpEndpointResource = (GridftpEndpointResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.GRIDFTP_ENDPOINT, gridftpEndpoint);
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return gridftpEndpointResource;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
@@ -152,12 +162,22 @@ public class GridftpEndpointResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Gridftp Endpoint Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Gridftp Endpoint Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -202,12 +222,22 @@ public class GridftpEndpointResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Gridftp Endpoint Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Gridftp Endpoint Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -228,7 +258,13 @@ public class GridftpEndpointResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			GridftpEndpoint existingGridftpEndpoint = em.find(GridftpEndpoint.class, new GridftpEndpoint_PK(endpoint, dataMovementInterfaceId));
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+
 			GridftpEndpoint gridftpEndpoint;
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
@@ -249,7 +285,12 @@ public class GridftpEndpointResource extends AppCatAbstractResource {
 				em.merge(gridftpEndpoint);
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -276,7 +317,12 @@ public class GridftpEndpointResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			GridftpEndpoint gridftpEndpoint = em.find(GridftpEndpoint.class, new GridftpEndpoint_PK(ids.get(GridftpEndpointConstants.ENDPOINT), ids.get(GridftpEndpointConstants.DATA_MOVEMENT_INTERFACE_ID)));
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return gridftpEndpoint != null;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);

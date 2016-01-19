@@ -66,7 +66,12 @@ public class ComputeResourceFileSystemResource extends AppCatAbstractResource {
 			Query q = generator.deleteQuery(em);
 			q.executeUpdate();
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -100,7 +105,12 @@ public class ComputeResourceFileSystemResource extends AppCatAbstractResource {
 			ComputeResourceFileSystem computeResourceFileSystem = (ComputeResourceFileSystem) q.getSingleResult();
 			ComputeResourceFileSystemResource computeResourceFileSystemResource = (ComputeResourceFileSystemResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.COMPUTE_RESOURCE_FILE_SYSTEM, computeResourceFileSystem);
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return computeResourceFileSystemResource;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
@@ -135,12 +145,22 @@ public class ComputeResourceFileSystemResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Compute Resource File System Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Compute Resource File System Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -185,12 +205,22 @@ public class ComputeResourceFileSystemResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Compute Resource File System Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Compute Resource File System Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -211,7 +241,12 @@ public class ComputeResourceFileSystemResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			ComputeResourceFileSystem existingComputeResourceFileSystem = em.find(ComputeResourceFileSystem.class, new ComputeResourceFileSystem_PK(computeResourceId, fileSystem));
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			ComputeResourceFileSystem computeResourceFileSystem;
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
@@ -231,7 +266,12 @@ public class ComputeResourceFileSystemResource extends AppCatAbstractResource {
 				em.merge(computeResourceFileSystem);
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -258,7 +298,12 @@ public class ComputeResourceFileSystemResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			ComputeResourceFileSystem computeResourceFileSystem = em.find(ComputeResourceFileSystem.class, new ComputeResourceFileSystem_PK(ids.get(ComputeResourceFileSystemConstants.COMPUTE_RESOURCE_ID), ids.get(ComputeResourceFileSystemConstants.FILE_SYSTEM)));
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return computeResourceFileSystem != null;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);

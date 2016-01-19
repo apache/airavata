@@ -53,7 +53,12 @@ public class GSISSHSubmissionResource extends AppCatAbstractResource {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -80,7 +85,12 @@ public class GSISSHSubmissionResource extends AppCatAbstractResource {
                     (GSISSHSubmissionResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.GSISSH_SUBMISSION
                             , gsisshSubmission);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return gsisshSubmissionResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -158,12 +168,22 @@ public class GSISSHSubmissionResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for GSISSH submission resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for GSISSH Submission resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -249,12 +269,22 @@ public class GSISSHSubmissionResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for GSISSH Submission resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for GSISSH Submission resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -274,7 +304,12 @@ public class GSISSHSubmissionResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             GSISSHSubmission existingGSISSHSubmission = em.find(GSISSHSubmission.class, submissionID);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -295,7 +330,12 @@ public class GSISSHSubmissionResource extends AppCatAbstractResource {
                 em.persist(gsisshSubmission);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -315,7 +355,12 @@ public class GSISSHSubmissionResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             GSISSHSubmission gsisshSubmission = em.find(GSISSHSubmission.class, identifier);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return gsisshSubmission != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);

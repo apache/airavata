@@ -76,7 +76,12 @@ public class SshJobSubmissionResource extends AppCatAbstractResource {
 			Query q = generator.deleteQuery(em);
 			q.executeUpdate();
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -102,7 +107,12 @@ public class SshJobSubmissionResource extends AppCatAbstractResource {
 			SshJobSubmission sshJobSubmission = (SshJobSubmission) q.getSingleResult();
 			SshJobSubmissionResource sshJobSubmissionResource = (SshJobSubmissionResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SSH_JOB_SUBMISSION, sshJobSubmission);
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return sshJobSubmissionResource;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
@@ -137,12 +147,22 @@ public class SshJobSubmissionResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Ssh Job Submission Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Ssh Job Submission Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -187,12 +207,22 @@ public class SshJobSubmissionResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Ssh Job Submission Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Ssh Job Submission Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -213,7 +243,12 @@ public class SshJobSubmissionResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			SshJobSubmission existingSshJobSubmission = em.find(SshJobSubmission.class, jobSubmissionInterfaceId);
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			SshJobSubmission sshJobSubmission;
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
@@ -238,7 +273,12 @@ public class SshJobSubmissionResource extends AppCatAbstractResource {
 				em.merge(sshJobSubmission);
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -258,7 +298,12 @@ public class SshJobSubmissionResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			SshJobSubmission sshJobSubmission = em.find(SshJobSubmission.class, identifier);
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return sshJobSubmission != null;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);

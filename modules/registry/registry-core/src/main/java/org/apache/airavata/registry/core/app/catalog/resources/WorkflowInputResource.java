@@ -75,7 +75,12 @@ public class WorkflowInputResource extends AppCatAbstractResource {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -111,7 +116,12 @@ public class WorkflowInputResource extends AppCatAbstractResource {
                     (WorkflowInputResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.WORKFLOW_INPUT
                             , workflowInput);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return workflowInputResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -176,12 +186,22 @@ public class WorkflowInputResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for WFInput Resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for WFInput Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -245,12 +265,22 @@ public class WorkflowInputResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for WFInput resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for WFInput Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -270,7 +300,12 @@ public class WorkflowInputResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             WorkflowInput existingWFInput = em.find(WorkflowInput.class, new WorkflowInput_PK(wfTemplateId, inputKey));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             WorkflowInput workflowInput;
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -300,7 +335,12 @@ public class WorkflowInputResource extends AppCatAbstractResource {
                 em.merge(workflowInput);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -330,7 +370,12 @@ public class WorkflowInputResource extends AppCatAbstractResource {
                     ids.get(WFInputConstants.WF_TEMPLATE_ID),
                     ids.get(WFInputConstants.INPUT_KEY)));
 
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return workflowInput != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);

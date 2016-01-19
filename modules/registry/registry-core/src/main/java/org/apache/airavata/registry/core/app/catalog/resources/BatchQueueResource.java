@@ -71,7 +71,12 @@ public class BatchQueueResource extends AppCatAbstractResource {
 			Query q = generator.deleteQuery(em);
 			q.executeUpdate();
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -105,7 +110,12 @@ public class BatchQueueResource extends AppCatAbstractResource {
 			BatchQueue batchQueue = (BatchQueue) q.getSingleResult();
 			BatchQueueResource batchQueueResource = (BatchQueueResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.BATCH_QUEUE, batchQueue);
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return batchQueueResource;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
@@ -140,12 +150,22 @@ public class BatchQueueResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Batch Queue Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Batch Queue Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -190,12 +210,22 @@ public class BatchQueueResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Batch Queue Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Batch Queue Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -216,7 +246,12 @@ public class BatchQueueResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			BatchQueue existingBatchQueue = em.find(BatchQueue.class, new BatchQueue_PK(computeResourceId, queueName));
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			BatchQueue batchQueue;
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
@@ -241,7 +276,12 @@ public class BatchQueueResource extends AppCatAbstractResource {
 				em.merge(batchQueue);
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -268,7 +308,12 @@ public class BatchQueueResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			BatchQueue batchQueue = em.find(BatchQueue.class, new BatchQueue_PK(ids.get(BatchQueueConstants.COMPUTE_RESOURCE_ID), ids.get(BatchQueueConstants.QUEUE_NAME)));
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return batchQueue != null;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);

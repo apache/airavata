@@ -65,7 +65,12 @@ public class GSISSHExportResource extends AppCatAbstractResource {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -101,7 +106,12 @@ public class GSISSHExportResource extends AppCatAbstractResource {
                     (GSISSHExportResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.GSISSH_EXPORT
                             , gsisshExport);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return gsisshExportResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -151,12 +161,22 @@ public class GSISSHExportResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for GSISSH Export Resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for GSISSH Export Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -212,12 +232,22 @@ public class GSISSHExportResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for GSISSH Export resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for GSISSH Export Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -237,7 +267,12 @@ public class GSISSHExportResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             GSISSHExport existingGSIExport = em.find(GSISSHExport.class, new GSISSHExportPK(submissionID, export));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -255,7 +290,12 @@ public class GSISSHExportResource extends AppCatAbstractResource {
                 em.persist(gsisshExport);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -284,7 +324,12 @@ public class GSISSHExportResource extends AppCatAbstractResource {
             GSISSHExport gsisshExport = em.find(GSISSHExport.class, new GSISSHExportPK(ids.get(GSISSHExportConstants.SUBMISSION_ID),
                     ids.get(GSISSHExportConstants.EXPORT)));
 
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return gsisshExport != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);

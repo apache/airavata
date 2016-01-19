@@ -69,7 +69,12 @@ public class WorkflowOutputResource extends AppCatAbstractResource {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -105,7 +110,12 @@ public class WorkflowOutputResource extends AppCatAbstractResource {
                     (WorkflowOutputResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.WORKFLOW_OUTPUT
                             , wfOutput);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return workflowOutputResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -170,12 +180,22 @@ public class WorkflowOutputResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for WF Output Resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for WF Output Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -240,12 +260,22 @@ public class WorkflowOutputResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for WF Output resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for WF Output Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -266,7 +296,12 @@ public class WorkflowOutputResource extends AppCatAbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             WorkflowOutput existingWorkflowOutput = em.find(WorkflowOutput.class,
                     new WorkflowOutput_PK(wfTemplateId, outputKey));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -299,7 +334,12 @@ public class WorkflowOutputResource extends AppCatAbstractResource {
                 em.persist(workflowOutput);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -329,7 +369,12 @@ public class WorkflowOutputResource extends AppCatAbstractResource {
                     ids.get(WFOutputConstants.WF_TEMPLATE_ID),
                     ids.get(WFOutputConstants.OUTPUT_KEY)));
 
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return workflowOutput != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);

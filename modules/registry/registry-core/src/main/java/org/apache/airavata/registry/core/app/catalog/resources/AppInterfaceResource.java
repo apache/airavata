@@ -105,7 +105,12 @@ public class AppInterfaceResource extends AppCatAbstractResource {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -132,7 +137,12 @@ public class AppInterfaceResource extends AppCatAbstractResource {
             AppInterfaceResource resource =
                     (AppInterfaceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APPLICATION_INTERFACE, applicationInterface);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return resource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -171,12 +181,22 @@ public class AppInterfaceResource extends AppCatAbstractResource {
                 }
             }  else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for application interface.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for application interface.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -211,7 +231,12 @@ public class AppInterfaceResource extends AppCatAbstractResource {
                     }
                 }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -243,7 +268,12 @@ public class AppInterfaceResource extends AppCatAbstractResource {
                 }
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -280,12 +310,22 @@ public class AppInterfaceResource extends AppCatAbstractResource {
                 }
             }  else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for application interface.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for application interface.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -306,7 +346,12 @@ public class AppInterfaceResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             ApplicationInterface existigAppInterface = em.find(ApplicationInterface.class, interfaceId);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -326,7 +371,12 @@ public class AppInterfaceResource extends AppCatAbstractResource {
                 em.persist(applicationInterface);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -346,7 +396,12 @@ public class AppInterfaceResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             ApplicationInterface existigAppInterface = em.find(ApplicationInterface.class, identifier);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return existigAppInterface != null;
         }catch (Exception e) {
             logger.error(e.getMessage(), e);
