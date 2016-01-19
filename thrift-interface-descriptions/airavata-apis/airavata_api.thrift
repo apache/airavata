@@ -2610,6 +2610,11 @@ service Airavata {
 
   /**
   * Fetch all gateway profiles registered
+  *
+  * @return GatewayResourceProfile
+  *   Returns all the GatewayResourcePrifle list object.
+  *
+  *
   **/
   list<gateway_resource_profile_model.GatewayResourceProfile>
               getAllGatewayResourceProfiles(1: required security_model.AuthzToken authzToken)
