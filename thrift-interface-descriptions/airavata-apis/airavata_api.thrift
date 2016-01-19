@@ -1356,7 +1356,6 @@ service Airavata {
    *   Returns a list of Deployed Resources.
    *
   */
-
   list<string> getAppModuleDeployedResources(1: required security_model.AuthzToken authzToken, 2: required string appModuleId)
       	throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
@@ -1364,21 +1363,22 @@ service Airavata {
                 4: airavata_errors.AuthorizationException ae)
 
 /*
+ *
  * Application Interface
  *
 */
 
   /**
+   *
    * Register a Application Interface.
    *
-   * @param applicationModule
+   * @param applicationInterface
    *    Application Module Object created from the datamodel.
    *
    * @return appInterfaceId
    *   Returns a server-side generated airavata application interface globally unique identifier.
    *
   */
-
   string registerApplicationInterface(1: required security_model.AuthzToken authzToken, 2: required string gatewayId,
                 3: required application_interface_model.ApplicationInterfaceDescription applicationInterface)
     	throws (1: airavata_errors.InvalidRequestException ire,
@@ -1386,7 +1386,23 @@ service Airavata {
               3: airavata_errors.AiravataSystemException ase,
               4: airavata_errors.AuthorizationException ae)
 
-
+  /**
+   *
+   * Clone an Application Interface.
+   *
+   * @gatewayId
+   *    The identifier for the gateway profile to be requested
+   *
+   * @param existingAppInterfaceID
+   *    Identifier of the existing Application interface you wich to clone.
+   *
+   * @param newApplicationName
+   *    Name for the new application interface.
+   *
+   * @return appInterfaceId
+   *    Returns a server-side generated globally unique identifier for the newly cloned application interface.
+   *
+  */
   string cloneApplicationInterface(1: required security_model.AuthzToken authzToken,
                          2: string existingAppInterfaceID,
                          3: string newApplicationName,
@@ -1395,18 +1411,18 @@ service Airavata {
                   2: airavata_errors.AiravataClientException ace,
                   3: airavata_errors.AiravataSystemException ase,
                   4: airavata_errors.AuthorizationException ae)
+
   /**
-   * Fetch a Application Interface.
+   *
+   * Fetch an Application Interface.
    *
    * @param appInterfaceId
-   *   The identifier for the requested application module
+   *   The identifier for the requested application interface.
    *
    * @return applicationInterface
-   *   Returns a application Interface Object.
-   *
+   *   Returns an application Interface Object.
    *
   */
-
   application_interface_model.ApplicationInterfaceDescription getApplicationInterface(1: required security_model.AuthzToken authzToken,
                 2: required string appInterfaceId)
       	throws (1: airavata_errors.InvalidRequestException ire,
@@ -1415,10 +1431,11 @@ service Airavata {
                 4: airavata_errors.AuthorizationException ae)
 
   /**
+   *
    * Update a Application Interface.
    *
    * @param appInterfaceId
-   *   The identifier for the requested application deployment to be updated.
+   *   The identifier of the requested application deployment to be updated.
    *
    * @param appInterface
    *    Application Interface Object created from the datamodel.
@@ -1426,9 +1443,7 @@ service Airavata {
    * @return status
    *   Returns a success/failure of the update.
    *
-   *
   */
-
   bool updateApplicationInterface(1: required security_model.AuthzToken authzToken,
             2: required string appInterfaceId,
             3: required application_interface_model.ApplicationInterfaceDescription applicationInterface)
@@ -1438,7 +1453,8 @@ service Airavata {
                 4: airavata_errors.AuthorizationException ae)
 
   /**
-   * Delete a Application Interface.
+   *
+   * Delete an Application Interface.
    *
    * @param appInterfaceId
    *   The identifier for the requested application interface to be deleted.
@@ -1446,9 +1462,7 @@ service Airavata {
    * @return status
    *   Returns a success/failure of the deletion.
    *
-   *
   */
-
   bool deleteApplicationInterface(1: required security_model.AuthzToken authzToken, 2: required string appInterfaceId)
          	throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
@@ -1456,14 +1470,14 @@ service Airavata {
                    4: airavata_errors.AuthorizationException ae)
 
   /**
-   * Fetch name and id of  Application Interface documents.
+   *
+   * Fetch name and ID of  Application Interface documents.
    *
    *
    * @return map<applicationId, applicationInterfaceNames>
-   *   Returns a list of application interfaces with corresponsing id's
+   *   Returns a list of application interfaces with corresponsing ID's
    *
   */
-
   map<string, string> getAllApplicationInterfaceNames (1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
       	throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
@@ -1471,14 +1485,14 @@ service Airavata {
                 4: airavata_errors.AuthorizationException ae)
 
   /**
+   *
    * Fetch all Application Interface documents.
    *
    *
    * @return map<applicationId, applicationInterfaceNames>
-   *   Returns a list of application interfaces documents
+   *   Returns a list of application interfaces documents (Application Interface ID, name, description, Inputs and Outputs objects).
    *
   */
-
   list<application_interface_model.ApplicationInterfaceDescription> getAllApplicationInterfaces (1: required security_model.AuthzToken authzToken,
                 2: required string gatewayId)
       	throws (1: airavata_errors.InvalidRequestException ire,
@@ -1487,16 +1501,16 @@ service Airavata {
                 4: airavata_errors.AuthorizationException ae)
 
   /**
+   *
    * Fetch the list of Application Inputs.
    *
    * @param appInterfaceId
-   *   The identifier for the requested application interface
+   *   The identifier of the application interface which need inputs to be fetched.
    *
    * @return list<application_interface_model.InputDataObjectType>
    *   Returns a list of application inputs.
    *
   */
-
   list<application_io_models.InputDataObjectType> getApplicationInputs(1: required security_model.AuthzToken authzToken,
                 2: required string appInterfaceId)
       	throws (1: airavata_errors.InvalidRequestException ire,
@@ -1505,16 +1519,16 @@ service Airavata {
                 4: airavata_errors.AuthorizationException ae)
 
   /**
-   * Fetch the list of Application Outputs.
+   *
+   * Fetch list of Application Outputs.
    *
    * @param appInterfaceId
-   *   The identifier for the requested application interface
+   *   The identifier of the application interface which need outputs to be fetched.
    *
    * @return list<application_interface_model.OutputDataObjectType>
    *   Returns a list of application outputs.
    *
   */
-
   list<application_io_models.OutputDataObjectType> getApplicationOutputs(1: required security_model.AuthzToken authzToken,
                 2: required string appInterfaceId)
       	throws (1: airavata_errors.InvalidRequestException ire,
@@ -1523,17 +1537,17 @@ service Airavata {
                 4: airavata_errors.AuthorizationException ae)
 
   /**
+   *
    * Fetch a list of all deployed Compute Hosts for a given application interfaces.
    *
    * @param appInterfaceId
-   *   The identifier for the requested application interface
+   *   The identifier for the requested application interface.
    *
    * @return map<computeResourceId, computeResourceName>
    *   A map of registered compute resource id's and their corresponding hostnames.
-   *    Deployments of each modules listed within the interfaces will be listed.
+   *   Deployments of each modules listed within the interfaces will be listed.
    *
   */
-
   map<string, string> getAvailableAppInterfaceComputeResources(1: required security_model.AuthzToken authzToken, 2: required string appInterfaceId)
       	throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
@@ -1541,6 +1555,7 @@ service Airavata {
                 4: airavata_errors.AuthorizationException ae)
 
 /*
+ *
  * Compute Resource
  *
 */
@@ -1555,7 +1570,6 @@ service Airavata {
    *   Returns a server-side generated airavata compute resource globally unique identifier.
    *
   */
-
   string registerComputeResource(1: required security_model.AuthzToken authzToken,
                                  2: required compute_resource_model.ComputeResourceDescription computeResourceDescription)
     	throws (1: airavata_errors.InvalidRequestException ire,
@@ -1573,7 +1587,6 @@ service Airavata {
    *    Compute Resource Object created from the datamodel..
    *
   */
-
   compute_resource_model.ComputeResourceDescription getComputeResource(1: required security_model.AuthzToken authzToken,
                 2: required string computeResourceId)
       	throws (1: airavata_errors.InvalidRequestException ire,
@@ -1582,13 +1595,13 @@ service Airavata {
                 4: airavata_errors.AuthorizationException ae)
 
   /**
+   *
    * Fetch all registered Compute Resources.
    *
    * @return A map of registered compute resource id's and thier corresponding hostnames.
    *    Compute Resource Object created from the datamodel..
    *
   */
-
   map<string, string> getAllComputeResourceNames(1: required security_model.AuthzToken authzToken)
       	throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
@@ -1627,7 +1640,6 @@ service Airavata {
    *   Returns a success/failure of the deletion.
    *
   */
-
   bool deleteComputeResource(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId)
          	throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
@@ -1635,6 +1647,7 @@ service Airavata {
                    4: airavata_errors.AuthorizationException ae)
 
 /*
+ *
  * Storage Resource
  *
 */
@@ -1690,7 +1703,7 @@ service Airavata {
                 4: airavata_errors.AuthorizationException ae)
 
   /**
-   * Update a Compute Resource.
+   * Update a Storage Resource.
    *
    * @param storageResourceId
    *   The identifier for the requested compute resource to be updated.
@@ -1715,7 +1728,7 @@ service Airavata {
    * Delete a Storage Resource.
    *
    * @param storageResourceId
-   *   The identifier for the requested compute resource to be deleted.
+   *   The identifier of the requested compute resource to be deleted.
    *
    * @return status
    *   Returns a success/failure of the deletion.
@@ -2547,6 +2560,23 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
+  /**
+   * Add a Storage Resource Preference to a registered gateway profile.
+   *
+   * @param gatewayID
+   *   The identifier of the gateway profile to be added.
+   *
+   * @param storageResourceId
+   *   Preferences related to a particular compute resource
+   *
+   * @param computeResourcePreference
+   *   The ComputeResourcePreference object to be added to the resource profile.
+   *
+   * @return status
+   *   Returns a success/failure of the addition. If a profile already exists, this operation will fail.
+   *    Instead an update should be used.
+   *
+  */
   bool addGatewayStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string gatewayID,
               3: required string storageResourceId,
               4: required gateway_resource_profile_model.StoragePreference storagePreference)
