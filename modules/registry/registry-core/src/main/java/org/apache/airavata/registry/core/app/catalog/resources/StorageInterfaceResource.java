@@ -92,7 +92,12 @@ public class StorageInterfaceResource extends AppCatAbstractResource {
 			Query q = generator.deleteQuery(em);
 			q.executeUpdate();
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -126,7 +131,12 @@ public class StorageInterfaceResource extends AppCatAbstractResource {
 			StorageInterface storageInterface = (StorageInterface) q.getSingleResult();
 			StorageInterfaceResource storageInterfaceResource = (StorageInterfaceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.STORAGE_INTERFACE, storageInterface);
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return storageInterfaceResource;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
@@ -161,12 +171,22 @@ public class StorageInterfaceResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Data Movement Interface Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Data Movement Interface Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -211,12 +231,22 @@ public class StorageInterfaceResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Storage Interface Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Storage Interface Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -237,7 +267,12 @@ public class StorageInterfaceResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			StorageInterface existingStorageInterface = em.find(StorageInterface.class, new StorageInterface_PK(storageResourceId, dataMovementInterfaceId));
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			StorageInterface storageInterface;
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
@@ -260,7 +295,12 @@ public class StorageInterfaceResource extends AppCatAbstractResource {
 				em.merge(storageInterface);
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -287,7 +327,12 @@ public class StorageInterfaceResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			StorageInterface storageInterface = em.find(StorageInterface.class, new StorageInterface_PK(ids.get(StorageInterfaceConstants.STORAGE_RESOURCE_ID), ids.get(StorageInterfaceConstants.DATA_MOVEMENT_ID)));
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return storageInterface != null;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);

@@ -87,7 +87,12 @@ public class JobSubmissionInterfaceResource extends AppCatAbstractResource {
 			Query q = generator.deleteQuery(em);
 			q.executeUpdate();
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -121,7 +126,12 @@ public class JobSubmissionInterfaceResource extends AppCatAbstractResource {
 			JobSubmissionInterface jobSubmissionInterface = (JobSubmissionInterface) q.getSingleResult();
 			JobSubmissionInterfaceResource jobSubmissionInterfaceResource = (JobSubmissionInterfaceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.JOB_SUBMISSION_INTERFACE, jobSubmissionInterface);
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return jobSubmissionInterfaceResource;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
@@ -156,12 +166,22 @@ public class JobSubmissionInterfaceResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Job Submission Interface Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Job Submission Interface Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -206,12 +226,22 @@ public class JobSubmissionInterfaceResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Job Submission Interface Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Job Submission Interface Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -232,7 +262,12 @@ public class JobSubmissionInterfaceResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			JobSubmissionInterface existingJobSubmissionInterface = em.find(JobSubmissionInterface.class, new JobSubmissionInterface_PK(jobSubmissionInterfaceId, computeResourceId));
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			JobSubmissionInterface jobSubmissionInterface;
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
@@ -255,7 +290,12 @@ public class JobSubmissionInterfaceResource extends AppCatAbstractResource {
 				em.merge(jobSubmissionInterface);
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -282,7 +322,12 @@ public class JobSubmissionInterfaceResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			JobSubmissionInterface jobSubmissionInterface = em.find(JobSubmissionInterface.class, new JobSubmissionInterface_PK(ids.get(JobSubmissionInterfaceConstants.JOB_SUBMISSION_INTERFACE_ID), ids.get(JobSubmissionInterfaceConstants.COMPUTE_RESOURCE_ID)));
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return jobSubmissionInterface != null;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);

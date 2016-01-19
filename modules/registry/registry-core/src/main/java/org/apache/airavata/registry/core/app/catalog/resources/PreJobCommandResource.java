@@ -66,7 +66,12 @@ public class PreJobCommandResource extends AppCatAbstractResource {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -103,7 +108,12 @@ public class PreJobCommandResource extends AppCatAbstractResource {
                     (PreJobCommandResource) AppCatalogJPAUtils.getResource(
                             AppCatalogResourceType.PRE_JOBCOMMAND, preJobCommand);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return preJobCommandResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -144,12 +154,22 @@ public class PreJobCommandResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for Pre Job Command Resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for Pre Job Command Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -205,12 +225,22 @@ public class PreJobCommandResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for GSISSH Pre Job resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for GSISSH Pre JOb Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -231,7 +261,12 @@ public class PreJobCommandResource extends AppCatAbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             PreJobCommand existingPreJobCommand = em.find(PreJobCommand.class,
                     new PreJobCommandPK(appDeploymentId, command));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -251,7 +286,12 @@ public class PreJobCommandResource extends AppCatAbstractResource {
                 em.persist(preJobCommand);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -281,7 +321,12 @@ public class PreJobCommandResource extends AppCatAbstractResource {
                     ids.get(PreJobCommandConstants.DEPLOYMENT_ID),
                     ids.get(PreJobCommandConstants.COMMAND)));
 
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return preJobCommand != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);

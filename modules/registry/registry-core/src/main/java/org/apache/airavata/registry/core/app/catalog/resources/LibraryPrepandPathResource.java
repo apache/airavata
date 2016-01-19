@@ -99,7 +99,12 @@ public class LibraryPrepandPathResource extends AppCatAbstractResource {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -134,7 +139,12 @@ public class LibraryPrepandPathResource extends AppCatAbstractResource {
             LibraryPrepandPathResource resource =
                     (LibraryPrepandPathResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.LIBRARY_PREPAND_PATH, libraryPrepandPath);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return resource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -185,12 +195,22 @@ public class LibraryPrepandPathResource extends AppCatAbstractResource {
                 }
             }else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for libraryPrepandPath resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for libraryPrepandPath resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -227,7 +247,12 @@ public class LibraryPrepandPathResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             LibraryPrepandPath existigPrepPath = em.find(LibraryPrepandPath.class, new LibraryPrepandPath_PK(deploymentId, name));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -245,7 +270,12 @@ public class LibraryPrepandPathResource extends AppCatAbstractResource {
                 em.persist(prepandPath);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -274,7 +304,12 @@ public class LibraryPrepandPathResource extends AppCatAbstractResource {
             LibraryPrepandPath prepandPath = em.find(LibraryPrepandPath.class,
                                                           new LibraryPrepandPath_PK(ids.get(LibraryPrepandPathConstants.DEPLOYMENT_ID),
                                                                                     ids.get(LibraryPrepandPathConstants.NAME)));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return prepandPath != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);

@@ -144,7 +144,12 @@ public class AppDeploymentResource extends AppCatAbstractResource {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -171,7 +176,12 @@ public class AppDeploymentResource extends AppCatAbstractResource {
             AppDeploymentResource deploymentResource =
                     (AppDeploymentResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APPLICATION_DEPLOYMENT, deployment);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return deploymentResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -222,12 +232,22 @@ public class AppDeploymentResource extends AppCatAbstractResource {
                 }
             }else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for app deployment resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for app deployment resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -262,7 +282,12 @@ public class AppDeploymentResource extends AppCatAbstractResource {
                     }
                 }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -294,7 +319,12 @@ public class AppDeploymentResource extends AppCatAbstractResource {
                 }
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -341,7 +371,12 @@ public class AppDeploymentResource extends AppCatAbstractResource {
                 }
             }else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for app deployment resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for app deployment resource.");
             }
@@ -367,7 +402,12 @@ public class AppDeploymentResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             ApplicationDeployment existingDeployment = em.find(ApplicationDeployment.class, deploymentId);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -400,7 +440,12 @@ public class AppDeploymentResource extends AppCatAbstractResource {
                 em.persist(deployment);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -421,7 +466,12 @@ public class AppDeploymentResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             ApplicationDeployment deployment = em.find(ApplicationDeployment.class, identifier);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return deployment != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);

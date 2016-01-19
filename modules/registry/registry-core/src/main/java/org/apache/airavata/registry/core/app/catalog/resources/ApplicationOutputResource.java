@@ -75,7 +75,12 @@ public class ApplicationOutputResource extends AppCatAbstractResource {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -112,7 +117,12 @@ public class ApplicationOutputResource extends AppCatAbstractResource {
                     (ApplicationOutputResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APPLICATION_OUTPUT
                             , applicationOutput);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return applicationOutputResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -177,12 +187,22 @@ public class ApplicationOutputResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for App Output Resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for App Output Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -254,7 +274,12 @@ public class ApplicationOutputResource extends AppCatAbstractResource {
                 throw new IllegalArgumentException("Unsupported field name for App Output Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -275,7 +300,12 @@ public class ApplicationOutputResource extends AppCatAbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             ApplicationIntOutput existingApplicationOutput = em.find(ApplicationIntOutput.class,
                     new AppOutput_PK(interfaceID, outputKey));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             ApplicationIntOutput applicationOutput;
             em = AppCatalogJPAUtils.getEntityManager();
@@ -300,7 +330,12 @@ public class ApplicationOutputResource extends AppCatAbstractResource {
             applicationOutput.setOutputStreaming(outputStreaming);
             em.merge(applicationOutput);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -330,7 +365,12 @@ public class ApplicationOutputResource extends AppCatAbstractResource {
                     ids.get(AppOutputConstants.INTERFACE_ID),
                     ids.get(AppOutputConstants.OUTPUT_KEY)));
 
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return applicationOutput != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);

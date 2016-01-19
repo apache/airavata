@@ -51,7 +51,12 @@ public class LocalDataMovementResource extends AppCatAbstractResource {
 			Query q = generator.deleteQuery(em);
 			q.executeUpdate();
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -77,7 +82,12 @@ public class LocalDataMovementResource extends AppCatAbstractResource {
 			LocalDataMovement localDataMovement = (LocalDataMovement) q.getSingleResult();
 			LocalDataMovementResource localDataMovementResource = (LocalDataMovementResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.LOCAL_DATA_MOVEMENT, localDataMovement);
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return localDataMovementResource;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
@@ -112,12 +122,22 @@ public class LocalDataMovementResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Local Data Movement Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Local Data Movement Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -162,12 +182,22 @@ public class LocalDataMovementResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Local Data Movement Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Local Data Movement Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -188,7 +218,13 @@ public class LocalDataMovementResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			LocalDataMovement existingLocalDataMovement = em.find(LocalDataMovement.class, dataMovementInterfaceId);
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+
 			LocalDataMovement localDataMovement;
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
@@ -204,7 +240,12 @@ public class LocalDataMovementResource extends AppCatAbstractResource {
 				em.merge(localDataMovement);
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -224,7 +265,12 @@ public class LocalDataMovementResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			LocalDataMovement localDataMovement = em.find(LocalDataMovement.class, identifier);
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return localDataMovement != null;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);

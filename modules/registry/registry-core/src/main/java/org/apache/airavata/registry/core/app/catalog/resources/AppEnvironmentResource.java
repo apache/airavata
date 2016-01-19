@@ -106,7 +106,12 @@ public class AppEnvironmentResource extends AppCatAbstractResource{
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -141,7 +146,12 @@ public class AppEnvironmentResource extends AppCatAbstractResource{
             AppEnvironmentResource resource =
                     (AppEnvironmentResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APP_ENVIRONMENT, appEnvironment);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return resource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -197,7 +207,12 @@ public class AppEnvironmentResource extends AppCatAbstractResource{
                 throw new IllegalArgumentException("Unsupported field name for App Environment resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -234,7 +249,12 @@ public class AppEnvironmentResource extends AppCatAbstractResource{
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             AppEnvironment existigAppEnv = em.find(AppEnvironment.class, new AppEnvironment_PK(deploymentId, name));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -255,7 +275,12 @@ public class AppEnvironmentResource extends AppCatAbstractResource{
                 em.persist(appEnvironment);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);

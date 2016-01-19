@@ -51,7 +51,12 @@ public class GlobusJobSubmissionResource extends AppCatAbstractResource {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -78,7 +83,12 @@ public class GlobusJobSubmissionResource extends AppCatAbstractResource {
                     (GlobusJobSubmissionResource) AppCatalogJPAUtils.getResource(
                             AppCatalogResourceType.GLOBUS_SUBMISSION, globusJobSubmission);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return globusJobSubmissionResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -130,12 +140,22 @@ public class GlobusJobSubmissionResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for Globus submission resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for Globus Submission resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -212,12 +232,22 @@ public class GlobusJobSubmissionResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for Globus Submission resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for Globus Submission resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -254,7 +284,12 @@ public class GlobusJobSubmissionResource extends AppCatAbstractResource {
                 em.persist(globusJobSubmission);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -273,7 +308,12 @@ public class GlobusJobSubmissionResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             GlobusJobSubmission globusJobSubmission = em.find(GlobusJobSubmission.class, identifier);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return globusJobSubmission != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);

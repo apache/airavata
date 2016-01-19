@@ -65,7 +65,12 @@ public class GlobusGKEndpointResource extends AppCatAbstractResource {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -100,7 +105,12 @@ public class GlobusGKEndpointResource extends AppCatAbstractResource {
             GlobusGKEndpointResource gkEndpointResource =
                     (GlobusGKEndpointResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.GLOBUS_GK_ENDPOINT, gkEndpoint);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return gkEndpointResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -150,12 +160,22 @@ public class GlobusGKEndpointResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for Globus Endpoint Resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for Globus Endpoint Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -211,12 +231,22 @@ public class GlobusGKEndpointResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for Globus EP resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for Globus EP Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -236,7 +266,12 @@ public class GlobusGKEndpointResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             GlobusGKEndpoint existingGlobusEP = em.find(GlobusGKEndpoint.class, new GlobusGKEndPointPK(submissionID, endpoint));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -254,7 +289,12 @@ public class GlobusGKEndpointResource extends AppCatAbstractResource {
                 em.persist(globusGKEndpoint);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -283,7 +323,12 @@ public class GlobusGKEndpointResource extends AppCatAbstractResource {
             GlobusGKEndpoint gkEndpoint = em.find(GlobusGKEndpoint.class, new GlobusGKEndPointPK(ids.get(GlobusEPConstants.SUBMISSION_ID),
                     ids.get(GlobusEPConstants.ENDPOINT)));
 
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return gkEndpoint != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);

@@ -53,7 +53,12 @@ public class UnicoreDataMovementResource extends AppCatAbstractResource {
 	            Query q = generator.deleteQuery(em);
 	            q.executeUpdate();
 	            em.getTransaction().commit();
-	            em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 	        } catch (ApplicationSettingsException e) {
 	            logger.error(e.getMessage(), e);
 	            throw new AppCatalogException(e);
@@ -81,7 +86,12 @@ public class UnicoreDataMovementResource extends AppCatAbstractResource {
 	            			.getResource(AppCatalogResourceType.UNICORE_DATA_MOVEMENT,
 							unicoreDataMovement);
 	            em.getTransaction().commit();
-	            em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 	            return dataMovementResource;
 	        } catch (ApplicationSettingsException e) {
 	            logger.error(e.getMessage(), e);
@@ -134,7 +144,12 @@ public class UnicoreDataMovementResource extends AppCatAbstractResource {
 	                }
 	            } else {
 	                em.getTransaction().commit();
-	                em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
 	                logger.error("Unsupported field name for Unicore data movement resource.", new IllegalArgumentException());
 	                throw new IllegalArgumentException("Unsupported field name for Unicore data movement resource.");
 	            }
@@ -175,7 +190,12 @@ public class UnicoreDataMovementResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             UnicoreDataMovement existingDataMovement = em.find(UnicoreDataMovement.class, dataMovementId);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -192,7 +212,12 @@ public class UnicoreDataMovementResource extends AppCatAbstractResource {
                 em.persist(unicoreJobSubmission);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -211,7 +236,12 @@ public class UnicoreDataMovementResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             UnicoreDataMovement dataMovement = em.find(UnicoreDataMovement.class, identifier);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return dataMovement != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);

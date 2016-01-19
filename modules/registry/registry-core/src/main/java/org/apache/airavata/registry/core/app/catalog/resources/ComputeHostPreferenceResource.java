@@ -173,7 +173,12 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -209,7 +214,12 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
             ComputeHostPreferenceResource preferenceResource =
                     (ComputeHostPreferenceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.COMPUTE_RESOURCE_PREFERENCE, preference);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return preferenceResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -298,12 +308,22 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for Compute host preference Resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for Compute host preference Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -340,7 +360,12 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             ComputeResourcePreference existingPreference = em.find(ComputeResourcePreference.class, new ComputeResourcePreferencePK(gatewayId, resourceId));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -377,7 +402,12 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
                 em.persist(resourcePreference);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -407,7 +437,12 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
             ComputeResourcePreference existingPreference = em.find(ComputeResourcePreference.class,
                     new ComputeResourcePreferencePK(ids.get(ComputeResourcePreferenceConstants.GATEWAY_ID),
                             ids.get(ComputeResourcePreferenceConstants.RESOURCE_ID)));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return existingPreference != null;
         }catch (Exception e) {
             logger.error(e.getMessage(), e);

@@ -56,7 +56,12 @@ public class UnicoreJobSubmissionResource extends AppCatAbstractResource {
 	            Query q = generator.deleteQuery(em);
 	            q.executeUpdate();
 	            em.getTransaction().commit();
-	            em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 	        } catch (ApplicationSettingsException e) {
 	            logger.error(e.getMessage(), e);
 	            throw new AppCatalogException(e);
@@ -85,7 +90,12 @@ public class UnicoreJobSubmissionResource extends AppCatAbstractResource {
 	            			.getResource(AppCatalogResourceType.UNICORE_JOB_SUBMISSION,
 							unicoreJobSubmission);
 	            em.getTransaction().commit();
-	            em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 	            return unicoreSubmissionResource;
 	        } catch (ApplicationSettingsException e) {
 	            logger.error(e.getMessage(), e);
@@ -139,12 +149,22 @@ public class UnicoreJobSubmissionResource extends AppCatAbstractResource {
 	            }        
 	            else {
 	                em.getTransaction().commit();
-	                em.close();
+                    if (em.isOpen()) {
+                        if (em.getTransaction().isActive()){
+                            em.getTransaction().rollback();
+                        }
+                        em.close();
+                    }
 	                logger.error("Unsupported field name for Unicore submission resource.", new IllegalArgumentException());
 	                throw new IllegalArgumentException("Unsupported field name for Unicore Submission resource.");
 	            }
 	            em.getTransaction().commit();
-	            em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 	        } catch (Exception e) {
 	            logger.error(e.getMessage(), e);
 	            throw new AppCatalogException(e);
@@ -223,12 +243,22 @@ public class UnicoreJobSubmissionResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for Globus Submission resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for Globus Submission resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -248,7 +278,12 @@ public class UnicoreJobSubmissionResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             UnicoreJobSubmission existingUnicoreSubmission = em.find(UnicoreJobSubmission.class, jobSubmissionInterfaceId);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -266,7 +301,12 @@ public class UnicoreJobSubmissionResource extends AppCatAbstractResource {
                 em.persist(unicoreJobSubmission);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -285,7 +325,12 @@ public class UnicoreJobSubmissionResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             UnicoreJobSubmission unicoreJobSubmission = em.find(UnicoreJobSubmission.class, identifier);
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return unicoreJobSubmission != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);

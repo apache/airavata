@@ -72,7 +72,12 @@ public class ScpDataMovementResource extends AppCatAbstractResource {
 			Query q = generator.deleteQuery(em);
 			q.executeUpdate();
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -98,7 +103,12 @@ public class ScpDataMovementResource extends AppCatAbstractResource {
 			ScpDataMovement scpDataMovement = (ScpDataMovement) q.getSingleResult();
 			ScpDataMovementResource scpDataMovementResource = (ScpDataMovementResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SCP_DATA_MOVEMENT, scpDataMovement);
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return scpDataMovementResource;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
@@ -133,12 +143,22 @@ public class ScpDataMovementResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Scp Data Movement Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Scp Data Movement Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -183,12 +203,22 @@ public class ScpDataMovementResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Scp Data Movement Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Scp Data Movement Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -209,7 +239,12 @@ public class ScpDataMovementResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			ScpDataMovement existingScpDataMovement = em.find(ScpDataMovement.class, dataMovementInterfaceId);
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			ScpDataMovement scpDataMovement;
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
@@ -231,7 +266,12 @@ public class ScpDataMovementResource extends AppCatAbstractResource {
 				em.merge(scpDataMovement);
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -251,7 +291,12 @@ public class ScpDataMovementResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			ScpDataMovement scpDataMovement = em.find(ScpDataMovement.class, identifier);
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return scpDataMovement != null;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);

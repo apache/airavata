@@ -64,7 +64,12 @@ public class ModuleLoadCmdResource extends AppCatAbstractResource {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -98,7 +103,12 @@ public class ModuleLoadCmdResource extends AppCatAbstractResource {
             ModuleLoadCmd moduleLoadCmd = (ModuleLoadCmd) q.getSingleResult();
             ModuleLoadCmdResource moduleLoadCmdResource = (ModuleLoadCmdResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.MODULE_LOAD_CMD, moduleLoadCmd);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return moduleLoadCmdResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -135,12 +145,22 @@ public class ModuleLoadCmdResource extends AppCatAbstractResource {
                         (o1, o2) -> ((ModuleLoadCmdResource)o1).getOrder()- ((ModuleLoadCmdResource)o2).getOrder());
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for Module Load Cmd Resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for Module Load Cmd Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -185,12 +205,22 @@ public class ModuleLoadCmdResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for Module Load Cmd Resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for Module Load Cmd Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -211,7 +241,13 @@ public class ModuleLoadCmdResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             ModuleLoadCmd existingModuleLoadCmd = em.find(ModuleLoadCmd.class, new ModuleLoadCmd_PK(cmd, appDeploymentId));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+
             ModuleLoadCmd moduleLoadCmd;
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -231,7 +267,12 @@ public class ModuleLoadCmdResource extends AppCatAbstractResource {
                 em.merge(moduleLoadCmd);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -258,7 +299,12 @@ public class ModuleLoadCmdResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             ModuleLoadCmd moduleLoadCmd = em.find(ModuleLoadCmd.class, new ModuleLoadCmd_PK(ids.get(ModuleLoadCmdConstants.CMD), ids.get(ModuleLoadCmdConstants.APP_DEPLOYMENT_ID)));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return moduleLoadCmd != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);

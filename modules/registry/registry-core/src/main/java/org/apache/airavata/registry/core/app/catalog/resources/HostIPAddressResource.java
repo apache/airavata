@@ -55,7 +55,12 @@ public class HostIPAddressResource extends AppCatAbstractResource {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -91,7 +96,12 @@ public class HostIPAddressResource extends AppCatAbstractResource {
             HostIPAddressResource hostIPAddressResource =
                     (HostIPAddressResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.HOST_IPADDRESS, hostIPAddress);
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return hostIPAddressResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
@@ -142,12 +152,22 @@ public class HostIPAddressResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for Host IPAddress Resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for Host IPAddress Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -204,12 +224,22 @@ public class HostIPAddressResource extends AppCatAbstractResource {
                 }
             } else {
                 em.getTransaction().commit();
-                em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
                 logger.error("Unsupported field name for Host IP Address resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported field name for Host IPAddress Resource.");
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -229,7 +259,12 @@ public class HostIPAddressResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             HostIPAddress existingHostIP = em.find(HostIPAddress.class, new HostIPAddressPK(resourceID,ipaddress));
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
@@ -247,7 +282,12 @@ public class HostIPAddressResource extends AppCatAbstractResource {
                 em.persist(hostIPAddress);
             }
             em.getTransaction().commit();
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -277,7 +317,12 @@ public class HostIPAddressResource extends AppCatAbstractResource {
             HostIPAddress hostIPAddress = em.find(HostIPAddress.class, new HostIPAddressPK(ids.get(HostIPAddressConstants.RESOURCE_ID),
                     ids.get(HostIPAddressConstants.IP_ADDRESS)));
 
-            em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
             return hostIPAddress != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);

@@ -74,7 +74,12 @@ public class ResourceJobManagerResource extends AppCatAbstractResource {
 			Query q = generator.deleteQuery(em);
 			q.executeUpdate();
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -100,7 +105,12 @@ public class ResourceJobManagerResource extends AppCatAbstractResource {
 			ResourceJobManager resourceJobManager = (ResourceJobManager) q.getSingleResult();
 			ResourceJobManagerResource resourceJobManagerResource = (ResourceJobManagerResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.RESOURCE_JOB_MANAGER, resourceJobManager);
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return resourceJobManagerResource;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
@@ -135,12 +145,22 @@ public class ResourceJobManagerResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Resource Job Manager Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Resource Job Manager Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -185,12 +205,22 @@ public class ResourceJobManagerResource extends AppCatAbstractResource {
 				}
 			} else {
 				em.getTransaction().commit();
-					em.close();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
+                }
 				logger.error("Unsupported field name for Resource Job Manager Resource.", new IllegalArgumentException());
 				throw new IllegalArgumentException("Unsupported field name for Resource Job Manager Resource.");
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -211,7 +241,13 @@ public class ResourceJobManagerResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			ResourceJobManager existingResourceJobManager = em.find(ResourceJobManager.class, resourceJobManagerId);
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+
 			ResourceJobManager resourceJobManager;
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
@@ -232,7 +268,12 @@ public class ResourceJobManagerResource extends AppCatAbstractResource {
 				em.merge(resourceJobManager);
 			}
 			em.getTransaction().commit();
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -252,7 +293,12 @@ public class ResourceJobManagerResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			ResourceJobManager resourceJobManager = em.find(ResourceJobManager.class, identifier);
-			em.close();
+            if (em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
 			return resourceJobManager != null;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
