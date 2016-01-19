@@ -1838,6 +1838,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throws AuthorizationException, TException {
     	try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            appCatalog = RegistryFactory.getAppCatalog();
 			if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)) {
                 logger.error(airavataExperimentId, "Error while launching experiment, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
@@ -1846,21 +1847,35 @@ public class AiravataServerHandler implements Airavata.Iface {
                 logger.error(airavataExperimentId, "Error while launching experiment, gatewayId {} doesn't exist.", gatewayId);
                 throw new ExperimentNotFoundException("Requested gateway id " + gatewayId + " does not exist in the system..");
             }
+            ExperimentModel experiment = getExperimentInternal(airavataExperimentId);
+            String applicationID = experiment.getExecutionId();
+            if (!appCatalog.getApplicationInterface().isApplicationInterfaceExists(applicationID)){
+                logger.error(airavataExperimentId, "Error while launching experiment, application id {} for experiment {} doesn't exist.", applicationID, airavataExperimentId);
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("Error while launching experiment, application id : " + applicationID  + " for experiment : " + airavataExperimentId +
+                        " doesn't exist..");
+                throw exception;
+            }
+            OrchestratorService.Client orchestratorClient = getOrchestratorClient();
+            if (orchestratorClient.validateExperiment(airavataExperimentId)) {
+                orchestratorClient.launchExperiment(airavataExperimentId, gatewayId);
+                logger.info("Airavata launched experiment with experiment id : " + airavataExperimentId);
+            }else {
+                logger.error(airavataExperimentId, "Couldn't identify experiment type, experiment {} is neither single application nor workflow.", airavataExperimentId);
+                throw new InvalidRequestException("Experiment '" + airavataExperimentId + "' launch failed. Unable to figureout execution type for application " + applicationID);
+            }
         } catch (RegistryException e1) {
             logger.error(airavataExperimentId, "Error while instantiate the registry instance", e1);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while instantiate the registry instance. More info : " + e1.getMessage());
             throw exception;
-        }
-    	ExperimentModel experiment = getExperimentInternal(airavataExperimentId);
-    	OrchestratorService.Client orchestratorClient = getOrchestratorClient();
-    	if (orchestratorClient.validateExperiment(airavataExperimentId)) {
-    		orchestratorClient.launchExperiment(airavataExperimentId, gatewayId);
-            logger.info("Airavata launched experiment with experiment id : " + airavataExperimentId);
-    	}else {
-            logger.error(airavataExperimentId, "Couldn't identify experiment type, experiment {} is neither single application nor workflow.", airavataExperimentId);
-            throw new InvalidRequestException("Experiment '" + airavataExperimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getExecutionId());
+        } catch (AppCatalogException e) {
+            logger.error(airavataExperimentId, "Error while instantiate the registry instance", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while instantiate the registry instance. More info : " + e.getMessage());
         }
     }
 
