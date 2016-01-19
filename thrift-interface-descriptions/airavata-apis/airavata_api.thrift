@@ -2555,6 +2555,7 @@ service Airavata {
               3: airavata_errors.AiravataSystemException ase,
               4: airavata_errors.AuthorizationException ae)
   /**
+   *
    * Fetch a Compute Resource Preference of a registered gateway profile.
    *
    * @param gatewayID
@@ -2575,6 +2576,20 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
+  /**
+   *
+   * Fetch a Storage Resource Preference of a registered gateway profile.
+   *
+   * @param gatewayID
+   *   The identifier of the gateway profile to request to fetch the particular storage resource preference.
+   *
+   * @param storageResourceId
+   *   Identifier of the Stprage Preference required to be fetched.
+   *
+   * @return StoragePreference
+   *   Returns the StoragePreference object.
+   *
+  */
   gateway_resource_profile_model.StoragePreference getGatewayStoragePreference(1: required security_model.AuthzToken authzToken,
               2: required string gatewayID,
               3: required string storageResourceId)
@@ -2584,6 +2599,7 @@ service Airavata {
               4: airavata_errors.AuthorizationException ae)
 
   /**
+   *
    * Fetch all Compute Resource Preferences of a registered gateway profile.
    *
    * @param gatewayID
@@ -2600,6 +2616,16 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
+  /**
+  * Fetch all Storage Resource Preferences of a registered gateway profile.
+  *
+  * @param gatewayID
+  *   The identifier for the gateway profile to be requested
+  *
+  * @return StoragePreference
+  *   Returns the StoragePreference object.
+  *
+ */
 
   list<gateway_resource_profile_model.StoragePreference>
               getAllGatewayStoragePreferences(1: required security_model.AuthzToken authzToken, 2: required string gatewayID)
@@ -2609,11 +2635,11 @@ service Airavata {
               4: airavata_errors.AuthorizationException ae)
 
   /**
-  * Fetch all gateway profiles registered
+  *
+  * Fetch all Gateway Profiles registered
   *
   * @return GatewayResourceProfile
   *   Returns all the GatewayResourcePrifle list object.
-  *
   *
   **/
   list<gateway_resource_profile_model.GatewayResourceProfile>
@@ -2647,6 +2673,23 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
+    /**
+     * Update a Storage Resource Preference of a registered gateway profile.
+     *
+     * @param gatewayID
+     *   The identifier of the gateway profile to be updated.
+     *
+     * @param storageId
+     *   The Storage resource identifier of the one that you want to update
+     *
+     * @param storagePreference
+     *   The storagePreference object to be updated to the resource profile.
+     *
+     * @return status
+     *   Returns a success/failure of the updation.
+     *
+    */
+
   bool updateGatewayStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string gatewayID,
               3: required string storageId,
               4: required gateway_resource_profile_model.StoragePreference storagePreference)
@@ -2675,6 +2718,21 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
+
+  /**
+   * Delete the Storage Resource Preference of a registered gateway profile.
+   *
+   * @param gatewayID
+   *   The identifier of the gateway profile to be deleted.
+   *
+   * @param storageId
+   *   ID of the storage preference you want to delete.
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+  */
+
   bool deleteGatewayStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string gatewayID,
               3: required string storageId)
     	throws (1: airavata_errors.InvalidRequestException ire,
@@ -2682,11 +2740,31 @@ service Airavata {
               3: airavata_errors.AiravataSystemException ase,
               4: airavata_errors.AuthorizationException ae)
 
+  /**
+   * Delete the Storage Resource Preference of a registered gateway profile.
+   *
+   * @param gatewayID
+   *   The identifier of the gateway profile to be deleted.
+   *
+   * @param storageId
+   *   ID of the storage preference you want to delete.
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+  */
+
   list<string> getAllWorkflows(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
           throws (1: airavata_errors.InvalidRequestException ire,
                   2: airavata_errors.AiravataClientException ace,
                   3: airavata_errors.AiravataSystemException ase,
                   4: airavata_errors.AuthorizationException ae)
+
+  /**
+   *
+   * API Methods Related for Work-Flow Submission Features.
+   *
+  */
 
   workflow_data_model.Workflow getWorkflow (1: required security_model.AuthzToken authzToken, 2: required string workflowTemplateId)
         throws (1: airavata_errors.InvalidRequestException ire,
@@ -2727,7 +2805,9 @@ service Airavata {
                   4: airavata_errors.AuthorizationException ae)
 
  /**
-  * Data Manager Related API Methods
+  *
+  * Data Manager Related API Methods.
+  *
  **/
  string registerDataResource(1: required security_model.AuthzToken authzToken, 2: required replica_catalog_models.DataResourceModel dataResourceModel)
           throws (1: airavata_errors.InvalidRequestException ire,
