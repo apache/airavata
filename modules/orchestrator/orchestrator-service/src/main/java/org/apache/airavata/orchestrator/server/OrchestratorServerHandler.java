@@ -538,7 +538,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 					}
 					if (status.getState() != null) {
 						status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-						OrchestratorUtils.updageAndPublishExperimentStatus(processIdentity.getExperimentId(), status, publisher, gatewayName);
+						OrchestratorUtils.updageAndPublishExperimentStatus(processIdentity.getExperimentId(), status, publisher,  processIdentity.getGatewayId());
 						log.info("expId : " + processIdentity.getExperimentId() + " :- Experiment status updated to " +
 								status.getState());
 					}
