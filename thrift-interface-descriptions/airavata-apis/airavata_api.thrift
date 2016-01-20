@@ -201,7 +201,6 @@ service Airavata {
    *   belonging to a Gateway.
    *
    **/
-
    string generateAndRegisterSSHKeys (1: required security_model.AuthzToken authzToken,
                     2: required string gatewayId,
                     3: required string userName)
@@ -221,7 +220,6 @@ service Airavata {
    * @return publicKey
    *
    **/
-
    string getSSHPubKey (1: required security_model.AuthzToken authzToken,
                         2: required string airavataCredStoreToken,
                         3: required string gatewayId)
@@ -230,6 +228,7 @@ service Airavata {
                    3: airavata_errors.AiravataSystemException ase)
 
    /**
+   *
    * Get a Public Key by Providing the Token
    *
    * @param CredStoreToken
@@ -249,6 +248,7 @@ service Airavata {
                    3: airavata_errors.AiravataSystemException ase)
 
    /**
+   *
    * Get all Public Keys of the Gateway
    *
    * @param CredStoreToken
@@ -260,7 +260,6 @@ service Airavata {
    * @return publicKey
    *
    **/
-
   map<string, string> getAllGatewaySSHPubKeys (1: required security_model.AuthzToken authzToken,
                                                2: required string gatewayId)
              throws (1: airavata_errors.InvalidRequestException ire,
@@ -268,6 +267,7 @@ service Airavata {
                      3: airavata_errors.AiravataSystemException ase)
 
     /**
+    *
     * Delete a Gateway
     *
     * @param gatewayId
@@ -277,7 +277,6 @@ service Airavata {
     *    Boolean identifier for the success or failure of the deletion operation.
     *
     **/
-
   bool deleteSSHPubKey (1: required security_model.AuthzToken authzToken,
                           2: required string airavataCredStoreToken,
                           3: required string gatewayId)
@@ -286,6 +285,7 @@ service Airavata {
                      3: airavata_errors.AiravataSystemException ase)
 
    /**
+   *
    * Creates a Project with basic metadata.
    *    A Project is a container of experiments.
    *
@@ -293,10 +293,9 @@ service Airavata {
    *    The identifier for the requested gateway.
    *
    * @param Project
-   *    The Project Object described in the workspace_model
+   *    The Project Object described in the workspace_model.
    *
    **/
-
   string createProject (1: required security_model.AuthzToken authzToken,
                         2: required string gatewayId,
                         3: required workspace_model.Project project)
@@ -306,6 +305,7 @@ service Airavata {
                   4: airavata_errors.AuthorizationException ae)
 
    /**
+   *
    * Update an Existing Project
    *
    * @param projectId
@@ -315,7 +315,6 @@ service Airavata {
    *    Currently this does not return any value.
    *
    **/
-
   void updateProject (1: required security_model.AuthzToken authzToken,
                       2: required string projectId,
                       3: required workspace_model.Project updatedProject)
@@ -326,17 +325,17 @@ service Airavata {
               5: airavata_errors.AuthorizationException ae)
 
    /**
+   *
    * Get a Project by ID
-   *    This method is to obtain a project by providing a projectId
+   *    This method is to obtain a project by providing a projectId.
    *
    * @param projectId
-   *    projectId of the project you require
+   *    projectId of the project you require.
    *
    * @return project
-   *    project data model will be returned
+   *    project data model will be returned.
    *
    **/
-
   workspace_model.Project getProject (1: required security_model.AuthzToken authzToken, 2: required string projectId)
         throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
@@ -345,17 +344,19 @@ service Airavata {
                 5: airavata_errors.AuthorizationException ae)
 
    /**
+   *
    * Delete a Project
-   *    This method is used to delete an existing Project
+   *    This method is used to delete an existing Project.
    *
    * @param projectId
-   *    projectId of the project you want to delete
+   *    projectId of the project you want to delete.
    *
    * @return boolean
    *    Boolean identifier for the success or failure of the deletion operation.
    *
+   *    NOTE: This method is not used within gateways connected with Airavata.
+   *
    **/
-
   bool deleteProject (1: required security_model.AuthzToken authzToken, 2: required string projectId)
           throws (1: airavata_errors.InvalidRequestException ire,
                   2: airavata_errors.AiravataClientException ace,
@@ -364,23 +365,23 @@ service Airavata {
                   5: airavata_errors.AuthorizationException ae)
 
    /**
-   * Get all Project by user with pagination. Results will be ordered based
-   * on creation time DESC
+   *
+   * Get All User Projects
+   * Get all Project for the user with pagination. Results will be ordered based on creation time DESC.
    *
    * @param gatewayId
    *    The identifier for the requested gateway.
    *
    * @param userName
-   *    The identifier of the user
+   *    The identifier of the user.
    *
    * @param limit
-   *    The amount results to be fetched
+   *    The amount results to be fetched.
    *
    * @param offset
-   *    The starting point of the results to be fetched
+   *    The starting point of the results to be fetched.
    *
    **/
-
   list<workspace_model.Project> getUserProjects(1: required security_model.AuthzToken authzToken,
                                                    2: required string gatewayId,
                                                    3: required string userName,
@@ -392,21 +393,26 @@ service Airavata {
                 4: airavata_errors.AuthorizationException ae)
 
    /**
-   * Get all Project for user by project name with pagination.Results will be ordered based
-   * on creation time DESC
+   *
+   * Search User Projects by Project Name
+   * Get all Project for user by project name with pagination.Results will be ordered based on creation time DESC.
    *
    * @param gatewayId
-   *    The identifier for the requested gateway.
+   *    The unique identifier for the requested gateway.
+   *
    * @param userName
-   *    The identifier of the user
+   *    The identifier of the user.
+   *
    * @param projectName
-   *    The name of the project on which the results to be fetched
+   *    The name of the project on which the results to be fetched.
+   *
    * @param limit
-   *    The amount results to be fetched
+   *    The amount results to be fetched.
+   *
    * @param offset
-   *    The starting point of the results to be fetched
+   *    The starting point of the results to be fetched.
+   *
    **/
-
   list<workspace_model.Project> searchProjectsByProjectName (1: required security_model.AuthzToken authzToken,
                         2: required string gatewayId,
                         3: required string userName,
@@ -419,21 +425,26 @@ service Airavata {
                   4: airavata_errors.AuthorizationException ae)
 
     /**
-    * Search and get all Projects for user by project description with pagination. Results
-    * will be ordered based on creation time DESC
+    *
+    * Search User Projects by Project Description
+    * Search and get all Projects for user by project description with pagination. Results will be ordered based on creation time DESC.
     *
     * @param gatewayId
-    *    The identifier for the requested gateway.
+    *    The unique identifier of the gateway making the request.
+    *
     * @param userName
-    *    The identifier of the user
+    *    The identifier of the user.
+    *
     * @param description
-    *    The description to be matched
+    *    The description to be matched.
+    *
     * @param limit
-    *    The amount results to be fetched
+    *    The amount results to be fetched.
+    *
     * @param offset
-    *    The starting point of the results to be fetched
+    *    The starting point of the results to be fetched.
+    *
     **/
-
   list<workspace_model.Project> searchProjectsByProjectDesc(1: required security_model.AuthzToken authzToken,
                         2: required string gatewayId,
                         3: required string userName,
@@ -446,21 +457,26 @@ service Airavata {
                     4: airavata_errors.AuthorizationException ae)
 
     /**
-    * Search Experiments by experiment name with pagination. Results will be sorted
-    * based on creation time DESC
+    *
+    * Search User Experiments by Name
+    * Search user Experiments using experiment name with pagination. Results will be sorted based on creation time DESC.
     *
     * @param gatewayId
-    *       Identifier of the requested gateway
+    *       Unique identifier of the requested gateway.
+    *
     * @param userName
-    *       Username of the requested user
+    *       Username of the user who created the experiments.
+    *
     * @param expName
-    *       Experiment name to be matched
+    *       Experiment name to be matched.
+    *
     * @param limit
-    *       Amount of results to be fetched
+    *       Amount of results to be fetched.
+    *
     * @param offset
-    *       The starting point of the results to be fetched
+    *       The starting point of the results to be fetched.
+    *
     **/
-
   list<experiment_model.ExperimentSummaryModel> searchExperimentsByName(1: required security_model.AuthzToken authzToken,
                           2: required string gatewayId,
                           3: required string userName,
@@ -473,21 +489,26 @@ service Airavata {
                     4: airavata_errors.AuthorizationException ae)
 
     /**
-    * Search Experiments by experiment name with pagination. Results will be sorted
-    * based on creation time DESC
+    *
+    * Search By Experiment Description
+    * Search Experiments by experiment description with pagination. Results will be sorted based on creation time DESC.
     *
     * @param gatewayId
-    *       Identifier of the requested gateway
+    *       Unique identifier of the requested gateway.
+    *
     * @param userName
-    *       Username of the requested user
+    *       Username of the requested user.
+    *
     * @param description
-    *       Experiment description to be matched
+    *       Experiment description to be matched.
+    *
     * @param limit
-    *       Amount of results to be fetched
+    *       Amount of results to be fetched.
+    *
     * @param offset
-    *       The starting point of the results to be fetched
+    *       The starting point of the results to be fetched.
+    *
     **/
-
   list<experiment_model.ExperimentSummaryModel> searchExperimentsByDesc(1: required security_model.AuthzToken authzToken,
                             2: required string gatewayId,
                             3: required string userName,
@@ -500,21 +521,26 @@ service Airavata {
                       4: airavata_errors.AuthorizationException ae)
 
    /**
-   * Search Experiments by application id with pagination. Results will be sorted
-   * based on creation time DESC
+   *
+   * Search Experiment By the Application
+   * Search Experiments of a particular application id with pagination. Results will be sorted based on creation time DESC
    *
    * @param gatewayId
-   *       Identifier of the requested gateway
+   *       Unique identifier of the requested gateway.
+   *
    * @param userName
-   *       Username of the requested user
+   *       Username of the requested user.
+   *
    * @param applicationId
-   *       Application id to be matched
+   *       Application id to be matched.
+   *
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   *
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   *
    **/
-
   list<experiment_model.ExperimentSummaryModel> searchExperimentsByApplication(1: required security_model.AuthzToken authzToken,
                              2: required string gatewayId,
                              3: required string userName,
@@ -527,21 +553,26 @@ service Airavata {
                       4: airavata_errors.AuthorizationException ae)
 
    /**
-   * Search Experiments by experiment status with pagination. Results will be sorted
-   * based on creation time DESC
+   *
+   * Search User Experiments by Status
+   * Search all the Experiments of the given user  by experiment status with pagination. Results will be sorted based on creation time DESC
    *
    * @param gatewayId
-   *       Identifier of the requested gateway
+   *       Unique identifier of the requested gateway.
+   *
    * @param userName
-   *       Username of the requested user
+   *       Username of the user making the request.
+   *
    * @param experimentState
-   *       Experiement state to be matched
+   *       Experiement state to be matched.
+   *
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   *
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   *
    **/
-
     list<experiment_model.ExperimentSummaryModel> searchExperimentsByStatus(1: required security_model.AuthzToken authzToken,
                             2: required string gatewayId,
                             3: required string userName,
@@ -554,23 +585,32 @@ service Airavata {
                         4: airavata_errors.AuthorizationException ae)
 
    /**
-   * Search Experiments by experiment creation time with pagination. Results will be sorted
-   * based on creation time DESC
+   *
+   * Search User Experiments by the Creation Time
+   * This will search all the experiments of the given user by experiment creation time with pagination. Results will be sorted based on creation time DESC.
    *
    * @param gatewayId
-   *       Identifier of the requested gateway
+   *       Unique identifier of the requested gateway.
+   *
    * @param userName
-   *       Username of the requested user
+   *       Username of the requested user.
+   *
    * @param fromTime
-   *       Start time of the experiments creation time
+   *       Start time of the experiments creation time.
+   *
    * @param toTime
-   *       End time of the  experiement creation time
+   *       End time of the  experiement creation time.
+   *
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   *
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   *
+   * @return ExperimentSummaryModel
+   *    List of experiments for the given search filter. Here only the Experiment summary will be returned.
+   *
    **/
-
     list<experiment_model.ExperimentSummaryModel> searchExperimentsByCreationTime(1: required security_model.AuthzToken authzToken,
                             2: required string gatewayId,
                             3: required string userName,
@@ -584,19 +624,27 @@ service Airavata {
                         4: airavata_errors.AuthorizationException ae)
 
    /**
-   * Search Experiments by using multiple filter criteria with pagination. Results will be sorted
-   * based on creation time DESC
+   * Search Experiments.
+   * Search Experiments by using multiple filter criteria with pagination. Results will be sorted based on creation time DESC.
    *
    * @param gatewayId
-   *       Identifier of the requested gateway
+   *       Identifier of the requested gateway.
+   *
    * @param userName
-   *       Username of the requested user
+   *       Username of the user requesting the search function.
+   *
    * @param filters
-   *       map of multiple filter criteria.
+   *       Map of multiple filter criteria. Currenlt search filters includes Experiment Name, Description, Application, etc....
+   *
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   *
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   *
+   * @return ExperimentSummaryModel
+   *    List of experiments for the given search filter. Here only the Experiment summary will be returned.
+   *
    **/
 
     list<experiment_model.ExperimentSummaryModel> searchExperiments(1: required security_model.AuthzToken authzToken,
@@ -611,13 +659,19 @@ service Airavata {
                         4: airavata_errors.AuthorizationException ae)
 
     /**
-     * Get Experiment Statisitics for the given gateway for a specific time period
+     *
+     * Get Experiment Statistics
+     * Get Experiment Statisitics for a given gateway for a specific time period. This feature is available only for admins of a particular gateway. Gateway admin access is managed by the user roles.
+     *
      * @param gatewayId
-     *       Identifier of the requested gateway
+     *       Unique identifier of the gateway making the request to fetch statistics.
+     *
      * @param fromTime
-     *       Starting date time
+     *       Starting date time.
+     *
      * @param toTime
-     *       Ending data time
+     *       Ending data time.
+     *
      **/
     experiment_model.ExperimentStatistics getExperimentStatistics(1: required security_model.AuthzToken authzToken,
                             2: required string gatewayId,
@@ -630,17 +684,20 @@ service Airavata {
 
 
   /**
-   * Get Experiments within project with pagination. Results will be sorted
-   * based on creation time DESC
+   *
+   * Get All Experiments of the Project
+   * Get Experiments within project with pagination. Results will be sorted based on creation time DESC.
    *
    * @param projectId
-   *       Identifier of the project
+   *       Uniqie identifier of the project.
+   *
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   *
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   *
    **/
-
   list<experiment_model.ExperimentModel> getExperimentsInProject(1: required security_model.AuthzToken authzToken,
                   2: required string projectId,
                   3: required i32 limit,
@@ -652,19 +709,23 @@ service Airavata {
                   5: airavata_errors.AuthorizationException ae)
 
    /**
-   * Get experiments by user with pagination. Results will be sorted
-   * based on creation time DESC
+   *
+   * Get All Experiments of the User
+   * Get experiments by user with pagination. Results will be sorted based on creation time DESC.
    *
    * @param gatewayId
-   *       Identifier of the requesting gateway
+   *       Identifier of the requesting gateway.
+   *
    * @param userName
-   *       Username of the requested user
+   *       Username of the requested end user.
+   *
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   *
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   *
    **/
-
   list<experiment_model.ExperimentModel> getUserExperiments(1: required security_model.AuthzToken authzToken,
                         2: required string gatewayId,
                         3: required string userName,
@@ -676,12 +737,17 @@ service Airavata {
                     4: airavata_errors.AuthorizationException ae)
 
    /**
+     *
+     * Create New Experiment
      * Create an experiment for the specified user belonging to the gateway. The gateway identity is not explicitly passed
      *   but inferred from the sshKeyAuthentication header. This experiment is just a persistent place holder. The client
      *   has to subsequently configure and launch the created experiment. No action is taken on Airavata Server except
      *   registering the experiment in a persistent store.
      *
-     * @param basicExperimentMetadata
+     * @param gatewayId
+     *    The unique ID of the gateway where the experiment is been created.
+     *
+     * @param ExperimentModel
      *    The create experiment will require the basic experiment metadata like the name and description, intended user,
      *      the gateway identifer and if the experiment should be shared public by defualt. During the creation of an experiment
      *      the ExperimentMetadata is a required field.
@@ -710,7 +776,6 @@ service Airavata {
      *       rather an Airavata Administrator will be notified to take corrective action.
      *
    **/
-
   string createExperiment(1: required security_model.AuthzToken authzToken,
                           2: required string gatewayId,
                           3: required experiment_model.ExperimentModel experiment)
@@ -720,8 +785,8 @@ service Airavata {
             4: airavata_errors.AuthorizationException ae)
 
   /**
-  * Delete an Experiment
   *
+  * Delete an Experiment
   * If the experiment is not already launched experiment can be deleted.
   *
   * @param authzToken
@@ -730,10 +795,9 @@ service Airavata {
   *     Experiment ID of the experimnet you want to delete.
   *
   * @return boolean
-  *     Identifier for the success or failure of the deletion operation
+  *     Identifier for the success or failure of the deletion operation.
   *
   **/
-
   bool deleteExperiment(1: required security_model.AuthzToken authzToken,
                           2: required string experimentId)
     throws (1: airavata_errors.InvalidRequestException ire,
@@ -743,12 +807,14 @@ service Airavata {
 
 
   /**
+   *
+   * Get Experiment
    * Fetch previously created experiment metadata.
    *
    * @param airavataExperimentId
-   *    The identifier for the requested experiment. This is returned during the create experiment step.
+   *    The unique identifier of the requested experiment. This ID is returned during the create experiment step.
    *
-   * @return experimentMetada
+   * @return ExperimentModel
    *   This method will return the previously stored experiment metadata.
    *
    * @throws org.apache.airavata.model.error.InvalidRequestException
@@ -785,14 +851,17 @@ service Airavata {
 
 
   /**
+   *
+   * Get Complete Experiment Details
    * Fetch the completed nested tree structue of previously created experiment metadata which includes processes ->
    * tasks -> jobs information.
    *
    * @param airavataExperimentId
    *    The identifier for the requested experiment. This is returned during the create experiment step.
    *
-   * @return experimentMetada
-   *   This method will return the previously stored experiment metadata.
+   * @return ExperimentModel
+   *   This method will return the previously stored experiment metadata including application input parameters, computational resource scheduling
+   *   information, special input output handling and additional quality of service parameters.
    *
    * @throws org.apache.airavata.model.error.InvalidRequestException
    *    For any incorrect forming of the request itself.
@@ -828,14 +897,15 @@ service Airavata {
 
 
   /**
-   * Configure a previously created experiment with required inputs, scheduling and other quality of service
-   *   parameters. This method only updates the experiment object within the registry. The experiment has to be launched
-   *   to make it actionable by the server.
+   *
+   * Update a Previously Created Experiment
+   * Configure the CREATED experiment with required inputs, scheduling and other quality of service parameters. This method only updates the experiment object within the registry.
+   * The experiment has to be launched to make it actionable by the server.
    *
    * @param airavataExperimentId
    *    The identifier for the requested experiment. This is returned during the create experiment step.
    *
-   * @param experimentConfigurationData
+   * @param ExperimentModel
    *    The configuration information of the experiment with application input parameters, computational resource scheduling
    *      information, special input output handling and additional quality of service parameters.
    *
@@ -887,13 +957,14 @@ service Airavata {
 
     /**
      *
-     * Validate experiment configuration. A true in general indicates, the experiment is ready to be launched.
+     * Validate experiment configuration.
+     * A true in general indicates, the experiment is ready to be launched.
      *
-     * @param experimentId
-     *
+     * @param airavataExperimentId
+     *    Unique identifier of the experiment (Experimnent ID) of the experiment which need to be validated.
      *
      * @return boolean
-     *      Identifier for the success or failure of the validation operation
+     *      Identifier for the success or failure of the validation operation.
      *
     **/
   bool validateExperiment(1: required security_model.AuthzToken authzToken,
@@ -905,8 +976,12 @@ service Airavata {
               5: airavata_errors.AuthorizationException ae)
 
   /**
-   * Launch a previously created and configured experiment. Airavata Server will then start processing the request and appropriate
-   *   notifications and intermediate and output data will be subsequently available for this experiment.
+   *
+   * Launch a Previously Created & Configured Experiment.
+   * Airavata Server will then start processing the request and appropriate notifications and intermediate and output data will be subsequently available for this experiment.
+   *
+   * @gatewayId
+   *    ID of the gateway which will launch the experiment.
    *
    * @param airavataExperimentId
    *    The identifier for the requested experiment. This is returned during the create experiment step.
@@ -948,20 +1023,20 @@ service Airavata {
             5: airavata_errors.AuthorizationException ae)
 
   /**
+  *
   * Get Experiment Status
   *
-  * Obtain the status os an experiment by providing the Experiment Id
+  * Obtain the status of an experiment by providing the Experiment Id
   *
   * @param authzToken
   *
-  * @param experiementId
-  *     Experiment ID of the experimnet you require the status
+  * @param airavataExperimentId
+  *     Experiment ID of the experimnet you require the status.
   *
   * @return ExperimentStatus
-  *     ExperimentStatus model with current status will be returned.
+  *     ExperimentStatus model with the current status will be returned.
   *
   **/
-
    status_models.ExperimentStatus getExperimentStatus(1: required security_model.AuthzToken authzToken,
                                                       2: required string airavataExperimentId)
       throws (1: airavata_errors.InvalidRequestException ire,
@@ -971,19 +1046,19 @@ service Airavata {
               5: airavata_errors.AuthorizationException ae)
 
   /**
+  *
   * Get Experiment Outputs
-  * This method to be used when need to obtain outputs of a certain Experiment
+  * This method to be used when need to obtain final outputs of a certain Experiment
   *
   * @param authzToken
   *
-  * @param experiementId
-  *     Experiment ID of the experimnet you need the outputs
+  * @param airavataExperimentId
+  *     Experiment ID of the experimnet you need the outputs.
   *
   * @return list
-  *     List of experiment outputs will be returned. They will be returned as a list of OutputDataObjectType for the experiment
+  *     List of experiment outputs will be returned. They will be returned as a list of OutputDataObjectType for the experiment.
   *
   **/
-
   list<application_io_models.OutputDataObjectType> getExperimentOutputs (1: required security_model.AuthzToken authzToken,
                 2: required string airavataExperimentId)
       throws (1: airavata_errors.InvalidRequestException ire,
@@ -993,19 +1068,19 @@ service Airavata {
               5: airavata_errors.AuthorizationException ae)
 
   /**
+  *
   * Get Intermediate Experiment Outputs
   * This method to be used when need to obtain intermediate outputs of a certain Experiment
   *
   * @param authzToken
   *
-  * @param experiementId
-  *     Experiment ID of the experimnet you need the intermediate outputs
+  * @param airavataExperimentId
+  *     Experiment ID of the experimnet you need intermediate outputs.
   *
   * @return list
-  *     List of intermediate experiment outputs will be returned. They will be returned as a list of OutputDataObjectType for the experiment
+  *     List of intermediate experiment outputs will be returned. They will be returned as a list of OutputDataObjectType for the experiment.
   *
   **/
-
    list<application_io_models.OutputDataObjectType> getIntermediateOutputs (1: required security_model.AuthzToken authzToken,
                 2: required string airavataExperimentId)
         throws (1: airavata_errors.InvalidRequestException ire,
@@ -1015,19 +1090,19 @@ service Airavata {
                 5: airavata_errors.AuthorizationException ae)
 
   /**
-  * Get Job Status for an Experiment
+  *
+  * Get Job Statuses for an Experiment
   * This method to be used when need to get the job status of an Experiment. An experiment may have one or many jobs; there for one or many job statuses may turnup
   *
   * @param authzToken
   *
   * @param experiementId
-  *     Experiment ID of the experimnet you need the intermediate outputs
+  *     Experiment ID of the experimnet you need the job statuses.
   *
   * @return JobStatus
   *     Job status (string) for all all the existing jobs for the experiment will be returned in the form of a map
   *
   **/
-
   map<string, status_models.JobStatus> getJobStatuses(1: required security_model.AuthzToken authzToken,
                       2: required string airavataExperimentId)
               throws (1: airavata_errors.InvalidRequestException ire,
@@ -1113,7 +1188,7 @@ service Airavata {
    * Terminate a running Experiment.
    *
    * @gatewayId
-   *    ID of the gateway which need to list all available application deployment documentation.
+   *    ID of the gateway which will terminate the running Experiment.
    *
    * @param airavataExperimentId
    *    The identifier of the experiment required termination. This ID is returned during the create experiment step.
@@ -1176,7 +1251,7 @@ service Airavata {
    * Register a Application Module.
    *
    * @gatewayId
-   *    ID of the gateway which need to list all available application deployment documentation.
+   *    ID of the gateway which is registering the new Application Module.
    *
    * @param applicationModule
    *    Application Module Object created from the datamodel.
@@ -1281,7 +1356,7 @@ service Airavata {
    * Register an Application Deployment.
    *
    * @param gatewayId
-   *    ID of the gateway which need to list all available application deployment documentation.
+   *    ID of the gateway which is registering the new Application Deployment.
    *
    * @param applicationDeployment
    *    Application Module Object created from the datamodel.
@@ -1907,6 +1982,7 @@ service Airavata {
 
 
   /**
+   *
    * Add a UNICORE Job Submission details to a compute resource
    *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
    *
@@ -1923,7 +1999,6 @@ service Airavata {
    *  Returns the unique job submission id.
    *
   */
-
   string addUNICOREJobSubmissionDetails(1: required security_model.AuthzToken authzToken,
             2: required string computeResourceId,
             3: required i32 priorityOrder,
@@ -1935,12 +2010,14 @@ service Airavata {
 
 
   /**
+    *
     * This method returns UnicoreJobSubmission object
+    *
     * @param jobSubmissionInterfaceId
     *   The identifier of the JobSubmission Interface to be retrieved.
     *  @return UnicoreJobSubmission instance
+    *
   **/
-
   compute_resource_model.UnicoreJobSubmission getUnicoreJobSubmission(1: required security_model.AuthzToken authzToken,
                         2: required string jobSubmissionId)
                 throws (1: airavata_errors.InvalidRequestException ire,
@@ -1950,6 +2027,7 @@ service Airavata {
 
 
  /**
+   *
    * Add a Cloud Job Submission details to a compute resource
    *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
    *
@@ -1964,8 +2042,8 @@ service Airavata {
    *
    * @return status
    *   Returns the unique job submission id.
+   *
 **/
-
  string addCloudJobSubmissionDetails(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId,
             3: required i32 priorityOrder,
             4: required compute_resource_model.CloudJobSubmission cloudSubmission)
@@ -1975,12 +2053,12 @@ service Airavata {
             4: airavata_errors.AuthorizationException ae)
 
  /**
+    *
     * This method returns cloudJobSubmission object
     * @param jobSubmissionInterfaceI
         *   The identifier of the JobSubmission Interface to be retrieved.
     *  @return CloudJobSubmission instance
  **/
-
  compute_resource_model.CloudJobSubmission getCloudJobSubmission(1: required security_model.AuthzToken authzToken, 2: required string jobSubmissionId)
                   throws (1: airavata_errors.InvalidRequestException ire,
                           2: airavata_errors.AiravataClientException ace,
@@ -1988,6 +2066,7 @@ service Airavata {
                           4: airavata_errors.AuthorizationException ae)
 
   /**
+   *
    * Update the given SSH Job Submission details
    *
    * @param jobSubmissionInterfaceId
@@ -2000,7 +2079,6 @@ service Airavata {
    *   Returns a success/failure of the update.
    *
   */
-
   bool updateSSHJobSubmissionDetails(1: required security_model.AuthzToken authzToken,
             2: required string jobSubmissionInterfaceId,
             3: required compute_resource_model.SSHJobSubmission sshJobSubmission)
@@ -2010,6 +2088,7 @@ service Airavata {
             4: airavata_errors.AuthorizationException ae)
 
 /**
+   *
    * Update the cloud Job Submission details
    *
    * @param jobSubmissionInterfaceId
@@ -2022,7 +2101,6 @@ service Airavata {
    *   Returns a success/failure of the update.
    *
   */
-
   bool updateCloudJobSubmissionDetails(1: required security_model.AuthzToken authzToken,
             2: required string jobSubmissionInterfaceId,
             3: required compute_resource_model.CloudJobSubmission sshJobSubmission)
@@ -2032,6 +2110,7 @@ service Airavata {
             4: airavata_errors.AuthorizationException ae)
 
    /**
+   *
    * Update the UNIOCRE Job Submission details
    *
    * @param jobSubmissionInterfaceId
@@ -2044,7 +2123,6 @@ service Airavata {
    *   Returns a success/failure of the update.
    *
    **/
-
   bool updateUnicoreJobSubmissionDetails(1: required security_model.AuthzToken authzToken,
               2: required string jobSubmissionInterfaceId,
               3: required compute_resource_model.UnicoreJobSubmission unicoreJobSubmission)
@@ -2054,6 +2132,7 @@ service Airavata {
               4: airavata_errors.AuthorizationException ae)
 
    /**
+   *
    * Add a Local data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
@@ -2073,7 +2152,6 @@ service Airavata {
    *   Returns the unique job submission id.
    *
    **/
-
   string addLocalDataMovementDetails(1: required security_model.AuthzToken authzToken,
             2: required string resourceId,
             3: required data_movement_models.DMType dataMoveType,
@@ -2085,6 +2163,7 @@ service Airavata {
             4: airavata_errors.AuthorizationException ae)
 
    /**
+   *
    * Update the given Local data movement details
    *
    * @param dataMovementInterfaceId
@@ -2097,7 +2176,6 @@ service Airavata {
    *   Returns a success/failure of the update.
    *
    **/
-
   bool updateLocalDataMovementDetails(1: required security_model.AuthzToken authzToken,
             2: required string dataMovementInterfaceId,
             3: required data_movement_models.LOCALDataMovement localDataMovement)
@@ -2107,7 +2185,8 @@ service Airavata {
             4: airavata_errors.AuthorizationException ae)
 
   /**
-  * This method returns local datamovement object
+  *
+  * This method returns local datamovement object.
   *
   * @param dataMovementId
   *   The identifier of the datamovement Interface to be retrieved.
@@ -2115,7 +2194,6 @@ service Airavata {
   *  @return LOCALDataMovement instance
   *
   **/
-
   data_movement_models.LOCALDataMovement getLocalDataMovement(1: required security_model.AuthzToken authzToken,
                     2: required string dataMovementId)
                     throws (1: airavata_errors.InvalidRequestException ire,
@@ -2124,6 +2202,7 @@ service Airavata {
                             4: airavata_errors.AuthorizationException ae)
 
   /**
+   *
    * Add a SCP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
@@ -2140,7 +2219,6 @@ service Airavata {
    *   Returns the unique job submission id.
    *
   */
-
   string addSCPDataMovementDetails(1: required security_model.AuthzToken authzToken,
             2: required string resourceId,
             3: required data_movement_models.DMType dataMoveType,
@@ -2152,6 +2230,7 @@ service Airavata {
             4: airavata_errors.AuthorizationException ae)
 
   /**
+   *
    * Update the given scp data movement details
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
@@ -2165,7 +2244,6 @@ service Airavata {
    *   Returns a success/failure of the update.
    *
   */
-
   bool updateSCPDataMovementDetails(1: required security_model.AuthzToken authzToken,
             2: required string dataMovementInterfaceId,
             3: required data_movement_models.SCPDataMovement scpDataMovement)
@@ -2183,7 +2261,6 @@ service Airavata {
     * @return SCPDataMovement instance
     *
     **/
-
   data_movement_models.SCPDataMovement getSCPDataMovement(1: required security_model.AuthzToken authzToken, 2: required string dataMovementId)
                     throws (1: airavata_errors.InvalidRequestException ire,
                             2: airavata_errors.AiravataClientException ace,
@@ -2191,6 +2268,7 @@ service Airavata {
                             4: airavata_errors.AuthorizationException ae)
 
  /**
+   *
    * Add a UNICORE data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
@@ -2207,7 +2285,6 @@ service Airavata {
    *   Returns the unique data movement id.
    *
   */
-
  string addUnicoreDataMovementDetails(1: required security_model.AuthzToken authzToken,
               2: required string resourceId,
               3: required data_movement_models.DMType dataMoveType,
@@ -2219,6 +2296,7 @@ service Airavata {
               4: airavata_errors.AuthorizationException ae)
 
    /**
+   *
    * Update a selected UNICORE data movement details
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
@@ -2241,6 +2319,7 @@ service Airavata {
              4: airavata_errors.AuthorizationException ae)
 
     /**
+    *
     * This method returns UNICORE datamovement object
     *
     * @param dataMovementId
@@ -2258,6 +2337,7 @@ service Airavata {
                              4: airavata_errors.AuthorizationException ae)
 
    /**
+   *
    * Add a GridFTP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
@@ -2511,7 +2591,7 @@ service Airavata {
    * Fetch the given Gateway Resource Profile.
    *
    * @param gatewayID
-   *   The identifier for the requested gateway resource
+   *   The identifier for the requested gateway resource.
    *
    * @return gatewayResourceProfile
    *    Gateway Resource Profile Object.
