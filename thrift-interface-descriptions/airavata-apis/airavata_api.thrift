@@ -1037,19 +1037,19 @@ service Airavata {
                       5: airavata_errors.AuthorizationException ae)
 
   /**
-  * Get Job Details for all the jobs within an Experiment
+  *
+  * Get Job Details for all the jobs within an Experiment.
   * This method to be used when need to get the job details for one or many jobs of an Experiment.
   *
   * @param authzToken
   *
   * @param experiementId
-  *     Experiment ID of the experimnet you need job details
+  *     Experiment ID of the experimnet you need job details.
   *
   * @return list of JobDetails
-  *     Job details
+  *     Job details.
   *
   **/
-
   list<job_model.JobModel> getJobDetails(1: required security_model.AuthzToken authzToken,
                                          2: required string airavataExperimentId)
                 throws (1: airavata_errors.InvalidRequestException ire,
@@ -1059,7 +1059,9 @@ service Airavata {
                         5: airavata_errors.AuthorizationException ae)
 
   /**
-   * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
+   *
+   * Clone an Existing Experiment
+   * Existing specified experiment is cloned and a new name is provided. A copy of the experiment configuration is made and is persisted with new metadata.
    *   The client has to subsequently update this configuration if needed and launch the cloned experiment. 
    *
    * @param newExperimentName
@@ -1071,7 +1073,7 @@ service Airavata {
    *      should be shared public by default.
    *
    * @return
-   *   The server-side generated.airavata.registry.core.experiment.globally unique identifier for the newly cloned experiment.
+   *   The server-side generated.airavata.registry.core.experiment.globally unique identifier (Experiment ID) for the newly cloned experiment.
    *
    * @throws org.apache.airavata.model.error.InvalidRequestException
    *    For any incorrect forming of the request itself.
@@ -1097,7 +1099,6 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-
   string cloneExperiment(1: required security_model.AuthzToken authzToken,
                          2: string existingExperimentID,
                          3: string newExperimentName)
@@ -1108,12 +1109,16 @@ service Airavata {
             5: airavata_errors.AuthorizationException ae)
 
   /**
-   * Terminate a running experiment.
+   *
+   * Terminate a running Experiment.
+   *
+   * @gatewayId
+   *    ID of the gateway which need to list all available application deployment documentation.
    *
    * @param airavataExperimentId
-   *    The identifier for the requested experiment. This is returned during the create experiment step.
+   *    The identifier of the experiment required termination. This ID is returned during the create experiment step.
    *
-   * @return
+   * @return status
    *   This method call does not have a return value.
    *
    * @throws org.apache.airavata.model.error.InvalidRequestException
@@ -1140,7 +1145,6 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-
   void terminateExperiment(1: required security_model.AuthzToken authzToken,
                            2: string airavataExperimentId,
                            3: string gatewayId)
@@ -1151,13 +1155,16 @@ service Airavata {
             5: airavata_errors.AuthorizationException ae)
 
 /*
+ *
  * API definitions for App Catalog related operations
  *
 */
 
 /*
- * Application Module is a specific computational application. Many applications, particularly scientific applications
- *  are really a suite of applications or encompass an ecosystem. For instance, Amber is referred to dozens of binaries.
+ *
+ * Application Module
+ *  A specific computational application. Many applications, particularly scientific applications
+ *  are really a suite of applications or encompass of an ecosystem. For instance, Amber is referred to dozens of binaries.
  *  WRF is referred for an ecosystem of applications. In this context, we refer to module as a single binary.
  *
  * Note: A module has to be defined before a deployment can be registered.
@@ -1165,16 +1172,19 @@ service Airavata {
 */
 
   /**
+   *
    * Register a Application Module.
+   *
+   * @gatewayId
+   *    ID of the gateway which need to list all available application deployment documentation.
    *
    * @param applicationModule
    *    Application Module Object created from the datamodel.
    *
    * @return appModuleId
-   *   Returns a server-side generated airavata appModule globally unique identifier.
+   *   Returns the server-side generated airavata appModule globally unique identifier.
    *
   */
-
   string registerApplicationModule(1: required security_model.AuthzToken authzToken,
                         2: required string gatewayId,
                         3: required application_deployment_model.ApplicationModule applicationModule)
@@ -1184,16 +1194,16 @@ service Airavata {
               4: airavata_errors.AuthorizationException ae)
 
   /**
+   *
    * Fetch a Application Module.
    *
    * @param appModuleId
-   *   The identifier for the requested application module
+   *   The unique identifier of the application module required
    *
    * @return applicationModule
-   *   Returns a application Module Object.
+   *   Returns an Application Module Object.
    *
   */
-
   application_deployment_model.ApplicationModule getApplicationModule(1: required security_model.AuthzToken authzToken,
                 2: required string appModuleId)
       	throws (1: airavata_errors.InvalidRequestException ire,
@@ -1202,6 +1212,7 @@ service Airavata {
                 4: airavata_errors.AuthorizationException ae)
 
   /**
+   *
    * Update a Application Module.
    *
    * @param appModuleId
@@ -1214,7 +1225,6 @@ service Airavata {
    *   Returns a success/failure of the update.
    *
   */
-
   bool updateApplicationModule(1: required security_model.AuthzToken authzToken,
             2: required string appModuleId,
             3: required application_deployment_model.ApplicationModule applicationModule)
@@ -1223,7 +1233,17 @@ service Airavata {
                 3: airavata_errors.AiravataSystemException ase,
                 4: airavata_errors.AuthorizationException ae)
 
-
+  /**
+   *
+   * Fetch all Application Module Descriptions.
+   *
+   * @param gatewayId
+   *    ID of the gateway which need to list all available application deployment documentation.
+   *
+   * @return list
+   *    Returns the list of all Application Module Objects.
+   *
+  */
   list<application_deployment_model.ApplicationModule> getAllAppModules (1: required security_model.AuthzToken authzToken,
                 2: required string gatewayId)
         throws (1: airavata_errors.InvalidRequestException ire,
@@ -1232,16 +1252,16 @@ service Airavata {
                 4: airavata_errors.AuthorizationException ae)
 
   /**
-   * Delete a Application Module.
+   *
+   * Delete an Application Module.
    *
    * @param appModuleId
-   *   The identifier for the requested application module to be deleted.
+   *   The identifier of the Application Module to be deleted.
    *
    * @return status
    *   Returns a success/failure of the deletion.
    *
   */
-
   bool deleteApplicationModule(1: required security_model.AuthzToken authzToken,
                                2: required string appModuleId)
          	throws (1: airavata_errors.InvalidRequestException ire,
@@ -1250,21 +1270,26 @@ service Airavata {
                    4: airavata_errors.AuthorizationException ae)
 
 /*
- * Application Deployment registers a deployment of a application module on a compute resource
+ *
+ * Application Deployment
+ *  Registers a deployment of an Application Module on a Compute Resource.
  *
 */
 
   /**
-   * Register a Application Deployment.
    *
-   * @param applicationModule
+   * Register an Application Deployment.
+   *
+   * @param gatewayId
+   *    ID of the gateway which need to list all available application deployment documentation.
+   *
+   * @param applicationDeployment
    *    Application Module Object created from the datamodel.
    *
    * @return appDeploymentId
    *   Returns a server-side generated airavata appDeployment globally unique identifier.
    *
   */
-
   string registerApplicationDeployment(1: required security_model.AuthzToken authzToken,
                 2: required string gatewayId,
                 3: required application_deployment_model.ApplicationDeploymentDescription applicationDeployment)
@@ -1274,6 +1299,7 @@ service Airavata {
               4: airavata_errors.AuthorizationException ae)
 
   /**
+   *
    * Fetch a Application Deployment.
    *
    * @param appDeploymentId
@@ -1283,7 +1309,6 @@ service Airavata {
    *   Returns a application Deployment Object.
    *
   */
-
   application_deployment_model.ApplicationDeploymentDescription getApplicationDeployment(1: required security_model.AuthzToken authzToken,
                 2: required string appDeploymentId)
       	throws (1: airavata_errors.InvalidRequestException ire,
@@ -1292,10 +1317,11 @@ service Airavata {
                 4: airavata_errors.AuthorizationException ae)
 
   /**
-   * Update a Application Deployment.
+   *
+   * Update an Application Deployment.
    *
    * @param appDeploymentId
-   *   The identifier for the requested application deployment to be updated.
+   *   The identifier of the requested application deployment to be updated.
    *
    * @param appDeployment
    *    Application Deployment Object created from the datamodel.
@@ -1304,7 +1330,6 @@ service Airavata {
    *   Returns a success/failure of the update.
    *
   */
-
   bool updateApplicationDeployment(1: required security_model.AuthzToken authzToken,
             2: required string appDeploymentId,
             3: required application_deployment_model.ApplicationDeploymentDescription applicationDeployment)
@@ -1314,16 +1339,16 @@ service Airavata {
                 4: airavata_errors.AuthorizationException ae)
 
   /**
-   * Delete a Application deployment.
+   *
+   * Delete an Application Deployment.
    *
    * @param appDeploymentId
-   *   The identifier for the requested application deployment to be deleted.
+   *   The unique identifier of application deployment to be deleted.
    *
    * @return status
    *   Returns a success/failure of the deletion.
    *
   */
-
   bool deleteApplicationDeployment(1: required security_model.AuthzToken authzToken,
                     2: required string appDeploymentId)
          	throws (1: airavata_errors.InvalidRequestException ire,
@@ -1332,13 +1357,16 @@ service Airavata {
                    4: airavata_errors.AuthorizationException ae)
 
   /**
+   *
    * Fetch all Application Deployment Descriptions.
    *
+   * @param gatewayId
+   *    ID of the gateway which need to list all available application deployment documentation.
+   *
    * @return list<applicationDeployment.
-   *   Returns the list of all application Deployment Objects.
+   *    Returns the list of all application Deployment Objects.
    *
   */
-
   list<application_deployment_model.ApplicationDeploymentDescription> getAllApplicationDeployments(1: required security_model.AuthzToken authzToken,
                 2: required string gatewayId)
       	throws (1: airavata_errors.InvalidRequestException ire,
