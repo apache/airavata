@@ -206,7 +206,7 @@ public class SCPDataStageTask implements Task {
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskError(errorModel);
         } catch (SSHApiException e) {
-            String msg = "Failed to do scp with compute resource";
+            String msg = e.getMessage();
             log.error(msg, e);
             status.setState(TaskState.FAILED);
             status.setReason(msg);

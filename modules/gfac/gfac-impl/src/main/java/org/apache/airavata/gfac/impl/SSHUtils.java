@@ -346,6 +346,11 @@ public class SSHUtils {
                         break;
                     }
                 }
+                if (fileSize == 0L){
+                    String error = "Input file is empty...";
+                    log.error(error);
+                    throw new JSchException(error);
+                }
                 String initData = "C0644 " + fileSize + " " + fileName + "\n";
                 assert dout != null;
                 dout.write(initData.getBytes());
@@ -396,6 +401,7 @@ public class SSHUtils {
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+            throw new JSchException(e.getMessage());
         } finally {
             try {
                 if (dout != null) dout.close();
