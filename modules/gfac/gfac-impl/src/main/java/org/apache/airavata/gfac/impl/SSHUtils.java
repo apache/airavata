@@ -272,7 +272,7 @@ public class SSHUtils {
      * @param destinationSession JSch Session for target
      * @return returns the final local file path of the new file came from the remote resource
      */
-    public static void scpThirdParty(String sourceFile, Session sourceSession, String destinationFile, Session destinationSession) throws
+    public static void scpThirdParty(String sourceFile, Session sourceSession, String destinationFile, Session destinationSession, boolean ignoreEmptyFile) throws
             IOException, JSchException {
         OutputStream sout = null;
         InputStream sin = null;
@@ -346,7 +346,7 @@ public class SSHUtils {
                         break;
                     }
                 }
-                if (fileSize == 0L){
+                if (fileSize == 0L && !ignoreEmptyFile){
                     String error = "Input file is empty...";
                     log.error(error);
                     throw new JSchException(error);

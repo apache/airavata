@@ -165,16 +165,16 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	}
 
 	@Override
-	public void scpThirdParty(String sourceFile, String destinationFile, Session clientSession, DIRECTION direction) throws SSHApiException {
+	public void scpThirdParty(String sourceFile, String destinationFile, Session clientSession, DIRECTION direction, boolean ignoreEmptyFile) throws SSHApiException {
 		try {
 			if(!session.isConnected()){
 				session = getOpenSession();
 			}
 			log.info("Transferring from:" + sourceFile + " To: " + destinationFile);
             if (direction == DIRECTION.TO) {
-                SSHUtils.scpThirdParty(sourceFile, clientSession, destinationFile, session);
+                SSHUtils.scpThirdParty(sourceFile, clientSession, destinationFile, session, ignoreEmptyFile);
             } else {
-                SSHUtils.scpThirdParty(sourceFile, session, destinationFile, clientSession);
+                SSHUtils.scpThirdParty(sourceFile, session, destinationFile, clientSession, ignoreEmptyFile);
             }
         } catch (IOException | JSchException e) {
 			throw new SSHApiException("Failed scp file:" + sourceFile + " to remote file "

@@ -70,7 +70,7 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
      * @param inOrOut direction to file transfer , to the remote cluster(DIRECTION.IN) or from the remote cluster(DIRECTION.OUT)
 	 *
 	 */
-	public void scpThirdParty(String sourceFile, String destinationFile ,Session session , DIRECTION inOrOut) throws SSHApiException;
+	public void scpThirdParty(String sourceFile, String destinationFile ,Session session , DIRECTION inOrOut, boolean ignoreEmptyFile) throws SSHApiException;
 
 	/**
 	 * This will create directories in computing resources

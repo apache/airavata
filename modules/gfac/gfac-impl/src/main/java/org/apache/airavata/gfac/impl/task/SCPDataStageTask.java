@@ -25,16 +25,10 @@ import com.jcraft.jsch.Session;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ThriftUtils;
-import org.apache.airavata.credential.store.credential.Credential;
-import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
-import org.apache.airavata.credential.store.store.CredentialReader;
-import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
-import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
-import org.apache.airavata.gfac.core.authentication.SSHPasswordAuthentication;
 import org.apache.airavata.gfac.core.cluster.CommandInfo;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
@@ -60,7 +54,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -258,7 +251,7 @@ public class SCPDataStageTask implements Task {
          * scp third party file transfer 'to' compute resource.
          */
         taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
-                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.TO);
+                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.TO, false);
     }
 
     private void outputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI destinationURI)
@@ -268,7 +261,7 @@ public class SCPDataStageTask implements Task {
          * scp third party file transfer 'from' comute resource.
          */
         taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
-                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.FROM);
+                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.FROM, true);
         // update output locations
         GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());
         GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());

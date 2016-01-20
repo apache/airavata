@@ -52,7 +52,7 @@ public class BESRemoteCluster extends AbstractRemoteCluster{
     }
 
     @Override
-    public void scpThirdParty(String sourceFile, String destinationFile, Session session, DIRECTION inOrOut) throws SSHApiException {
+    public void scpThirdParty(String sourceFile, String destinationFile, Session session, DIRECTION inOrOut, boolean ignoreEmptyFile) throws SSHApiException {
 
     }
 
