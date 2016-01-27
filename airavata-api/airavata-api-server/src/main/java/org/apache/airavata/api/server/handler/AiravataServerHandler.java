@@ -1425,7 +1425,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
             return (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId);
-        } catch (Exception e) {
+        } catch (RegistryException e) {
             logger.error("Error while retrieving the experiment", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
