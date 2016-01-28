@@ -123,6 +123,18 @@ public class SCPDataStageTask implements Task {
                 return status;
             }
 
+            StorageResourceDescription storageResource = taskContext.getParentProcessContext().getStorageResource();
+            StoragePreference storagePreference = taskContext.getParentProcessContext().getStoragePreference();
+
+            if (storageResource != null){
+                hostName = storageResource.getHostName();
+            }
+
+            if (storagePreference != null){
+                userName = storagePreference.getLoginUserName();
+                inputPath = storagePreference.getFileSystemRootLocation();
+            }
+
             // use rsync instead of scp if source and destination host and user name is same.
             URI sourceURI = new URI(subTaskModel.getSource());
             String fileName = sourceURI.getPath().substring(sourceURI.getPath().lastIndexOf(File.separator) + 1,
@@ -145,17 +157,6 @@ public class SCPDataStageTask implements Task {
 
             authenticationInfo = Factory.getStorageSSHKeyAuthentication(taskContext.getParentProcessContext());
             status = new TaskStatus(TaskState.COMPLETED);
-            StorageResourceDescription storageResource = taskContext.getParentProcessContext().getStorageResource();
-            StoragePreference storagePreference = taskContext.getParentProcessContext().getStoragePreference();
-
-            if (storageResource != null){
-                hostName = storageResource.getHostName();
-            }
-
-            if (storagePreference != null){
-                userName = storagePreference.getLoginUserName();
-                inputPath = storagePreference.getFileSystemRootLocation();
-            }
 
             ServerInfo serverInfo = new ServerInfo(userName, hostName, DEFAULT_SSH_PORT);
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
