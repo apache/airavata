@@ -57,8 +57,10 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
 
   private static final org.apache.thrift.protocol.TField NODE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("nodeId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("status", org.apache.thrift.protocol.TType.STRUCT, (short)3);
-  private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField APPLICATION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationId", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField APPLICATION_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationName", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("status", org.apache.thrift.protocol.TType.STRUCT, (short)5);
+  private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)6);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -68,6 +70,8 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
 
   private String nodeId; // required
   private String name; // optional
+  private String applicationId; // optional
+  private String applicationName; // optional
   private ComponentStatus status; // optional
   private String description; // optional
 
@@ -75,8 +79,10 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     NODE_ID((short)1, "nodeId"),
     NAME((short)2, "name"),
-    STATUS((short)3, "status"),
-    DESCRIPTION((short)4, "description");
+    APPLICATION_ID((short)3, "applicationId"),
+    APPLICATION_NAME((short)4, "applicationName"),
+    STATUS((short)5, "status"),
+    DESCRIPTION((short)6, "description");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -95,9 +101,13 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
           return NODE_ID;
         case 2: // NAME
           return NAME;
-        case 3: // STATUS
+        case 3: // APPLICATION_ID
+          return APPLICATION_ID;
+        case 4: // APPLICATION_NAME
+          return APPLICATION_NAME;
+        case 5: // STATUS
           return STATUS;
-        case 4: // DESCRIPTION
+        case 6: // DESCRIPTION
           return DESCRIPTION;
         default:
           return null;
@@ -139,13 +149,17 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
   }
 
   // isset id assignments
-  private static final _Fields optionals[] = {_Fields.NAME,_Fields.STATUS,_Fields.DESCRIPTION};
+  private static final _Fields optionals[] = {_Fields.NAME,_Fields.APPLICATION_ID,_Fields.APPLICATION_NAME,_Fields.STATUS,_Fields.DESCRIPTION};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.NODE_ID, new org.apache.thrift.meta_data.FieldMetaData("nodeId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.NAME, new org.apache.thrift.meta_data.FieldMetaData("name", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.APPLICATION_ID, new org.apache.thrift.meta_data.FieldMetaData("applicationId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.APPLICATION_NAME, new org.apache.thrift.meta_data.FieldMetaData("applicationName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.STATUS, new org.apache.thrift.meta_data.FieldMetaData("status", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ComponentStatus.class)));
@@ -177,6 +191,12 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
     if (other.isSetName()) {
       this.name = other.name;
     }
+    if (other.isSetApplicationId()) {
+      this.applicationId = other.applicationId;
+    }
+    if (other.isSetApplicationName()) {
+      this.applicationName = other.applicationName;
+    }
     if (other.isSetStatus()) {
       this.status = new ComponentStatus(other.status);
     }
@@ -194,6 +214,8 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
     this.nodeId = "DO_NOT_SET_AT_CLIENTS";
 
     this.name = null;
+    this.applicationId = null;
+    this.applicationName = null;
     this.status = null;
     this.description = null;
   }
@@ -241,6 +263,52 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
   public void setNameIsSet(boolean value) {
     if (!value) {
       this.name = null;
+    }
+  }
+
+  public String getApplicationId() {
+    return this.applicationId;
+  }
+
+  public void setApplicationId(String applicationId) {
+    this.applicationId = applicationId;
+  }
+
+  public void unsetApplicationId() {
+    this.applicationId = null;
+  }
+
+  /** Returns true if field applicationId is set (has been assigned a value) and false otherwise */
+  public boolean isSetApplicationId() {
+    return this.applicationId != null;
+  }
+
+  public void setApplicationIdIsSet(boolean value) {
+    if (!value) {
+      this.applicationId = null;
+    }
+  }
+
+  public String getApplicationName() {
+    return this.applicationName;
+  }
+
+  public void setApplicationName(String applicationName) {
+    this.applicationName = applicationName;
+  }
+
+  public void unsetApplicationName() {
+    this.applicationName = null;
+  }
+
+  /** Returns true if field applicationName is set (has been assigned a value) and false otherwise */
+  public boolean isSetApplicationName() {
+    return this.applicationName != null;
+  }
+
+  public void setApplicationNameIsSet(boolean value) {
+    if (!value) {
+      this.applicationName = null;
     }
   }
 
@@ -308,6 +376,22 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
       }
       break;
 
+    case APPLICATION_ID:
+      if (value == null) {
+        unsetApplicationId();
+      } else {
+        setApplicationId((String)value);
+      }
+      break;
+
+    case APPLICATION_NAME:
+      if (value == null) {
+        unsetApplicationName();
+      } else {
+        setApplicationName((String)value);
+      }
+      break;
+
     case STATUS:
       if (value == null) {
         unsetStatus();
@@ -335,6 +419,12 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
     case NAME:
       return getName();
 
+    case APPLICATION_ID:
+      return getApplicationId();
+
+    case APPLICATION_NAME:
+      return getApplicationName();
+
     case STATUS:
       return getStatus();
 
@@ -356,6 +446,10 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
       return isSetNodeId();
     case NAME:
       return isSetName();
+    case APPLICATION_ID:
+      return isSetApplicationId();
+    case APPLICATION_NAME:
+      return isSetApplicationName();
     case STATUS:
       return isSetStatus();
     case DESCRIPTION:
@@ -395,6 +489,24 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
         return false;
     }
 
+    boolean this_present_applicationId = true && this.isSetApplicationId();
+    boolean that_present_applicationId = true && that.isSetApplicationId();
+    if (this_present_applicationId || that_present_applicationId) {
+      if (!(this_present_applicationId && that_present_applicationId))
+        return false;
+      if (!this.applicationId.equals(that.applicationId))
+        return false;
+    }
+
+    boolean this_present_applicationName = true && this.isSetApplicationName();
+    boolean that_present_applicationName = true && that.isSetApplicationName();
+    if (this_present_applicationName || that_present_applicationName) {
+      if (!(this_present_applicationName && that_present_applicationName))
+        return false;
+      if (!this.applicationName.equals(that.applicationName))
+        return false;
+    }
+
     boolean this_present_status = true && this.isSetStatus();
     boolean that_present_status = true && that.isSetStatus();
     if (this_present_status || that_present_status) {
@@ -429,6 +541,16 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
     list.add(present_name);
     if (present_name)
       list.add(name);
+
+    boolean present_applicationId = true && (isSetApplicationId());
+    list.add(present_applicationId);
+    if (present_applicationId)
+      list.add(applicationId);
+
+    boolean present_applicationName = true && (isSetApplicationName());
+    list.add(present_applicationName);
+    if (present_applicationName)
+      list.add(applicationName);
 
     boolean present_status = true && (isSetStatus());
     list.add(present_status);
@@ -467,6 +589,26 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
     }
     if (isSetName()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.name, other.name);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetApplicationId()).compareTo(other.isSetApplicationId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetApplicationId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.applicationId, other.applicationId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetApplicationName()).compareTo(other.isSetApplicationName());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetApplicationName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.applicationName, other.applicationName);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -525,6 +667,26 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
         sb.append("null");
       } else {
         sb.append(this.name);
+      }
+      first = false;
+    }
+    if (isSetApplicationId()) {
+      if (!first) sb.append(", ");
+      sb.append("applicationId:");
+      if (this.applicationId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.applicationId);
+      }
+      first = false;
+    }
+    if (isSetApplicationName()) {
+      if (!first) sb.append(", ");
+      sb.append("applicationName:");
+      if (this.applicationName == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.applicationName);
       }
       first = false;
     }
@@ -614,7 +776,23 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // STATUS
+          case 3: // APPLICATION_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.applicationId = iprot.readString();
+              struct.setApplicationIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // APPLICATION_NAME
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.applicationName = iprot.readString();
+              struct.setApplicationNameIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 5: // STATUS
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.status = new ComponentStatus();
               struct.status.read(iprot);
@@ -623,7 +801,7 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // DESCRIPTION
+          case 6: // DESCRIPTION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.description = iprot.readString();
               struct.setDescriptionIsSet(true);
@@ -653,6 +831,20 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
         if (struct.isSetName()) {
           oprot.writeFieldBegin(NAME_FIELD_DESC);
           oprot.writeString(struct.name);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.applicationId != null) {
+        if (struct.isSetApplicationId()) {
+          oprot.writeFieldBegin(APPLICATION_ID_FIELD_DESC);
+          oprot.writeString(struct.applicationId);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.applicationName != null) {
+        if (struct.isSetApplicationName()) {
+          oprot.writeFieldBegin(APPLICATION_NAME_FIELD_DESC);
+          oprot.writeString(struct.applicationName);
           oprot.writeFieldEnd();
         }
       }
@@ -692,15 +884,27 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
       if (struct.isSetName()) {
         optionals.set(0);
       }
-      if (struct.isSetStatus()) {
+      if (struct.isSetApplicationId()) {
         optionals.set(1);
       }
-      if (struct.isSetDescription()) {
+      if (struct.isSetApplicationName()) {
         optionals.set(2);
       }
-      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetStatus()) {
+        optionals.set(3);
+      }
+      if (struct.isSetDescription()) {
+        optionals.set(4);
+      }
+      oprot.writeBitSet(optionals, 5);
       if (struct.isSetName()) {
         oprot.writeString(struct.name);
+      }
+      if (struct.isSetApplicationId()) {
+        oprot.writeString(struct.applicationId);
+      }
+      if (struct.isSetApplicationName()) {
+        oprot.writeString(struct.applicationName);
       }
       if (struct.isSetStatus()) {
         struct.status.write(oprot);
@@ -715,17 +919,25 @@ public class NodeModel implements org.apache.thrift.TBase<NodeModel, NodeModel._
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.nodeId = iprot.readString();
       struct.setNodeIdIsSet(true);
-      BitSet incoming = iprot.readBitSet(3);
+      BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
         struct.name = iprot.readString();
         struct.setNameIsSet(true);
       }
       if (incoming.get(1)) {
+        struct.applicationId = iprot.readString();
+        struct.setApplicationIdIsSet(true);
+      }
+      if (incoming.get(2)) {
+        struct.applicationName = iprot.readString();
+        struct.setApplicationNameIsSet(true);
+      }
+      if (incoming.get(3)) {
         struct.status = new ComponentStatus();
         struct.status.read(iprot);
         struct.setStatusIsSet(true);
       }
-      if (incoming.get(2)) {
+      if (incoming.get(4)) {
         struct.description = iprot.readString();
         struct.setDescriptionIsSet(true);
       }
