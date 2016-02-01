@@ -21,16 +21,14 @@
 
 package org.apache.airavata.workflow.core;
 
-import org.apache.airavata.model.experiment.TaskDetails;
-import org.apache.airavata.model.experiment.WorkflowNodeDetails;
 import org.apache.airavata.workflow.core.dag.nodes.WorkflowNode;
 
-public class ProcessContext {
+public class WorkflowContext {
     private WorkflowNode workflowNode;
     private WorkflowNodeDetails wfNodeDetails;
     private TaskDetails taskDetails;
 
-    public ProcessContext(WorkflowNode workflowNode, WorkflowNodeDetails wfNodeDetails, TaskDetails taskDetails) {
+    public WorkflowContext(WorkflowNode workflowNode, WorkflowNodeDetails wfNodeDetails, TaskDetails taskDetails) {
         this.workflowNode = workflowNode;
         this.wfNodeDetails = wfNodeDetails;
         this.taskDetails = taskDetails;

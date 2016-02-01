@@ -26,12 +26,9 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingConstants;
-import org.apache.airavata.messaging.core.impl.RabbitMQProcessPublisher;
+import org.apache.airavata.messaging.core.impl.RabbitMQProcessLaunchPublisher;
 import org.apache.airavata.messaging.core.impl.RabbitMQStatusConsumer;
-import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.messaging.event.TaskIdentifier;
-import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
-import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +71,7 @@ public class WorkflowEnactmentService {
     public void submitWorkflow(String experimentId,
                                   String credentialToken,
                                   String gatewayName,
-                                  RabbitMQProcessPublisher publisher) throws Exception {
+                                  RabbitMQProcessLaunchPublisher publisher) throws Exception {
 
         SimpleWorkflowInterpreter simpleWorkflowInterpreter = new SimpleWorkflowInterpreter(
                 experimentId, credentialToken,gatewayName, publisher);
@@ -129,18 +126,17 @@ public class WorkflowEnactmentService {
         private void process() {
             String message;
             SimpleWorkflowInterpreter simpleWorkflowInterpreter;
-            if (msgCtx.getType() == MessageType.TASK) {
-                TaskStatusChangeEvent event = (TaskStatusChangeEvent) msgCtx.getEvent();
-                TaskIdentifier taskIdentifier = event.getTaskIdentity();
-                simpleWorkflowInterpreter = getInterpreter(taskIdentifier.getExperimentId());
+            if (msgCtx.getType() == MessageType.PROCESS) {
+                ProcessStatusChangeEvent event = ((ProcessStatusChangeEvent) msgCtx.getEvent());
+                ProcessIdentifier processIdentity = event.getProcessIdentity();
+                simpleWorkflowInterpreter = getInterpreter(processIdentity.getExperimentId());
                 if (simpleWorkflowInterpreter != null) {
-                    simpleWorkflowInterpreter.handleTaskStatusChangeEvent(event);
+                    simpleWorkflowInterpreter.handleProcessStatusChangeEvent(event);
                 } else {
                     // this happens when Task status messages comes after the Taskoutput messages,as we have worked on
                     // output changes it is ok to ignore this.
                 }
-                message = "Received task output change event , expId : " + taskIdentifier.getExperimentId() + ", taskId : " + taskIdentifier.getTaskId() + ", workflow node Id : " + taskIdentifier.getWorkflowNodeId();
-                log.debug(message);
+
             }else if (msgCtx.getType() == MessageType.TASKOUTPUT) {
                 TaskOutputChangeEvent event = (TaskOutputChangeEvent) msgCtx.getEvent();
                 TaskIdentifier taskIdentifier = event.getTaskIdentity();
