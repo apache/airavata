@@ -37,9 +37,9 @@ import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.workflow.core.dag.edge.Edge;
 import org.apache.airavata.workflow.core.dag.nodes.ApplicationNode;
 import org.apache.airavata.workflow.core.dag.nodes.NodeState;
-import org.apache.airavata.workflow.core.dag.nodes.WorkflowInputNode;
+import org.apache.airavata.workflow.core.dag.nodes.InputNode;
 import org.apache.airavata.workflow.core.dag.nodes.WorkflowNode;
-import org.apache.airavata.workflow.core.dag.nodes.WorkflowOutputNode;
+import org.apache.airavata.workflow.core.dag.nodes.OutputNode;
 import org.apache.airavata.workflow.core.dag.port.InPort;
 import org.apache.airavata.workflow.core.dag.port.OutPort;
 import org.slf4j.Logger;
@@ -59,7 +59,7 @@ import java.util.concurrent.ConcurrentHashMap;
 class SimpleWorkflowInterpreter{
 
     private static final Logger log = LoggerFactory.getLogger(SimpleWorkflowInterpreter.class);
-    private List<WorkflowInputNode> workflowInputNodes;
+    private List<InputNode> inputNodes;
 
     private ExperimentModel experiment;
 
@@ -72,7 +72,7 @@ class SimpleWorkflowInterpreter{
     private Map<String, WorkflowContext> processingQueue = new ConcurrentHashMap<String, WorkflowContext>();
     private Map<String, WorkflowContext> completeList = new HashMap<String, WorkflowContext>();
     private Registry registry;
-    private List<WorkflowOutputNode> completeWorkflowOutputs = new ArrayList<WorkflowOutputNode>();
+    private List<OutputNode> completeWorkflowOutputs = new ArrayList<OutputNode>();
     private RabbitMQProcessLaunchPublisher publisher;
     private RabbitMQStatusConsumer statusConsumer;
     private String consumerId;
@@ -97,20 +97,20 @@ class SimpleWorkflowInterpreter{
      * @throws Exception
      */
     void launchWorkflow() throws Exception {
-        WorkflowFactoryImpl wfFactory = WorkflowFactoryImpl.getInstance();
-        WorkflowParser workflowParser = wfFactory.getWorkflowParser(experiment.getExperimentId(), credentialToken);
+        WorkflowBuilder workflowBuilder = WorkflowFactory.getWorkflowBuilder(experiment.getExperimentId(), credentialToken, null);
+
         log.debug("Initialized workflow parser");
-        setWorkflowInputNodes(workflowParser.parse());
+        setInputNodes(workflowBuilder.build());
         log.debug("Parsed the workflow and got the workflow input nodes");
         // process workflow input nodes
-        processWorkflowInputNodes(getWorkflowInputNodes());
+        processWorkflowInputNodes(getInputNodes());
         if (readyList.isEmpty()) {
             StringBuilder sb = new StringBuilder();
-            for (WorkflowInputNode workflowInputNode : workflowInputNodes) {
+            for (InputNode inputNode : inputNodes) {
                 sb.append(", ");
-                sb.append(workflowInputNode.getInputObject().getName());
+                sb.append(inputNode.getInputObject().getName());
                 sb.append("=");
-                sb.append(workflowInputNode.getInputObject().getValue());
+                sb.append(inputNode.getInputObject().getValue());
             }
             throw new AiravataException("No workflow application node is in ready state to run with experiment inputs" + sb.toString());
         }
@@ -128,8 +128,8 @@ class SimpleWorkflowInterpreter{
             throw new AiravataException("No workflow application node is in ready state to run");
         }
         for (WorkflowNode readyNode : readyList.values()) {
-            if (readyNode instanceof WorkflowOutputNode) {
-                WorkflowOutputNode wfOutputNode = (WorkflowOutputNode) readyNode;
+            if (readyNode instanceof OutputNode) {
+                OutputNode wfOutputNode = (OutputNode) readyNode;
                 wfOutputNode.getOutputObject().setValue(wfOutputNode.getInPort().getInputObject().getValue());
                 addToCompleteOutputNodeList(wfOutputNode);
                 continue;
@@ -151,7 +151,7 @@ class SimpleWorkflowInterpreter{
 
     private void saveWorkflowOutputs() throws AppCatalogException {
         List<OutputDataObjectType> outputDataObjects = new ArrayList<OutputDataObjectType>();
-        for (WorkflowOutputNode completeWorkflowOutput : completeWorkflowOutputs) {
+        for (OutputNode completeWorkflowOutput : completeWorkflowOutputs) {
             outputDataObjects.add(completeWorkflowOutput.getOutputObject());
         }
         RegistryFactory.getAppCatalog().getWorkflowCatalog()
@@ -183,9 +183,9 @@ class SimpleWorkflowInterpreter{
             executionUnit = ExecutionUnit.APPLICATION;
             executionData = ((ApplicationNode) readyNode).getApplicationId();
             setupNodeDetailsInput(((ApplicationNode) readyNode), wfNodeDetails);
-        } else if (readyNode instanceof WorkflowInputNode) {
+        } else if (readyNode instanceof InputNode) {
             executionUnit = ExecutionUnit.INPUT;
-        } else if (readyNode instanceof WorkflowOutputNode) {
+        } else if (readyNode instanceof OutputNode) {
             executionUnit = ExecutionUnit.OUTPUT;
         }
         wfNodeDetails.setExecutionUnit(executionUnit);
@@ -206,9 +206,9 @@ class SimpleWorkflowInterpreter{
     }
 
 
-    private void processWorkflowInputNodes(List<WorkflowInputNode> wfInputNodes) {
+    private void processWorkflowInputNodes(List<InputNode> wfInputNodes) {
         Set<WorkflowNode> tempNodeSet = new HashSet<WorkflowNode>();
-        for (WorkflowInputNode wfInputNode : wfInputNodes) {
+        for (InputNode wfInputNode : wfInputNodes) {
             if (wfInputNode.isReady()) {
                 log.debug("Workflow node : " + wfInputNode.getId() + " is ready to execute");
                 for (Edge edge : wfInputNode.getOutPort().getOutEdges()) {
@@ -227,12 +227,12 @@ class SimpleWorkflowInterpreter{
     }
 
 
-    public List<WorkflowInputNode> getWorkflowInputNodes() throws Exception {
-        return workflowInputNodes;
+    public List<InputNode> getInputNodes() throws Exception {
+        return inputNodes;
     }
 
-    public void setWorkflowInputNodes(List<WorkflowInputNode> workflowInputNodes) {
-        this.workflowInputNodes = workflowInputNodes;
+    public void setInputNodes(List<InputNode> inputNodes) {
+        this.inputNodes = inputNodes;
     }
 
     private Registry getRegistry() throws RegistryException {
@@ -282,7 +282,7 @@ class SimpleWorkflowInterpreter{
     }
 
 
-    private void addToCompleteOutputNodeList(WorkflowOutputNode wfOutputNode) {
+    private void addToCompleteOutputNodeList(OutputNode wfOutputNode) {
         completeWorkflowOutputs.add(wfOutputNode);
         readyList.remove(wfOutputNode.getId());
     }

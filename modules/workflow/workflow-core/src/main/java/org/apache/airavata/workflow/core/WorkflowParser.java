@@ -21,12 +21,26 @@
 
 package org.apache.airavata.workflow.core;
 
-import org.apache.airavata.workflow.core.dag.nodes.WorkflowInputNode;
+import org.apache.airavata.workflow.core.dag.edge.Edge;
+import org.apache.airavata.workflow.core.dag.nodes.ApplicationNode;
+import org.apache.airavata.workflow.core.dag.nodes.InputNode;
+import org.apache.airavata.workflow.core.dag.nodes.OutputNode;
+import org.apache.airavata.workflow.core.dag.port.Port;
 
 import java.util.List;
 
 public interface WorkflowParser {
 
-    public List<WorkflowInputNode> parse() throws Exception;
+    public void parse() throws Exception;
+
+    public List<InputNode> getInputNodes() throws Exception;
+
+    public List<OutputNode> getOutputNodes() throws Exception;
+
+    public List<ApplicationNode> getApplicationNodes() throws Exception;
+
+    public List<Port> getPorts() throws Exception;
+
+    public List<Edge> getEdges() throws Exception;
 
 }

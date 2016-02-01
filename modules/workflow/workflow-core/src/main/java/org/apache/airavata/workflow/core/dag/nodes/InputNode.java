@@ -21,17 +21,17 @@
 
 package org.apache.airavata.workflow.core.dag.nodes;
 
-import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.workflow.core.dag.port.InPort;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.workflow.core.dag.port.OutPort;
 
-public interface WorkflowOutputNode extends WorkflowNode {
+public interface InputNode extends WorkflowNode {
 
-    public OutputDataObjectType getOutputObject();
+    public InputDataObjectType getInputObject();
 
-    public void setOutputObject(OutputDataObjectType outputObject);
+    public void setInputObject(InputDataObjectType inputObject);
 
-    public InPort getInPort();
+    public OutPort getOutPort();
 
-    public void setInPort(InPort inPort);
+    public void setOutPort(OutPort outPort);
 
 }
