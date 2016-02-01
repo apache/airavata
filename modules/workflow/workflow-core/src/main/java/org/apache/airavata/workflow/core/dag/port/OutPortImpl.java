@@ -21,6 +21,7 @@
 
 package org.apache.airavata.workflow.core.dag.port;
 
+import org.apache.airavata.model.PortModel;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.workflow.core.dag.edge.Edge;
 import org.apache.airavata.workflow.core.dag.nodes.WorkflowNode;
@@ -33,11 +34,11 @@ public class OutPortImpl implements OutPort {
     private OutputDataObjectType outputDataObjectType;
     private List<Edge> outEdges = new ArrayList<Edge>();
     private boolean isSatisfy = false;
-    private String portId;
     private WorkflowNode node;
+    private PortModel portModel;
 
-    public OutPortImpl(String portId) {
-        this.portId = portId;
+    public OutPortImpl(PortModel portModel) {
+        this.portModel = portModel;
     }
 
     @Override
@@ -61,6 +62,16 @@ public class OutPortImpl implements OutPort {
     }
 
     @Override
+    public void setPortModel(PortModel portModel) {
+        this.portModel = portModel;
+    }
+
+    @Override
+    public PortModel getPortModel() {
+        return portModel;
+    }
+
+    @Override
     public boolean isReady() {
         return this.outputDataObjectType.getValue() != null
                 && !this.outputDataObjectType.getValue().equals("");
@@ -78,6 +89,6 @@ public class OutPortImpl implements OutPort {
 
     @Override
     public String getId() {
-        return portId;
+        return getPortModel().getPortId();
     }
 }

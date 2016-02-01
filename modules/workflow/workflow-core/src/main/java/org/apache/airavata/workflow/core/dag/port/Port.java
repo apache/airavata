@@ -21,9 +21,14 @@
 
 package org.apache.airavata.workflow.core.dag.port;
 
+import org.apache.airavata.model.PortModel;
 import org.apache.airavata.workflow.core.dag.nodes.WorkflowNode;
 
 public interface Port {
+
+    public void setPortModel(PortModel portModel);
+
+    public PortModel getPortModel();
 
     public boolean isReady();
 

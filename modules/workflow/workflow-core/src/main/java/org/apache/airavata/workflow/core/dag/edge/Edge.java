@@ -21,6 +21,7 @@
 
 package org.apache.airavata.workflow.core.dag.edge;
 
+import org.apache.airavata.model.EdgeModel;
 import org.apache.airavata.workflow.core.dag.port.InPort;
 import org.apache.airavata.workflow.core.dag.port.OutPort;
 
@@ -30,6 +31,10 @@ import org.apache.airavata.workflow.core.dag.port.OutPort;
  */
 
 public interface Edge {
+
+    public void setEdgeModel(EdgeModel edgeModel);
+
+    public EdgeModel getEdgeModel();
 
     public InPort getToPort();
 

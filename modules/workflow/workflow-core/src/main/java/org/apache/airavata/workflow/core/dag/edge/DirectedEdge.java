@@ -21,6 +21,7 @@
 
 package org.apache.airavata.workflow.core.dag.edge;
 
+import org.apache.airavata.model.EdgeModel;
 import org.apache.airavata.workflow.core.dag.port.InPort;
 import org.apache.airavata.workflow.core.dag.port.OutPort;
 
@@ -29,6 +30,17 @@ public class DirectedEdge implements Edge {
 
     private InPort inPort;
     private OutPort outPort;
+    private EdgeModel edgeModel;
+
+    @Override
+    public void setEdgeModel(EdgeModel edgeModel) {
+        this.edgeModel = edgeModel;
+    }
+
+    @Override
+    public EdgeModel getEdgeModel() {
+        return edgeModel;
+    }
 
     @Override
     public InPort getToPort() {
