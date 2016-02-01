@@ -33,11 +33,65 @@ include "../../airavata-apis/airavata_commons.thrift"
 */
 
 
-struct Workflow {
+struct WorkflowModel {
     1: required string templateId = airavata_commons.DEFAULT_ID,
     2: required string name,
-    3: optional string graph,
+    3: required string graph,
     4: optional binary image,
     5: optional list<application_io_models.InputDataObjectType> workflowInputs,
     6: optional list<application_io_models.OutputDataObjectType> workflowOutputs
+}
+
+enum WorkflowState {
+    CREATED,
+    STARTED,
+    EXECUTING,
+    COMPLETED,
+    FAILED,
+    CANCELLING,
+    CANCELED
+}
+
+enum ComponentState {
+    CREATED,
+    WAITING,
+    READY,
+    RUNNING,
+    COMPLETED,
+    FAILED,
+    CANCELED
+}
+
+struct ComponentStatus {
+    1: required ComponentState state = ComponentState.CREATED,
+    2: optional string reason,
+    3: optional i64 timeofStateChange
+}
+
+struct WorkflowStatus {
+    1: required WorkflowState state,
+    2: optional i64 timeOfStateChange,
+    3: optional string reason
+}
+
+struct EdgeModel {
+    1: required string edgeId = airavata_commons.DEFAULT_ID,
+    2: optional string name,
+    3: optional ComponentStatus status,
+    4: optional string description
+}
+
+struct PortModel {
+    1: required string portId = airavata_commons.DEFAULT_ID,
+    2: optional string name
+    3: optional ComponentStatus status,
+    4: optional string description
+
+}
+
+struct NodeModel {
+    1: required string nodeId= airavata_commons.DEFAULT_ID,
+    2: optional string name,
+    3: optional ComponentStatus status,
+    4: optional string description
 }
