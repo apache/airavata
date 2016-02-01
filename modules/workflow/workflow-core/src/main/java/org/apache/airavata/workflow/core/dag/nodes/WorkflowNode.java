@@ -21,7 +21,15 @@
 
 package org.apache.airavata.workflow.core.dag.nodes;
 
+import org.apache.airavata.model.ComponentState;
+import org.apache.airavata.model.ComponentStatus;
+import org.apache.airavata.model.NodeModel;
+
 public interface WorkflowNode {
+
+    public void setNodeModel(NodeModel nodeModel);
+
+    public NodeModel getNodeModel();
 
     public String getId();
 
@@ -29,9 +37,11 @@ public interface WorkflowNode {
 
     public NodeType getType();
 
-    public NodeState getState();
+    public ComponentState getState();
 
-    public void setState(NodeState newState);
+    public ComponentStatus getStatus();
+
+    public void setStatus(ComponentStatus newStatus);
 
     public boolean isReady();
 

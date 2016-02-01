@@ -30,6 +30,8 @@ public interface ApplicationNode extends WorkflowNode {
 
     public String getApplicationId();
 
+    public String getApplicationName();
+
     public void addInPort(InPort inPort);
 
     public List<InPort> getInputPorts();

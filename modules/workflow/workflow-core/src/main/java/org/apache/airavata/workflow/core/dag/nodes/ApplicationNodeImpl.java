@@ -21,6 +21,9 @@
 
 package org.apache.airavata.workflow.core.dag.nodes;
 
+import org.apache.airavata.model.ComponentState;
+import org.apache.airavata.model.ComponentStatus;
+import org.apache.airavata.model.NodeModel;
 import org.apache.airavata.workflow.core.dag.port.InPort;
 import org.apache.airavata.workflow.core.dag.port.OutPort;
 
@@ -29,35 +32,32 @@ import java.util.List;
 
 public class ApplicationNodeImpl implements ApplicationNode {
 
-    private final String nodeId;
-    private NodeState myState = NodeState.WAITING;
-    private String applicationId;
-    private List<InPort> inPorts = new ArrayList<InPort>();
-    private List<OutPort> outPorts = new ArrayList<OutPort>();
-    private String applicationName;
+    private NodeModel nodeModel;
+    private List<InPort> inPorts = new ArrayList<>();
+    private List<OutPort> outPorts = new ArrayList<>();
 
-//    public ApplicationNodeImpl(String nodeId) {
-//        this(nodeId, null);
-//    }
-//
-//    public ApplicationNodeImpl(String nodeId, String applicationId) {
-//        this(nodeId, null, applicationId);
-//    }
+    public ApplicationNodeImpl(NodeModel nodeModel) {
+        this.nodeModel = nodeModel;
+    }
 
-    public ApplicationNodeImpl(String nodeId, String applicationName, String applicationId) {
-        this.nodeId = nodeId;
-        this.applicationName = applicationName;
-        this.applicationId = applicationId;
+    @Override
+    public void setNodeModel(NodeModel nodeModel) {
+        this.nodeModel = nodeModel;
+    }
+
+    @Override
+    public NodeModel getNodeModel() {
+        return nodeModel;
     }
 
     @Override
     public String getId() {
-        return this.nodeId;
+        return nodeModel.getNodeId();
     }
 
     @Override
     public String getName() {
-        return applicationName;
+        return getNodeModel().getName();
     }
 
     @Override
@@ -66,17 +66,18 @@ public class ApplicationNodeImpl implements ApplicationNode {
     }
 
     @Override
-    public NodeState getState() {
-        return myState;
+    public ComponentState getState() {
+        return getStatus().getState();
     }
 
     @Override
-    public void setState(NodeState newState) {
-        if (newState.getLevel() > myState.getLevel()) {
-            myState = newState;
-        } else {
-            throw new IllegalStateException("Node state can't be reversed. currentState : " + myState.toString() + " , newState " + newState.toString());
-        }
+    public ComponentStatus getStatus() {
+        return getNodeModel().getStatus();
+    }
+
+    @Override
+    public void setStatus(ComponentStatus newStatus) {
+        getNodeModel().setStatus(newStatus);
     }
 
     @Override
@@ -91,7 +92,12 @@ public class ApplicationNodeImpl implements ApplicationNode {
 
     @Override
     public String getApplicationId() {
-        return this.applicationId;
+        return getNodeModel().getApplicationId();
+    }
+
+    @Override
+    public String getApplicationName() {
+        return null;
     }
 
     @Override

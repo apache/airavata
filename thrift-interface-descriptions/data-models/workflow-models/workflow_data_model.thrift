@@ -83,9 +83,10 @@ struct EdgeModel {
 
 struct PortModel {
     1: required string portId = airavata_commons.DEFAULT_ID,
-    2: optional string name
+    2: optional string name,
     3: optional ComponentStatus status,
-    4: optional string description
+    4: optional string value,
+    5: optional string description
 
 }
 

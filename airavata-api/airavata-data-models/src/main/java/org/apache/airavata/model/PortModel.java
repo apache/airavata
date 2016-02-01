@@ -58,7 +58,8 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
   private static final org.apache.thrift.protocol.TField PORT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("portId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("status", org.apache.thrift.protocol.TType.STRUCT, (short)3);
-  private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField VALUE_FIELD_DESC = new org.apache.thrift.protocol.TField("value", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)5);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -69,6 +70,7 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
   private String portId; // required
   private String name; // optional
   private ComponentStatus status; // optional
+  private String value; // optional
   private String description; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -76,7 +78,8 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
     PORT_ID((short)1, "portId"),
     NAME((short)2, "name"),
     STATUS((short)3, "status"),
-    DESCRIPTION((short)4, "description");
+    VALUE((short)4, "value"),
+    DESCRIPTION((short)5, "description");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -97,7 +100,9 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
           return NAME;
         case 3: // STATUS
           return STATUS;
-        case 4: // DESCRIPTION
+        case 4: // VALUE
+          return VALUE;
+        case 5: // DESCRIPTION
           return DESCRIPTION;
         default:
           return null;
@@ -139,7 +144,7 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
   }
 
   // isset id assignments
-  private static final _Fields optionals[] = {_Fields.NAME,_Fields.STATUS,_Fields.DESCRIPTION};
+  private static final _Fields optionals[] = {_Fields.NAME,_Fields.STATUS,_Fields.VALUE,_Fields.DESCRIPTION};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -149,6 +154,8 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.STATUS, new org.apache.thrift.meta_data.FieldMetaData("status", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ComponentStatus.class)));
+    tmpMap.put(_Fields.VALUE, new org.apache.thrift.meta_data.FieldMetaData("value", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("description", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -180,6 +187,9 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
     if (other.isSetStatus()) {
       this.status = new ComponentStatus(other.status);
     }
+    if (other.isSetValue()) {
+      this.value = other.value;
+    }
     if (other.isSetDescription()) {
       this.description = other.description;
     }
@@ -195,6 +205,7 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
 
     this.name = null;
     this.status = null;
+    this.value = null;
     this.description = null;
   }
 
@@ -267,6 +278,29 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
     }
   }
 
+  public String getValue() {
+    return this.value;
+  }
+
+  public void setValue(String value) {
+    this.value = value;
+  }
+
+  public void unsetValue() {
+    this.value = null;
+  }
+
+  /** Returns true if field value is set (has been assigned a value) and false otherwise */
+  public boolean isSetValue() {
+    return this.value != null;
+  }
+
+  public void setValueIsSet(boolean value) {
+    if (!value) {
+      this.value = null;
+    }
+  }
+
   public String getDescription() {
     return this.description;
   }
@@ -316,6 +350,14 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
       }
       break;
 
+    case VALUE:
+      if (value == null) {
+        unsetValue();
+      } else {
+        setValue((String)value);
+      }
+      break;
+
     case DESCRIPTION:
       if (value == null) {
         unsetDescription();
@@ -338,6 +380,9 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
     case STATUS:
       return getStatus();
 
+    case VALUE:
+      return getValue();
+
     case DESCRIPTION:
       return getDescription();
 
@@ -358,6 +403,8 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
       return isSetName();
     case STATUS:
       return isSetStatus();
+    case VALUE:
+      return isSetValue();
     case DESCRIPTION:
       return isSetDescription();
     }
@@ -404,6 +451,15 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
         return false;
     }
 
+    boolean this_present_value = true && this.isSetValue();
+    boolean that_present_value = true && that.isSetValue();
+    if (this_present_value || that_present_value) {
+      if (!(this_present_value && that_present_value))
+        return false;
+      if (!this.value.equals(that.value))
+        return false;
+    }
+
     boolean this_present_description = true && this.isSetDescription();
     boolean that_present_description = true && that.isSetDescription();
     if (this_present_description || that_present_description) {
@@ -434,6 +490,11 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
     list.add(present_status);
     if (present_status)
       list.add(status);
+
+    boolean present_value = true && (isSetValue());
+    list.add(present_value);
+    if (present_value)
+      list.add(value);
 
     boolean present_description = true && (isSetDescription());
     list.add(present_description);
@@ -477,6 +538,16 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
     }
     if (isSetStatus()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.status, other.status);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetValue()).compareTo(other.isSetValue());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetValue()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.value, other.value);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -535,6 +606,16 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
         sb.append("null");
       } else {
         sb.append(this.status);
+      }
+      first = false;
+    }
+    if (isSetValue()) {
+      if (!first) sb.append(", ");
+      sb.append("value:");
+      if (this.value == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.value);
       }
       first = false;
     }
@@ -623,7 +704,15 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // DESCRIPTION
+          case 4: // VALUE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.value = iprot.readString();
+              struct.setValueIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 5: // DESCRIPTION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.description = iprot.readString();
               struct.setDescriptionIsSet(true);
@@ -663,6 +752,13 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
           oprot.writeFieldEnd();
         }
       }
+      if (struct.value != null) {
+        if (struct.isSetValue()) {
+          oprot.writeFieldBegin(VALUE_FIELD_DESC);
+          oprot.writeString(struct.value);
+          oprot.writeFieldEnd();
+        }
+      }
       if (struct.description != null) {
         if (struct.isSetDescription()) {
           oprot.writeFieldBegin(DESCRIPTION_FIELD_DESC);
@@ -695,15 +791,21 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
       if (struct.isSetStatus()) {
         optionals.set(1);
       }
-      if (struct.isSetDescription()) {
+      if (struct.isSetValue()) {
         optionals.set(2);
       }
-      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetDescription()) {
+        optionals.set(3);
+      }
+      oprot.writeBitSet(optionals, 4);
       if (struct.isSetName()) {
         oprot.writeString(struct.name);
       }
       if (struct.isSetStatus()) {
         struct.status.write(oprot);
+      }
+      if (struct.isSetValue()) {
+        oprot.writeString(struct.value);
       }
       if (struct.isSetDescription()) {
         oprot.writeString(struct.description);
@@ -715,7 +817,7 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.portId = iprot.readString();
       struct.setPortIdIsSet(true);
-      BitSet incoming = iprot.readBitSet(3);
+      BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
         struct.name = iprot.readString();
         struct.setNameIsSet(true);
@@ -726,6 +828,10 @@ public class PortModel implements org.apache.thrift.TBase<PortModel, PortModel._
         struct.setStatusIsSet(true);
       }
       if (incoming.get(2)) {
+        struct.value = iprot.readString();
+        struct.setValueIsSet(true);
+      }
+      if (incoming.get(3)) {
         struct.description = iprot.readString();
         struct.setDescriptionIsSet(true);
       }
