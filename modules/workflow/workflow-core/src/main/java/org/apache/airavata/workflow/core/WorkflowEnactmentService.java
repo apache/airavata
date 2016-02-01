@@ -137,7 +137,7 @@ public class WorkflowEnactmentService {
                     // output changes it is ok to ignore this.
                 }
 
-            }else if (msgCtx.getType() == MessageType.TASKOUTPUT) {
+            }else if (msgCtx.getType() == MessageType.PROCESSOUTPUT) {
                 TaskOutputChangeEvent event = (TaskOutputChangeEvent) msgCtx.getEvent();
                 TaskIdentifier taskIdentifier = event.getTaskIdentity();
                 simpleWorkflowInterpreter = getInterpreter(taskIdentifier.getExperimentId());
@@ -150,7 +150,7 @@ public class WorkflowEnactmentService {
                     throw new IllegalArgumentException("Error while processing TaskOutputChangeEvent, " +
                             "There is no registered workflow for experiment Id : " + taskIdentifier.getExperimentId());
                 }
-                message = "Received task output change event , expId : " + taskIdentifier.getExperimentId() + ", taskId : " + taskIdentifier.getTaskId() + ", workflow node Id : " + taskIdentifier.getWorkflowNodeId();
+                message = "Received task output change event , expId : " + taskIdentifier.getExperimentId() + ", taskId : " + taskIdentifier.getTaskId();
                 log.debug(message);
             } else {
                 // not interested, ignores

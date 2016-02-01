@@ -21,11 +21,41 @@
 
 package org.apache.airavata.workflow.core;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.workflow.core.parser.AiravataWorkflowBuilder;
+import org.apache.airavata.workflow.core.parser.JsonWorkflowParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Constructor;
+
 /**
  * All classes implement this WorkflowFactory interface, should be abstract or singleton.
  */
-public interface WorkflowFactory {
+public class WorkflowFactory {
 
-    public WorkflowParser getWorkflowParser(String experimentId, String credentialToken) throws Exception;
+    private static final Logger log = LoggerFactory.getLogger(WorkflowFactory.class);
+
+
+    public static WorkflowBuilder getWorkflowBuilder(String experimentId, String credentialToken, String workflowString) throws Exception {
+        return new AiravataWorkflowBuilder(experimentId, credentialToken, getWorkflowParser(workflowString));
+    }
+
+    public static WorkflowParser getWorkflowParser(String workflowString) throws Exception {
+        WorkflowParser workflowParser = null;
+        try {
+            String wfParserClassName = ServerSettings.getWorkflowParser();
+            Class<?> aClass = Class.forName(wfParserClassName);
+            Constructor<?> constructor = aClass.getConstructor(String.class);
+            workflowParser = (WorkflowParser) constructor.newInstance(workflowString);
+        } catch (ApplicationSettingsException e) {
+            log.info("A custom workflow parser is not defined, Use default Airavata JSON workflow parser");
+        }
+        if (workflowParser == null) {
+            workflowParser = new JsonWorkflowParser(workflowString);
+        }
+        return workflowParser;
+    }
 
 }

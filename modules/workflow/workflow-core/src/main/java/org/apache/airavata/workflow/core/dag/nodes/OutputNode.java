@@ -19,35 +19,19 @@
  *
  */
 
-package org.apache.airavata.workflow.core.parser;
+package org.apache.airavata.workflow.core.dag.nodes;
 
+import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.workflow.core.dag.port.InPort;
-import org.apache.airavata.workflow.model.graph.DataPort;
 
+public interface OutputNode extends WorkflowNode {
 
-public class PortContainer {
-    private DataPort dataPort;
-    private InPort inPort;
+    public OutputDataObjectType getOutputObject();
 
+    public void setOutputObject(OutputDataObjectType outputObject);
 
-    public PortContainer(DataPort dataPort, InPort inPort) {
-        this.dataPort = dataPort;
-        this.inPort = inPort;
-    }
+    public InPort getInPort();
 
-    public DataPort getDataPort() {
-        return dataPort;
-    }
+    public void setInPort(InPort inPort);
 
-    public void setDataPort(DataPort dataPort) {
-        this.dataPort = dataPort;
-    }
-
-    public InPort getInPort() {
-        return inPort;
-    }
-
-    public void setInPort(InPort inPort) {
-        this.inPort = inPort;
-    }
 }

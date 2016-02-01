@@ -27,13 +27,13 @@ import org.apache.airavata.model.NodeModel;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.workflow.core.dag.port.InPort;
 
-public class WorkflowOutputNodeImpl implements WorkflowOutputNode {
+public class OutputNodeImpl implements OutputNode {
 
     private NodeModel nodeModel;
     private OutputDataObjectType outputDataObjectType;
     private InPort inPort;
 
-    public WorkflowOutputNodeImpl(NodeModel nodeModel) {
+    public OutputNodeImpl(NodeModel nodeModel) {
         this.nodeModel = nodeModel;
     }
 

@@ -24,11 +24,11 @@ package org.apache.airavata.workflow.core.parser;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.workflow.core.WorkflowParser;
 import org.apache.airavata.workflow.core.dag.nodes.ApplicationNode;
-import org.apache.airavata.workflow.core.dag.nodes.WorkflowInputNode;
+import org.apache.airavata.workflow.core.dag.nodes.InputNode;
 import org.apache.airavata.workflow.core.dag.nodes.WorkflowNode;
-import org.apache.airavata.workflow.core.dag.nodes.WorkflowOutputNode;
-import org.apache.airavata.workflow.model.wf.Workflow;
+import org.apache.airavata.workflow.core.dag.nodes.OutputNode;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -37,10 +37,11 @@ import org.junit.Test;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AiravataWorkflowParserTest {
+public class JsonWorkflowParserTest {
 
     @Before
     public void setUp() throws Exception {
@@ -63,7 +64,7 @@ public class AiravataWorkflowParserTest {
             sb.append(nextLine);
             nextLine = br.readLine();
         }
-        Workflow workflow = new Workflow(sb.toString());
+//        Workflow workflow = new Workflow(sb.toString());
         ExperimentModel experiment = new ExperimentModel();
         InputDataObjectType x = new InputDataObjectType();
         x.setValue("6");
@@ -86,16 +87,17 @@ public class AiravataWorkflowParserTest {
         inputs.add(z);
         experiment.setExperimentInputs(inputs);
         // create parser
-        AiravataWorkflowParser parser = new AiravataWorkflowParser(experiment, "testCredentialId");
-        List<WorkflowInputNode> workflowInputNodes = parser.parseWorkflow(workflow);
-        Assert.assertNotNull(workflowInputNodes);
-        Assert.assertEquals(3, workflowInputNodes.size());
-        for (WorkflowInputNode workflowInputNode : workflowInputNodes) {
-            Assert.assertNotNull(workflowInputNode.getOutPort());
-            Assert.assertNotNull(workflowInputNode.getInputObject());
+        WorkflowParser parser = new JsonWorkflowParser("workflow string");
+        parser.parse();
+        List<InputNode> inputNodes = parser.getInputNodes();
+        Assert.assertNotNull(inputNodes);
+        Assert.assertEquals(3, inputNodes.size());
+        for (InputNode inputNode : inputNodes) {
+            Assert.assertNotNull(inputNode.getOutPort());
+            Assert.assertNotNull(inputNode.getInputObject());
         }
 
-        Map<String, WorkflowNode> wfNodes = parser.getWfNodes();
+        Map<String, WorkflowNode> wfNodes = getWorkflowNodeMap(parser.getApplicationNodes());
         for (String wfId : wfNodes.keySet()) {
             WorkflowNode wfNode = wfNodes.get(wfId);
             if (wfNode instanceof ApplicationNode) {
@@ -109,11 +111,20 @@ public class AiravataWorkflowParserTest {
                 Assert.assertEquals(1, node.getOutputPorts().size());
                 Assert.assertEquals(1, node.getOutputPorts().get(0).getOutEdges().size());
                 Assert.assertNotNull(node.getOutputPorts().get(0).getOutEdges().get(0));
-            } else if (wfNode instanceof WorkflowOutputNode) {
-                WorkflowOutputNode workflowOutputNode = (WorkflowOutputNode) wfNode;
-                Assert.assertNotNull(workflowOutputNode.getInPort());
+            } else if (wfNode instanceof OutputNode) {
+                OutputNode outputNode = (OutputNode) wfNode;
+                Assert.assertNotNull(outputNode.getInPort());
             }
         }
 
+    }
+
+    private Map<String, WorkflowNode> getWorkflowNodeMap(List<ApplicationNode> applicationNodes) {
+        Map<String, WorkflowNode> map = new HashMap<>();
+        for (ApplicationNode applicationNode : applicationNodes) {
+            map.put(applicationNode.getApplicationId(), applicationNode);
+        }
+
+        return map;
     }
 }
