@@ -92,6 +92,8 @@ struct PortModel {
 struct NodeModel {
     1: required string nodeId= airavata_commons.DEFAULT_ID,
     2: optional string name,
-    3: optional ComponentStatus status,
-    4: optional string description
+    3: optional string applicationId,
+    4: optional string applicationName,
+    5: optional ComponentStatus status,
+    6: optional string description
 }
