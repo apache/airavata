@@ -22,6 +22,7 @@
 package org.apache.airavata.registry.core.app.catalog.impl;
 
 
+import org.apache.airavata.registry.core.workflow.catalog.impl.WorkflowCatalogImpl;
 import org.apache.airavata.registry.cpi.*;
 
 public class AppCatalogImpl implements AppCatalog {
