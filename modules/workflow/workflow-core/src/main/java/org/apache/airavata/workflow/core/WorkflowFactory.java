@@ -37,11 +37,6 @@ public class WorkflowFactory {
 
     private static final Logger log = LoggerFactory.getLogger(WorkflowFactory.class);
 
-
-    public static WorkflowBuilder getWorkflowBuilder(String experimentId, String credentialToken, String workflowString) throws Exception {
-        return new AiravataWorkflowBuilder(experimentId, credentialToken, getWorkflowParser(workflowString));
-    }
-
     public static WorkflowParser getWorkflowParser(String workflowString) throws Exception {
         WorkflowParser workflowParser = null;
         try {

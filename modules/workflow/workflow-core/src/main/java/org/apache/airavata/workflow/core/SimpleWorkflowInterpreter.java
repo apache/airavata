@@ -67,6 +67,7 @@ class SimpleWorkflowInterpreter{
 
     private String gatewayName;
 
+    private String workflowString;
     private Map<String, WorkflowNode> readyList = new ConcurrentHashMap<String, WorkflowNode>();
     private Map<String, WorkflowNode> waitingList = new ConcurrentHashMap<String, WorkflowNode>();
     private Map<String, WorkflowContext> processingQueue = new ConcurrentHashMap<String, WorkflowContext>();
@@ -97,10 +98,12 @@ class SimpleWorkflowInterpreter{
      * @throws Exception
      */
     void launchWorkflow() throws Exception {
-        WorkflowBuilder workflowBuilder = WorkflowFactory.getWorkflowBuilder(experiment.getExperimentId(), credentialToken, null);
-
+//        WorkflowBuilder workflowBuilder = WorkflowFactory.getWorkflowBuilder(experiment.getExperimentId(), credentialToken, null);
+        workflowString = getWorkflow();
+        WorkflowParser workflowParser = WorkflowFactory.getWorkflowParser(workflowString);
         log.debug("Initialized workflow parser");
-        setInputNodes(workflowBuilder.build());
+        workflowParser.parse();
+        setInputNodes(workflowParser.getInputNodes());
         log.debug("Parsed the workflow and got the workflow input nodes");
         // process workflow input nodes
         processWorkflowInputNodes(getInputNodes());
@@ -117,6 +120,12 @@ class SimpleWorkflowInterpreter{
         processReadyList();
     }
 
+    private String getWorkflow() throws AppCatalogException {
+        WorkflowCatalog workflowCatalog = RegistryFactory.getAppCatalog().getWorkflowCatalog();
+        //FIXME: parse workflowTemplateId or experimentId
+        workflowCatalog.getWorkflow("");
+    }
+
     // try to remove synchronization tag
     /**
      * Package-Private method.
@@ -129,9 +138,9 @@ class SimpleWorkflowInterpreter{
         }
         for (WorkflowNode readyNode : readyList.values()) {
             if (readyNode instanceof OutputNode) {
-                OutputNode wfOutputNode = (OutputNode) readyNode;
-                wfOutputNode.getOutputObject().setValue(wfOutputNode.getInPort().getInputObject().getValue());
-                addToCompleteOutputNodeList(wfOutputNode);
+                OutputNode outputNode = (OutputNode) readyNode;
+                outputNode.getOutputObject().setValue(outputNode.getInPort().getInputObject().getValue());
+                addToCompleteOutputNodeList(outputNode);
                 continue;
             }
             WorkflowNodeDetails workflowNodeDetails = createWorkflowNodeDetails(readyNode);
@@ -206,13 +215,13 @@ class SimpleWorkflowInterpreter{
     }
 
 
-    private void processWorkflowInputNodes(List<InputNode> wfInputNodes) {
+    private void processWorkflowInputNodes(List<InputNode> inputNodes) {
         Set<WorkflowNode> tempNodeSet = new HashSet<WorkflowNode>();
-        for (InputNode wfInputNode : wfInputNodes) {
-            if (wfInputNode.isReady()) {
-                log.debug("Workflow node : " + wfInputNode.getId() + " is ready to execute");
-                for (Edge edge : wfInputNode.getOutPort().getOutEdges()) {
-                    edge.getToPort().getInputObject().setValue(wfInputNode.getInputObject().getValue());
+        for (InputNode inputNode : inputNodes) {
+            if (inputNode.isReady()) {
+                log.debug("Workflow node : " + inputNode.getId() + " is ready to execute");
+                for (Edge edge : inputNode.getOutPort().getEdges()) {
+                    edge.getToPort().getInputObject().setValue(inputNode.getInputObject().getValue());
                     if (edge.getToPort().getNode().isReady()) {
                         addToReadyQueue(edge.getToPort().getNode());
                         log.debug("Added workflow node : " + edge.getToPort().getNode().getId() + " to the readyQueue");
@@ -315,7 +324,7 @@ class SimpleWorkflowInterpreter{
                             break;
                         }
                     }
-                    for (Edge edge : outPort.getOutEdges()) {
+                    for (Edge edge : outPort.getEdges()) {
                         edge.getToPort().getInputObject().setValue(outPort.getOutputObject().getValue());
                         if (edge.getToPort().getNode().isReady()) {
                             addToReadyQueue(edge.getToPort().getNode());

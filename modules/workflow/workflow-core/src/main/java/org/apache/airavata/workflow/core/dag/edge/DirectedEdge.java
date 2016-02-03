@@ -33,6 +33,11 @@ public class DirectedEdge implements Edge {
     private EdgeModel edgeModel;
 
     @Override
+    public String getId() {
+        return getEdgeModel().getEdgeId();
+    }
+
+    @Override
     public void setEdgeModel(EdgeModel edgeModel) {
         this.edgeModel = edgeModel;
     }
