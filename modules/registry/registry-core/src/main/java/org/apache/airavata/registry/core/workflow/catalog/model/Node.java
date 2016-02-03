@@ -24,6 +24,7 @@ package org.apache.airavata.registry.core.workflow.catalog.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "NODE")
@@ -52,6 +53,9 @@ public class Node implements Serializable {
 
     @Column(name = "APPLICATION_NAME")
     private String applicationName;
+
+    @Column(name = "CREATED_TIME")
+    private Timestamp createdTime;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "TEMPLATE_ID")
@@ -119,6 +123,14 @@ public class Node implements Serializable {
 
     public void setApplicationName(String applicationName) {
         this.applicationName = applicationName;
+    }
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+        this.createdTime = createdTime;
     }
 }
 

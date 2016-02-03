@@ -61,9 +61,6 @@
         <class>org.apache.airavata.registry.core.app.catalog.model.JobManagerCommand</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.LocalSubmission</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.LocalDataMovement</class>
-        <class>org.apache.airavata.registry.core.app.catalog.model.Workflow</class>
-        <class>org.apache.airavata.registry.core.app.catalog.model.WorkflowInput</class>
-        <class>org.apache.airavata.registry.core.app.catalog.model.WorkflowOutput</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.Configuration</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.GatewayClientCredential</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
@@ -102,6 +99,18 @@
         <class>org.apache.airavata.registry.core.data.catalog.model.DataResourceMetaData</class>
         <class>org.apache.airavata.registry.core.data.catalog.model.DataReplicaMetaData</class>
         <class>org.apache.airavata.registry.core.data.catalog.model.Configuration</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
+    <persistence-unit name="workflowcatalog_data">
+        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+        <class>org.apache.airavata.registry.core.workflow.catalog.model.Workflow</class>
+        <class>org.apache.airavata.registry.core.workflow.catalog.model.WorkflowInput</class>
+        <class>org.apache.airavata.registry.core.workflow.catalog.model.WorkflowOutput</class>
+        <class>org.apache.airavata.registry.core.workflow.catalog.model.Edge</class>
+        <class>org.apache.airavata.registry.core.workflow.catalog.model.Node</class>
+        <class>org.apache.airavata.registry.core.workflow.catalog.model.Port</class>
+        <class>org.apache.airavata.registry.core.workflow.catalog.model.ComponentStatus</class>
+        <class>org.apache.airavata.registry.core.workflow.catalog.model.WorkflowStatus</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>

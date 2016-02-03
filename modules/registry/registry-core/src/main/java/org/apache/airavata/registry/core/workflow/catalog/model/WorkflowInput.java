@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.registry.core.app.catalog.model;
+package org.apache.airavata.registry.core.workflow.catalog.model;
 
 
 import javax.persistence.*;
@@ -30,8 +30,8 @@ import java.io.Serializable;
 @IdClass(WorkflowInput_PK.class)
 public class WorkflowInput implements Serializable {
     @Id
-    @Column(name = "WF_TEMPLATE_ID")
-    private String wfTemplateId;
+    @Column(name = "TEMPLATE_ID")
+    private String templateID;
     @Id
     @Column(name = "INPUT_KEY")
     private String inputKey;
@@ -48,7 +48,7 @@ public class WorkflowInput implements Serializable {
     private String userFriendlyDesc;
     @Column(name = "STANDARD_INPUT")
     private boolean standardInput;
-    @Column(name = "INPUT_ORDER")
+    @Column(name="INPUT_ORDER")
     private int inputOrder;
     @Column(name="IS_REQUIRED")
     private boolean isRequired;
@@ -57,16 +57,16 @@ public class WorkflowInput implements Serializable {
     @Column(name = "DATA_STAGED")
     private boolean dataStaged;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "WF_TEMPLATE_ID")
+    @ManyToOne(cascade= CascadeType.MERGE)
+    @JoinColumn(name = "TEMPLATE_ID")
     private Workflow workflow;
 
-    public String getWfTemplateId() {
-        return wfTemplateId;
+    public String getTemplateID() {
+        return templateID;
     }
 
-    public void setWfTemplateId(String wfTemplateId) {
-        this.wfTemplateId = wfTemplateId;
+    public void setTemplateID(String templateID) {
+        this.templateID = templateID;
     }
 
     public String getInputKey() {

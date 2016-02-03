@@ -24,6 +24,7 @@ package org.apache.airavata.registry.core.workflow.catalog.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "PORT")
@@ -46,6 +47,9 @@ public class Port implements Serializable {
 
     @Column(name = "DESCRIPTION")
     private String description;
+
+    @Column(name = "CREATED_TIME")
+    private Timestamp createdTime;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "TEMPLATE_ID")
@@ -97,6 +101,14 @@ public class Port implements Serializable {
 
     public void setPortId(String portId) {
         this.portId = portId;
+    }
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+        this.createdTime = createdTime;
     }
 }
 

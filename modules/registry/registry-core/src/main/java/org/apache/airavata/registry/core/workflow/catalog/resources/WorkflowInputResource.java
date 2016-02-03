@@ -17,16 +17,16 @@
  * under the License.
  */
 
-package org.apache.airavata.registry.core.app.catalog.resources;
+package org.apache.airavata.registry.core.workflow.catalog.resources;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.registry.core.app.catalog.model.Workflow;
-import org.apache.airavata.registry.core.app.catalog.model.WorkflowInput;
-import org.apache.airavata.registry.core.app.catalog.model.WorkflowInput_PK;
-import org.apache.airavata.registry.core.app.catalog.util.AppCatalogJPAUtils;
-import org.apache.airavata.registry.core.app.catalog.util.AppCatalogQueryGenerator;
-import org.apache.airavata.registry.core.app.catalog.util.AppCatalogResourceType;
-import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.core.workflow.catalog.model.Workflow;
+import org.apache.airavata.registry.core.workflow.catalog.model.WorkflowInput;
+import org.apache.airavata.registry.core.workflow.catalog.model.WorkflowInput_PK;
+import org.apache.airavata.registry.core.workflow.catalog.utils.WorkflowCatalogJPAUtils;
+import org.apache.airavata.registry.core.workflow.catalog.utils.WorkflowCatalogQueryGenerator;
+import org.apache.airavata.registry.core.workflow.catalog.utils.WorkflowCatalogResourceType;
+import org.apache.airavata.registry.cpi.WorkflowCatalogException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WorkflowInputResource extends AppCatAbstractResource {
+public class WorkflowInputResource extends WorkflowCatAbstractResource {
 
     private final static Logger logger = LoggerFactory.getLogger(WorkflowInputResource.class);
 
@@ -56,22 +56,22 @@ public class WorkflowInputResource extends AppCatAbstractResource {
 
     private WorkflowResource workflowResource;
 
-    public void remove(Object identifier) throws AppCatalogException {
+    public void remove(Object identifier) throws WorkflowCatalogException {
         HashMap<String, String> ids;
         if (identifier instanceof Map) {
             ids = (HashMap) identifier;
         } else {
             logger.error("Identifier should be a map with the field name and it's value");
-            throw new AppCatalogException("Identifier should be a map with the field name and it's value");
+            throw new WorkflowCatalogException("Identifier should be a map with the field name and it's value");
         }
 
         EntityManager em = null;
         try {
-            em = AppCatalogJPAUtils.getEntityManager();
+            em = WorkflowCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(WORKFLOW_INPUT);
-            generator.setParameter(WFInputConstants.WF_TEMPLATE_ID, ids.get(WFInputConstants.WF_TEMPLATE_ID));
-            generator.setParameter(WFInputConstants.INPUT_KEY, ids.get(WFInputConstants.INPUT_KEY));
+            WorkflowCatalogQueryGenerator generator = new WorkflowCatalogQueryGenerator(WORKFLOW_INPUT);
+            generator.setParameter(WorkflowInputConstants.WF_TEMPLATE_ID, ids.get(WorkflowInputConstants.WF_TEMPLATE_ID));
+            generator.setParameter(WorkflowInputConstants.INPUT_KEY, ids.get(WorkflowInputConstants.INPUT_KEY));
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
@@ -83,7 +83,7 @@ public class WorkflowInputResource extends AppCatAbstractResource {
             }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         } finally {
             if (em != null && em.isOpen()) {
                 if (em.getTransaction().isActive()) {
@@ -94,26 +94,26 @@ public class WorkflowInputResource extends AppCatAbstractResource {
         }
     }
 
-    public AppCatalogResource get(Object identifier) throws AppCatalogException {
+    public WorkflowCatalogResource get(Object identifier) throws WorkflowCatalogException {
         HashMap<String, String> ids;
         if (identifier instanceof Map) {
             ids = (HashMap<String, String>) identifier;
         } else {
             logger.error("Identifier should be a map with the field name and it's value");
-            throw new AppCatalogException("Identifier should be a map with the field name and it's value");
+            throw new WorkflowCatalogException("Identifier should be a map with the field name and it's value");
         }
 
         EntityManager em = null;
         try {
-            em = AppCatalogJPAUtils.getEntityManager();
+            em = WorkflowCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(WORKFLOW_INPUT);
-            generator.setParameter(WFInputConstants.WF_TEMPLATE_ID, ids.get(WFInputConstants.WF_TEMPLATE_ID));
-            generator.setParameter(WFInputConstants.INPUT_KEY, ids.get(WFInputConstants.INPUT_KEY));
+            WorkflowCatalogQueryGenerator generator = new WorkflowCatalogQueryGenerator(WORKFLOW_INPUT);
+            generator.setParameter(WorkflowInputConstants.WF_TEMPLATE_ID, ids.get(WorkflowInputConstants.WF_TEMPLATE_ID));
+            generator.setParameter(WorkflowInputConstants.INPUT_KEY, ids.get(WorkflowInputConstants.INPUT_KEY));
             Query q = generator.selectQuery(em);
             WorkflowInput workflowInput = (WorkflowInput) q.getSingleResult();
             WorkflowInputResource workflowInputResource =
-                    (WorkflowInputResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.WORKFLOW_INPUT
+                    (WorkflowInputResource) WorkflowCatalogJPAUtils.getResource(WorkflowCatalogResourceType.WORKFLOW_INPUT
                             , workflowInput);
             em.getTransaction().commit();
             if (em.isOpen()) {
@@ -125,7 +125,7 @@ public class WorkflowInputResource extends AppCatAbstractResource {
             return workflowInputResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         } finally {
             if (em != null && em.isOpen()) {
                 if (em.getTransaction().isActive()) {
@@ -136,51 +136,51 @@ public class WorkflowInputResource extends AppCatAbstractResource {
         }
     }
 
-    public List<AppCatalogResource> get(String fieldName, Object value) throws AppCatalogException {
-        List<AppCatalogResource> wfInputResources = new ArrayList<AppCatalogResource>();
+    public List<WorkflowCatalogResource> get(String fieldName, Object value) throws WorkflowCatalogException {
+        List<WorkflowCatalogResource> wfInputResources = new ArrayList<WorkflowCatalogResource>();
         EntityManager em = null;
         try {
-            em = AppCatalogJPAUtils.getEntityManager();
+            em = WorkflowCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             Query q;
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(WORKFLOW_INPUT);
+            WorkflowCatalogQueryGenerator generator = new WorkflowCatalogQueryGenerator(WORKFLOW_INPUT);
             List results;
-            if (fieldName.equals(WFInputConstants.WF_TEMPLATE_ID)) {
-                generator.setParameter(WFInputConstants.WF_TEMPLATE_ID, value);
+            if (fieldName.equals(WorkflowInputConstants.WF_TEMPLATE_ID)) {
+                generator.setParameter(WorkflowInputConstants.WF_TEMPLATE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
                         WorkflowInput workflowInput = (WorkflowInput) result;
                         WorkflowInputResource workflowInputResource =
-                                (WorkflowInputResource) AppCatalogJPAUtils.getResource(
-                                        AppCatalogResourceType.WORKFLOW_INPUT, workflowInput);
+                                (WorkflowInputResource) WorkflowCatalogJPAUtils.getResource(
+                                        WorkflowCatalogResourceType.WORKFLOW_INPUT, workflowInput);
                         wfInputResources.add(workflowInputResource);
                     }
                 }
-            } else if (fieldName.equals(WFInputConstants.INPUT_KEY)) {
-                generator.setParameter(WFInputConstants.INPUT_KEY, value);
+            } else if (fieldName.equals(WorkflowInputConstants.INPUT_KEY)) {
+                generator.setParameter(WorkflowInputConstants.INPUT_KEY, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
                         WorkflowInput workflowInput = (WorkflowInput) result;
                         WorkflowInputResource workflowInputResource =
-                                (WorkflowInputResource) AppCatalogJPAUtils.getResource(
-                                        AppCatalogResourceType.WORKFLOW_INPUT, workflowInput);
+                                (WorkflowInputResource) WorkflowCatalogJPAUtils.getResource(
+                                        WorkflowCatalogResourceType.WORKFLOW_INPUT, workflowInput);
                         wfInputResources.add(workflowInputResource);
                     }
                 }
-            } else if (fieldName.equals(WFInputConstants.DATA_TYPE)) {
-                generator.setParameter(WFInputConstants.DATA_TYPE, value);
+            } else if (fieldName.equals(WorkflowInputConstants.DATA_TYPE)) {
+                generator.setParameter(WorkflowInputConstants.DATA_TYPE, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
                         WorkflowInput workflowInput = (WorkflowInput) result;
                         WorkflowInputResource workflowInputResource =
-                                (WorkflowInputResource) AppCatalogJPAUtils.getResource(
-                                        AppCatalogResourceType.WORKFLOW_INPUT, workflowInput);
+                                (WorkflowInputResource) WorkflowCatalogJPAUtils.getResource(
+                                        WorkflowCatalogResourceType.WORKFLOW_INPUT, workflowInput);
                         wfInputResources.add(workflowInputResource);
                     }
                 }
@@ -204,7 +204,7 @@ public class WorkflowInputResource extends AppCatAbstractResource {
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         } finally {
             if (em != null && em.isOpen()) {
                 if (em.getTransaction().isActive()) {
@@ -216,51 +216,51 @@ public class WorkflowInputResource extends AppCatAbstractResource {
         return wfInputResources;
     }
 
-    public List<AppCatalogResource> getAll() throws AppCatalogException {
+    public List<WorkflowCatalogResource> getAll() throws WorkflowCatalogException {
         return null;
     }
 
-    public List<String> getAllIds() throws AppCatalogException {
+    public List<String> getAllIds() throws WorkflowCatalogException {
         return null;
     }
 
-    public List<String> getIds(String fieldName, Object value) throws AppCatalogException {
+    public List<String> getIds(String fieldName, Object value) throws WorkflowCatalogException {
         List<String> wfInputResourceIDs = new ArrayList<String>();
         EntityManager em = null;
         try {
-            em = AppCatalogJPAUtils.getEntityManager();
+            em = WorkflowCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             Query q;
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(WORKFLOW_INPUT);
+            WorkflowCatalogQueryGenerator generator = new WorkflowCatalogQueryGenerator(WORKFLOW_INPUT);
             List results;
-            if (fieldName.equals(WFInputConstants.WF_TEMPLATE_ID)) {
-                generator.setParameter(WFInputConstants.WF_TEMPLATE_ID, value);
+            if (fieldName.equals(WorkflowInputConstants.WF_TEMPLATE_ID)) {
+                generator.setParameter(WorkflowInputConstants.WF_TEMPLATE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
                         WorkflowInput workflowInput = (WorkflowInput) result;
-                        wfInputResourceIDs.add(workflowInput.getWfTemplateId());
+                        wfInputResourceIDs.add(workflowInput.getTemplateID());
                     }
                 }
-            } else if (fieldName.equals(WFInputConstants.INPUT_KEY)) {
-                generator.setParameter(WFInputConstants.INPUT_KEY, value);
+            } else if (fieldName.equals(WorkflowInputConstants.INPUT_KEY)) {
+                generator.setParameter(WorkflowInputConstants.INPUT_KEY, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
                         WorkflowInput workflowInput = (WorkflowInput) result;
-                        wfInputResourceIDs.add(workflowInput.getWfTemplateId());
+                        wfInputResourceIDs.add(workflowInput.getTemplateID());
                     }
                 }
-            } else if (fieldName.equals(WFInputConstants.DATA_TYPE)) {
-                generator.setParameter(WFInputConstants.DATA_TYPE, value);
+            } else if (fieldName.equals(WorkflowInputConstants.DATA_TYPE)) {
+                generator.setParameter(WorkflowInputConstants.DATA_TYPE, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
                         WorkflowInput workflowInput = (WorkflowInput) result;
-                        wfInputResourceIDs.add(workflowInput.getWfTemplateId());
+                        wfInputResourceIDs.add(workflowInput.getTemplateID());
                     }
                 }
             } else {
@@ -283,7 +283,7 @@ public class WorkflowInputResource extends AppCatAbstractResource {
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         } finally {
             if (em != null && em.isOpen()) {
                 if (em.getTransaction().isActive()) {
@@ -295,10 +295,10 @@ public class WorkflowInputResource extends AppCatAbstractResource {
         return wfInputResourceIDs;
     }
 
-    public void save() throws AppCatalogException {
+    public void save() throws WorkflowCatalogException {
         EntityManager em = null;
         try {
-            em = AppCatalogJPAUtils.getEntityManager();
+            em = WorkflowCatalogJPAUtils.getEntityManager();
             WorkflowInput existingWFInput = em.find(WorkflowInput.class, new WorkflowInput_PK(wfTemplateId, inputKey));
             if (em.isOpen()) {
                 if (em.getTransaction().isActive()){
@@ -307,14 +307,14 @@ public class WorkflowInputResource extends AppCatAbstractResource {
                 em.close();
             }
             WorkflowInput workflowInput;
-            em = AppCatalogJPAUtils.getEntityManager();
+            em = WorkflowCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             if (existingWFInput == null) {
                 workflowInput = new WorkflowInput();
             } else {
             	workflowInput=existingWFInput;
             }
-            workflowInput.setWfTemplateId(wfTemplateId);
+            workflowInput.setTemplateID(wfTemplateId);
             Workflow workflow = em.find(Workflow.class, wfTemplateId);
             workflowInput.setWorkflow(workflow);
             workflowInput.setDataType(dataType);
@@ -343,7 +343,7 @@ public class WorkflowInputResource extends AppCatAbstractResource {
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         } finally {
             if (em != null && em.isOpen()) {
                 if (em.getTransaction().isActive()) {
@@ -354,21 +354,21 @@ public class WorkflowInputResource extends AppCatAbstractResource {
         }
     }
 
-    public boolean isExists(Object identifier) throws AppCatalogException {
+    public boolean isExists(Object identifier) throws WorkflowCatalogException {
         HashMap<String, String> ids;
         if (identifier instanceof Map) {
             ids = (HashMap<String, String>) identifier;
         } else {
             logger.error("Identifier should be a map with the field name and it's value");
-            throw new AppCatalogException("Identifier should be a map with the field name and it's value");
+            throw new WorkflowCatalogException("Identifier should be a map with the field name and it's value");
         }
 
         EntityManager em = null;
         try {
-            em = AppCatalogJPAUtils.getEntityManager();
+            em = WorkflowCatalogJPAUtils.getEntityManager();
             WorkflowInput workflowInput = em.find(WorkflowInput.class, new WorkflowInput_PK(
-                    ids.get(WFInputConstants.WF_TEMPLATE_ID),
-                    ids.get(WFInputConstants.INPUT_KEY)));
+                    ids.get(WorkflowInputConstants.WF_TEMPLATE_ID),
+                    ids.get(WorkflowInputConstants.INPUT_KEY)));
 
             if (em.isOpen()) {
                 if (em.getTransaction().isActive()){
@@ -379,7 +379,7 @@ public class WorkflowInputResource extends AppCatAbstractResource {
             return workflowInput != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         } finally {
             if (em != null && em.isOpen()) {
                 if (em.getTransaction().isActive()) {

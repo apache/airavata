@@ -19,15 +19,15 @@
  *
  */
 
-package org.apache.airavata.registry.core.app.catalog.resources;
+package org.apache.airavata.registry.core.workflow.catalog.resources;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.registry.core.app.catalog.model.Workflow;
-import org.apache.airavata.registry.core.app.catalog.util.AppCatalogJPAUtils;
-import org.apache.airavata.registry.core.app.catalog.util.AppCatalogQueryGenerator;
-import org.apache.airavata.registry.core.app.catalog.util.AppCatalogResourceType;
-import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.core.workflow.catalog.model.Workflow;
+import org.apache.airavata.registry.core.workflow.catalog.utils.WorkflowCatalogJPAUtils;
+import org.apache.airavata.registry.core.workflow.catalog.utils.WorkflowCatalogQueryGenerator;
+import org.apache.airavata.registry.core.workflow.catalog.utils.WorkflowCatalogResourceType;
+import org.apache.airavata.registry.cpi.WorkflowCatalogException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WorkflowResource extends AppCatAbstractResource {
+public class WorkflowResource extends WorkflowCatAbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(WorkflowResource.class);
     private String wfName;
     private String createdUser;
@@ -81,13 +81,13 @@ public class WorkflowResource extends AppCatAbstractResource {
     }
 
     @Override
-    public void remove(Object identifier) throws AppCatalogException {
+    public void remove(Object identifier) throws WorkflowCatalogException {
         EntityManager em = null;
         try {
-            em = AppCatalogJPAUtils.getEntityManager();
+            em = WorkflowCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(WORKFLOW);
-            generator.setParameter(WorkflowConstants.WF_TEMPLATE_ID, identifier);
+            WorkflowCatalogQueryGenerator generator = new WorkflowCatalogQueryGenerator(WORKFLOW);
+            generator.setParameter(WorkflowConstants.TEMPLATE_ID, identifier);
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
@@ -99,7 +99,7 @@ public class WorkflowResource extends AppCatAbstractResource {
             }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         } finally {
             if (em != null && em.isOpen()) {
                 if (em.getTransaction().isActive()) {
@@ -111,16 +111,16 @@ public class WorkflowResource extends AppCatAbstractResource {
     }
 
     @Override
-    public AppCatalogResource get(Object identifier) throws AppCatalogException {
+    public WorkflowCatalogResource get(Object identifier) throws WorkflowCatalogException {
         EntityManager em = null;
         try {
-            em = AppCatalogJPAUtils.getEntityManager();
+            em = WorkflowCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(WORKFLOW);
-            generator.setParameter(WorkflowConstants.WF_TEMPLATE_ID, identifier);
+            WorkflowCatalogQueryGenerator generator = new WorkflowCatalogQueryGenerator(WORKFLOW);
+            generator.setParameter(WorkflowConstants.TEMPLATE_ID, identifier);
             Query q = generator.selectQuery(em);
             Workflow workflow = (Workflow) q.getSingleResult();
-            WorkflowResource workflowResource = (WorkflowResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.WORKFLOW, workflow);
+            WorkflowResource workflowResource = (WorkflowResource) WorkflowCatalogJPAUtils.getResource(WorkflowCatalogResourceType.WORKFLOW, workflow);
             em.getTransaction().commit();
             if (em.isOpen()) {
                 if (em.getTransaction().isActive()){
@@ -131,7 +131,7 @@ public class WorkflowResource extends AppCatAbstractResource {
             return workflowResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         } finally {
             if (em != null && em.isOpen()) {
                 if (em.getTransaction().isActive()) {
@@ -143,21 +143,21 @@ public class WorkflowResource extends AppCatAbstractResource {
     }
 
     @Override
-    public List<AppCatalogResource> get(String fieldName, Object value) throws AppCatalogException {
-        List<AppCatalogResource> workflowResources = new ArrayList<AppCatalogResource>();
+    public List<WorkflowCatalogResource> get(String fieldName, Object value) throws WorkflowCatalogException {
+        List<WorkflowCatalogResource> workflowResources = new ArrayList<WorkflowCatalogResource>();
         EntityManager em = null;
         try {
-            em = AppCatalogJPAUtils.getEntityManager();
+            em = WorkflowCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(WORKFLOW);
+            WorkflowCatalogQueryGenerator generator = new WorkflowCatalogQueryGenerator(WORKFLOW);
             Query q;
-            if ((fieldName.equals(WorkflowConstants.WF_NAME)) || (fieldName.equals(WorkflowConstants.CREATED_USER)) || (fieldName.equals(WorkflowConstants.GRAPH)) || (fieldName.equals(WorkflowConstants.WF_TEMPLATE_ID))) {
+            if ((fieldName.equals(WorkflowConstants.TEMPLATE_ID)) || (fieldName.equals(WorkflowConstants.GATEWAY_ID))) {
                 generator.setParameter(fieldName, value);
                 q = generator.selectQuery(em);
                 List<?> results = q.getResultList();
                 for (Object result : results) {
                     Workflow workflow = (Workflow) result;
-                    WorkflowResource workflowResource = (WorkflowResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.WORKFLOW, workflow);
+                    WorkflowResource workflowResource = (WorkflowResource) WorkflowCatalogJPAUtils.getResource(WorkflowCatalogResourceType.WORKFLOW, workflow);
                     workflowResources.add(workflowResource);
                 }
             } else {
@@ -180,7 +180,7 @@ public class WorkflowResource extends AppCatAbstractResource {
             }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         } finally {
             if (em != null && em.isOpen()) {
                 if (em.getTransaction().isActive()) {
@@ -193,13 +193,13 @@ public class WorkflowResource extends AppCatAbstractResource {
     }
 
     @Override
-    public List<AppCatalogResource> getAll() throws AppCatalogException {
-        List<AppCatalogResource> workflows = new ArrayList<AppCatalogResource>();
+    public List<WorkflowCatalogResource> getAll() throws WorkflowCatalogException {
+        List<WorkflowCatalogResource> workflows = new ArrayList<WorkflowCatalogResource>();
         EntityManager em = null;
         try {
-            em = AppCatalogJPAUtils.getEntityManager();
+            em = WorkflowCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(WORKFLOW);
+            WorkflowCatalogQueryGenerator generator = new WorkflowCatalogQueryGenerator(WORKFLOW);
             generator.setParameter(WorkflowConstants.GATEWAY_ID, gatewayId);
             Query q = generator.selectQuery(em);
             List results = q.getResultList();
@@ -207,7 +207,7 @@ public class WorkflowResource extends AppCatAbstractResource {
                 for (Object result : results) {
                     Workflow workflow = (Workflow) result;
                     WorkflowResource wfResource =
-                            (WorkflowResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.WORKFLOW, workflow);
+                            (WorkflowResource) WorkflowCatalogJPAUtils.getResource(WorkflowCatalogResourceType.WORKFLOW, workflow);
                     workflows.add(wfResource);
                 }
             }
@@ -220,7 +220,7 @@ public class WorkflowResource extends AppCatAbstractResource {
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         } finally {
             if (em != null && em.isOpen()) {
                 if (em.getTransaction().isActive()) {
@@ -233,20 +233,20 @@ public class WorkflowResource extends AppCatAbstractResource {
     }
 
     @Override
-    public List<String> getAllIds() throws AppCatalogException {
+    public List<String> getAllIds() throws WorkflowCatalogException {
         List<String> workflowIds = new ArrayList<String>();
         EntityManager em = null;
         try {
-            em = AppCatalogJPAUtils.getEntityManager();
+            em = WorkflowCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(WORKFLOW);
+            WorkflowCatalogQueryGenerator generator = new WorkflowCatalogQueryGenerator(WORKFLOW);
             generator.setParameter(WorkflowConstants.GATEWAY_ID, gatewayId);
             Query q = generator.selectQuery(em);
             List results = q.getResultList();
             if (results.size() != 0) {
                 for (Object result : results) {
                     Workflow workflow = (Workflow) result;
-                    workflowIds.add(workflow.getWfTemplateId());
+                    workflowIds.add(workflow.getTemplateId());
                 }
             }
             em.getTransaction().commit();
@@ -258,7 +258,7 @@ public class WorkflowResource extends AppCatAbstractResource {
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         } finally {
             if (em != null && em.isOpen()) {
                 if (em.getTransaction().isActive()) {
@@ -271,21 +271,21 @@ public class WorkflowResource extends AppCatAbstractResource {
     }
 
     @Override
-    public List<String> getIds(String fieldName, Object value) throws AppCatalogException {
+    public List<String> getIds(String fieldName, Object value) throws WorkflowCatalogException {
         List<String> workflowResourceIDs = new ArrayList<String>();
         EntityManager em = null;
         try {
-            em = AppCatalogJPAUtils.getEntityManager();
+            em = WorkflowCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(WORKFLOW);
+            WorkflowCatalogQueryGenerator generator = new WorkflowCatalogQueryGenerator(WORKFLOW);
             Query q;
-            if ((fieldName.equals(WorkflowConstants.WF_NAME)) || (fieldName.equals(WorkflowConstants.CREATED_USER)) || (fieldName.equals(WorkflowConstants.GRAPH)) || (fieldName.equals(WorkflowConstants.WF_TEMPLATE_ID))) {
+            if ((fieldName.equals(WorkflowConstants.TEMPLATE_ID)) || (fieldName.equals(WorkflowConstants.GATEWAY_ID))) {
                 generator.setParameter(fieldName, value);
                 q = generator.selectQuery(em);
                 List<?> results = q.getResultList();
                 for (Object result : results) {
                     Workflow workflow = (Workflow) result;
-                    WorkflowResource workflowResource = (WorkflowResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.WORKFLOW, workflow);
+                    WorkflowResource workflowResource = (WorkflowResource) WorkflowCatalogJPAUtils.getResource(WorkflowCatalogResourceType.WORKFLOW, workflow);
                     workflowResourceIDs.add(workflowResource.getWfTemplateId());
                 }
             } else {
@@ -308,7 +308,7 @@ public class WorkflowResource extends AppCatAbstractResource {
             }
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         } finally {
             if (em != null && em.isOpen()) {
                 if (em.getTransaction().isActive()) {
@@ -321,10 +321,10 @@ public class WorkflowResource extends AppCatAbstractResource {
     }
 
     @Override
-    public void save() throws AppCatalogException {
+    public void save() throws WorkflowCatalogException {
         EntityManager em = null;
         try {
-            em = AppCatalogJPAUtils.getEntityManager();
+            em = WorkflowCatalogJPAUtils.getEntityManager();
             Workflow existingWorkflow = em.find(Workflow.class, wfTemplateId);
             if (em.isOpen()) {
                 if (em.getTransaction().isActive()){
@@ -333,7 +333,7 @@ public class WorkflowResource extends AppCatAbstractResource {
                 em.close();
             }
             Workflow workflow;
-            em = AppCatalogJPAUtils.getEntityManager();
+            em = WorkflowCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             if (existingWorkflow == null) {
                 workflow = new Workflow();
@@ -342,7 +342,7 @@ public class WorkflowResource extends AppCatAbstractResource {
                 workflow = existingWorkflow;
                 workflow.setUpdateTime(AiravataUtils.getCurrentTimestamp());
             }
-            workflow.setWfName(getWfName());
+            workflow.setWorkflowName(getWfName());
             workflow.setCreatedUser(getCreatedUser());
             workflow.setGatewayId(gatewayId);
             if (getGraph() != null){
@@ -351,7 +351,7 @@ public class WorkflowResource extends AppCatAbstractResource {
             if (image != null){
                 workflow.setImage(image.getBytes());
             }
-            workflow.setWfTemplateId(getWfTemplateId());
+            workflow.setTemplateId(getWfTemplateId());
             if (existingWorkflow == null) {
                 em.persist(workflow);
             } else {
@@ -366,7 +366,7 @@ public class WorkflowResource extends AppCatAbstractResource {
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         } finally {
             if (em != null && em.isOpen()) {
                 if (em.getTransaction().isActive()) {
@@ -378,10 +378,10 @@ public class WorkflowResource extends AppCatAbstractResource {
     }
 
     @Override
-    public boolean isExists(Object identifier) throws AppCatalogException {
+    public boolean isExists(Object identifier) throws WorkflowCatalogException {
         EntityManager em = null;
         try {
-            em = AppCatalogJPAUtils.getEntityManager();
+            em = WorkflowCatalogJPAUtils.getEntityManager();
             Workflow workflow = em.find(Workflow.class, identifier);
             if (em.isOpen()) {
                 if (em.getTransaction().isActive()){
@@ -392,7 +392,7 @@ public class WorkflowResource extends AppCatAbstractResource {
             return workflow != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         } finally {
             if (em != null && em.isOpen()) {
                 if (em.getTransaction().isActive()) {

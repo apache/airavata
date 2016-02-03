@@ -28,19 +28,19 @@ import java.util.List;
 
 public interface WorkflowCatalog {
 
-    public List<String> getAllWorkflows(String gatewayId) throws AppCatalogException;
+    public List<String> getAllWorkflows(String gatewayId) throws WorkflowCatalogException;
 
-    public org.apache.airavata.model.Workflow getWorkflow(String workflowTemplateId) throws AppCatalogException;
+    public org.apache.airavata.model.Workflow getWorkflow(String workflowTemplateId) throws WorkflowCatalogException;
 
-    public void deleteWorkflow(String workflowTemplateId) throws AppCatalogException;
+    public void deleteWorkflow(String workflowTemplateId) throws WorkflowCatalogException;
 
-    public String registerWorkflow(org.apache.airavata.model.Workflow workflow, String gatewayId) throws AppCatalogException;
+    public String registerWorkflow(org.apache.airavata.model.Workflow workflow, String gatewayId) throws WorkflowCatalogException;
 
-    public void updateWorkflow(String workflowTemplateId, org.apache.airavata.model.Workflow workflow) throws AppCatalogException;
+    public void updateWorkflow(String workflowTemplateId, org.apache.airavata.model.Workflow workflow) throws WorkflowCatalogException;
 
-    public String getWorkflowTemplateId(String workflowName) throws AppCatalogException;
+    public String getWorkflowTemplateId(String workflowName) throws WorkflowCatalogException;
 
-    public boolean isWorkflowExistWithName(String workflowName) throws AppCatalogException;
+    public boolean isWorkflowExistWithName(String workflowName) throws WorkflowCatalogException;
 
-    public void updateWorkflowOutputs(String workflowTemplateId, List<OutputDataObjectType> workflowOutputs) throws AppCatalogException;
+    public void updateWorkflowOutputs(String workflowTemplateId, List<OutputDataObjectType> workflowOutputs) throws WorkflowCatalogException;
 }
