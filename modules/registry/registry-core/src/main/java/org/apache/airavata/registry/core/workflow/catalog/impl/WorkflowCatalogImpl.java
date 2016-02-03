@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.registry.core.app.catalog.impl;
+package org.apache.airavata.registry.core.workflow.catalog.impl;
 
 import org.apache.airavata.model.Workflow;
 import org.apache.airavata.model.application.io.InputDataObjectType;
@@ -27,7 +27,6 @@ import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.registry.core.workflow.catalog.resources.*;
 import org.apache.airavata.registry.core.workflow.catalog.utils.WorkflowCatalogThriftConversion;
 import org.apache.airavata.registry.core.workflow.catalog.utils.WorkflowCatalogUtils;
-import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.WorkflowCatalog;
 import org.apache.airavata.registry.cpi.WorkflowCatalogException;
 import org.slf4j.Logger;

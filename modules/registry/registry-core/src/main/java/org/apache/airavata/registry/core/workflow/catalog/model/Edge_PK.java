@@ -24,11 +24,11 @@ package org.apache.airavata.registry.core.workflow.catalog.model;
 import java.io.Serializable;
 
 public class Edge_PK implements Serializable {
-    private String templateID;
+    private String templateId;
     private String edgeId;
 
     public Edge_PK(String templateId, String edgeId) {
-        this.templateID = templateId;
+        this.templateId = templateId;
         this.edgeId = edgeId;
     }
 
@@ -47,11 +47,11 @@ public class Edge_PK implements Serializable {
     }
 
     public String getTemplateID() {
-        return templateID;
+        return templateId;
     }
 
     public void setTemplateID(String templateID) {
-        this.templateID = templateID;
+        this.templateId = templateID;
     }
 
     public String getEdgeId() {
