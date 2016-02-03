@@ -24,11 +24,12 @@ package org.apache.airavata.registry.core.app.catalog.impl;
 import org.apache.airavata.model.Workflow;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.registry.core.app.catalog.resources.*;
-import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
-import org.apache.airavata.registry.core.app.catalog.util.AppCatalogUtils;
+import org.apache.airavata.registry.core.workflow.catalog.resources.*;
+import org.apache.airavata.registry.core.workflow.catalog.utils.WorkflowCatalogThriftConversion;
+import org.apache.airavata.registry.core.workflow.catalog.utils.WorkflowCatalogUtils;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.WorkflowCatalog;
+import org.apache.airavata.registry.cpi.WorkflowCatalogException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,7 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
     private final static Logger logger = LoggerFactory.getLogger(WorkflowCatalogImpl.class);
 
     @Override
-    public List<String> getAllWorkflows(String gatewayId) throws AppCatalogException {
+    public List<String> getAllWorkflows(String gatewayId) throws WorkflowCatalogException {
         List<String> workflowIds = new ArrayList<String>();
         try {
             WorkflowResource resource = new WorkflowResource();
@@ -49,39 +50,39 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
             workflowIds = resource.getAllIds();
         } catch (Exception e) {
             logger.error("Error while retrieving all the workflow template ids...", e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         }
         return workflowIds;
     }
 
     @Override
-    public Workflow getWorkflow(String workflowTemplateId) throws AppCatalogException {
+    public Workflow getWorkflow(String workflowTemplateId) throws WorkflowCatalogException {
         try {
             WorkflowResource resource = new WorkflowResource();
             WorkflowResource wfResource = (WorkflowResource)resource.get(workflowTemplateId);
-            return AppCatalogThriftConversion.getWorkflow(wfResource);
+            return WorkflowCatalogThriftConversion.getWorkflow(wfResource);
         } catch (Exception e) {
             logger.error("Error while retrieving the workflow...", e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         }
     }
 
     @Override
-    public void deleteWorkflow(String workflowTemplateId) throws AppCatalogException {
+    public void deleteWorkflow(String workflowTemplateId) throws WorkflowCatalogException {
         try {
             WorkflowResource resource = new WorkflowResource();
             resource.remove(workflowTemplateId);
         } catch (Exception e) {
             logger.error("Error while deleting the workflow...", e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         }
     }
 
     @Override
-    public String registerWorkflow(Workflow workflow, String gatewayId) throws AppCatalogException {
+    public String registerWorkflow(Workflow workflow, String gatewayId) throws WorkflowCatalogException {
         try {
             WorkflowResource resource = new WorkflowResource();
-            resource.setWfTemplateId(AppCatalogUtils.getID(workflow.getName()));
+            resource.setWfTemplateId(WorkflowCatalogUtils.getID(workflow.getName()));
             resource.setWfName(workflow.getName());
             resource.setGraph(workflow.getGraph());
             resource.setGatewayId(gatewayId);
@@ -121,12 +122,12 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
             return resource.getWfTemplateId();
         } catch (Exception e) {
             logger.error("Error while saving the workflow...", e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         }
     }
 
     @Override
-    public void updateWorkflow(String workflowTemplateId, Workflow workflow) throws AppCatalogException {
+    public void updateWorkflow(String workflowTemplateId, Workflow workflow) throws WorkflowCatalogException {
         try {
             WorkflowResource resource = new WorkflowResource();
             WorkflowResource existingWF = (WorkflowResource)resource.get(workflowTemplateId);
@@ -141,8 +142,8 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
                 for (InputDataObjectType input : existingwFInputs){
                     WorkflowInputResource wfInputResource = new WorkflowInputResource();
                     Map<String, String> ids = new HashMap<String, String>();
-                    ids.put(AppCatAbstractResource.WFInputConstants.WF_TEMPLATE_ID,existingWF.getWfTemplateId());
-                    ids.put(AppCatAbstractResource.WFInputConstants.INPUT_KEY,input.getName());
+                    ids.put(WorkflowCatAbstractResource.WorkflowInputConstants.WF_TEMPLATE_ID,existingWF.getWfTemplateId());
+                    ids.put(WorkflowCatAbstractResource.WorkflowInputConstants.INPUT_KEY,input.getName());
                     WorkflowInputResource existingInput = (WorkflowInputResource)wfInputResource.get(ids);
                     existingInput.setWorkflowResource(existingWF);
                     existingInput.setInputKey(input.getName());
@@ -161,8 +162,8 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
                 for (OutputDataObjectType output : workflowOutputs){
                     WorkflowOutputResource outputResource = new WorkflowOutputResource();
                     Map<String, String> ids = new HashMap<String, String>();
-                    ids.put(AppCatAbstractResource.WFOutputConstants.WF_TEMPLATE_ID,existingWF.getWfTemplateId());
-                    ids.put(AppCatAbstractResource.WFOutputConstants.OUTPUT_KEY,output.getName());
+                    ids.put(WorkflowCatAbstractResource.WorkflowOutputConstants.WF_TEMPLATE_ID,existingWF.getWfTemplateId());
+                    ids.put(WorkflowCatAbstractResource.WorkflowOutputConstants.OUTPUT_KEY,output.getName());
                     WorkflowOutputResource existingOutput = (WorkflowOutputResource)outputResource.get(ids);
                     existingOutput.setWorkflowResource(existingWF);
                     existingOutput.setOutputKey(output.getName());
@@ -174,51 +175,51 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
             }
         } catch (Exception e) {
             logger.error("Error while updating the workflow...", e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         }
     }
 
     @Override
-    public String getWorkflowTemplateId(String workflowName) throws AppCatalogException {
+    public String getWorkflowTemplateId(String workflowName) throws WorkflowCatalogException {
         try {
             WorkflowResource resource = new WorkflowResource();
-            List<AppCatalogResource> resourceList = resource.get(AppCatAbstractResource.WorkflowConstants.WF_NAME, workflowName);
+            List<WorkflowCatalogResource> resourceList = resource.get(WorkflowCatAbstractResource.WorkflowConstants.WORKFLOW_NAME, workflowName);
             if (resourceList != null && !resourceList.isEmpty()){
                 WorkflowResource wfResource = (WorkflowResource)resourceList.get(0);
                 return wfResource.getWfTemplateId();
             }
         } catch (Exception e) {
             logger.error("Error while retrieving the workflow with the workflow name...", e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         }
         return null;
     }
 
     @Override
-    public boolean isWorkflowExistWithName(String workflowName) throws AppCatalogException {
+    public boolean isWorkflowExistWithName(String workflowName) throws WorkflowCatalogException {
         try {
             WorkflowResource resource = new WorkflowResource();
-            List<AppCatalogResource> resourceList = resource.get(AppCatAbstractResource.WorkflowConstants.WF_NAME, workflowName);
+            List<WorkflowCatalogResource> resourceList = resource.get(WorkflowCatAbstractResource.WorkflowConstants.WORKFLOW_NAME, workflowName);
             if (resourceList != null && !resourceList.isEmpty()){
                 return true;
             }
         } catch (Exception e) {
             logger.error("Error while retrieving the workflow with the workflow name...", e);
-            throw new AppCatalogException(e);
+            throw new WorkflowCatalogException(e);
         }
         return false;
     }
 
     @Override
-    public void updateWorkflowOutputs(String workflowTemplateId, List<OutputDataObjectType> workflowOutputs) throws AppCatalogException {
+    public void updateWorkflowOutputs(String workflowTemplateId, List<OutputDataObjectType> workflowOutputs) throws WorkflowCatalogException {
         WorkflowResource resource = new WorkflowResource();
         WorkflowResource existingWF = (WorkflowResource)resource.get(workflowTemplateId);
         if (workflowOutputs != null && workflowOutputs.size() != 0) {
             for (OutputDataObjectType output : workflowOutputs) {
                 WorkflowOutputResource outputResource = new WorkflowOutputResource();
                 Map<String, String> ids = new HashMap<String, String>();
-                ids.put(AppCatAbstractResource.WFOutputConstants.WF_TEMPLATE_ID, existingWF.getWfTemplateId());
-                ids.put(AppCatAbstractResource.WFOutputConstants.OUTPUT_KEY, output.getName());
+                ids.put(WorkflowCatAbstractResource.WorkflowOutputConstants.WF_TEMPLATE_ID, existingWF.getWfTemplateId());
+                ids.put(WorkflowCatAbstractResource.WorkflowOutputConstants.OUTPUT_KEY, output.getName());
                 WorkflowOutputResource existingOutput = (WorkflowOutputResource) outputResource.get(ids);
                 existingOutput.setWorkflowResource(existingWF);
                 existingOutput.setOutputKey(output.getName());

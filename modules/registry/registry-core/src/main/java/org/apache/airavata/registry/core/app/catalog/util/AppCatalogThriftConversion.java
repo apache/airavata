@@ -21,7 +21,6 @@
 
 package org.apache.airavata.registry.core.app.catalog.util;
 
-import org.apache.airavata.model.Workflow;
 import org.apache.airavata.model.appcatalog.appdeployment.*;
 import org.apache.airavata.model.appcatalog.appinterface.*;
 import org.apache.airavata.model.appcatalog.computeresource.*;
@@ -846,30 +845,6 @@ public class AppCatalogThriftConversion {
         return preferences;
     }
 
-    public static InputDataObjectType getWorkflowInput (WorkflowInputResource resource){
-        InputDataObjectType input = new InputDataObjectType();
-        input.setName(resource.getInputKey());
-        input.setApplicationArgument(resource.getAppArgument());
-        input.setInputOrder(resource.getInputOrder());
-        input.setType(DataType.valueOf(resource.getDataType()));
-        input.setMetaData(resource.getMetadata());
-        input.setUserFriendlyDescription(resource.getUserFriendlyDesc());
-        input.setIsRequired(resource.getRequired());
-        input.setRequiredToAddedToCommandLine(resource.getRequiredToCMD());
-        input.setDataStaged(resource.isDataStaged());
-        return input;
-    }
-
-    public static List<InputDataObjectType> getWFInputs(List<AppCatalogResource> resources){
-        List<InputDataObjectType> inputResources = new ArrayList<InputDataObjectType>();
-        if (resources != null && !resources.isEmpty()){
-            for (AppCatalogResource resource : resources){
-                inputResources.add(getWorkflowInput((WorkflowInputResource) resource));
-            }
-        }
-        return inputResources;
-    }
-
     public static GatewayResourceProfile getGatewayResourceProfile(GatewayProfileResource gw, List<ComputeResourcePreference> preferences, List<StoragePreference> storagePreferences){
         GatewayResourceProfile gatewayProfile = new GatewayResourceProfile();
         gatewayProfile.setGatewayID(gw.getGatewayID());
@@ -879,18 +854,4 @@ public class AppCatalogThriftConversion {
         return gatewayProfile;
     }
 
-    public static Workflow getWorkflow (WorkflowResource resource) throws AppCatalogException {
-        Workflow workflow = new Workflow();
-        workflow.setTemplateId(resource.getWfTemplateId());
-        workflow.setGraph(resource.getGraph());
-        workflow.setName(resource.getWfName());
-        if (resource.getImage() != null){
-            workflow.setImage(resource.getImage().getBytes());
-        }
-        WorkflowInputResource inputResource = new WorkflowInputResource();
-        List<AppCatalogResource> resources = inputResource.get(AppCatAbstractResource.WFInputConstants.WF_TEMPLATE_ID, resource.getWfTemplateId());
-        workflow.setWorkflowInputs(getWFInputs(resources));
-
-        return workflow;
-    }
 }

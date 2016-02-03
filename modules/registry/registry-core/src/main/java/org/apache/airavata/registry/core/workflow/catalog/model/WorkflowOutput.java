@@ -35,8 +35,9 @@ public class WorkflowOutput implements Serializable {
     @Id
     @Column(name = "OUTPUT_KEY")
     private String outputKey;
+    @Lob
     @Column(name = "OUTPUT_VALUE")
-    private String outputVal;
+    private char[] outputVal;
     @Column(name = "DATA_TYPE")
     private String dataType;
     @Column(name = "IS_REQUIRED")
@@ -90,11 +91,11 @@ public class WorkflowOutput implements Serializable {
         this.outputKey = outputKey;
     }
 
-    public String getOutputVal() {
+    public char[] getOutputVal() {
         return outputVal;
     }
 
-    public void setOutputVal(String outputVal) {
+    public void setOutputVal(char[] outputVal) {
         this.outputVal = outputVal;
     }
 

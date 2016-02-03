@@ -48,6 +48,9 @@ public class Edge implements Serializable {
     @Column(name = "DESCRIPTION")
     private String description;
 
+    @Column(name = "CREATED_TIME")
+    private Timestamp createdTime;
+
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "TEMPLATE_ID")
     private Workflow workflow;
@@ -98,6 +101,14 @@ public class Edge implements Serializable {
 
     public void setWorkflow(Workflow workflow) {
         this.workflow = workflow;
+    }
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+        this.createdTime = createdTime;
     }
 }
 

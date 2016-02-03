@@ -43,6 +43,13 @@ public class ComponentStatus implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
+    @Column(name = "TEMPLATE_ID")
+    private String templateId;
+
+    @ManyToOne(cascade= CascadeType.MERGE)
+    @JoinColumn(name = "TEMPLATE_ID")
+    private Workflow workflow;
+
     public String getStatusId() {
         return statusId;
     }
@@ -73,6 +80,22 @@ public class ComponentStatus implements Serializable {
 
     public void setUpdateTime(Timestamp updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getTemplateId() {
+        return templateId;
+    }
+
+    public void setTemplateId(String templateId) {
+        this.templateId = templateId;
+    }
+
+    public Workflow getWorkflow() {
+        return workflow;
+    }
+
+    public void setWorkflow(Workflow workflow) {
+        this.workflow = workflow;
     }
 }
 

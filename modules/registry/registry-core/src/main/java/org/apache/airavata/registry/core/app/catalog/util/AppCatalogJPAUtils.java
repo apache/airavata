@@ -42,9 +42,9 @@ public class AppCatalogJPAUtils {
     private static final String APPCATALOG_VALIDATION_QUERY = "appcatalog.validationQuery";
     private static final String JPA_CACHE_SIZE = "jpa.cache.size";
     private static final String JPA_CACHE_ENABLED = "cache.enable";
-    @PersistenceUnit(unitName="appcatalog_data")
+    @PersistenceUnit(unitName = "appcatalog_data")
     protected static EntityManagerFactory factory;
-    @PersistenceContext(unitName="appcatalog_data")
+    @PersistenceContext(unitName = "appcatalog_data")
     private static EntityManager appCatEntityManager;
 
     public static EntityManager getEntityManager() throws ApplicationSettingsException {
@@ -63,8 +63,8 @@ public class AppCatalogJPAUtils {
             // For app catalog, we don't need caching
 //            properties.put("openjpa.DataCache","" + readServerProperties(JPA_CACHE_ENABLED) + "(CacheSize=" + Integer.valueOf(readServerProperties(JPA_CACHE_SIZE)) + ", SoftReferenceSize=0)");
 //            properties.put("openjpa.QueryCache","" + readServerProperties(JPA_CACHE_ENABLED) + "(CacheSize=" + Integer.valueOf(readServerProperties(JPA_CACHE_SIZE)) + ", SoftReferenceSize=0)");
-            properties.put("openjpa.RemoteCommitProvider","sjvm");
-            properties.put("openjpa.Log","DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
+            properties.put("openjpa.RemoteCommitProvider", "sjvm");
+            properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
             properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
             properties.put("openjpa.jdbc.QuerySQLCache", "false");
             properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
@@ -74,7 +74,7 @@ public class AppCatalogJPAUtils {
         return appCatEntityManager;
     }
 
-    private static String readServerProperties (String propertyName) throws ApplicationSettingsException {
+    private static String readServerProperties(String propertyName) throws ApplicationSettingsException {
         try {
             return ServerSettings.getSetting(propertyName);
         } catch (ApplicationSettingsException e) {
@@ -84,118 +84,117 @@ public class AppCatalogJPAUtils {
     }
 
     /**
-     *
      * @param type model type
-     * @param o model type instance
+     * @param o    model type instance
      * @return corresponding resource object
      */
     public static AppCatalogResource getResource(AppCatalogResourceType type, Object o) {
-        switch (type){
-	        case COMPUTE_RESOURCE:
-				if (o instanceof ComputeResource){
-					return createComputeResource((ComputeResource) o);
-				}else{
-					logger.error("Object should be a Compute Resource.", new IllegalArgumentException());
-					throw new IllegalArgumentException("Object should be a Compute Resource.");
-				}
+        switch (type) {
+            case COMPUTE_RESOURCE:
+                if (o instanceof ComputeResource) {
+                    return createComputeResource((ComputeResource) o);
+                } else {
+                    logger.error("Object should be a Compute Resource.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Compute Resource.");
+                }
             case HOST_ALIAS:
-                if (o instanceof HostAlias){
+                if (o instanceof HostAlias) {
                     return createHostAlias((HostAlias) o);
-                }else {
+                } else {
                     logger.error("Object should be a Host Alias.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Host Alias.");
                 }
             case HOST_IPADDRESS:
-                if (o instanceof HostIPAddress){
+                if (o instanceof HostIPAddress) {
                     return createHostIPAddress((HostIPAddress) o);
-                }else {
+                } else {
                     logger.error("Object should be a Host IPAdress.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Host IPAdress.");
                 }
             case GSISSH_SUBMISSION:
-                if (o instanceof GSISSHSubmission){
+                if (o instanceof GSISSHSubmission) {
                     return createGSSISSHSubmission((GSISSHSubmission) o);
-                }else {
+                } else {
                     logger.error("Object should be a GSISSH Submission", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GSISSH Submission.");
                 }
             case UNICORE_JOB_SUBMISSION:
-                if (o instanceof UnicoreJobSubmission){
+                if (o instanceof UnicoreJobSubmission) {
                     return createUnicoreJobSubmission((UnicoreJobSubmission) o);
-                }else {
+                } else {
                     logger.error("Object should be a GSISSH Submission", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GSISSH Submission.");
                 }
             case UNICORE_DATA_MOVEMENT:
-                if (o instanceof UnicoreDataMovement){
+                if (o instanceof UnicoreDataMovement) {
                     return createUnicoreDataMovement((UnicoreDataMovement) o);
-                }else {
+                } else {
                     logger.error("Object should be a GSISSH Submission", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GSISSH Submission.");
                 }
             case GSISSH_EXPORT:
-                if (o instanceof GSISSHExport){
+                if (o instanceof GSISSHExport) {
                     return createGSISSHExport((GSISSHExport) o);
-                }else {
+                } else {
                     logger.error("Object should be a GSISSH Export.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GSISSH Export.");
                 }
             case PRE_JOBCOMMAND:
-                if (o instanceof PreJobCommand){
+                if (o instanceof PreJobCommand) {
                     return createPreJobCommand((PreJobCommand) o);
-                }else {
+                } else {
                     logger.error("Object should be a GSISSHPreJobCommand.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GSISSHPreJobCommand.");
                 }
             case POST_JOBCOMMAND:
-                if (o instanceof PostJobCommand){
+                if (o instanceof PostJobCommand) {
                     return createPostJObCommand((PostJobCommand) o);
-                }else {
+                } else {
                     logger.error("Object should be a GSISSHPostJobCommand.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GSISSHPostJobCommand.");
                 }
             case GLOBUS_SUBMISSION:
-                if (o instanceof GlobusJobSubmission){
+                if (o instanceof GlobusJobSubmission) {
                     return createGlobusJobSubmission((GlobusJobSubmission) o);
-                }else {
+                } else {
                     logger.error("Object should be a GlobusJobSubmission.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GlobusJobSubmission.");
                 }
             case GLOBUS_GK_ENDPOINT:
-                if (o instanceof GlobusGKEndpoint){
+                if (o instanceof GlobusGKEndpoint) {
                     return createGlobusEndpoint((GlobusGKEndpoint) o);
-                }else {
+                } else {
                     logger.error("Object should be a GlobusJobSubmission.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GlobusJobSubmission.");
                 }
             case SSH_JOB_SUBMISSION:
-				if (o instanceof SshJobSubmission){
-					return createSshJobSubmission((SshJobSubmission) o);
-				}else{
-					logger.error("Object should be a Ssh Job Submission.", new IllegalArgumentException());
-					throw new IllegalArgumentException("Object should be a Ssh Job Submission.");
-				}
+                if (o instanceof SshJobSubmission) {
+                    return createSshJobSubmission((SshJobSubmission) o);
+                } else {
+                    logger.error("Object should be a Ssh Job Submission.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Ssh Job Submission.");
+                }
             case SCP_DATA_MOVEMENT:
-				if (o instanceof ScpDataMovement){
-					return createScpDataMovement((ScpDataMovement) o);
-				}else{
-					logger.error("Object should be a Scp Data Movement.", new IllegalArgumentException());
-					throw new IllegalArgumentException("Object should be a Scp Data Movement.");
-				}
+                if (o instanceof ScpDataMovement) {
+                    return createScpDataMovement((ScpDataMovement) o);
+                } else {
+                    logger.error("Object should be a Scp Data Movement.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Scp Data Movement.");
+                }
             case GRIDFTP_DATA_MOVEMENT:
-				if (o instanceof GridftpDataMovement){
-					return createGridftpDataMovement((GridftpDataMovement) o);
-				}else{
-					logger.error("Object should be a Gridftp Data Movement.", new IllegalArgumentException());
-					throw new IllegalArgumentException("Object should be a Gridftp Data Movement.");
-				}
+                if (o instanceof GridftpDataMovement) {
+                    return createGridftpDataMovement((GridftpDataMovement) o);
+                } else {
+                    logger.error("Object should be a Gridftp Data Movement.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Gridftp Data Movement.");
+                }
             case GRIDFTP_ENDPOINT:
-				if (o instanceof GridftpEndpoint){
-					return createGridftpEndpoint((GridftpEndpoint) o);
-				}else{
-					logger.error("Object should be a Gridftp Endpoint.", new IllegalArgumentException());
-					throw new IllegalArgumentException("Object should be a Gridftp Endpoint.");
-				}
+                if (o instanceof GridftpEndpoint) {
+                    return createGridftpEndpoint((GridftpEndpoint) o);
+                } else {
+                    logger.error("Object should be a Gridftp Endpoint.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Gridftp Endpoint.");
+                }
 //            case JOB_SUBMISSION_PROTOCOL:
 //                if (o instanceof JobSubmissionProtocol){
 //                    return createJobSubmissionProtocol((JobSubmissionProtocol) o);
@@ -211,159 +210,159 @@ public class AppCatalogJPAUtils {
 //                    throw new IllegalArgumentException("Object should be a DataMovementProtocol.");
 //                }
             case APPLICATION_MODULE:
-                if (o instanceof ApplicationModule){
+                if (o instanceof ApplicationModule) {
                     return createApplicationModule((ApplicationModule) o);
-                }else {
+                } else {
                     logger.error("Object should be a Application Module.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Application Module.");
                 }
             case APPLICATION_DEPLOYMENT:
-                if (o instanceof ApplicationDeployment){
+                if (o instanceof ApplicationDeployment) {
                     return createApplicationDeployment((ApplicationDeployment) o);
-                }else {
+                } else {
                     logger.error("Object should be a Application Deployment.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Application Deployment.");
                 }
             case LIBRARY_PREPAND_PATH:
-                if (o instanceof LibraryPrepandPath){
+                if (o instanceof LibraryPrepandPath) {
                     return createLibraryPrepPathResource((LibraryPrepandPath) o);
-                }else {
+                } else {
                     logger.error("Object should be a Library Prepand path.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Library Prepand path.");
                 }
             case LIBRARY_APEND_PATH:
-                if (o instanceof LibraryApendPath){
+                if (o instanceof LibraryApendPath) {
                     return createLibraryApendPathResource((LibraryApendPath) o);
-                }else {
+                } else {
                     logger.error("Object should be a Library Apend path.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Library Apend.");
                 }
             case APP_ENVIRONMENT:
-                if (o instanceof AppEnvironment){
+                if (o instanceof AppEnvironment) {
                     return createAppEnvironmentResource((AppEnvironment) o);
-                }else {
+                } else {
                     logger.error("Object should be a AppEnvironment.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a AppEnvironment.");
                 }
             case APPLICATION_INTERFACE:
-                if (o instanceof ApplicationInterface){
+                if (o instanceof ApplicationInterface) {
                     return createAppInterfaceResource((ApplicationInterface) o);
-                }else {
+                } else {
                     logger.error("Object should be a ApplicationInterface.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a ApplicationInterface.");
                 }
             case APP_MODULE_MAPPING:
-                if (o instanceof AppModuleMapping){
+                if (o instanceof AppModuleMapping) {
                     return createAppModMappingResource((AppModuleMapping) o);
-                }else {
+                } else {
                     logger.error("Object should be a AppModuleMapping.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a AppModuleMapping.");
                 }
             case APPLICATION_OUTPUT:
-                if (o instanceof ApplicationIntOutput){
+                if (o instanceof ApplicationIntOutput) {
                     return createApplicationOutput((ApplicationIntOutput) o);
-                }else {
+                } else {
                     logger.error("Object should be a ApplicationOutput.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a ApplicationOutput.");
                 }
             case GATEWAY_PROFILE:
-                if (o instanceof GatewayProfile){
+                if (o instanceof GatewayProfile) {
                     return createGatewayProfile((GatewayProfile) o);
-                }else {
+                } else {
                     logger.error("Object should be a GatewayProfile.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GatewayProfile.");
                 }
             case COMPUTE_RESOURCE_PREFERENCE:
-                if (o instanceof ComputeResourcePreference){
+                if (o instanceof ComputeResourcePreference) {
                     return createComputeResourcePref((ComputeResourcePreference) o);
-                }else {
+                } else {
                     logger.error("Object should be a Compute Resource Preference.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Compute Resource Preference.");
                 }
             case STORAGE_PREFERENCE:
-                if (o instanceof StoragePreference){
+                if (o instanceof StoragePreference) {
                     return createStoragePref((StoragePreference) o);
-                }else {
+                } else {
                     logger.error("Object should be a data storage Preference.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a data storage Preference.");
                 }
             case STORAGE_RESOURCE:
-                if (o instanceof StorageResource){
+                if (o instanceof StorageResource) {
                     return createStorageResource((StorageResource) o);
-                }else {
+                } else {
                     logger.error("Object should be a storage resource.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a storage resource.");
                 }
             case STORAGE_INTERFACE:
-                if (o instanceof StorageInterface){
+                if (o instanceof StorageInterface) {
                     return createStorageInterface((StorageInterface) o);
-                }else {
+                } else {
                     logger.error("Object should be a storage interface.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a storage interface.");
                 }
             case APPLICATION_INPUT:
-                if (o instanceof ApplicationIntInput){
+                if (o instanceof ApplicationIntInput) {
                     return createApplicationInput((ApplicationIntInput) o);
-                }else {
+                } else {
                     logger.error("Object should be a ApplicationInput.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a ApplicationInput.");
                 }
             case BATCH_QUEUE:
-				if (o instanceof BatchQueue){
-					return createBatchQueue((BatchQueue) o);
-				}else{
-					logger.error("Object should be a Batch Queue.", new IllegalArgumentException());
-					throw new IllegalArgumentException("Object should be a Batch Queue.");
-				}
+                if (o instanceof BatchQueue) {
+                    return createBatchQueue((BatchQueue) o);
+                } else {
+                    logger.error("Object should be a Batch Queue.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Batch Queue.");
+                }
             case COMPUTE_RESOURCE_FILE_SYSTEM:
-				if (o instanceof ComputeResourceFileSystem){
-					return createComputeResourceFileSystem((ComputeResourceFileSystem) o);
-				}else{
-					logger.error("Object should be a Compute Resource File System.", new IllegalArgumentException());
-					throw new IllegalArgumentException("Object should be a Compute Resource File System.");
-				}
+                if (o instanceof ComputeResourceFileSystem) {
+                    return createComputeResourceFileSystem((ComputeResourceFileSystem) o);
+                } else {
+                    logger.error("Object should be a Compute Resource File System.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Compute Resource File System.");
+                }
             case JOB_SUBMISSION_INTERFACE:
-				if (o instanceof JobSubmissionInterface){
-					return createJobSubmissionInterface((JobSubmissionInterface) o);
-				}else{
-					logger.error("Object should be a Job Submission Interface.", new IllegalArgumentException());
-					throw new IllegalArgumentException("Object should be a Job Submission Interface.");
-				}
+                if (o instanceof JobSubmissionInterface) {
+                    return createJobSubmissionInterface((JobSubmissionInterface) o);
+                } else {
+                    logger.error("Object should be a Job Submission Interface.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Job Submission Interface.");
+                }
             case DATA_MOVEMENT_INTERFACE:
-				if (o instanceof DataMovementInterface){
-					return createDataMovementInterface((DataMovementInterface) o);
-				}else{
-					logger.error("Object should be a Data Movement Interface.", new IllegalArgumentException());
-					throw new IllegalArgumentException("Object should be a Data Movement Interface.");
-				}
+                if (o instanceof DataMovementInterface) {
+                    return createDataMovementInterface((DataMovementInterface) o);
+                } else {
+                    logger.error("Object should be a Data Movement Interface.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Data Movement Interface.");
+                }
             case RESOURCE_JOB_MANAGER:
-				if (o instanceof ResourceJobManager){
-					return createResourceJobManager((ResourceJobManager) o);
-				}else{
-					logger.error("Object should be a Resource Job Manager.", new IllegalArgumentException());
-					throw new IllegalArgumentException("Object should be a Resource Job Manager.");
-				}
+                if (o instanceof ResourceJobManager) {
+                    return createResourceJobManager((ResourceJobManager) o);
+                } else {
+                    logger.error("Object should be a Resource Job Manager.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Resource Job Manager.");
+                }
             case JOB_MANAGER_COMMAND:
-				if (o instanceof JobManagerCommand){
-					return createJobManagerCommand((JobManagerCommand) o);
-				}else{
-					logger.error("Object should be a Job Manager Command.", new IllegalArgumentException());
-					throw new IllegalArgumentException("Object should be a Job Manager Command.");
-				}
-			case LOCAL_SUBMISSION:
-				if (o instanceof LocalSubmission){
-					return createLocalSubmission((LocalSubmission) o);
-				}else{
-					logger.error("Object should be a Local Submission.", new IllegalArgumentException());
-					throw new IllegalArgumentException("Object should be a Local Submission.");
-				}
-			case LOCAL_DATA_MOVEMENT:
-				if (o instanceof LocalDataMovement){
-					return createLocalDataMovement((LocalDataMovement) o);
-				}else{
-					logger.error("Object should be a Local Data Movement.", new IllegalArgumentException());
-					throw new IllegalArgumentException("Object should be a Local Data Movement.");
-				}
+                if (o instanceof JobManagerCommand) {
+                    return createJobManagerCommand((JobManagerCommand) o);
+                } else {
+                    logger.error("Object should be a Job Manager Command.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Job Manager Command.");
+                }
+            case LOCAL_SUBMISSION:
+                if (o instanceof LocalSubmission) {
+                    return createLocalSubmission((LocalSubmission) o);
+                } else {
+                    logger.error("Object should be a Local Submission.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Local Submission.");
+                }
+            case LOCAL_DATA_MOVEMENT:
+                if (o instanceof LocalDataMovement) {
+                    return createLocalDataMovement((LocalDataMovement) o);
+                } else {
+                    logger.error("Object should be a Local Data Movement.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Local Data Movement.");
+                }
             case MODULE_LOAD_CMD:
                 if (o instanceof ModuleLoadCmd) {
                     return createModuleLoadCmd((ModuleLoadCmd) o);
@@ -371,31 +370,10 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a Module Load Cmd.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Module Load Cmd.");
                 }
-            case WORKFLOW:
-                if (o instanceof Workflow) {
-                    return createWorkflow((Workflow) o);
-                } else {
-                    logger.error("Object should be a Workflow.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a Workflow.");
-                }
-            case WORKFLOW_INPUT:
-                if (o instanceof WorkflowInput){
-                    return createWorflowInput((WorkflowInput) o);
-                }else {
-                    logger.error("Object should be a Workflow Input.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a Workflow Input.");
-                }
-            case WORKFLOW_OUTPUT:
-                if (o instanceof WorkflowOutput){
-                    return createWorkflowOutput((WorkflowOutput) o);
-                }else {
-                    logger.error("Object should be a Workflow Output.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a Workflow Output.");
-                }
             case GATEWAY_CLIENT_CREDENTIAL:
-                if (o instanceof GatewayClientCredential){
+                if (o instanceof GatewayClientCredential) {
                     return createGatewayClientCredential((GatewayClientCredential) o);
-                }else {
+                } else {
                     logger.error("Object should be a Gateway Client Credential.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Gateway Client Credential.");
                 }
@@ -404,103 +382,103 @@ public class AppCatalogJPAUtils {
                 throw new IllegalArgumentException("Illegal data type..");
         }
     }
-	
-	private static AppCatalogResource createLocalDataMovement(LocalDataMovement o) {
-		LocalDataMovementResource localDataMovementResource = new LocalDataMovementResource();
-        if (o != null){
+
+    private static AppCatalogResource createLocalDataMovement(LocalDataMovement o) {
+        LocalDataMovementResource localDataMovementResource = new LocalDataMovementResource();
+        if (o != null) {
             localDataMovementResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
         }
-		return localDataMovementResource;
-	}
-	
+        return localDataMovementResource;
+    }
+
     private static AppCatalogResource createLocalSubmission(LocalSubmission o) {
-		LocalSubmissionResource localSubmissionResource = new LocalSubmissionResource();
-        if (o != null){
+        LocalSubmissionResource localSubmissionResource = new LocalSubmissionResource();
+        if (o != null) {
             localSubmissionResource.setResourceJobManagerId(o.getResourceJobManagerId());
-            localSubmissionResource.setResourceJobManagerResource((ResourceJobManagerResource)createResourceJobManager(o.getResourceJobManager()));
+            localSubmissionResource.setResourceJobManagerResource((ResourceJobManagerResource) createResourceJobManager(o.getResourceJobManager()));
             localSubmissionResource.setJobSubmissionInterfaceId(o.getJobSubmissionInterfaceId());
             localSubmissionResource.setCreatedTime(o.getCreationTime());
-            if (o.getUpdateTime() != null){
+            if (o.getUpdateTime() != null) {
                 localSubmissionResource.setUpdatedTime(o.getUpdateTime());
             }
         }
-		return localSubmissionResource;
-	}
-    
+        return localSubmissionResource;
+    }
+
     private static AppCatalogResource createJobManagerCommand(JobManagerCommand o) {
-		JobManagerCommandResource jobManagerCommandResource = new JobManagerCommandResource();
-        if (o != null){
+        JobManagerCommandResource jobManagerCommandResource = new JobManagerCommandResource();
+        if (o != null) {
             jobManagerCommandResource.setResourceJobManagerId(o.getResourceJobManagerId());
-            jobManagerCommandResource.setResourceJobManagerResource((ResourceJobManagerResource)createResourceJobManager(o.getResourceJobManager()));
+            jobManagerCommandResource.setResourceJobManagerResource((ResourceJobManagerResource) createResourceJobManager(o.getResourceJobManager()));
             jobManagerCommandResource.setCommandType(o.getCommandType());
             jobManagerCommandResource.setCommand(o.getCommand());
         }
-		return jobManagerCommandResource;
-	}
-    
+        return jobManagerCommandResource;
+    }
+
     private static AppCatalogResource createResourceJobManager(ResourceJobManager o) {
-		ResourceJobManagerResource resourceJobManagerResource = new ResourceJobManagerResource();
+        ResourceJobManagerResource resourceJobManagerResource = new ResourceJobManagerResource();
         if (o != null) {
             resourceJobManagerResource.setResourceJobManagerId(o.getResourceJobManagerId());
             resourceJobManagerResource.setPushMonitoringEndpoint(o.getPushMonitoringEndpoint());
             resourceJobManagerResource.setJobManagerBinPath(o.getJobManagerBinPath());
             resourceJobManagerResource.setResourceJobManagerType(o.getResourceJobManagerType());
             resourceJobManagerResource.setCreatedTime(o.getCreationTime());
-            if (o.getUpdateTime() != null){
+            if (o.getUpdateTime() != null) {
                 resourceJobManagerResource.setUpdatedTime(o.getUpdateTime());
             }
         }
-		return resourceJobManagerResource;
-	}
-    
+        return resourceJobManagerResource;
+    }
+
     private static AppCatalogResource createDataMovementInterface(DataMovementInterface o) {
-		DataMovementInterfaceResource dataMovementInterfaceResource = new DataMovementInterfaceResource();
+        DataMovementInterfaceResource dataMovementInterfaceResource = new DataMovementInterfaceResource();
         if (o != null) {
             dataMovementInterfaceResource.setComputeResourceId(o.getComputeResourceId());
-            dataMovementInterfaceResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+            dataMovementInterfaceResource.setComputeHostResource((ComputeResourceResource) createComputeResource(o.getComputeResource()));
             dataMovementInterfaceResource.setDataMovementProtocol(o.getDataMovementProtocol());
             dataMovementInterfaceResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
             dataMovementInterfaceResource.setPriorityOrder(o.getPriorityOrder());
             dataMovementInterfaceResource.setCreatedTime(o.getCreationTime());
-            if (o.getUpdateTime() != null){
+            if (o.getUpdateTime() != null) {
                 dataMovementInterfaceResource.setUpdatedTime(o.getUpdateTime());
             }
         }
-		return dataMovementInterfaceResource;
-	}
-    
+        return dataMovementInterfaceResource;
+    }
+
     private static AppCatalogResource createJobSubmissionInterface(JobSubmissionInterface o) {
-		JobSubmissionInterfaceResource jobSubmissionInterfaceResource = new JobSubmissionInterfaceResource();
+        JobSubmissionInterfaceResource jobSubmissionInterfaceResource = new JobSubmissionInterfaceResource();
         if (o != null) {
             jobSubmissionInterfaceResource.setJobSubmissionInterfaceId(o.getJobSubmissionInterfaceId());
             jobSubmissionInterfaceResource.setComputeResourceId(o.getComputeResourceId());
-            jobSubmissionInterfaceResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+            jobSubmissionInterfaceResource.setComputeHostResource((ComputeResourceResource) createComputeResource(o.getComputeResource()));
             jobSubmissionInterfaceResource.setJobSubmissionProtocol(o.getJobSubmissionProtocol());
             jobSubmissionInterfaceResource.setPriorityOrder(o.getPriorityOrder());
             jobSubmissionInterfaceResource.setCreatedTime(o.getCreationTime());
-            if (o.getUpdateTime() != null){
+            if (o.getUpdateTime() != null) {
                 jobSubmissionInterfaceResource.setUpdatedTime(o.getUpdateTime());
             }
         }
-		return jobSubmissionInterfaceResource;
-	}
-    
+        return jobSubmissionInterfaceResource;
+    }
+
     private static AppCatalogResource createComputeResourceFileSystem(ComputeResourceFileSystem o) {
-		ComputeResourceFileSystemResource computeResourceFileSystemResource = new ComputeResourceFileSystemResource();
-        if (o != null){
+        ComputeResourceFileSystemResource computeResourceFileSystemResource = new ComputeResourceFileSystemResource();
+        if (o != null) {
             computeResourceFileSystemResource.setComputeResourceId(o.getComputeResourceId());
-            computeResourceFileSystemResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+            computeResourceFileSystemResource.setComputeHostResource((ComputeResourceResource) createComputeResource(o.getComputeResource()));
             computeResourceFileSystemResource.setPath(o.getPath());
             computeResourceFileSystemResource.setFileSystem(o.getFileSystem());
         }
-		return computeResourceFileSystemResource;
-	}
-    
+        return computeResourceFileSystemResource;
+    }
+
     private static AppCatalogResource createBatchQueue(BatchQueue o) {
-		BatchQueueResource batchQueueResource = new BatchQueueResource();
-        if (o != null){
+        BatchQueueResource batchQueueResource = new BatchQueueResource();
+        if (o != null) {
             batchQueueResource.setComputeResourceId(o.getComputeResourceId());
-            batchQueueResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+            batchQueueResource.setComputeHostResource((ComputeResourceResource) createComputeResource(o.getComputeResource()));
             batchQueueResource.setMaxRuntime(o.getMaxRuntime());
             batchQueueResource.setMaxJobInQueue(o.getMaxJobInQueue());
             batchQueueResource.setQueueDescription(o.getQueueDescription());
@@ -509,10 +487,11 @@ public class AppCatalogJPAUtils {
             batchQueueResource.setMaxNodes(o.getMaxNodes());
             batchQueueResource.setMaxMemory(o.getMaxMemory());
         }
-		return batchQueueResource;
-	}
+        return batchQueueResource;
+    }
+
     private static AppCatalogResource createComputeResource(ComputeResource o) {
-		ComputeResourceResource computeResourceResource = new ComputeResourceResource();
+        ComputeResourceResource computeResourceResource = new ComputeResourceResource();
         if (o != null) {
             computeResourceResource.setResourceDescription(o.getResourceDescription());
             computeResourceResource.setResourceId(o.getResourceId());
@@ -520,29 +499,29 @@ public class AppCatalogJPAUtils {
             computeResourceResource.setCreatedTime(o.getCreationTime());
             computeResourceResource.setEnabled(o.getEnabled());
             computeResourceResource.setMaxMemoryPerNode(o.getMaxMemoryPerNode());
-            if (o.getUpdateTime() != null){
+            if (o.getUpdateTime() != null) {
                 computeResourceResource.setUpdatedTime(o.getUpdateTime());
             }
         }
-		return computeResourceResource;
-	}
+        return computeResourceResource;
+    }
 
     private static AppCatalogResource createHostAlias(HostAlias o) {
         HostAliasAppResource aliasResource = new HostAliasAppResource();
-        if (o != null){
+        if (o != null) {
             aliasResource.setResourceID(o.getResourceID());
             aliasResource.setAlias(o.getAlias());
-            aliasResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+            aliasResource.setComputeHostResource((ComputeResourceResource) createComputeResource(o.getComputeResource()));
         }
         return aliasResource;
     }
 
     private static AppCatalogResource createHostIPAddress(HostIPAddress o) {
         HostIPAddressResource ipAddressResource = new HostIPAddressResource();
-        if (o != null){
+        if (o != null) {
             ipAddressResource.setResourceID(o.getResourceID());
             ipAddressResource.setIpaddress(o.getIpaddress());
-            ipAddressResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+            ipAddressResource.setComputeHostResource((ComputeResourceResource) createComputeResource(o.getComputeResource()));
         }
         return ipAddressResource;
     }
@@ -558,8 +537,7 @@ public class AppCatalogJPAUtils {
         }
         return submissionResource;
     }
-    
-    
+
     private static AppCatalogResource createUnicoreJobSubmission(UnicoreJobSubmission o) {
         UnicoreJobSubmissionResource submissionResource = new UnicoreJobSubmissionResource();
         if (o != null) {
@@ -579,18 +557,18 @@ public class AppCatalogJPAUtils {
         }
         return dataMovementResource;
     }
-    
-    private static AppCatalogResource createGSISSHExport(GSISSHExport o){
+
+    private static AppCatalogResource createGSISSHExport(GSISSHExport o) {
         GSISSHExportResource resource = new GSISSHExportResource();
         if (o != null) {
             resource.setSubmissionID(o.getSubmissionID());
             resource.setExport(o.getExport());
-            resource.setGsisshSubmissionResource((GSISSHSubmissionResource)createGSSISSHSubmission(o.getGsisshJobSubmission()));
+            resource.setGsisshSubmissionResource((GSISSHSubmissionResource) createGSSISSHSubmission(o.getGsisshJobSubmission()));
         }
         return resource;
     }
 
-    private static AppCatalogResource createPreJobCommand(PreJobCommand o){
+    private static AppCatalogResource createPreJobCommand(PreJobCommand o) {
         PreJobCommandResource resource = new PreJobCommandResource();
         if (o != null) {
             resource.setAppDeploymentId(o.getDeploymentId());
@@ -601,9 +579,9 @@ public class AppCatalogJPAUtils {
         return resource;
     }
 
-    private static AppCatalogResource createPostJObCommand(PostJobCommand o){
+    private static AppCatalogResource createPostJObCommand(PostJobCommand o) {
         PostJobCommandResource resource = new PostJobCommandResource();
-        if (o != null){
+        if (o != null) {
             resource.setAppDeploymentId(o.getDeploymentId());
             resource.setCommand(o.getCommand());
             resource.setOrder(o.getOrder());
@@ -614,7 +592,7 @@ public class AppCatalogJPAUtils {
 
     private static AppCatalogResource createGlobusJobSubmission(GlobusJobSubmission o) {
         GlobusJobSubmissionResource resource = new GlobusJobSubmissionResource();
-        if (o != null){
+        if (o != null) {
             resource.setSubmissionID(o.getSubmissionID());
             resource.setResourceJobManager(o.getResourceJobManager());
             resource.setSecurityProtocol(o.getSecurityProtocol());
@@ -624,15 +602,15 @@ public class AppCatalogJPAUtils {
 
     private static AppCatalogResource createGlobusEndpoint(GlobusGKEndpoint o) {
         GlobusGKEndpointResource resource = new GlobusGKEndpointResource();
-        if (o != null){
+        if (o != null) {
             resource.setSubmissionID(o.getSubmissionID());
             resource.setEndpoint(o.getEndpoint());
-            resource.setGlobusJobSubmissionResource((GlobusJobSubmissionResource)createGlobusJobSubmission(o.getGlobusSubmission()));
+            resource.setGlobusJobSubmissionResource((GlobusJobSubmissionResource) createGlobusJobSubmission(o.getGlobusSubmission()));
         }
         return resource;
     }
-	
-	private static AppCatalogResource createSshJobSubmission(SshJobSubmission o) {
+
+    private static AppCatalogResource createSshJobSubmission(SshJobSubmission o) {
         SshJobSubmissionResource sshJobSubmissionResource = new SshJobSubmissionResource();
         if (o != null) {
             sshJobSubmissionResource.setResourceJobManagerId(o.getResourceJobManagerId());
@@ -643,7 +621,7 @@ public class AppCatalogJPAUtils {
             sshJobSubmissionResource.setSshPort(o.getSshPort());
             sshJobSubmissionResource.setMonitorMode(o.getMonitorMode());
             sshJobSubmissionResource.setCreatedTime(o.getCreationTime());
-            if (o.getUpdateTime() != null){
+            if (o.getUpdateTime() != null) {
                 sshJobSubmissionResource.setUpdatedTime(o.getUpdateTime());
             }
         }
@@ -651,47 +629,47 @@ public class AppCatalogJPAUtils {
     }
 
     private static AppCatalogResource createScpDataMovement(ScpDataMovement o) {
-		ScpDataMovementResource scpDataMovementResource = new ScpDataMovementResource();
-        if (o != null){
+        ScpDataMovementResource scpDataMovementResource = new ScpDataMovementResource();
+        if (o != null) {
             scpDataMovementResource.setQueueDescription(o.getQueueDescription());
             scpDataMovementResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
             scpDataMovementResource.setSecurityProtocol(o.getSecurityProtocol());
             scpDataMovementResource.setAlternativeScpHostname(o.getAlternativeScpHostname());
             scpDataMovementResource.setSshPort(o.getSshPort());
             scpDataMovementResource.setCreatedTime(o.getCreationTime());
-            if (o.getUpdateTime() != null){
+            if (o.getUpdateTime() != null) {
                 scpDataMovementResource.setUpdatedTime(o.getUpdateTime());
             }
         }
-		return scpDataMovementResource;
-	}
+        return scpDataMovementResource;
+    }
 
     private static AppCatalogResource createGridftpDataMovement(GridftpDataMovement o) {
-		GridftpDataMovementResource gridftpDataMovementResource = new GridftpDataMovementResource();
-        if (o != null){
+        GridftpDataMovementResource gridftpDataMovementResource = new GridftpDataMovementResource();
+        if (o != null) {
             gridftpDataMovementResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
             gridftpDataMovementResource.setSecurityProtocol(o.getSecurityProtocol());
             gridftpDataMovementResource.setCreatedTime(o.getCreationTime());
-            if (o.getUpdateTime() != null){
+            if (o.getUpdateTime() != null) {
                 gridftpDataMovementResource.setUpdatedTime(o.getUpdateTime());
             }
         }
-		return gridftpDataMovementResource;
-	}
+        return gridftpDataMovementResource;
+    }
 
     private static AppCatalogResource createGridftpEndpoint(GridftpEndpoint o) {
-		GridftpEndpointResource gridftpEndpointResource = new GridftpEndpointResource();
-        if (o != null){
+        GridftpEndpointResource gridftpEndpointResource = new GridftpEndpointResource();
+        if (o != null) {
             gridftpEndpointResource.setEndpoint(o.getEndpoint());
             gridftpEndpointResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
-            gridftpEndpointResource.setGridftpDataMovementResource((GridftpDataMovementResource)createGridftpDataMovement(o.getGridftpDataMovement()));
+            gridftpEndpointResource.setGridftpDataMovementResource((GridftpDataMovementResource) createGridftpDataMovement(o.getGridftpDataMovement()));
             gridftpEndpointResource.setCreatedTime(o.getCreationTime());
-            if (o.getUpdateTime() != null){
+            if (o.getUpdateTime() != null) {
                 gridftpEndpointResource.setUpdatedTime(o.getUpdateTime());
             }
         }
-		return gridftpEndpointResource;
-	}
+        return gridftpEndpointResource;
+    }
 
 //    private static Resource createJobSubmissionProtocol(JobSubmissionProtocol o) {
 //        JobSubmissionProtocolResource resource = new JobSubmissionProtocolResource();
@@ -717,14 +695,14 @@ public class AppCatalogJPAUtils {
 
     private static AppCatalogResource createApplicationModule(ApplicationModule o) {
         AppModuleResource moduleResource = new AppModuleResource();
-        if (o != null){
+        if (o != null) {
             moduleResource.setModuleId(o.getModuleID());
             moduleResource.setModuleDesc(o.getModuleDesc());
             moduleResource.setGatewayId(o.getGatewayId());
             moduleResource.setModuleName(o.getModuleName());
             moduleResource.setModuleVersion(o.getModuleVersion());
             moduleResource.setCreatedTime(o.getCreationTime());
-            if (o.getUpdateTime() != null){
+            if (o.getUpdateTime() != null) {
                 moduleResource.setUpdatedTime(o.getUpdateTime());
             }
         }
@@ -733,7 +711,7 @@ public class AppCatalogJPAUtils {
 
     private static AppCatalogResource createApplicationDeployment(ApplicationDeployment o) {
         AppDeploymentResource resource = new AppDeploymentResource();
-        if (o != null){
+        if (o != null) {
             resource.setDeploymentId(o.getDeploymentID());
             resource.setAppDes(o.getApplicationDesc());
             resource.setAppModuleId(o.getAppModuleID());
@@ -744,7 +722,7 @@ public class AppCatalogJPAUtils {
             resource.setModuleResource((AppModuleResource) createApplicationModule(o.getApplicationModule()));
             resource.setHostResource((ComputeResourceResource) createComputeResource(o.getComputeResource()));
             resource.setCreatedTime(o.getCreationTime());
-            if (o.getUpdateTime() != null){
+            if (o.getUpdateTime() != null) {
                 resource.setUpdatedTime(o.getUpdateTime());
             }
         }
@@ -753,7 +731,7 @@ public class AppCatalogJPAUtils {
 
     private static AppCatalogResource createLibraryPrepPathResource(LibraryPrepandPath o) {
         LibraryPrepandPathResource resource = new LibraryPrepandPathResource();
-        if (o != null){
+        if (o != null) {
             resource.setDeploymentId(o.getDeploymentID());
             resource.setName(o.getName());
             resource.setValue(o.getValue());
@@ -764,36 +742,36 @@ public class AppCatalogJPAUtils {
 
     private static AppCatalogResource createLibraryApendPathResource(LibraryApendPath o) {
         LibraryApendPathResource resource = new LibraryApendPathResource();
-        if (o != null){
+        if (o != null) {
             resource.setDeploymentId(o.getDeploymentID());
             resource.setName(o.getName());
             resource.setValue(o.getValue());
-            resource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
+            resource.setAppDeploymentResource((AppDeploymentResource) createApplicationDeployment(o.getApplicationDeployment()));
         }
         return resource;
     }
 
     private static AppCatalogResource createAppEnvironmentResource(AppEnvironment o) {
         AppEnvironmentResource resource = new AppEnvironmentResource();
-        if (o != null){
+        if (o != null) {
             resource.setDeploymentId(o.getDeploymentID());
             resource.setName(o.getName());
             resource.setValue(o.getValue());
             resource.setOrder(o.getOrder());
-            resource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
+            resource.setAppDeploymentResource((AppDeploymentResource) createApplicationDeployment(o.getApplicationDeployment()));
         }
         return resource;
     }
 
     private static AppCatalogResource createAppInterfaceResource(ApplicationInterface o) {
         AppInterfaceResource resource = new AppInterfaceResource();
-        if (o != null){
+        if (o != null) {
             resource.setInterfaceId(o.getInterfaceID());
             resource.setAppName(o.getAppName());
             resource.setAppDescription(o.getAppDescription());
             resource.setCreatedTime(o.getCreationTime());
             resource.setGatewayId(o.getGatewayId());
-            if (o.getUpdateTime() != null){
+            if (o.getUpdateTime() != null) {
                 resource.setUpdatedTime(o.getUpdateTime());
             }
         }
@@ -802,7 +780,7 @@ public class AppCatalogJPAUtils {
 
     private static AppCatalogResource createAppModMappingResource(AppModuleMapping o) {
         AppModuleMappingAppCatalogResourceAppCat resource = new AppModuleMappingAppCatalogResourceAppCat();
-        if (o != null){
+        if (o != null) {
             resource.setInterfaceId(o.getInterfaceID());
             resource.setModuleId(o.getModuleID());
         }
@@ -811,7 +789,7 @@ public class AppCatalogJPAUtils {
 
     private static AppCatalogResource createApplicationInput(ApplicationIntInput o) {
         ApplicationInputResource resource = new ApplicationInputResource();
-        if (o != null){
+        if (o != null) {
             resource.setInterfaceID(o.getInterfaceID());
             resource.setInputKey(o.getInputKey());
             resource.setInputVal(o.getInputVal());
@@ -824,36 +802,14 @@ public class AppCatalogJPAUtils {
             resource.setRequired(o.isRequired());
             resource.setRequiredToCMD(o.isRequiredToCMD());
             resource.setDataStaged(o.isDataStaged());
-            resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));
-        }
-        return resource;
-    }
-
-    private static AppCatalogResource createWorflowInput(WorkflowInput o) {
-        WorkflowInputResource resource = new WorkflowInputResource();
-        if (o != null){
-            resource.setWfTemplateId(o.getWfTemplateId());
-            resource.setInputKey(o.getInputKey());
-            if (o.getInputVal() != null){
-                resource.setInputVal(new String(o.getInputVal()));
-            }
-            resource.setDataType(o.getDataType());
-            resource.setMetadata(o.getMetadata());
-            resource.setAppArgument(o.getAppArgument());
-            resource.setInputOrder(o.getInputOrder());
-            resource.setUserFriendlyDesc(o.getUserFriendlyDesc());
-            resource.setStandardInput(o.isStandardInput());
-            resource.setRequired(o.isRequired());
-            resource.setRequiredToCMD(o.isRequiredToCMD());
-            resource.setDataStaged(o.isDataStaged());
-            resource.setWorkflowResource((WorkflowResource)createWorkflow(o.getWorkflow()));
+            resource.setAppInterfaceResource((AppInterfaceResource) createAppInterfaceResource(o.getApplicationInterface()));
         }
         return resource;
     }
 
     private static AppCatalogResource createApplicationOutput(ApplicationIntOutput o) {
         ApplicationOutputResource resource = new ApplicationOutputResource();
-        if (o != null){
+        if (o != null) {
             resource.setInterfaceID(o.getInterfaceID());
             resource.setOutputKey(o.getOutputKey());
             resource.setOutputVal(o.getOutputVal());
@@ -865,31 +821,14 @@ public class AppCatalogJPAUtils {
             resource.setSearchQuery(o.getSearchQuery());
             resource.setAppArgument(o.getApplicationArgument());
             resource.setOutputStreaming(o.isOutputStreaming());
-            resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));
-        }
-        return resource;
-    }
-
-    private static AppCatalogResource createWorkflowOutput(WorkflowOutput o) {
-        WorkflowOutputResource resource = new WorkflowOutputResource();
-        if (o != null){
-            resource.setWfTemplateId(o.getWfTemplateId());
-            resource.setOutputKey(o.getOutputKey());
-            if (o.getOutputVal() != null){
-                resource.setOutputVal(new String(o.getOutputVal()));
-            }
-            resource.setDataType(o.getDataType());
-            resource.setValidityType(o.getValidityType());
-            resource.setDataMovement(o.isDataMovement());
-            resource.setDataNameLocation(o.getDataNameLocation());
-            resource.setWorkflowResource((WorkflowResource)createWorkflow(o.getWorkflow()));
+            resource.setAppInterfaceResource((AppInterfaceResource) createAppInterfaceResource(o.getApplicationInterface()));
         }
         return resource;
     }
 
     private static AppCatalogResource createGatewayClientCredential(GatewayClientCredential o) {
         GatewayClientCredentialResource resource = new GatewayClientCredentialResource();
-        if (o != null){
+        if (o != null) {
             resource.setClientKey(o.getClientKey());
             resource.setClientSecret(o.getClientSecret());
             resource.setGatewayId(o.getGatewayId());
@@ -903,7 +842,7 @@ public class AppCatalogJPAUtils {
             resource.setGatewayID(o.getGatewayID());
             resource.setCreatedTime(o.getCreationTime());
             resource.setCredentialStoreToken(o.getCredentialStoreToken());
-            if (o.getUpdateTime() != null){
+            if (o.getUpdateTime() != null) {
                 resource.setUpdatedTime(o.getUpdateTime());
             }
         }
@@ -960,38 +899,20 @@ public class AppCatalogJPAUtils {
             resource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
             resource.setDataMovementProtocol(o.getDataMovementProtocol());
             resource.setPriorityOrder(o.getPriorityOrder());
-            resource.setStorageResourceResource((StorageResourceResource)createStorageResource(o.getStorageResource()));
+            resource.setStorageResourceResource((StorageResourceResource) createStorageResource(o.getStorageResource()));
         }
         return resource;
     }
 
     private static AppCatalogResource createModuleLoadCmd(ModuleLoadCmd o) {
         ModuleLoadCmdResource moduleLoadCmdResource = new ModuleLoadCmdResource();
-        if (o != null){
+        if (o != null) {
             moduleLoadCmdResource.setCmd(o.getCmd());
             moduleLoadCmdResource.setAppDeploymentId(o.getAppDeploymentId());
             moduleLoadCmdResource.setOrder(o.getOrder());
-            moduleLoadCmdResource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
+            moduleLoadCmdResource.setAppDeploymentResource((AppDeploymentResource) createApplicationDeployment(o.getApplicationDeployment()));
         }
         return moduleLoadCmdResource;
     }
-
-    private static AppCatalogResource createWorkflow(Workflow o) {
-        WorkflowResource workflowResource = new WorkflowResource();
-        workflowResource.setWfName(o.getWfName());
-        workflowResource.setCreatedUser(o.getCreatedUser());
-        if (o.getGraph() != null){
-            workflowResource.setGraph(new String(o.getGraph()));
-        }
-        if (o.getImage() != null){
-            workflowResource.setImage(new String(o.getImage()));
-        }
-        workflowResource.setCreatedTime(o.getCreationTime());
-        if (o.getUpdateTime() != null){
-            workflowResource.setUpdatedTime(o.getUpdateTime());
-        }
-        workflowResource.setWfTemplateId(o.getWfTemplateId());
-        workflowResource.setGatewayId(o.getGatewayId());
-        return workflowResource;
-    }
 }
+
