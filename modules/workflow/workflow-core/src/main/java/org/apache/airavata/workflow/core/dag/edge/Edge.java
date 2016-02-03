@@ -32,6 +32,8 @@ import org.apache.airavata.workflow.core.dag.port.OutPort;
 
 public interface Edge {
 
+    public String getId();
+
     public void setEdgeModel(EdgeModel edgeModel);
 
     public EdgeModel getEdgeModel();

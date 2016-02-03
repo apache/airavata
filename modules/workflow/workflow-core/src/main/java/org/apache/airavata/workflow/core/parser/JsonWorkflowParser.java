@@ -16,11 +16,15 @@ import java.util.List;
 public class JsonWorkflowParser implements WorkflowParser{
 
     private final String workflow;
+    private List<InputNode> inputs;
+    private List<OutputNode> outputs;
+    private List<ApplicationNode> applications;
+    private List<Port> ports;
+    private List<Edge> edges;
 
     public JsonWorkflowParser(String jsonWorkflowString) {
         workflow = jsonWorkflowString;
     }
-
 
     @Override
     public void parse() throws Exception {

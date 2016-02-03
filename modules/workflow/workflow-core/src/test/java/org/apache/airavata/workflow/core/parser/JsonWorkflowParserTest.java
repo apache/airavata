@@ -109,8 +109,8 @@ public class JsonWorkflowParserTest {
                 Assert.assertNotNull(node.getInputPorts().get(1).getEdge());
 
                 Assert.assertEquals(1, node.getOutputPorts().size());
-                Assert.assertEquals(1, node.getOutputPorts().get(0).getOutEdges().size());
-                Assert.assertNotNull(node.getOutputPorts().get(0).getOutEdges().get(0));
+                Assert.assertEquals(1, node.getOutputPorts().get(0).getEdges().size());
+                Assert.assertNotNull(node.getOutputPorts().get(0).getEdges().get(0));
             } else if (wfNode instanceof OutputNode) {
                 OutputNode outputNode = (OutputNode) wfNode;
                 Assert.assertNotNull(outputNode.getInPort());

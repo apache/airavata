@@ -52,7 +52,7 @@ public class OutPortImpl implements OutPort {
     }
 
     @Override
-    public List<Edge> getOutEdges() {
+    public List<Edge> getEdges() {
         return this.outEdges;
     }
 
