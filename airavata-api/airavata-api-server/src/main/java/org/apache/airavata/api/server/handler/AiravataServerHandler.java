@@ -4147,7 +4147,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
         try {
 			return getWorkflowCatalog().getAllWorkflows(gatewayId);
-		} catch (AppCatalogException e) {
+		} catch (WorkflowCatalogException e) {
 			String msg = "Error in retrieving all workflow template Ids.";
 			logger.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -4162,7 +4162,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 			throws InvalidRequestException, AiravataClientException, AuthorizationException, AiravataSystemException, TException {
 		try {
 			return getWorkflowCatalog().getWorkflow(workflowTemplateId);
-		} catch (AppCatalogException e) {
+		} catch (WorkflowCatalogException e) {
 			String msg = "Error in retrieving the workflow "+workflowTemplateId+".";
 			logger.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -4177,7 +4177,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 			throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 		try {
 			getWorkflowCatalog().deleteWorkflow(workflowTemplateId);
-		} catch (AppCatalogException e) {
+		} catch (WorkflowCatalogException e) {
 			String msg = "Error in deleting the workflow "+workflowTemplateId+".";
 			logger.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -4196,7 +4196,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
         try {
 			return getWorkflowCatalog().registerWorkflow(workflow, gatewayId);
-		} catch (AppCatalogException e) {
+		} catch (WorkflowCatalogException e) {
 			String msg = "Error in registering the workflow "+workflow.getName()+".";
 			logger.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -4211,7 +4211,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 			throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 		try {
 			getWorkflowCatalog().updateWorkflow(workflowTemplateId, workflow);
-		} catch (AppCatalogException e) {
+		} catch (WorkflowCatalogException e) {
 			String msg = "Error in updating the workflow "+workflow.getName()+".";
 			logger.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -4226,7 +4226,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 			throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 		try {
 			return getWorkflowCatalog().getWorkflowTemplateId(workflowName);
-		} catch (AppCatalogException e) {
+		} catch (WorkflowCatalogException e) {
 			String msg = "Error in retrieving the workflow template id for "+workflowName+".";
 			logger.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -4241,7 +4241,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 			throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 		try {
 			return getWorkflowCatalog().isWorkflowExistWithName(workflowName);
-		} catch (AppCatalogException e) {
+		} catch (WorkflowCatalogException e) {
 			String msg = "Error in veriying the workflow for workflow name "+workflowName+".";
 			logger.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);

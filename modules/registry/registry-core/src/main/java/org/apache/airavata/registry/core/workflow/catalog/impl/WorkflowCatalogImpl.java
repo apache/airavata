@@ -115,6 +115,12 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
                     outputResource.setOutputVal(output.getValue());
                     outputResource.setWfTemplateId(resource.getWfTemplateId());
                     outputResource.setDataType(output.getType().toString());
+                    outputResource.setAppArgument(output.getApplicationArgument());
+                    outputResource.setDataNameLocation(output.getLocation());
+                    outputResource.setRequired(output.isIsRequired());
+                    outputResource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
+                    outputResource.setOutputStreaming(output.isOutputStreaming());
+                    outputResource.setDataMovement(output.isDataMovement());
                     outputResource.save();
                 }
             }
@@ -169,6 +175,13 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
                     existingOutput.setOutputVal(output.getValue());
                     existingOutput.setWfTemplateId(existingWF.getWfTemplateId());
                     existingOutput.setDataType(output.getType().toString());
+                    existingOutput.setDataType(output.getType().toString());
+                    existingOutput.setAppArgument(output.getApplicationArgument());
+                    existingOutput.setDataNameLocation(output.getLocation());
+                    existingOutput.setRequired(output.isIsRequired());
+                    existingOutput.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
+                    existingOutput.setOutputStreaming(output.isOutputStreaming());
+                    existingOutput.setDataMovement(output.isDataMovement());
                     existingOutput.save();
                 }
             }
@@ -225,6 +238,13 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
                 existingOutput.setOutputVal(output.getValue());
                 existingOutput.setWfTemplateId(existingWF.getWfTemplateId());
                 existingOutput.setDataType(output.getType().toString());
+                existingOutput.setDataType(output.getType().toString());
+                existingOutput.setAppArgument(output.getApplicationArgument());
+                existingOutput.setDataNameLocation(output.getLocation());
+                existingOutput.setRequired(output.isIsRequired());
+                existingOutput.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
+                existingOutput.setOutputStreaming(output.isOutputStreaming());
+                existingOutput.setDataMovement(output.isDataMovement());
                 existingOutput.save();
             }
         }
