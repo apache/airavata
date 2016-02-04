@@ -43,4 +43,6 @@ public interface WorkflowCatalog {
     public boolean isWorkflowExistWithName(String workflowName) throws WorkflowCatalogException;
 
     public void updateWorkflowOutputs(String workflowTemplateId, List<OutputDataObjectType> workflowOutputs) throws WorkflowCatalogException;
+
+
 }

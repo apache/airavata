@@ -33,11 +33,13 @@ import org.apache.airavata.api.server.security.interceptor.SecurityModule;
 import org.apache.airavata.api.server.util.AppCatalogInitUtil;
 import org.apache.airavata.api.server.util.Constants;
 import org.apache.airavata.api.server.util.RegistryInitUtil;
+import org.apache.airavata.api.server.util.WorkflowCatalogInitUtil;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.registry.core.workflow.catalog.utils.WorkflowCatalogUtils;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
@@ -68,6 +70,7 @@ public class AiravataAPIServer implements IServer{
         try {
             RegistryInitUtil.initializeDB();
             AppCatalogInitUtil.initializeDB();
+            WorkflowCatalogInitUtil.initializeDB();
             final String serverHost = ServerSettings.getSetting(Constants.API_SERVER_HOST, null);
             if (!ServerSettings.isTLSEnabled()) {
                 final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_PORT, "8930"));

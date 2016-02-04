@@ -37,9 +37,12 @@ struct WorkflowModel {
     1: required string templateId = airavata_commons.DEFAULT_ID,
     2: required string name,
     3: required string graph,
-    4: optional binary image,
-    5: optional list<application_io_models.InputDataObjectType> workflowInputs,
-    6: optional list<application_io_models.OutputDataObjectType> workflowOutputs
+    4: required string gatewayId,
+    5: required string createdUser,
+    6: optional binary image,
+    7: optional list<application_io_models.InputDataObjectType> workflowInputs,
+    8: optional list<application_io_models.OutputDataObjectType> workflowOutputs,
+    9: optional i64 creationTime,
 }
 
 enum WorkflowState {
