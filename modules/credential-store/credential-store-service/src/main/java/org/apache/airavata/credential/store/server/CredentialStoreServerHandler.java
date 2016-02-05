@@ -233,19 +233,14 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
     public Map<String, String> getAllSSHKeysForGateway(String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
         Map<String, String> sshKeyMap = new HashMap<>();
         try {
-            List<Credential> allCredentials = credentialReader.getAllCredentials();
+            List<Credential> allCredentials = credentialReader.getAllCredentialsPerGateway(gatewayId);
             if (allCredentials != null && !allCredentials.isEmpty()){
                 for (Credential credential : allCredentials) {
                     if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) {
                         org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
-                        String gateway = sshCredential.getGateway();
-                        if (gateway != null){
-                            if (gateway.equals(gatewayId)) {
-                                byte[] publicKey = sshCredential.getPublicKey();
-                                if (publicKey != null) {
-                                    sshKeyMap.put(sshCredential.getToken(), new String(publicKey));
-                                }
-                            }
+                        byte[] publicKey = sshCredential.getPublicKey();
+                        if (publicKey != null) {
+                            sshKeyMap.put(sshCredential.getToken(), new String(publicKey));
                         }
                     }
                 }
