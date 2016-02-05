@@ -31,6 +31,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!--Workflow Interpreter dependency-->
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-gfac-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- Airavata default parser dependency -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
