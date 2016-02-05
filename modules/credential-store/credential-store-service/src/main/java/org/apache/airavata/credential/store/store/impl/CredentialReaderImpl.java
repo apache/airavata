@@ -87,6 +87,22 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
 
     }
 
+    @Override
+    public List<Credential> getAllCredentialsPerGateway(String gatewayId) throws CredentialStoreException {
+        Connection connection = getConnection();
+
+        try {
+            return this.credentialsDAO.getCredentials(gatewayId, connection);
+        } finally {
+            DBUtil.cleanup(connection);
+        }
+    }
+
+    @Override
+    public List<Credential> getAllCredentialsPerUser(String userName) throws CredentialStoreException {
+        return null;
+    }
+
     public String getPortalUser(String gatewayName, String tokenId) throws CredentialStoreException {
 
         Connection connection = getConnection();

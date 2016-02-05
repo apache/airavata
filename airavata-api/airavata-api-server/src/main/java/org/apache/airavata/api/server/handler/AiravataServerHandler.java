@@ -337,8 +337,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             if (csClient == null){
                 csClient = getCredentialStoreServiceClient();
             }
+            Map<String, String> allSSHKeysForGateway = csClient.getAllSSHKeysForGateway(gatewayId);
             logger.info("Airavata retrieved all SSH pub keys for gateway Id : " + gatewayId);
-            return csClient.getAllSSHKeysForGateway(gatewayId);
+            return allSSHKeysForGateway;
         }catch (Exception e){
             logger.error("Error occurred while retrieving SSH public keys for gateway : " + gatewayId , e);
             AiravataSystemException exception = new AiravataSystemException();
