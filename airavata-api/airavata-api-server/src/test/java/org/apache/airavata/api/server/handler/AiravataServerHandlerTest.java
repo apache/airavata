@@ -23,7 +23,7 @@ package org.apache.airavata.api.server.handler;
 import junit.framework.Assert;
 import org.apache.airavata.api.server.handler.utils.AppCatInit;
 import org.apache.airavata.api.server.handler.utils.ExpCatInit;
-import org.apache.airavata.api.server.util.RegistryInitUtil;
+import org.apache.airavata.api.server.util.ExperimentCatalogInitUtil;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
@@ -76,7 +76,7 @@ public class AiravataServerHandlerTest {
 
     @AfterClass
     public static void tearDown(){
-        RegistryInitUtil.stopDerbyInServerMode();
+        ExperimentCatalogInitUtil.stopDerbyInServerMode();
     }
 
     /**

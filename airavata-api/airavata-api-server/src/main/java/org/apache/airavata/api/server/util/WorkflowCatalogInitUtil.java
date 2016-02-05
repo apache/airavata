@@ -74,9 +74,9 @@ public class WorkflowCatalogInitUtil {
             conn = db.connect();
             if (!DatabaseCreator.isDatabaseStructureCreated(WORKFLOW, conn)) {
                 DatabaseCreator.createRegistryDatabase("database_scripts/workflowcatalog", conn);
-                logger.info("New Database created for Workflow Catalog");
+                logger.info("New Database created for Workflow Catalog !!! ");
             } else {
-                logger.info("Database already created for Workflow Catalog!");
+                logger.info("Database already created for Workflow Catalog!!!");
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

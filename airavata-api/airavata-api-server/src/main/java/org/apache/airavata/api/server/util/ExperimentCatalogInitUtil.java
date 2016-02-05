@@ -39,9 +39,9 @@ import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RegistryInitUtil {
+public class ExperimentCatalogInitUtil {
     public static final String CONFIGURATION_TABLE = "CONFIGURATION";
-    private static final Logger logger = LoggerFactory.getLogger(RegistryInitUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExperimentCatalogInitUtil.class);
     public static final String REGISTRY_JDBC_DRIVER = "registry.jdbc.driver";
     public static final String REGISTRY_JDBC_URL = "registry.jdbc.url";
     public static final String REGISTRY_JDBC_USER = "registry.jdbc.user";
@@ -79,9 +79,9 @@ public class RegistryInitUtil {
             conn = db.connect();
             if (!DatabaseCreator.isDatabaseStructureCreated(CONFIGURATION_TABLE, conn)) {
                 DatabaseCreator.createRegistryDatabase("database_scripts/expcatalog", conn);
-                logger.info("New Database created for Registry");
+                logger.info("New Database created for Experiment Catalog !!!");
             } else {
-                logger.info("Database already created for Registry!");
+                logger.info("Database already created for Experiment Catalog !!!");
             }
             try{
                 GatewayResource gateway;
