@@ -74,9 +74,9 @@ public class AppCatalogInitUtil {
             conn = db.connect();
             if (!DatabaseCreator.isDatabaseStructureCreated(COMPUTE_RESOURCE, conn)) {
                 DatabaseCreator.createRegistryDatabase("database_scripts/appcatalog", conn);
-                logger.info("New Database created for App Catalog");
+                logger.info("New Database created for App Catalog !!!");
             } else {
-                logger.info("Database already created for App Catalog!");
+                logger.info("Database already created for App Catalog !!!");
             }
             GatewayProfileResource gatewayProfileResource = new GatewayProfileResource();
             if (!gatewayProfileResource.isExists(ServerSettings.getDefaultUserGateway())){
