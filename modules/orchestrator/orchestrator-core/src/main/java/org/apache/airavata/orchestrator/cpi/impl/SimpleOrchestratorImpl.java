@@ -269,11 +269,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         return processModels;
     }
 
-    public String createAndSaveTasks(String gatewayId, ExperimentModel experimentModel, ProcessModel processModel) throws OrchestratorException {
+    public String createAndSaveTasks(String gatewayId, ProcessModel processModel, boolean autoSchedule) throws OrchestratorException {
         try {
             ExperimentCatalog experimentCatalog = orchestratorContext.getRegistry().getExperimentCatalog();
             AppCatalog appCatalog = orchestratorContext.getRegistry().getAppCatalog();
-            boolean autoSchedule = experimentModel.getUserConfigurationData().isAiravataAutoSchedule();
             ComputationalResourceSchedulingModel resourceSchedule = processModel.getResourceSchedule();
             String userGivenQueueName = resourceSchedule.getQueueName();
             int userGivenWallTime = resourceSchedule.getWallTimeLimit();

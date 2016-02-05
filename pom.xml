@@ -557,6 +557,7 @@
 				<module>modules/credential-store</module>
 				<module>modules/orchestrator</module>
 				<module>modules/server</module>
+				<module>modules/workflow</module>
 				<module>modules/test-suite</module>
 				<!-- Deprecated Modules-->
 				<!--<module>modules/integration-tests</module>-->

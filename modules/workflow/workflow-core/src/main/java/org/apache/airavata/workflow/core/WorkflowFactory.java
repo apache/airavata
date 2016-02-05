@@ -23,7 +23,6 @@ package org.apache.airavata.workflow.core;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.workflow.core.parser.AiravataWorkflowBuilder;
 import org.apache.airavata.workflow.core.parser.JsonWorkflowParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -142,7 +142,7 @@ public class WorkflowEnactmentService {
                 TaskIdentifier taskIdentifier = event.getTaskIdentity();
                 simpleWorkflowInterpreter = getInterpreter(taskIdentifier.getExperimentId());
                 if (simpleWorkflowInterpreter != null) {
-                    simpleWorkflowInterpreter.handleTaskOutputChangeEvent(event);
+//                    simpleWorkflowInterpreter.handleTaskOutputChangeEvent(event);
                     if (simpleWorkflowInterpreter.isAllDone()) {
                         workflowMap.remove(taskIdentifier.getExperimentId());
                     }

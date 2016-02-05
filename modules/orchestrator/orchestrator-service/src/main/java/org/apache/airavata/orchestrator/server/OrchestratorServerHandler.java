@@ -136,45 +136,46 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         ExperimentModel experiment = null;
         try {
 
-            List<ProcessModel> processes = orchestrator.createProcesses(experimentId, gatewayId);
-            experiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
-            for (ProcessModel processModel : processes){
-                String taskDag = orchestrator.createAndSaveTasks(gatewayId, experiment, processModel);
-                processModel.setTaskDag(taskDag);
-                experimentCatalog.update(ExperimentCatalogModelType.PROCESS,processModel, processModel.getProcessId());
-            }
-            if (experiment == null) {
-                log.error(experimentId, "Error retrieving the Experiment by the given experimentID: {} ", experimentId);
-                return false;
-            }
+            String experimentNodePath = GFacUtils.getExperimentNodePath (experimentId);
+			ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentNodePath);
+			String experimentCancelNode = ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+			ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
 
-            if (!validateProcess(experimentId, processes)) {
-                log.error("Validating process fails for given experiment Id : {}", experimentId);
-                return false;
-            }
-            ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().
+			ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().
 					getComputeResourcePreference(gatewayId,
 							experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
-            String token = computeResourcePreference.getResourceSpecificCredentialStoreToken();
-            if (token == null || token.isEmpty()){
-                // try with gateway profile level token
-                GatewayResourceProfile gatewayProfile = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
-                token = gatewayProfile.getCredentialStoreToken();
-            }
-            // still the token is empty, then we fail the experiment
-            if (token == null || token.isEmpty()){
-                log.error("You have not configured credential store token at gateway profile or compute resource preference. Please provide the correct token at gateway profile or compute resource preference.");
-                return false;
-            }
-            String experimentNodePath = GFacUtils.getExperimentNodePath (experimentId);
-	        ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentNodePath);
-	        String experimentCancelNode = ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
-	        ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
+			String token = computeResourcePreference.getResourceSpecificCredentialStoreToken();
+			if (token == null || token.isEmpty()){
+				// try with gateway profile level token
+				GatewayResourceProfile gatewayProfile = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
+				token = gatewayProfile.getCredentialStoreToken();
+			}
+			// still the token is empty, then we fail the experiment
+			if (token == null || token.isEmpty()){
+				log.error("You have not configured credential store token at gateway profile or compute resource preference. Please provide the correct token at gateway profile or compute resource preference.");
+				return false;
+			}
+			ExperimentType executionType = experiment.getExperimentType();
+			if (executionType == ExperimentType.SINGLE_APPLICATION) {
+				//its an single application execution experiment
+				List<ProcessModel> processes = orchestrator.createProcesses(experimentId, gatewayId);
+				experiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+				if (experiment == null) {
+					log.error(experimentId, "Error retrieving the Experiment by the given experimentID: {} ", experimentId);
+					return false;
+				}
+				for (ProcessModel processModel : processes){
+					String taskDag = orchestrator.createAndSaveTasks(gatewayId, processModel, experiment.getUserConfigurationData().isAiravataAutoSchedule());
+					processModel.setTaskDag(taskDag);
+					experimentCatalog.update(ExperimentCatalogModelType.PROCESS,processModel, processModel.getProcessId());
+				}
 
-	        ExperimentType executionType = experiment.getExperimentType();
-            if (executionType == ExperimentType.SINGLE_APPLICATION) {
-                //its an single application execution experiment
-                log.debug(experimentId, "Launching single application experiment {}.", experimentId);
+				if (!validateProcess(experimentId, processes)) {
+					log.error("Validating process fails for given experiment Id : {}", experimentId);
+					return false;
+				}
+
+				log.debug(experimentId, "Launching single application experiment {}.", experimentId);
                 ExperimentStatus status = new ExperimentStatus(ExperimentState.LAUNCHED);
                 status.setReason("submitted all processes");
                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
@@ -184,7 +185,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             } else if (executionType == ExperimentType.WORKFLOW) {
                 //its a workflow execution experiment
                 log.debug(experimentId, "Launching workflow experiment {}.", experimentId);
-                launchWorkflowExperiment(experimentId, token);
+                launchWorkflowExperiment(experimentId, token, gatewayId);
             } else {
                 log.error(experimentId, "Couldn't identify experiment type, experiment {} is neither single application nor workflow.", experimentId);
                 throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getExecutionId());
@@ -367,7 +368,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		}
     }
 
-    private void launchWorkflowExperiment(String experimentId, String airavataCredStoreToken) throws TException {
+    private void launchWorkflowExperiment(String experimentId, String airavataCredStoreToken, String gatewayId) throws TException {
         // FIXME
 //        try {
 //            WorkflowEnactmentService.getInstance().
