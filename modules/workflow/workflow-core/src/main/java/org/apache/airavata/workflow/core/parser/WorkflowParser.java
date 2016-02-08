@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.workflow.core;
+package org.apache.airavata.workflow.core.parser;
 
 import org.apache.airavata.workflow.core.dag.edge.Edge;
 import org.apache.airavata.workflow.core.dag.nodes.ApplicationNode;

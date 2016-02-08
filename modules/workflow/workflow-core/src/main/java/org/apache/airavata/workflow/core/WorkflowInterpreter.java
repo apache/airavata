@@ -30,13 +30,12 @@ import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.messaging.event.ProcessIdentifier;
 import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.workflow.core.dag.edge.Edge;
 import org.apache.airavata.workflow.core.dag.nodes.*;
-import org.apache.airavata.workflow.core.dag.port.OutPort;
+import org.apache.airavata.workflow.core.parser.WorkflowParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,9 +45,9 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Package-Private class
  */
-class SimpleWorkflowInterpreter{
+class WorkflowInterpreter {
 
-    private static final Logger log = LoggerFactory.getLogger(SimpleWorkflowInterpreter.class);
+    private static final Logger log = LoggerFactory.getLogger(WorkflowInterpreter.class);
     private List<InputNode> inputNodes;
 
     private ExperimentModel experiment;
@@ -69,14 +68,14 @@ class SimpleWorkflowInterpreter{
     private String consumerId;
     private boolean continueWorkflow = true;
 
-    public SimpleWorkflowInterpreter(String experimentId, String credentialToken, String gatewayName, RabbitMQProcessLaunchPublisher publisher) throws RegistryException {
+    public WorkflowInterpreter(String experimentId, String credentialToken, String gatewayName, RabbitMQProcessLaunchPublisher publisher) throws RegistryException {
         this.gatewayName = gatewayName;
         setExperiment(experimentId);
         this.credentialToken = credentialToken;
         this.publisher = publisher;
     }
 
-    public SimpleWorkflowInterpreter(ExperimentModel experiment, String credentialStoreToken, String gatewayName, RabbitMQProcessLaunchPublisher publisher) {
+    public WorkflowInterpreter(ExperimentModel experiment, String credentialStoreToken, String gatewayName, RabbitMQProcessLaunchPublisher publisher) {
         this.gatewayName = gatewayName;
         this.experiment = experiment;
         this.credentialToken = credentialStoreToken;
@@ -85,6 +84,7 @@ class SimpleWorkflowInterpreter{
 
     /**
      * Package-Private method.
+     *
      * @throws Exception
      */
     void launchWorkflow() throws Exception {
@@ -118,8 +118,10 @@ class SimpleWorkflowInterpreter{
     }
 
     // try to remove synchronization tag
+
     /**
      * Package-Private method.
+     *
      * @throws RegistryException
      * @throws AiravataException
      */
@@ -133,9 +135,9 @@ class SimpleWorkflowInterpreter{
                 outputNode.getOutputObject().setValue(outputNode.getInPort().getInputObject().getValue());
                 addToCompleteOutputNodeList(outputNode);
             } else if (readyNode instanceof InputNode) {
-                // set input object of applications and add applications to ready List.
+                // FIXME: set input object of applications and add applications to ready List.
             } else if (readyNode instanceof ApplicationNode) {
-                //  call orchestrator to create process for the application
+                // FIXME:  call orchestrator to create process for the application
             } else {
                 throw new RuntimeException("Unsupported workflow node type");
             }
@@ -155,6 +157,7 @@ class SimpleWorkflowInterpreter{
         for (OutputNode completeWorkflowOutput : completeWorkflowOutputs) {
             outputDataObjects.add(completeWorkflowOutput.getOutputObject());
         }
+        // FIXME: save workflow output to registry.
 //        RegistryFactory.getAppCatalog().getWorkflowCatalog()
 //                .updateWorkflowOutputs(experiment.getApplicationId(), outputDataObjects);
     }
@@ -189,7 +192,7 @@ class SimpleWorkflowInterpreter{
     }
 
     private Registry getRegistry() throws RegistryException {
-        if (registry==null){
+        if (registry == null) {
             registry = RegistryFactory.getRegistry();
         }
         return registry;
@@ -198,6 +201,7 @@ class SimpleWorkflowInterpreter{
     /**
      * Package-Private method.
      * Remove the workflow node from waiting queue and add it to the ready queue.
+     *
      * @param workflowNode - Workflow Node
      */
     synchronized void addToReadyQueue(WorkflowNode workflowNode) {
@@ -212,6 +216,7 @@ class SimpleWorkflowInterpreter{
     /**
      * First remove the node from ready list and then add the WfNodeContainer to the process queue.
      * Note that underline data structure of the process queue is a Map.
+     *
      * @param applicationNode - has both workflow and correspond workflowNodeDetails and TaskDetails
      */
     private synchronized void addToProcessingQueue(ApplicationNode applicationNode) {
@@ -298,13 +303,16 @@ class SimpleWorkflowInterpreter{
                     break;
                 case COMPLETED:
                     state = ComponentState.COMPLETED;
+                    // FIXME: read output form registry and set it to node outputport then continue to next application.
                     break;
                 case FAILED:
                     state = ComponentState.FAILED;
+                    // FIXME: fail workflow.
                     break;
                 case CANCELED:
                 case CANCELLING:
                     state = ComponentState.CANCELED;
+                    // FIXME: cancel workflow.
                     break;
                 default:
                     break;
@@ -314,7 +322,7 @@ class SimpleWorkflowInterpreter{
                     updateWorkflowNodeStatus(applicationNode, new ComponentStatus(state));
                 } catch (RegistryException e) {
                     log.error("Error! Couldn't update new application state to registry. nodeInstanceId : {} "
-                            + applicationNode.getId() + " status to: " + applicationNode.getState().toString() , e);
+                            + applicationNode.getId() + " status to: " + applicationNode.getState().toString(), e);
                 }
             }
         }
