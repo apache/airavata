@@ -17,7 +17,45 @@ use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
 
-class Workflow {
+final class WorkflowState {
+  const CREATED = 0;
+  const STARTED = 1;
+  const EXECUTING = 2;
+  const COMPLETED = 3;
+  const FAILED = 4;
+  const CANCELLING = 5;
+  const CANCELED = 6;
+  static public $__names = array(
+    0 => 'CREATED',
+    1 => 'STARTED',
+    2 => 'EXECUTING',
+    3 => 'COMPLETED',
+    4 => 'FAILED',
+    5 => 'CANCELLING',
+    6 => 'CANCELED',
+  );
+}
+
+final class ComponentState {
+  const CREATED = 0;
+  const WAITING = 1;
+  const READY = 2;
+  const RUNNING = 3;
+  const COMPLETED = 4;
+  const FAILED = 5;
+  const CANCELED = 6;
+  static public $__names = array(
+    0 => 'CREATED',
+    1 => 'WAITING',
+    2 => 'READY',
+    3 => 'RUNNING',
+    4 => 'COMPLETED',
+    5 => 'FAILED',
+    6 => 'CANCELED',
+  );
+}
+
+class WorkflowModel {
   static $_TSPEC;
 
   /**
@@ -35,6 +73,14 @@ class Workflow {
   /**
    * @var string
    */
+  public $gatewayId = null;
+  /**
+   * @var string
+   */
+  public $createdUser = null;
+  /**
+   * @var string
+   */
   public $image = null;
   /**
    * @var \Airavata\Model\Application\Io\InputDataObjectType[]
@@ -44,6 +90,10 @@ class Workflow {
    * @var \Airavata\Model\Application\Io\OutputDataObjectType[]
    */
   public $workflowOutputs = null;
+  /**
+   * @var int
+   */
+  public $creationTime = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -61,10 +111,18 @@ class Workflow {
           'type' => TType::STRING,
           ),
         4 => array(
-          'var' => 'image',
+          'var' => 'gatewayId',
           'type' => TType::STRING,
           ),
         5 => array(
+          'var' => 'createdUser',
+          'type' => TType::STRING,
+          ),
+        6 => array(
+          'var' => 'image',
+          'type' => TType::STRING,
+          ),
+        7 => array(
           'var' => 'workflowInputs',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -73,7 +131,7 @@ class Workflow {
             'class' => '\Airavata\Model\Application\Io\InputDataObjectType',
             ),
           ),
-        6 => array(
+        8 => array(
           'var' => 'workflowOutputs',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -81,6 +139,10 @@ class Workflow {
             'type' => TType::STRUCT,
             'class' => '\Airavata\Model\Application\Io\OutputDataObjectType',
             ),
+          ),
+        9 => array(
+          'var' => 'creationTime',
+          'type' => TType::I64,
           ),
         );
     }
@@ -94,6 +156,12 @@ class Workflow {
       if (isset($vals['graph'])) {
         $this->graph = $vals['graph'];
       }
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
+      }
+      if (isset($vals['createdUser'])) {
+        $this->createdUser = $vals['createdUser'];
+      }
       if (isset($vals['image'])) {
         $this->image = $vals['image'];
       }
@@ -103,11 +171,14 @@ class Workflow {
       if (isset($vals['workflowOutputs'])) {
         $this->workflowOutputs = $vals['workflowOutputs'];
       }
+      if (isset($vals['creationTime'])) {
+        $this->creationTime = $vals['creationTime'];
+      }
     }
   }
 
   public function getName() {
-    return 'Workflow';
+    return 'WorkflowModel';
   }
 
   public function read($input)
@@ -148,12 +219,26 @@ class Workflow {
           break;
         case 4:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->image);
+            $xfer += $input->readString($this->gatewayId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 5:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->createdUser);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 6:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->image);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 7:
           if ($ftype == TType::LST) {
             $this->workflowInputs = array();
             $_size0 = 0;
@@ -171,7 +256,7 @@ class Workflow {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 6:
+        case 8:
           if ($ftype == TType::LST) {
             $this->workflowOutputs = array();
             $_size6 = 0;
@@ -189,6 +274,13 @@ class Workflow {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 9:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->creationTime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -201,7 +293,7 @@ class Workflow {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('Workflow');
+    $xfer += $output->writeStructBegin('WorkflowModel');
     if ($this->templateId !== null) {
       $xfer += $output->writeFieldBegin('templateId', TType::STRING, 1);
       $xfer += $output->writeString($this->templateId);
@@ -217,8 +309,18 @@ class Workflow {
       $xfer += $output->writeString($this->graph);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 4);
+      $xfer += $output->writeString($this->gatewayId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->createdUser !== null) {
+      $xfer += $output->writeFieldBegin('createdUser', TType::STRING, 5);
+      $xfer += $output->writeString($this->createdUser);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->image !== null) {
-      $xfer += $output->writeFieldBegin('image', TType::STRING, 4);
+      $xfer += $output->writeFieldBegin('image', TType::STRING, 6);
       $xfer += $output->writeString($this->image);
       $xfer += $output->writeFieldEnd();
     }
@@ -226,7 +328,7 @@ class Workflow {
       if (!is_array($this->workflowInputs)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('workflowInputs', TType::LST, 5);
+      $xfer += $output->writeFieldBegin('workflowInputs', TType::LST, 7);
       {
         $output->writeListBegin(TType::STRUCT, count($this->workflowInputs));
         {
@@ -243,7 +345,7 @@ class Workflow {
       if (!is_array($this->workflowOutputs)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('workflowOutputs', TType::LST, 6);
+      $xfer += $output->writeFieldBegin('workflowOutputs', TType::LST, 8);
       {
         $output->writeListBegin(TType::STRUCT, count($this->workflowOutputs));
         {
@@ -254,6 +356,769 @@ class Workflow {
         }
         $output->writeListEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->creationTime !== null) {
+      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 9);
+      $xfer += $output->writeI64($this->creationTime);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class ComponentStatus {
+  static $_TSPEC;
+
+  /**
+   * @var int
+   */
+  public $state =   0;
+  /**
+   * @var string
+   */
+  public $reason = null;
+  /**
+   * @var int
+   */
+  public $timeofStateChange = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'state',
+          'type' => TType::I32,
+          ),
+        2 => array(
+          'var' => 'reason',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'timeofStateChange',
+          'type' => TType::I64,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['state'])) {
+        $this->state = $vals['state'];
+      }
+      if (isset($vals['reason'])) {
+        $this->reason = $vals['reason'];
+      }
+      if (isset($vals['timeofStateChange'])) {
+        $this->timeofStateChange = $vals['timeofStateChange'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'ComponentStatus';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->state);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->reason);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->timeofStateChange);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('ComponentStatus');
+    if ($this->state !== null) {
+      $xfer += $output->writeFieldBegin('state', TType::I32, 1);
+      $xfer += $output->writeI32($this->state);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->reason !== null) {
+      $xfer += $output->writeFieldBegin('reason', TType::STRING, 2);
+      $xfer += $output->writeString($this->reason);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->timeofStateChange !== null) {
+      $xfer += $output->writeFieldBegin('timeofStateChange', TType::I64, 3);
+      $xfer += $output->writeI64($this->timeofStateChange);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class WorkflowStatus {
+  static $_TSPEC;
+
+  /**
+   * @var int
+   */
+  public $state = null;
+  /**
+   * @var int
+   */
+  public $timeOfStateChange = null;
+  /**
+   * @var string
+   */
+  public $reason = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'state',
+          'type' => TType::I32,
+          ),
+        2 => array(
+          'var' => 'timeOfStateChange',
+          'type' => TType::I64,
+          ),
+        3 => array(
+          'var' => 'reason',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['state'])) {
+        $this->state = $vals['state'];
+      }
+      if (isset($vals['timeOfStateChange'])) {
+        $this->timeOfStateChange = $vals['timeOfStateChange'];
+      }
+      if (isset($vals['reason'])) {
+        $this->reason = $vals['reason'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'WorkflowStatus';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->state);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->timeOfStateChange);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->reason);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('WorkflowStatus');
+    if ($this->state !== null) {
+      $xfer += $output->writeFieldBegin('state', TType::I32, 1);
+      $xfer += $output->writeI32($this->state);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->timeOfStateChange !== null) {
+      $xfer += $output->writeFieldBegin('timeOfStateChange', TType::I64, 2);
+      $xfer += $output->writeI64($this->timeOfStateChange);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->reason !== null) {
+      $xfer += $output->writeFieldBegin('reason', TType::STRING, 3);
+      $xfer += $output->writeString($this->reason);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class EdgeModel {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $edgeId = "DO_NOT_SET_AT_CLIENTS";
+  /**
+   * @var string
+   */
+  public $name = null;
+  /**
+   * @var \Airavata\Model\ComponentStatus
+   */
+  public $status = null;
+  /**
+   * @var string
+   */
+  public $description = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'edgeId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'name',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'status',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\ComponentStatus',
+          ),
+        4 => array(
+          'var' => 'description',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['edgeId'])) {
+        $this->edgeId = $vals['edgeId'];
+      }
+      if (isset($vals['name'])) {
+        $this->name = $vals['name'];
+      }
+      if (isset($vals['status'])) {
+        $this->status = $vals['status'];
+      }
+      if (isset($vals['description'])) {
+        $this->description = $vals['description'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'EdgeModel';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->edgeId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->name);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->status = new \Airavata\Model\ComponentStatus();
+            $xfer += $this->status->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->description);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('EdgeModel');
+    if ($this->edgeId !== null) {
+      $xfer += $output->writeFieldBegin('edgeId', TType::STRING, 1);
+      $xfer += $output->writeString($this->edgeId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->name !== null) {
+      $xfer += $output->writeFieldBegin('name', TType::STRING, 2);
+      $xfer += $output->writeString($this->name);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->status !== null) {
+      if (!is_object($this->status)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('status', TType::STRUCT, 3);
+      $xfer += $this->status->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->description !== null) {
+      $xfer += $output->writeFieldBegin('description', TType::STRING, 4);
+      $xfer += $output->writeString($this->description);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class PortModel {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $portId = "DO_NOT_SET_AT_CLIENTS";
+  /**
+   * @var string
+   */
+  public $name = null;
+  /**
+   * @var \Airavata\Model\ComponentStatus
+   */
+  public $status = null;
+  /**
+   * @var string
+   */
+  public $value = null;
+  /**
+   * @var string
+   */
+  public $description = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'portId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'name',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'status',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\ComponentStatus',
+          ),
+        4 => array(
+          'var' => 'value',
+          'type' => TType::STRING,
+          ),
+        5 => array(
+          'var' => 'description',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['portId'])) {
+        $this->portId = $vals['portId'];
+      }
+      if (isset($vals['name'])) {
+        $this->name = $vals['name'];
+      }
+      if (isset($vals['status'])) {
+        $this->status = $vals['status'];
+      }
+      if (isset($vals['value'])) {
+        $this->value = $vals['value'];
+      }
+      if (isset($vals['description'])) {
+        $this->description = $vals['description'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'PortModel';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->portId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->name);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->status = new \Airavata\Model\ComponentStatus();
+            $xfer += $this->status->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->value);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->description);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('PortModel');
+    if ($this->portId !== null) {
+      $xfer += $output->writeFieldBegin('portId', TType::STRING, 1);
+      $xfer += $output->writeString($this->portId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->name !== null) {
+      $xfer += $output->writeFieldBegin('name', TType::STRING, 2);
+      $xfer += $output->writeString($this->name);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->status !== null) {
+      if (!is_object($this->status)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('status', TType::STRUCT, 3);
+      $xfer += $this->status->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->value !== null) {
+      $xfer += $output->writeFieldBegin('value', TType::STRING, 4);
+      $xfer += $output->writeString($this->value);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->description !== null) {
+      $xfer += $output->writeFieldBegin('description', TType::STRING, 5);
+      $xfer += $output->writeString($this->description);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class NodeModel {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $nodeId = "DO_NOT_SET_AT_CLIENTS";
+  /**
+   * @var string
+   */
+  public $name = null;
+  /**
+   * @var string
+   */
+  public $applicationId = null;
+  /**
+   * @var string
+   */
+  public $applicationName = null;
+  /**
+   * @var \Airavata\Model\ComponentStatus
+   */
+  public $status = null;
+  /**
+   * @var string
+   */
+  public $description = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'nodeId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'name',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'applicationId',
+          'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'applicationName',
+          'type' => TType::STRING,
+          ),
+        5 => array(
+          'var' => 'status',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\ComponentStatus',
+          ),
+        6 => array(
+          'var' => 'description',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['nodeId'])) {
+        $this->nodeId = $vals['nodeId'];
+      }
+      if (isset($vals['name'])) {
+        $this->name = $vals['name'];
+      }
+      if (isset($vals['applicationId'])) {
+        $this->applicationId = $vals['applicationId'];
+      }
+      if (isset($vals['applicationName'])) {
+        $this->applicationName = $vals['applicationName'];
+      }
+      if (isset($vals['status'])) {
+        $this->status = $vals['status'];
+      }
+      if (isset($vals['description'])) {
+        $this->description = $vals['description'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'NodeModel';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->nodeId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->name);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->applicationId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->applicationName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
+          if ($ftype == TType::STRUCT) {
+            $this->status = new \Airavata\Model\ComponentStatus();
+            $xfer += $this->status->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 6:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->description);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('NodeModel');
+    if ($this->nodeId !== null) {
+      $xfer += $output->writeFieldBegin('nodeId', TType::STRING, 1);
+      $xfer += $output->writeString($this->nodeId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->name !== null) {
+      $xfer += $output->writeFieldBegin('name', TType::STRING, 2);
+      $xfer += $output->writeString($this->name);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->applicationId !== null) {
+      $xfer += $output->writeFieldBegin('applicationId', TType::STRING, 3);
+      $xfer += $output->writeString($this->applicationId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->applicationName !== null) {
+      $xfer += $output->writeFieldBegin('applicationName', TType::STRING, 4);
+      $xfer += $output->writeString($this->applicationName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->status !== null) {
+      if (!is_object($this->status)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('status', TType::STRUCT, 5);
+      $xfer += $this->status->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->description !== null) {
+      $xfer += $output->writeFieldBegin('description', TType::STRING, 6);
+      $xfer += $output->writeString($this->description);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

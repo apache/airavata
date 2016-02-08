@@ -2904,7 +2904,7 @@ service Airavata {
    *
   */
 
-  workflow_data_model.Workflow getWorkflow (1: required security_model.AuthzToken authzToken, 2: required string workflowTemplateId)
+  workflow_data_model.WorkflowModel getWorkflow (1: required security_model.AuthzToken authzToken, 2: required string workflowTemplateId)
         throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
                 3: airavata_errors.AiravataSystemException ase,
@@ -2917,14 +2917,14 @@ service Airavata {
                 4: airavata_errors.AuthorizationException ae)
 
   string registerWorkflow(1: required security_model.AuthzToken authzToken, 2: required string gatewayId,
-                          3: required workflow_data_model.Workflow workflow)
+                          3: required workflow_data_model.WorkflowModel workflow)
           throws (1: airavata_errors.InvalidRequestException ire,
                   2: airavata_errors.AiravataClientException ace,
                   3: airavata_errors.AiravataSystemException ase,
                   4: airavata_errors.AuthorizationException ae)
 
   void updateWorkflow (1: required security_model.AuthzToken authzToken, 2: required string workflowTemplateId,
-                       3: required workflow_data_model.Workflow workflow)
+                       3: required workflow_data_model.WorkflowModel workflow)
           throws (1: airavata_errors.InvalidRequestException ire,
                   2: airavata_errors.AiravataClientException ace,
                   3: airavata_errors.AiravataSystemException ase,

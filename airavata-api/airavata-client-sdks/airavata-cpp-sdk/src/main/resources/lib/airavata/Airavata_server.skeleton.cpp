@@ -210,6 +210,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Get a Public Key by Providing the Token
    * 
    * @param CredStoreToken
@@ -231,6 +232,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Get all Public Keys of the Gateway
    * 
    * @param CredStoreToken
@@ -252,6 +254,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Delete a Gateway
    * 
    * @param gatewayId
@@ -272,6 +275,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Creates a Project with basic metadata.
    *    A Project is a container of experiments.
    * 
@@ -279,7 +283,7 @@ class AiravataHandler : virtual public AiravataIf {
    *    The identifier for the requested gateway.
    * 
    * @param Project
-   *    The Project Object described in the workspace_model
+   *    The Project Object described in the workspace_model.
    * 
    * 
    * 
@@ -293,6 +297,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Update an Existing Project
    * 
    * @param projectId
@@ -313,14 +318,15 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Get a Project by ID
-   *    This method is to obtain a project by providing a projectId
+   *    This method is to obtain a project by providing a projectId.
    * 
    * @param projectId
-   *    projectId of the project you require
+   *    projectId of the project you require.
    * 
    * @return project
-   *    project data model will be returned
+   *    project data model will be returned.
    * 
    * 
    * 
@@ -333,14 +339,17 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Delete a Project
-   *    This method is used to delete an existing Project
+   *    This method is used to delete an existing Project.
    * 
    * @param projectId
-   *    projectId of the project you want to delete
+   *    projectId of the project you want to delete.
    * 
    * @return boolean
    *    Boolean identifier for the success or failure of the deletion operation.
+   * 
+   *    NOTE: This method is not used within gateways connected with Airavata.
    * 
    * 
    * 
@@ -353,20 +362,21 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Get all Project by user with pagination. Results will be ordered based
-   * on creation time DESC
+   * 
+   * Get All User Projects
+   * Get all Project for the user with pagination. Results will be ordered based on creation time DESC.
    * 
    * @param gatewayId
    *    The identifier for the requested gateway.
    * 
    * @param userName
-   *    The identifier of the user
+   *    The identifier of the user.
    * 
    * @param limit
-   *    The amount results to be fetched
+   *    The amount results to be fetched.
    * 
    * @param offset
-   *    The starting point of the results to be fetched
+   *    The starting point of the results to be fetched.
    * 
    * 
    * 
@@ -382,19 +392,25 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Get all Project for user by project name with pagination.Results will be ordered based
-   * on creation time DESC
+   * 
+   * Search User Projects by Project Name
+   * Get all Project for user by project name with pagination.Results will be ordered based on creation time DESC.
    * 
    * @param gatewayId
-   *    The identifier for the requested gateway.
+   *    The unique identifier for the requested gateway.
+   * 
    * @param userName
-   *    The identifier of the user
+   *    The identifier of the user.
+   * 
    * @param projectName
-   *    The name of the project on which the results to be fetched
+   *    The name of the project on which the results to be fetched.
+   * 
    * @param limit
-   *    The amount results to be fetched
+   *    The amount results to be fetched.
+   * 
    * @param offset
-   *    The starting point of the results to be fetched
+   *    The starting point of the results to be fetched.
+   * 
    * 
    * 
    * @param authzToken
@@ -410,19 +426,25 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Search and get all Projects for user by project description with pagination. Results
-   * will be ordered based on creation time DESC
+   * 
+   * Search User Projects by Project Description
+   * Search and get all Projects for user by project description with pagination. Results will be ordered based on creation time DESC.
    * 
    * @param gatewayId
-   *    The identifier for the requested gateway.
+   *    The unique identifier of the gateway making the request.
+   * 
    * @param userName
-   *    The identifier of the user
+   *    The identifier of the user.
+   * 
    * @param description
-   *    The description to be matched
+   *    The description to be matched.
+   * 
    * @param limit
-   *    The amount results to be fetched
+   *    The amount results to be fetched.
+   * 
    * @param offset
-   *    The starting point of the results to be fetched
+   *    The starting point of the results to be fetched.
+   * 
    * 
    * 
    * @param authzToken
@@ -438,19 +460,25 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Search Experiments by experiment name with pagination. Results will be sorted
-   * based on creation time DESC
+   * 
+   * Search User Experiments by Name
+   * Search user Experiments using experiment name with pagination. Results will be sorted based on creation time DESC.
    * 
    * @param gatewayId
-   *       Identifier of the requested gateway
+   *       Unique identifier of the requested gateway.
+   * 
    * @param userName
-   *       Username of the requested user
+   *       Username of the user who created the experiments.
+   * 
    * @param expName
-   *       Experiment name to be matched
+   *       Experiment name to be matched.
+   * 
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   * 
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   * 
    * 
    * 
    * @param authzToken
@@ -466,19 +494,25 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Search Experiments by experiment name with pagination. Results will be sorted
-   * based on creation time DESC
+   * 
+   * Search By Experiment Description
+   * Search Experiments by experiment description with pagination. Results will be sorted based on creation time DESC.
    * 
    * @param gatewayId
-   *       Identifier of the requested gateway
+   *       Unique identifier of the requested gateway.
+   * 
    * @param userName
-   *       Username of the requested user
+   *       Username of the requested user.
+   * 
    * @param description
-   *       Experiment description to be matched
+   *       Experiment description to be matched.
+   * 
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   * 
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   * 
    * 
    * 
    * @param authzToken
@@ -494,19 +528,25 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Search Experiments by application id with pagination. Results will be sorted
-   * based on creation time DESC
+   * 
+   * Search Experiment By the Application
+   * Search Experiments of a particular application id with pagination. Results will be sorted based on creation time DESC
    * 
    * @param gatewayId
-   *       Identifier of the requested gateway
+   *       Unique identifier of the requested gateway.
+   * 
    * @param userName
-   *       Username of the requested user
+   *       Username of the requested user.
+   * 
    * @param applicationId
-   *       Application id to be matched
+   *       Application id to be matched.
+   * 
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   * 
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   * 
    * 
    * 
    * @param authzToken
@@ -522,19 +562,25 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Search Experiments by experiment status with pagination. Results will be sorted
-   * based on creation time DESC
+   * 
+   * Search User Experiments by Status
+   * Search all the Experiments of the given user  by experiment status with pagination. Results will be sorted based on creation time DESC
    * 
    * @param gatewayId
-   *       Identifier of the requested gateway
+   *       Unique identifier of the requested gateway.
+   * 
    * @param userName
-   *       Username of the requested user
+   *       Username of the user making the request.
+   * 
    * @param experimentState
-   *       Experiement state to be matched
+   *       Experiement state to be matched.
+   * 
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   * 
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   * 
    * 
    * 
    * @param authzToken
@@ -550,21 +596,31 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Search Experiments by experiment creation time with pagination. Results will be sorted
-   * based on creation time DESC
+   * 
+   * Search User Experiments by the Creation Time
+   * This will search all the experiments of the given user by experiment creation time with pagination. Results will be sorted based on creation time DESC.
    * 
    * @param gatewayId
-   *       Identifier of the requested gateway
+   *       Unique identifier of the requested gateway.
+   * 
    * @param userName
-   *       Username of the requested user
+   *       Username of the requested user.
+   * 
    * @param fromTime
-   *       Start time of the experiments creation time
+   *       Start time of the experiments creation time.
+   * 
    * @param toTime
-   *       End time of the  experiement creation time
+   *       End time of the  experiement creation time.
+   * 
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   * 
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   * 
+   * @return ExperimentSummaryModel
+   *    List of experiments for the given search filter. Here only the Experiment summary will be returned.
+   * 
    * 
    * 
    * @param authzToken
@@ -581,19 +637,27 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Search Experiments by using multiple filter criteria with pagination. Results will be sorted
-   * based on creation time DESC
+   * Search Experiments.
+   * Search Experiments by using multiple filter criteria with pagination. Results will be sorted based on creation time DESC.
    * 
    * @param gatewayId
-   *       Identifier of the requested gateway
+   *       Identifier of the requested gateway.
+   * 
    * @param userName
-   *       Username of the requested user
+   *       Username of the user requesting the search function.
+   * 
    * @param filters
-   *       map of multiple filter criteria.
+   *       Map of multiple filter criteria. Currenlt search filters includes Experiment Name, Description, Application, etc....
+   * 
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   * 
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   * 
+   * @return ExperimentSummaryModel
+   *    List of experiments for the given search filter. Here only the Experiment summary will be returned.
+   * 
    * 
    * 
    * @param authzToken
@@ -609,13 +673,19 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Get Experiment Statisitics for the given gateway for a specific time period
+   * 
+   * Get Experiment Statistics
+   * Get Experiment Statisitics for a given gateway for a specific time period. This feature is available only for admins of a particular gateway. Gateway admin access is managed by the user roles.
+   * 
    * @param gatewayId
-   *       Identifier of the requested gateway
+   *       Unique identifier of the gateway making the request to fetch statistics.
+   * 
    * @param fromTime
-   *       Starting date time
+   *       Starting date time.
+   * 
    * @param toTime
-   *       Ending data time
+   *       Ending data time.
+   * 
    * 
    * 
    * @param authzToken
@@ -629,15 +699,19 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Get Experiments within project with pagination. Results will be sorted
-   * based on creation time DESC
+   * 
+   * Get All Experiments of the Project
+   * Get Experiments within project with pagination. Results will be sorted based on creation time DESC.
    * 
    * @param projectId
-   *       Identifier of the project
+   *       Uniqie identifier of the project.
+   * 
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   * 
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   * 
    * 
    * 
    * @param authzToken
@@ -651,17 +725,22 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Get experiments by user with pagination. Results will be sorted
-   * based on creation time DESC
+   * 
+   * Get All Experiments of the User
+   * Get experiments by user with pagination. Results will be sorted based on creation time DESC.
    * 
    * @param gatewayId
-   *       Identifier of the requesting gateway
+   *       Identifier of the requesting gateway.
+   * 
    * @param userName
-   *       Username of the requested user
+   *       Username of the requested end user.
+   * 
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   * 
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   * 
    * 
    * 
    * @param authzToken
@@ -676,12 +755,17 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   *   *
+   *   * Create New Experiment
    *   * Create an experiment for the specified user belonging to the gateway. The gateway identity is not explicitly passed
    *   *   but inferred from the sshKeyAuthentication header. This experiment is just a persistent place holder. The client
    *   *   has to subsequently configure and launch the created experiment. No action is taken on Airavata Server except
    *   *   registering the experiment in a persistent store.
    *   *
-   *   * @param basicExperimentMetadata
+   *   * @param gatewayId
+   *   *    The unique ID of the gateway where the experiment is been created.
+   *   *
+   *   * @param ExperimentModel
    *   *    The create experiment will require the basic experiment metadata like the name and description, intended user,
    *   *      the gateway identifer and if the experiment should be shared public by defualt. During the creation of an experiment
    *   *      the ExperimentMetadata is a required field.
@@ -721,8 +805,8 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Delete an Experiment
    * 
+   * Delete an Experiment
    * If the experiment is not already launched experiment can be deleted.
    * 
    * @param authzToken
@@ -731,7 +815,7 @@ class AiravataHandler : virtual public AiravataIf {
    *     Experiment ID of the experimnet you want to delete.
    * 
    * @return boolean
-   *     Identifier for the success or failure of the deletion operation
+   *     Identifier for the success or failure of the deletion operation.
    * 
    * 
    * 
@@ -744,12 +828,14 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   *   *
+   *   * Get Experiment
    *   * Fetch previously created experiment metadata.
    *   *
    *   * @param airavataExperimentId
-   *   *    The identifier for the requested experiment. This is returned during the create experiment step.
+   *   *    The unique identifier of the requested experiment. This ID is returned during the create experiment step.
    *   *
-   *   * @return experimentMetada
+   *   * @return ExperimentModel
    *   *   This method will return the previously stored experiment metadata.
    *   *
    *   * @throws org.apache.airavata.model.error.InvalidRequestException
@@ -786,14 +872,17 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
+   * Get Complete Experiment Details
    * Fetch the completed nested tree structue of previously created experiment metadata which includes processes ->
    * tasks -> jobs information.
    * 
    * @param airavataExperimentId
    *    The identifier for the requested experiment. This is returned during the create experiment step.
    * 
-   * @return experimentMetada
-   *   This method will return the previously stored experiment metadata.
+   * @return ExperimentModel
+   *   This method will return the previously stored experiment metadata including application input parameters, computational resource scheduling
+   *   information, special input output handling and additional quality of service parameters.
    * 
    * @throws org.apache.airavata.model.error.InvalidRequestException
    *    For any incorrect forming of the request itself.
@@ -828,14 +917,15 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Configure a previously created experiment with required inputs, scheduling and other quality of service
-   *   parameters. This method only updates the experiment object within the registry. The experiment has to be launched
-   *   to make it actionable by the server.
+   * 
+   * Update a Previously Created Experiment
+   * Configure the CREATED experiment with required inputs, scheduling and other quality of service parameters. This method only updates the experiment object within the registry.
+   * The experiment has to be launched to make it actionable by the server.
    * 
    * @param airavataExperimentId
    *    The identifier for the requested experiment. This is returned during the create experiment step.
    * 
-   * @param experimentConfigurationData
+   * @param ExperimentModel
    *    The configuration information of the experiment with application input parameters, computational resource scheduling
    *      information, special input output handling and additional quality of service parameters.
    * 
@@ -887,13 +977,14 @@ class AiravataHandler : virtual public AiravataIf {
 
   /**
    *  *
-   *  * Validate experiment configuration. A true in general indicates, the experiment is ready to be launched.
+   *  * Validate experiment configuration.
+   *  * A true in general indicates, the experiment is ready to be launched.
    *  *
-   *  * @param experimentId
-   *  *
+   *  * @param airavataExperimentId
+   *  *    Unique identifier of the experiment (Experimnent ID) of the experiment which need to be validated.
    *  *
    *  * @return boolean
-   *  *      Identifier for the success or failure of the validation operation
+   *  *      Identifier for the success or failure of the validation operation.
    *  *
    * *
    * 
@@ -906,8 +997,12 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Launch a previously created and configured experiment. Airavata Server will then start processing the request and appropriate
-   *   notifications and intermediate and output data will be subsequently available for this experiment.
+   * 
+   * Launch a Previously Created & Configured Experiment.
+   * Airavata Server will then start processing the request and appropriate notifications and intermediate and output data will be subsequently available for this experiment.
+   * 
+   * @gatewayId
+   *    ID of the gateway which will launch the experiment.
    * 
    * @param airavataExperimentId
    *    The identifier for the requested experiment. This is returned during the create experiment step.
@@ -949,17 +1044,18 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Get Experiment Status
    * 
-   * Obtain the status os an experiment by providing the Experiment Id
+   * Obtain the status of an experiment by providing the Experiment Id
    * 
    * @param authzToken
    * 
-   * @param experiementId
-   *     Experiment ID of the experimnet you require the status
+   * @param airavataExperimentId
+   *     Experiment ID of the experimnet you require the status.
    * 
    * @return ExperimentStatus
-   *     ExperimentStatus model with current status will be returned.
+   *     ExperimentStatus model with the current status will be returned.
    * 
    * 
    * 
@@ -972,16 +1068,17 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Get Experiment Outputs
-   * This method to be used when need to obtain outputs of a certain Experiment
+   * This method to be used when need to obtain final outputs of a certain Experiment
    * 
    * @param authzToken
    * 
-   * @param experiementId
-   *     Experiment ID of the experimnet you need the outputs
+   * @param airavataExperimentId
+   *     Experiment ID of the experimnet you need the outputs.
    * 
    * @return list
-   *     List of experiment outputs will be returned. They will be returned as a list of OutputDataObjectType for the experiment
+   *     List of experiment outputs will be returned. They will be returned as a list of OutputDataObjectType for the experiment.
    * 
    * 
    * 
@@ -994,16 +1091,17 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Get Intermediate Experiment Outputs
    * This method to be used when need to obtain intermediate outputs of a certain Experiment
    * 
    * @param authzToken
    * 
-   * @param experiementId
-   *     Experiment ID of the experimnet you need the intermediate outputs
+   * @param airavataExperimentId
+   *     Experiment ID of the experimnet you need intermediate outputs.
    * 
    * @return list
-   *     List of intermediate experiment outputs will be returned. They will be returned as a list of OutputDataObjectType for the experiment
+   *     List of intermediate experiment outputs will be returned. They will be returned as a list of OutputDataObjectType for the experiment.
    * 
    * 
    * 
@@ -1016,13 +1114,14 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Get Job Status for an Experiment
+   * 
+   * Get Job Statuses for an Experiment
    * This method to be used when need to get the job status of an Experiment. An experiment may have one or many jobs; there for one or many job statuses may turnup
    * 
    * @param authzToken
    * 
    * @param experiementId
-   *     Experiment ID of the experimnet you need the intermediate outputs
+   *     Experiment ID of the experimnet you need the job statuses.
    * 
    * @return JobStatus
    *     Job status (string) for all all the existing jobs for the experiment will be returned in the form of a map
@@ -1038,16 +1137,17 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Get Job Details for all the jobs within an Experiment
+   * 
+   * Get Job Details for all the jobs within an Experiment.
    * This method to be used when need to get the job details for one or many jobs of an Experiment.
    * 
    * @param authzToken
    * 
    * @param experiementId
-   *     Experiment ID of the experimnet you need job details
+   *     Experiment ID of the experimnet you need job details.
    * 
    * @return list of JobDetails
-   *     Job details
+   *     Job details.
    * 
    * 
    * 
@@ -1060,7 +1160,9 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
+   * 
+   * Clone an Existing Experiment
+   * Existing specified experiment is cloned and a new name is provided. A copy of the experiment configuration is made and is persisted with new metadata.
    *   The client has to subsequently update this configuration if needed and launch the cloned experiment.
    * 
    * @param newExperimentName
@@ -1072,7 +1174,7 @@ class AiravataHandler : virtual public AiravataIf {
    *      should be shared public by default.
    * 
    * @return
-   *   The server-side generated.airavata.registry.core.experiment.globally unique identifier for the newly cloned experiment.
+   *   The server-side generated.airavata.registry.core.experiment.globally unique identifier (Experiment ID) for the newly cloned experiment.
    * 
    * @throws org.apache.airavata.model.error.InvalidRequestException
    *    For any incorrect forming of the request itself.
@@ -1108,12 +1210,16 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Terminate a running experiment.
+   * 
+   * Terminate a running Experiment.
+   * 
+   * @gatewayId
+   *    ID of the gateway which will terminate the running Experiment.
    * 
    * @param airavataExperimentId
-   *    The identifier for the requested experiment. This is returned during the create experiment step.
+   *    The identifier of the experiment required termination. This ID is returned during the create experiment step.
    * 
-   * @return
+   * @return status
    *   This method call does not have a return value.
    * 
    * @throws org.apache.airavata.model.error.InvalidRequestException
@@ -1150,13 +1256,17 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Register a Application Module.
+   * 
+   * @gatewayId
+   *    ID of the gateway which is registering the new Application Module.
    * 
    * @param applicationModule
    *    Application Module Object created from the datamodel.
    * 
    * @return appModuleId
-   *   Returns a server-side generated airavata appModule globally unique identifier.
+   *   Returns the server-side generated airavata appModule globally unique identifier.
    * 
    * 
    * @param authzToken
@@ -1169,13 +1279,14 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Fetch a Application Module.
    * 
    * @param appModuleId
-   *   The identifier for the requested application module
+   *   The unique identifier of the application module required
    * 
    * @return applicationModule
-   *   Returns a application Module Object.
+   *   Returns an Application Module Object.
    * 
    * 
    * @param authzToken
@@ -1187,6 +1298,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Update a Application Module.
    * 
    * @param appModuleId
@@ -1208,16 +1320,31 @@ class AiravataHandler : virtual public AiravataIf {
     printf("updateApplicationModule\n");
   }
 
+  /**
+   * 
+   * Fetch all Application Module Descriptions.
+   * 
+   * @param gatewayId
+   *    ID of the gateway which need to list all available application deployment documentation.
+   * 
+   * @return list
+   *    Returns the list of all Application Module Objects.
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   */
   void getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllAppModules\n");
   }
 
   /**
-   * Delete a Application Module.
+   * 
+   * Delete an Application Module.
    * 
    * @param appModuleId
-   *   The identifier for the requested application module to be deleted.
+   *   The identifier of the Application Module to be deleted.
    * 
    * @return status
    *   Returns a success/failure of the deletion.
@@ -1232,9 +1359,13 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Register a Application Deployment.
    * 
-   * @param applicationModule
+   * Register an Application Deployment.
+   * 
+   * @param gatewayId
+   *    ID of the gateway which is registering the new Application Deployment.
+   * 
+   * @param applicationDeployment
    *    Application Module Object created from the datamodel.
    * 
    * @return appDeploymentId
@@ -1251,6 +1382,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Fetch a Application Deployment.
    * 
    * @param appDeploymentId
@@ -1269,10 +1401,11 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Update a Application Deployment.
+   * 
+   * Update an Application Deployment.
    * 
    * @param appDeploymentId
-   *   The identifier for the requested application deployment to be updated.
+   *   The identifier of the requested application deployment to be updated.
    * 
    * @param appDeployment
    *    Application Deployment Object created from the datamodel.
@@ -1291,10 +1424,11 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Delete a Application deployment.
+   * 
+   * Delete an Application Deployment.
    * 
    * @param appDeploymentId
-   *   The identifier for the requested application deployment to be deleted.
+   *   The unique identifier of application deployment to be deleted.
    * 
    * @return status
    *   Returns a success/failure of the deletion.
@@ -1309,10 +1443,14 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Fetch all Application Deployment Descriptions.
    * 
+   * @param gatewayId
+   *    ID of the gateway which need to list all available application deployment documentation.
+   * 
    * @return list<applicationDeployment.
-   *   Returns the list of all application Deployment Objects.
+   *    Returns the list of all application Deployment Objects.
    * 
    * 
    * @param authzToken
@@ -1342,9 +1480,10 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Register a Application Interface.
    * 
-   * @param applicationModule
+   * @param applicationInterface
    *    Application Module Object created from the datamodel.
    * 
    * @return appInterfaceId
@@ -1360,20 +1499,42 @@ class AiravataHandler : virtual public AiravataIf {
     printf("registerApplicationInterface\n");
   }
 
+  /**
+   * 
+   * Clone an Application Interface.
+   * 
+   * @gatewayId
+   *    The identifier for the gateway profile to be requested
+   * 
+   * @param existingAppInterfaceID
+   *    Identifier of the existing Application interface you wich to clone.
+   * 
+   * @param newApplicationName
+   *    Name for the new application interface.
+   * 
+   * @return appInterfaceId
+   *    Returns a server-side generated globally unique identifier for the newly cloned application interface.
+   * 
+   * 
+   * @param authzToken
+   * @param existingAppInterfaceID
+   * @param newApplicationName
+   * @param gatewayId
+   */
   void cloneApplicationInterface(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingAppInterfaceID, const std::string& newApplicationName, const std::string& gatewayId) {
     // Your implementation goes here
     printf("cloneApplicationInterface\n");
   }
 
   /**
-   * Fetch a Application Interface.
+   * 
+   * Fetch an Application Interface.
    * 
    * @param appInterfaceId
-   *   The identifier for the requested application module
+   *   The identifier for the requested application interface.
    * 
    * @return applicationInterface
-   *   Returns a application Interface Object.
-   * 
+   *   Returns an application Interface Object.
    * 
    * 
    * @param authzToken
@@ -1385,17 +1546,17 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Update a Application Interface.
    * 
    * @param appInterfaceId
-   *   The identifier for the requested application deployment to be updated.
+   *   The identifier of the requested application deployment to be updated.
    * 
    * @param appInterface
    *    Application Interface Object created from the datamodel.
    * 
    * @return status
    *   Returns a success/failure of the update.
-   * 
    * 
    * 
    * @param authzToken
@@ -1408,14 +1569,14 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Delete a Application Interface.
+   * 
+   * Delete an Application Interface.
    * 
    * @param appInterfaceId
    *   The identifier for the requested application interface to be deleted.
    * 
    * @return status
    *   Returns a success/failure of the deletion.
-   * 
    * 
    * 
    * @param authzToken
@@ -1427,11 +1588,12 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Fetch name and id of  Application Interface documents.
+   * 
+   * Fetch name and ID of  Application Interface documents.
    * 
    * 
    * @return map<applicationId, applicationInterfaceNames>
-   *   Returns a list of application interfaces with corresponsing id's
+   *   Returns a list of application interfaces with corresponsing ID's
    * 
    * 
    * @param authzToken
@@ -1443,11 +1605,12 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Fetch all Application Interface documents.
    * 
    * 
    * @return map<applicationId, applicationInterfaceNames>
-   *   Returns a list of application interfaces documents
+   *   Returns a list of application interfaces documents (Application Interface ID, name, description, Inputs and Outputs objects).
    * 
    * 
    * @param authzToken
@@ -1459,10 +1622,11 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Fetch the list of Application Inputs.
    * 
    * @param appInterfaceId
-   *   The identifier for the requested application interface
+   *   The identifier of the application interface which need inputs to be fetched.
    * 
    * @return list<application_interface_model.InputDataObjectType>
    *   Returns a list of application inputs.
@@ -1477,10 +1641,11 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Fetch the list of Application Outputs.
+   * 
+   * Fetch list of Application Outputs.
    * 
    * @param appInterfaceId
-   *   The identifier for the requested application interface
+   *   The identifier of the application interface which need outputs to be fetched.
    * 
    * @return list<application_interface_model.OutputDataObjectType>
    *   Returns a list of application outputs.
@@ -1495,14 +1660,15 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Fetch a list of all deployed Compute Hosts for a given application interfaces.
    * 
    * @param appInterfaceId
-   *   The identifier for the requested application interface
+   *   The identifier for the requested application interface.
    * 
    * @return map<computeResourceId, computeResourceName>
    *   A map of registered compute resource id's and their corresponding hostnames.
-   *    Deployments of each modules listed within the interfaces will be listed.
+   *   Deployments of each modules listed within the interfaces will be listed.
    * 
    * 
    * @param authzToken
@@ -1550,6 +1716,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Fetch all registered Compute Resources.
    * 
    * @return A map of registered compute resource id's and thier corresponding hostnames.
@@ -1654,7 +1821,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Update a Compute Resource.
+   * Update a Storage Resource.
    * 
    * @param storageResourceId
    *   The identifier for the requested compute resource to be updated.
@@ -1679,7 +1846,7 @@ class AiravataHandler : virtual public AiravataIf {
    * Delete a Storage Resource.
    * 
    * @param storageResourceId
-   *   The identifier for the requested compute resource to be deleted.
+   *   The identifier of the requested compute resource to be deleted.
    * 
    * @return status
    *   Returns a success/failure of the deletion.
@@ -1827,6 +1994,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Add a UNICORE Job Submission details to a compute resource
    *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
    * 
@@ -1854,10 +2022,13 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   *   *
    *   * This method returns UnicoreJobSubmission object
+   *   *
    *   * @param jobSubmissionInterfaceId
    *   *   The identifier of the JobSubmission Interface to be retrieved.
    *   *  @return UnicoreJobSubmission instance
+   *   *
    * *
    * 
    * @param authzToken
@@ -1869,6 +2040,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   *    *
    *    * Add a Cloud Job Submission details to a compute resource
    *    *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
    *    *
@@ -1883,6 +2055,7 @@ class AiravataHandler : virtual public AiravataIf {
    *    *
    *    * @return status
    *    *   Returns the unique job submission id.
+   *    *
    * *
    * 
    * @param authzToken
@@ -1896,6 +2069,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   *    *
    *    * This method returns cloudJobSubmission object
    *    * @param jobSubmissionInterfaceI
    *        *   The identifier of the JobSubmission Interface to be retrieved.
@@ -1911,6 +2085,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Update the given SSH Job Submission details
    * 
    * @param jobSubmissionInterfaceId
@@ -1933,6 +2108,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Update the cloud Job Submission details
    * 
    * @param jobSubmissionInterfaceId
@@ -1955,6 +2131,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Update the UNIOCRE Job Submission details
    * 
    * @param jobSubmissionInterfaceId
@@ -1978,6 +2155,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Add a Local data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
@@ -2010,6 +2188,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Update the given Local data movement details
    * 
    * @param dataMovementInterfaceId
@@ -2033,7 +2212,8 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * This method returns local datamovement object
+   * 
+   * This method returns local datamovement object.
    * 
    * @param dataMovementId
    *   The identifier of the datamovement Interface to be retrieved.
@@ -2051,6 +2231,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Add a SCP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
@@ -2079,6 +2260,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Update the given scp data movement details
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
@@ -2120,6 +2302,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Add a UNICORE data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
@@ -2148,6 +2331,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Update a selected UNICORE data movement details
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
@@ -2172,6 +2356,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * This method returns UNICORE datamovement object
    * 
    * @param dataMovementId
@@ -2190,6 +2375,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
    * Add a GridFTP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
@@ -2453,7 +2639,7 @@ class AiravataHandler : virtual public AiravataIf {
    * Fetch the given Gateway Resource Profile.
    * 
    * @param gatewayID
-   *   The identifier for the requested gateway resource
+   *   The identifier for the requested gateway resource.
    * 
    * @return gatewayResourceProfile
    *    Gateway Resource Profile Object.
@@ -2534,12 +2720,35 @@ class AiravataHandler : virtual public AiravataIf {
     printf("addGatewayComputeResourcePreference\n");
   }
 
+  /**
+   * Add a Storage Resource Preference to a registered gateway profile.
+   * 
+   * @param gatewayID
+   *   The identifier of the gateway profile to be added.
+   * 
+   * @param storageResourceId
+   *   Preferences related to a particular compute resource
+   * 
+   * @param computeResourcePreference
+   *   The ComputeResourcePreference object to be added to the resource profile.
+   * 
+   * @return status
+   *   Returns a success/failure of the addition. If a profile already exists, this operation will fail.
+   *    Instead an update should be used.
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayID
+   * @param storageResourceId
+   * @param storagePreference
+   */
   bool addGatewayStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& storageResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference& storagePreference) {
     // Your implementation goes here
     printf("addGatewayStoragePreference\n");
   }
 
   /**
+   * 
    * Fetch a Compute Resource Preference of a registered gateway profile.
    * 
    * @param gatewayID
@@ -2561,12 +2770,31 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getGatewayComputeResourcePreference\n");
   }
 
+  /**
+   * 
+   * Fetch a Storage Resource Preference of a registered gateway profile.
+   * 
+   * @param gatewayID
+   *   The identifier of the gateway profile to request to fetch the particular storage resource preference.
+   * 
+   * @param storageResourceId
+   *   Identifier of the Stprage Preference required to be fetched.
+   * 
+   * @return StoragePreference
+   *   Returns the StoragePreference object.
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayID
+   * @param storageResourceId
+   */
   void getGatewayStoragePreference( ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& storageResourceId) {
     // Your implementation goes here
     printf("getGatewayStoragePreference\n");
   }
 
   /**
+   * 
    * Fetch all Compute Resource Preferences of a registered gateway profile.
    * 
    * @param gatewayID
@@ -2584,13 +2812,31 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllGatewayComputeResourcePreferences\n");
   }
 
+  /**
+   * Fetch all Storage Resource Preferences of a registered gateway profile.
+   * 
+   * @param gatewayID
+   *   The identifier for the gateway profile to be requested
+   * 
+   * @return StoragePreference
+   *   Returns the StoragePreference object.
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayID
+   */
   void getAllGatewayStoragePreferences(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID) {
     // Your implementation goes here
     printf("getAllGatewayStoragePreferences\n");
   }
 
   /**
-   * Fetch all gateway profiles registered
+   * 
+   * Fetch all Gateway Profiles registered
+   * 
+   * @return GatewayResourceProfile
+   *   Returns all the GatewayResourcePrifle list object.
+   * 
    * 
    * 
    * @param authzToken
@@ -2626,6 +2872,27 @@ class AiravataHandler : virtual public AiravataIf {
     printf("updateGatewayComputeResourcePreference\n");
   }
 
+  /**
+   * Update a Storage Resource Preference of a registered gateway profile.
+   * 
+   * @param gatewayID
+   *   The identifier of the gateway profile to be updated.
+   * 
+   * @param storageId
+   *   The Storage resource identifier of the one that you want to update
+   * 
+   * @param storagePreference
+   *   The storagePreference object to be updated to the resource profile.
+   * 
+   * @return status
+   *   Returns a success/failure of the updation.
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayID
+   * @param storageId
+   * @param storagePreference
+   */
   bool updateGatewayStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& storageId, const  ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference& storagePreference) {
     // Your implementation goes here
     printf("updateGatewayStoragePreference\n");
@@ -2653,17 +2920,58 @@ class AiravataHandler : virtual public AiravataIf {
     printf("deleteGatewayComputeResourcePreference\n");
   }
 
+  /**
+   * Delete the Storage Resource Preference of a registered gateway profile.
+   * 
+   * @param gatewayID
+   *   The identifier of the gateway profile to be deleted.
+   * 
+   * @param storageId
+   *   ID of the storage preference you want to delete.
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayID
+   * @param storageId
+   */
   bool deleteGatewayStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& storageId) {
     // Your implementation goes here
     printf("deleteGatewayStoragePreference\n");
   }
 
+  /**
+   * Delete the Storage Resource Preference of a registered gateway profile.
+   * 
+   * @param gatewayID
+   *   The identifier of the gateway profile to be deleted.
+   * 
+   * @param storageId
+   *   ID of the storage preference you want to delete.
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   */
   void getAllWorkflows(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllWorkflows\n");
   }
 
-  void getWorkflow( ::Workflow& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId) {
+  /**
+   * 
+   * API Methods Related for Work-Flow Submission Features.
+   * 
+   * 
+   * @param authzToken
+   * @param workflowTemplateId
+   */
+  void getWorkflow( ::WorkflowModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId) {
     // Your implementation goes here
     printf("getWorkflow\n");
   }
@@ -2673,12 +2981,12 @@ class AiravataHandler : virtual public AiravataIf {
     printf("deleteWorkflow\n");
   }
 
-  void registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::Workflow& workflow) {
+  void registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::WorkflowModel& workflow) {
     // Your implementation goes here
     printf("registerWorkflow\n");
   }
 
-  void updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::Workflow& workflow) {
+  void updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::WorkflowModel& workflow) {
     // Your implementation goes here
     printf("updateWorkflow\n");
   }
@@ -2694,7 +3002,9 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   *  * Data Manager Related API Methods
+   *  *
+   *  * Data Manager Related API Methods.
+   *  *
    * *
    * 
    * @param authzToken
