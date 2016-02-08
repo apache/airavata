@@ -38,7 +38,7 @@ import org.apache.airavata.data.manager.cpi.DataManagerException;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
-import org.apache.airavata.model.Workflow;
+import org.apache.airavata.model.WorkflowModel;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -4159,7 +4159,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
 	@Override
     @SecurityCheck
-	public Workflow getWorkflow(AuthzToken authzToken, String workflowTemplateId)
+	public WorkflowModel getWorkflow(AuthzToken authzToken, String workflowTemplateId)
 			throws InvalidRequestException, AiravataClientException, AuthorizationException, AiravataSystemException, TException {
 		try {
 			return getWorkflowCatalog().getWorkflow(workflowTemplateId);
@@ -4189,7 +4189,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
 	@Override
     @SecurityCheck
-	public String registerWorkflow(AuthzToken authzToken, String gatewayId, Workflow workflow)
+	public String registerWorkflow(AuthzToken authzToken, String gatewayId, WorkflowModel workflow)
 			throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -4208,7 +4208,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
 	@Override
     @SecurityCheck
-	public void updateWorkflow(AuthzToken authzToken, String workflowTemplateId, Workflow workflow)
+	public void updateWorkflow(AuthzToken authzToken, String workflowTemplateId, WorkflowModel workflow)
 			throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 		try {
 			getWorkflowCatalog().updateWorkflow(workflowTemplateId, workflow);

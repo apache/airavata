@@ -52566,7 +52566,7 @@ void AiravataClient::recv_getAllWorkflows(std::vector<std::string> & _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllWorkflows failed: unknown result");
 }
 
-void AiravataClient::getWorkflow( ::Workflow& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId)
+void AiravataClient::getWorkflow( ::WorkflowModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId)
 {
   send_getWorkflow(authzToken, workflowTemplateId);
   recv_getWorkflow(_return);
@@ -52587,7 +52587,7 @@ void AiravataClient::send_getWorkflow(const  ::apache::airavata::model::security
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getWorkflow( ::Workflow& _return)
+void AiravataClient::recv_getWorkflow( ::WorkflowModel& _return)
 {
 
   int32_t rseqid = 0;
@@ -52703,13 +52703,13 @@ void AiravataClient::recv_deleteWorkflow()
   return;
 }
 
-void AiravataClient::registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::Workflow& workflow)
+void AiravataClient::registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::WorkflowModel& workflow)
 {
   send_registerWorkflow(authzToken, gatewayId, workflow);
   recv_registerWorkflow(_return);
 }
 
-void AiravataClient::send_registerWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::Workflow& workflow)
+void AiravataClient::send_registerWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::WorkflowModel& workflow)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("registerWorkflow", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -52775,13 +52775,13 @@ void AiravataClient::recv_registerWorkflow(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "registerWorkflow failed: unknown result");
 }
 
-void AiravataClient::updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::Workflow& workflow)
+void AiravataClient::updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::WorkflowModel& workflow)
 {
   send_updateWorkflow(authzToken, workflowTemplateId, workflow);
   recv_updateWorkflow();
 }
 
-void AiravataClient::send_updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::Workflow& workflow)
+void AiravataClient::send_updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::WorkflowModel& workflow)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateWorkflow", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -75524,7 +75524,7 @@ void AiravataConcurrentClient::recv_getAllWorkflows(std::vector<std::string> & _
   } // end while(true)
 }
 
-void AiravataConcurrentClient::getWorkflow( ::Workflow& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId)
+void AiravataConcurrentClient::getWorkflow( ::WorkflowModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId)
 {
   int32_t seqid = send_getWorkflow(authzToken, workflowTemplateId);
   recv_getWorkflow(_return, seqid);
@@ -75549,7 +75549,7 @@ int32_t AiravataConcurrentClient::send_getWorkflow(const  ::apache::airavata::mo
   return cseqid;
 }
 
-void AiravataConcurrentClient::recv_getWorkflow( ::Workflow& _return, const int32_t seqid)
+void AiravataConcurrentClient::recv_getWorkflow( ::WorkflowModel& _return, const int32_t seqid)
 {
 
   int32_t rseqid = 0;
@@ -75720,13 +75720,13 @@ void AiravataConcurrentClient::recv_deleteWorkflow(const int32_t seqid)
   } // end while(true)
 }
 
-void AiravataConcurrentClient::registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::Workflow& workflow)
+void AiravataConcurrentClient::registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::WorkflowModel& workflow)
 {
   int32_t seqid = send_registerWorkflow(authzToken, gatewayId, workflow);
   recv_registerWorkflow(_return, seqid);
 }
 
-int32_t AiravataConcurrentClient::send_registerWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::Workflow& workflow)
+int32_t AiravataConcurrentClient::send_registerWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::WorkflowModel& workflow)
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
@@ -75822,13 +75822,13 @@ void AiravataConcurrentClient::recv_registerWorkflow(std::string& _return, const
   } // end while(true)
 }
 
-void AiravataConcurrentClient::updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::Workflow& workflow)
+void AiravataConcurrentClient::updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::WorkflowModel& workflow)
 {
   int32_t seqid = send_updateWorkflow(authzToken, workflowTemplateId, workflow);
   recv_updateWorkflow(seqid);
 }
 
-int32_t AiravataConcurrentClient::send_updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::Workflow& workflow)
+int32_t AiravataConcurrentClient::send_updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::WorkflowModel& workflow)
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
