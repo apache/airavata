@@ -21,6 +21,7 @@
 
 package org.apache.airavata.workflow.core.parser;
 
+import org.apache.airavata.workflow.core.WorkflowInfo;
 import org.apache.airavata.workflow.core.dag.edge.Edge;
 import org.apache.airavata.workflow.core.dag.nodes.ApplicationNode;
 import org.apache.airavata.workflow.core.dag.nodes.InputNode;
@@ -31,7 +32,7 @@ import java.util.List;
 
 public interface WorkflowParser {
 
-    public void parse() throws Exception;
+    public WorkflowInfo parse() throws Exception;
 
     public List<InputNode> getInputNodes() throws Exception;
 

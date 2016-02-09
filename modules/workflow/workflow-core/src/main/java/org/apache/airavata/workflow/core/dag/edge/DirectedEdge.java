@@ -32,6 +32,10 @@ public class DirectedEdge implements Edge {
     private OutPort outPort;
     private EdgeModel edgeModel;
 
+    public DirectedEdge(EdgeModel edgeModel) {
+        this.edgeModel = edgeModel;
+    }
+
     @Override
     public String getId() {
         return getEdgeModel().getEdgeId();

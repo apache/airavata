@@ -69,16 +69,16 @@
     ],
     "links" : [
       { "description" : "link desc",
-         "from" : { "nodeId" : "" , "ouputId" : "" },
+         "from" : { "nodeId" : "" , "outputId" : "" },
          "to" : { "nodeId" : "" , "outputId" : "" }},
       { "description" : "link desc",
-         "from" : { "nodeId" : "" , "ouputId" : "" },
+         "from" : { "nodeId" : "" , "outputId" : "" },
          "to" : { "nodeId" : "" , "outputId" : "" }},
       { "description" : "link desc",
-         "from" : { "nodeId" : "" , "ouputId" : "" },
+         "from" : { "nodeId" : "" , "outputId" : "" },
          "to" : { "nodeId" : "" , "outputId" : "" }},
       { "description" : "link desc",
-         "from" : { "nodeId" : "" , "ouputId" : "" },
+         "from" : { "nodeId" : "" , "outputId" : "" },
          "to" : { "nodeId" : "" , "outputId" : "" }}
     ]
   }
