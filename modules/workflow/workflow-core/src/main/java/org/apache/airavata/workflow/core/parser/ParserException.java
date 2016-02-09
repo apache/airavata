@@ -18,29 +18,23 @@
  * under the License.
  *
  */
+package org.apache.airavata.workflow.core.parser;
 
-package org.apache.airavata.workflow.core;
+public class ParserException extends Exception {
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-public class WorkflowDAGTest {
-
-    @Before
-    public void setUp() throws Exception {
-
+    public ParserException(String message) {
+        super(message);
     }
 
-    @After
-    public void tearDown() throws Exception {
-
+    public ParserException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    @Test
-    public void testWorkflowDAG() throws Exception {
+    public ParserException(Throwable cause) {
+        super(cause);
+    }
 
-
-
+    protected ParserException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

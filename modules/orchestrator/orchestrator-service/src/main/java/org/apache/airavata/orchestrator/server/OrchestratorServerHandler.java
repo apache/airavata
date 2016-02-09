@@ -135,7 +135,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	public boolean launchExperiment(String experimentId, String gatewayId) throws TException {
         ExperimentModel experiment = null;
         try {
-
             String experimentNodePath = GFacUtils.getExperimentNodePath (experimentId);
 			ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentNodePath);
 			String experimentCancelNode = ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
