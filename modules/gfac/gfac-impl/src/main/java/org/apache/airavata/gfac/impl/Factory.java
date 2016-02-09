@@ -230,7 +230,13 @@ public abstract class Factory {
                         processContext.getSshKeyAuthentication());
             }
             remoteClusterMap.put(key, remoteCluster);
-		}
+        }else {
+            AuthenticationInfo authentication = remoteCluster.getAuthentication();
+            if (authentication instanceof SSHKeyAuthentication){
+                SSHKeyAuthentication sshKeyAuthentication = (SSHKeyAuthentication)authentication;
+                sshKeyAuthentication.setUserName(processContext.getComputeResourcePreference().getLoginUserName());
+            }
+        }
 		return remoteCluster;
 	}
 
@@ -251,6 +257,12 @@ public abstract class Factory {
             }
 
             remoteClusterMap.put(key, remoteCluster);
+        }else {
+            AuthenticationInfo authentication = remoteCluster.getAuthentication();
+            if (authentication instanceof SSHKeyAuthentication){
+                SSHKeyAuthentication sshKeyAuthentication = (SSHKeyAuthentication)authentication;
+                sshKeyAuthentication.setUserName(processContext.getComputeResourcePreference().getLoginUserName());
+            }
         }
         return remoteCluster;
     }
