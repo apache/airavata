@@ -234,7 +234,15 @@ public abstract class Factory {
             AuthenticationInfo authentication = remoteCluster.getAuthentication();
             if (authentication instanceof SSHKeyAuthentication){
                 SSHKeyAuthentication sshKeyAuthentication = (SSHKeyAuthentication)authentication;
-                sshKeyAuthentication.setUserName(processContext.getComputeResourcePreference().getLoginUserName());
+                if (!sshKeyAuthentication.getUserName().equals(processContext.getComputeResourcePreference().getLoginUserName())){
+                    JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
+                    if (jobSubmissionProtocol == JobSubmissionProtocol.SSH ||
+                            jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK) {
+                        remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration,
+                                processContext.getSshKeyAuthentication());
+                    }
+                }
+
             }
         }
 		return remoteCluster;
@@ -261,7 +269,15 @@ public abstract class Factory {
             AuthenticationInfo authentication = remoteCluster.getAuthentication();
             if (authentication instanceof SSHKeyAuthentication){
                 SSHKeyAuthentication sshKeyAuthentication = (SSHKeyAuthentication)authentication;
-                sshKeyAuthentication.setUserName(processContext.getComputeResourcePreference().getLoginUserName());
+                if (!sshKeyAuthentication.getUserName().equals(processContext.getComputeResourcePreference().getLoginUserName())){
+                    JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
+                    dataMovementProtocol = processContext.getDataMovementProtocol();
+                    if (dataMovementProtocol == DataMovementProtocol.SCP) {
+                        remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration,
+                                processContext.getSshKeyAuthentication());
+                    }
+                }
+
             }
         }
         return remoteCluster;
