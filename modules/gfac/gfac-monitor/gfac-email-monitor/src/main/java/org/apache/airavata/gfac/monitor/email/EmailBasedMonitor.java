@@ -173,6 +173,8 @@ public class EmailBasedMonitor implements Runnable{
                     return ResourceJobManagerType.UGE;
                 } else if (addressStr.contains("blacklight.psc.xsede.org")) {
                     return ResourceJobManagerType.PBS;
+                }else if (addressStr.contains("sdsc.edu")) {
+                    return ResourceJobManagerType.SLURM;
                 } else {
                     throw new AiravataException("[EJM]: Couldn't identify Resource job manager type from address " + addressStr);
                 }
