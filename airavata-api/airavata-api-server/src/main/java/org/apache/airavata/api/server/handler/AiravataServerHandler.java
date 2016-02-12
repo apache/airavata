@@ -3572,13 +3572,23 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public boolean deleteDataMovementInterface(AuthzToken authzToken, String computeResourceId, String dataMovementInterfaceId)
+    public boolean deleteDataMovementInterface(AuthzToken authzToken, String resourceId, String dataMovementInterfaceId, DMType dmType)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
-            appCatalog.getComputeResource().removeDataMovementInterface(computeResourceId, dataMovementInterfaceId);
-            logger.info("Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
-            return true;
+            switch (dmType){
+                case COMPUTE_RESOURCE:
+                    appCatalog.getComputeResource().removeDataMovementInterface(resourceId, dataMovementInterfaceId);
+                    logger.info("Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
+                    return true;
+                case STORAGE_RESOURCE:
+                    appCatalog.getStorageResource().removeDataMovementInterface(resourceId, dataMovementInterfaceId);
+                    logger.info("Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
+                    return true;
+                default:
+                    logger.error("Unsupported data movement type specifies.. Please provide the correct data movement type... ");
+                    return false;
+            }
         } catch (AppCatalogException e) {
             logger.error(dataMovementInterfaceId, "Error while deleting data movement interface...", e);
             AiravataSystemException exception = new AiravataSystemException();
