@@ -2839,15 +2839,16 @@ interface AiravataIf {
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
-   * @param string $computeResourceId
+   * @param string $resourceId
    * @param string $dataMovementInterfaceId
+   * @param int $dataMoveType
    * @return bool
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function deleteDataMovementInterface(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $dataMovementInterfaceId);
+  public function deleteDataMovementInterface(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMovementInterfaceId, $dataMoveType);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param \Airavata\Model\AppCatalog\ComputeResource\ResourceJobManager $resourceJobManager
@@ -10289,18 +10290,19 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("deleteJobSubmissionInterface failed: unknown result");
   }
 
-  public function deleteDataMovementInterface(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $dataMovementInterfaceId)
+  public function deleteDataMovementInterface(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMovementInterfaceId, $dataMoveType)
   {
-    $this->send_deleteDataMovementInterface($authzToken, $computeResourceId, $dataMovementInterfaceId);
+    $this->send_deleteDataMovementInterface($authzToken, $resourceId, $dataMovementInterfaceId, $dataMoveType);
     return $this->recv_deleteDataMovementInterface();
   }
 
-  public function send_deleteDataMovementInterface(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $dataMovementInterfaceId)
+  public function send_deleteDataMovementInterface(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMovementInterfaceId, $dataMoveType)
   {
     $args = new \Airavata\API\Airavata_deleteDataMovementInterface_args();
     $args->authzToken = $authzToken;
-    $args->computeResourceId = $computeResourceId;
+    $args->resourceId = $resourceId;
     $args->dataMovementInterfaceId = $dataMovementInterfaceId;
+    $args->dataMoveType = $dataMoveType;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -45026,11 +45028,15 @@ class Airavata_deleteDataMovementInterface_args {
   /**
    * @var string
    */
-  public $computeResourceId = null;
+  public $resourceId = null;
   /**
    * @var string
    */
   public $dataMovementInterfaceId = null;
+  /**
+   * @var int
+   */
+  public $dataMoveType = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -45041,12 +45047,16 @@ class Airavata_deleteDataMovementInterface_args {
           'class' => '\Airavata\Model\Security\AuthzToken',
           ),
         2 => array(
-          'var' => 'computeResourceId',
+          'var' => 'resourceId',
           'type' => TType::STRING,
           ),
         3 => array(
           'var' => 'dataMovementInterfaceId',
           'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'dataMoveType',
+          'type' => TType::I32,
           ),
         );
     }
@@ -45054,11 +45064,14 @@ class Airavata_deleteDataMovementInterface_args {
       if (isset($vals['authzToken'])) {
         $this->authzToken = $vals['authzToken'];
       }
-      if (isset($vals['computeResourceId'])) {
-        $this->computeResourceId = $vals['computeResourceId'];
+      if (isset($vals['resourceId'])) {
+        $this->resourceId = $vals['resourceId'];
       }
       if (isset($vals['dataMovementInterfaceId'])) {
         $this->dataMovementInterfaceId = $vals['dataMovementInterfaceId'];
+      }
+      if (isset($vals['dataMoveType'])) {
+        $this->dataMoveType = $vals['dataMoveType'];
       }
     }
   }
@@ -45092,7 +45105,7 @@ class Airavata_deleteDataMovementInterface_args {
           break;
         case 2:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->computeResourceId);
+            $xfer += $input->readString($this->resourceId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -45100,6 +45113,13 @@ class Airavata_deleteDataMovementInterface_args {
         case 3:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->dataMovementInterfaceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->dataMoveType);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -45125,14 +45145,19 @@ class Airavata_deleteDataMovementInterface_args {
       $xfer += $this->authzToken->write($output);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->computeResourceId !== null) {
-      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 2);
-      $xfer += $output->writeString($this->computeResourceId);
+    if ($this->resourceId !== null) {
+      $xfer += $output->writeFieldBegin('resourceId', TType::STRING, 2);
+      $xfer += $output->writeString($this->resourceId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->dataMovementInterfaceId !== null) {
       $xfer += $output->writeFieldBegin('dataMovementInterfaceId', TType::STRING, 3);
       $xfer += $output->writeString($this->dataMovementInterfaceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->dataMoveType !== null) {
+      $xfer += $output->writeFieldBegin('dataMoveType', TType::I32, 4);
+      $xfer += $output->writeI32($this->dataMoveType);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

@@ -2437,7 +2437,7 @@ class Iface:
     """
     pass
 
-  def deleteDataMovementInterface(self, authzToken, computeResourceId, dataMovementInterfaceId):
+  def deleteDataMovementInterface(self, authzToken, resourceId, dataMovementInterfaceId, dataMoveType):
     """
     Delete a given data movement interface
 
@@ -2451,8 +2451,9 @@ class Iface:
 
     Parameters:
      - authzToken
-     - computeResourceId
+     - resourceId
      - dataMovementInterfaceId
+     - dataMoveType
     """
     pass
 
@@ -8937,7 +8938,7 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "deleteJobSubmissionInterface failed: unknown result")
 
-  def deleteDataMovementInterface(self, authzToken, computeResourceId, dataMovementInterfaceId):
+  def deleteDataMovementInterface(self, authzToken, resourceId, dataMovementInterfaceId, dataMoveType):
     """
     Delete a given data movement interface
 
@@ -8951,18 +8952,20 @@ class Client(Iface):
 
     Parameters:
      - authzToken
-     - computeResourceId
+     - resourceId
      - dataMovementInterfaceId
+     - dataMoveType
     """
-    self.send_deleteDataMovementInterface(authzToken, computeResourceId, dataMovementInterfaceId)
+    self.send_deleteDataMovementInterface(authzToken, resourceId, dataMovementInterfaceId, dataMoveType)
     return self.recv_deleteDataMovementInterface()
 
-  def send_deleteDataMovementInterface(self, authzToken, computeResourceId, dataMovementInterfaceId):
+  def send_deleteDataMovementInterface(self, authzToken, resourceId, dataMovementInterfaceId, dataMoveType):
     self._oprot.writeMessageBegin('deleteDataMovementInterface', TMessageType.CALL, self._seqid)
     args = deleteDataMovementInterface_args()
     args.authzToken = authzToken
-    args.computeResourceId = computeResourceId
+    args.resourceId = resourceId
     args.dataMovementInterfaceId = dataMovementInterfaceId
+    args.dataMoveType = dataMoveType
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -14027,7 +14030,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = deleteDataMovementInterface_result()
     try:
-      result.success = self._handler.deleteDataMovementInterface(args.authzToken, args.computeResourceId, args.dataMovementInterfaceId)
+      result.success = self._handler.deleteDataMovementInterface(args.authzToken, args.resourceId, args.dataMovementInterfaceId, args.dataMoveType)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -38135,21 +38138,24 @@ class deleteDataMovementInterface_args:
   """
   Attributes:
    - authzToken
-   - computeResourceId
+   - resourceId
    - dataMovementInterfaceId
+   - dataMoveType
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRING, 'computeResourceId', None, None, ), # 2
+    (2, TType.STRING, 'resourceId', None, None, ), # 2
     (3, TType.STRING, 'dataMovementInterfaceId', None, None, ), # 3
+    (4, TType.I32, 'dataMoveType', None, None, ), # 4
   )
 
-  def __init__(self, authzToken=None, computeResourceId=None, dataMovementInterfaceId=None,):
+  def __init__(self, authzToken=None, resourceId=None, dataMovementInterfaceId=None, dataMoveType=None,):
     self.authzToken = authzToken
-    self.computeResourceId = computeResourceId
+    self.resourceId = resourceId
     self.dataMovementInterfaceId = dataMovementInterfaceId
+    self.dataMoveType = dataMoveType
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -38168,12 +38174,17 @@ class deleteDataMovementInterface_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.computeResourceId = iprot.readString()
+          self.resourceId = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
           self.dataMovementInterfaceId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.I32:
+          self.dataMoveType = iprot.readI32()
         else:
           iprot.skip(ftype)
       else:
@@ -38190,13 +38201,17 @@ class deleteDataMovementInterface_args:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
       oprot.writeFieldEnd()
-    if self.computeResourceId is not None:
-      oprot.writeFieldBegin('computeResourceId', TType.STRING, 2)
-      oprot.writeString(self.computeResourceId)
+    if self.resourceId is not None:
+      oprot.writeFieldBegin('resourceId', TType.STRING, 2)
+      oprot.writeString(self.resourceId)
       oprot.writeFieldEnd()
     if self.dataMovementInterfaceId is not None:
       oprot.writeFieldBegin('dataMovementInterfaceId', TType.STRING, 3)
       oprot.writeString(self.dataMovementInterfaceId)
+      oprot.writeFieldEnd()
+    if self.dataMoveType is not None:
+      oprot.writeFieldBegin('dataMoveType', TType.I32, 4)
+      oprot.writeI32(self.dataMoveType)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -38204,18 +38219,21 @@ class deleteDataMovementInterface_args:
   def validate(self):
     if self.authzToken is None:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
-    if self.computeResourceId is None:
-      raise TProtocol.TProtocolException(message='Required field computeResourceId is unset!')
+    if self.resourceId is None:
+      raise TProtocol.TProtocolException(message='Required field resourceId is unset!')
     if self.dataMovementInterfaceId is None:
       raise TProtocol.TProtocolException(message='Required field dataMovementInterfaceId is unset!')
+    if self.dataMoveType is None:
+      raise TProtocol.TProtocolException(message='Required field dataMoveType is unset!')
     return
 
 
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
-    value = (value * 31) ^ hash(self.computeResourceId)
+    value = (value * 31) ^ hash(self.resourceId)
     value = (value * 31) ^ hash(self.dataMovementInterfaceId)
+    value = (value * 31) ^ hash(self.dataMoveType)
     return value
 
   def __repr__(self):
