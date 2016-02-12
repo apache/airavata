@@ -2512,8 +2512,9 @@ service Airavata {
    *
    **/
 
-  bool deleteDataMovementInterface(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId,
-            3: required string dataMovementInterfaceId)
+  bool deleteDataMovementInterface(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
+            3: required string dataMovementInterfaceId,
+            4: required data_movement_models.DMType dataMoveType,)
   	throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.AiravataClientException ace,
             3: airavata_errors.AiravataSystemException ase,

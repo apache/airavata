@@ -4,6 +4,7 @@ import com.jcraft.jsch.Session;
 import org.apache.airavata.gfac.core.JobManagerConfiguration;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
+import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
 import org.apache.airavata.gfac.core.cluster.*;
 import org.apache.airavata.model.status.JobStatus;
 
@@ -177,6 +178,11 @@ public class LocalRemoteCluster extends AbstractRemoteCluster {
 
     @Override
     public ServerInfo getServerInfo() {
+        return null;
+    }
+
+    @Override
+    public AuthenticationInfo getAuthentication() {
         return null;
     }
 }

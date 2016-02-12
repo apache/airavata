@@ -86,7 +86,7 @@ public class StorageInterfaceResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
-			AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(DATA_MOVEMENT_INTERFACE);
+			AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(STORAGE_INTERFACE);
 			generator.setParameter(StorageInterfaceConstants.STORAGE_RESOURCE_ID, ids.get(StorageInterfaceConstants.STORAGE_RESOURCE_ID));
 			generator.setParameter(StorageInterfaceConstants.DATA_MOVEMENT_ID, ids.get(StorageInterfaceConstants.DATA_MOVEMENT_ID));
 			Query q = generator.deleteQuery(em);
@@ -124,7 +124,7 @@ public class StorageInterfaceResource extends AppCatAbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
-			AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(DATA_MOVEMENT_INTERFACE);
+			AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(STORAGE_INTERFACE);
 			generator.setParameter(StorageInterfaceConstants.STORAGE_RESOURCE_ID, ids.get(StorageInterfaceConstants.STORAGE_RESOURCE_ID));
 			generator.setParameter(StorageInterfaceConstants.DATA_MOVEMENT_ID, ids.get(StorageInterfaceConstants.DATA_MOVEMENT_ID));
 			Query q = generator.selectQuery(em);

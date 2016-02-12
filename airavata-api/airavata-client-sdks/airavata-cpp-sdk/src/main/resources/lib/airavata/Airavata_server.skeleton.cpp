@@ -2564,10 +2564,11 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * 
    * @param authzToken
-   * @param computeResourceId
+   * @param resourceId
    * @param dataMovementInterfaceId
+   * @param dataMoveType
    */
-  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& dataMovementInterfaceId) {
+  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType) {
     // Your implementation goes here
     printf("deleteDataMovementInterface\n");
   }

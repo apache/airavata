@@ -89,7 +89,7 @@ resources:
     commandOutputParser: org.apache.airavata.gfac.impl.job.SlurmOutputParser
     emailParser: org.apache.airavata.gfac.monitor.email.parser.SLURMEmailParser
     resourceEmailAddresses:
-      - SDSC Admin <slurm@comet-fe3.sdsc.edu> # comet
+      - slurm@comet # comet
       - slurm@batch1.stampede.tacc.utexas.edu # stampede
 
   - jobManagerType: UGE
