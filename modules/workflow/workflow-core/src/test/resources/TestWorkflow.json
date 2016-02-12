@@ -68,18 +68,22 @@
         "nodeId" : "defaultOutputNodeId_2" }
     ],
     "links" : [
-      { "description" : "link desc",
-         "from" : { "nodeId" : "" , "outputId" : "" },
-         "to" : { "nodeId" : "" , "outputId" : "" }},
-      { "description" : "link desc",
-         "from" : { "nodeId" : "" , "outputId" : "" },
-         "to" : { "nodeId" : "" , "outputId" : "" }},
-      { "description" : "link desc",
-         "from" : { "nodeId" : "" , "outputId" : "" },
-         "to" : { "nodeId" : "" , "outputId" : "" }},
-      { "description" : "link desc",
-         "from" : { "nodeId" : "" , "outputId" : "" },
-         "to" : { "nodeId" : "" , "outputId" : "" }}
+      { "id" : "link_1",
+        "description" : "link desc",
+        "from" : { "nodeId" : "" , "outputId" : "" },
+        "to" : { "nodeId" : "" , "inputId" : "" }},
+      { "id" : "link_2",
+        "description" : "link desc",
+        "from" : { "nodeId" : "" , "outputId" : "" },
+        "to" : { "nodeId" : "" , "inputId" : "" }},
+      { "id" : "link_3",
+        "description" : "link desc",
+        "from" : { "nodeId" : "" , "outputId" : "" },
+        "to" : { "nodeId" : "" , "inputId" : "" }},
+      { "id" : "link_4",
+        "description" : "link desc",
+        "from" : { "nodeId" : "" , "outputId" : "" },
+        "to" : { "nodeId" : "" , "inputId" : "" }}
     ]
   }
 }
