@@ -38,33 +38,74 @@
 
 
 
-class Workflow;
+struct WorkflowState {
+  enum type {
+    CREATED = 0,
+    STARTED = 1,
+    EXECUTING = 2,
+    COMPLETED = 3,
+    FAILED = 4,
+    CANCELLING = 5,
+    CANCELED = 6
+  };
+};
 
-typedef struct _Workflow__isset {
-  _Workflow__isset() : graph(false), image(false), workflowInputs(false), workflowOutputs(false) {}
-  bool graph :1;
+extern const std::map<int, const char*> _WorkflowState_VALUES_TO_NAMES;
+
+struct ComponentState {
+  enum type {
+    CREATED = 0,
+    WAITING = 1,
+    READY = 2,
+    RUNNING = 3,
+    COMPLETED = 4,
+    FAILED = 5,
+    CANCELED = 6
+  };
+};
+
+extern const std::map<int, const char*> _ComponentState_VALUES_TO_NAMES;
+
+class WorkflowModel;
+
+class ComponentStatus;
+
+class WorkflowStatus;
+
+class EdgeModel;
+
+class PortModel;
+
+class NodeModel;
+
+typedef struct _WorkflowModel__isset {
+  _WorkflowModel__isset() : image(false), workflowInputs(false), workflowOutputs(false), creationTime(false) {}
   bool image :1;
   bool workflowInputs :1;
   bool workflowOutputs :1;
-} _Workflow__isset;
+  bool creationTime :1;
+} _WorkflowModel__isset;
 
-class Workflow {
+class WorkflowModel {
  public:
 
-  Workflow(const Workflow&);
-  Workflow& operator=(const Workflow&);
-  Workflow() : templateId("DO_NOT_SET_AT_CLIENTS"), name(), graph(), image() {
+  WorkflowModel(const WorkflowModel&);
+  WorkflowModel& operator=(const WorkflowModel&);
+  WorkflowModel() : templateId("DO_NOT_SET_AT_CLIENTS"), name(), graph(), gatewayId(), createdUser(), image(), creationTime(0) {
   }
 
-  virtual ~Workflow() throw();
+  virtual ~WorkflowModel() throw();
   std::string templateId;
   std::string name;
   std::string graph;
+  std::string gatewayId;
+  std::string createdUser;
   std::string image;
   std::vector< ::apache::airavata::model::application::io::InputDataObjectType>  workflowInputs;
   std::vector< ::apache::airavata::model::application::io::OutputDataObjectType>  workflowOutputs;
+  int64_t creationTime;
 
-  _Workflow__isset __isset;
+  _WorkflowModel__isset __isset;
 
   void __set_templateId(const std::string& val);
 
@@ -72,21 +113,29 @@ class Workflow {
 
   void __set_graph(const std::string& val);
 
+  void __set_gatewayId(const std::string& val);
+
+  void __set_createdUser(const std::string& val);
+
   void __set_image(const std::string& val);
 
   void __set_workflowInputs(const std::vector< ::apache::airavata::model::application::io::InputDataObjectType> & val);
 
   void __set_workflowOutputs(const std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & val);
 
-  bool operator == (const Workflow & rhs) const
+  void __set_creationTime(const int64_t val);
+
+  bool operator == (const WorkflowModel & rhs) const
   {
     if (!(templateId == rhs.templateId))
       return false;
     if (!(name == rhs.name))
       return false;
-    if (__isset.graph != rhs.__isset.graph)
+    if (!(graph == rhs.graph))
       return false;
-    else if (__isset.graph && !(graph == rhs.graph))
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    if (!(createdUser == rhs.createdUser))
       return false;
     if (__isset.image != rhs.__isset.image)
       return false;
@@ -100,13 +149,17 @@ class Workflow {
       return false;
     else if (__isset.workflowOutputs && !(workflowOutputs == rhs.workflowOutputs))
       return false;
+    if (__isset.creationTime != rhs.__isset.creationTime)
+      return false;
+    else if (__isset.creationTime && !(creationTime == rhs.creationTime))
+      return false;
     return true;
   }
-  bool operator != (const Workflow &rhs) const {
+  bool operator != (const WorkflowModel &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Workflow & ) const;
+  bool operator < (const WorkflowModel & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -114,9 +167,364 @@ class Workflow {
   virtual void printTo(std::ostream& out) const;
 };
 
-void swap(Workflow &a, Workflow &b);
+void swap(WorkflowModel &a, WorkflowModel &b);
 
-inline std::ostream& operator<<(std::ostream& out, const Workflow& obj)
+inline std::ostream& operator<<(std::ostream& out, const WorkflowModel& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+typedef struct _ComponentStatus__isset {
+  _ComponentStatus__isset() : reason(false), timeofStateChange(false) {}
+  bool reason :1;
+  bool timeofStateChange :1;
+} _ComponentStatus__isset;
+
+class ComponentStatus {
+ public:
+
+  ComponentStatus(const ComponentStatus&);
+  ComponentStatus& operator=(const ComponentStatus&);
+  ComponentStatus() : state((ComponentState::type)0), reason(), timeofStateChange(0) {
+    state = (ComponentState::type)0;
+
+  }
+
+  virtual ~ComponentStatus() throw();
+  ComponentState::type state;
+  std::string reason;
+  int64_t timeofStateChange;
+
+  _ComponentStatus__isset __isset;
+
+  void __set_state(const ComponentState::type val);
+
+  void __set_reason(const std::string& val);
+
+  void __set_timeofStateChange(const int64_t val);
+
+  bool operator == (const ComponentStatus & rhs) const
+  {
+    if (!(state == rhs.state))
+      return false;
+    if (__isset.reason != rhs.__isset.reason)
+      return false;
+    else if (__isset.reason && !(reason == rhs.reason))
+      return false;
+    if (__isset.timeofStateChange != rhs.__isset.timeofStateChange)
+      return false;
+    else if (__isset.timeofStateChange && !(timeofStateChange == rhs.timeofStateChange))
+      return false;
+    return true;
+  }
+  bool operator != (const ComponentStatus &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ComponentStatus & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(ComponentStatus &a, ComponentStatus &b);
+
+inline std::ostream& operator<<(std::ostream& out, const ComponentStatus& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+typedef struct _WorkflowStatus__isset {
+  _WorkflowStatus__isset() : timeOfStateChange(false), reason(false) {}
+  bool timeOfStateChange :1;
+  bool reason :1;
+} _WorkflowStatus__isset;
+
+class WorkflowStatus {
+ public:
+
+  WorkflowStatus(const WorkflowStatus&);
+  WorkflowStatus& operator=(const WorkflowStatus&);
+  WorkflowStatus() : state((WorkflowState::type)0), timeOfStateChange(0), reason() {
+  }
+
+  virtual ~WorkflowStatus() throw();
+  WorkflowState::type state;
+  int64_t timeOfStateChange;
+  std::string reason;
+
+  _WorkflowStatus__isset __isset;
+
+  void __set_state(const WorkflowState::type val);
+
+  void __set_timeOfStateChange(const int64_t val);
+
+  void __set_reason(const std::string& val);
+
+  bool operator == (const WorkflowStatus & rhs) const
+  {
+    if (!(state == rhs.state))
+      return false;
+    if (__isset.timeOfStateChange != rhs.__isset.timeOfStateChange)
+      return false;
+    else if (__isset.timeOfStateChange && !(timeOfStateChange == rhs.timeOfStateChange))
+      return false;
+    if (__isset.reason != rhs.__isset.reason)
+      return false;
+    else if (__isset.reason && !(reason == rhs.reason))
+      return false;
+    return true;
+  }
+  bool operator != (const WorkflowStatus &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const WorkflowStatus & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(WorkflowStatus &a, WorkflowStatus &b);
+
+inline std::ostream& operator<<(std::ostream& out, const WorkflowStatus& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+typedef struct _EdgeModel__isset {
+  _EdgeModel__isset() : name(false), status(false), description(false) {}
+  bool name :1;
+  bool status :1;
+  bool description :1;
+} _EdgeModel__isset;
+
+class EdgeModel {
+ public:
+
+  EdgeModel(const EdgeModel&);
+  EdgeModel& operator=(const EdgeModel&);
+  EdgeModel() : edgeId("DO_NOT_SET_AT_CLIENTS"), name(), description() {
+  }
+
+  virtual ~EdgeModel() throw();
+  std::string edgeId;
+  std::string name;
+  ComponentStatus status;
+  std::string description;
+
+  _EdgeModel__isset __isset;
+
+  void __set_edgeId(const std::string& val);
+
+  void __set_name(const std::string& val);
+
+  void __set_status(const ComponentStatus& val);
+
+  void __set_description(const std::string& val);
+
+  bool operator == (const EdgeModel & rhs) const
+  {
+    if (!(edgeId == rhs.edgeId))
+      return false;
+    if (__isset.name != rhs.__isset.name)
+      return false;
+    else if (__isset.name && !(name == rhs.name))
+      return false;
+    if (__isset.status != rhs.__isset.status)
+      return false;
+    else if (__isset.status && !(status == rhs.status))
+      return false;
+    if (__isset.description != rhs.__isset.description)
+      return false;
+    else if (__isset.description && !(description == rhs.description))
+      return false;
+    return true;
+  }
+  bool operator != (const EdgeModel &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const EdgeModel & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(EdgeModel &a, EdgeModel &b);
+
+inline std::ostream& operator<<(std::ostream& out, const EdgeModel& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+typedef struct _PortModel__isset {
+  _PortModel__isset() : name(false), status(false), value(false), description(false) {}
+  bool name :1;
+  bool status :1;
+  bool value :1;
+  bool description :1;
+} _PortModel__isset;
+
+class PortModel {
+ public:
+
+  PortModel(const PortModel&);
+  PortModel& operator=(const PortModel&);
+  PortModel() : portId("DO_NOT_SET_AT_CLIENTS"), name(), value(), description() {
+  }
+
+  virtual ~PortModel() throw();
+  std::string portId;
+  std::string name;
+  ComponentStatus status;
+  std::string value;
+  std::string description;
+
+  _PortModel__isset __isset;
+
+  void __set_portId(const std::string& val);
+
+  void __set_name(const std::string& val);
+
+  void __set_status(const ComponentStatus& val);
+
+  void __set_value(const std::string& val);
+
+  void __set_description(const std::string& val);
+
+  bool operator == (const PortModel & rhs) const
+  {
+    if (!(portId == rhs.portId))
+      return false;
+    if (__isset.name != rhs.__isset.name)
+      return false;
+    else if (__isset.name && !(name == rhs.name))
+      return false;
+    if (__isset.status != rhs.__isset.status)
+      return false;
+    else if (__isset.status && !(status == rhs.status))
+      return false;
+    if (__isset.value != rhs.__isset.value)
+      return false;
+    else if (__isset.value && !(value == rhs.value))
+      return false;
+    if (__isset.description != rhs.__isset.description)
+      return false;
+    else if (__isset.description && !(description == rhs.description))
+      return false;
+    return true;
+  }
+  bool operator != (const PortModel &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const PortModel & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(PortModel &a, PortModel &b);
+
+inline std::ostream& operator<<(std::ostream& out, const PortModel& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+typedef struct _NodeModel__isset {
+  _NodeModel__isset() : name(false), applicationId(false), applicationName(false), status(false), description(false) {}
+  bool name :1;
+  bool applicationId :1;
+  bool applicationName :1;
+  bool status :1;
+  bool description :1;
+} _NodeModel__isset;
+
+class NodeModel {
+ public:
+
+  NodeModel(const NodeModel&);
+  NodeModel& operator=(const NodeModel&);
+  NodeModel() : nodeId("DO_NOT_SET_AT_CLIENTS"), name(), applicationId(), applicationName(), description() {
+  }
+
+  virtual ~NodeModel() throw();
+  std::string nodeId;
+  std::string name;
+  std::string applicationId;
+  std::string applicationName;
+  ComponentStatus status;
+  std::string description;
+
+  _NodeModel__isset __isset;
+
+  void __set_nodeId(const std::string& val);
+
+  void __set_name(const std::string& val);
+
+  void __set_applicationId(const std::string& val);
+
+  void __set_applicationName(const std::string& val);
+
+  void __set_status(const ComponentStatus& val);
+
+  void __set_description(const std::string& val);
+
+  bool operator == (const NodeModel & rhs) const
+  {
+    if (!(nodeId == rhs.nodeId))
+      return false;
+    if (__isset.name != rhs.__isset.name)
+      return false;
+    else if (__isset.name && !(name == rhs.name))
+      return false;
+    if (__isset.applicationId != rhs.__isset.applicationId)
+      return false;
+    else if (__isset.applicationId && !(applicationId == rhs.applicationId))
+      return false;
+    if (__isset.applicationName != rhs.__isset.applicationName)
+      return false;
+    else if (__isset.applicationName && !(applicationName == rhs.applicationName))
+      return false;
+    if (__isset.status != rhs.__isset.status)
+      return false;
+    else if (__isset.status && !(status == rhs.status))
+      return false;
+    if (__isset.description != rhs.__isset.description)
+      return false;
+    else if (__isset.description && !(description == rhs.description))
+      return false;
+    return true;
+  }
+  bool operator != (const NodeModel &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const NodeModel & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(NodeModel &a, NodeModel &b);
+
+inline std::ostream& operator<<(std::ostream& out, const NodeModel& obj)
 {
   obj.printTo(out);
   return out;

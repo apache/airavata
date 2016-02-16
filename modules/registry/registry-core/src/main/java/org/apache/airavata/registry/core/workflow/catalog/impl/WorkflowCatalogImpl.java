@@ -21,7 +21,7 @@
 
 package org.apache.airavata.registry.core.workflow.catalog.impl;
 
-import org.apache.airavata.model.Workflow;
+import org.apache.airavata.model.WorkflowModel;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.registry.core.workflow.catalog.resources.*;
@@ -55,7 +55,7 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
     }
 
     @Override
-    public Workflow getWorkflow(String workflowTemplateId) throws WorkflowCatalogException {
+    public WorkflowModel getWorkflow(String workflowTemplateId) throws WorkflowCatalogException {
         try {
             WorkflowResource resource = new WorkflowResource();
             WorkflowResource wfResource = (WorkflowResource)resource.get(workflowTemplateId);
@@ -78,7 +78,7 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
     }
 
     @Override
-    public String registerWorkflow(Workflow workflow, String gatewayId) throws WorkflowCatalogException {
+    public String registerWorkflow(WorkflowModel workflow, String gatewayId) throws WorkflowCatalogException {
         try {
             WorkflowResource resource = new WorkflowResource();
             resource.setWfTemplateId(WorkflowCatalogUtils.getID(workflow.getName()));
@@ -132,7 +132,7 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
     }
 
     @Override
-    public void updateWorkflow(String workflowTemplateId, Workflow workflow) throws WorkflowCatalogException {
+    public void updateWorkflow(String workflowTemplateId, WorkflowModel workflow) throws WorkflowCatalogException {
         try {
             WorkflowResource resource = new WorkflowResource();
             WorkflowResource existingWF = (WorkflowResource)resource.get(workflowTemplateId);

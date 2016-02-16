@@ -230,7 +230,21 @@ public abstract class Factory {
                         processContext.getSshKeyAuthentication());
             }
             remoteClusterMap.put(key, remoteCluster);
-		}
+        }else {
+            AuthenticationInfo authentication = remoteCluster.getAuthentication();
+            if (authentication instanceof SSHKeyAuthentication){
+                SSHKeyAuthentication sshKeyAuthentication = (SSHKeyAuthentication)authentication;
+                if (!sshKeyAuthentication.getUserName().equals(processContext.getComputeResourcePreference().getLoginUserName())){
+                    JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
+                    if (jobSubmissionProtocol == JobSubmissionProtocol.SSH ||
+                            jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK) {
+                        remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration,
+                                processContext.getSshKeyAuthentication());
+                    }
+                }
+
+            }
+        }
 		return remoteCluster;
 	}
 
@@ -251,6 +265,20 @@ public abstract class Factory {
             }
 
             remoteClusterMap.put(key, remoteCluster);
+        }else {
+            AuthenticationInfo authentication = remoteCluster.getAuthentication();
+            if (authentication instanceof SSHKeyAuthentication){
+                SSHKeyAuthentication sshKeyAuthentication = (SSHKeyAuthentication)authentication;
+                if (!sshKeyAuthentication.getUserName().equals(processContext.getComputeResourcePreference().getLoginUserName())){
+                    JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
+                    dataMovementProtocol = processContext.getDataMovementProtocol();
+                    if (dataMovementProtocol == DataMovementProtocol.SCP) {
+                        remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration,
+                                processContext.getSshKeyAuthentication());
+                    }
+                }
+
+            }
         }
         return remoteCluster;
     }

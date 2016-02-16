@@ -24,14 +24,21 @@ package org.apache.airavata.workflow.core.dag.nodes;
 import org.apache.airavata.model.ComponentState;
 import org.apache.airavata.model.ComponentStatus;
 import org.apache.airavata.model.NodeModel;
+import org.apache.airavata.model.PortModel;
+import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.workflow.core.dag.edge.Edge;
 import org.apache.airavata.workflow.core.dag.port.InPort;
 
 public class OutputNodeImpl implements OutputNode {
 
     private NodeModel nodeModel;
     private OutputDataObjectType outputDataObjectType;
-    private InPort inPort;
+    private InputDataObjectType inputDataObjectType;
+    private PortModel portModel;
+    private String value;
+    private DataType dataType;
 
     public OutputNodeImpl(NodeModel nodeModel) {
         this.nodeModel = nodeModel;
@@ -50,6 +57,21 @@ public class OutputNodeImpl implements OutputNode {
     @Override
     public String getId() {
         return getNodeModel().getNodeId();
+    }
+
+    @Override
+    public DataType getDataType() {
+        return dataType;
+    }
+
+    @Override
+    public void setDataType(DataType dataType) {
+        this.dataType = dataType;
+    }
+
+    @Override
+    public String getNodeId() {
+        return getNode().getId();
     }
 
     @Override
@@ -79,9 +101,29 @@ public class OutputNodeImpl implements OutputNode {
 
 
     @Override
+    public void setPortModel(PortModel portModel) {
+        this.portModel = portModel;
+    }
+
+    @Override
+    public PortModel getPortModel() {
+        return portModel;
+    }
+
+    @Override
     public boolean isReady() {
-        return !(inPort.getInputObject() == null || inPort.getInputObject().getValue() == null
-                || inPort.getInputObject().getValue().equals(""));
+        return !(getInputObject() == null || getInputObject().getValue() == null
+                || getInputObject().getValue().equals(""));
+    }
+
+    @Override
+    public WorkflowNode getNode() {
+        return this;
+    }
+
+    @Override
+    public void setNode(WorkflowNode workflowNode) {
+        // OutputNode is a workflow Node.
     }
 
     @Override
@@ -96,13 +138,50 @@ public class OutputNodeImpl implements OutputNode {
 
     @Override
     public InPort getInPort() {
-        return this.inPort;
+        return this;
     }
 
     @Override
     public void setInPort(InPort inPort) {
-        this.inPort = inPort;
+        // outputNode is an inPort.
     }
 
+    @Override
+    public void setInputObject(InputDataObjectType inputObject) {
+        this.inputDataObjectType = inputObject;
+        setOutputObject(convert(inputObject));
+    }
+
+    private OutputDataObjectType convert(InputDataObjectType inputObject) {
+        OutputDataObjectType output = new OutputDataObjectType(getName());
+        output.setValue(inputObject.getValue());
+        output.setType(inputObject.getType());
+        return output;
+    }
+
+    @Override
+    public InputDataObjectType getInputObject() {
+        return inputDataObjectType;
+    }
+
+    @Override
+    public Edge getEdge() {
+        return null;
+    }
+
+    @Override
+    public void addEdge(Edge edge) {
+
+    }
+
+    @Override
+    public String getDefaultValue() {
+        return value;
+    }
+
+    @Override
+    public void setDefaultValue(String defaultValue) {
+        value = defaultValue;
+    }
 }
 

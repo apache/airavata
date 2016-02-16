@@ -24,6 +24,7 @@ package org.apache.airavata.workflow.core.dag.nodes;
 import org.apache.airavata.workflow.core.dag.port.InPort;
 import org.apache.airavata.workflow.core.dag.port.OutPort;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface ApplicationNode extends WorkflowNode {
@@ -39,5 +40,9 @@ public interface ApplicationNode extends WorkflowNode {
     public void addOutPort(OutPort outPort);
 
     public List<OutPort> getOutputPorts();
+
+    public void addInputPorts(Collection<? extends InPort> inPorts);
+
+    public void addOutPorts(Collection<? extends OutPort> outPorts);
 
 }

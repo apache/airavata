@@ -46,11 +46,11 @@ public class WorkflowEnactmentService {
     private final RabbitMQStatusConsumer statusConsumer;
     private String consumerId;
     private ExecutorService executor;
-    private Map<String,SimpleWorkflowInterpreter> workflowMap;
+    private Map<String,WorkflowInterpreter> workflowMap;
 
     private WorkflowEnactmentService () throws AiravataException {
         executor = Executors.newFixedThreadPool(getThreadPoolSize());
-        workflowMap = new ConcurrentHashMap<String, SimpleWorkflowInterpreter>();
+        workflowMap = new ConcurrentHashMap<String, WorkflowInterpreter>();
         statusConsumer = new RabbitMQStatusConsumer();
         consumerId = statusConsumer.listen(new TaskMessageHandler());
         // register the shutdown hook to un-bind status consumer.
@@ -73,10 +73,10 @@ public class WorkflowEnactmentService {
                                   String gatewayName,
                                   RabbitMQProcessLaunchPublisher publisher) throws Exception {
 
-        SimpleWorkflowInterpreter simpleWorkflowInterpreter = new SimpleWorkflowInterpreter(
+        WorkflowInterpreter workflowInterpreter = new WorkflowInterpreter(
                 experimentId, credentialToken,gatewayName, publisher);
-        workflowMap.put(experimentId, simpleWorkflowInterpreter);
-        simpleWorkflowInterpreter.launchWorkflow();
+        workflowMap.put(experimentId, workflowInterpreter);
+        workflowInterpreter.launchWorkflow();
 
     }
 
@@ -125,13 +125,13 @@ public class WorkflowEnactmentService {
 
         private void process() {
             String message;
-            SimpleWorkflowInterpreter simpleWorkflowInterpreter;
+            WorkflowInterpreter workflowInterpreter;
             if (msgCtx.getType() == MessageType.PROCESS) {
                 ProcessStatusChangeEvent event = ((ProcessStatusChangeEvent) msgCtx.getEvent());
                 ProcessIdentifier processIdentity = event.getProcessIdentity();
-                simpleWorkflowInterpreter = getInterpreter(processIdentity.getExperimentId());
-                if (simpleWorkflowInterpreter != null) {
-                    simpleWorkflowInterpreter.handleProcessStatusChangeEvent(event);
+                workflowInterpreter = getInterpreter(processIdentity.getExperimentId());
+                if (workflowInterpreter != null) {
+                    workflowInterpreter.handleProcessStatusChangeEvent(event);
                 } else {
                     // this happens when Task status messages comes after the Taskoutput messages,as we have worked on
                     // output changes it is ok to ignore this.
@@ -140,10 +140,10 @@ public class WorkflowEnactmentService {
             }else if (msgCtx.getType() == MessageType.PROCESSOUTPUT) {
                 TaskOutputChangeEvent event = (TaskOutputChangeEvent) msgCtx.getEvent();
                 TaskIdentifier taskIdentifier = event.getTaskIdentity();
-                simpleWorkflowInterpreter = getInterpreter(taskIdentifier.getExperimentId());
-                if (simpleWorkflowInterpreter != null) {
-//                    simpleWorkflowInterpreter.handleTaskOutputChangeEvent(event);
-                    if (simpleWorkflowInterpreter.isAllDone()) {
+                workflowInterpreter = getInterpreter(taskIdentifier.getExperimentId());
+                if (workflowInterpreter != null) {
+//                    workflowInterpreter.handleTaskOutputChangeEvent(event);
+                    if (workflowInterpreter.isAllDone()) {
                         workflowMap.remove(taskIdentifier.getExperimentId());
                     }
                 } else {
@@ -157,7 +157,7 @@ public class WorkflowEnactmentService {
             }
         }
 
-        private SimpleWorkflowInterpreter getInterpreter(String experimentId){
+        private WorkflowInterpreter getInterpreter(String experimentId){
             return workflowMap.get(experimentId);
         }
     }

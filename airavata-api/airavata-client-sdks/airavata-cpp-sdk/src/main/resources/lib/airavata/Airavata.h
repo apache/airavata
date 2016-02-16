@@ -183,6 +183,7 @@ class AiravataIf {
   virtual void getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) = 0;
 
   /**
+   * 
    * Get a Public Key by Providing the Token
    * 
    * @param CredStoreToken
@@ -201,6 +202,7 @@ class AiravataIf {
   virtual void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName) = 0;
 
   /**
+   * 
    * Get all Public Keys of the Gateway
    * 
    * @param CredStoreToken
@@ -219,6 +221,7 @@ class AiravataIf {
   virtual void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
 
   /**
+   * 
    * Delete a Gateway
    * 
    * @param gatewayId
@@ -236,6 +239,7 @@ class AiravataIf {
   virtual bool deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) = 0;
 
   /**
+   * 
    * Creates a Project with basic metadata.
    *    A Project is a container of experiments.
    * 
@@ -243,7 +247,7 @@ class AiravataIf {
    *    The identifier for the requested gateway.
    * 
    * @param Project
-   *    The Project Object described in the workspace_model
+   *    The Project Object described in the workspace_model.
    * 
    * 
    * 
@@ -254,6 +258,7 @@ class AiravataIf {
   virtual void createProject(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project) = 0;
 
   /**
+   * 
    * Update an Existing Project
    * 
    * @param projectId
@@ -271,14 +276,15 @@ class AiravataIf {
   virtual void updateProject(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const  ::apache::airavata::model::workspace::Project& updatedProject) = 0;
 
   /**
+   * 
    * Get a Project by ID
-   *    This method is to obtain a project by providing a projectId
+   *    This method is to obtain a project by providing a projectId.
    * 
    * @param projectId
-   *    projectId of the project you require
+   *    projectId of the project you require.
    * 
    * @return project
-   *    project data model will be returned
+   *    project data model will be returned.
    * 
    * 
    * 
@@ -288,14 +294,17 @@ class AiravataIf {
   virtual void getProject( ::apache::airavata::model::workspace::Project& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId) = 0;
 
   /**
+   * 
    * Delete a Project
-   *    This method is used to delete an existing Project
+   *    This method is used to delete an existing Project.
    * 
    * @param projectId
-   *    projectId of the project you want to delete
+   *    projectId of the project you want to delete.
    * 
    * @return boolean
    *    Boolean identifier for the success or failure of the deletion operation.
+   * 
+   *    NOTE: This method is not used within gateways connected with Airavata.
    * 
    * 
    * 
@@ -305,20 +314,21 @@ class AiravataIf {
   virtual bool deleteProject(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId) = 0;
 
   /**
-   * Get all Project by user with pagination. Results will be ordered based
-   * on creation time DESC
+   * 
+   * Get All User Projects
+   * Get all Project for the user with pagination. Results will be ordered based on creation time DESC.
    * 
    * @param gatewayId
    *    The identifier for the requested gateway.
    * 
    * @param userName
-   *    The identifier of the user
+   *    The identifier of the user.
    * 
    * @param limit
-   *    The amount results to be fetched
+   *    The amount results to be fetched.
    * 
    * @param offset
-   *    The starting point of the results to be fetched
+   *    The starting point of the results to be fetched.
    * 
    * 
    * 
@@ -331,19 +341,25 @@ class AiravataIf {
   virtual void getUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) = 0;
 
   /**
-   * Get all Project for user by project name with pagination.Results will be ordered based
-   * on creation time DESC
+   * 
+   * Search User Projects by Project Name
+   * Get all Project for user by project name with pagination.Results will be ordered based on creation time DESC.
    * 
    * @param gatewayId
-   *    The identifier for the requested gateway.
+   *    The unique identifier for the requested gateway.
+   * 
    * @param userName
-   *    The identifier of the user
+   *    The identifier of the user.
+   * 
    * @param projectName
-   *    The name of the project on which the results to be fetched
+   *    The name of the project on which the results to be fetched.
+   * 
    * @param limit
-   *    The amount results to be fetched
+   *    The amount results to be fetched.
+   * 
    * @param offset
-   *    The starting point of the results to be fetched
+   *    The starting point of the results to be fetched.
+   * 
    * 
    * 
    * @param authzToken
@@ -356,19 +372,25 @@ class AiravataIf {
   virtual void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset) = 0;
 
   /**
-   * Search and get all Projects for user by project description with pagination. Results
-   * will be ordered based on creation time DESC
+   * 
+   * Search User Projects by Project Description
+   * Search and get all Projects for user by project description with pagination. Results will be ordered based on creation time DESC.
    * 
    * @param gatewayId
-   *    The identifier for the requested gateway.
+   *    The unique identifier of the gateway making the request.
+   * 
    * @param userName
-   *    The identifier of the user
+   *    The identifier of the user.
+   * 
    * @param description
-   *    The description to be matched
+   *    The description to be matched.
+   * 
    * @param limit
-   *    The amount results to be fetched
+   *    The amount results to be fetched.
+   * 
    * @param offset
-   *    The starting point of the results to be fetched
+   *    The starting point of the results to be fetched.
+   * 
    * 
    * 
    * @param authzToken
@@ -381,19 +403,25 @@ class AiravataIf {
   virtual void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) = 0;
 
   /**
-   * Search Experiments by experiment name with pagination. Results will be sorted
-   * based on creation time DESC
+   * 
+   * Search User Experiments by Name
+   * Search user Experiments using experiment name with pagination. Results will be sorted based on creation time DESC.
    * 
    * @param gatewayId
-   *       Identifier of the requested gateway
+   *       Unique identifier of the requested gateway.
+   * 
    * @param userName
-   *       Username of the requested user
+   *       Username of the user who created the experiments.
+   * 
    * @param expName
-   *       Experiment name to be matched
+   *       Experiment name to be matched.
+   * 
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   * 
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   * 
    * 
    * 
    * @param authzToken
@@ -406,19 +434,25 @@ class AiravataIf {
   virtual void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset) = 0;
 
   /**
-   * Search Experiments by experiment name with pagination. Results will be sorted
-   * based on creation time DESC
+   * 
+   * Search By Experiment Description
+   * Search Experiments by experiment description with pagination. Results will be sorted based on creation time DESC.
    * 
    * @param gatewayId
-   *       Identifier of the requested gateway
+   *       Unique identifier of the requested gateway.
+   * 
    * @param userName
-   *       Username of the requested user
+   *       Username of the requested user.
+   * 
    * @param description
-   *       Experiment description to be matched
+   *       Experiment description to be matched.
+   * 
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   * 
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   * 
    * 
    * 
    * @param authzToken
@@ -431,19 +465,25 @@ class AiravataIf {
   virtual void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) = 0;
 
   /**
-   * Search Experiments by application id with pagination. Results will be sorted
-   * based on creation time DESC
+   * 
+   * Search Experiment By the Application
+   * Search Experiments of a particular application id with pagination. Results will be sorted based on creation time DESC
    * 
    * @param gatewayId
-   *       Identifier of the requested gateway
+   *       Unique identifier of the requested gateway.
+   * 
    * @param userName
-   *       Username of the requested user
+   *       Username of the requested user.
+   * 
    * @param applicationId
-   *       Application id to be matched
+   *       Application id to be matched.
+   * 
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   * 
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   * 
    * 
    * 
    * @param authzToken
@@ -456,19 +496,25 @@ class AiravataIf {
   virtual void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset) = 0;
 
   /**
-   * Search Experiments by experiment status with pagination. Results will be sorted
-   * based on creation time DESC
+   * 
+   * Search User Experiments by Status
+   * Search all the Experiments of the given user  by experiment status with pagination. Results will be sorted based on creation time DESC
    * 
    * @param gatewayId
-   *       Identifier of the requested gateway
+   *       Unique identifier of the requested gateway.
+   * 
    * @param userName
-   *       Username of the requested user
+   *       Username of the user making the request.
+   * 
    * @param experimentState
-   *       Experiement state to be matched
+   *       Experiement state to be matched.
+   * 
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   * 
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   * 
    * 
    * 
    * @param authzToken
@@ -481,21 +527,31 @@ class AiravataIf {
   virtual void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset) = 0;
 
   /**
-   * Search Experiments by experiment creation time with pagination. Results will be sorted
-   * based on creation time DESC
+   * 
+   * Search User Experiments by the Creation Time
+   * This will search all the experiments of the given user by experiment creation time with pagination. Results will be sorted based on creation time DESC.
    * 
    * @param gatewayId
-   *       Identifier of the requested gateway
+   *       Unique identifier of the requested gateway.
+   * 
    * @param userName
-   *       Username of the requested user
+   *       Username of the requested user.
+   * 
    * @param fromTime
-   *       Start time of the experiments creation time
+   *       Start time of the experiments creation time.
+   * 
    * @param toTime
-   *       End time of the  experiement creation time
+   *       End time of the  experiement creation time.
+   * 
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   * 
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   * 
+   * @return ExperimentSummaryModel
+   *    List of experiments for the given search filter. Here only the Experiment summary will be returned.
+   * 
    * 
    * 
    * @param authzToken
@@ -509,19 +565,27 @@ class AiravataIf {
   virtual void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset) = 0;
 
   /**
-   * Search Experiments by using multiple filter criteria with pagination. Results will be sorted
-   * based on creation time DESC
+   * Search Experiments.
+   * Search Experiments by using multiple filter criteria with pagination. Results will be sorted based on creation time DESC.
    * 
    * @param gatewayId
-   *       Identifier of the requested gateway
+   *       Identifier of the requested gateway.
+   * 
    * @param userName
-   *       Username of the requested user
+   *       Username of the user requesting the search function.
+   * 
    * @param filters
-   *       map of multiple filter criteria.
+   *       Map of multiple filter criteria. Currenlt search filters includes Experiment Name, Description, Application, etc....
+   * 
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   * 
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   * 
+   * @return ExperimentSummaryModel
+   *    List of experiments for the given search filter. Here only the Experiment summary will be returned.
+   * 
    * 
    * 
    * @param authzToken
@@ -534,13 +598,19 @@ class AiravataIf {
   virtual void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset) = 0;
 
   /**
-   * Get Experiment Statisitics for the given gateway for a specific time period
+   * 
+   * Get Experiment Statistics
+   * Get Experiment Statisitics for a given gateway for a specific time period. This feature is available only for admins of a particular gateway. Gateway admin access is managed by the user roles.
+   * 
    * @param gatewayId
-   *       Identifier of the requested gateway
+   *       Unique identifier of the gateway making the request to fetch statistics.
+   * 
    * @param fromTime
-   *       Starting date time
+   *       Starting date time.
+   * 
    * @param toTime
-   *       Ending data time
+   *       Ending data time.
+   * 
    * 
    * 
    * @param authzToken
@@ -551,15 +621,19 @@ class AiravataIf {
   virtual void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime) = 0;
 
   /**
-   * Get Experiments within project with pagination. Results will be sorted
-   * based on creation time DESC
+   * 
+   * Get All Experiments of the Project
+   * Get Experiments within project with pagination. Results will be sorted based on creation time DESC.
    * 
    * @param projectId
-   *       Identifier of the project
+   *       Uniqie identifier of the project.
+   * 
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   * 
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   * 
    * 
    * 
    * @param authzToken
@@ -570,17 +644,22 @@ class AiravataIf {
   virtual void getExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset) = 0;
 
   /**
-   * Get experiments by user with pagination. Results will be sorted
-   * based on creation time DESC
+   * 
+   * Get All Experiments of the User
+   * Get experiments by user with pagination. Results will be sorted based on creation time DESC.
    * 
    * @param gatewayId
-   *       Identifier of the requesting gateway
+   *       Identifier of the requesting gateway.
+   * 
    * @param userName
-   *       Username of the requested user
+   *       Username of the requested end user.
+   * 
    * @param limit
-   *       Amount of results to be fetched
+   *       Amount of results to be fetched.
+   * 
    * @param offset
-   *       The starting point of the results to be fetched
+   *       The starting point of the results to be fetched.
+   * 
    * 
    * 
    * @param authzToken
@@ -592,12 +671,17 @@ class AiravataIf {
   virtual void getUserExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) = 0;
 
   /**
+   *   *
+   *   * Create New Experiment
    *   * Create an experiment for the specified user belonging to the gateway. The gateway identity is not explicitly passed
    *   *   but inferred from the sshKeyAuthentication header. This experiment is just a persistent place holder. The client
    *   *   has to subsequently configure and launch the created experiment. No action is taken on Airavata Server except
    *   *   registering the experiment in a persistent store.
    *   *
-   *   * @param basicExperimentMetadata
+   *   * @param gatewayId
+   *   *    The unique ID of the gateway where the experiment is been created.
+   *   *
+   *   * @param ExperimentModel
    *   *    The create experiment will require the basic experiment metadata like the name and description, intended user,
    *   *      the gateway identifer and if the experiment should be shared public by defualt. During the creation of an experiment
    *   *      the ExperimentMetadata is a required field.
@@ -634,8 +718,8 @@ class AiravataIf {
   virtual void createExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment) = 0;
 
   /**
-   * Delete an Experiment
    * 
+   * Delete an Experiment
    * If the experiment is not already launched experiment can be deleted.
    * 
    * @param authzToken
@@ -644,7 +728,7 @@ class AiravataIf {
    *     Experiment ID of the experimnet you want to delete.
    * 
    * @return boolean
-   *     Identifier for the success or failure of the deletion operation
+   *     Identifier for the success or failure of the deletion operation.
    * 
    * 
    * 
@@ -654,12 +738,14 @@ class AiravataIf {
   virtual bool deleteExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& experimentId) = 0;
 
   /**
+   *   *
+   *   * Get Experiment
    *   * Fetch previously created experiment metadata.
    *   *
    *   * @param airavataExperimentId
-   *   *    The identifier for the requested experiment. This is returned during the create experiment step.
+   *   *    The unique identifier of the requested experiment. This ID is returned during the create experiment step.
    *   *
-   *   * @return experimentMetada
+   *   * @return ExperimentModel
    *   *   This method will return the previously stored experiment metadata.
    *   *
    *   * @throws org.apache.airavata.model.error.InvalidRequestException
@@ -693,14 +779,17 @@ class AiravataIf {
   virtual void getExperiment( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) = 0;
 
   /**
+   * 
+   * Get Complete Experiment Details
    * Fetch the completed nested tree structue of previously created experiment metadata which includes processes ->
    * tasks -> jobs information.
    * 
    * @param airavataExperimentId
    *    The identifier for the requested experiment. This is returned during the create experiment step.
    * 
-   * @return experimentMetada
-   *   This method will return the previously stored experiment metadata.
+   * @return ExperimentModel
+   *   This method will return the previously stored experiment metadata including application input parameters, computational resource scheduling
+   *   information, special input output handling and additional quality of service parameters.
    * 
    * @throws org.apache.airavata.model.error.InvalidRequestException
    *    For any incorrect forming of the request itself.
@@ -732,14 +821,15 @@ class AiravataIf {
   virtual void getDetailedExperimentTree( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) = 0;
 
   /**
-   * Configure a previously created experiment with required inputs, scheduling and other quality of service
-   *   parameters. This method only updates the experiment object within the registry. The experiment has to be launched
-   *   to make it actionable by the server.
+   * 
+   * Update a Previously Created Experiment
+   * Configure the CREATED experiment with required inputs, scheduling and other quality of service parameters. This method only updates the experiment object within the registry.
+   * The experiment has to be launched to make it actionable by the server.
    * 
    * @param airavataExperimentId
    *    The identifier for the requested experiment. This is returned during the create experiment step.
    * 
-   * @param experimentConfigurationData
+   * @param ExperimentModel
    *    The configuration information of the experiment with application input parameters, computational resource scheduling
    *      information, special input output handling and additional quality of service parameters.
    * 
@@ -780,13 +870,14 @@ class AiravataIf {
 
   /**
    *  *
-   *  * Validate experiment configuration. A true in general indicates, the experiment is ready to be launched.
+   *  * Validate experiment configuration.
+   *  * A true in general indicates, the experiment is ready to be launched.
    *  *
-   *  * @param experimentId
-   *  *
+   *  * @param airavataExperimentId
+   *  *    Unique identifier of the experiment (Experimnent ID) of the experiment which need to be validated.
    *  *
    *  * @return boolean
-   *  *      Identifier for the success or failure of the validation operation
+   *  *      Identifier for the success or failure of the validation operation.
    *  *
    * *
    * 
@@ -796,8 +887,12 @@ class AiravataIf {
   virtual bool validateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) = 0;
 
   /**
-   * Launch a previously created and configured experiment. Airavata Server will then start processing the request and appropriate
-   *   notifications and intermediate and output data will be subsequently available for this experiment.
+   * 
+   * Launch a Previously Created & Configured Experiment.
+   * Airavata Server will then start processing the request and appropriate notifications and intermediate and output data will be subsequently available for this experiment.
+   * 
+   * @gatewayId
+   *    ID of the gateway which will launch the experiment.
    * 
    * @param airavataExperimentId
    *    The identifier for the requested experiment. This is returned during the create experiment step.
@@ -836,17 +931,18 @@ class AiravataIf {
   virtual void launchExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId) = 0;
 
   /**
+   * 
    * Get Experiment Status
    * 
-   * Obtain the status os an experiment by providing the Experiment Id
+   * Obtain the status of an experiment by providing the Experiment Id
    * 
    * @param authzToken
    * 
-   * @param experiementId
-   *     Experiment ID of the experimnet you require the status
+   * @param airavataExperimentId
+   *     Experiment ID of the experimnet you require the status.
    * 
    * @return ExperimentStatus
-   *     ExperimentStatus model with current status will be returned.
+   *     ExperimentStatus model with the current status will be returned.
    * 
    * 
    * 
@@ -856,16 +952,17 @@ class AiravataIf {
   virtual void getExperimentStatus( ::apache::airavata::model::status::ExperimentStatus& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) = 0;
 
   /**
+   * 
    * Get Experiment Outputs
-   * This method to be used when need to obtain outputs of a certain Experiment
+   * This method to be used when need to obtain final outputs of a certain Experiment
    * 
    * @param authzToken
    * 
-   * @param experiementId
-   *     Experiment ID of the experimnet you need the outputs
+   * @param airavataExperimentId
+   *     Experiment ID of the experimnet you need the outputs.
    * 
    * @return list
-   *     List of experiment outputs will be returned. They will be returned as a list of OutputDataObjectType for the experiment
+   *     List of experiment outputs will be returned. They will be returned as a list of OutputDataObjectType for the experiment.
    * 
    * 
    * 
@@ -875,16 +972,17 @@ class AiravataIf {
   virtual void getExperimentOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) = 0;
 
   /**
+   * 
    * Get Intermediate Experiment Outputs
    * This method to be used when need to obtain intermediate outputs of a certain Experiment
    * 
    * @param authzToken
    * 
-   * @param experiementId
-   *     Experiment ID of the experimnet you need the intermediate outputs
+   * @param airavataExperimentId
+   *     Experiment ID of the experimnet you need intermediate outputs.
    * 
    * @return list
-   *     List of intermediate experiment outputs will be returned. They will be returned as a list of OutputDataObjectType for the experiment
+   *     List of intermediate experiment outputs will be returned. They will be returned as a list of OutputDataObjectType for the experiment.
    * 
    * 
    * 
@@ -894,13 +992,14 @@ class AiravataIf {
   virtual void getIntermediateOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) = 0;
 
   /**
-   * Get Job Status for an Experiment
+   * 
+   * Get Job Statuses for an Experiment
    * This method to be used when need to get the job status of an Experiment. An experiment may have one or many jobs; there for one or many job statuses may turnup
    * 
    * @param authzToken
    * 
    * @param experiementId
-   *     Experiment ID of the experimnet you need the intermediate outputs
+   *     Experiment ID of the experimnet you need the job statuses.
    * 
    * @return JobStatus
    *     Job status (string) for all all the existing jobs for the experiment will be returned in the form of a map
@@ -913,16 +1012,17 @@ class AiravataIf {
   virtual void getJobStatuses(std::map<std::string,  ::apache::airavata::model::status::JobStatus> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) = 0;
 
   /**
-   * Get Job Details for all the jobs within an Experiment
+   * 
+   * Get Job Details for all the jobs within an Experiment.
    * This method to be used when need to get the job details for one or many jobs of an Experiment.
    * 
    * @param authzToken
    * 
    * @param experiementId
-   *     Experiment ID of the experimnet you need job details
+   *     Experiment ID of the experimnet you need job details.
    * 
    * @return list of JobDetails
-   *     Job details
+   *     Job details.
    * 
    * 
    * 
@@ -932,7 +1032,9 @@ class AiravataIf {
   virtual void getJobDetails(std::vector< ::apache::airavata::model::job::JobModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) = 0;
 
   /**
-   * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
+   * 
+   * Clone an Existing Experiment
+   * Existing specified experiment is cloned and a new name is provided. A copy of the experiment configuration is made and is persisted with new metadata.
    *   The client has to subsequently update this configuration if needed and launch the cloned experiment.
    * 
    * @param newExperimentName
@@ -944,7 +1046,7 @@ class AiravataIf {
    *      should be shared public by default.
    * 
    * @return
-   *   The server-side generated.airavata.registry.core.experiment.globally unique identifier for the newly cloned experiment.
+   *   The server-side generated.airavata.registry.core.experiment.globally unique identifier (Experiment ID) for the newly cloned experiment.
    * 
    * @throws org.apache.airavata.model.error.InvalidRequestException
    *    For any incorrect forming of the request itself.
@@ -977,12 +1079,16 @@ class AiravataIf {
   virtual void cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName) = 0;
 
   /**
-   * Terminate a running experiment.
+   * 
+   * Terminate a running Experiment.
+   * 
+   * @gatewayId
+   *    ID of the gateway which will terminate the running Experiment.
    * 
    * @param airavataExperimentId
-   *    The identifier for the requested experiment. This is returned during the create experiment step.
+   *    The identifier of the experiment required termination. This ID is returned during the create experiment step.
    * 
-   * @return
+   * @return status
    *   This method call does not have a return value.
    * 
    * @throws org.apache.airavata.model.error.InvalidRequestException
@@ -1016,13 +1122,17 @@ class AiravataIf {
   virtual void terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId) = 0;
 
   /**
+   * 
    * Register a Application Module.
+   * 
+   * @gatewayId
+   *    ID of the gateway which is registering the new Application Module.
    * 
    * @param applicationModule
    *    Application Module Object created from the datamodel.
    * 
    * @return appModuleId
-   *   Returns a server-side generated airavata appModule globally unique identifier.
+   *   Returns the server-side generated airavata appModule globally unique identifier.
    * 
    * 
    * @param authzToken
@@ -1032,13 +1142,14 @@ class AiravataIf {
   virtual void registerApplicationModule(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) = 0;
 
   /**
+   * 
    * Fetch a Application Module.
    * 
    * @param appModuleId
-   *   The identifier for the requested application module
+   *   The unique identifier of the application module required
    * 
    * @return applicationModule
-   *   Returns a application Module Object.
+   *   Returns an Application Module Object.
    * 
    * 
    * @param authzToken
@@ -1047,6 +1158,7 @@ class AiravataIf {
   virtual void getApplicationModule( ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appModuleId) = 0;
 
   /**
+   * 
    * Update a Application Module.
    * 
    * @param appModuleId
@@ -1064,13 +1176,29 @@ class AiravataIf {
    * @param applicationModule
    */
   virtual bool updateApplicationModule(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) = 0;
+
+  /**
+   * 
+   * Fetch all Application Module Descriptions.
+   * 
+   * @param gatewayId
+   *    ID of the gateway which need to list all available application deployment documentation.
+   * 
+   * @return list
+   *    Returns the list of all Application Module Objects.
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   */
   virtual void getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
 
   /**
-   * Delete a Application Module.
+   * 
+   * Delete an Application Module.
    * 
    * @param appModuleId
-   *   The identifier for the requested application module to be deleted.
+   *   The identifier of the Application Module to be deleted.
    * 
    * @return status
    *   Returns a success/failure of the deletion.
@@ -1082,9 +1210,13 @@ class AiravataIf {
   virtual bool deleteApplicationModule(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appModuleId) = 0;
 
   /**
-   * Register a Application Deployment.
    * 
-   * @param applicationModule
+   * Register an Application Deployment.
+   * 
+   * @param gatewayId
+   *    ID of the gateway which is registering the new Application Deployment.
+   * 
+   * @param applicationDeployment
    *    Application Module Object created from the datamodel.
    * 
    * @return appDeploymentId
@@ -1098,6 +1230,7 @@ class AiravataIf {
   virtual void registerApplicationDeployment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) = 0;
 
   /**
+   * 
    * Fetch a Application Deployment.
    * 
    * @param appDeploymentId
@@ -1113,10 +1246,11 @@ class AiravataIf {
   virtual void getApplicationDeployment( ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appDeploymentId) = 0;
 
   /**
-   * Update a Application Deployment.
+   * 
+   * Update an Application Deployment.
    * 
    * @param appDeploymentId
-   *   The identifier for the requested application deployment to be updated.
+   *   The identifier of the requested application deployment to be updated.
    * 
    * @param appDeployment
    *    Application Deployment Object created from the datamodel.
@@ -1132,10 +1266,11 @@ class AiravataIf {
   virtual bool updateApplicationDeployment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appDeploymentId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) = 0;
 
   /**
-   * Delete a Application deployment.
+   * 
+   * Delete an Application Deployment.
    * 
    * @param appDeploymentId
-   *   The identifier for the requested application deployment to be deleted.
+   *   The unique identifier of application deployment to be deleted.
    * 
    * @return status
    *   Returns a success/failure of the deletion.
@@ -1147,10 +1282,14 @@ class AiravataIf {
   virtual bool deleteApplicationDeployment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appDeploymentId) = 0;
 
   /**
+   * 
    * Fetch all Application Deployment Descriptions.
    * 
+   * @param gatewayId
+   *    ID of the gateway which need to list all available application deployment documentation.
+   * 
    * @return list<applicationDeployment.
-   *   Returns the list of all application Deployment Objects.
+   *    Returns the list of all application Deployment Objects.
    * 
    * 
    * @param authzToken
@@ -1174,9 +1313,10 @@ class AiravataIf {
   virtual void getAppModuleDeployedResources(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appModuleId) = 0;
 
   /**
+   * 
    * Register a Application Interface.
    * 
-   * @param applicationModule
+   * @param applicationInterface
    *    Application Module Object created from the datamodel.
    * 
    * @return appInterfaceId
@@ -1188,17 +1328,40 @@ class AiravataIf {
    * @param applicationInterface
    */
   virtual void registerApplicationInterface(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) = 0;
+
+  /**
+   * 
+   * Clone an Application Interface.
+   * 
+   * @gatewayId
+   *    The identifier for the gateway profile to be requested
+   * 
+   * @param existingAppInterfaceID
+   *    Identifier of the existing Application interface you wich to clone.
+   * 
+   * @param newApplicationName
+   *    Name for the new application interface.
+   * 
+   * @return appInterfaceId
+   *    Returns a server-side generated globally unique identifier for the newly cloned application interface.
+   * 
+   * 
+   * @param authzToken
+   * @param existingAppInterfaceID
+   * @param newApplicationName
+   * @param gatewayId
+   */
   virtual void cloneApplicationInterface(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingAppInterfaceID, const std::string& newApplicationName, const std::string& gatewayId) = 0;
 
   /**
-   * Fetch a Application Interface.
+   * 
+   * Fetch an Application Interface.
    * 
    * @param appInterfaceId
-   *   The identifier for the requested application module
+   *   The identifier for the requested application interface.
    * 
    * @return applicationInterface
-   *   Returns a application Interface Object.
-   * 
+   *   Returns an application Interface Object.
    * 
    * 
    * @param authzToken
@@ -1207,17 +1370,17 @@ class AiravataIf {
   virtual void getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appInterfaceId) = 0;
 
   /**
+   * 
    * Update a Application Interface.
    * 
    * @param appInterfaceId
-   *   The identifier for the requested application deployment to be updated.
+   *   The identifier of the requested application deployment to be updated.
    * 
    * @param appInterface
    *    Application Interface Object created from the datamodel.
    * 
    * @return status
    *   Returns a success/failure of the update.
-   * 
    * 
    * 
    * @param authzToken
@@ -1227,7 +1390,8 @@ class AiravataIf {
   virtual bool updateApplicationInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appInterfaceId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) = 0;
 
   /**
-   * Delete a Application Interface.
+   * 
+   * Delete an Application Interface.
    * 
    * @param appInterfaceId
    *   The identifier for the requested application interface to be deleted.
@@ -1236,18 +1400,18 @@ class AiravataIf {
    *   Returns a success/failure of the deletion.
    * 
    * 
-   * 
    * @param authzToken
    * @param appInterfaceId
    */
   virtual bool deleteApplicationInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appInterfaceId) = 0;
 
   /**
-   * Fetch name and id of  Application Interface documents.
+   * 
+   * Fetch name and ID of  Application Interface documents.
    * 
    * 
    * @return map<applicationId, applicationInterfaceNames>
-   *   Returns a list of application interfaces with corresponsing id's
+   *   Returns a list of application interfaces with corresponsing ID's
    * 
    * 
    * @param authzToken
@@ -1256,11 +1420,12 @@ class AiravataIf {
   virtual void getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
 
   /**
+   * 
    * Fetch all Application Interface documents.
    * 
    * 
    * @return map<applicationId, applicationInterfaceNames>
-   *   Returns a list of application interfaces documents
+   *   Returns a list of application interfaces documents (Application Interface ID, name, description, Inputs and Outputs objects).
    * 
    * 
    * @param authzToken
@@ -1269,10 +1434,11 @@ class AiravataIf {
   virtual void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
 
   /**
+   * 
    * Fetch the list of Application Inputs.
    * 
    * @param appInterfaceId
-   *   The identifier for the requested application interface
+   *   The identifier of the application interface which need inputs to be fetched.
    * 
    * @return list<application_interface_model.InputDataObjectType>
    *   Returns a list of application inputs.
@@ -1284,10 +1450,11 @@ class AiravataIf {
   virtual void getApplicationInputs(std::vector< ::apache::airavata::model::application::io::InputDataObjectType> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appInterfaceId) = 0;
 
   /**
-   * Fetch the list of Application Outputs.
+   * 
+   * Fetch list of Application Outputs.
    * 
    * @param appInterfaceId
-   *   The identifier for the requested application interface
+   *   The identifier of the application interface which need outputs to be fetched.
    * 
    * @return list<application_interface_model.OutputDataObjectType>
    *   Returns a list of application outputs.
@@ -1299,14 +1466,15 @@ class AiravataIf {
   virtual void getApplicationOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appInterfaceId) = 0;
 
   /**
+   * 
    * Fetch a list of all deployed Compute Hosts for a given application interfaces.
    * 
    * @param appInterfaceId
-   *   The identifier for the requested application interface
+   *   The identifier for the requested application interface.
    * 
    * @return map<computeResourceId, computeResourceName>
    *   A map of registered compute resource id's and their corresponding hostnames.
-   *    Deployments of each modules listed within the interfaces will be listed.
+   *   Deployments of each modules listed within the interfaces will be listed.
    * 
    * 
    * @param authzToken
@@ -1345,6 +1513,7 @@ class AiravataIf {
   virtual void getComputeResource( ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId) = 0;
 
   /**
+   * 
    * Fetch all registered Compute Resources.
    * 
    * @return A map of registered compute resource id's and thier corresponding hostnames.
@@ -1431,7 +1600,7 @@ class AiravataIf {
   virtual void getAllStorageResourceNames(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) = 0;
 
   /**
-   * Update a Compute Resource.
+   * Update a Storage Resource.
    * 
    * @param storageResourceId
    *   The identifier for the requested compute resource to be updated.
@@ -1453,7 +1622,7 @@ class AiravataIf {
    * Delete a Storage Resource.
    * 
    * @param storageResourceId
-   *   The identifier for the requested compute resource to be deleted.
+   *   The identifier of the requested compute resource to be deleted.
    * 
    * @return status
    *   Returns a success/failure of the deletion.
@@ -1580,6 +1749,7 @@ class AiravataIf {
   virtual void getSSHJobSubmission( ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionId) = 0;
 
   /**
+   * 
    * Add a UNICORE Job Submission details to a compute resource
    *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
    * 
@@ -1604,10 +1774,13 @@ class AiravataIf {
   virtual void addUNICOREJobSubmissionDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission) = 0;
 
   /**
+   *   *
    *   * This method returns UnicoreJobSubmission object
+   *   *
    *   * @param jobSubmissionInterfaceId
    *   *   The identifier of the JobSubmission Interface to be retrieved.
    *   *  @return UnicoreJobSubmission instance
+   *   *
    * *
    * 
    * @param authzToken
@@ -1616,6 +1789,7 @@ class AiravataIf {
   virtual void getUnicoreJobSubmission( ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionId) = 0;
 
   /**
+   *    *
    *    * Add a Cloud Job Submission details to a compute resource
    *    *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
    *    *
@@ -1630,6 +1804,7 @@ class AiravataIf {
    *    *
    *    * @return status
    *    *   Returns the unique job submission id.
+   *    *
    * *
    * 
    * @param authzToken
@@ -1640,6 +1815,7 @@ class AiravataIf {
   virtual void addCloudJobSubmissionDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& cloudSubmission) = 0;
 
   /**
+   *    *
    *    * This method returns cloudJobSubmission object
    *    * @param jobSubmissionInterfaceI
    *        *   The identifier of the JobSubmission Interface to be retrieved.
@@ -1652,6 +1828,7 @@ class AiravataIf {
   virtual void getCloudJobSubmission( ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionId) = 0;
 
   /**
+   * 
    * Update the given SSH Job Submission details
    * 
    * @param jobSubmissionInterfaceId
@@ -1671,6 +1848,7 @@ class AiravataIf {
   virtual bool updateSSHJobSubmissionDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) = 0;
 
   /**
+   * 
    * Update the cloud Job Submission details
    * 
    * @param jobSubmissionInterfaceId
@@ -1690,6 +1868,7 @@ class AiravataIf {
   virtual bool updateCloudJobSubmissionDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& sshJobSubmission) = 0;
 
   /**
+   * 
    * Update the UNIOCRE Job Submission details
    * 
    * @param jobSubmissionInterfaceId
@@ -1710,6 +1889,7 @@ class AiravataIf {
   virtual bool updateUnicoreJobSubmissionDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission) = 0;
 
   /**
+   * 
    * Add a Local data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
@@ -1739,6 +1919,7 @@ class AiravataIf {
   virtual void addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement) = 0;
 
   /**
+   * 
    * Update the given Local data movement details
    * 
    * @param dataMovementInterfaceId
@@ -1759,7 +1940,8 @@ class AiravataIf {
   virtual bool updateLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement) = 0;
 
   /**
-   * This method returns local datamovement object
+   * 
+   * This method returns local datamovement object.
    * 
    * @param dataMovementId
    *   The identifier of the datamovement Interface to be retrieved.
@@ -1774,6 +1956,7 @@ class AiravataIf {
   virtual void getLocalDataMovement( ::apache::airavata::model::data::movement::LOCALDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId) = 0;
 
   /**
+   * 
    * Add a SCP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
@@ -1799,6 +1982,7 @@ class AiravataIf {
   virtual void addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement) = 0;
 
   /**
+   * 
    * Update the given scp data movement details
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
@@ -1834,6 +2018,7 @@ class AiravataIf {
   virtual void getSCPDataMovement( ::apache::airavata::model::data::movement::SCPDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId) = 0;
 
   /**
+   * 
    * Add a UNICORE data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
@@ -1859,6 +2044,7 @@ class AiravataIf {
   virtual void addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement) = 0;
 
   /**
+   * 
    * Update a selected UNICORE data movement details
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
@@ -1880,6 +2066,7 @@ class AiravataIf {
   virtual bool updateUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement) = 0;
 
   /**
+   * 
    * This method returns UNICORE datamovement object
    * 
    * @param dataMovementId
@@ -1895,6 +2082,7 @@ class AiravataIf {
   virtual void getUnicoreDataMovement( ::apache::airavata::model::data::movement::UnicoreDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId) = 0;
 
   /**
+   * 
    * Add a GridFTP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
@@ -2059,10 +2247,11 @@ class AiravataIf {
    * 
    * 
    * @param authzToken
-   * @param computeResourceId
+   * @param resourceId
    * @param dataMovementInterfaceId
+   * @param dataMoveType
    */
-  virtual bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& dataMovementInterfaceId) = 0;
+  virtual bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType) = 0;
   virtual void registerResourceJobManager(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager) = 0;
   virtual bool updateResourceJobManager(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceJobManagerId, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& updatedResourceJobManager) = 0;
   virtual void getResourceJobManager( ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceJobManagerId) = 0;
@@ -2109,7 +2298,7 @@ class AiravataIf {
    * Fetch the given Gateway Resource Profile.
    * 
    * @param gatewayID
-   *   The identifier for the requested gateway resource
+   *   The identifier for the requested gateway resource.
    * 
    * @return gatewayResourceProfile
    *    Gateway Resource Profile Object.
@@ -2177,9 +2366,33 @@ class AiravataIf {
    * @param computeResourcePreference
    */
   virtual bool addGatewayComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference) = 0;
+
+  /**
+   * Add a Storage Resource Preference to a registered gateway profile.
+   * 
+   * @param gatewayID
+   *   The identifier of the gateway profile to be added.
+   * 
+   * @param storageResourceId
+   *   Preferences related to a particular compute resource
+   * 
+   * @param computeResourcePreference
+   *   The ComputeResourcePreference object to be added to the resource profile.
+   * 
+   * @return status
+   *   Returns a success/failure of the addition. If a profile already exists, this operation will fail.
+   *    Instead an update should be used.
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayID
+   * @param storageResourceId
+   * @param storagePreference
+   */
   virtual bool addGatewayStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& storageResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference& storagePreference) = 0;
 
   /**
+   * 
    * Fetch a Compute Resource Preference of a registered gateway profile.
    * 
    * @param gatewayID
@@ -2197,9 +2410,29 @@ class AiravataIf {
    * @param computeResourceId
    */
   virtual void getGatewayComputeResourcePreference( ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& computeResourceId) = 0;
+
+  /**
+   * 
+   * Fetch a Storage Resource Preference of a registered gateway profile.
+   * 
+   * @param gatewayID
+   *   The identifier of the gateway profile to request to fetch the particular storage resource preference.
+   * 
+   * @param storageResourceId
+   *   Identifier of the Stprage Preference required to be fetched.
+   * 
+   * @return StoragePreference
+   *   Returns the StoragePreference object.
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayID
+   * @param storageResourceId
+   */
   virtual void getGatewayStoragePreference( ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& storageResourceId) = 0;
 
   /**
+   * 
    * Fetch all Compute Resource Preferences of a registered gateway profile.
    * 
    * @param gatewayID
@@ -2213,10 +2446,29 @@ class AiravataIf {
    * @param gatewayID
    */
   virtual void getAllGatewayComputeResourcePreferences(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID) = 0;
+
+  /**
+   * Fetch all Storage Resource Preferences of a registered gateway profile.
+   * 
+   * @param gatewayID
+   *   The identifier for the gateway profile to be requested
+   * 
+   * @return StoragePreference
+   *   Returns the StoragePreference object.
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayID
+   */
   virtual void getAllGatewayStoragePreferences(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID) = 0;
 
   /**
-   * Fetch all gateway profiles registered
+   * 
+   * Fetch all Gateway Profiles registered
+   * 
+   * @return GatewayResourceProfile
+   *   Returns all the GatewayResourcePrifle list object.
+   * 
    * 
    * 
    * @param authzToken
@@ -2245,6 +2497,28 @@ class AiravataIf {
    * @param computeResourcePreference
    */
   virtual bool updateGatewayComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference) = 0;
+
+  /**
+   * Update a Storage Resource Preference of a registered gateway profile.
+   * 
+   * @param gatewayID
+   *   The identifier of the gateway profile to be updated.
+   * 
+   * @param storageId
+   *   The Storage resource identifier of the one that you want to update
+   * 
+   * @param storagePreference
+   *   The storagePreference object to be updated to the resource profile.
+   * 
+   * @return status
+   *   Returns a success/failure of the updation.
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayID
+   * @param storageId
+   * @param storagePreference
+   */
   virtual bool updateGatewayStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& storageId, const  ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference& storagePreference) = 0;
 
   /**
@@ -2265,17 +2539,63 @@ class AiravataIf {
    * @param computeResourceId
    */
   virtual bool deleteGatewayComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& computeResourceId) = 0;
+
+  /**
+   * Delete the Storage Resource Preference of a registered gateway profile.
+   * 
+   * @param gatewayID
+   *   The identifier of the gateway profile to be deleted.
+   * 
+   * @param storageId
+   *   ID of the storage preference you want to delete.
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayID
+   * @param storageId
+   */
   virtual bool deleteGatewayStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& storageId) = 0;
+
+  /**
+   * Delete the Storage Resource Preference of a registered gateway profile.
+   * 
+   * @param gatewayID
+   *   The identifier of the gateway profile to be deleted.
+   * 
+   * @param storageId
+   *   ID of the storage preference you want to delete.
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   */
   virtual void getAllWorkflows(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
-  virtual void getWorkflow( ::Workflow& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId) = 0;
+
+  /**
+   * 
+   * API Methods Related for Work-Flow Submission Features.
+   * 
+   * 
+   * @param authzToken
+   * @param workflowTemplateId
+   */
+  virtual void getWorkflow( ::WorkflowModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId) = 0;
   virtual void deleteWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId) = 0;
-  virtual void registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::Workflow& workflow) = 0;
-  virtual void updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::Workflow& workflow) = 0;
+  virtual void registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::WorkflowModel& workflow) = 0;
+  virtual void updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::WorkflowModel& workflow) = 0;
   virtual void getWorkflowTemplateId(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName) = 0;
   virtual bool isWorkflowExistWithName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName) = 0;
 
   /**
-   *  * Data Manager Related API Methods
+   *  *
+   *  * Data Manager Related API Methods.
+   *  *
    * *
    * 
    * @param authzToken
@@ -2660,7 +2980,7 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* computeResourceId */, const std::string& /* dataMovementInterfaceId */) {
+  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* resourceId */, const std::string& /* dataMovementInterfaceId */, const  ::apache::airavata::model::data::movement::DMType::type /* dataMoveType */) {
     bool _return = false;
     return _return;
   }
@@ -2738,16 +3058,16 @@ class AiravataNull : virtual public AiravataIf {
   void getAllWorkflows(std::vector<std::string> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */) {
     return;
   }
-  void getWorkflow( ::Workflow& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* workflowTemplateId */) {
+  void getWorkflow( ::WorkflowModel& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* workflowTemplateId */) {
     return;
   }
   void deleteWorkflow(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* workflowTemplateId */) {
     return;
   }
-  void registerWorkflow(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const  ::Workflow& /* workflow */) {
+  void registerWorkflow(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const  ::WorkflowModel& /* workflow */) {
     return;
   }
-  void updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* workflowTemplateId */, const  ::Workflow& /* workflow */) {
+  void updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* workflowTemplateId */, const  ::WorkflowModel& /* workflow */) {
     return;
   }
   void getWorkflowTemplateId(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* workflowName */) {
@@ -17645,27 +17965,32 @@ class Airavata_deleteDataMovementInterface_args {
 
   Airavata_deleteDataMovementInterface_args(const Airavata_deleteDataMovementInterface_args&);
   Airavata_deleteDataMovementInterface_args& operator=(const Airavata_deleteDataMovementInterface_args&);
-  Airavata_deleteDataMovementInterface_args() : computeResourceId(), dataMovementInterfaceId() {
+  Airavata_deleteDataMovementInterface_args() : resourceId(), dataMovementInterfaceId(), dataMoveType(( ::apache::airavata::model::data::movement::DMType::type)0) {
   }
 
   virtual ~Airavata_deleteDataMovementInterface_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
-  std::string computeResourceId;
+  std::string resourceId;
   std::string dataMovementInterfaceId;
+   ::apache::airavata::model::data::movement::DMType::type dataMoveType;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
-  void __set_computeResourceId(const std::string& val);
+  void __set_resourceId(const std::string& val);
 
   void __set_dataMovementInterfaceId(const std::string& val);
+
+  void __set_dataMoveType(const  ::apache::airavata::model::data::movement::DMType::type val);
 
   bool operator == (const Airavata_deleteDataMovementInterface_args & rhs) const
   {
     if (!(authzToken == rhs.authzToken))
       return false;
-    if (!(computeResourceId == rhs.computeResourceId))
+    if (!(resourceId == rhs.resourceId))
       return false;
     if (!(dataMovementInterfaceId == rhs.dataMovementInterfaceId))
+      return false;
+    if (!(dataMoveType == rhs.dataMoveType))
       return false;
     return true;
   }
@@ -17687,8 +18012,9 @@ class Airavata_deleteDataMovementInterface_pargs {
 
   virtual ~Airavata_deleteDataMovementInterface_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* computeResourceId;
+  const std::string* resourceId;
   const std::string* dataMovementInterfaceId;
+  const  ::apache::airavata::model::data::movement::DMType::type* dataMoveType;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -20788,7 +21114,7 @@ class Airavata_getWorkflow_result {
   }
 
   virtual ~Airavata_getWorkflow_result() throw();
-   ::Workflow success;
+   ::WorkflowModel success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -20796,7 +21122,7 @@ class Airavata_getWorkflow_result {
 
   _Airavata_getWorkflow_result__isset __isset;
 
-  void __set_success(const  ::Workflow& val);
+  void __set_success(const  ::WorkflowModel& val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -20845,7 +21171,7 @@ class Airavata_getWorkflow_presult {
 
 
   virtual ~Airavata_getWorkflow_presult() throw();
-   ::Workflow* success;
+   ::WorkflowModel* success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -20997,13 +21323,13 @@ class Airavata_registerWorkflow_args {
   virtual ~Airavata_registerWorkflow_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string gatewayId;
-   ::Workflow workflow;
+   ::WorkflowModel workflow;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
   void __set_gatewayId(const std::string& val);
 
-  void __set_workflow(const  ::Workflow& val);
+  void __set_workflow(const  ::WorkflowModel& val);
 
   bool operator == (const Airavata_registerWorkflow_args & rhs) const
   {
@@ -21034,7 +21360,7 @@ class Airavata_registerWorkflow_pargs {
   virtual ~Airavata_registerWorkflow_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* gatewayId;
-  const  ::Workflow* workflow;
+  const  ::WorkflowModel* workflow;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -21139,13 +21465,13 @@ class Airavata_updateWorkflow_args {
   virtual ~Airavata_updateWorkflow_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string workflowTemplateId;
-   ::Workflow workflow;
+   ::WorkflowModel workflow;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
   void __set_workflowTemplateId(const std::string& val);
 
-  void __set_workflow(const  ::Workflow& val);
+  void __set_workflow(const  ::WorkflowModel& val);
 
   bool operator == (const Airavata_updateWorkflow_args & rhs) const
   {
@@ -21176,7 +21502,7 @@ class Airavata_updateWorkflow_pargs {
   virtual ~Airavata_updateWorkflow_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* workflowTemplateId;
-  const  ::Workflow* workflow;
+  const  ::WorkflowModel* workflow;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -22703,8 +23029,8 @@ class AiravataClient : virtual public AiravataIf {
   bool deleteJobSubmissionInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& jobSubmissionInterfaceId);
   void send_deleteJobSubmissionInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& jobSubmissionInterfaceId);
   bool recv_deleteJobSubmissionInterface();
-  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& dataMovementInterfaceId);
-  void send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& dataMovementInterfaceId);
+  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType);
+  void send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType);
   bool recv_deleteDataMovementInterface();
   void registerResourceJobManager(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager);
   void send_registerResourceJobManager(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager);
@@ -22769,17 +23095,17 @@ class AiravataClient : virtual public AiravataIf {
   void getAllWorkflows(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void send_getAllWorkflows(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getAllWorkflows(std::vector<std::string> & _return);
-  void getWorkflow( ::Workflow& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId);
+  void getWorkflow( ::WorkflowModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId);
   void send_getWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId);
-  void recv_getWorkflow( ::Workflow& _return);
+  void recv_getWorkflow( ::WorkflowModel& _return);
   void deleteWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId);
   void send_deleteWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId);
   void recv_deleteWorkflow();
-  void registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::Workflow& workflow);
-  void send_registerWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::Workflow& workflow);
+  void registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::WorkflowModel& workflow);
+  void send_registerWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::WorkflowModel& workflow);
   void recv_registerWorkflow(std::string& _return);
-  void updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::Workflow& workflow);
-  void send_updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::Workflow& workflow);
+  void updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::WorkflowModel& workflow);
+  void send_updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::WorkflowModel& workflow);
   void recv_updateWorkflow();
   void getWorkflowTemplateId(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName);
   void send_getWorkflowTemplateId(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName);
@@ -24143,13 +24469,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->deleteJobSubmissionInterface(authzToken, computeResourceId, jobSubmissionInterfaceId);
   }
 
-  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& dataMovementInterfaceId) {
+  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->deleteDataMovementInterface(authzToken, computeResourceId, dataMovementInterfaceId);
+      ifaces_[i]->deleteDataMovementInterface(authzToken, resourceId, dataMovementInterfaceId, dataMoveType);
     }
-    return ifaces_[i]->deleteDataMovementInterface(authzToken, computeResourceId, dataMovementInterfaceId);
+    return ifaces_[i]->deleteDataMovementInterface(authzToken, resourceId, dataMovementInterfaceId, dataMoveType);
   }
 
   void registerResourceJobManager(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager) {
@@ -24351,7 +24677,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getWorkflow( ::Workflow& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId) {
+  void getWorkflow( ::WorkflowModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -24370,7 +24696,7 @@ class AiravataMultiface : virtual public AiravataIf {
     ifaces_[i]->deleteWorkflow(authzToken, workflowTemplateId);
   }
 
-  void registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::Workflow& workflow) {
+  void registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::WorkflowModel& workflow) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -24380,7 +24706,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::Workflow& workflow) {
+  void updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::WorkflowModel& workflow) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -24811,8 +25137,8 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   bool deleteJobSubmissionInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& jobSubmissionInterfaceId);
   int32_t send_deleteJobSubmissionInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& jobSubmissionInterfaceId);
   bool recv_deleteJobSubmissionInterface(const int32_t seqid);
-  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& dataMovementInterfaceId);
-  int32_t send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& dataMovementInterfaceId);
+  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType);
+  int32_t send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType);
   bool recv_deleteDataMovementInterface(const int32_t seqid);
   void registerResourceJobManager(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager);
   int32_t send_registerResourceJobManager(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager);
@@ -24877,17 +25203,17 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void getAllWorkflows(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   int32_t send_getAllWorkflows(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getAllWorkflows(std::vector<std::string> & _return, const int32_t seqid);
-  void getWorkflow( ::Workflow& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId);
+  void getWorkflow( ::WorkflowModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId);
   int32_t send_getWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId);
-  void recv_getWorkflow( ::Workflow& _return, const int32_t seqid);
+  void recv_getWorkflow( ::WorkflowModel& _return, const int32_t seqid);
   void deleteWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId);
   int32_t send_deleteWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId);
   void recv_deleteWorkflow(const int32_t seqid);
-  void registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::Workflow& workflow);
-  int32_t send_registerWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::Workflow& workflow);
+  void registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::WorkflowModel& workflow);
+  int32_t send_registerWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::WorkflowModel& workflow);
   void recv_registerWorkflow(std::string& _return, const int32_t seqid);
-  void updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::Workflow& workflow);
-  int32_t send_updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::Workflow& workflow);
+  void updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::WorkflowModel& workflow);
+  int32_t send_updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::WorkflowModel& workflow);
   void recv_updateWorkflow(const int32_t seqid);
   void getWorkflowTemplateId(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName);
   int32_t send_getWorkflowTemplateId(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName);

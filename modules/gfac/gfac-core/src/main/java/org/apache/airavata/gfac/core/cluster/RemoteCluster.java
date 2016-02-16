@@ -22,6 +22,8 @@ package org.apache.airavata.gfac.core.cluster;
 
 import com.jcraft.jsch.Session;
 import org.apache.airavata.gfac.core.SSHApiException;
+import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
+import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
 import org.apache.airavata.model.status.JobStatus;
 
 import java.util.List;
@@ -151,6 +153,7 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 */
 	public ServerInfo getServerInfo();
 
+    public AuthenticationInfo getAuthentication();
     enum DIRECTION {
         TO,
         FROM

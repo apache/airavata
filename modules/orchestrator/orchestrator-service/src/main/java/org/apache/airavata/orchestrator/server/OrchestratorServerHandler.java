@@ -141,6 +141,12 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			String experimentCancelNode = ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
 			ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
 
+            experiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            if (experiment == null) {
+                log.error(experimentId, "Error retrieving the Experiment by the given experimentID: {} ", experimentId);
+                return false;
+            }
+
 			ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().
 					getComputeResourcePreference(gatewayId,
 							experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
@@ -159,11 +165,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			if (executionType == ExperimentType.SINGLE_APPLICATION) {
 				//its an single application execution experiment
 				List<ProcessModel> processes = orchestrator.createProcesses(experimentId, gatewayId);
-				experiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
-				if (experiment == null) {
-					log.error(experimentId, "Error retrieving the Experiment by the given experimentID: {} ", experimentId);
-					return false;
-				}
 				for (ProcessModel processModel : processes){
 					String taskDag = orchestrator.createAndSaveTasks(gatewayId, processModel, experiment.getUserConfigurationData().isAiravataAutoSchedule());
 					processModel.setTaskDag(taskDag);

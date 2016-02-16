@@ -33185,8 +33185,9 @@ uint32_t Airavata_deleteDataMovementInterface_args::read(::apache::thrift::proto
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_authzToken = false;
-  bool isset_computeResourceId = false;
+  bool isset_resourceId = false;
   bool isset_dataMovementInterfaceId = false;
+  bool isset_dataMoveType = false;
 
   while (true)
   {
@@ -33206,8 +33207,8 @@ uint32_t Airavata_deleteDataMovementInterface_args::read(::apache::thrift::proto
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->computeResourceId);
-          isset_computeResourceId = true;
+          xfer += iprot->readString(this->resourceId);
+          isset_resourceId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -33216,6 +33217,16 @@ uint32_t Airavata_deleteDataMovementInterface_args::read(::apache::thrift::proto
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->dataMovementInterfaceId);
           isset_dataMovementInterfaceId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast369;
+          xfer += iprot->readI32(ecast369);
+          this->dataMoveType = ( ::apache::airavata::model::data::movement::DMType::type)ecast369;
+          isset_dataMoveType = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -33231,9 +33242,11 @@ uint32_t Airavata_deleteDataMovementInterface_args::read(::apache::thrift::proto
 
   if (!isset_authzToken)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_computeResourceId)
+  if (!isset_resourceId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_dataMovementInterfaceId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_dataMoveType)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -33247,12 +33260,16 @@ uint32_t Airavata_deleteDataMovementInterface_args::write(::apache::thrift::prot
   xfer += this->authzToken.write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("computeResourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->computeResourceId);
+  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->resourceId);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("dataMovementInterfaceId", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString(this->dataMovementInterfaceId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("dataMoveType", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32((int32_t)this->dataMoveType);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -33274,12 +33291,16 @@ uint32_t Airavata_deleteDataMovementInterface_pargs::write(::apache::thrift::pro
   xfer += (*(this->authzToken)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("computeResourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString((*(this->computeResourceId)));
+  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->resourceId)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("dataMovementInterfaceId", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString((*(this->dataMovementInterfaceId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("dataMoveType", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32((int32_t)(*(this->dataMoveType)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -37534,14 +37555,14 @@ uint32_t Airavata_getAllGatewayComputeResourcePreferences_result::read(::apache:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size369;
-            ::apache::thrift::protocol::TType _etype372;
-            xfer += iprot->readListBegin(_etype372, _size369);
-            this->success.resize(_size369);
-            uint32_t _i373;
-            for (_i373 = 0; _i373 < _size369; ++_i373)
+            uint32_t _size370;
+            ::apache::thrift::protocol::TType _etype373;
+            xfer += iprot->readListBegin(_etype373, _size370);
+            this->success.resize(_size370);
+            uint32_t _i374;
+            for (_i374 = 0; _i374 < _size370; ++_i374)
             {
-              xfer += this->success[_i373].read(iprot);
+              xfer += this->success[_i374].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -37604,10 +37625,10 @@ uint32_t Airavata_getAllGatewayComputeResourcePreferences_result::write(::apache
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> ::const_iterator _iter374;
-      for (_iter374 = this->success.begin(); _iter374 != this->success.end(); ++_iter374)
+      std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> ::const_iterator _iter375;
+      for (_iter375 = this->success.begin(); _iter375 != this->success.end(); ++_iter375)
       {
-        xfer += (*_iter374).write(oprot);
+        xfer += (*_iter375).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -37664,14 +37685,14 @@ uint32_t Airavata_getAllGatewayComputeResourcePreferences_presult::read(::apache
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size375;
-            ::apache::thrift::protocol::TType _etype378;
-            xfer += iprot->readListBegin(_etype378, _size375);
-            (*(this->success)).resize(_size375);
-            uint32_t _i379;
-            for (_i379 = 0; _i379 < _size375; ++_i379)
+            uint32_t _size376;
+            ::apache::thrift::protocol::TType _etype379;
+            xfer += iprot->readListBegin(_etype379, _size376);
+            (*(this->success)).resize(_size376);
+            uint32_t _i380;
+            for (_i380 = 0; _i380 < _size376; ++_i380)
             {
-              xfer += (*(this->success))[_i379].read(iprot);
+              xfer += (*(this->success))[_i380].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -37855,14 +37876,14 @@ uint32_t Airavata_getAllGatewayStoragePreferences_result::read(::apache::thrift:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size380;
-            ::apache::thrift::protocol::TType _etype383;
-            xfer += iprot->readListBegin(_etype383, _size380);
-            this->success.resize(_size380);
-            uint32_t _i384;
-            for (_i384 = 0; _i384 < _size380; ++_i384)
+            uint32_t _size381;
+            ::apache::thrift::protocol::TType _etype384;
+            xfer += iprot->readListBegin(_etype384, _size381);
+            this->success.resize(_size381);
+            uint32_t _i385;
+            for (_i385 = 0; _i385 < _size381; ++_i385)
             {
-              xfer += this->success[_i384].read(iprot);
+              xfer += this->success[_i385].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -37925,10 +37946,10 @@ uint32_t Airavata_getAllGatewayStoragePreferences_result::write(::apache::thrift
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference> ::const_iterator _iter385;
-      for (_iter385 = this->success.begin(); _iter385 != this->success.end(); ++_iter385)
+      std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::StoragePreference> ::const_iterator _iter386;
+      for (_iter386 = this->success.begin(); _iter386 != this->success.end(); ++_iter386)
       {
-        xfer += (*_iter385).write(oprot);
+        xfer += (*_iter386).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -37985,14 +38006,14 @@ uint32_t Airavata_getAllGatewayStoragePreferences_presult::read(::apache::thrift
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size386;
-            ::apache::thrift::protocol::TType _etype389;
-            xfer += iprot->readListBegin(_etype389, _size386);
-            (*(this->success)).resize(_size386);
-            uint32_t _i390;
-            for (_i390 = 0; _i390 < _size386; ++_i390)
+            uint32_t _size387;
+            ::apache::thrift::protocol::TType _etype390;
+            xfer += iprot->readListBegin(_etype390, _size387);
+            (*(this->success)).resize(_size387);
+            uint32_t _i391;
+            for (_i391 = 0; _i391 < _size387; ++_i391)
             {
-              xfer += (*(this->success))[_i390].read(iprot);
+              xfer += (*(this->success))[_i391].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -38157,14 +38178,14 @@ uint32_t Airavata_getAllGatewayResourceProfiles_result::read(::apache::thrift::p
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size391;
-            ::apache::thrift::protocol::TType _etype394;
-            xfer += iprot->readListBegin(_etype394, _size391);
-            this->success.resize(_size391);
-            uint32_t _i395;
-            for (_i395 = 0; _i395 < _size391; ++_i395)
+            uint32_t _size392;
+            ::apache::thrift::protocol::TType _etype395;
+            xfer += iprot->readListBegin(_etype395, _size392);
+            this->success.resize(_size392);
+            uint32_t _i396;
+            for (_i396 = 0; _i396 < _size392; ++_i396)
             {
-              xfer += this->success[_i395].read(iprot);
+              xfer += this->success[_i396].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -38227,10 +38248,10 @@ uint32_t Airavata_getAllGatewayResourceProfiles_result::write(::apache::thrift::
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile> ::const_iterator _iter396;
-      for (_iter396 = this->success.begin(); _iter396 != this->success.end(); ++_iter396)
+      std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile> ::const_iterator _iter397;
+      for (_iter397 = this->success.begin(); _iter397 != this->success.end(); ++_iter397)
       {
-        xfer += (*_iter396).write(oprot);
+        xfer += (*_iter397).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -38287,14 +38308,14 @@ uint32_t Airavata_getAllGatewayResourceProfiles_presult::read(::apache::thrift::
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size397;
-            ::apache::thrift::protocol::TType _etype400;
-            xfer += iprot->readListBegin(_etype400, _size397);
-            (*(this->success)).resize(_size397);
-            uint32_t _i401;
-            for (_i401 = 0; _i401 < _size397; ++_i401)
+            uint32_t _size398;
+            ::apache::thrift::protocol::TType _etype401;
+            xfer += iprot->readListBegin(_etype401, _size398);
+            (*(this->success)).resize(_size398);
+            uint32_t _i402;
+            for (_i402 = 0; _i402 < _size398; ++_i402)
             {
-              xfer += (*(this->success))[_i401].read(iprot);
+              xfer += (*(this->success))[_i402].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -39748,14 +39769,14 @@ uint32_t Airavata_getAllWorkflows_result::read(::apache::thrift::protocol::TProt
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size402;
-            ::apache::thrift::protocol::TType _etype405;
-            xfer += iprot->readListBegin(_etype405, _size402);
-            this->success.resize(_size402);
-            uint32_t _i406;
-            for (_i406 = 0; _i406 < _size402; ++_i406)
+            uint32_t _size403;
+            ::apache::thrift::protocol::TType _etype406;
+            xfer += iprot->readListBegin(_etype406, _size403);
+            this->success.resize(_size403);
+            uint32_t _i407;
+            for (_i407 = 0; _i407 < _size403; ++_i407)
             {
-              xfer += iprot->readString(this->success[_i406]);
+              xfer += iprot->readString(this->success[_i407]);
             }
             xfer += iprot->readListEnd();
           }
@@ -39818,10 +39839,10 @@ uint32_t Airavata_getAllWorkflows_result::write(::apache::thrift::protocol::TPro
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->success.size()));
-      std::vector<std::string> ::const_iterator _iter407;
-      for (_iter407 = this->success.begin(); _iter407 != this->success.end(); ++_iter407)
+      std::vector<std::string> ::const_iterator _iter408;
+      for (_iter408 = this->success.begin(); _iter408 != this->success.end(); ++_iter408)
       {
-        xfer += oprot->writeString((*_iter407));
+        xfer += oprot->writeString((*_iter408));
       }
       xfer += oprot->writeListEnd();
     }
@@ -39878,14 +39899,14 @@ uint32_t Airavata_getAllWorkflows_presult::read(::apache::thrift::protocol::TPro
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size408;
-            ::apache::thrift::protocol::TType _etype411;
-            xfer += iprot->readListBegin(_etype411, _size408);
-            (*(this->success)).resize(_size408);
-            uint32_t _i412;
-            for (_i412 = 0; _i412 < _size408; ++_i412)
+            uint32_t _size409;
+            ::apache::thrift::protocol::TType _etype412;
+            xfer += iprot->readListBegin(_etype412, _size409);
+            (*(this->success)).resize(_size409);
+            uint32_t _i413;
+            for (_i413 = 0; _i413 < _size409; ++_i413)
             {
-              xfer += iprot->readString((*(this->success))[_i412]);
+              xfer += iprot->readString((*(this->success))[_i413]);
             }
             xfer += iprot->readListEnd();
           }
@@ -50989,21 +51010,22 @@ bool AiravataClient::recv_deleteJobSubmissionInterface()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "deleteJobSubmissionInterface failed: unknown result");
 }
 
-bool AiravataClient::deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& dataMovementInterfaceId)
+bool AiravataClient::deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType)
 {
-  send_deleteDataMovementInterface(authzToken, computeResourceId, dataMovementInterfaceId);
+  send_deleteDataMovementInterface(authzToken, resourceId, dataMovementInterfaceId, dataMoveType);
   return recv_deleteDataMovementInterface();
 }
 
-void AiravataClient::send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& dataMovementInterfaceId)
+void AiravataClient::send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("deleteDataMovementInterface", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_deleteDataMovementInterface_pargs args;
   args.authzToken = &authzToken;
-  args.computeResourceId = &computeResourceId;
+  args.resourceId = &resourceId;
   args.dataMovementInterfaceId = &dataMovementInterfaceId;
+  args.dataMoveType = &dataMoveType;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -52566,7 +52588,7 @@ void AiravataClient::recv_getAllWorkflows(std::vector<std::string> & _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllWorkflows failed: unknown result");
 }
 
-void AiravataClient::getWorkflow( ::Workflow& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId)
+void AiravataClient::getWorkflow( ::WorkflowModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId)
 {
   send_getWorkflow(authzToken, workflowTemplateId);
   recv_getWorkflow(_return);
@@ -52587,7 +52609,7 @@ void AiravataClient::send_getWorkflow(const  ::apache::airavata::model::security
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getWorkflow( ::Workflow& _return)
+void AiravataClient::recv_getWorkflow( ::WorkflowModel& _return)
 {
 
   int32_t rseqid = 0;
@@ -52703,13 +52725,13 @@ void AiravataClient::recv_deleteWorkflow()
   return;
 }
 
-void AiravataClient::registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::Workflow& workflow)
+void AiravataClient::registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::WorkflowModel& workflow)
 {
   send_registerWorkflow(authzToken, gatewayId, workflow);
   recv_registerWorkflow(_return);
 }
 
-void AiravataClient::send_registerWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::Workflow& workflow)
+void AiravataClient::send_registerWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::WorkflowModel& workflow)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("registerWorkflow", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -52775,13 +52797,13 @@ void AiravataClient::recv_registerWorkflow(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "registerWorkflow failed: unknown result");
 }
 
-void AiravataClient::updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::Workflow& workflow)
+void AiravataClient::updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::WorkflowModel& workflow)
 {
   send_updateWorkflow(authzToken, workflowTemplateId, workflow);
   recv_updateWorkflow();
 }
 
-void AiravataClient::send_updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::Workflow& workflow)
+void AiravataClient::send_updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::WorkflowModel& workflow)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateWorkflow", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -60385,7 +60407,7 @@ void AiravataProcessor::process_deleteDataMovementInterface(int32_t seqid, ::apa
 
   Airavata_deleteDataMovementInterface_result result;
   try {
-    result.success = iface_->deleteDataMovementInterface(args.authzToken, args.computeResourceId, args.dataMovementInterfaceId);
+    result.success = iface_->deleteDataMovementInterface(args.authzToken, args.resourceId, args.dataMovementInterfaceId, args.dataMoveType);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -73287,13 +73309,13 @@ bool AiravataConcurrentClient::recv_deleteJobSubmissionInterface(const int32_t s
   } // end while(true)
 }
 
-bool AiravataConcurrentClient::deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& dataMovementInterfaceId)
+bool AiravataConcurrentClient::deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType)
 {
-  int32_t seqid = send_deleteDataMovementInterface(authzToken, computeResourceId, dataMovementInterfaceId);
+  int32_t seqid = send_deleteDataMovementInterface(authzToken, resourceId, dataMovementInterfaceId, dataMoveType);
   return recv_deleteDataMovementInterface(seqid);
 }
 
-int32_t AiravataConcurrentClient::send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& dataMovementInterfaceId)
+int32_t AiravataConcurrentClient::send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType)
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
@@ -73301,8 +73323,9 @@ int32_t AiravataConcurrentClient::send_deleteDataMovementInterface(const  ::apac
 
   Airavata_deleteDataMovementInterface_pargs args;
   args.authzToken = &authzToken;
-  args.computeResourceId = &computeResourceId;
+  args.resourceId = &resourceId;
   args.dataMovementInterfaceId = &dataMovementInterfaceId;
+  args.dataMoveType = &dataMoveType;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -75524,7 +75547,7 @@ void AiravataConcurrentClient::recv_getAllWorkflows(std::vector<std::string> & _
   } // end while(true)
 }
 
-void AiravataConcurrentClient::getWorkflow( ::Workflow& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId)
+void AiravataConcurrentClient::getWorkflow( ::WorkflowModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId)
 {
   int32_t seqid = send_getWorkflow(authzToken, workflowTemplateId);
   recv_getWorkflow(_return, seqid);
@@ -75549,7 +75572,7 @@ int32_t AiravataConcurrentClient::send_getWorkflow(const  ::apache::airavata::mo
   return cseqid;
 }
 
-void AiravataConcurrentClient::recv_getWorkflow( ::Workflow& _return, const int32_t seqid)
+void AiravataConcurrentClient::recv_getWorkflow( ::WorkflowModel& _return, const int32_t seqid)
 {
 
   int32_t rseqid = 0;
@@ -75720,13 +75743,13 @@ void AiravataConcurrentClient::recv_deleteWorkflow(const int32_t seqid)
   } // end while(true)
 }
 
-void AiravataConcurrentClient::registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::Workflow& workflow)
+void AiravataConcurrentClient::registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::WorkflowModel& workflow)
 {
   int32_t seqid = send_registerWorkflow(authzToken, gatewayId, workflow);
   recv_registerWorkflow(_return, seqid);
 }
 
-int32_t AiravataConcurrentClient::send_registerWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::Workflow& workflow)
+int32_t AiravataConcurrentClient::send_registerWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::WorkflowModel& workflow)
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
@@ -75822,13 +75845,13 @@ void AiravataConcurrentClient::recv_registerWorkflow(std::string& _return, const
   } // end while(true)
 }
 
-void AiravataConcurrentClient::updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::Workflow& workflow)
+void AiravataConcurrentClient::updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::WorkflowModel& workflow)
 {
   int32_t seqid = send_updateWorkflow(authzToken, workflowTemplateId, workflow);
   recv_updateWorkflow(seqid);
 }
 
-int32_t AiravataConcurrentClient::send_updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::Workflow& workflow)
+int32_t AiravataConcurrentClient::send_updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::WorkflowModel& workflow)
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);

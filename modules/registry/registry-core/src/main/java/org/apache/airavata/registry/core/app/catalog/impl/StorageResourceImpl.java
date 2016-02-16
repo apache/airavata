@@ -262,4 +262,18 @@ public class StorageResourceImpl implements StorageResource {
             throw new AppCatalogException(e);
         }
     }
+
+    @Override
+    public void removeDataMovementInterface(String storageResourceId, String dataMovementInterfaceId) throws AppCatalogException {
+        try {
+            StorageInterfaceResource resource = new StorageInterfaceResource();
+            Map<String, String> ids = new HashMap<String, String>();
+            ids.put(AppCatAbstractResource.StorageInterfaceConstants.STORAGE_RESOURCE_ID, storageResourceId);
+            ids.put(AppCatAbstractResource.StorageInterfaceConstants.DATA_MOVEMENT_ID, dataMovementInterfaceId);
+            resource.remove(ids);
+        }catch (Exception e){
+            logger.error("Error while removing data movement interface..", e);
+            throw new AppCatalogException(e);
+        }
+    }
 }

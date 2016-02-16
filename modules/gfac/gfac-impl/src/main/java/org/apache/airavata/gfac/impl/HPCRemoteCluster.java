@@ -312,7 +312,13 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 		return this.serverInfo;
 	}
 
-	private class DefaultUserInfo implements UserInfo {
+    @Override
+    public AuthenticationInfo getAuthentication() {
+        return this.authentication;
+    }
+
+
+    private class DefaultUserInfo implements UserInfo {
 
 		private String userName;
 		private String password;
