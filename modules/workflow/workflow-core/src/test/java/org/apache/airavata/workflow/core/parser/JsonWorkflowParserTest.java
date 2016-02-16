@@ -21,110 +21,75 @@
 
 package org.apache.airavata.workflow.core.parser;
 
-import org.apache.airavata.model.application.io.DataType;
-import org.apache.airavata.model.application.io.InputDataObjectType;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.workflow.core.WorkflowParser;
+import org.apache.airavata.workflow.core.WorkflowInfo;
 import org.apache.airavata.workflow.core.dag.nodes.ApplicationNode;
 import org.apache.airavata.workflow.core.dag.nodes.InputNode;
-import org.apache.airavata.workflow.core.dag.nodes.WorkflowNode;
 import org.apache.airavata.workflow.core.dag.nodes.OutputNode;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 
 public class JsonWorkflowParserTest {
 
+    private InputStream inputStream;
     @Before
     public void setUp() throws Exception {
-
+        inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("TestWorkflow.json");
+        if (inputStream == null) {
+            throw new Exception("Couldn't find TestWorkflow File");
+        }
     }
 
     @After
     public void tearDown() throws Exception {
-
+        if (inputStream != null) {
+            inputStream.close();
+        }
     }
 
     @Test
-    public void testWorkflowParse() throws Exception {
-        Assert.assertNotNull("Test file (ComplexMathWorkflow.awf) is missing", getClass().getResource("/ComplexMathWorkflow.awf"));
-        InputStreamReader isr = new InputStreamReader(this.getClass().getResourceAsStream("/ComplexMathWorkflow.awf"));
-        BufferedReader br = new BufferedReader(isr);
-        StringBuffer sb = new StringBuffer();
-        String nextLine = br.readLine();
-        while (nextLine != null) {
-            sb.append(nextLine);
-            nextLine = br.readLine();
-        }
-//        Workflow workflow = new Workflow(sb.toString());
-        ExperimentModel experiment = new ExperimentModel();
-        InputDataObjectType x = new InputDataObjectType();
-        x.setValue("6");
-        x.setType(DataType.STRING);
-        x.setName("x");
+    public void testParse() throws Exception {
+        JsonWorkflowParser jwp = new JsonWorkflowParser(inputStream);
 
-        InputDataObjectType y = new InputDataObjectType();
-        y.setValue("8");
-        y.setType(DataType.STRING);
-        y.setName("y");
-
-        InputDataObjectType z = new InputDataObjectType();
-        z.setValue("10");
-        z.setType(DataType.STRING);
-        z.setName("y_2");
-
-        List<InputDataObjectType> inputs = new ArrayList<InputDataObjectType>();
-        inputs.add(x);
-        inputs.add(y);
-        inputs.add(z);
-        experiment.setExperimentInputs(inputs);
-        // create parser
-        WorkflowParser parser = new JsonWorkflowParser("workflow string");
-        parser.parse();
-        List<InputNode> inputNodes = parser.getInputNodes();
-        Assert.assertNotNull(inputNodes);
-        Assert.assertEquals(3, inputNodes.size());
-        for (InputNode inputNode : inputNodes) {
-            Assert.assertNotNull(inputNode.getOutPort());
-            Assert.assertNotNull(inputNode.getInputObject());
-        }
-
-        Map<String, WorkflowNode> wfNodes = getWorkflowNodeMap(parser.getApplicationNodes());
-        for (String wfId : wfNodes.keySet()) {
-            WorkflowNode wfNode = wfNodes.get(wfId);
-            if (wfNode instanceof ApplicationNode) {
-                ApplicationNode node = (ApplicationNode) wfNode;
-                Assert.assertEquals(2, node.getInputPorts().size());
-                Assert.assertNotNull(node.getInputPorts().get(0).getInputObject());
-                Assert.assertNotNull(node.getInputPorts().get(1).getInputObject());
-                Assert.assertNotNull(node.getInputPorts().get(0).getEdge());
-                Assert.assertNotNull(node.getInputPorts().get(1).getEdge());
-
-                Assert.assertEquals(1, node.getOutputPorts().size());
-                Assert.assertEquals(1, node.getOutputPorts().get(0).getEdges().size());
-                Assert.assertNotNull(node.getOutputPorts().get(0).getEdges().get(0));
-            } else if (wfNode instanceof OutputNode) {
-                OutputNode outputNode = (OutputNode) wfNode;
-                Assert.assertNotNull(outputNode.getInPort());
-            }
-        }
+        WorkflowInfo workflowInfo = jwp.parse();
+        Assert.assertNotNull(workflowInfo);
+        Assert.assertEquals("name", workflowInfo.getName());
+        Assert.assertEquals("default_id", workflowInfo.getId());
+        Assert.assertEquals("default description", workflowInfo.getDescription());
+        Assert.assertEquals("version", workflowInfo.getVersion());
+        testApplications(jwp);
+        testWorkflowInputs(jwp);
+        testWorkflowOutputs(jwp);
 
     }
 
-    private Map<String, WorkflowNode> getWorkflowNodeMap(List<ApplicationNode> applicationNodes) {
-        Map<String, WorkflowNode> map = new HashMap<>();
-        for (ApplicationNode applicationNode : applicationNodes) {
-            map.put(applicationNode.getApplicationId(), applicationNode);
-        }
+    private void testApplications(JsonWorkflowParser jwp) throws Exception {
+        List<ApplicationNode> applicationNodes = jwp.getApplicationNodes();
+        Assert.assertNotNull(applicationNodes);
+        Assert.assertEquals(1, applicationNodes.size());
 
-        return map;
+        ApplicationNode node = applicationNodes.get(0);
+        Assert.assertEquals("App Name", node.getName());
+        Assert.assertEquals("appId_1", node.getApplicationId());
+
     }
+
+    private void testWorkflowInputs(JsonWorkflowParser jwp) throws Exception {
+        List<InputNode> inputNodes = jwp.getInputNodes();
+        Assert.assertEquals(2, inputNodes.size());
+
+    }
+
+    private void testWorkflowOutputs(JsonWorkflowParser jwp) throws Exception {
+        List<OutputNode> outputNodes = jwp.getOutputNodes();
+        Assert.assertEquals(2, outputNodes.size());
+
+    }
+
 }

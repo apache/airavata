@@ -38,7 +38,7 @@ import org.apache.airavata.data.manager.cpi.DataManagerException;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
-import org.apache.airavata.model.Workflow;
+import org.apache.airavata.model.WorkflowModel;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -3572,13 +3572,23 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public boolean deleteDataMovementInterface(AuthzToken authzToken, String computeResourceId, String dataMovementInterfaceId)
+    public boolean deleteDataMovementInterface(AuthzToken authzToken, String resourceId, String dataMovementInterfaceId, DMType dmType)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
-            appCatalog.getComputeResource().removeDataMovementInterface(computeResourceId, dataMovementInterfaceId);
-            logger.info("Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
-            return true;
+            switch (dmType){
+                case COMPUTE_RESOURCE:
+                    appCatalog.getComputeResource().removeDataMovementInterface(resourceId, dataMovementInterfaceId);
+                    logger.info("Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
+                    return true;
+                case STORAGE_RESOURCE:
+                    appCatalog.getStorageResource().removeDataMovementInterface(resourceId, dataMovementInterfaceId);
+                    logger.info("Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
+                    return true;
+                default:
+                    logger.error("Unsupported data movement type specifies.. Please provide the correct data movement type... ");
+                    return false;
+            }
         } catch (AppCatalogException e) {
             logger.error(dataMovementInterfaceId, "Error while deleting data movement interface...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -4159,7 +4169,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
 	@Override
     @SecurityCheck
-	public Workflow getWorkflow(AuthzToken authzToken, String workflowTemplateId)
+	public WorkflowModel getWorkflow(AuthzToken authzToken, String workflowTemplateId)
 			throws InvalidRequestException, AiravataClientException, AuthorizationException, AiravataSystemException, TException {
 		try {
 			return getWorkflowCatalog().getWorkflow(workflowTemplateId);
@@ -4189,7 +4199,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
 	@Override
     @SecurityCheck
-	public String registerWorkflow(AuthzToken authzToken, String gatewayId, Workflow workflow)
+	public String registerWorkflow(AuthzToken authzToken, String gatewayId, WorkflowModel workflow)
 			throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -4208,7 +4218,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
 	@Override
     @SecurityCheck
-	public void updateWorkflow(AuthzToken authzToken, String workflowTemplateId, Workflow workflow)
+	public void updateWorkflow(AuthzToken authzToken, String workflowTemplateId, WorkflowModel workflow)
 			throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 		try {
 			getWorkflowCatalog().updateWorkflow(workflowTemplateId, workflow);

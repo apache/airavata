@@ -21,7 +21,7 @@
 
 package org.apache.airavata.registry.core.workflow.catalog.utils;
 
-import org.apache.airavata.model.Workflow;
+import org.apache.airavata.model.WorkflowModel;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.registry.core.workflow.catalog.resources.WorkflowCatAbstractResource;
@@ -59,8 +59,8 @@ public class WorkflowCatalogThriftConversion {
         return inputResources;
     }
 
-    public static Workflow getWorkflow (WorkflowResource resource) throws WorkflowCatalogException {
-        Workflow workflow = new Workflow();
+    public static WorkflowModel getWorkflow (WorkflowResource resource) throws WorkflowCatalogException {
+        WorkflowModel workflow = new WorkflowModel();
         workflow.setTemplateId(resource.getWfTemplateId());
         workflow.setGraph(resource.getGraph());
         workflow.setName(resource.getWfName());

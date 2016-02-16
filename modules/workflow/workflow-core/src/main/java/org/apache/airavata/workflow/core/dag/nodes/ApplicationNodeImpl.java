@@ -28,6 +28,7 @@ import org.apache.airavata.workflow.core.dag.port.InPort;
 import org.apache.airavata.workflow.core.dag.port.OutPort;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class ApplicationNodeImpl implements ApplicationNode {
@@ -118,5 +119,15 @@ public class ApplicationNodeImpl implements ApplicationNode {
     @Override
     public List<OutPort> getOutputPorts() {
         return this.outPorts;
+    }
+
+    @Override
+    public void addInputPorts(Collection<? extends InPort> inPorts) {
+        this.inPorts.addAll(inPorts);
+    }
+
+    @Override
+    public void addOutPorts(Collection<? extends OutPort> outPorts) {
+        this.outPorts.addAll(outPorts);
     }
 }

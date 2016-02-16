@@ -87,4 +87,6 @@ public interface StorageResource {
      */
     void removeStorageResource(String resourceId) throws AppCatalogException;
 
+    void removeDataMovementInterface(String storageResourceId, String dataMovementInterfaceId)  throws AppCatalogException;
+
 }

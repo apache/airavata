@@ -22,6 +22,7 @@
 package org.apache.airavata.registry.cpi;
 
 
+import org.apache.airavata.model.WorkflowModel;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 
 import java.util.List;
@@ -30,13 +31,13 @@ public interface WorkflowCatalog {
 
     public List<String> getAllWorkflows(String gatewayId) throws WorkflowCatalogException;
 
-    public org.apache.airavata.model.Workflow getWorkflow(String workflowTemplateId) throws WorkflowCatalogException;
+    public WorkflowModel getWorkflow(String workflowTemplateId) throws WorkflowCatalogException;
 
     public void deleteWorkflow(String workflowTemplateId) throws WorkflowCatalogException;
 
-    public String registerWorkflow(org.apache.airavata.model.Workflow workflow, String gatewayId) throws WorkflowCatalogException;
+    public String registerWorkflow(WorkflowModel workflow, String gatewayId) throws WorkflowCatalogException;
 
-    public void updateWorkflow(String workflowTemplateId, org.apache.airavata.model.Workflow workflow) throws WorkflowCatalogException;
+    public void updateWorkflow(String workflowTemplateId, WorkflowModel workflow) throws WorkflowCatalogException;
 
     public String getWorkflowTemplateId(String workflowName) throws WorkflowCatalogException;
 

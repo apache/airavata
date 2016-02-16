@@ -20,6 +20,7 @@
 package org.apache.airavata.workflow.core.dag.port;
 
 import org.apache.airavata.model.PortModel;
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.workflow.core.dag.edge.Edge;
 import org.apache.airavata.workflow.core.dag.nodes.WorkflowNode;
@@ -31,6 +32,7 @@ public class InputPortIml implements InPort {
     private Edge edge;
     private WorkflowNode node;
     private PortModel portModel;
+    private DataType dataType;
 
     public InputPortIml(PortModel portModel) {
         this.portModel = portModel;
@@ -96,6 +98,21 @@ public class InputPortIml implements InPort {
     @Override
     public String getId() {
         return getPortModel().getPortId();
+    }
+
+    @Override
+    public DataType getDataType() {
+        return dataType;
+    }
+
+    @Override
+    public void setDataType(DataType dataType) {
+        this.dataType = dataType;
+    }
+
+    @Override
+    public String getNodeId() {
+        return getNode().getId();
     }
 
 }
