@@ -27,6 +27,7 @@ import com.google.gson.stream.JsonToken;
 import org.apache.airavata.model.EdgeModel;
 import org.apache.airavata.model.NodeModel;
 import org.apache.airavata.model.PortModel;
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.workflow.core.WorkflowInfo;
 import org.apache.airavata.workflow.core.dag.edge.DirectedEdge;
 import org.apache.airavata.workflow.core.dag.edge.Edge;
@@ -49,8 +50,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
 public class JsonWorkflowParser implements WorkflowParser {
 
@@ -110,14 +115,131 @@ public class JsonWorkflowParser implements WorkflowParser {
         }
         jsonReader.endObject();
 
-        buildWorkflowDAG();
+        buildWorkflowGraph();
         return workflowInfo;
     }
 
-    private void buildWorkflowDAG() {
+    private void buildWorkflowGraph() throws Exception {
         // TODO construct runtime model
+        Queue<WorkflowNode> queue = new LinkedList<>();
+        queue.addAll(inputs);
+
+        Map<String, List<Link>> linkMap = getEdgesMap(links);
+        Map<String, InPort> nodeInportMap = getNodeInPortsMap(getApplicationNodes());
+        nodeInportMap.putAll(getNodeInPortMap(getOutputNodes()));
+        Set<String> processedNodes = new HashSet<>();
+
+        while (!queue.isEmpty()) {
+            WorkflowNode node = queue.poll();
+            if (processedNodes.contains(node.getId())) {
+                continue;
+            }
+
+            if (node instanceof InputNode) {
+                InputNode input = ((InputNode) node);
+                OutPort outPort = ((OutPort) node);
+                Map<String,Edge> edgeMap = addEdges(outPort, linkMap.get(outPort.getNodeId() + "," + outPort.getId()));
+
+                for (Map.Entry<String, Edge> entry : edgeMap.entrySet()) {
+                    InPort inPort = nodeInportMap.get(entry.getKey());
+                    if (inPort != null) {
+                        inPort.addEdge(entry.getValue());
+                        entry.getValue().setToPort(inPort);
+
+                        queue.add(inPort.getNode());
+                    }
+                }
+
+            } else if (node instanceof ApplicationNode) {
+                ApplicationNode appNode = ((ApplicationNode) node);
+                for (OutPort outPort : appNode.getOutputPorts()) {
+                    outPort.setNode(appNode);
+                    Map<String, Edge> edgeMap = addEdges(outPort, linkMap.get(outPort.getNodeId() + "," + outPort.getId()));
+
+                    for (Map.Entry<String, Edge> entry : edgeMap.entrySet()) {
+                        InPort inPort = nodeInportMap.get(entry.getKey());
+                        if (inPort != null) {
+                            inPort.addEdge(entry.getValue());
+                            entry.getValue().setToPort(inPort);
+
+                            queue.add(inPort.getNode());
+                        }
+                    }
+                }
+            } else if (node instanceof OutputNode) {
+                OutputNode outputNode = ((OutputNode) node);
+                InPort inPort = ((InPort) node);
+                outputNode.setInputObject(inPort.getInputObject());
+
+            }
+            // marke node as precessed node, we don't need to process it again.
+            processedNodes.add(node.getId());
+        }
 
     }
+
+    private Map<String, InPort> getNodeInPortMap(List<OutputNode> outputNodes) {
+        Map<String, InPort> nodeInPortsMap = new HashMap<>();
+        if (outputNodes != null) {
+            for (OutputNode outputNode : outputNodes) {
+                InPort inPort = outputNode.getInPort();
+                inPort.setNode(outputNode);
+                nodeInPortsMap.put(outputNode.getId() + "," + inPort.getId(), inPort);
+            }
+        }
+        return nodeInPortsMap;
+    }
+
+    private Map<String, InPort> getNodeInPortsMap(List<ApplicationNode> applicationNodes) {
+        Map<String, InPort> nodeInPortsMap = new HashMap<>();
+        if (applicationNodes != null) {
+            for (ApplicationNode applicationNode : applicationNodes) {
+                for (InPort inPort : applicationNode.getInputPorts()) {
+                    inPort.setNode(applicationNode);
+                    nodeInPortsMap.put(applicationNode.getId() + "," + inPort.getId(), inPort);
+                }
+            }
+        }
+
+        return nodeInPortsMap;
+    }
+
+    /**
+     *
+     * @param outPort -
+     * @param links  -
+     * @return key: nodeId,inportId  value : link
+     */
+    private Map<String, Edge> addEdges(OutPort outPort, List<Link> links) {
+        Map<String, Edge> inPortMap = new HashMap<>();
+        if (links != null) {
+            for (Link link : links) {
+                EdgeModel edgeModel = new EdgeModel(link.getId());
+                Edge edge = new DirectedEdge(edgeModel);
+                edge.setFromPort(outPort);
+                outPort.addEdge(edge);
+                inPortMap.put(link.getTo().getNodeId() + "," + link.getTo().getPortId(), edge);
+            }
+        }
+        return inPortMap;
+    }
+
+    private Map<String, List<Link>> getEdgesMap(List<Link> links) {
+        Map<String, List<Link>> map = new HashMap<>();
+        List<Link> linkList;
+        for (Link link : links) {
+            linkList = map.get(link.from.getNodeId() + "," + link.from.getPortId());
+            if (linkList == null) {
+                linkList = new ArrayList<>();
+            }
+
+            linkList.add(link);
+            map.put(link.from.getNodeId() + "," + link.from.getPortId(), linkList);
+        }
+
+        return map;
+    }
+
 
     private void readWorkflowInfo(JsonReader jsonReader) throws IOException, ParserException {
         jsonReader.beginObject();
@@ -178,13 +300,15 @@ public class JsonWorkflowParser implements WorkflowParser {
                     } else if (name.equals(ID)) {
                         nodeModel.setNodeId(jsonReader.nextString());
                     } else if (name.equals(DATATYPE)) {
-                        jsonReader.skipValue();
+                        inputNode.setDataType(DataType.valueOf(jsonReader.nextString()));
                     } else if (name.equals(DESCRIPTION)) {
                         nodeModel.setDescription(jsonReader.nextString());
                     } else if (name.equals(POSITION)) {
                         readPosition(jsonReader);
                     } else if (name.equals(NODE_ID)) {
                         nodeModel.setNodeId(jsonReader.nextString());
+                    } else if (name.equals(DEFAULT_VALUE)) {
+                        inputNode.setValue(jsonReader.nextString());
                     } else {
                         jsonReader.skipValue();
                     }
@@ -263,7 +387,7 @@ public class JsonWorkflowParser implements WorkflowParser {
     private Link readLink(JsonReader jsonReader) throws IOException {
         jsonReader.beginObject();
         String name = null;
-        Link link = new Link(null, null);
+        Link link = new Link();
         while (jsonReader.hasNext()) {
             name = jsonReader.nextName();
             if (name.equals(DESCRIPTION)) {
@@ -272,6 +396,8 @@ public class JsonWorkflowParser implements WorkflowParser {
                 link.setFrom(readLinkHelper(jsonReader));
             } else if (name.equals(TO)) {
                 link.setTo(readLinkHelper(jsonReader));
+            } else if (name.equals(ID)) {
+                link.setId(jsonReader.nextString());
             } else {
                 jsonReader.skipValue();
             }
@@ -288,8 +414,8 @@ public class JsonWorkflowParser implements WorkflowParser {
             name = jsonReader.nextName();
             if (name.equals(NODE_ID)) {
                 helper.setNodeId(jsonReader.nextString());
-            } else if (name.equals(OUTPUT_ID)) {
-                helper.setOutputId(jsonReader.nextString());
+            } else if (name.equals(OUTPUT_ID) || name.equals(INPUT_ID)) {
+                helper.setPortId(jsonReader.nextString());
             } else {
                 jsonReader.skipValue();
             }
@@ -549,17 +675,14 @@ public class JsonWorkflowParser implements WorkflowParser {
     public static final String FROM = "from";
     public static final String TO = "to";
     public static final String OUTPUT_ID = "outputId";
+    public static final String INPUT_ID = "inputId";
 
 
     class Link {
         private LinkHelper from;
         private LinkHelper to;
         private String description;
-
-        public Link(LinkHelper from, LinkHelper to) {
-            this.from = from;
-            this.to = to;
-        }
+        private String id;
 
         public String getDescription() {
             return description;
@@ -576,11 +699,27 @@ public class JsonWorkflowParser implements WorkflowParser {
         public void setTo(LinkHelper to) {
             this.to = to;
         }
+
+        public LinkHelper getFrom() {
+            return from;
+        }
+
+        public LinkHelper getTo() {
+            return to;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
     }
 
     class LinkHelper {
         private String nodeId;
-        private String outputId;
+        private String portId;
 
         public String getNodeId() {
             return nodeId;
@@ -590,12 +729,12 @@ public class JsonWorkflowParser implements WorkflowParser {
             this.nodeId = nodeId;
         }
 
-        public String getOutputId() {
-            return outputId;
+        public String getPortId() {
+            return portId;
         }
 
-        public void setOutputId(String outputId) {
-            this.outputId = outputId;
+        public void setPortId(String portId) {
+            this.portId = portId;
         }
     }
 }

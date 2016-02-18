@@ -21,10 +21,12 @@
 
 package org.apache.airavata.workflow.core.dag.nodes;
 
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.workflow.core.dag.port.InPort;
 import org.apache.airavata.workflow.core.dag.port.OutPort;
 
-public interface InputNode extends WorkflowNode {
+public interface InputNode extends WorkflowNode , OutPort{
 
     public InputDataObjectType getInputObject();
 
@@ -33,5 +35,9 @@ public interface InputNode extends WorkflowNode {
     public OutPort getOutPort();
 
     public void setOutPort(OutPort outPort);
+
+    public void setValue(String value);
+
+    public String getValue();
 
 }

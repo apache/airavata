@@ -780,7 +780,7 @@ public class GFacUtils {
             int number = new SecureRandom().nextInt();
             number = (number < 0 ? -number : number);
 
-	        tempJobFile = new File(GFacUtils.getLocalDataDir(taskContext), Integer.toString(number) +
+	        tempJobFile = new File(GFacUtils.getLocalDataDir(taskContext), "job_" + Integer.toString(number) +
 			        jobManagerConfiguration.getScriptExtension());
 	        FileUtils.writeStringToFile(tempJobFile, scriptContent);
             return tempJobFile;
