@@ -2247,10 +2247,11 @@ class AiravataIf {
    * 
    * 
    * @param authzToken
-   * @param computeResourceId
+   * @param resourceId
    * @param dataMovementInterfaceId
+   * @param dataMoveType
    */
-  virtual bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& dataMovementInterfaceId) = 0;
+  virtual bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType) = 0;
   virtual void registerResourceJobManager(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager) = 0;
   virtual bool updateResourceJobManager(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceJobManagerId, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& updatedResourceJobManager) = 0;
   virtual void getResourceJobManager( ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceJobManagerId) = 0;
@@ -2979,7 +2980,7 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* computeResourceId */, const std::string& /* dataMovementInterfaceId */) {
+  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* resourceId */, const std::string& /* dataMovementInterfaceId */, const  ::apache::airavata::model::data::movement::DMType::type /* dataMoveType */) {
     bool _return = false;
     return _return;
   }
@@ -17964,27 +17965,32 @@ class Airavata_deleteDataMovementInterface_args {
 
   Airavata_deleteDataMovementInterface_args(const Airavata_deleteDataMovementInterface_args&);
   Airavata_deleteDataMovementInterface_args& operator=(const Airavata_deleteDataMovementInterface_args&);
-  Airavata_deleteDataMovementInterface_args() : computeResourceId(), dataMovementInterfaceId() {
+  Airavata_deleteDataMovementInterface_args() : resourceId(), dataMovementInterfaceId(), dataMoveType(( ::apache::airavata::model::data::movement::DMType::type)0) {
   }
 
   virtual ~Airavata_deleteDataMovementInterface_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
-  std::string computeResourceId;
+  std::string resourceId;
   std::string dataMovementInterfaceId;
+   ::apache::airavata::model::data::movement::DMType::type dataMoveType;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
-  void __set_computeResourceId(const std::string& val);
+  void __set_resourceId(const std::string& val);
 
   void __set_dataMovementInterfaceId(const std::string& val);
+
+  void __set_dataMoveType(const  ::apache::airavata::model::data::movement::DMType::type val);
 
   bool operator == (const Airavata_deleteDataMovementInterface_args & rhs) const
   {
     if (!(authzToken == rhs.authzToken))
       return false;
-    if (!(computeResourceId == rhs.computeResourceId))
+    if (!(resourceId == rhs.resourceId))
       return false;
     if (!(dataMovementInterfaceId == rhs.dataMovementInterfaceId))
+      return false;
+    if (!(dataMoveType == rhs.dataMoveType))
       return false;
     return true;
   }
@@ -18006,8 +18012,9 @@ class Airavata_deleteDataMovementInterface_pargs {
 
   virtual ~Airavata_deleteDataMovementInterface_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* computeResourceId;
+  const std::string* resourceId;
   const std::string* dataMovementInterfaceId;
+  const  ::apache::airavata::model::data::movement::DMType::type* dataMoveType;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -23022,8 +23029,8 @@ class AiravataClient : virtual public AiravataIf {
   bool deleteJobSubmissionInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& jobSubmissionInterfaceId);
   void send_deleteJobSubmissionInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& jobSubmissionInterfaceId);
   bool recv_deleteJobSubmissionInterface();
-  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& dataMovementInterfaceId);
-  void send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& dataMovementInterfaceId);
+  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType);
+  void send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType);
   bool recv_deleteDataMovementInterface();
   void registerResourceJobManager(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager);
   void send_registerResourceJobManager(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager);
@@ -24462,13 +24469,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->deleteJobSubmissionInterface(authzToken, computeResourceId, jobSubmissionInterfaceId);
   }
 
-  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& dataMovementInterfaceId) {
+  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->deleteDataMovementInterface(authzToken, computeResourceId, dataMovementInterfaceId);
+      ifaces_[i]->deleteDataMovementInterface(authzToken, resourceId, dataMovementInterfaceId, dataMoveType);
     }
-    return ifaces_[i]->deleteDataMovementInterface(authzToken, computeResourceId, dataMovementInterfaceId);
+    return ifaces_[i]->deleteDataMovementInterface(authzToken, resourceId, dataMovementInterfaceId, dataMoveType);
   }
 
   void registerResourceJobManager(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager) {
@@ -25130,8 +25137,8 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   bool deleteJobSubmissionInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& jobSubmissionInterfaceId);
   int32_t send_deleteJobSubmissionInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& jobSubmissionInterfaceId);
   bool recv_deleteJobSubmissionInterface(const int32_t seqid);
-  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& dataMovementInterfaceId);
-  int32_t send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& dataMovementInterfaceId);
+  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType);
+  int32_t send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType);
   bool recv_deleteDataMovementInterface(const int32_t seqid);
   void registerResourceJobManager(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager);
   int32_t send_registerResourceJobManager(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager);

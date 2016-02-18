@@ -22,6 +22,7 @@
 package org.apache.airavata.workflow.core.dag.port;
 
 import org.apache.airavata.model.PortModel;
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.workflow.core.dag.nodes.WorkflowNode;
 
 public interface Port {
@@ -37,5 +38,11 @@ public interface Port {
     public void setNode(WorkflowNode workflowNode);
 
     public String getId();
+
+    public DataType getDataType();
+
+    public void setDataType(DataType dataType);
+
+    public String getNodeId();
     
 }

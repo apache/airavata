@@ -24,7 +24,7 @@ package org.apache.airavata.workflow.core.dag.nodes;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.workflow.core.dag.port.InPort;
 
-public interface OutputNode extends WorkflowNode {
+public interface OutputNode extends WorkflowNode, InPort {
 
     public OutputDataObjectType getOutputObject();
 
