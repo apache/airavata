@@ -102,7 +102,7 @@ public class CredentialStoreServer  implements IServer {
                 }.start();
             } catch (TTransportException e) {
                 setStatus(ServerStatus.FAILED);
-                logger.error("Error while starting the credential store service", e);
+//                logger.error("Error while starting the credential store service", e);
                 throw new Exception("Error while starting the credential store service", e);
             }
         }
