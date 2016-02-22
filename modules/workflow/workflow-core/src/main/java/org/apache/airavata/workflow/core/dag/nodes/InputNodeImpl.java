@@ -119,9 +119,9 @@ public class InputNodeImpl implements InputNode {
             inputDataObjectType = new InputDataObjectType(getName());
             inputDataObjectType.setValue(getValue());
             inputDataObjectType.setType(getDataType());
-            inputDataObjectType.setIsRequired(true);
-            inputDataObjectType.setDataStaged(true);
-            inputDataObjectType.setInputOrder(0);
+//            inputDataObjectType.setIsRequired(true);
+//            inputDataObjectType.setDataStaged(true);
+//            inputDataObjectType.setInputOrder(0);
         }
         return inputDataObjectType;
     }
