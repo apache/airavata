@@ -24,6 +24,8 @@ package org.apache.airavata.workflow.core.parser;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
+import org.apache.airavata.model.ComponentState;
+import org.apache.airavata.model.ComponentStatus;
 import org.apache.airavata.model.EdgeModel;
 import org.apache.airavata.model.NodeModel;
 import org.apache.airavata.model.PortModel;
@@ -116,6 +118,9 @@ public class JsonWorkflowParser implements WorkflowParser {
         jsonReader.endObject();
 
         buildWorkflowGraph();
+        workflowInfo.setInputs(inputs);
+        workflowInfo.setApplications(applications);
+        workflowInfo.setOutputs(outputs);
         return workflowInfo;
     }
 
@@ -143,7 +148,7 @@ public class JsonWorkflowParser implements WorkflowParser {
                 for (Map.Entry<String, Edge> entry : edgeMap.entrySet()) {
                     InPort inPort = nodeInportMap.get(entry.getKey());
                     if (inPort != null) {
-                        inPort.addEdge(entry.getValue());
+//                        inPort.addEdge(entry.getValue());
                         entry.getValue().setToPort(inPort);
 
                         queue.add(inPort.getNode());
@@ -159,7 +164,7 @@ public class JsonWorkflowParser implements WorkflowParser {
                     for (Map.Entry<String, Edge> entry : edgeMap.entrySet()) {
                         InPort inPort = nodeInportMap.get(entry.getKey());
                         if (inPort != null) {
-                            inPort.addEdge(entry.getValue());
+//                            inPort.addEdge(entry.getValue());
                             entry.getValue().setToPort(inPort);
 
                             queue.add(inPort.getNode());
@@ -216,7 +221,7 @@ public class JsonWorkflowParser implements WorkflowParser {
             for (Link link : links) {
                 EdgeModel edgeModel = new EdgeModel(link.getId());
                 Edge edge = new DirectedEdge(edgeModel);
-                edge.setFromPort(outPort);
+//                edge.setFromPort(outPort);
                 outPort.addEdge(edge);
                 inPortMap.put(link.getTo().getNodeId() + "," + link.getTo().getPortId(), edge);
             }
@@ -284,6 +289,7 @@ public class JsonWorkflowParser implements WorkflowParser {
         JsonToken peek = jsonReader.peek();
         InputNode inputNode;
         NodeModel nodeModel;
+        ComponentStatus status;
         String name;
         if (peek == JsonToken.NULL) {
             throw new ParserException("Error! workflow inputs can't be null");
@@ -292,6 +298,10 @@ public class JsonWorkflowParser implements WorkflowParser {
             while (jsonReader.hasNext()) {
                 jsonReader.beginObject();
                 nodeModel = new NodeModel();
+                status = new ComponentStatus();
+                status.setState(ComponentState.CREATED);
+                status.setReason("Created");
+                nodeModel.setStatus(status);
                 inputNode = new InputNodeImpl(nodeModel);
                 while (jsonReader.hasNext()) {
                     name = jsonReader.nextName();
@@ -306,7 +316,8 @@ public class JsonWorkflowParser implements WorkflowParser {
                     } else if (name.equals(POSITION)) {
                         readPosition(jsonReader);
                     } else if (name.equals(NODE_ID)) {
-                        nodeModel.setNodeId(jsonReader.nextString());
+                        jsonReader.skipValue();
+//                        nodeModel.setNodeId(jsonReader.nextString());
                     } else if (name.equals(DEFAULT_VALUE)) {
                         inputNode.setValue(jsonReader.nextString());
                     } else {
@@ -327,6 +338,7 @@ public class JsonWorkflowParser implements WorkflowParser {
         JsonToken peek = jsonReader.peek();
         OutputNode outputNode;
         NodeModel nodeModel;
+        ComponentStatus status;
         String name;
         if (peek == JsonToken.NULL) {
             throw new ParserException("Error! workflow outputs can't be null");
@@ -335,6 +347,10 @@ public class JsonWorkflowParser implements WorkflowParser {
             while (jsonReader.hasNext()) {
                 jsonReader.beginObject();
                 nodeModel = new NodeModel();
+                status = new ComponentStatus();
+                status.setState(ComponentState.CREATED);
+                status.setReason("Created");
+                nodeModel.setStatus(status);
                 outputNode = new OutputNodeImpl(nodeModel);
                 while (jsonReader.hasNext()) {
                     name = jsonReader.nextName();
@@ -349,7 +365,8 @@ public class JsonWorkflowParser implements WorkflowParser {
                     } else if (name.equals(POSITION)) {
                         readPosition(jsonReader);
                     } else if (name.equals(NODE_ID)) {
-                        nodeModel.setNodeId(jsonReader.nextString());
+                        jsonReader.skipValue();
+//                        nodeModel.setNodeId(jsonReader.nextString());
                     } else if (name.equals(DEFAULT_VALUE)) {
                         jsonReader.skipValue();
                     } else {
@@ -427,6 +444,10 @@ public class JsonWorkflowParser implements WorkflowParser {
     private ApplicationNode readApplication(JsonReader jsonReader) throws IOException, ParserException {
         jsonReader.beginObject();
         NodeModel nodeModel = new NodeModel();
+        ComponentStatus status = new ComponentStatus();
+        status.setState(ComponentState.CREATED);
+        status.setReason("Created");
+        nodeModel.setStatus(status);
         ApplicationNode applicationNode = new ApplicationNodeImpl(nodeModel);
         String name;
         while (jsonReader.hasNext()) {

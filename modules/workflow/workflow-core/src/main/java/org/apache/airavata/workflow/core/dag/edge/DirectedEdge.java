@@ -28,8 +28,8 @@ import org.apache.airavata.workflow.core.dag.port.OutPort;
 
 public class DirectedEdge implements Edge {
 
-    private InPort inPort;
-    private OutPort outPort;
+    private InPort toPort;
+    private OutPort fromPort;
     private EdgeModel edgeModel;
 
     public DirectedEdge(EdgeModel edgeModel) {
@@ -53,21 +53,21 @@ public class DirectedEdge implements Edge {
 
     @Override
     public InPort getToPort() {
-        return inPort;
+        return toPort;
     }
 
     @Override
     public void setToPort(InPort inPort) {
-        this.inPort = inPort;
+        this.toPort = inPort;
     }
 
     @Override
     public OutPort getFromPort() {
-        return outPort;
+        return fromPort;
     }
 
     @Override
     public void setFromPort(OutPort outPort) {
-        this.outPort = outPort;
+        this.fromPort = outPort;
     }
 }
