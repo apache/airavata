@@ -1716,6 +1716,18 @@ class ComputeResourceDescription {
    * @var int
    */
   public $maxMemoryPerNode = null;
+  /**
+   * @var bool
+   */
+  public $xsedeGatewayUsageReporting = null;
+  /**
+   * @var string
+   */
+  public $gatewayUsageModuleLoadCommand = null;
+  /**
+   * @var string
+   */
+  public $gatewayUsageExecutable = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -1795,6 +1807,18 @@ class ComputeResourceDescription {
           'var' => 'maxMemoryPerNode',
           'type' => TType::I32,
           ),
+        12 => array(
+          'var' => 'xsedeGatewayUsageReporting',
+          'type' => TType::BOOL,
+          ),
+        13 => array(
+          'var' => 'gatewayUsageModuleLoadCommand',
+          'type' => TType::STRING,
+          ),
+        14 => array(
+          'var' => 'gatewayUsageExecutable',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -1830,6 +1854,15 @@ class ComputeResourceDescription {
       }
       if (isset($vals['maxMemoryPerNode'])) {
         $this->maxMemoryPerNode = $vals['maxMemoryPerNode'];
+      }
+      if (isset($vals['xsedeGatewayUsageReporting'])) {
+        $this->xsedeGatewayUsageReporting = $vals['xsedeGatewayUsageReporting'];
+      }
+      if (isset($vals['gatewayUsageModuleLoadCommand'])) {
+        $this->gatewayUsageModuleLoadCommand = $vals['gatewayUsageModuleLoadCommand'];
+      }
+      if (isset($vals['gatewayUsageExecutable'])) {
+        $this->gatewayUsageExecutable = $vals['gatewayUsageExecutable'];
       }
     }
   }
@@ -1996,6 +2029,27 @@ class ComputeResourceDescription {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 12:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->xsedeGatewayUsageReporting);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 13:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayUsageModuleLoadCommand);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 14:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayUsageExecutable);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -2135,6 +2189,21 @@ class ComputeResourceDescription {
     if ($this->maxMemoryPerNode !== null) {
       $xfer += $output->writeFieldBegin('maxMemoryPerNode', TType::I32, 11);
       $xfer += $output->writeI32($this->maxMemoryPerNode);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->xsedeGatewayUsageReporting !== null) {
+      $xfer += $output->writeFieldBegin('xsedeGatewayUsageReporting', TType::BOOL, 12);
+      $xfer += $output->writeBool($this->xsedeGatewayUsageReporting);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayUsageModuleLoadCommand !== null) {
+      $xfer += $output->writeFieldBegin('gatewayUsageModuleLoadCommand', TType::STRING, 13);
+      $xfer += $output->writeString($this->gatewayUsageModuleLoadCommand);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayUsageExecutable !== null) {
+      $xfer += $output->writeFieldBegin('gatewayUsageExecutable', TType::STRING, 14);
+      $xfer += $output->writeString($this->gatewayUsageExecutable);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
