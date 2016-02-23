@@ -486,6 +486,10 @@ class GatewayResourceProfile {
    * @var \Airavata\Model\AppCatalog\GatewayProfile\StoragePreference[]
    */
   public $storagePreferences = null;
+  /**
+   * @var string
+   */
+  public $xsedeUsageReportingGatewayId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -516,6 +520,10 @@ class GatewayResourceProfile {
             'class' => '\Airavata\Model\AppCatalog\GatewayProfile\StoragePreference',
             ),
           ),
+        5 => array(
+          'var' => 'xsedeUsageReportingGatewayId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -530,6 +538,9 @@ class GatewayResourceProfile {
       }
       if (isset($vals['storagePreferences'])) {
         $this->storagePreferences = $vals['storagePreferences'];
+      }
+      if (isset($vals['xsedeUsageReportingGatewayId'])) {
+        $this->xsedeUsageReportingGatewayId = $vals['xsedeUsageReportingGatewayId'];
       }
     }
   }
@@ -603,6 +614,13 @@ class GatewayResourceProfile {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 5:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->xsedeUsageReportingGatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -658,6 +676,11 @@ class GatewayResourceProfile {
         }
         $output->writeListEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->xsedeUsageReportingGatewayId !== null) {
+      $xfer += $output->writeFieldBegin('xsedeUsageReportingGatewayId', TType::STRING, 5);
+      $xfer += $output->writeString($this->xsedeUsageReportingGatewayId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
