@@ -1633,9 +1633,9 @@ void ComputeResourceDescription::__set_maxMemoryPerNode(const int32_t val) {
 __isset.maxMemoryPerNode = true;
 }
 
-void ComputeResourceDescription::__set_xsedeGatewayUsageReporting(const bool val) {
-  this->xsedeGatewayUsageReporting = val;
-__isset.xsedeGatewayUsageReporting = true;
+void ComputeResourceDescription::__set_gatewayUsageReporting(const bool val) {
+  this->gatewayUsageReporting = val;
+__isset.gatewayUsageReporting = true;
 }
 
 void ComputeResourceDescription::__set_gatewayUsageModuleLoadCommand(const std::string& val) {
@@ -1838,8 +1838,8 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
         break;
       case 12:
         if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool(this->xsedeGatewayUsageReporting);
-          this->__isset.xsedeGatewayUsageReporting = true;
+          xfer += iprot->readBool(this->gatewayUsageReporting);
+          this->__isset.gatewayUsageReporting = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -1983,9 +1983,9 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeI32(this->maxMemoryPerNode);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.xsedeGatewayUsageReporting) {
-    xfer += oprot->writeFieldBegin("xsedeGatewayUsageReporting", ::apache::thrift::protocol::T_BOOL, 12);
-    xfer += oprot->writeBool(this->xsedeGatewayUsageReporting);
+  if (this->__isset.gatewayUsageReporting) {
+    xfer += oprot->writeFieldBegin("gatewayUsageReporting", ::apache::thrift::protocol::T_BOOL, 12);
+    xfer += oprot->writeBool(this->gatewayUsageReporting);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.gatewayUsageModuleLoadCommand) {
@@ -2016,7 +2016,7 @@ void swap(ComputeResourceDescription &a, ComputeResourceDescription &b) {
   swap(a.jobSubmissionInterfaces, b.jobSubmissionInterfaces);
   swap(a.dataMovementInterfaces, b.dataMovementInterfaces);
   swap(a.maxMemoryPerNode, b.maxMemoryPerNode);
-  swap(a.xsedeGatewayUsageReporting, b.xsedeGatewayUsageReporting);
+  swap(a.gatewayUsageReporting, b.gatewayUsageReporting);
   swap(a.gatewayUsageModuleLoadCommand, b.gatewayUsageModuleLoadCommand);
   swap(a.gatewayUsageExecutable, b.gatewayUsageExecutable);
   swap(a.__isset, b.__isset);
@@ -2034,7 +2034,7 @@ ComputeResourceDescription::ComputeResourceDescription(const ComputeResourceDesc
   jobSubmissionInterfaces = other85.jobSubmissionInterfaces;
   dataMovementInterfaces = other85.dataMovementInterfaces;
   maxMemoryPerNode = other85.maxMemoryPerNode;
-  xsedeGatewayUsageReporting = other85.xsedeGatewayUsageReporting;
+  gatewayUsageReporting = other85.gatewayUsageReporting;
   gatewayUsageModuleLoadCommand = other85.gatewayUsageModuleLoadCommand;
   gatewayUsageExecutable = other85.gatewayUsageExecutable;
   __isset = other85.__isset;
@@ -2051,7 +2051,7 @@ ComputeResourceDescription& ComputeResourceDescription::operator=(const ComputeR
   jobSubmissionInterfaces = other86.jobSubmissionInterfaces;
   dataMovementInterfaces = other86.dataMovementInterfaces;
   maxMemoryPerNode = other86.maxMemoryPerNode;
-  xsedeGatewayUsageReporting = other86.xsedeGatewayUsageReporting;
+  gatewayUsageReporting = other86.gatewayUsageReporting;
   gatewayUsageModuleLoadCommand = other86.gatewayUsageModuleLoadCommand;
   gatewayUsageExecutable = other86.gatewayUsageExecutable;
   __isset = other86.__isset;
@@ -2071,7 +2071,7 @@ void ComputeResourceDescription::printTo(std::ostream& out) const {
   out << ", " << "jobSubmissionInterfaces="; (__isset.jobSubmissionInterfaces ? (out << to_string(jobSubmissionInterfaces)) : (out << "<null>"));
   out << ", " << "dataMovementInterfaces="; (__isset.dataMovementInterfaces ? (out << to_string(dataMovementInterfaces)) : (out << "<null>"));
   out << ", " << "maxMemoryPerNode="; (__isset.maxMemoryPerNode ? (out << to_string(maxMemoryPerNode)) : (out << "<null>"));
-  out << ", " << "xsedeGatewayUsageReporting="; (__isset.xsedeGatewayUsageReporting ? (out << to_string(xsedeGatewayUsageReporting)) : (out << "<null>"));
+  out << ", " << "gatewayUsageReporting="; (__isset.gatewayUsageReporting ? (out << to_string(gatewayUsageReporting)) : (out << "<null>"));
   out << ", " << "gatewayUsageModuleLoadCommand="; (__isset.gatewayUsageModuleLoadCommand ? (out << to_string(gatewayUsageModuleLoadCommand)) : (out << "<null>"));
   out << ", " << "gatewayUsageExecutable="; (__isset.gatewayUsageExecutable ? (out << to_string(gatewayUsageExecutable)) : (out << "<null>"));
   out << ")";

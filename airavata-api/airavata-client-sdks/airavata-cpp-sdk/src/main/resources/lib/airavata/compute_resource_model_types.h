@@ -666,7 +666,7 @@ inline std::ostream& operator<<(std::ostream& out, const JobSubmissionInterface&
 }
 
 typedef struct _ComputeResourceDescription__isset {
-  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), enabled(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovementInterfaces(false), maxMemoryPerNode(false), xsedeGatewayUsageReporting(false), gatewayUsageModuleLoadCommand(false), gatewayUsageExecutable(false) {}
+  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), enabled(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovementInterfaces(false), maxMemoryPerNode(false), gatewayUsageReporting(false), gatewayUsageModuleLoadCommand(false), gatewayUsageExecutable(false) {}
   bool hostAliases :1;
   bool ipAddresses :1;
   bool resourceDescription :1;
@@ -676,7 +676,7 @@ typedef struct _ComputeResourceDescription__isset {
   bool jobSubmissionInterfaces :1;
   bool dataMovementInterfaces :1;
   bool maxMemoryPerNode :1;
-  bool xsedeGatewayUsageReporting :1;
+  bool gatewayUsageReporting :1;
   bool gatewayUsageModuleLoadCommand :1;
   bool gatewayUsageExecutable :1;
 } _ComputeResourceDescription__isset;
@@ -686,7 +686,7 @@ class ComputeResourceDescription {
 
   ComputeResourceDescription(const ComputeResourceDescription&);
   ComputeResourceDescription& operator=(const ComputeResourceDescription&);
-  ComputeResourceDescription() : computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), resourceDescription(), enabled(0), maxMemoryPerNode(0), xsedeGatewayUsageReporting(0), gatewayUsageModuleLoadCommand(), gatewayUsageExecutable() {
+  ComputeResourceDescription() : computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), resourceDescription(), enabled(0), maxMemoryPerNode(0), gatewayUsageReporting(0), gatewayUsageModuleLoadCommand(), gatewayUsageExecutable() {
   }
 
   virtual ~ComputeResourceDescription() throw();
@@ -701,7 +701,7 @@ class ComputeResourceDescription {
   std::vector<JobSubmissionInterface>  jobSubmissionInterfaces;
   std::vector< ::apache::airavata::model::data::movement::DataMovementInterface>  dataMovementInterfaces;
   int32_t maxMemoryPerNode;
-  bool xsedeGatewayUsageReporting;
+  bool gatewayUsageReporting;
   std::string gatewayUsageModuleLoadCommand;
   std::string gatewayUsageExecutable;
 
@@ -729,7 +729,7 @@ class ComputeResourceDescription {
 
   void __set_maxMemoryPerNode(const int32_t val);
 
-  void __set_xsedeGatewayUsageReporting(const bool val);
+  void __set_gatewayUsageReporting(const bool val);
 
   void __set_gatewayUsageModuleLoadCommand(const std::string& val);
 
@@ -777,9 +777,9 @@ class ComputeResourceDescription {
       return false;
     else if (__isset.maxMemoryPerNode && !(maxMemoryPerNode == rhs.maxMemoryPerNode))
       return false;
-    if (__isset.xsedeGatewayUsageReporting != rhs.__isset.xsedeGatewayUsageReporting)
+    if (__isset.gatewayUsageReporting != rhs.__isset.gatewayUsageReporting)
       return false;
-    else if (__isset.xsedeGatewayUsageReporting && !(xsedeGatewayUsageReporting == rhs.xsedeGatewayUsageReporting))
+    else if (__isset.gatewayUsageReporting && !(gatewayUsageReporting == rhs.gatewayUsageReporting))
       return false;
     if (__isset.gatewayUsageModuleLoadCommand != rhs.__isset.gatewayUsageModuleLoadCommand)
       return false;
