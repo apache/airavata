@@ -262,8 +262,6 @@ struct UnicoreJobSubmission {
     3: required string unicoreEndPointURL,
 }
 
-
-
 /**
 * Provider name
 **/
@@ -346,5 +344,8 @@ struct ComputeResourceDescription {
     8: optional map<FileSystems, string> fileSystems,
     9: optional list<JobSubmissionInterface> jobSubmissionInterfaces,
     10: optional list<data_movement_models.DataMovementInterface> dataMovementInterfaces,
-    11: optional i32 maxMemoryPerNode
+    11: optional i32 maxMemoryPerNode,
+    12: optional bool xsedeGatewayUsageReporting,
+    13: optional string gatewayUsageModuleLoadCommand,
+    14: optional string gatewayUsageExecutable
 }
