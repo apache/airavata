@@ -1719,7 +1719,7 @@ class ComputeResourceDescription {
   /**
    * @var bool
    */
-  public $xsedeGatewayUsageReporting = null;
+  public $gatewayUsageReporting = null;
   /**
    * @var string
    */
@@ -1808,7 +1808,7 @@ class ComputeResourceDescription {
           'type' => TType::I32,
           ),
         12 => array(
-          'var' => 'xsedeGatewayUsageReporting',
+          'var' => 'gatewayUsageReporting',
           'type' => TType::BOOL,
           ),
         13 => array(
@@ -1855,8 +1855,8 @@ class ComputeResourceDescription {
       if (isset($vals['maxMemoryPerNode'])) {
         $this->maxMemoryPerNode = $vals['maxMemoryPerNode'];
       }
-      if (isset($vals['xsedeGatewayUsageReporting'])) {
-        $this->xsedeGatewayUsageReporting = $vals['xsedeGatewayUsageReporting'];
+      if (isset($vals['gatewayUsageReporting'])) {
+        $this->gatewayUsageReporting = $vals['gatewayUsageReporting'];
       }
       if (isset($vals['gatewayUsageModuleLoadCommand'])) {
         $this->gatewayUsageModuleLoadCommand = $vals['gatewayUsageModuleLoadCommand'];
@@ -2031,7 +2031,7 @@ class ComputeResourceDescription {
           break;
         case 12:
           if ($ftype == TType::BOOL) {
-            $xfer += $input->readBool($this->xsedeGatewayUsageReporting);
+            $xfer += $input->readBool($this->gatewayUsageReporting);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -2191,9 +2191,9 @@ class ComputeResourceDescription {
       $xfer += $output->writeI32($this->maxMemoryPerNode);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->xsedeGatewayUsageReporting !== null) {
-      $xfer += $output->writeFieldBegin('xsedeGatewayUsageReporting', TType::BOOL, 12);
-      $xfer += $output->writeBool($this->xsedeGatewayUsageReporting);
+    if ($this->gatewayUsageReporting !== null) {
+      $xfer += $output->writeFieldBegin('gatewayUsageReporting', TType::BOOL, 12);
+      $xfer += $output->writeBool($this->gatewayUsageReporting);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->gatewayUsageModuleLoadCommand !== null) {

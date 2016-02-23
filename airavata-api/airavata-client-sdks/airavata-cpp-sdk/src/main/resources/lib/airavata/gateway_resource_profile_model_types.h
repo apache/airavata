@@ -220,11 +220,11 @@ inline std::ostream& operator<<(std::ostream& out, const StoragePreference& obj)
 }
 
 typedef struct _GatewayResourceProfile__isset {
-  _GatewayResourceProfile__isset() : credentialStoreToken(false), computeResourcePreferences(false), storagePreferences(false), xsedeUsageReportingGatewayId(false) {}
+  _GatewayResourceProfile__isset() : credentialStoreToken(false), computeResourcePreferences(false), storagePreferences(false), usageReportingGatewayId(false) {}
   bool credentialStoreToken :1;
   bool computeResourcePreferences :1;
   bool storagePreferences :1;
-  bool xsedeUsageReportingGatewayId :1;
+  bool usageReportingGatewayId :1;
 } _GatewayResourceProfile__isset;
 
 class GatewayResourceProfile {
@@ -232,7 +232,7 @@ class GatewayResourceProfile {
 
   GatewayResourceProfile(const GatewayResourceProfile&);
   GatewayResourceProfile& operator=(const GatewayResourceProfile&);
-  GatewayResourceProfile() : gatewayID(), credentialStoreToken(), xsedeUsageReportingGatewayId() {
+  GatewayResourceProfile() : gatewayID(), credentialStoreToken(), usageReportingGatewayId() {
   }
 
   virtual ~GatewayResourceProfile() throw();
@@ -240,7 +240,7 @@ class GatewayResourceProfile {
   std::string credentialStoreToken;
   std::vector<ComputeResourcePreference>  computeResourcePreferences;
   std::vector<StoragePreference>  storagePreferences;
-  std::string xsedeUsageReportingGatewayId;
+  std::string usageReportingGatewayId;
 
   _GatewayResourceProfile__isset __isset;
 
@@ -252,7 +252,7 @@ class GatewayResourceProfile {
 
   void __set_storagePreferences(const std::vector<StoragePreference> & val);
 
-  void __set_xsedeUsageReportingGatewayId(const std::string& val);
+  void __set_usageReportingGatewayId(const std::string& val);
 
   bool operator == (const GatewayResourceProfile & rhs) const
   {
@@ -270,9 +270,9 @@ class GatewayResourceProfile {
       return false;
     else if (__isset.storagePreferences && !(storagePreferences == rhs.storagePreferences))
       return false;
-    if (__isset.xsedeUsageReportingGatewayId != rhs.__isset.xsedeUsageReportingGatewayId)
+    if (__isset.usageReportingGatewayId != rhs.__isset.usageReportingGatewayId)
       return false;
-    else if (__isset.xsedeUsageReportingGatewayId && !(xsedeUsageReportingGatewayId == rhs.xsedeUsageReportingGatewayId))
+    else if (__isset.usageReportingGatewayId && !(usageReportingGatewayId == rhs.usageReportingGatewayId))
       return false;
     return true;
   }

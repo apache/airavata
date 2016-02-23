@@ -489,7 +489,7 @@ class GatewayResourceProfile {
   /**
    * @var string
    */
-  public $xsedeUsageReportingGatewayId = null;
+  public $usageReportingGatewayId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -521,7 +521,7 @@ class GatewayResourceProfile {
             ),
           ),
         5 => array(
-          'var' => 'xsedeUsageReportingGatewayId',
+          'var' => 'usageReportingGatewayId',
           'type' => TType::STRING,
           ),
         );
@@ -539,8 +539,8 @@ class GatewayResourceProfile {
       if (isset($vals['storagePreferences'])) {
         $this->storagePreferences = $vals['storagePreferences'];
       }
-      if (isset($vals['xsedeUsageReportingGatewayId'])) {
-        $this->xsedeUsageReportingGatewayId = $vals['xsedeUsageReportingGatewayId'];
+      if (isset($vals['usageReportingGatewayId'])) {
+        $this->usageReportingGatewayId = $vals['usageReportingGatewayId'];
       }
     }
   }
@@ -616,7 +616,7 @@ class GatewayResourceProfile {
           break;
         case 5:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->xsedeUsageReportingGatewayId);
+            $xfer += $input->readString($this->usageReportingGatewayId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -678,9 +678,9 @@ class GatewayResourceProfile {
       }
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->xsedeUsageReportingGatewayId !== null) {
-      $xfer += $output->writeFieldBegin('xsedeUsageReportingGatewayId', TType::STRING, 5);
-      $xfer += $output->writeString($this->xsedeUsageReportingGatewayId);
+    if ($this->usageReportingGatewayId !== null) {
+      $xfer += $output->writeFieldBegin('usageReportingGatewayId', TType::STRING, 5);
+      $xfer += $output->writeString($this->usageReportingGatewayId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
