@@ -1633,6 +1633,21 @@ void ComputeResourceDescription::__set_maxMemoryPerNode(const int32_t val) {
 __isset.maxMemoryPerNode = true;
 }
 
+void ComputeResourceDescription::__set_xsedeGatewayUsageReporting(const bool val) {
+  this->xsedeGatewayUsageReporting = val;
+__isset.xsedeGatewayUsageReporting = true;
+}
+
+void ComputeResourceDescription::__set_gatewayUsageModuleLoadCommand(const std::string& val) {
+  this->gatewayUsageModuleLoadCommand = val;
+__isset.gatewayUsageModuleLoadCommand = true;
+}
+
+void ComputeResourceDescription::__set_gatewayUsageExecutable(const std::string& val) {
+  this->gatewayUsageExecutable = val;
+__isset.gatewayUsageExecutable = true;
+}
+
 uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -1821,6 +1836,30 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
+      case 12:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->xsedeGatewayUsageReporting);
+          this->__isset.xsedeGatewayUsageReporting = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 13:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayUsageModuleLoadCommand);
+          this->__isset.gatewayUsageModuleLoadCommand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 14:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayUsageExecutable);
+          this->__isset.gatewayUsageExecutable = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -1944,6 +1983,21 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeI32(this->maxMemoryPerNode);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.xsedeGatewayUsageReporting) {
+    xfer += oprot->writeFieldBegin("xsedeGatewayUsageReporting", ::apache::thrift::protocol::T_BOOL, 12);
+    xfer += oprot->writeBool(this->xsedeGatewayUsageReporting);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.gatewayUsageModuleLoadCommand) {
+    xfer += oprot->writeFieldBegin("gatewayUsageModuleLoadCommand", ::apache::thrift::protocol::T_STRING, 13);
+    xfer += oprot->writeString(this->gatewayUsageModuleLoadCommand);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.gatewayUsageExecutable) {
+    xfer += oprot->writeFieldBegin("gatewayUsageExecutable", ::apache::thrift::protocol::T_STRING, 14);
+    xfer += oprot->writeString(this->gatewayUsageExecutable);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -1962,6 +2016,9 @@ void swap(ComputeResourceDescription &a, ComputeResourceDescription &b) {
   swap(a.jobSubmissionInterfaces, b.jobSubmissionInterfaces);
   swap(a.dataMovementInterfaces, b.dataMovementInterfaces);
   swap(a.maxMemoryPerNode, b.maxMemoryPerNode);
+  swap(a.xsedeGatewayUsageReporting, b.xsedeGatewayUsageReporting);
+  swap(a.gatewayUsageModuleLoadCommand, b.gatewayUsageModuleLoadCommand);
+  swap(a.gatewayUsageExecutable, b.gatewayUsageExecutable);
   swap(a.__isset, b.__isset);
 }
 
@@ -1977,6 +2034,9 @@ ComputeResourceDescription::ComputeResourceDescription(const ComputeResourceDesc
   jobSubmissionInterfaces = other85.jobSubmissionInterfaces;
   dataMovementInterfaces = other85.dataMovementInterfaces;
   maxMemoryPerNode = other85.maxMemoryPerNode;
+  xsedeGatewayUsageReporting = other85.xsedeGatewayUsageReporting;
+  gatewayUsageModuleLoadCommand = other85.gatewayUsageModuleLoadCommand;
+  gatewayUsageExecutable = other85.gatewayUsageExecutable;
   __isset = other85.__isset;
 }
 ComputeResourceDescription& ComputeResourceDescription::operator=(const ComputeResourceDescription& other86) {
@@ -1991,6 +2051,9 @@ ComputeResourceDescription& ComputeResourceDescription::operator=(const ComputeR
   jobSubmissionInterfaces = other86.jobSubmissionInterfaces;
   dataMovementInterfaces = other86.dataMovementInterfaces;
   maxMemoryPerNode = other86.maxMemoryPerNode;
+  xsedeGatewayUsageReporting = other86.xsedeGatewayUsageReporting;
+  gatewayUsageModuleLoadCommand = other86.gatewayUsageModuleLoadCommand;
+  gatewayUsageExecutable = other86.gatewayUsageExecutable;
   __isset = other86.__isset;
   return *this;
 }
@@ -2008,6 +2071,9 @@ void ComputeResourceDescription::printTo(std::ostream& out) const {
   out << ", " << "jobSubmissionInterfaces="; (__isset.jobSubmissionInterfaces ? (out << to_string(jobSubmissionInterfaces)) : (out << "<null>"));
   out << ", " << "dataMovementInterfaces="; (__isset.dataMovementInterfaces ? (out << to_string(dataMovementInterfaces)) : (out << "<null>"));
   out << ", " << "maxMemoryPerNode="; (__isset.maxMemoryPerNode ? (out << to_string(maxMemoryPerNode)) : (out << "<null>"));
+  out << ", " << "xsedeGatewayUsageReporting="; (__isset.xsedeGatewayUsageReporting ? (out << to_string(xsedeGatewayUsageReporting)) : (out << "<null>"));
+  out << ", " << "gatewayUsageModuleLoadCommand="; (__isset.gatewayUsageModuleLoadCommand ? (out << to_string(gatewayUsageModuleLoadCommand)) : (out << "<null>"));
+  out << ", " << "gatewayUsageExecutable="; (__isset.gatewayUsageExecutable ? (out << to_string(gatewayUsageExecutable)) : (out << "<null>"));
   out << ")";
 }
 
