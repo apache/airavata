@@ -345,7 +345,7 @@ struct ComputeResourceDescription {
     9: optional list<JobSubmissionInterface> jobSubmissionInterfaces,
     10: optional list<data_movement_models.DataMovementInterface> dataMovementInterfaces,
     11: optional i32 maxMemoryPerNode,
-    12: optional bool xsedeGatewayUsageReporting,
+    12: optional bool gatewayUsageReporting,
     13: optional string gatewayUsageModuleLoadCommand,
     14: optional string gatewayUsageExecutable
 }

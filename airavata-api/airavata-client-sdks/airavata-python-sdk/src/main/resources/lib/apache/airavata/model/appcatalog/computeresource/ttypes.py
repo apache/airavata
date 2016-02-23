@@ -1340,7 +1340,7 @@ class ComputeResourceDescription:
    - jobSubmissionInterfaces
    - dataMovementInterfaces
    - maxMemoryPerNode
-   - xsedeGatewayUsageReporting
+   - gatewayUsageReporting
    - gatewayUsageModuleLoadCommand
    - gatewayUsageExecutable
   """
@@ -1358,12 +1358,12 @@ class ComputeResourceDescription:
     (9, TType.LIST, 'jobSubmissionInterfaces', (TType.STRUCT,(JobSubmissionInterface, JobSubmissionInterface.thrift_spec)), None, ), # 9
     (10, TType.LIST, 'dataMovementInterfaces', (TType.STRUCT,(apache.airavata.model.data.movement.ttypes.DataMovementInterface, apache.airavata.model.data.movement.ttypes.DataMovementInterface.thrift_spec)), None, ), # 10
     (11, TType.I32, 'maxMemoryPerNode', None, None, ), # 11
-    (12, TType.BOOL, 'xsedeGatewayUsageReporting', None, None, ), # 12
+    (12, TType.BOOL, 'gatewayUsageReporting', None, None, ), # 12
     (13, TType.STRING, 'gatewayUsageModuleLoadCommand', None, None, ), # 13
     (14, TType.STRING, 'gatewayUsageExecutable', None, None, ), # 14
   )
 
-  def __init__(self, computeResourceId=thrift_spec[1][4], hostName=None, hostAliases=None, ipAddresses=None, resourceDescription=None, enabled=None, batchQueues=None, fileSystems=None, jobSubmissionInterfaces=None, dataMovementInterfaces=None, maxMemoryPerNode=None, xsedeGatewayUsageReporting=None, gatewayUsageModuleLoadCommand=None, gatewayUsageExecutable=None,):
+  def __init__(self, computeResourceId=thrift_spec[1][4], hostName=None, hostAliases=None, ipAddresses=None, resourceDescription=None, enabled=None, batchQueues=None, fileSystems=None, jobSubmissionInterfaces=None, dataMovementInterfaces=None, maxMemoryPerNode=None, gatewayUsageReporting=None, gatewayUsageModuleLoadCommand=None, gatewayUsageExecutable=None,):
     self.computeResourceId = computeResourceId
     self.hostName = hostName
     self.hostAliases = hostAliases
@@ -1375,7 +1375,7 @@ class ComputeResourceDescription:
     self.jobSubmissionInterfaces = jobSubmissionInterfaces
     self.dataMovementInterfaces = dataMovementInterfaces
     self.maxMemoryPerNode = maxMemoryPerNode
-    self.xsedeGatewayUsageReporting = xsedeGatewayUsageReporting
+    self.gatewayUsageReporting = gatewayUsageReporting
     self.gatewayUsageModuleLoadCommand = gatewayUsageModuleLoadCommand
     self.gatewayUsageExecutable = gatewayUsageExecutable
 
@@ -1479,7 +1479,7 @@ class ComputeResourceDescription:
           iprot.skip(ftype)
       elif fid == 12:
         if ftype == TType.BOOL:
-          self.xsedeGatewayUsageReporting = iprot.readBool()
+          self.gatewayUsageReporting = iprot.readBool()
         else:
           iprot.skip(ftype)
       elif fid == 13:
@@ -1565,9 +1565,9 @@ class ComputeResourceDescription:
       oprot.writeFieldBegin('maxMemoryPerNode', TType.I32, 11)
       oprot.writeI32(self.maxMemoryPerNode)
       oprot.writeFieldEnd()
-    if self.xsedeGatewayUsageReporting is not None:
-      oprot.writeFieldBegin('xsedeGatewayUsageReporting', TType.BOOL, 12)
-      oprot.writeBool(self.xsedeGatewayUsageReporting)
+    if self.gatewayUsageReporting is not None:
+      oprot.writeFieldBegin('gatewayUsageReporting', TType.BOOL, 12)
+      oprot.writeBool(self.gatewayUsageReporting)
       oprot.writeFieldEnd()
     if self.gatewayUsageModuleLoadCommand is not None:
       oprot.writeFieldBegin('gatewayUsageModuleLoadCommand', TType.STRING, 13)
@@ -1601,7 +1601,7 @@ class ComputeResourceDescription:
     value = (value * 31) ^ hash(self.jobSubmissionInterfaces)
     value = (value * 31) ^ hash(self.dataMovementInterfaces)
     value = (value * 31) ^ hash(self.maxMemoryPerNode)
-    value = (value * 31) ^ hash(self.xsedeGatewayUsageReporting)
+    value = (value * 31) ^ hash(self.gatewayUsageReporting)
     value = (value * 31) ^ hash(self.gatewayUsageModuleLoadCommand)
     value = (value * 31) ^ hash(self.gatewayUsageExecutable)
     return value
