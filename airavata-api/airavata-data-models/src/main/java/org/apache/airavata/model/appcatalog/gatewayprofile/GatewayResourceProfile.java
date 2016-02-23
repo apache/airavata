@@ -72,7 +72,7 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
   private static final org.apache.thrift.protocol.TField CREDENTIAL_STORE_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("credentialStoreToken", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_PREFERENCES_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourcePreferences", org.apache.thrift.protocol.TType.LIST, (short)3);
   private static final org.apache.thrift.protocol.TField STORAGE_PREFERENCES_FIELD_DESC = new org.apache.thrift.protocol.TField("storagePreferences", org.apache.thrift.protocol.TType.LIST, (short)4);
-  private static final org.apache.thrift.protocol.TField XSEDE_USAGE_REPORTING_GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("xsedeUsageReportingGatewayId", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField USAGE_REPORTING_GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("usageReportingGatewayId", org.apache.thrift.protocol.TType.STRING, (short)5);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -84,7 +84,7 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
   private String credentialStoreToken; // optional
   private List<ComputeResourcePreference> computeResourcePreferences; // optional
   private List<StoragePreference> storagePreferences; // optional
-  private String xsedeUsageReportingGatewayId; // optional
+  private String usageReportingGatewayId; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -92,7 +92,7 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
     CREDENTIAL_STORE_TOKEN((short)2, "credentialStoreToken"),
     COMPUTE_RESOURCE_PREFERENCES((short)3, "computeResourcePreferences"),
     STORAGE_PREFERENCES((short)4, "storagePreferences"),
-    XSEDE_USAGE_REPORTING_GATEWAY_ID((short)5, "xsedeUsageReportingGatewayId");
+    USAGE_REPORTING_GATEWAY_ID((short)5, "usageReportingGatewayId");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -115,8 +115,8 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
           return COMPUTE_RESOURCE_PREFERENCES;
         case 4: // STORAGE_PREFERENCES
           return STORAGE_PREFERENCES;
-        case 5: // XSEDE_USAGE_REPORTING_GATEWAY_ID
-          return XSEDE_USAGE_REPORTING_GATEWAY_ID;
+        case 5: // USAGE_REPORTING_GATEWAY_ID
+          return USAGE_REPORTING_GATEWAY_ID;
         default:
           return null;
       }
@@ -157,7 +157,7 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
   }
 
   // isset id assignments
-  private static final _Fields optionals[] = {_Fields.CREDENTIAL_STORE_TOKEN,_Fields.COMPUTE_RESOURCE_PREFERENCES,_Fields.STORAGE_PREFERENCES,_Fields.XSEDE_USAGE_REPORTING_GATEWAY_ID};
+  private static final _Fields optionals[] = {_Fields.CREDENTIAL_STORE_TOKEN,_Fields.COMPUTE_RESOURCE_PREFERENCES,_Fields.STORAGE_PREFERENCES,_Fields.USAGE_REPORTING_GATEWAY_ID};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -171,7 +171,7 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
     tmpMap.put(_Fields.STORAGE_PREFERENCES, new org.apache.thrift.meta_data.FieldMetaData("storagePreferences", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, StoragePreference.class))));
-    tmpMap.put(_Fields.XSEDE_USAGE_REPORTING_GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("xsedeUsageReportingGatewayId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.USAGE_REPORTING_GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("usageReportingGatewayId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(GatewayResourceProfile.class, metaDataMap);
@@ -211,8 +211,8 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
       }
       this.storagePreferences = __this__storagePreferences;
     }
-    if (other.isSetXsedeUsageReportingGatewayId()) {
-      this.xsedeUsageReportingGatewayId = other.xsedeUsageReportingGatewayId;
+    if (other.isSetUsageReportingGatewayId()) {
+      this.usageReportingGatewayId = other.usageReportingGatewayId;
     }
   }
 
@@ -226,7 +226,7 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
     this.credentialStoreToken = null;
     this.computeResourcePreferences = null;
     this.storagePreferences = null;
-    this.xsedeUsageReportingGatewayId = null;
+    this.usageReportingGatewayId = null;
   }
 
   public String getGatewayID() {
@@ -351,26 +351,26 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
     }
   }
 
-  public String getXsedeUsageReportingGatewayId() {
-    return this.xsedeUsageReportingGatewayId;
+  public String getUsageReportingGatewayId() {
+    return this.usageReportingGatewayId;
   }
 
-  public void setXsedeUsageReportingGatewayId(String xsedeUsageReportingGatewayId) {
-    this.xsedeUsageReportingGatewayId = xsedeUsageReportingGatewayId;
+  public void setUsageReportingGatewayId(String usageReportingGatewayId) {
+    this.usageReportingGatewayId = usageReportingGatewayId;
   }
 
-  public void unsetXsedeUsageReportingGatewayId() {
-    this.xsedeUsageReportingGatewayId = null;
+  public void unsetUsageReportingGatewayId() {
+    this.usageReportingGatewayId = null;
   }
 
-  /** Returns true if field xsedeUsageReportingGatewayId is set (has been assigned a value) and false otherwise */
-  public boolean isSetXsedeUsageReportingGatewayId() {
-    return this.xsedeUsageReportingGatewayId != null;
+  /** Returns true if field usageReportingGatewayId is set (has been assigned a value) and false otherwise */
+  public boolean isSetUsageReportingGatewayId() {
+    return this.usageReportingGatewayId != null;
   }
 
-  public void setXsedeUsageReportingGatewayIdIsSet(boolean value) {
+  public void setUsageReportingGatewayIdIsSet(boolean value) {
     if (!value) {
-      this.xsedeUsageReportingGatewayId = null;
+      this.usageReportingGatewayId = null;
     }
   }
 
@@ -408,11 +408,11 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
       }
       break;
 
-    case XSEDE_USAGE_REPORTING_GATEWAY_ID:
+    case USAGE_REPORTING_GATEWAY_ID:
       if (value == null) {
-        unsetXsedeUsageReportingGatewayId();
+        unsetUsageReportingGatewayId();
       } else {
-        setXsedeUsageReportingGatewayId((String)value);
+        setUsageReportingGatewayId((String)value);
       }
       break;
 
@@ -433,8 +433,8 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
     case STORAGE_PREFERENCES:
       return getStoragePreferences();
 
-    case XSEDE_USAGE_REPORTING_GATEWAY_ID:
-      return getXsedeUsageReportingGatewayId();
+    case USAGE_REPORTING_GATEWAY_ID:
+      return getUsageReportingGatewayId();
 
     }
     throw new IllegalStateException();
@@ -455,8 +455,8 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
       return isSetComputeResourcePreferences();
     case STORAGE_PREFERENCES:
       return isSetStoragePreferences();
-    case XSEDE_USAGE_REPORTING_GATEWAY_ID:
-      return isSetXsedeUsageReportingGatewayId();
+    case USAGE_REPORTING_GATEWAY_ID:
+      return isSetUsageReportingGatewayId();
     }
     throw new IllegalStateException();
   }
@@ -510,12 +510,12 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
         return false;
     }
 
-    boolean this_present_xsedeUsageReportingGatewayId = true && this.isSetXsedeUsageReportingGatewayId();
-    boolean that_present_xsedeUsageReportingGatewayId = true && that.isSetXsedeUsageReportingGatewayId();
-    if (this_present_xsedeUsageReportingGatewayId || that_present_xsedeUsageReportingGatewayId) {
-      if (!(this_present_xsedeUsageReportingGatewayId && that_present_xsedeUsageReportingGatewayId))
+    boolean this_present_usageReportingGatewayId = true && this.isSetUsageReportingGatewayId();
+    boolean that_present_usageReportingGatewayId = true && that.isSetUsageReportingGatewayId();
+    if (this_present_usageReportingGatewayId || that_present_usageReportingGatewayId) {
+      if (!(this_present_usageReportingGatewayId && that_present_usageReportingGatewayId))
         return false;
-      if (!this.xsedeUsageReportingGatewayId.equals(that.xsedeUsageReportingGatewayId))
+      if (!this.usageReportingGatewayId.equals(that.usageReportingGatewayId))
         return false;
     }
 
@@ -546,10 +546,10 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
     if (present_storagePreferences)
       list.add(storagePreferences);
 
-    boolean present_xsedeUsageReportingGatewayId = true && (isSetXsedeUsageReportingGatewayId());
-    list.add(present_xsedeUsageReportingGatewayId);
-    if (present_xsedeUsageReportingGatewayId)
-      list.add(xsedeUsageReportingGatewayId);
+    boolean present_usageReportingGatewayId = true && (isSetUsageReportingGatewayId());
+    list.add(present_usageReportingGatewayId);
+    if (present_usageReportingGatewayId)
+      list.add(usageReportingGatewayId);
 
     return list.hashCode();
   }
@@ -602,12 +602,12 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetXsedeUsageReportingGatewayId()).compareTo(other.isSetXsedeUsageReportingGatewayId());
+    lastComparison = Boolean.valueOf(isSetUsageReportingGatewayId()).compareTo(other.isSetUsageReportingGatewayId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetXsedeUsageReportingGatewayId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.xsedeUsageReportingGatewayId, other.xsedeUsageReportingGatewayId);
+    if (isSetUsageReportingGatewayId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.usageReportingGatewayId, other.usageReportingGatewayId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -669,13 +669,13 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
       }
       first = false;
     }
-    if (isSetXsedeUsageReportingGatewayId()) {
+    if (isSetUsageReportingGatewayId()) {
       if (!first) sb.append(", ");
-      sb.append("xsedeUsageReportingGatewayId:");
-      if (this.xsedeUsageReportingGatewayId == null) {
+      sb.append("usageReportingGatewayId:");
+      if (this.usageReportingGatewayId == null) {
         sb.append("null");
       } else {
-        sb.append(this.xsedeUsageReportingGatewayId);
+        sb.append(this.usageReportingGatewayId);
       }
       first = false;
     }
@@ -780,10 +780,10 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // XSEDE_USAGE_REPORTING_GATEWAY_ID
+          case 5: // USAGE_REPORTING_GATEWAY_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.xsedeUsageReportingGatewayId = iprot.readString();
-              struct.setXsedeUsageReportingGatewayIdIsSet(true);
+              struct.usageReportingGatewayId = iprot.readString();
+              struct.setUsageReportingGatewayIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -841,10 +841,10 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
           oprot.writeFieldEnd();
         }
       }
-      if (struct.xsedeUsageReportingGatewayId != null) {
-        if (struct.isSetXsedeUsageReportingGatewayId()) {
-          oprot.writeFieldBegin(XSEDE_USAGE_REPORTING_GATEWAY_ID_FIELD_DESC);
-          oprot.writeString(struct.xsedeUsageReportingGatewayId);
+      if (struct.usageReportingGatewayId != null) {
+        if (struct.isSetUsageReportingGatewayId()) {
+          oprot.writeFieldBegin(USAGE_REPORTING_GATEWAY_ID_FIELD_DESC);
+          oprot.writeString(struct.usageReportingGatewayId);
           oprot.writeFieldEnd();
         }
       }
@@ -876,7 +876,7 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
       if (struct.isSetStoragePreferences()) {
         optionals.set(2);
       }
-      if (struct.isSetXsedeUsageReportingGatewayId()) {
+      if (struct.isSetUsageReportingGatewayId()) {
         optionals.set(3);
       }
       oprot.writeBitSet(optionals, 4);
@@ -901,8 +901,8 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
           }
         }
       }
-      if (struct.isSetXsedeUsageReportingGatewayId()) {
-        oprot.writeString(struct.xsedeUsageReportingGatewayId);
+      if (struct.isSetUsageReportingGatewayId()) {
+        oprot.writeString(struct.usageReportingGatewayId);
       }
     }
 
@@ -945,8 +945,8 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
         struct.setStoragePreferencesIsSet(true);
       }
       if (incoming.get(3)) {
-        struct.xsedeUsageReportingGatewayId = iprot.readString();
-        struct.setXsedeUsageReportingGatewayIdIsSet(true);
+        struct.usageReportingGatewayId = iprot.readString();
+        struct.setUsageReportingGatewayIdIsSet(true);
       }
     }
   }

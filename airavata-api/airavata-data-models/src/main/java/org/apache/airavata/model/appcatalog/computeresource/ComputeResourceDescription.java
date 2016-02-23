@@ -95,7 +95,7 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
   private static final org.apache.thrift.protocol.TField JOB_SUBMISSION_INTERFACES_FIELD_DESC = new org.apache.thrift.protocol.TField("jobSubmissionInterfaces", org.apache.thrift.protocol.TType.LIST, (short)9);
   private static final org.apache.thrift.protocol.TField DATA_MOVEMENT_INTERFACES_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovementInterfaces", org.apache.thrift.protocol.TType.LIST, (short)10);
   private static final org.apache.thrift.protocol.TField MAX_MEMORY_PER_NODE_FIELD_DESC = new org.apache.thrift.protocol.TField("maxMemoryPerNode", org.apache.thrift.protocol.TType.I32, (short)11);
-  private static final org.apache.thrift.protocol.TField XSEDE_GATEWAY_USAGE_REPORTING_FIELD_DESC = new org.apache.thrift.protocol.TField("xsedeGatewayUsageReporting", org.apache.thrift.protocol.TType.BOOL, (short)12);
+  private static final org.apache.thrift.protocol.TField GATEWAY_USAGE_REPORTING_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayUsageReporting", org.apache.thrift.protocol.TType.BOOL, (short)12);
   private static final org.apache.thrift.protocol.TField GATEWAY_USAGE_MODULE_LOAD_COMMAND_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayUsageModuleLoadCommand", org.apache.thrift.protocol.TType.STRING, (short)13);
   private static final org.apache.thrift.protocol.TField GATEWAY_USAGE_EXECUTABLE_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayUsageExecutable", org.apache.thrift.protocol.TType.STRING, (short)14);
 
@@ -116,7 +116,7 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
   private List<JobSubmissionInterface> jobSubmissionInterfaces; // optional
   private List<org.apache.airavata.model.data.movement.DataMovementInterface> dataMovementInterfaces; // optional
   private int maxMemoryPerNode; // optional
-  private boolean xsedeGatewayUsageReporting; // optional
+  private boolean gatewayUsageReporting; // optional
   private String gatewayUsageModuleLoadCommand; // optional
   private String gatewayUsageExecutable; // optional
 
@@ -133,7 +133,7 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     JOB_SUBMISSION_INTERFACES((short)9, "jobSubmissionInterfaces"),
     DATA_MOVEMENT_INTERFACES((short)10, "dataMovementInterfaces"),
     MAX_MEMORY_PER_NODE((short)11, "maxMemoryPerNode"),
-    XSEDE_GATEWAY_USAGE_REPORTING((short)12, "xsedeGatewayUsageReporting"),
+    GATEWAY_USAGE_REPORTING((short)12, "gatewayUsageReporting"),
     GATEWAY_USAGE_MODULE_LOAD_COMMAND((short)13, "gatewayUsageModuleLoadCommand"),
     GATEWAY_USAGE_EXECUTABLE((short)14, "gatewayUsageExecutable");
 
@@ -172,8 +172,8 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
           return DATA_MOVEMENT_INTERFACES;
         case 11: // MAX_MEMORY_PER_NODE
           return MAX_MEMORY_PER_NODE;
-        case 12: // XSEDE_GATEWAY_USAGE_REPORTING
-          return XSEDE_GATEWAY_USAGE_REPORTING;
+        case 12: // GATEWAY_USAGE_REPORTING
+          return GATEWAY_USAGE_REPORTING;
         case 13: // GATEWAY_USAGE_MODULE_LOAD_COMMAND
           return GATEWAY_USAGE_MODULE_LOAD_COMMAND;
         case 14: // GATEWAY_USAGE_EXECUTABLE
@@ -220,9 +220,9 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
   // isset id assignments
   private static final int __ENABLED_ISSET_ID = 0;
   private static final int __MAXMEMORYPERNODE_ISSET_ID = 1;
-  private static final int __XSEDEGATEWAYUSAGEREPORTING_ISSET_ID = 2;
+  private static final int __GATEWAYUSAGEREPORTING_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.HOST_ALIASES,_Fields.IP_ADDRESSES,_Fields.RESOURCE_DESCRIPTION,_Fields.ENABLED,_Fields.BATCH_QUEUES,_Fields.FILE_SYSTEMS,_Fields.JOB_SUBMISSION_INTERFACES,_Fields.DATA_MOVEMENT_INTERFACES,_Fields.MAX_MEMORY_PER_NODE,_Fields.XSEDE_GATEWAY_USAGE_REPORTING,_Fields.GATEWAY_USAGE_MODULE_LOAD_COMMAND,_Fields.GATEWAY_USAGE_EXECUTABLE};
+  private static final _Fields optionals[] = {_Fields.HOST_ALIASES,_Fields.IP_ADDRESSES,_Fields.RESOURCE_DESCRIPTION,_Fields.ENABLED,_Fields.BATCH_QUEUES,_Fields.FILE_SYSTEMS,_Fields.JOB_SUBMISSION_INTERFACES,_Fields.DATA_MOVEMENT_INTERFACES,_Fields.MAX_MEMORY_PER_NODE,_Fields.GATEWAY_USAGE_REPORTING,_Fields.GATEWAY_USAGE_MODULE_LOAD_COMMAND,_Fields.GATEWAY_USAGE_EXECUTABLE};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -255,7 +255,7 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.data.movement.DataMovementInterface.class))));
     tmpMap.put(_Fields.MAX_MEMORY_PER_NODE, new org.apache.thrift.meta_data.FieldMetaData("maxMemoryPerNode", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-    tmpMap.put(_Fields.XSEDE_GATEWAY_USAGE_REPORTING, new org.apache.thrift.meta_data.FieldMetaData("xsedeGatewayUsageReporting", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.GATEWAY_USAGE_REPORTING, new org.apache.thrift.meta_data.FieldMetaData("gatewayUsageReporting", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.GATEWAY_USAGE_MODULE_LOAD_COMMAND, new org.apache.thrift.meta_data.FieldMetaData("gatewayUsageModuleLoadCommand", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
@@ -339,7 +339,7 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       this.dataMovementInterfaces = __this__dataMovementInterfaces;
     }
     this.maxMemoryPerNode = other.maxMemoryPerNode;
-    this.xsedeGatewayUsageReporting = other.xsedeGatewayUsageReporting;
+    this.gatewayUsageReporting = other.gatewayUsageReporting;
     if (other.isSetGatewayUsageModuleLoadCommand()) {
       this.gatewayUsageModuleLoadCommand = other.gatewayUsageModuleLoadCommand;
     }
@@ -368,8 +368,8 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     this.dataMovementInterfaces = null;
     setMaxMemoryPerNodeIsSet(false);
     this.maxMemoryPerNode = 0;
-    setXsedeGatewayUsageReportingIsSet(false);
-    this.xsedeGatewayUsageReporting = false;
+    setGatewayUsageReportingIsSet(false);
+    this.gatewayUsageReporting = false;
     this.gatewayUsageModuleLoadCommand = null;
     this.gatewayUsageExecutable = null;
   }
@@ -711,26 +711,26 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __MAXMEMORYPERNODE_ISSET_ID, value);
   }
 
-  public boolean isXsedeGatewayUsageReporting() {
-    return this.xsedeGatewayUsageReporting;
+  public boolean isGatewayUsageReporting() {
+    return this.gatewayUsageReporting;
   }
 
-  public void setXsedeGatewayUsageReporting(boolean xsedeGatewayUsageReporting) {
-    this.xsedeGatewayUsageReporting = xsedeGatewayUsageReporting;
-    setXsedeGatewayUsageReportingIsSet(true);
+  public void setGatewayUsageReporting(boolean gatewayUsageReporting) {
+    this.gatewayUsageReporting = gatewayUsageReporting;
+    setGatewayUsageReportingIsSet(true);
   }
 
-  public void unsetXsedeGatewayUsageReporting() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __XSEDEGATEWAYUSAGEREPORTING_ISSET_ID);
+  public void unsetGatewayUsageReporting() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __GATEWAYUSAGEREPORTING_ISSET_ID);
   }
 
-  /** Returns true if field xsedeGatewayUsageReporting is set (has been assigned a value) and false otherwise */
-  public boolean isSetXsedeGatewayUsageReporting() {
-    return EncodingUtils.testBit(__isset_bitfield, __XSEDEGATEWAYUSAGEREPORTING_ISSET_ID);
+  /** Returns true if field gatewayUsageReporting is set (has been assigned a value) and false otherwise */
+  public boolean isSetGatewayUsageReporting() {
+    return EncodingUtils.testBit(__isset_bitfield, __GATEWAYUSAGEREPORTING_ISSET_ID);
   }
 
-  public void setXsedeGatewayUsageReportingIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __XSEDEGATEWAYUSAGEREPORTING_ISSET_ID, value);
+  public void setGatewayUsageReportingIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __GATEWAYUSAGEREPORTING_ISSET_ID, value);
   }
 
   public String getGatewayUsageModuleLoadCommand() {
@@ -869,11 +869,11 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       }
       break;
 
-    case XSEDE_GATEWAY_USAGE_REPORTING:
+    case GATEWAY_USAGE_REPORTING:
       if (value == null) {
-        unsetXsedeGatewayUsageReporting();
+        unsetGatewayUsageReporting();
       } else {
-        setXsedeGatewayUsageReporting((Boolean)value);
+        setGatewayUsageReporting((Boolean)value);
       }
       break;
 
@@ -931,8 +931,8 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     case MAX_MEMORY_PER_NODE:
       return getMaxMemoryPerNode();
 
-    case XSEDE_GATEWAY_USAGE_REPORTING:
-      return isXsedeGatewayUsageReporting();
+    case GATEWAY_USAGE_REPORTING:
+      return isGatewayUsageReporting();
 
     case GATEWAY_USAGE_MODULE_LOAD_COMMAND:
       return getGatewayUsageModuleLoadCommand();
@@ -973,8 +973,8 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       return isSetDataMovementInterfaces();
     case MAX_MEMORY_PER_NODE:
       return isSetMaxMemoryPerNode();
-    case XSEDE_GATEWAY_USAGE_REPORTING:
-      return isSetXsedeGatewayUsageReporting();
+    case GATEWAY_USAGE_REPORTING:
+      return isSetGatewayUsageReporting();
     case GATEWAY_USAGE_MODULE_LOAD_COMMAND:
       return isSetGatewayUsageModuleLoadCommand();
     case GATEWAY_USAGE_EXECUTABLE:
@@ -1095,12 +1095,12 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
         return false;
     }
 
-    boolean this_present_xsedeGatewayUsageReporting = true && this.isSetXsedeGatewayUsageReporting();
-    boolean that_present_xsedeGatewayUsageReporting = true && that.isSetXsedeGatewayUsageReporting();
-    if (this_present_xsedeGatewayUsageReporting || that_present_xsedeGatewayUsageReporting) {
-      if (!(this_present_xsedeGatewayUsageReporting && that_present_xsedeGatewayUsageReporting))
+    boolean this_present_gatewayUsageReporting = true && this.isSetGatewayUsageReporting();
+    boolean that_present_gatewayUsageReporting = true && that.isSetGatewayUsageReporting();
+    if (this_present_gatewayUsageReporting || that_present_gatewayUsageReporting) {
+      if (!(this_present_gatewayUsageReporting && that_present_gatewayUsageReporting))
         return false;
-      if (this.xsedeGatewayUsageReporting != that.xsedeGatewayUsageReporting)
+      if (this.gatewayUsageReporting != that.gatewayUsageReporting)
         return false;
     }
 
@@ -1184,10 +1184,10 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     if (present_maxMemoryPerNode)
       list.add(maxMemoryPerNode);
 
-    boolean present_xsedeGatewayUsageReporting = true && (isSetXsedeGatewayUsageReporting());
-    list.add(present_xsedeGatewayUsageReporting);
-    if (present_xsedeGatewayUsageReporting)
-      list.add(xsedeGatewayUsageReporting);
+    boolean present_gatewayUsageReporting = true && (isSetGatewayUsageReporting());
+    list.add(present_gatewayUsageReporting);
+    if (present_gatewayUsageReporting)
+      list.add(gatewayUsageReporting);
 
     boolean present_gatewayUsageModuleLoadCommand = true && (isSetGatewayUsageModuleLoadCommand());
     list.add(present_gatewayUsageModuleLoadCommand);
@@ -1320,12 +1320,12 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetXsedeGatewayUsageReporting()).compareTo(other.isSetXsedeGatewayUsageReporting());
+    lastComparison = Boolean.valueOf(isSetGatewayUsageReporting()).compareTo(other.isSetGatewayUsageReporting());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetXsedeGatewayUsageReporting()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.xsedeGatewayUsageReporting, other.xsedeGatewayUsageReporting);
+    if (isSetGatewayUsageReporting()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayUsageReporting, other.gatewayUsageReporting);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1467,10 +1467,10 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       sb.append(this.maxMemoryPerNode);
       first = false;
     }
-    if (isSetXsedeGatewayUsageReporting()) {
+    if (isSetGatewayUsageReporting()) {
       if (!first) sb.append(", ");
-      sb.append("xsedeGatewayUsageReporting:");
-      sb.append(this.xsedeGatewayUsageReporting);
+      sb.append("gatewayUsageReporting:");
+      sb.append(this.gatewayUsageReporting);
       first = false;
     }
     if (isSetGatewayUsageModuleLoadCommand()) {
@@ -1699,10 +1699,10 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 12: // XSEDE_GATEWAY_USAGE_REPORTING
+          case 12: // GATEWAY_USAGE_REPORTING
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-              struct.xsedeGatewayUsageReporting = iprot.readBool();
-              struct.setXsedeGatewayUsageReportingIsSet(true);
+              struct.gatewayUsageReporting = iprot.readBool();
+              struct.setGatewayUsageReportingIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1848,9 +1848,9 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
         oprot.writeI32(struct.maxMemoryPerNode);
         oprot.writeFieldEnd();
       }
-      if (struct.isSetXsedeGatewayUsageReporting()) {
-        oprot.writeFieldBegin(XSEDE_GATEWAY_USAGE_REPORTING_FIELD_DESC);
-        oprot.writeBool(struct.xsedeGatewayUsageReporting);
+      if (struct.isSetGatewayUsageReporting()) {
+        oprot.writeFieldBegin(GATEWAY_USAGE_REPORTING_FIELD_DESC);
+        oprot.writeBool(struct.gatewayUsageReporting);
         oprot.writeFieldEnd();
       }
       if (struct.gatewayUsageModuleLoadCommand != null) {
@@ -1914,7 +1914,7 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       if (struct.isSetMaxMemoryPerNode()) {
         optionals.set(8);
       }
-      if (struct.isSetXsedeGatewayUsageReporting()) {
+      if (struct.isSetGatewayUsageReporting()) {
         optionals.set(9);
       }
       if (struct.isSetGatewayUsageModuleLoadCommand()) {
@@ -1988,8 +1988,8 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       if (struct.isSetMaxMemoryPerNode()) {
         oprot.writeI32(struct.maxMemoryPerNode);
       }
-      if (struct.isSetXsedeGatewayUsageReporting()) {
-        oprot.writeBool(struct.xsedeGatewayUsageReporting);
+      if (struct.isSetGatewayUsageReporting()) {
+        oprot.writeBool(struct.gatewayUsageReporting);
       }
       if (struct.isSetGatewayUsageModuleLoadCommand()) {
         oprot.writeString(struct.gatewayUsageModuleLoadCommand);
@@ -2103,8 +2103,8 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
         struct.setMaxMemoryPerNodeIsSet(true);
       }
       if (incoming.get(9)) {
-        struct.xsedeGatewayUsageReporting = iprot.readBool();
-        struct.setXsedeGatewayUsageReportingIsSet(true);
+        struct.gatewayUsageReporting = iprot.readBool();
+        struct.setGatewayUsageReportingIsSet(true);
       }
       if (incoming.get(10)) {
         struct.gatewayUsageModuleLoadCommand = iprot.readString();

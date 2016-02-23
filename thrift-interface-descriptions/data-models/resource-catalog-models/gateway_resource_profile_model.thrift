@@ -97,5 +97,5 @@ struct GatewayResourceProfile {
     2: optional string credentialStoreToken,
     3: optional list<ComputeResourcePreference> computeResourcePreferences,
     4: optional list<StoragePreference> storagePreferences,
-    5: optional string xsedeUsageReportingGatewayId
+    5: optional string usageReportingGatewayId
 }
