@@ -58,53 +58,51 @@ public class CredentialStoreServer  implements IServer {
 
     @Override
     public void start() throws Exception {
-        if(ServerSettings.isCredentialStoreStartEnabled()) {
-            try {
-                setStatus(ServerStatus.STARTING);
-	            final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
-	            final String serverHost = ServerSettings.getCredentialStoreServerHost();
-                CredentialStoreService.Processor processor = new CredentialStoreService.Processor(new CredentialStoreServerHandler());
+        try {
+            setStatus(ServerStatus.STARTING);
+            final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
+            final String serverHost = ServerSettings.getCredentialStoreServerHost();
+            CredentialStoreService.Processor processor = new CredentialStoreService.Processor(new CredentialStoreServerHandler());
 
-                TServerTransport serverTransport;
+            TServerTransport serverTransport;
 
-                if(serverHost == null){
-                    serverTransport = new TServerSocket(serverPort);
-                }else{
-                    InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
-                    serverTransport = new TServerSocket(inetSocketAddress);
-                }
-                TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
-                options.minWorkerThreads = 30;
-                server = new TThreadPoolServer(options.processor(processor));
-
-                new Thread() {
-                    public void run() {
-                        server.serve();
-                        setStatus(ServerStatus.STOPPED);
-                        logger.info("Credential store Server Stopped.");
-                    }
-                }.start();
-                new Thread() {
-                    public void run() {
-                        while(!server.isServing()){
-                            try {
-                                Thread.sleep(500);
-                            } catch (InterruptedException e) {
-                                break;
-                            }
-                        }
-                        if (server.isServing()){
-                            setStatus(ServerStatus.STARTED);
-                            logger.info("Starting Credential store Server on Port " + serverPort);
-                            logger.info("Listening to Credential store clients ....");
-                        }
-                    }
-                }.start();
-            } catch (TTransportException e) {
-                setStatus(ServerStatus.FAILED);
-//                logger.error("Error while starting the credential store service", e);
-                throw new Exception("Error while starting the credential store service", e);
+            if (serverHost == null) {
+                serverTransport = new TServerSocket(serverPort);
+            } else {
+                InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
+                serverTransport = new TServerSocket(inetSocketAddress);
             }
+            TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
+            options.minWorkerThreads = 30;
+            server = new TThreadPoolServer(options.processor(processor));
+
+            new Thread() {
+                public void run() {
+                    server.serve();
+                    setStatus(ServerStatus.STOPPED);
+                    logger.info("Credential store Server Stopped.");
+                }
+            }.start();
+            new Thread() {
+                public void run() {
+                    while (!server.isServing()) {
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            break;
+                        }
+                    }
+                    if (server.isServing()) {
+                        setStatus(ServerStatus.STARTED);
+                        logger.info("Starting Credential store Server on Port " + serverPort);
+                        logger.info("Listening to Credential store clients ....");
+                    }
+                }
+            }.start();
+        } catch (TTransportException e) {
+            setStatus(ServerStatus.FAILED);
+//                logger.error("Error while starting the credential store service", e);
+            throw new Exception("Error while starting the credential store service", e);
         }
     }
 
