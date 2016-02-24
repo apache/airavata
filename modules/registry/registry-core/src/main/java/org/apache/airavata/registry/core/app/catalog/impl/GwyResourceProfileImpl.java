@@ -49,7 +49,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
             if (gatewayProfile.getCredentialStoreToken()!= null){
                 profileResource.setCredentialStoreToken(gatewayProfile.getCredentialStoreToken());
             }
-//            profileResource.setGatewayID(gatewayProfile.getGatewayID());
+            profileResource.setGatewayID(gatewayProfile.getGatewayID());
             profileResource.save();
             List<ComputeResourcePreference> computeResourcePreferences = gatewayProfile.getComputeResourcePreferences();
             if (computeResourcePreferences != null && !computeResourcePreferences.isEmpty()){
@@ -63,6 +63,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     resource.setOverrideByAiravata(preference.isOverridebyAiravata());
                     resource.setLoginUserName(preference.getLoginUserName());
                     resource.setResourceCSToken(preference.getResourceSpecificCredentialStoreToken());
+                    resource.setUsageReportingGatewayId(preference.getUsageReportingGatewayId());
                     if (preference.getPreferredJobSubmissionProtocol() != null){
                         resource.setPreferredJobProtocol(preference.getPreferredJobSubmissionProtocol().toString());
                     }
@@ -127,6 +128,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     resource.setProjectNumber(preference.getAllocationProjectNumber());
                     resource.setScratchLocation(preference.getScratchLocation());
                     resource.setResourceCSToken(preference.getResourceSpecificCredentialStoreToken());
+                    resource.setUsageReportingGatewayId(preference.getUsageReportingGatewayId());
                     resource.save();
                 }
             }

@@ -70,20 +70,20 @@
     "links" : [
       { "id" : "link_1",
         "description" : "link desc",
-        "from" : { "nodeId" : "" , "outputId" : "" },
-        "to" : { "nodeId" : "" , "inputId" : "" }},
+        "from" : { "nodeId" : "inputNode_Id_1" , "outputId" : "inputNode_Id_1" },
+        "to" : { "nodeId" : "applicationNodeId" , "inputId" : "appInputNode_Id_1" }},
       { "id" : "link_2",
         "description" : "link desc",
-        "from" : { "nodeId" : "" , "outputId" : "" },
-        "to" : { "nodeId" : "" , "inputId" : "" }},
+        "from" : { "nodeId" : "inputNode_Id_2" , "outputId" : "inputNode_Id_2" },
+        "to" : { "nodeId" : "applicationNodeId" , "inputId" : "appInputNode_Id_2" }},
       { "id" : "link_3",
         "description" : "link desc",
-        "from" : { "nodeId" : "" , "outputId" : "" },
-        "to" : { "nodeId" : "" , "inputId" : "" }},
+        "from" : { "nodeId" : "applicationNodeId" , "outputId" : "appOutputNode_Id_1" },
+        "to" : { "nodeId" : "outputNode_Id_1" , "inputId" : "outputNode_Id_1" }},
       { "id" : "link_4",
         "description" : "link desc",
-        "from" : { "nodeId" : "" , "outputId" : "" },
-        "to" : { "nodeId" : "" , "inputId" : "" }}
+        "from" : { "nodeId" : "applicationNodeId" , "outputId" : "appOutputNode_Id_2" },
+        "to" : { "nodeId" : "outputNode_Id_2" , "inputId" : "outputNode_Id_2" }}
     ]
   }
 }

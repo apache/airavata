@@ -296,7 +296,7 @@ public class ServerMain {
 			}
 		}
 	}
-	private static final int SERVER_STATUS_CHANGE_WAIT_INTERVAL=100;
+	private static final int SERVER_STATUS_CHANGE_WAIT_INTERVAL=500;
 
 	private static void waitForServerToStart(IServer server,Integer maxWait) throws Exception {
 		int count=0;
@@ -307,7 +307,7 @@ public class ServerMain {
 			Thread.sleep(SERVER_STATUS_CHANGE_WAIT_INTERVAL);
 			count+=SERVER_STATUS_CHANGE_WAIT_INTERVAL;
 		}
-		if (server.getStatus()!=ServerStatus.STARTED){
+		if (server.getStatus()!= ServerStatus.STARTED){
 			logger.error("The "+server.getName()+" did not start!!!");
 		}
 	}

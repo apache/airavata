@@ -20,14 +20,22 @@
  */
 package org.apache.airavata.workflow.core;
 
+import org.apache.airavata.workflow.core.dag.nodes.ApplicationNode;
+import org.apache.airavata.workflow.core.dag.nodes.InputNode;
+import org.apache.airavata.workflow.core.dag.nodes.OutputNode;
+import org.apache.airavata.workflow.core.dag.nodes.WorkflowNode;
+
+import java.util.List;
+
 public class WorkflowInfo {
     private String name;
     private String id;
     private String description;
     private String version;
-    private int applicationCount;
-    private int inputCount;
-    private int outputCount;
+    private List<InputNode> inputs;
+    private List<OutputNode> outputs;
+    private List<ApplicationNode> applications;
+
 
     public String getName() {
         return name;
@@ -61,27 +69,27 @@ public class WorkflowInfo {
         this.version = version;
     }
 
-    public int getApplicationCount() {
-        return applicationCount;
+    public List<InputNode> getInputs() {
+        return inputs;
     }
 
-    public void setApplicationCount(int applicationCount) {
-        this.applicationCount = applicationCount;
+    public void setInputs(List<InputNode> inputs) {
+        this.inputs = inputs;
     }
 
-    public int getInputCount() {
-        return inputCount;
+    public List<OutputNode> getOutputs() {
+        return outputs;
     }
 
-    public void setInputCount(int inputCount) {
-        this.inputCount = inputCount;
+    public void setOutputs(List<OutputNode> outputs) {
+        this.outputs = outputs;
     }
 
-    public int getOutputCount() {
-        return outputCount;
+    public List<ApplicationNode> getApplications() {
+        return applications;
     }
 
-    public void setOutputCount(int outputCount) {
-        this.outputCount = outputCount;
+    public void setApplications(List<ApplicationNode> applications) {
+        this.applications = applications;
     }
 }
