@@ -35,7 +35,6 @@ public class ServerSettings extends ApplicationSettings {
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_USER_PASSWORD = "default.registry.password";
     private static final String DEFAULT_USER_GATEWAY = "default.registry.gateway";
-    private static final String LOCAL_DATA_DIR = "local.data.dir";
 
     public static final String IP = "ip";
 
@@ -376,6 +375,6 @@ public class ServerSettings extends ApplicationSettings {
     }
 
     public static String getLocalDataLocation() {
-        return getSetting(LOCAL_DATA_DIR, System.getProperty("java.io.tmpdir"));
+        return System.getProperty("java.io.tmpdir");
     }
 }
