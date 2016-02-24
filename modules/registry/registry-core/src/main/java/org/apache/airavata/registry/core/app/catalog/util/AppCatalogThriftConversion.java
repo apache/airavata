@@ -819,6 +819,7 @@ public class AppCatalogThriftConversion {
         preference.setAllocationProjectNumber(resource.getProjectNumber());
         preference.setLoginUserName(resource.getLoginUserName());
         preference.setResourceSpecificCredentialStoreToken(resource.getResourceCSToken());
+        preference.setUsageReportingGatewayId(resource.getGatewayId());
         return preference;
     }
 
@@ -857,7 +858,6 @@ public class AppCatalogThriftConversion {
         gatewayProfile.setCredentialStoreToken(gw.getCredentialStoreToken());
         gatewayProfile.setComputeResourcePreferences(preferences);
         gatewayProfile.setStoragePreferences(storagePreferences);
-        gatewayProfile.setUsageReportingGatewayId(gw.getUsageReportingGWId());
         return gatewayProfile;
     }
 

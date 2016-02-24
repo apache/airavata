@@ -78,6 +78,11 @@ void ComputeResourcePreference::__set_resourceSpecificCredentialStoreToken(const
 __isset.resourceSpecificCredentialStoreToken = true;
 }
 
+void ComputeResourcePreference::__set_usageReportingGatewayId(const std::string& val) {
+  this->usageReportingGatewayId = val;
+__isset.usageReportingGatewayId = true;
+}
+
 uint32_t ComputeResourcePreference::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -177,6 +182,14 @@ uint32_t ComputeResourcePreference::read(::apache::thrift::protocol::TProtocol* 
           xfer += iprot->skip(ftype);
         }
         break;
+      case 10:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->usageReportingGatewayId);
+          this->__isset.usageReportingGatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -241,6 +254,11 @@ uint32_t ComputeResourcePreference::write(::apache::thrift::protocol::TProtocol*
     xfer += oprot->writeString(this->resourceSpecificCredentialStoreToken);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.usageReportingGatewayId) {
+    xfer += oprot->writeFieldBegin("usageReportingGatewayId", ::apache::thrift::protocol::T_STRING, 10);
+    xfer += oprot->writeString(this->usageReportingGatewayId);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -257,6 +275,7 @@ void swap(ComputeResourcePreference &a, ComputeResourcePreference &b) {
   swap(a.scratchLocation, b.scratchLocation);
   swap(a.allocationProjectNumber, b.allocationProjectNumber);
   swap(a.resourceSpecificCredentialStoreToken, b.resourceSpecificCredentialStoreToken);
+  swap(a.usageReportingGatewayId, b.usageReportingGatewayId);
   swap(a.__isset, b.__isset);
 }
 
@@ -270,6 +289,7 @@ ComputeResourcePreference::ComputeResourcePreference(const ComputeResourcePrefer
   scratchLocation = other2.scratchLocation;
   allocationProjectNumber = other2.allocationProjectNumber;
   resourceSpecificCredentialStoreToken = other2.resourceSpecificCredentialStoreToken;
+  usageReportingGatewayId = other2.usageReportingGatewayId;
   __isset = other2.__isset;
 }
 ComputeResourcePreference& ComputeResourcePreference::operator=(const ComputeResourcePreference& other3) {
@@ -282,6 +302,7 @@ ComputeResourcePreference& ComputeResourcePreference::operator=(const ComputeRes
   scratchLocation = other3.scratchLocation;
   allocationProjectNumber = other3.allocationProjectNumber;
   resourceSpecificCredentialStoreToken = other3.resourceSpecificCredentialStoreToken;
+  usageReportingGatewayId = other3.usageReportingGatewayId;
   __isset = other3.__isset;
   return *this;
 }
@@ -297,6 +318,7 @@ void ComputeResourcePreference::printTo(std::ostream& out) const {
   out << ", " << "scratchLocation="; (__isset.scratchLocation ? (out << to_string(scratchLocation)) : (out << "<null>"));
   out << ", " << "allocationProjectNumber="; (__isset.allocationProjectNumber ? (out << to_string(allocationProjectNumber)) : (out << "<null>"));
   out << ", " << "resourceSpecificCredentialStoreToken="; (__isset.resourceSpecificCredentialStoreToken ? (out << to_string(resourceSpecificCredentialStoreToken)) : (out << "<null>"));
+  out << ", " << "usageReportingGatewayId="; (__isset.usageReportingGatewayId ? (out << to_string(usageReportingGatewayId)) : (out << "<null>"));
   out << ")";
 }
 
@@ -479,11 +501,6 @@ void GatewayResourceProfile::__set_storagePreferences(const std::vector<StorageP
 __isset.storagePreferences = true;
 }
 
-void GatewayResourceProfile::__set_usageReportingGatewayId(const std::string& val) {
-  this->usageReportingGatewayId = val;
-__isset.usageReportingGatewayId = true;
-}
-
 uint32_t GatewayResourceProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -562,14 +579,6 @@ uint32_t GatewayResourceProfile::read(::apache::thrift::protocol::TProtocol* ipr
           xfer += iprot->skip(ftype);
         }
         break;
-      case 5:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->usageReportingGatewayId);
-          this->__isset.usageReportingGatewayId = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -624,11 +633,6 @@ uint32_t GatewayResourceProfile::write(::apache::thrift::protocol::TProtocol* op
     }
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.usageReportingGatewayId) {
-    xfer += oprot->writeFieldBegin("usageReportingGatewayId", ::apache::thrift::protocol::T_STRING, 5);
-    xfer += oprot->writeString(this->usageReportingGatewayId);
-    xfer += oprot->writeFieldEnd();
-  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -640,7 +644,6 @@ void swap(GatewayResourceProfile &a, GatewayResourceProfile &b) {
   swap(a.credentialStoreToken, b.credentialStoreToken);
   swap(a.computeResourcePreferences, b.computeResourcePreferences);
   swap(a.storagePreferences, b.storagePreferences);
-  swap(a.usageReportingGatewayId, b.usageReportingGatewayId);
   swap(a.__isset, b.__isset);
 }
 
@@ -649,7 +652,6 @@ GatewayResourceProfile::GatewayResourceProfile(const GatewayResourceProfile& oth
   credentialStoreToken = other18.credentialStoreToken;
   computeResourcePreferences = other18.computeResourcePreferences;
   storagePreferences = other18.storagePreferences;
-  usageReportingGatewayId = other18.usageReportingGatewayId;
   __isset = other18.__isset;
 }
 GatewayResourceProfile& GatewayResourceProfile::operator=(const GatewayResourceProfile& other19) {
@@ -657,7 +659,6 @@ GatewayResourceProfile& GatewayResourceProfile::operator=(const GatewayResourceP
   credentialStoreToken = other19.credentialStoreToken;
   computeResourcePreferences = other19.computeResourcePreferences;
   storagePreferences = other19.storagePreferences;
-  usageReportingGatewayId = other19.usageReportingGatewayId;
   __isset = other19.__isset;
   return *this;
 }
@@ -668,7 +669,6 @@ void GatewayResourceProfile::printTo(std::ostream& out) const {
   out << ", " << "credentialStoreToken="; (__isset.credentialStoreToken ? (out << to_string(credentialStoreToken)) : (out << "<null>"));
   out << ", " << "computeResourcePreferences="; (__isset.computeResourcePreferences ? (out << to_string(computeResourcePreferences)) : (out << "<null>"));
   out << ", " << "storagePreferences="; (__isset.storagePreferences ? (out << to_string(storagePreferences)) : (out << "<null>"));
-  out << ", " << "usageReportingGatewayId="; (__isset.usageReportingGatewayId ? (out << to_string(usageReportingGatewayId)) : (out << "<null>"));
   out << ")";
 }
 

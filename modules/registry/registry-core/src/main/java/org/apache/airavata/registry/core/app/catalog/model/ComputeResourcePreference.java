@@ -57,6 +57,8 @@ public class ComputeResourcePreference {
     private String loginUserName;
     @Column(name = "RESOURCE_CS_TOKEN")
     private String computeResourceCSToken;
+    @Column(name = "USAGE_REPORTING_GATEWAY_ID")
+    private String usageReportingGWId;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "RESOURCE_ID")
@@ -160,5 +162,13 @@ public class ComputeResourcePreference {
 
     public void setComputeResourceCSToken(String computeResourceCSToken) {
         this.computeResourceCSToken = computeResourceCSToken;
+    }
+
+    public String getUsageReportingGWId() {
+        return usageReportingGWId;
+    }
+
+    public void setUsageReportingGWId(String usageReportingGWId) {
+        this.usageReportingGWId = usageReportingGWId;
     }
 }

@@ -42,7 +42,6 @@ public class GatewayProfileResource extends AppCatAbstractResource {
     private Timestamp createdTime;
     private Timestamp updatedTime;
     private String credentialStoreToken;
-    private String usageReportingGWId;
 
     public Timestamp getCreatedTime() {
         return createdTime;
@@ -62,14 +61,6 @@ public class GatewayProfileResource extends AppCatAbstractResource {
 
     public String getCredentialStoreToken() {
         return credentialStoreToken;
-    }
-
-    public String getUsageReportingGWId() {
-        return usageReportingGWId;
-    }
-
-    public void setUsageReportingGWId(String usageReportingGWId) {
-        this.usageReportingGWId = usageReportingGWId;
     }
 
     public void setCredentialStoreToken(String credentialStoreToken) {
@@ -324,7 +315,6 @@ public class GatewayProfileResource extends AppCatAbstractResource {
             em.getTransaction().begin();
             if (existingGatewayProfile != null) {
                 existingGatewayProfile.setUpdateTime(AiravataUtils.getCurrentTimestamp());
-                existingGatewayProfile.setUsageReportingGWId(getUsageReportingGWId());
                 if (credentialStoreToken != null){
                     existingGatewayProfile.setCredentialStoreToken(credentialStoreToken);
                 }
@@ -332,7 +322,6 @@ public class GatewayProfileResource extends AppCatAbstractResource {
             } else {
                 GatewayProfile gatewayProfile = new GatewayProfile();
                 gatewayProfile.setGatewayID(gatewayID);
-                gatewayProfile.setUsageReportingGWId(usageReportingGWId);
                 gatewayProfile.setCreationTime(AiravataUtils.getCurrentTimestamp());
                 if (credentialStoreToken != null){
                     gatewayProfile.setCredentialStoreToken(credentialStoreToken);
