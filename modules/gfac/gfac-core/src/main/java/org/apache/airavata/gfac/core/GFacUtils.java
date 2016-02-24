@@ -617,6 +617,8 @@ public class GFacUtils {
                     jobDescriptor.setJobSubmitter("mpiexec");
                 }else if (appDepDescription.getComputeHostId().contains("gordon")){
                     jobDescriptor.setJobSubmitter(" mpirun_rsh -hostfile $PBS_NODEFILE -np");
+                }else if (appDepDescription.getComputeHostId().contains("alamo")){
+                    jobDescriptor.setJobSubmitter("mpirun -np");
                 }else {
                     jobDescriptor.setJobSubmitter("ibrun");
                 }

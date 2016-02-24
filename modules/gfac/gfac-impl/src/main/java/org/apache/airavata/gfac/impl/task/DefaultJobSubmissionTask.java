@@ -24,19 +24,25 @@ package org.apache.airavata.gfac.impl.task;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.gfac.core.*;
+import org.apache.airavata.gfac.core.cluster.CommandInfo;
 import org.apache.airavata.gfac.core.cluster.JobSubmissionOutput;
+import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.Factory;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.commons.ErrorModel;
+import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,13 +88,14 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 				jobModel.setStdErr(jobSubmissionOutput.getStdErr());
 				jobModel.setStdOut(jobSubmissionOutput.getStdOut());
 				String jobId = jobSubmissionOutput.getJobId();
-				if (exitCode != 0 || jobSubmissionOutput.isJobSubmissionFailed()) {
+                String experimentId = taskContext.getExperimentId();
+                if (exitCode != 0 || jobSubmissionOutput.isJobSubmissionFailed()) {
 					jobModel.setJobId(DEFAULT_JOB_ID);
 					if (jobSubmissionOutput.isJobSubmissionFailed()) {
 						jobModel.setJobStatus(new JobStatus(JobState.FAILED));
 						jobModel.getJobStatus().setReason(jobSubmissionOutput.getFailureReason());
 						log.error("expId: {}, processid: {}, taskId: {} :- Job submission failed for job name {}",
-								taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(), jobModel.getJobName());
+                                experimentId, taskContext.getProcessId(), taskContext.getTaskId(), jobModel.getJobName());
 						ErrorModel errorModel = new ErrorModel();
 						errorModel.setUserFriendlyMessage(jobSubmissionOutput.getFailureReason());
 						errorModel.setActualErrorMessage(jobSubmissionOutput.getFailureReason());
@@ -135,8 +142,9 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 				    jobModel.setJobId(jobId);
 				    GFacUtils.saveJobModel(processContext, jobModel);
 				    jobStatus.setJobState(JobState.SUBMITTED);
-				    jobStatus.setReason("Successfully Submitted to " + taskContext.getParentProcessContext()
-						    .getComputeResourceDescription().getHostName());
+                    ComputeResourceDescription computeResourceDescription = taskContext.getParentProcessContext()
+                            .getComputeResourceDescription();
+                    jobStatus.setReason("Successfully Submitted to " + computeResourceDescription.getHostName());
                     jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 				    jobModel.setJobStatus(jobStatus);
 				    GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
@@ -147,6 +155,15 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 					    jobModel.setJobStatus(jobStatus);
 					    GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
 				    }
+                    // doing gateway reporting
+                    if (computeResourceDescription.isGatewayUsageReporting()){
+                        String loadCommand = computeResourceDescription.getGatewayUsageModuleLoadCommand();
+                        String usageExecutable = computeResourceDescription.getGatewayUsageExecutable();
+                        ExperimentModel experiment = (ExperimentModel)taskContext.getParentProcessContext().getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+                        RawCommandInfo rawCommandInfo = new RawCommandInfo(loadCommand + " && " + usageExecutable + " -gateway_user " +  experiment.getUserName()  +
+                                                                           " -submit_time \"`date '+%F %T %:z'`\"  -jobid " + jobId );
+                        remoteCluster.execute(rawCommandInfo);
+                    }
 				    taskStatus = new TaskStatus(TaskState.COMPLETED);
 				    taskStatus.setReason("Submitted job to compute resource");
                     taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
@@ -252,9 +269,11 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);
 		    taskContext.getTaskModel().setTaskError(errorModel);
-	    }
+	    } catch (RegistryException e) {
+            e.printStackTrace();
+        }
 
-	    taskContext.setTaskStatus(taskStatus);
+        taskContext.setTaskStatus(taskStatus);
 	    try {
 		    GFacUtils.saveAndPublishTaskStatus(taskContext);
 	    } catch (GFacException e) {

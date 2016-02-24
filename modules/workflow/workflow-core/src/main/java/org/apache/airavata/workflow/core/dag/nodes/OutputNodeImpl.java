@@ -153,10 +153,14 @@ public class OutputNodeImpl implements OutputNode {
     }
 
     private OutputDataObjectType convert(InputDataObjectType inputObject) {
-        OutputDataObjectType output = new OutputDataObjectType(getName());
-        output.setValue(inputObject.getValue());
-        output.setType(inputObject.getType());
-        return output;
+        if (inputObject != null) {
+            OutputDataObjectType output = new OutputDataObjectType(getName());
+            output.setValue(inputObject.getValue());
+            output.setType(inputObject.getType());
+            return output;
+
+        }
+        return null;
     }
 
     @Override

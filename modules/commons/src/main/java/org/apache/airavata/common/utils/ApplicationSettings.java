@@ -351,28 +351,12 @@ public class ApplicationSettings {
         return getSetting("credential.store.keystore.url");
     }
 
-    public static String getCredentialStoreThriftServerKeyStorePath() throws ApplicationSettingsException {
-        return getSetting("credential.store.thrift.server.keystore");
-    }
-
-    public static boolean isCredentialStoreStartEnabled() throws ApplicationSettingsException {
-        String enableCredentialStore = getSetting("start.credential.store");
-        if (enableCredentialStore.equals("true")){
-            return true;
-        }
-        return false;
-    }
-
     public static String getCredentialStoreKeyAlias() throws ApplicationSettingsException {
         return getSetting("credential.store.keystore.alias");
     }
 
     public static String getCredentialStoreKeyStorePassword() throws ApplicationSettingsException {
         return getSetting("credential.store.keystore.password");
-    }
-
-    public static String getCredentialStoreThriftServerKeyStorePassword() throws ApplicationSettingsException {
-        return getSetting("credential.store.thrift.server.keystore.password");
     }
 
     public static String getCredentialStoreServerHost() throws ApplicationSettingsException {

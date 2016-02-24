@@ -69,7 +69,8 @@ struct ComputeResourcePreference {
     6: optional string preferredBatchQueue,
     7: optional string scratchLocation,
     8: optional string allocationProjectNumber,
-    9: optional string resourceSpecificCredentialStoreToken
+    9: optional string resourceSpecificCredentialStoreToken,
+    10: optional string usageReportingGatewayId
 }
 
 struct StoragePreference {
@@ -96,6 +97,5 @@ struct GatewayResourceProfile {
     1: required string gatewayID,
     2: optional string credentialStoreToken,
     3: optional list<ComputeResourcePreference> computeResourcePreferences,
-    4: optional list<StoragePreference> storagePreferences,
-    5: optional string usageReportingGatewayId
+    4: optional list<StoragePreference> storagePreferences
 }

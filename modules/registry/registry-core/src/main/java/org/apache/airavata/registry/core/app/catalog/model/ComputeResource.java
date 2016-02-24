@@ -54,6 +54,15 @@ public class ComputeResource implements Serializable {
     @Column(name = "ENABLED")
     private boolean enabled;
 
+    @Column(name = "GATEWAY_USAGE_REPORTING")
+    private boolean gatewayUsageReporting;
+
+    @Column(name = "GATEWAY_USAGE_MODULE_LOAD_CMD")
+    private String gatewayUsageModLoadCMD;
+
+    @Column(name = "GATEWAY_USAGE_EXECUTABLE")
+    private String gatewayUsageExec;
+
     public Timestamp getCreationTime() {
         return creationTime;
     }
@@ -108,5 +117,29 @@ public class ComputeResource implements Serializable {
 
     public void setMaxMemoryPerNode(int maxMemoryPerNode) {
         this.maxMemoryPerNode = maxMemoryPerNode;
+    }
+
+    public boolean isGatewayUsageReporting() {
+        return gatewayUsageReporting;
+    }
+
+    public void setGatewayUsageReporting(boolean gatewayUsageReporting) {
+        this.gatewayUsageReporting = gatewayUsageReporting;
+    }
+
+    public String getGatewayUsageModLoadCMD() {
+        return gatewayUsageModLoadCMD;
+    }
+
+    public void setGatewayUsageModLoadCMD(String gatewayUsageModLoadCMD) {
+        this.gatewayUsageModLoadCMD = gatewayUsageModLoadCMD;
+    }
+
+    public String getGatewayUsageExec() {
+        return gatewayUsageExec;
+    }
+
+    public void setGatewayUsageExec(String gatewayUsageExec) {
+        this.gatewayUsageExec = gatewayUsageExec;
     }
 }
