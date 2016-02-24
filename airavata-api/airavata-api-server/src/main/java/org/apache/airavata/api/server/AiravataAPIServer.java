@@ -30,10 +30,7 @@ import org.apache.airavata.api.server.handler.AiravataServerHandler;
 import org.apache.airavata.api.server.security.AiravataSecurityManager;
 import org.apache.airavata.api.server.security.SecurityManagerFactory;
 import org.apache.airavata.api.server.security.interceptor.SecurityModule;
-import org.apache.airavata.api.server.util.AppCatalogInitUtil;
-import org.apache.airavata.api.server.util.Constants;
-import org.apache.airavata.api.server.util.ExperimentCatalogInitUtil;
-import org.apache.airavata.api.server.util.WorkflowCatalogInitUtil;
+import org.apache.airavata.api.server.util.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -67,9 +64,14 @@ public class AiravataAPIServer implements IServer{
 	
     public void startAiravataServer(Airavata.Processor<Airavata.Iface> airavataAPIServer) throws AiravataSystemException {
         try {
+            // creating experiment catalog db
             ExperimentCatalogInitUtil.initializeDB();
+            // creating app catalog db
             AppCatalogInitUtil.initializeDB();
+            // creating workflow catalog db
             WorkflowCatalogInitUtil.initializeDB();
+            // creating credential store db
+            CredentialStoreInitUtil.initializeDB();
             final String serverHost = ServerSettings.getSetting(Constants.API_SERVER_HOST, null);
             if (!ServerSettings.isTLSEnabled()) {
                 final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_PORT, "8930"));
