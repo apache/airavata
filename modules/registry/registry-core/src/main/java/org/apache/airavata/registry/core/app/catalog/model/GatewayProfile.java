@@ -43,9 +43,6 @@ public class GatewayProfile implements Serializable {
     @Column(name = "CS_TOKEN")
     private String credentialStoreToken;
 
-    @Column(name = "USAGE_REPORTING_GATEWAY_ID")
-    private String usageReportingGWId;
-
     public Timestamp getCreationTime() {
         return creationTime;
     }
@@ -77,13 +74,5 @@ public class GatewayProfile implements Serializable {
 
     public void setCredentialStoreToken(String credentialStoreToken) {
         this.credentialStoreToken = credentialStoreToken;
-    }
-
-    public String getUsageReportingGWId() {
-        return usageReportingGWId;
-    }
-
-    public void setUsageReportingGWId(String usageReportingGWId) {
-        this.usageReportingGWId = usageReportingGWId;
     }
 }

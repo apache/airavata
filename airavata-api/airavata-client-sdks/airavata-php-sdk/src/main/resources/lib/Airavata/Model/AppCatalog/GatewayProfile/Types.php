@@ -90,6 +90,10 @@ class ComputeResourcePreference {
    * @var string
    */
   public $resourceSpecificCredentialStoreToken = null;
+  /**
+   * @var string
+   */
+  public $usageReportingGatewayId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -130,6 +134,10 @@ class ComputeResourcePreference {
           'var' => 'resourceSpecificCredentialStoreToken',
           'type' => TType::STRING,
           ),
+        10 => array(
+          'var' => 'usageReportingGatewayId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -159,6 +167,9 @@ class ComputeResourcePreference {
       }
       if (isset($vals['resourceSpecificCredentialStoreToken'])) {
         $this->resourceSpecificCredentialStoreToken = $vals['resourceSpecificCredentialStoreToken'];
+      }
+      if (isset($vals['usageReportingGatewayId'])) {
+        $this->usageReportingGatewayId = $vals['usageReportingGatewayId'];
       }
     }
   }
@@ -245,6 +256,13 @@ class ComputeResourcePreference {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 10:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->usageReportingGatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -301,6 +319,11 @@ class ComputeResourcePreference {
     if ($this->resourceSpecificCredentialStoreToken !== null) {
       $xfer += $output->writeFieldBegin('resourceSpecificCredentialStoreToken', TType::STRING, 9);
       $xfer += $output->writeString($this->resourceSpecificCredentialStoreToken);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->usageReportingGatewayId !== null) {
+      $xfer += $output->writeFieldBegin('usageReportingGatewayId', TType::STRING, 10);
+      $xfer += $output->writeString($this->usageReportingGatewayId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -486,10 +509,6 @@ class GatewayResourceProfile {
    * @var \Airavata\Model\AppCatalog\GatewayProfile\StoragePreference[]
    */
   public $storagePreferences = null;
-  /**
-   * @var string
-   */
-  public $usageReportingGatewayId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -520,10 +539,6 @@ class GatewayResourceProfile {
             'class' => '\Airavata\Model\AppCatalog\GatewayProfile\StoragePreference',
             ),
           ),
-        5 => array(
-          'var' => 'usageReportingGatewayId',
-          'type' => TType::STRING,
-          ),
         );
     }
     if (is_array($vals)) {
@@ -538,9 +553,6 @@ class GatewayResourceProfile {
       }
       if (isset($vals['storagePreferences'])) {
         $this->storagePreferences = $vals['storagePreferences'];
-      }
-      if (isset($vals['usageReportingGatewayId'])) {
-        $this->usageReportingGatewayId = $vals['usageReportingGatewayId'];
       }
     }
   }
@@ -614,13 +626,6 @@ class GatewayResourceProfile {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 5:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->usageReportingGatewayId);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -676,11 +681,6 @@ class GatewayResourceProfile {
         }
         $output->writeListEnd();
       }
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->usageReportingGatewayId !== null) {
-      $xfer += $output->writeFieldBegin('usageReportingGatewayId', TType::STRING, 5);
-      $xfer += $output->writeString($this->usageReportingGatewayId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

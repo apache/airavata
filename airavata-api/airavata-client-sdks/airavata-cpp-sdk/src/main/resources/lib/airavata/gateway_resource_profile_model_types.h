@@ -45,7 +45,7 @@ class StoragePreference;
 class GatewayResourceProfile;
 
 typedef struct _ComputeResourcePreference__isset {
-  _ComputeResourcePreference__isset() : loginUserName(false), preferredJobSubmissionProtocol(false), preferredDataMovementProtocol(false), preferredBatchQueue(false), scratchLocation(false), allocationProjectNumber(false), resourceSpecificCredentialStoreToken(false) {}
+  _ComputeResourcePreference__isset() : loginUserName(false), preferredJobSubmissionProtocol(false), preferredDataMovementProtocol(false), preferredBatchQueue(false), scratchLocation(false), allocationProjectNumber(false), resourceSpecificCredentialStoreToken(false), usageReportingGatewayId(false) {}
   bool loginUserName :1;
   bool preferredJobSubmissionProtocol :1;
   bool preferredDataMovementProtocol :1;
@@ -53,6 +53,7 @@ typedef struct _ComputeResourcePreference__isset {
   bool scratchLocation :1;
   bool allocationProjectNumber :1;
   bool resourceSpecificCredentialStoreToken :1;
+  bool usageReportingGatewayId :1;
 } _ComputeResourcePreference__isset;
 
 class ComputeResourcePreference {
@@ -60,7 +61,7 @@ class ComputeResourcePreference {
 
   ComputeResourcePreference(const ComputeResourcePreference&);
   ComputeResourcePreference& operator=(const ComputeResourcePreference&);
-  ComputeResourcePreference() : computeResourceId(), overridebyAiravata(true), loginUserName(), preferredJobSubmissionProtocol(( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)0), preferredDataMovementProtocol(( ::apache::airavata::model::data::movement::DataMovementProtocol::type)0), preferredBatchQueue(), scratchLocation(), allocationProjectNumber(), resourceSpecificCredentialStoreToken() {
+  ComputeResourcePreference() : computeResourceId(), overridebyAiravata(true), loginUserName(), preferredJobSubmissionProtocol(( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)0), preferredDataMovementProtocol(( ::apache::airavata::model::data::movement::DataMovementProtocol::type)0), preferredBatchQueue(), scratchLocation(), allocationProjectNumber(), resourceSpecificCredentialStoreToken(), usageReportingGatewayId() {
   }
 
   virtual ~ComputeResourcePreference() throw();
@@ -73,6 +74,7 @@ class ComputeResourcePreference {
   std::string scratchLocation;
   std::string allocationProjectNumber;
   std::string resourceSpecificCredentialStoreToken;
+  std::string usageReportingGatewayId;
 
   _ComputeResourcePreference__isset __isset;
 
@@ -93,6 +95,8 @@ class ComputeResourcePreference {
   void __set_allocationProjectNumber(const std::string& val);
 
   void __set_resourceSpecificCredentialStoreToken(const std::string& val);
+
+  void __set_usageReportingGatewayId(const std::string& val);
 
   bool operator == (const ComputeResourcePreference & rhs) const
   {
@@ -127,6 +131,10 @@ class ComputeResourcePreference {
     if (__isset.resourceSpecificCredentialStoreToken != rhs.__isset.resourceSpecificCredentialStoreToken)
       return false;
     else if (__isset.resourceSpecificCredentialStoreToken && !(resourceSpecificCredentialStoreToken == rhs.resourceSpecificCredentialStoreToken))
+      return false;
+    if (__isset.usageReportingGatewayId != rhs.__isset.usageReportingGatewayId)
+      return false;
+    else if (__isset.usageReportingGatewayId && !(usageReportingGatewayId == rhs.usageReportingGatewayId))
       return false;
     return true;
   }
@@ -220,11 +228,10 @@ inline std::ostream& operator<<(std::ostream& out, const StoragePreference& obj)
 }
 
 typedef struct _GatewayResourceProfile__isset {
-  _GatewayResourceProfile__isset() : credentialStoreToken(false), computeResourcePreferences(false), storagePreferences(false), usageReportingGatewayId(false) {}
+  _GatewayResourceProfile__isset() : credentialStoreToken(false), computeResourcePreferences(false), storagePreferences(false) {}
   bool credentialStoreToken :1;
   bool computeResourcePreferences :1;
   bool storagePreferences :1;
-  bool usageReportingGatewayId :1;
 } _GatewayResourceProfile__isset;
 
 class GatewayResourceProfile {
@@ -232,7 +239,7 @@ class GatewayResourceProfile {
 
   GatewayResourceProfile(const GatewayResourceProfile&);
   GatewayResourceProfile& operator=(const GatewayResourceProfile&);
-  GatewayResourceProfile() : gatewayID(), credentialStoreToken(), usageReportingGatewayId() {
+  GatewayResourceProfile() : gatewayID(), credentialStoreToken() {
   }
 
   virtual ~GatewayResourceProfile() throw();
@@ -240,7 +247,6 @@ class GatewayResourceProfile {
   std::string credentialStoreToken;
   std::vector<ComputeResourcePreference>  computeResourcePreferences;
   std::vector<StoragePreference>  storagePreferences;
-  std::string usageReportingGatewayId;
 
   _GatewayResourceProfile__isset __isset;
 
@@ -251,8 +257,6 @@ class GatewayResourceProfile {
   void __set_computeResourcePreferences(const std::vector<ComputeResourcePreference> & val);
 
   void __set_storagePreferences(const std::vector<StoragePreference> & val);
-
-  void __set_usageReportingGatewayId(const std::string& val);
 
   bool operator == (const GatewayResourceProfile & rhs) const
   {
@@ -269,10 +273,6 @@ class GatewayResourceProfile {
     if (__isset.storagePreferences != rhs.__isset.storagePreferences)
       return false;
     else if (__isset.storagePreferences && !(storagePreferences == rhs.storagePreferences))
-      return false;
-    if (__isset.usageReportingGatewayId != rhs.__isset.usageReportingGatewayId)
-      return false;
-    else if (__isset.usageReportingGatewayId && !(usageReportingGatewayId == rhs.usageReportingGatewayId))
       return false;
     return true;
   }

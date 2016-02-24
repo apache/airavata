@@ -845,7 +845,6 @@ public class AppCatalogJPAUtils {
             resource.setGatewayID(o.getGatewayID());
             resource.setCreatedTime(o.getCreationTime());
             resource.setCredentialStoreToken(o.getCredentialStoreToken());
-            resource.setUsageReportingGWId(o.getUsageReportingGWId());
             if (o.getUpdateTime() != null) {
                 resource.setUpdatedTime(o.getUpdateTime());
             }
@@ -866,6 +865,7 @@ public class AppCatalogJPAUtils {
             resource.setProjectNumber(o.getProjectNumber());
             resource.setLoginUserName(o.getLoginUserName());
             resource.setResourceCSToken(o.getComputeResourceCSToken());
+            resource.setUsageReportingGatewayId(o.getUsageReportingGWId());
             resource.setComputeHostResource((ComputeResourceResource) createComputeResource(o.getComputeHostResource()));
             resource.setGatewayProfile((GatewayProfileResource) createGatewayProfile(o.getGatewayProfile()));
         }

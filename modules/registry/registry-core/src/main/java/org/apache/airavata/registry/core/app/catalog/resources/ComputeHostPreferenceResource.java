@@ -52,6 +52,7 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
     private String projectNumber;
     private String loginUserName;
     private String resourceCSToken;
+    private String usageReportingGatewayId;
 
     private GatewayProfileResource gatewayProfile;
     private ComputeResourceResource computeHostResource;
@@ -150,6 +151,14 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
 
     public void setResourceCSToken(String resourceCSToken) {
         this.resourceCSToken = resourceCSToken;
+    }
+
+    public String getUsageReportingGatewayId() {
+        return usageReportingGatewayId;
+    }
+
+    public void setUsageReportingGatewayId(String usageReportingGatewayId) {
+        this.usageReportingGatewayId = usageReportingGatewayId;
     }
 
     @Override
@@ -384,6 +393,7 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
                 existingPreference.setBatchQueue(batchQueue);
                 existingPreference.setLoginUserName(loginUserName);
                 existingPreference.setComputeResourceCSToken(resourceCSToken);
+                existingPreference.setUsageReportingGWId(usageReportingGatewayId);
                 em.merge(existingPreference);
             } else {
                 ComputeResourcePreference resourcePreference = new ComputeResourcePreference();
@@ -399,6 +409,7 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
                 resourcePreference.setBatchQueue(batchQueue);
                 resourcePreference.setLoginUserName(loginUserName);
                 resourcePreference.setComputeResourceCSToken(resourceCSToken);
+                resourcePreference.setUsageReportingGWId(usageReportingGatewayId);
                 em.persist(resourcePreference);
             }
             em.getTransaction().commit();

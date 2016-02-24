@@ -49,8 +49,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
             if (gatewayProfile.getCredentialStoreToken()!= null){
                 profileResource.setCredentialStoreToken(gatewayProfile.getCredentialStoreToken());
             }
-            profileResource.setUsageReportingGWId(gatewayProfile.getUsageReportingGatewayId());
-//            profileResource.setGatewayID(gatewayProfile.getGatewayID());
+            profileResource.setGatewayID(gatewayProfile.getGatewayID());
             profileResource.save();
             List<ComputeResourcePreference> computeResourcePreferences = gatewayProfile.getComputeResourcePreferences();
             if (computeResourcePreferences != null && !computeResourcePreferences.isEmpty()){
@@ -64,6 +63,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     resource.setOverrideByAiravata(preference.isOverridebyAiravata());
                     resource.setLoginUserName(preference.getLoginUserName());
                     resource.setResourceCSToken(preference.getResourceSpecificCredentialStoreToken());
+                    resource.setUsageReportingGatewayId(preference.getUsageReportingGatewayId());
                     if (preference.getPreferredJobSubmissionProtocol() != null){
                         resource.setPreferredJobProtocol(preference.getPreferredJobSubmissionProtocol().toString());
                     }
@@ -104,7 +104,6 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
             GatewayProfileResource profileResource = new GatewayProfileResource();
             GatewayProfileResource existingGP = (GatewayProfileResource)profileResource.get(gatewayId);
             existingGP.setCredentialStoreToken(updatedProfile.getCredentialStoreToken());
-            existingGP.setUsageReportingGWId(updatedProfile.getUsageReportingGatewayId());
             existingGP.save();
 
             List<ComputeResourcePreference> computeResourcePreferences = updatedProfile.getComputeResourcePreferences();
@@ -129,6 +128,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     resource.setProjectNumber(preference.getAllocationProjectNumber());
                     resource.setScratchLocation(preference.getScratchLocation());
                     resource.setResourceCSToken(preference.getResourceSpecificCredentialStoreToken());
+                    resource.setUsageReportingGatewayId(preference.getUsageReportingGatewayId());
                     resource.save();
                 }
             }
