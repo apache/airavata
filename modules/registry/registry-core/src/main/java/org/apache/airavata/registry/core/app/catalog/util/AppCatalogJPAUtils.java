@@ -499,6 +499,9 @@ public class AppCatalogJPAUtils {
             computeResourceResource.setCreatedTime(o.getCreationTime());
             computeResourceResource.setEnabled(o.getEnabled());
             computeResourceResource.setMaxMemoryPerNode(o.getMaxMemoryPerNode());
+            computeResourceResource.setGatewayUsageExec(o.getGatewayUsageExec());
+            computeResourceResource.setGatewayUsageModLoadCMD(o.getGatewayUsageModLoadCMD());
+            computeResourceResource.setGatewayUsageReporting(o.isGatewayUsageReporting());
             if (o.getUpdateTime() != null) {
                 computeResourceResource.setUpdatedTime(o.getUpdateTime());
             }
@@ -842,6 +845,7 @@ public class AppCatalogJPAUtils {
             resource.setGatewayID(o.getGatewayID());
             resource.setCreatedTime(o.getCreationTime());
             resource.setCredentialStoreToken(o.getCredentialStoreToken());
+            resource.setUsageReportingGWId(o.getUsageReportingGWId());
             if (o.getUpdateTime() != null) {
                 resource.setUpdatedTime(o.getUpdateTime());
             }

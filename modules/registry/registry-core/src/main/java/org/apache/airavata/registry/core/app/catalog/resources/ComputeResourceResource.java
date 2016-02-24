@@ -46,6 +46,9 @@ public class ComputeResourceResource extends AppCatAbstractResource {
     private Timestamp updatedTime;
     private int maxMemoryPerNode;
     private boolean enabled;
+    private boolean gatewayUsageReporting;
+    private String gatewayUsageModLoadCMD;
+    private String gatewayUsageExec;
 
     public int getMaxMemoryPerNode() {
         return maxMemoryPerNode;
@@ -338,6 +341,9 @@ public class ComputeResourceResource extends AppCatAbstractResource {
 			computeResource.setHostName(getHostName());
             computeResource.setEnabled(isEnabled());
             computeResource.setMaxMemoryPerNode(getMaxMemoryPerNode());
+            computeResource.setGatewayUsageReporting(gatewayUsageReporting);
+            computeResource.setGatewayUsageModLoadCMD(gatewayUsageModLoadCMD);
+            computeResource.setGatewayUsageExec(gatewayUsageExec);
 			if (existingComputeResource == null) {
 				em.persist(computeResource);
 			} else {
@@ -412,4 +418,28 @@ public class ComputeResourceResource extends AppCatAbstractResource {
 	public void setHostName(String hostName) {
 		this.hostName=hostName;
 	}
+
+    public boolean isGatewayUsageReporting() {
+        return gatewayUsageReporting;
+    }
+
+    public void setGatewayUsageReporting(boolean gatewayUsageReporting) {
+        this.gatewayUsageReporting = gatewayUsageReporting;
+    }
+
+    public String getGatewayUsageModLoadCMD() {
+        return gatewayUsageModLoadCMD;
+    }
+
+    public void setGatewayUsageModLoadCMD(String gatewayUsageModLoadCMD) {
+        this.gatewayUsageModLoadCMD = gatewayUsageModLoadCMD;
+    }
+
+    public String getGatewayUsageExec() {
+        return gatewayUsageExec;
+    }
+
+    public void setGatewayUsageExec(String gatewayUsageExec) {
+        this.gatewayUsageExec = gatewayUsageExec;
+    }
 }

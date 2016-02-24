@@ -51,6 +51,9 @@ public class AppCatalogThriftConversion {
         resource.setResourceId(description.getComputeResourceId());
         resource.setMaxMemoryPerNode(description.getMaxMemoryPerNode());
         resource.setEnabled(description.isEnabled());
+        resource.setGatewayUsageReporting(description.isGatewayUsageReporting());
+        resource.setGatewayUsageExec(description.getGatewayUsageExecutable());
+        resource.setGatewayUsageModLoadCMD(description.getGatewayUsageModuleLoadCommand());
         return resource;
     }
 
@@ -70,6 +73,9 @@ public class AppCatalogThriftConversion {
         description.setResourceDescription(resource.getResourceDescription());
         description.setMaxMemoryPerNode(resource.getMaxMemoryPerNode());
         description.setEnabled(resource.isEnabled());
+        description.setGatewayUsageReporting(resource.isGatewayUsageReporting());
+        description.setGatewayUsageExecutable(resource.getGatewayUsageExec());
+        description.setGatewayUsageModuleLoadCommand(resource.getGatewayUsageModLoadCMD());
         HostAliasAppResource aliasResource = new HostAliasAppResource();
         List<AppCatalogResource> resources = aliasResource.get(AppCatAbstractResource.HostAliasConstants.RESOURCE_ID, resource.getResourceId());
         if (resources != null && !resources.isEmpty()){
@@ -851,6 +857,7 @@ public class AppCatalogThriftConversion {
         gatewayProfile.setCredentialStoreToken(gw.getCredentialStoreToken());
         gatewayProfile.setComputeResourcePreferences(preferences);
         gatewayProfile.setStoragePreferences(storagePreferences);
+        gatewayProfile.setUsageReportingGatewayId(gw.getUsageReportingGWId());
         return gatewayProfile;
     }
 
