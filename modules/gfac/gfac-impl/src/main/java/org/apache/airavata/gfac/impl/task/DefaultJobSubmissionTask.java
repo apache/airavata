@@ -160,7 +160,8 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
                         String loadCommand = computeResourceDescription.getGatewayUsageModuleLoadCommand();
                         String usageExecutable = computeResourceDescription.getGatewayUsageExecutable();
                         ExperimentModel experiment = (ExperimentModel)taskContext.getParentProcessContext().getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
-                        RawCommandInfo rawCommandInfo = new RawCommandInfo(loadCommand + " && " + usageExecutable + " -gateway_user " +  experiment.getUserName()  +
+                        String username = experiment.getUserName() + "@" + taskContext.getParentProcessContext().getComputeResourcePreference().getUsageReportingGatewayId();
+                        RawCommandInfo rawCommandInfo = new RawCommandInfo(loadCommand + " && " + usageExecutable + " -gateway_user " +  username  +
                                                                            " -submit_time \"`date '+%F %T %:z'`\"  -jobid " + jobId );
                         remoteCluster.execute(rawCommandInfo);
                     }
