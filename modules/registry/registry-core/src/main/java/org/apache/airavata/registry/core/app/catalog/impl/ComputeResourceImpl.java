@@ -24,6 +24,8 @@ package org.apache.airavata.registry.core.app.catalog.impl;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.data.movement.DMType;
+import org.apache.airavata.model.parallelism.ApplicationParallelismType;
+import org.apache.airavata.registry.core.app.catalog.model.ParallelismPrefixCommand;
 import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogUtils;
@@ -829,6 +831,17 @@ public class ComputeResourceImpl implements ComputeResource {
 				r.save();
 			}
 		}
+
+        Map<ApplicationParallelismType, String> parallelismPrefix = resourceJobManager.getParallelismPrefix();
+        if (parallelismPrefix!=null && parallelismPrefix.size() != 0) {
+            for (ApplicationParallelismType commandType : parallelismPrefix.keySet()) {
+                ParallelismPrefixCommandResource r = new ParallelismPrefixCommandResource();
+                r.setCommandType(commandType.toString());
+                r.setCommand(parallelismPrefix.get(commandType));
+                r.setResourceJobManagerId(resource.getResourceJobManagerId());
+                r.save();
+            }
+        }
 		return resource.getResourceJobManagerId();
 	}
 
@@ -853,6 +866,26 @@ public class ComputeResourceImpl implements ComputeResource {
                     }
                     existingCommand.setCommandType(commandType.toString());
                     existingCommand.setCommand(jobManagerCommands.get(commandType));
+                    existingCommand.setResourceJobManagerId(resource.getResourceJobManagerId());
+                    existingCommand.save();
+                }
+            }
+
+            Map<ApplicationParallelismType, String> parallelismPrefix = updatedResourceJobManager.getParallelismPrefix();
+            if (parallelismPrefix!=null && parallelismPrefix.size() != 0) {
+                for (ApplicationParallelismType commandType : parallelismPrefix.keySet()) {
+                    ParallelismPrefixCommandResource r = new ParallelismPrefixCommandResource();
+                    Map<String, String> ids = new HashMap<String, String>();
+                    ids.put(AppCatAbstractResource.ParallelismCommandConstants.RESOURCE_JOB_MANAGER_ID, resourceJobManagerId);
+                    ids.put(AppCatAbstractResource.ParallelismCommandConstants.COMMAND_TYPE, commandType.toString());
+                    ParallelismPrefixCommandResource existingCommand;
+                    if (r.isExists(ids)){
+                        existingCommand = (ParallelismPrefixCommandResource)r.get(ids);
+                    }else {
+                        existingCommand = new ParallelismPrefixCommandResource();
+                    }
+                    existingCommand.setCommandType(commandType.toString());
+                    existingCommand.setCommand(parallelismPrefix.get(commandType));
                     existingCommand.setResourceJobManagerId(resource.getResourceJobManagerId());
                     existingCommand.save();
                 }
