@@ -30,24 +30,6 @@
 
 namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace appdeployment {
 
-int _kApplicationParallelismTypeValues[] = {
-  ApplicationParallelismType::SERIAL,
-  ApplicationParallelismType::MPI,
-  ApplicationParallelismType::OPENMP,
-  ApplicationParallelismType::OPENMP_MPI,
-  ApplicationParallelismType::CCM,
-  ApplicationParallelismType::CRAY_MPI
-};
-const char* _kApplicationParallelismTypeNames[] = {
-  "SERIAL",
-  "MPI",
-  "OPENMP",
-  "OPENMP_MPI",
-  "CCM",
-  "CRAY_MPI"
-};
-const std::map<int, const char*> _ApplicationParallelismType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kApplicationParallelismTypeValues, _kApplicationParallelismTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
-
 
 SetEnvPaths::~SetEnvPaths() throw() {
 }
@@ -470,7 +452,7 @@ void ApplicationDeploymentDescription::__set_executablePath(const std::string& v
   this->executablePath = val;
 }
 
-void ApplicationDeploymentDescription::__set_parallelism(const ApplicationParallelismType::type val) {
+void ApplicationDeploymentDescription::__set_parallelism(const  ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type val) {
   this->parallelism = val;
 }
 
@@ -571,7 +553,7 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast6;
           xfer += iprot->readI32(ecast6);
-          this->parallelism = (ApplicationParallelismType::type)ecast6;
+          this->parallelism = ( ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type)ecast6;
           isset_parallelism = true;
         } else {
           xfer += iprot->skip(ftype);

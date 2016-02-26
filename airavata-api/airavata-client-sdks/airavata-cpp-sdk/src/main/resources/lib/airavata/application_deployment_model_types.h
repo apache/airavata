@@ -33,22 +33,10 @@
 
 #include <thrift/cxxfunctional.h>
 #include "airavata_commons_types.h"
+#include "parallelism_model_types.h"
 
 
 namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace appdeployment {
-
-struct ApplicationParallelismType {
-  enum type {
-    SERIAL = 0,
-    MPI = 1,
-    OPENMP = 2,
-    OPENMP_MPI = 3,
-    CCM = 4,
-    CRAY_MPI = 5
-  };
-};
-
-extern const std::map<int, const char*> _ApplicationParallelismType_VALUES_TO_NAMES;
 
 class SetEnvPaths;
 
@@ -251,8 +239,8 @@ class ApplicationDeploymentDescription {
 
   ApplicationDeploymentDescription(const ApplicationDeploymentDescription&);
   ApplicationDeploymentDescription& operator=(const ApplicationDeploymentDescription&);
-  ApplicationDeploymentDescription() : appDeploymentId("DO_NOT_SET_AT_CLIENTS"), appModuleId(), computeHostId(), executablePath(), parallelism((ApplicationParallelismType::type)0), appDeploymentDescription() {
-    parallelism = (ApplicationParallelismType::type)0;
+  ApplicationDeploymentDescription() : appDeploymentId("DO_NOT_SET_AT_CLIENTS"), appModuleId(), computeHostId(), executablePath(), parallelism(( ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type)0), appDeploymentDescription() {
+    parallelism = ( ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type)0;
 
   }
 
@@ -261,7 +249,7 @@ class ApplicationDeploymentDescription {
   std::string appModuleId;
   std::string computeHostId;
   std::string executablePath;
-  ApplicationParallelismType::type parallelism;
+   ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type parallelism;
   std::string appDeploymentDescription;
   std::vector<CommandObject>  moduleLoadCmds;
   std::vector<SetEnvPaths>  libPrependPaths;
@@ -280,7 +268,7 @@ class ApplicationDeploymentDescription {
 
   void __set_executablePath(const std::string& val);
 
-  void __set_parallelism(const ApplicationParallelismType::type val);
+  void __set_parallelism(const  ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type val);
 
   void __set_appDeploymentDescription(const std::string& val);
 

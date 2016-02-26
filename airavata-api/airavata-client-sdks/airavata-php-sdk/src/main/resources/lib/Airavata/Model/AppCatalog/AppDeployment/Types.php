@@ -18,39 +18,6 @@ use Thrift\Exception\TApplicationException;
 
 
 /**
- * Enumeration of application parallelism supported by Airavata
- * 
- * SERIAL:
- *  Single processor applications without any parallelization.
- * 
- * MPI:
- *  Messaging Passing Interface.
- * 
- * OPENMP:
- *  Shared Memory Implementtaion.
- * 
- * OPENMP_MPI:
- *  Hybrid Applications.
- * 
- */
-final class ApplicationParallelismType {
-  const SERIAL = 0;
-  const MPI = 1;
-  const OPENMP = 2;
-  const OPENMP_MPI = 3;
-  const CCM = 4;
-  const CRAY_MPI = 5;
-  static public $__names = array(
-    0 => 'SERIAL',
-    1 => 'MPI',
-    2 => 'OPENMP',
-    3 => 'OPENMP_MPI',
-    4 => 'CCM',
-    5 => 'CRAY_MPI',
-  );
-}
-
-/**
  * Key Value pairs to be used to set environments
  * 
  * name:
