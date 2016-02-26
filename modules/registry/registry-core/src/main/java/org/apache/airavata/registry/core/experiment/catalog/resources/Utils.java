@@ -422,6 +422,7 @@ public class Utils {
             experimentResource.setDescription(o.getDescription());
             experimentResource.setExecutionId(o.getExecutionId());
             experimentResource.setGatewayExecutionId(o.getGatewayExecutionId());
+            experimentResource.setGatewayInstanceId(o.getGatewayInstanceId());
             experimentResource.setEnableEmailNotification(o.getEnableEmailNotification());
             experimentResource.setEmailAddresses(o.getEmailAddresses());
         }

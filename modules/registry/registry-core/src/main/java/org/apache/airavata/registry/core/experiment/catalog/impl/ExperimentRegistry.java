@@ -90,6 +90,7 @@ public class ExperimentRegistry {
             experimentResource.setDescription(experiment.getDescription());
             experimentResource.setExecutionId(experiment.getExecutionId());
             experimentResource.setGatewayExecutionId(experiment.getGatewayExecutionId());
+            experimentResource.setGatewayInstanceId(experiment.getGatewayInstanceId());
             if(experiment.isEnableEmailNotification()){
                 experimentResource.setEnableEmailNotification(true);
                 if(experiment.getEmailAddresses() != null){
@@ -580,6 +581,7 @@ public class ExperimentRegistry {
             existingExperiment.setUserName(experiment.getUserName());
             existingExperiment.setGatewayId(experiment.getGatewayId());
             existingExperiment.setGatewayExecutionId(experiment.getGatewayExecutionId());
+            existingExperiment.setGatewayInstanceId(experiment.getGatewayInstanceId());
             existingExperiment.setProjectId(experiment.getProjectId());
             existingExperiment.setCreationTime(AiravataUtils.getTime(experiment.getCreationTime()));
             existingExperiment.setDescription(experiment.getDescription());

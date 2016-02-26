@@ -123,6 +123,7 @@ public class ThriftDataModelConversion {
             experiment.setDescription(experimentResource.getDescription());
             experiment.setEnableEmailNotification(experimentResource.getEnableEmailNotification());
             experiment.setGatewayExecutionId(experimentResource.getGatewayExecutionId());
+            experiment.setGatewayInstanceId(experimentResource.getGatewayInstanceId());
             if (experiment.isEnableEmailNotification()){
                 String notificationEmails = experimentResource.getEmailAddresses();
                 experiment.setEmailAddresses(getEmailAddresses(notificationEmails.split(",")));
