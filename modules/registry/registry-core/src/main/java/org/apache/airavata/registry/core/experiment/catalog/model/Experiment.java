@@ -41,6 +41,8 @@ public class Experiment {
     private String description;
     private String executionId;
     private String gatewayExecutionId;
+    private String gatewayInstanceId;
+
     private Boolean enableEmailNotification;
     private String emailAddresses;
     private Users user;
@@ -141,6 +143,15 @@ public class Experiment {
 
     public void setGatewayExecutionId(String gatewayExecutionId) {
         this.gatewayExecutionId = gatewayExecutionId;
+    }
+
+    @Column(name = "GATEWAY_INSTANCE_ID")
+    public String getGatewayInstanceId() {
+        return gatewayInstanceId;
+    }
+
+    public void setGatewayInstanceId(String gatewayInstanceId) {
+        this.gatewayInstanceId = gatewayInstanceId;
     }
 
     @Column(name = "ENABLE_EMAIL_NOTIFICATION")
