@@ -23,8 +23,8 @@ package org.apache.airavata.gfac.impl.task.utils.bes;
 
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.ApplicationType;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
 import org.ggf.schemas.jsdl.x2005.x11.jsdlPosix.FileNameType;

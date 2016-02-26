@@ -596,33 +596,17 @@ public class GFacUtils {
         }
 
         ApplicationParallelismType parallelism = appDepDescription.getParallelism();
+        Map<ApplicationParallelismType, String> parallelismPrefix = processContext.getResourceJobManager().getParallelismPrefix();
         if (parallelism != null) {
             if (parallelism != ApplicationParallelismType.SERIAL) {
-                // FIXME this needs to be fixed once parallaliasation retrieved by app catalog
-                if (appDepDescription.getComputeHostId().contains("stampede")){
-                    jobDescriptor.setJobSubmitter("ibrun");
-                }else if (appDepDescription.getComputeHostId().contains("bigred2")){
-                    if (parallelism == ApplicationParallelismType.CRAY_MPI){
-                        if (processModel.getApplicationInterfaceId().contains("Lammps")){
-                            jobDescriptor.setJobSubmitter("aprun -N 1 -n");
-                        }else {
-                            jobDescriptor.setJobSubmitter("aprun -n");
-                        }
-                    }else if (parallelism == ApplicationParallelismType.CCM){
-                        jobDescriptor.setJobSubmitter("ccmrun");
+                if (parallelismPrefix != null){
+                    String parallelismCommand = parallelismPrefix.get(parallelism);
+                    if (parallelismCommand != null){
+                        jobDescriptor.setJobSubmitter(parallelismCommand);
                     }else {
-                        jobDescriptor.setJobSubmitter("aprun -n");
+                        throw new GFacException("Parallelism prefix is not defined for given parallelism type " + parallelism + ".. Please define the parallelism prefix at App Catalog");
                     }
-                }else if (appDepDescription.getComputeHostId().contains("comet")){
-                    jobDescriptor.setJobSubmitter("mpiexec");
-                }else if (appDepDescription.getComputeHostId().contains("gordon")){
-                    jobDescriptor.setJobSubmitter(" mpirun_rsh -hostfile $PBS_NODEFILE -np");
-                }else if (appDepDescription.getComputeHostId().contains("alamo")){
-                    jobDescriptor.setJobSubmitter("mpirun -np");
-                }else {
-                    jobDescriptor.setJobSubmitter("ibrun");
                 }
-
             }
         }
         return jobDescriptor;
