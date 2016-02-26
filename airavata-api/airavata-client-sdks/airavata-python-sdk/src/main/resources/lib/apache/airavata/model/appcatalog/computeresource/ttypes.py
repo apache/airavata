@@ -288,7 +288,7 @@ class ResourceJobManager:
    - pushMonitoringEndpoint
    - jobManagerBinPath
    - jobManagerCommands
-   - parallalisimPrefix
+   - parallelismPrefix
   """
 
   thrift_spec = (
@@ -298,16 +298,16 @@ class ResourceJobManager:
     (3, TType.STRING, 'pushMonitoringEndpoint', None, None, ), # 3
     (4, TType.STRING, 'jobManagerBinPath', None, None, ), # 4
     (5, TType.MAP, 'jobManagerCommands', (TType.I32,None,TType.STRING,None), None, ), # 5
-    (6, TType.MAP, 'parallalisimPrefix', (TType.I32,None,TType.STRING,None), None, ), # 6
+    (6, TType.MAP, 'parallelismPrefix', (TType.I32,None,TType.STRING,None), None, ), # 6
   )
 
-  def __init__(self, resourceJobManagerId=thrift_spec[1][4], resourceJobManagerType=None, pushMonitoringEndpoint=None, jobManagerBinPath=None, jobManagerCommands=None, parallalisimPrefix=None,):
+  def __init__(self, resourceJobManagerId=thrift_spec[1][4], resourceJobManagerType=None, pushMonitoringEndpoint=None, jobManagerBinPath=None, jobManagerCommands=None, parallelismPrefix=None,):
     self.resourceJobManagerId = resourceJobManagerId
     self.resourceJobManagerType = resourceJobManagerType
     self.pushMonitoringEndpoint = pushMonitoringEndpoint
     self.jobManagerBinPath = jobManagerBinPath
     self.jobManagerCommands = jobManagerCommands
-    self.parallalisimPrefix = parallalisimPrefix
+    self.parallelismPrefix = parallelismPrefix
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -351,12 +351,12 @@ class ResourceJobManager:
           iprot.skip(ftype)
       elif fid == 6:
         if ftype == TType.MAP:
-          self.parallalisimPrefix = {}
+          self.parallelismPrefix = {}
           (_ktype8, _vtype9, _size7 ) = iprot.readMapBegin()
           for _i11 in xrange(_size7):
             _key12 = iprot.readI32()
             _val13 = iprot.readString()
-            self.parallalisimPrefix[_key12] = _val13
+            self.parallelismPrefix[_key12] = _val13
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -394,10 +394,10 @@ class ResourceJobManager:
         oprot.writeString(viter15)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
-    if self.parallalisimPrefix is not None:
-      oprot.writeFieldBegin('parallalisimPrefix', TType.MAP, 6)
-      oprot.writeMapBegin(TType.I32, TType.STRING, len(self.parallalisimPrefix))
-      for kiter16,viter17 in self.parallalisimPrefix.items():
+    if self.parallelismPrefix is not None:
+      oprot.writeFieldBegin('parallelismPrefix', TType.MAP, 6)
+      oprot.writeMapBegin(TType.I32, TType.STRING, len(self.parallelismPrefix))
+      for kiter16,viter17 in self.parallelismPrefix.items():
         oprot.writeI32(kiter16)
         oprot.writeString(viter17)
       oprot.writeMapEnd()
@@ -420,7 +420,7 @@ class ResourceJobManager:
     value = (value * 31) ^ hash(self.pushMonitoringEndpoint)
     value = (value * 31) ^ hash(self.jobManagerBinPath)
     value = (value * 31) ^ hash(self.jobManagerCommands)
-    value = (value * 31) ^ hash(self.parallalisimPrefix)
+    value = (value * 31) ^ hash(self.parallelismPrefix)
     return value
 
   def __repr__(self):

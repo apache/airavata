@@ -166,9 +166,9 @@ void ResourceJobManager::__set_jobManagerCommands(const std::map<JobManagerComma
 __isset.jobManagerCommands = true;
 }
 
-void ResourceJobManager::__set_parallalisimPrefix(const std::map< ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type, std::string> & val) {
-  this->parallalisimPrefix = val;
-__isset.parallalisimPrefix = true;
+void ResourceJobManager::__set_parallelismPrefix(const std::map< ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type, std::string> & val) {
+  this->parallelismPrefix = val;
+__isset.parallelismPrefix = true;
 }
 
 uint32_t ResourceJobManager::read(::apache::thrift::protocol::TProtocol* iprot) {
@@ -256,7 +256,7 @@ uint32_t ResourceJobManager::read(::apache::thrift::protocol::TProtocol* iprot) 
       case 6:
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
-            this->parallalisimPrefix.clear();
+            this->parallelismPrefix.clear();
             uint32_t _size9;
             ::apache::thrift::protocol::TType _ktype10;
             ::apache::thrift::protocol::TType _vtype11;
@@ -268,12 +268,12 @@ uint32_t ResourceJobManager::read(::apache::thrift::protocol::TProtocol* iprot) 
               int32_t ecast16;
               xfer += iprot->readI32(ecast16);
               _key14 = ( ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type)ecast16;
-              std::string& _val15 = this->parallalisimPrefix[_key14];
+              std::string& _val15 = this->parallelismPrefix[_key14];
               xfer += iprot->readString(_val15);
             }
             xfer += iprot->readMapEnd();
           }
-          this->__isset.parallalisimPrefix = true;
+          this->__isset.parallelismPrefix = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -331,12 +331,12 @@ uint32_t ResourceJobManager::write(::apache::thrift::protocol::TProtocol* oprot)
     }
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.parallalisimPrefix) {
-    xfer += oprot->writeFieldBegin("parallalisimPrefix", ::apache::thrift::protocol::T_MAP, 6);
+  if (this->__isset.parallelismPrefix) {
+    xfer += oprot->writeFieldBegin("parallelismPrefix", ::apache::thrift::protocol::T_MAP, 6);
     {
-      xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_I32, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->parallalisimPrefix.size()));
+      xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_I32, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->parallelismPrefix.size()));
       std::map< ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type, std::string> ::const_iterator _iter18;
-      for (_iter18 = this->parallalisimPrefix.begin(); _iter18 != this->parallalisimPrefix.end(); ++_iter18)
+      for (_iter18 = this->parallelismPrefix.begin(); _iter18 != this->parallelismPrefix.end(); ++_iter18)
       {
         xfer += oprot->writeI32((int32_t)_iter18->first);
         xfer += oprot->writeString(_iter18->second);
@@ -357,7 +357,7 @@ void swap(ResourceJobManager &a, ResourceJobManager &b) {
   swap(a.pushMonitoringEndpoint, b.pushMonitoringEndpoint);
   swap(a.jobManagerBinPath, b.jobManagerBinPath);
   swap(a.jobManagerCommands, b.jobManagerCommands);
-  swap(a.parallalisimPrefix, b.parallalisimPrefix);
+  swap(a.parallelismPrefix, b.parallelismPrefix);
   swap(a.__isset, b.__isset);
 }
 
@@ -367,7 +367,7 @@ ResourceJobManager::ResourceJobManager(const ResourceJobManager& other19) {
   pushMonitoringEndpoint = other19.pushMonitoringEndpoint;
   jobManagerBinPath = other19.jobManagerBinPath;
   jobManagerCommands = other19.jobManagerCommands;
-  parallalisimPrefix = other19.parallalisimPrefix;
+  parallelismPrefix = other19.parallelismPrefix;
   __isset = other19.__isset;
 }
 ResourceJobManager& ResourceJobManager::operator=(const ResourceJobManager& other20) {
@@ -376,7 +376,7 @@ ResourceJobManager& ResourceJobManager::operator=(const ResourceJobManager& othe
   pushMonitoringEndpoint = other20.pushMonitoringEndpoint;
   jobManagerBinPath = other20.jobManagerBinPath;
   jobManagerCommands = other20.jobManagerCommands;
-  parallalisimPrefix = other20.parallalisimPrefix;
+  parallelismPrefix = other20.parallelismPrefix;
   __isset = other20.__isset;
   return *this;
 }
@@ -388,7 +388,7 @@ void ResourceJobManager::printTo(std::ostream& out) const {
   out << ", " << "pushMonitoringEndpoint="; (__isset.pushMonitoringEndpoint ? (out << to_string(pushMonitoringEndpoint)) : (out << "<null>"));
   out << ", " << "jobManagerBinPath="; (__isset.jobManagerBinPath ? (out << to_string(jobManagerBinPath)) : (out << "<null>"));
   out << ", " << "jobManagerCommands="; (__isset.jobManagerCommands ? (out << to_string(jobManagerCommands)) : (out << "<null>"));
-  out << ", " << "parallalisimPrefix="; (__isset.parallalisimPrefix ? (out << to_string(parallalisimPrefix)) : (out << "<null>"));
+  out << ", " << "parallelismPrefix="; (__isset.parallelismPrefix ? (out << to_string(parallelismPrefix)) : (out << "<null>"));
   out << ")";
 }
 

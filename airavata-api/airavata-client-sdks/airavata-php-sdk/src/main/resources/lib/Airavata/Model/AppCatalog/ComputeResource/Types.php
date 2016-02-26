@@ -249,7 +249,7 @@ class ResourceJobManager {
   /**
    * @var array
    */
-  public $parallalisimPrefix = null;
+  public $parallelismPrefix = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -283,7 +283,7 @@ class ResourceJobManager {
             ),
           ),
         6 => array(
-          'var' => 'parallalisimPrefix',
+          'var' => 'parallelismPrefix',
           'type' => TType::MAP,
           'ktype' => TType::I32,
           'vtype' => TType::STRING,
@@ -312,8 +312,8 @@ class ResourceJobManager {
       if (isset($vals['jobManagerCommands'])) {
         $this->jobManagerCommands = $vals['jobManagerCommands'];
       }
-      if (isset($vals['parallalisimPrefix'])) {
-        $this->parallalisimPrefix = $vals['parallalisimPrefix'];
+      if (isset($vals['parallelismPrefix'])) {
+        $this->parallelismPrefix = $vals['parallelismPrefix'];
       }
     }
   }
@@ -387,7 +387,7 @@ class ResourceJobManager {
           break;
         case 6:
           if ($ftype == TType::MAP) {
-            $this->parallalisimPrefix = array();
+            $this->parallelismPrefix = array();
             $_size7 = 0;
             $_ktype8 = 0;
             $_vtype9 = 0;
@@ -398,7 +398,7 @@ class ResourceJobManager {
               $val13 = '';
               $xfer += $input->readI32($key12);
               $xfer += $input->readString($val13);
-              $this->parallalisimPrefix[$key12] = $val13;
+              $this->parallelismPrefix[$key12] = $val13;
             }
             $xfer += $input->readMapEnd();
           } else {
@@ -456,15 +456,15 @@ class ResourceJobManager {
       }
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->parallalisimPrefix !== null) {
-      if (!is_array($this->parallalisimPrefix)) {
+    if ($this->parallelismPrefix !== null) {
+      if (!is_array($this->parallelismPrefix)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('parallalisimPrefix', TType::MAP, 6);
+      $xfer += $output->writeFieldBegin('parallelismPrefix', TType::MAP, 6);
       {
-        $output->writeMapBegin(TType::I32, TType::STRING, count($this->parallalisimPrefix));
+        $output->writeMapBegin(TType::I32, TType::STRING, count($this->parallelismPrefix));
         {
-          foreach ($this->parallalisimPrefix as $kiter16 => $viter17)
+          foreach ($this->parallelismPrefix as $kiter16 => $viter17)
           {
             $xfer += $output->writeI32($kiter16);
             $xfer += $output->writeString($viter17);
