@@ -374,6 +374,10 @@ class ExperimentModel {
    */
   public $gatewayExecutionId = null;
   /**
+   * @var string
+   */
+  public $gatewayInstanceId = null;
+  /**
    * @var bool
    */
   public $enableEmailNotification = null;
@@ -450,10 +454,14 @@ class ExperimentModel {
           'type' => TType::STRING,
           ),
         11 => array(
+          'var' => 'gatewayInstanceId',
+          'type' => TType::STRING,
+          ),
+        12 => array(
           'var' => 'enableEmailNotification',
           'type' => TType::BOOL,
           ),
-        12 => array(
+        13 => array(
           'var' => 'emailAddresses',
           'type' => TType::LST,
           'etype' => TType::STRING,
@@ -461,12 +469,12 @@ class ExperimentModel {
             'type' => TType::STRING,
             ),
           ),
-        13 => array(
+        14 => array(
           'var' => 'userConfigurationData',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Experiment\UserConfigurationDataModel',
           ),
-        14 => array(
+        15 => array(
           'var' => 'experimentInputs',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -475,7 +483,7 @@ class ExperimentModel {
             'class' => '\Airavata\Model\Application\Io\InputDataObjectType',
             ),
           ),
-        15 => array(
+        16 => array(
           'var' => 'experimentOutputs',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -484,12 +492,12 @@ class ExperimentModel {
             'class' => '\Airavata\Model\Application\Io\OutputDataObjectType',
             ),
           ),
-        16 => array(
+        17 => array(
           'var' => 'experimentStatus',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Status\ExperimentStatus',
           ),
-        17 => array(
+        18 => array(
           'var' => 'errors',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -498,7 +506,7 @@ class ExperimentModel {
             'class' => '\Airavata\Model\Commons\ErrorModel',
             ),
           ),
-        18 => array(
+        19 => array(
           'var' => 'processes',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -539,6 +547,9 @@ class ExperimentModel {
       }
       if (isset($vals['gatewayExecutionId'])) {
         $this->gatewayExecutionId = $vals['gatewayExecutionId'];
+      }
+      if (isset($vals['gatewayInstanceId'])) {
+        $this->gatewayInstanceId = $vals['gatewayInstanceId'];
       }
       if (isset($vals['enableEmailNotification'])) {
         $this->enableEmailNotification = $vals['enableEmailNotification'];
@@ -657,13 +668,20 @@ class ExperimentModel {
           }
           break;
         case 11:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayInstanceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 12:
           if ($ftype == TType::BOOL) {
             $xfer += $input->readBool($this->enableEmailNotification);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 12:
+        case 13:
           if ($ftype == TType::LST) {
             $this->emailAddresses = array();
             $_size0 = 0;
@@ -680,7 +698,7 @@ class ExperimentModel {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 13:
+        case 14:
           if ($ftype == TType::STRUCT) {
             $this->userConfigurationData = new \Airavata\Model\Experiment\UserConfigurationDataModel();
             $xfer += $this->userConfigurationData->read($input);
@@ -688,7 +706,7 @@ class ExperimentModel {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 14:
+        case 15:
           if ($ftype == TType::LST) {
             $this->experimentInputs = array();
             $_size6 = 0;
@@ -706,7 +724,7 @@ class ExperimentModel {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 15:
+        case 16:
           if ($ftype == TType::LST) {
             $this->experimentOutputs = array();
             $_size12 = 0;
@@ -724,7 +742,7 @@ class ExperimentModel {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 16:
+        case 17:
           if ($ftype == TType::STRUCT) {
             $this->experimentStatus = new \Airavata\Model\Status\ExperimentStatus();
             $xfer += $this->experimentStatus->read($input);
@@ -732,7 +750,7 @@ class ExperimentModel {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 17:
+        case 18:
           if ($ftype == TType::LST) {
             $this->errors = array();
             $_size18 = 0;
@@ -750,7 +768,7 @@ class ExperimentModel {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 18:
+        case 19:
           if ($ftype == TType::LST) {
             $this->processes = array();
             $_size24 = 0;
@@ -831,8 +849,13 @@ class ExperimentModel {
       $xfer += $output->writeString($this->gatewayExecutionId);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->gatewayInstanceId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayInstanceId', TType::STRING, 11);
+      $xfer += $output->writeString($this->gatewayInstanceId);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->enableEmailNotification !== null) {
-      $xfer += $output->writeFieldBegin('enableEmailNotification', TType::BOOL, 11);
+      $xfer += $output->writeFieldBegin('enableEmailNotification', TType::BOOL, 12);
       $xfer += $output->writeBool($this->enableEmailNotification);
       $xfer += $output->writeFieldEnd();
     }
@@ -840,7 +863,7 @@ class ExperimentModel {
       if (!is_array($this->emailAddresses)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('emailAddresses', TType::LST, 12);
+      $xfer += $output->writeFieldBegin('emailAddresses', TType::LST, 13);
       {
         $output->writeListBegin(TType::STRING, count($this->emailAddresses));
         {
@@ -857,7 +880,7 @@ class ExperimentModel {
       if (!is_object($this->userConfigurationData)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('userConfigurationData', TType::STRUCT, 13);
+      $xfer += $output->writeFieldBegin('userConfigurationData', TType::STRUCT, 14);
       $xfer += $this->userConfigurationData->write($output);
       $xfer += $output->writeFieldEnd();
     }
@@ -865,7 +888,7 @@ class ExperimentModel {
       if (!is_array($this->experimentInputs)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('experimentInputs', TType::LST, 14);
+      $xfer += $output->writeFieldBegin('experimentInputs', TType::LST, 15);
       {
         $output->writeListBegin(TType::STRUCT, count($this->experimentInputs));
         {
@@ -882,7 +905,7 @@ class ExperimentModel {
       if (!is_array($this->experimentOutputs)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('experimentOutputs', TType::LST, 15);
+      $xfer += $output->writeFieldBegin('experimentOutputs', TType::LST, 16);
       {
         $output->writeListBegin(TType::STRUCT, count($this->experimentOutputs));
         {
@@ -899,7 +922,7 @@ class ExperimentModel {
       if (!is_object($this->experimentStatus)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('experimentStatus', TType::STRUCT, 16);
+      $xfer += $output->writeFieldBegin('experimentStatus', TType::STRUCT, 17);
       $xfer += $this->experimentStatus->write($output);
       $xfer += $output->writeFieldEnd();
     }
@@ -907,7 +930,7 @@ class ExperimentModel {
       if (!is_array($this->errors)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('errors', TType::LST, 17);
+      $xfer += $output->writeFieldBegin('errors', TType::LST, 18);
       {
         $output->writeListBegin(TType::STRUCT, count($this->errors));
         {
@@ -924,7 +947,7 @@ class ExperimentModel {
       if (!is_array($this->processes)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('processes', TType::LST, 18);
+      $xfer += $output->writeFieldBegin('processes', TType::LST, 19);
       {
         $output->writeListBegin(TType::STRUCT, count($this->processes));
         {

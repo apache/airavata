@@ -272,6 +272,7 @@ class ExperimentModel:
    - description
    - executionId
    - gatewayExecutionId
+   - gatewayInstanceId
    - enableEmailNotification
    - emailAddresses
    - userConfigurationData
@@ -294,17 +295,18 @@ class ExperimentModel:
     (8, TType.STRING, 'description', None, None, ), # 8
     (9, TType.STRING, 'executionId', None, None, ), # 9
     (10, TType.STRING, 'gatewayExecutionId', None, None, ), # 10
-    (11, TType.BOOL, 'enableEmailNotification', None, None, ), # 11
-    (12, TType.LIST, 'emailAddresses', (TType.STRING,None), None, ), # 12
-    (13, TType.STRUCT, 'userConfigurationData', (UserConfigurationDataModel, UserConfigurationDataModel.thrift_spec), None, ), # 13
-    (14, TType.LIST, 'experimentInputs', (TType.STRUCT,(apache.airavata.model.application.io.ttypes.InputDataObjectType, apache.airavata.model.application.io.ttypes.InputDataObjectType.thrift_spec)), None, ), # 14
-    (15, TType.LIST, 'experimentOutputs', (TType.STRUCT,(apache.airavata.model.application.io.ttypes.OutputDataObjectType, apache.airavata.model.application.io.ttypes.OutputDataObjectType.thrift_spec)), None, ), # 15
-    (16, TType.STRUCT, 'experimentStatus', (apache.airavata.model.status.ttypes.ExperimentStatus, apache.airavata.model.status.ttypes.ExperimentStatus.thrift_spec), None, ), # 16
-    (17, TType.LIST, 'errors', (TType.STRUCT,(apache.airavata.model.commons.ttypes.ErrorModel, apache.airavata.model.commons.ttypes.ErrorModel.thrift_spec)), None, ), # 17
-    (18, TType.LIST, 'processes', (TType.STRUCT,(apache.airavata.model.process.ttypes.ProcessModel, apache.airavata.model.process.ttypes.ProcessModel.thrift_spec)), None, ), # 18
+    (11, TType.STRING, 'gatewayInstanceId', None, None, ), # 11
+    (12, TType.BOOL, 'enableEmailNotification', None, None, ), # 12
+    (13, TType.LIST, 'emailAddresses', (TType.STRING,None), None, ), # 13
+    (14, TType.STRUCT, 'userConfigurationData', (UserConfigurationDataModel, UserConfigurationDataModel.thrift_spec), None, ), # 14
+    (15, TType.LIST, 'experimentInputs', (TType.STRUCT,(apache.airavata.model.application.io.ttypes.InputDataObjectType, apache.airavata.model.application.io.ttypes.InputDataObjectType.thrift_spec)), None, ), # 15
+    (16, TType.LIST, 'experimentOutputs', (TType.STRUCT,(apache.airavata.model.application.io.ttypes.OutputDataObjectType, apache.airavata.model.application.io.ttypes.OutputDataObjectType.thrift_spec)), None, ), # 16
+    (17, TType.STRUCT, 'experimentStatus', (apache.airavata.model.status.ttypes.ExperimentStatus, apache.airavata.model.status.ttypes.ExperimentStatus.thrift_spec), None, ), # 17
+    (18, TType.LIST, 'errors', (TType.STRUCT,(apache.airavata.model.commons.ttypes.ErrorModel, apache.airavata.model.commons.ttypes.ErrorModel.thrift_spec)), None, ), # 18
+    (19, TType.LIST, 'processes', (TType.STRUCT,(apache.airavata.model.process.ttypes.ProcessModel, apache.airavata.model.process.ttypes.ProcessModel.thrift_spec)), None, ), # 19
   )
 
-  def __init__(self, experimentId=thrift_spec[1][4], projectId=None, gatewayId=None, experimentType=thrift_spec[4][4], userName=None, experimentName=None, creationTime=None, description=None, executionId=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None, userConfigurationData=None, experimentInputs=None, experimentOutputs=None, experimentStatus=None, errors=None, processes=None,):
+  def __init__(self, experimentId=thrift_spec[1][4], projectId=None, gatewayId=None, experimentType=thrift_spec[4][4], userName=None, experimentName=None, creationTime=None, description=None, executionId=None, gatewayExecutionId=None, gatewayInstanceId=None, enableEmailNotification=None, emailAddresses=None, userConfigurationData=None, experimentInputs=None, experimentOutputs=None, experimentStatus=None, errors=None, processes=None,):
     self.experimentId = experimentId
     self.projectId = projectId
     self.gatewayId = gatewayId
@@ -315,6 +317,7 @@ class ExperimentModel:
     self.description = description
     self.executionId = executionId
     self.gatewayExecutionId = gatewayExecutionId
+    self.gatewayInstanceId = gatewayInstanceId
     self.enableEmailNotification = enableEmailNotification
     self.emailAddresses = emailAddresses
     self.userConfigurationData = userConfigurationData
@@ -384,11 +387,16 @@ class ExperimentModel:
         else:
           iprot.skip(ftype)
       elif fid == 11:
+        if ftype == TType.STRING:
+          self.gatewayInstanceId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 12:
         if ftype == TType.BOOL:
           self.enableEmailNotification = iprot.readBool()
         else:
           iprot.skip(ftype)
-      elif fid == 12:
+      elif fid == 13:
         if ftype == TType.LIST:
           self.emailAddresses = []
           (_etype3, _size0) = iprot.readListBegin()
@@ -398,13 +406,13 @@ class ExperimentModel:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 13:
+      elif fid == 14:
         if ftype == TType.STRUCT:
           self.userConfigurationData = UserConfigurationDataModel()
           self.userConfigurationData.read(iprot)
         else:
           iprot.skip(ftype)
-      elif fid == 14:
+      elif fid == 15:
         if ftype == TType.LIST:
           self.experimentInputs = []
           (_etype9, _size6) = iprot.readListBegin()
@@ -415,7 +423,7 @@ class ExperimentModel:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 15:
+      elif fid == 16:
         if ftype == TType.LIST:
           self.experimentOutputs = []
           (_etype15, _size12) = iprot.readListBegin()
@@ -426,13 +434,13 @@ class ExperimentModel:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 16:
+      elif fid == 17:
         if ftype == TType.STRUCT:
           self.experimentStatus = apache.airavata.model.status.ttypes.ExperimentStatus()
           self.experimentStatus.read(iprot)
         else:
           iprot.skip(ftype)
-      elif fid == 17:
+      elif fid == 18:
         if ftype == TType.LIST:
           self.errors = []
           (_etype21, _size18) = iprot.readListBegin()
@@ -443,7 +451,7 @@ class ExperimentModel:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 18:
+      elif fid == 19:
         if ftype == TType.LIST:
           self.processes = []
           (_etype27, _size24) = iprot.readListBegin()
@@ -504,48 +512,52 @@ class ExperimentModel:
       oprot.writeFieldBegin('gatewayExecutionId', TType.STRING, 10)
       oprot.writeString(self.gatewayExecutionId)
       oprot.writeFieldEnd()
+    if self.gatewayInstanceId is not None:
+      oprot.writeFieldBegin('gatewayInstanceId', TType.STRING, 11)
+      oprot.writeString(self.gatewayInstanceId)
+      oprot.writeFieldEnd()
     if self.enableEmailNotification is not None:
-      oprot.writeFieldBegin('enableEmailNotification', TType.BOOL, 11)
+      oprot.writeFieldBegin('enableEmailNotification', TType.BOOL, 12)
       oprot.writeBool(self.enableEmailNotification)
       oprot.writeFieldEnd()
     if self.emailAddresses is not None:
-      oprot.writeFieldBegin('emailAddresses', TType.LIST, 12)
+      oprot.writeFieldBegin('emailAddresses', TType.LIST, 13)
       oprot.writeListBegin(TType.STRING, len(self.emailAddresses))
       for iter30 in self.emailAddresses:
         oprot.writeString(iter30)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.userConfigurationData is not None:
-      oprot.writeFieldBegin('userConfigurationData', TType.STRUCT, 13)
+      oprot.writeFieldBegin('userConfigurationData', TType.STRUCT, 14)
       self.userConfigurationData.write(oprot)
       oprot.writeFieldEnd()
     if self.experimentInputs is not None:
-      oprot.writeFieldBegin('experimentInputs', TType.LIST, 14)
+      oprot.writeFieldBegin('experimentInputs', TType.LIST, 15)
       oprot.writeListBegin(TType.STRUCT, len(self.experimentInputs))
       for iter31 in self.experimentInputs:
         iter31.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.experimentOutputs is not None:
-      oprot.writeFieldBegin('experimentOutputs', TType.LIST, 15)
+      oprot.writeFieldBegin('experimentOutputs', TType.LIST, 16)
       oprot.writeListBegin(TType.STRUCT, len(self.experimentOutputs))
       for iter32 in self.experimentOutputs:
         iter32.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.experimentStatus is not None:
-      oprot.writeFieldBegin('experimentStatus', TType.STRUCT, 16)
+      oprot.writeFieldBegin('experimentStatus', TType.STRUCT, 17)
       self.experimentStatus.write(oprot)
       oprot.writeFieldEnd()
     if self.errors is not None:
-      oprot.writeFieldBegin('errors', TType.LIST, 17)
+      oprot.writeFieldBegin('errors', TType.LIST, 18)
       oprot.writeListBegin(TType.STRUCT, len(self.errors))
       for iter33 in self.errors:
         iter33.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.processes is not None:
-      oprot.writeFieldBegin('processes', TType.LIST, 18)
+      oprot.writeFieldBegin('processes', TType.LIST, 19)
       oprot.writeListBegin(TType.STRUCT, len(self.processes))
       for iter34 in self.processes:
         iter34.write(oprot)
@@ -582,6 +594,7 @@ class ExperimentModel:
     value = (value * 31) ^ hash(self.description)
     value = (value * 31) ^ hash(self.executionId)
     value = (value * 31) ^ hash(self.gatewayExecutionId)
+    value = (value * 31) ^ hash(self.gatewayInstanceId)
     value = (value * 31) ^ hash(self.enableEmailNotification)
     value = (value * 31) ^ hash(self.emailAddresses)
     value = (value * 31) ^ hash(self.userConfigurationData)
