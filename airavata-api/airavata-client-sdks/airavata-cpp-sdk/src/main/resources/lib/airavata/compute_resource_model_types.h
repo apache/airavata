@@ -33,6 +33,7 @@
 
 #include <thrift/cxxfunctional.h>
 #include "airavata_commons_types.h"
+#include "parallelism_model_types.h"
 #include "data_movement_models_types.h"
 
 
@@ -139,10 +140,11 @@ class JobSubmissionInterface;
 class ComputeResourceDescription;
 
 typedef struct _ResourceJobManager__isset {
-  _ResourceJobManager__isset() : pushMonitoringEndpoint(false), jobManagerBinPath(false), jobManagerCommands(false) {}
+  _ResourceJobManager__isset() : pushMonitoringEndpoint(false), jobManagerBinPath(false), jobManagerCommands(false), parallalisimPrefix(false) {}
   bool pushMonitoringEndpoint :1;
   bool jobManagerBinPath :1;
   bool jobManagerCommands :1;
+  bool parallalisimPrefix :1;
 } _ResourceJobManager__isset;
 
 class ResourceJobManager {
@@ -159,6 +161,7 @@ class ResourceJobManager {
   std::string pushMonitoringEndpoint;
   std::string jobManagerBinPath;
   std::map<JobManagerCommand::type, std::string>  jobManagerCommands;
+  std::map< ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type, std::string>  parallalisimPrefix;
 
   _ResourceJobManager__isset __isset;
 
@@ -171,6 +174,8 @@ class ResourceJobManager {
   void __set_jobManagerBinPath(const std::string& val);
 
   void __set_jobManagerCommands(const std::map<JobManagerCommand::type, std::string> & val);
+
+  void __set_parallalisimPrefix(const std::map< ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type, std::string> & val);
 
   bool operator == (const ResourceJobManager & rhs) const
   {
@@ -189,6 +194,10 @@ class ResourceJobManager {
     if (__isset.jobManagerCommands != rhs.__isset.jobManagerCommands)
       return false;
     else if (__isset.jobManagerCommands && !(jobManagerCommands == rhs.jobManagerCommands))
+      return false;
+    if (__isset.parallalisimPrefix != rhs.__isset.parallalisimPrefix)
+      return false;
+    else if (__isset.parallalisimPrefix && !(parallalisimPrefix == rhs.parallalisimPrefix))
       return false;
     return true;
   }

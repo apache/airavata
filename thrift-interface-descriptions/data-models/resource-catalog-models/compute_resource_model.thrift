@@ -19,6 +19,7 @@
  */
 
 include "../../airavata-apis/airavata_commons.thrift"
+include "../app-catalog-models/parallelism_model.thrift"
 include "data_movement_models.thrift"
 
 namespace java org.apache.airavata.model.appcatalog.computeresource
@@ -112,7 +113,8 @@ struct ResourceJobManager {
     2: required ResourceJobManagerType resourceJobManagerType,
     3: optional string pushMonitoringEndpoint,
     4: optional string jobManagerBinPath,
-    5: optional map<JobManagerCommand, string> jobManagerCommands
+    5: optional map<JobManagerCommand, string> jobManagerCommands,
+    6: optional map<parallelism_model.ApplicationParallelismType, string> parallalisimPrefix
 }
 
 /**

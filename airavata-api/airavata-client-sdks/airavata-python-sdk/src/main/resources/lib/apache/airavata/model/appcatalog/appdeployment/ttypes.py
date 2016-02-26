@@ -8,6 +8,7 @@
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import apache.airavata.model.commons.ttypes
+import apache.airavata.model.appcatalog.parallelism.ttypes
 
 
 from thrift.transport import TTransport
@@ -17,48 +18,6 @@ try:
 except:
   fastbinary = None
 
-
-class ApplicationParallelismType:
-  """
-  Enumeration of application parallelism supported by Airavata
-
-  SERIAL:
-   Single processor applications without any parallelization.
-
-  MPI:
-   Messaging Passing Interface.
-
-  OPENMP:
-   Shared Memory Implementtaion.
-
-  OPENMP_MPI:
-   Hybrid Applications.
-
-  """
-  SERIAL = 0
-  MPI = 1
-  OPENMP = 2
-  OPENMP_MPI = 3
-  CCM = 4
-  CRAY_MPI = 5
-
-  _VALUES_TO_NAMES = {
-    0: "SERIAL",
-    1: "MPI",
-    2: "OPENMP",
-    3: "OPENMP_MPI",
-    4: "CCM",
-    5: "CRAY_MPI",
-  }
-
-  _NAMES_TO_VALUES = {
-    "SERIAL": 0,
-    "MPI": 1,
-    "OPENMP": 2,
-    "OPENMP_MPI": 3,
-    "CCM": 4,
-    "CRAY_MPI": 5,
-  }
 
 
 class SetEnvPaths:
