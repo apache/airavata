@@ -114,7 +114,7 @@ struct ResourceJobManager {
     3: optional string pushMonitoringEndpoint,
     4: optional string jobManagerBinPath,
     5: optional map<JobManagerCommand, string> jobManagerCommands,
-    6: optional map<parallelism_model.ApplicationParallelismType, string> parallalisimPrefix
+    6: optional map<parallelism_model.ApplicationParallelismType, string> parallelismPrefix
 }
 
 /**

@@ -140,11 +140,11 @@ class JobSubmissionInterface;
 class ComputeResourceDescription;
 
 typedef struct _ResourceJobManager__isset {
-  _ResourceJobManager__isset() : pushMonitoringEndpoint(false), jobManagerBinPath(false), jobManagerCommands(false), parallalisimPrefix(false) {}
+  _ResourceJobManager__isset() : pushMonitoringEndpoint(false), jobManagerBinPath(false), jobManagerCommands(false), parallelismPrefix(false) {}
   bool pushMonitoringEndpoint :1;
   bool jobManagerBinPath :1;
   bool jobManagerCommands :1;
-  bool parallalisimPrefix :1;
+  bool parallelismPrefix :1;
 } _ResourceJobManager__isset;
 
 class ResourceJobManager {
@@ -161,7 +161,7 @@ class ResourceJobManager {
   std::string pushMonitoringEndpoint;
   std::string jobManagerBinPath;
   std::map<JobManagerCommand::type, std::string>  jobManagerCommands;
-  std::map< ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type, std::string>  parallalisimPrefix;
+  std::map< ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type, std::string>  parallelismPrefix;
 
   _ResourceJobManager__isset __isset;
 
@@ -175,7 +175,7 @@ class ResourceJobManager {
 
   void __set_jobManagerCommands(const std::map<JobManagerCommand::type, std::string> & val);
 
-  void __set_parallalisimPrefix(const std::map< ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type, std::string> & val);
+  void __set_parallelismPrefix(const std::map< ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type, std::string> & val);
 
   bool operator == (const ResourceJobManager & rhs) const
   {
@@ -195,9 +195,9 @@ class ResourceJobManager {
       return false;
     else if (__isset.jobManagerCommands && !(jobManagerCommands == rhs.jobManagerCommands))
       return false;
-    if (__isset.parallalisimPrefix != rhs.__isset.parallalisimPrefix)
+    if (__isset.parallelismPrefix != rhs.__isset.parallelismPrefix)
       return false;
-    else if (__isset.parallalisimPrefix && !(parallalisimPrefix == rhs.parallalisimPrefix))
+    else if (__isset.parallelismPrefix && !(parallelismPrefix == rhs.parallelismPrefix))
       return false;
     return true;
   }

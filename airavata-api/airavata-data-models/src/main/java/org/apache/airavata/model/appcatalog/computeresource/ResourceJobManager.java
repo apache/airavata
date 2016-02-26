@@ -77,7 +77,7 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
   private static final org.apache.thrift.protocol.TField PUSH_MONITORING_ENDPOINT_FIELD_DESC = new org.apache.thrift.protocol.TField("pushMonitoringEndpoint", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField JOB_MANAGER_BIN_PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("jobManagerBinPath", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField JOB_MANAGER_COMMANDS_FIELD_DESC = new org.apache.thrift.protocol.TField("jobManagerCommands", org.apache.thrift.protocol.TType.MAP, (short)5);
-  private static final org.apache.thrift.protocol.TField PARALLALISIM_PREFIX_FIELD_DESC = new org.apache.thrift.protocol.TField("parallalisimPrefix", org.apache.thrift.protocol.TType.MAP, (short)6);
+  private static final org.apache.thrift.protocol.TField PARALLELISM_PREFIX_FIELD_DESC = new org.apache.thrift.protocol.TField("parallelismPrefix", org.apache.thrift.protocol.TType.MAP, (short)6);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -90,7 +90,7 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
   private String pushMonitoringEndpoint; // optional
   private String jobManagerBinPath; // optional
   private Map<JobManagerCommand,String> jobManagerCommands; // optional
-  private Map<org.apache.airavata.model.parallelism.ApplicationParallelismType,String> parallalisimPrefix; // optional
+  private Map<org.apache.airavata.model.parallelism.ApplicationParallelismType,String> parallelismPrefix; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -103,7 +103,7 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
     PUSH_MONITORING_ENDPOINT((short)3, "pushMonitoringEndpoint"),
     JOB_MANAGER_BIN_PATH((short)4, "jobManagerBinPath"),
     JOB_MANAGER_COMMANDS((short)5, "jobManagerCommands"),
-    PARALLALISIM_PREFIX((short)6, "parallalisimPrefix");
+    PARALLELISM_PREFIX((short)6, "parallelismPrefix");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -128,8 +128,8 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
           return JOB_MANAGER_BIN_PATH;
         case 5: // JOB_MANAGER_COMMANDS
           return JOB_MANAGER_COMMANDS;
-        case 6: // PARALLALISIM_PREFIX
-          return PARALLALISIM_PREFIX;
+        case 6: // PARALLELISM_PREFIX
+          return PARALLELISM_PREFIX;
         default:
           return null;
       }
@@ -170,7 +170,7 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
   }
 
   // isset id assignments
-  private static final _Fields optionals[] = {_Fields.PUSH_MONITORING_ENDPOINT,_Fields.JOB_MANAGER_BIN_PATH,_Fields.JOB_MANAGER_COMMANDS,_Fields.PARALLALISIM_PREFIX};
+  private static final _Fields optionals[] = {_Fields.PUSH_MONITORING_ENDPOINT,_Fields.JOB_MANAGER_BIN_PATH,_Fields.JOB_MANAGER_COMMANDS,_Fields.PARALLELISM_PREFIX};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -186,7 +186,7 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
         new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
             new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, JobManagerCommand.class), 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
-    tmpMap.put(_Fields.PARALLALISIM_PREFIX, new org.apache.thrift.meta_data.FieldMetaData("parallalisimPrefix", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.PARALLELISM_PREFIX, new org.apache.thrift.meta_data.FieldMetaData("parallelismPrefix", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
             new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, org.apache.airavata.model.parallelism.ApplicationParallelismType.class), 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
@@ -239,20 +239,20 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
       }
       this.jobManagerCommands = __this__jobManagerCommands;
     }
-    if (other.isSetParallalisimPrefix()) {
-      Map<org.apache.airavata.model.parallelism.ApplicationParallelismType,String> __this__parallalisimPrefix = new HashMap<org.apache.airavata.model.parallelism.ApplicationParallelismType,String>(other.parallalisimPrefix.size());
-      for (Map.Entry<org.apache.airavata.model.parallelism.ApplicationParallelismType, String> other_element : other.parallalisimPrefix.entrySet()) {
+    if (other.isSetParallelismPrefix()) {
+      Map<org.apache.airavata.model.parallelism.ApplicationParallelismType,String> __this__parallelismPrefix = new HashMap<org.apache.airavata.model.parallelism.ApplicationParallelismType,String>(other.parallelismPrefix.size());
+      for (Map.Entry<org.apache.airavata.model.parallelism.ApplicationParallelismType, String> other_element : other.parallelismPrefix.entrySet()) {
 
         org.apache.airavata.model.parallelism.ApplicationParallelismType other_element_key = other_element.getKey();
         String other_element_value = other_element.getValue();
 
-        org.apache.airavata.model.parallelism.ApplicationParallelismType __this__parallalisimPrefix_copy_key = other_element_key;
+        org.apache.airavata.model.parallelism.ApplicationParallelismType __this__parallelismPrefix_copy_key = other_element_key;
 
-        String __this__parallalisimPrefix_copy_value = other_element_value;
+        String __this__parallelismPrefix_copy_value = other_element_value;
 
-        __this__parallalisimPrefix.put(__this__parallalisimPrefix_copy_key, __this__parallalisimPrefix_copy_value);
+        __this__parallelismPrefix.put(__this__parallelismPrefix_copy_key, __this__parallelismPrefix_copy_value);
       }
-      this.parallalisimPrefix = __this__parallalisimPrefix;
+      this.parallelismPrefix = __this__parallelismPrefix;
     }
   }
 
@@ -268,7 +268,7 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
     this.pushMonitoringEndpoint = null;
     this.jobManagerBinPath = null;
     this.jobManagerCommands = null;
-    this.parallalisimPrefix = null;
+    this.parallelismPrefix = null;
   }
 
   public String getResourceJobManagerId() {
@@ -405,37 +405,37 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
     }
   }
 
-  public int getParallalisimPrefixSize() {
-    return (this.parallalisimPrefix == null) ? 0 : this.parallalisimPrefix.size();
+  public int getParallelismPrefixSize() {
+    return (this.parallelismPrefix == null) ? 0 : this.parallelismPrefix.size();
   }
 
-  public void putToParallalisimPrefix(org.apache.airavata.model.parallelism.ApplicationParallelismType key, String val) {
-    if (this.parallalisimPrefix == null) {
-      this.parallalisimPrefix = new HashMap<org.apache.airavata.model.parallelism.ApplicationParallelismType,String>();
+  public void putToParallelismPrefix(org.apache.airavata.model.parallelism.ApplicationParallelismType key, String val) {
+    if (this.parallelismPrefix == null) {
+      this.parallelismPrefix = new HashMap<org.apache.airavata.model.parallelism.ApplicationParallelismType,String>();
     }
-    this.parallalisimPrefix.put(key, val);
+    this.parallelismPrefix.put(key, val);
   }
 
-  public Map<org.apache.airavata.model.parallelism.ApplicationParallelismType,String> getParallalisimPrefix() {
-    return this.parallalisimPrefix;
+  public Map<org.apache.airavata.model.parallelism.ApplicationParallelismType,String> getParallelismPrefix() {
+    return this.parallelismPrefix;
   }
 
-  public void setParallalisimPrefix(Map<org.apache.airavata.model.parallelism.ApplicationParallelismType,String> parallalisimPrefix) {
-    this.parallalisimPrefix = parallalisimPrefix;
+  public void setParallelismPrefix(Map<org.apache.airavata.model.parallelism.ApplicationParallelismType,String> parallelismPrefix) {
+    this.parallelismPrefix = parallelismPrefix;
   }
 
-  public void unsetParallalisimPrefix() {
-    this.parallalisimPrefix = null;
+  public void unsetParallelismPrefix() {
+    this.parallelismPrefix = null;
   }
 
-  /** Returns true if field parallalisimPrefix is set (has been assigned a value) and false otherwise */
-  public boolean isSetParallalisimPrefix() {
-    return this.parallalisimPrefix != null;
+  /** Returns true if field parallelismPrefix is set (has been assigned a value) and false otherwise */
+  public boolean isSetParallelismPrefix() {
+    return this.parallelismPrefix != null;
   }
 
-  public void setParallalisimPrefixIsSet(boolean value) {
+  public void setParallelismPrefixIsSet(boolean value) {
     if (!value) {
-      this.parallalisimPrefix = null;
+      this.parallelismPrefix = null;
     }
   }
 
@@ -481,11 +481,11 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
       }
       break;
 
-    case PARALLALISIM_PREFIX:
+    case PARALLELISM_PREFIX:
       if (value == null) {
-        unsetParallalisimPrefix();
+        unsetParallelismPrefix();
       } else {
-        setParallalisimPrefix((Map<org.apache.airavata.model.parallelism.ApplicationParallelismType,String>)value);
+        setParallelismPrefix((Map<org.apache.airavata.model.parallelism.ApplicationParallelismType,String>)value);
       }
       break;
 
@@ -509,8 +509,8 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
     case JOB_MANAGER_COMMANDS:
       return getJobManagerCommands();
 
-    case PARALLALISIM_PREFIX:
-      return getParallalisimPrefix();
+    case PARALLELISM_PREFIX:
+      return getParallelismPrefix();
 
     }
     throw new IllegalStateException();
@@ -533,8 +533,8 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
       return isSetJobManagerBinPath();
     case JOB_MANAGER_COMMANDS:
       return isSetJobManagerCommands();
-    case PARALLALISIM_PREFIX:
-      return isSetParallalisimPrefix();
+    case PARALLELISM_PREFIX:
+      return isSetParallelismPrefix();
     }
     throw new IllegalStateException();
   }
@@ -597,12 +597,12 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
         return false;
     }
 
-    boolean this_present_parallalisimPrefix = true && this.isSetParallalisimPrefix();
-    boolean that_present_parallalisimPrefix = true && that.isSetParallalisimPrefix();
-    if (this_present_parallalisimPrefix || that_present_parallalisimPrefix) {
-      if (!(this_present_parallalisimPrefix && that_present_parallalisimPrefix))
+    boolean this_present_parallelismPrefix = true && this.isSetParallelismPrefix();
+    boolean that_present_parallelismPrefix = true && that.isSetParallelismPrefix();
+    if (this_present_parallelismPrefix || that_present_parallelismPrefix) {
+      if (!(this_present_parallelismPrefix && that_present_parallelismPrefix))
         return false;
-      if (!this.parallalisimPrefix.equals(that.parallalisimPrefix))
+      if (!this.parallelismPrefix.equals(that.parallelismPrefix))
         return false;
     }
 
@@ -638,10 +638,10 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
     if (present_jobManagerCommands)
       list.add(jobManagerCommands);
 
-    boolean present_parallalisimPrefix = true && (isSetParallalisimPrefix());
-    list.add(present_parallalisimPrefix);
-    if (present_parallalisimPrefix)
-      list.add(parallalisimPrefix);
+    boolean present_parallelismPrefix = true && (isSetParallelismPrefix());
+    list.add(present_parallelismPrefix);
+    if (present_parallelismPrefix)
+      list.add(parallelismPrefix);
 
     return list.hashCode();
   }
@@ -704,12 +704,12 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetParallalisimPrefix()).compareTo(other.isSetParallalisimPrefix());
+    lastComparison = Boolean.valueOf(isSetParallelismPrefix()).compareTo(other.isSetParallelismPrefix());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetParallalisimPrefix()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parallalisimPrefix, other.parallalisimPrefix);
+    if (isSetParallelismPrefix()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parallelismPrefix, other.parallelismPrefix);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -779,13 +779,13 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
       }
       first = false;
     }
-    if (isSetParallalisimPrefix()) {
+    if (isSetParallelismPrefix()) {
       if (!first) sb.append(", ");
-      sb.append("parallalisimPrefix:");
-      if (this.parallalisimPrefix == null) {
+      sb.append("parallelismPrefix:");
+      if (this.parallelismPrefix == null) {
         sb.append("null");
       } else {
-        sb.append(this.parallalisimPrefix);
+        sb.append(this.parallelismPrefix);
       }
       first = false;
     }
@@ -892,22 +892,22 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // PARALLALISIM_PREFIX
+          case 6: // PARALLELISM_PREFIX
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
                 org.apache.thrift.protocol.TMap _map4 = iprot.readMapBegin();
-                struct.parallalisimPrefix = new HashMap<org.apache.airavata.model.parallelism.ApplicationParallelismType,String>(2*_map4.size);
+                struct.parallelismPrefix = new HashMap<org.apache.airavata.model.parallelism.ApplicationParallelismType,String>(2*_map4.size);
                 org.apache.airavata.model.parallelism.ApplicationParallelismType _key5;
                 String _val6;
                 for (int _i7 = 0; _i7 < _map4.size; ++_i7)
                 {
                   _key5 = org.apache.airavata.model.parallelism.ApplicationParallelismType.findByValue(iprot.readI32());
                   _val6 = iprot.readString();
-                  struct.parallalisimPrefix.put(_key5, _val6);
+                  struct.parallelismPrefix.put(_key5, _val6);
                 }
                 iprot.readMapEnd();
               }
-              struct.setParallalisimPrefixIsSet(true);
+              struct.setParallelismPrefixIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -964,12 +964,12 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
           oprot.writeFieldEnd();
         }
       }
-      if (struct.parallalisimPrefix != null) {
-        if (struct.isSetParallalisimPrefix()) {
-          oprot.writeFieldBegin(PARALLALISIM_PREFIX_FIELD_DESC);
+      if (struct.parallelismPrefix != null) {
+        if (struct.isSetParallelismPrefix()) {
+          oprot.writeFieldBegin(PARALLELISM_PREFIX_FIELD_DESC);
           {
-            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRING, struct.parallalisimPrefix.size()));
-            for (Map.Entry<org.apache.airavata.model.parallelism.ApplicationParallelismType, String> _iter9 : struct.parallalisimPrefix.entrySet())
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRING, struct.parallelismPrefix.size()));
+            for (Map.Entry<org.apache.airavata.model.parallelism.ApplicationParallelismType, String> _iter9 : struct.parallelismPrefix.entrySet())
             {
               oprot.writeI32(_iter9.getKey().getValue());
               oprot.writeString(_iter9.getValue());
@@ -1008,7 +1008,7 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
       if (struct.isSetJobManagerCommands()) {
         optionals.set(2);
       }
-      if (struct.isSetParallalisimPrefix()) {
+      if (struct.isSetParallelismPrefix()) {
         optionals.set(3);
       }
       oprot.writeBitSet(optionals, 4);
@@ -1028,10 +1028,10 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
           }
         }
       }
-      if (struct.isSetParallalisimPrefix()) {
+      if (struct.isSetParallelismPrefix()) {
         {
-          oprot.writeI32(struct.parallalisimPrefix.size());
-          for (Map.Entry<org.apache.airavata.model.parallelism.ApplicationParallelismType, String> _iter11 : struct.parallalisimPrefix.entrySet())
+          oprot.writeI32(struct.parallelismPrefix.size());
+          for (Map.Entry<org.apache.airavata.model.parallelism.ApplicationParallelismType, String> _iter11 : struct.parallelismPrefix.entrySet())
           {
             oprot.writeI32(_iter11.getKey().getValue());
             oprot.writeString(_iter11.getValue());
@@ -1074,17 +1074,17 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
       if (incoming.get(3)) {
         {
           org.apache.thrift.protocol.TMap _map16 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.parallalisimPrefix = new HashMap<org.apache.airavata.model.parallelism.ApplicationParallelismType,String>(2*_map16.size);
+          struct.parallelismPrefix = new HashMap<org.apache.airavata.model.parallelism.ApplicationParallelismType,String>(2*_map16.size);
           org.apache.airavata.model.parallelism.ApplicationParallelismType _key17;
           String _val18;
           for (int _i19 = 0; _i19 < _map16.size; ++_i19)
           {
             _key17 = org.apache.airavata.model.parallelism.ApplicationParallelismType.findByValue(iprot.readI32());
             _val18 = iprot.readString();
-            struct.parallalisimPrefix.put(_key17, _val18);
+            struct.parallelismPrefix.put(_key17, _val18);
           }
         }
-        struct.setParallalisimPrefixIsSet(true);
+        struct.setParallelismPrefixIsSet(true);
       }
     }
   }
