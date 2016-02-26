@@ -375,6 +375,11 @@ void ExperimentModel::__set_gatewayExecutionId(const std::string& val) {
 __isset.gatewayExecutionId = true;
 }
 
+void ExperimentModel::__set_gatewayInstanceId(const std::string& val) {
+  this->gatewayInstanceId = val;
+__isset.gatewayInstanceId = true;
+}
+
 void ExperimentModel::__set_enableEmailNotification(const bool val) {
   this->enableEmailNotification = val;
 __isset.enableEmailNotification = true;
@@ -525,6 +530,14 @@ uint32_t ExperimentModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 11:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayInstanceId);
+          this->__isset.gatewayInstanceId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 12:
         if (ftype == ::apache::thrift::protocol::T_BOOL) {
           xfer += iprot->readBool(this->enableEmailNotification);
           this->__isset.enableEmailNotification = true;
@@ -532,7 +545,7 @@ uint32_t ExperimentModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 12:
+      case 13:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->emailAddresses.clear();
@@ -552,7 +565,7 @@ uint32_t ExperimentModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 13:
+      case 14:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->userConfigurationData.read(iprot);
           this->__isset.userConfigurationData = true;
@@ -560,7 +573,7 @@ uint32_t ExperimentModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 14:
+      case 15:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->experimentInputs.clear();
@@ -580,7 +593,7 @@ uint32_t ExperimentModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 15:
+      case 16:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->experimentOutputs.clear();
@@ -600,7 +613,7 @@ uint32_t ExperimentModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 16:
+      case 17:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->experimentStatus.read(iprot);
           this->__isset.experimentStatus = true;
@@ -608,7 +621,7 @@ uint32_t ExperimentModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 17:
+      case 18:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->errors.clear();
@@ -628,7 +641,7 @@ uint32_t ExperimentModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 18:
+      case 19:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->processes.clear();
@@ -721,13 +734,18 @@ uint32_t ExperimentModel::write(::apache::thrift::protocol::TProtocol* oprot) co
     xfer += oprot->writeString(this->gatewayExecutionId);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.gatewayInstanceId) {
+    xfer += oprot->writeFieldBegin("gatewayInstanceId", ::apache::thrift::protocol::T_STRING, 11);
+    xfer += oprot->writeString(this->gatewayInstanceId);
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.enableEmailNotification) {
-    xfer += oprot->writeFieldBegin("enableEmailNotification", ::apache::thrift::protocol::T_BOOL, 11);
+    xfer += oprot->writeFieldBegin("enableEmailNotification", ::apache::thrift::protocol::T_BOOL, 12);
     xfer += oprot->writeBool(this->enableEmailNotification);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.emailAddresses) {
-    xfer += oprot->writeFieldBegin("emailAddresses", ::apache::thrift::protocol::T_LIST, 12);
+    xfer += oprot->writeFieldBegin("emailAddresses", ::apache::thrift::protocol::T_LIST, 13);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->emailAddresses.size()));
       std::vector<std::string> ::const_iterator _iter28;
@@ -740,12 +758,12 @@ uint32_t ExperimentModel::write(::apache::thrift::protocol::TProtocol* oprot) co
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.userConfigurationData) {
-    xfer += oprot->writeFieldBegin("userConfigurationData", ::apache::thrift::protocol::T_STRUCT, 13);
+    xfer += oprot->writeFieldBegin("userConfigurationData", ::apache::thrift::protocol::T_STRUCT, 14);
     xfer += this->userConfigurationData.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.experimentInputs) {
-    xfer += oprot->writeFieldBegin("experimentInputs", ::apache::thrift::protocol::T_LIST, 14);
+    xfer += oprot->writeFieldBegin("experimentInputs", ::apache::thrift::protocol::T_LIST, 15);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->experimentInputs.size()));
       std::vector< ::apache::airavata::model::application::io::InputDataObjectType> ::const_iterator _iter29;
@@ -758,7 +776,7 @@ uint32_t ExperimentModel::write(::apache::thrift::protocol::TProtocol* oprot) co
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.experimentOutputs) {
-    xfer += oprot->writeFieldBegin("experimentOutputs", ::apache::thrift::protocol::T_LIST, 15);
+    xfer += oprot->writeFieldBegin("experimentOutputs", ::apache::thrift::protocol::T_LIST, 16);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->experimentOutputs.size()));
       std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> ::const_iterator _iter30;
@@ -771,12 +789,12 @@ uint32_t ExperimentModel::write(::apache::thrift::protocol::TProtocol* oprot) co
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.experimentStatus) {
-    xfer += oprot->writeFieldBegin("experimentStatus", ::apache::thrift::protocol::T_STRUCT, 16);
+    xfer += oprot->writeFieldBegin("experimentStatus", ::apache::thrift::protocol::T_STRUCT, 17);
     xfer += this->experimentStatus.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.errors) {
-    xfer += oprot->writeFieldBegin("errors", ::apache::thrift::protocol::T_LIST, 17);
+    xfer += oprot->writeFieldBegin("errors", ::apache::thrift::protocol::T_LIST, 18);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->errors.size()));
       std::vector< ::apache::airavata::model::commons::ErrorModel> ::const_iterator _iter31;
@@ -789,7 +807,7 @@ uint32_t ExperimentModel::write(::apache::thrift::protocol::TProtocol* oprot) co
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.processes) {
-    xfer += oprot->writeFieldBegin("processes", ::apache::thrift::protocol::T_LIST, 18);
+    xfer += oprot->writeFieldBegin("processes", ::apache::thrift::protocol::T_LIST, 19);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->processes.size()));
       std::vector< ::apache::airavata::model::process::ProcessModel> ::const_iterator _iter32;
@@ -818,6 +836,7 @@ void swap(ExperimentModel &a, ExperimentModel &b) {
   swap(a.description, b.description);
   swap(a.executionId, b.executionId);
   swap(a.gatewayExecutionId, b.gatewayExecutionId);
+  swap(a.gatewayInstanceId, b.gatewayInstanceId);
   swap(a.enableEmailNotification, b.enableEmailNotification);
   swap(a.emailAddresses, b.emailAddresses);
   swap(a.userConfigurationData, b.userConfigurationData);
@@ -840,6 +859,7 @@ ExperimentModel::ExperimentModel(const ExperimentModel& other33) {
   description = other33.description;
   executionId = other33.executionId;
   gatewayExecutionId = other33.gatewayExecutionId;
+  gatewayInstanceId = other33.gatewayInstanceId;
   enableEmailNotification = other33.enableEmailNotification;
   emailAddresses = other33.emailAddresses;
   userConfigurationData = other33.userConfigurationData;
@@ -861,6 +881,7 @@ ExperimentModel& ExperimentModel::operator=(const ExperimentModel& other34) {
   description = other34.description;
   executionId = other34.executionId;
   gatewayExecutionId = other34.gatewayExecutionId;
+  gatewayInstanceId = other34.gatewayInstanceId;
   enableEmailNotification = other34.enableEmailNotification;
   emailAddresses = other34.emailAddresses;
   userConfigurationData = other34.userConfigurationData;
@@ -885,6 +906,7 @@ void ExperimentModel::printTo(std::ostream& out) const {
   out << ", " << "description="; (__isset.description ? (out << to_string(description)) : (out << "<null>"));
   out << ", " << "executionId="; (__isset.executionId ? (out << to_string(executionId)) : (out << "<null>"));
   out << ", " << "gatewayExecutionId="; (__isset.gatewayExecutionId ? (out << to_string(gatewayExecutionId)) : (out << "<null>"));
+  out << ", " << "gatewayInstanceId="; (__isset.gatewayInstanceId ? (out << to_string(gatewayInstanceId)) : (out << "<null>"));
   out << ", " << "enableEmailNotification="; (__isset.enableEmailNotification ? (out << to_string(enableEmailNotification)) : (out << "<null>"));
   out << ", " << "emailAddresses="; (__isset.emailAddresses ? (out << to_string(emailAddresses)) : (out << "<null>"));
   out << ", " << "userConfigurationData="; (__isset.userConfigurationData ? (out << to_string(userConfigurationData)) : (out << "<null>"));
