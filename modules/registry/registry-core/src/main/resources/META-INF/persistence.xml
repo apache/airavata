@@ -59,6 +59,7 @@
         <class>org.apache.airavata.registry.core.app.catalog.model.StorageInterface</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.ResourceJobManager</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.JobManagerCommand</class>
+        <class>org.apache.airavata.registry.core.app.catalog.model.ParallelismPrefixCommand</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.LocalSubmission</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.LocalDataMovement</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.Configuration</class>
