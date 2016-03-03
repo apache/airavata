@@ -349,6 +349,13 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a Job Manager Command.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Job Manager Command.");
                 }
+            case PARALLELISM_PREFIX_COMMAND:
+                if (o instanceof ParallelismPrefixCommand) {
+                    return createParallelismCommand((ParallelismPrefixCommand) o);
+                } else {
+                    logger.error("Object should be a Parallelism Prefix Command.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Parallelism Prefix Command.");
+                }
             case LOCAL_SUBMISSION:
                 if (o instanceof LocalSubmission) {
                     return createLocalSubmission((LocalSubmission) o);
@@ -414,6 +421,17 @@ public class AppCatalogJPAUtils {
             jobManagerCommandResource.setCommand(o.getCommand());
         }
         return jobManagerCommandResource;
+    }
+
+    private static AppCatalogResource createParallelismCommand(ParallelismPrefixCommand o) {
+        ParallelismPrefixCommandResource parallelismPrefixCommandResource = new ParallelismPrefixCommandResource();
+        if (o != null) {
+            parallelismPrefixCommandResource.setResourceJobManagerId(o.getResourceJobManagerId());
+            parallelismPrefixCommandResource.setResourceJobManagerResource((ResourceJobManagerResource) createResourceJobManager(o.getResourceJobManager()));
+            parallelismPrefixCommandResource.setCommandType(o.getCommandType());
+            parallelismPrefixCommandResource.setCommand(o.getCommand());
+        }
+        return parallelismPrefixCommandResource;
     }
 
     private static AppCatalogResource createResourceJobManager(ResourceJobManager o) {

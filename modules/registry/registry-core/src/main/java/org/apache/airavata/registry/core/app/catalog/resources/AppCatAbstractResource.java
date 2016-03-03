@@ -62,6 +62,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
 	public static final String DATA_MOVEMENT_INTERFACE = "DataMovementInterface";
 	public static final String RESOURCE_JOB_MANAGER = "ResourceJobManager";
 	public static final String JOB_MANAGER_COMMAND = "JobManagerCommand";
+	public static final String PARALLELISM_PREFIX_COMMAND = "ParallelismPrefixCommand";
 	public static final String LOCAL_SUBMISSION = "LocalSubmission";
 	public static final String LOCAL_DATA_MOVEMENT = "LocalDataMovement";
 	public static final String SSH_JOB_SUBMISSION = "SshJobSubmission";
@@ -361,6 +362,12 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
 		public static final String COMMAND_TYPE = "commandType";
 		public static final String COMMAND = "command";
 	}
+
+    public final class ParallelismCommandConstants {
+        public static final String RESOURCE_JOB_MANAGER_ID = "resourceJobManagerId";
+        public static final String COMMAND_TYPE = "commandType";
+        public static final String COMMAND = "command";
+    }
 	
 	// Gridftp Data Movement Table
 	public final class GridftpDataMovementConstants {

@@ -38,6 +38,8 @@ import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.data.movement.*;
+import org.apache.airavata.model.parallelism.ApplicationParallelismType;
+import org.apache.airavata.registry.core.app.catalog.model.ParallelismPrefixCommand;
 import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 
@@ -393,6 +395,16 @@ public class AppCatalogThriftConversion {
         		JobManagerCommandResource rr=(JobManagerCommandResource)rrr;
         		r.getJobManagerCommands().put(JobManagerCommand.valueOf(rr.getCommandType()), rr.getCommand());
 			}
+        }
+
+        r.setParallelismPrefix(new HashMap<ApplicationParallelismType, String>());
+        ParallelismPrefixCommandResource prefixCommandResource=new ParallelismPrefixCommandResource();
+        List<AppCatalogResource> resourceList = prefixCommandResource.get(AppCatAbstractResource.JobManagerCommandConstants.RESOURCE_JOB_MANAGER_ID, manager.getResourceJobManagerId());
+        if (resourceList != null && !resourceList.isEmpty()){
+            for (AppCatalogResource rrr : resourceList) {
+                ParallelismPrefixCommandResource rr=(ParallelismPrefixCommandResource)rrr;
+                r.getParallelismPrefix().put(ApplicationParallelismType.valueOf(rr.getCommandType()), rr.getCommand());
+            }
         }
     	return r;
     }

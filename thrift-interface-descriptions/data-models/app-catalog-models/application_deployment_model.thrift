@@ -25,12 +25,12 @@
 */
 
 include "../../airavata-apis/airavata_commons.thrift"
+include "parallelism_model.thrift"
 
 namespace java org.apache.airavata.model.appcatalog.appdeployment
 namespace php Airavata.Model.AppCatalog.AppDeployment
 namespace cpp apache.airavata.model.appcatalog.appdeployment
 namespace py apache.airavata.model.appcatalog.appdeployment
-
 
 /**
  * Key Value pairs to be used to set environments
@@ -87,30 +87,6 @@ struct ApplicationModule {
 }
 
 /**
- * Enumeration of application parallelism supported by Airavata
- *
- * SERIAL:
- *  Single processor applications without any parallelization.
- *
- * MPI:
- *  Messaging Passing Interface.
- *
- * OPENMP:
- *  Shared Memory Implementtaion.
- *
- * OPENMP_MPI:
- *  Hybrid Applications.
- *
-*/
-enum ApplicationParallelismType {
-    SERIAL,
-    MPI,
-    OPENMP,
-    OPENMP_MPI,
-    CCM,
-    CRAY_MPI
-}
-/**
  * Application Deployment Description
  *
  * appDeploymentId: Airavata Internal Unique Job ID. This is set by the registry.
@@ -142,7 +118,7 @@ struct ApplicationDeploymentDescription {
     2: required string appModuleId,
     3: required string computeHostId,
     4: required string executablePath,
-    5: required ApplicationParallelismType parallelism = ApplicationParallelismType.SERIAL,
+    5: required parallelism_model.ApplicationParallelismType parallelism = parallelism_model.ApplicationParallelismType.SERIAL,
 	6: optional string appDeploymentDescription,
 	7: optional list<CommandObject> moduleLoadCmds,
 	8: optional list<SetEnvPaths> libPrependPaths,

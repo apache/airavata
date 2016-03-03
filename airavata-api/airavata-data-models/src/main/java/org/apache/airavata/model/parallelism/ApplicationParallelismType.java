@@ -21,7 +21,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package org.apache.airavata.model.appcatalog.appdeployment;
+package org.apache.airavata.model.parallelism;
 
 
 import java.util.Map;
