@@ -23,7 +23,6 @@ package org.apache.airavata.client.tools;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
@@ -34,6 +33,7 @@ import org.apache.airavata.model.data.movement.DMType;
 import org.apache.airavata.model.data.movement.SCPDataMovement;
 import org.apache.airavata.model.data.movement.SecurityProtocol;
 import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;

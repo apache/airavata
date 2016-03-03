@@ -50,6 +50,7 @@ public class ExperimentResource extends AbstractExpCatResource {
     private String description;
     private String executionId;
     private String gatewayExecutionId;
+    private String gatewayInstanceId;
     private boolean enableEmailNotification;
     private String emailAddresses;
 
@@ -125,6 +126,14 @@ public class ExperimentResource extends AbstractExpCatResource {
         this.executionId = executionId;
     }
 
+    public String getGatewayInstanceId() {
+        return gatewayInstanceId;
+    }
+
+    public void setGatewayInstanceId(String gatewayInstanceId) {
+        this.gatewayInstanceId = gatewayInstanceId;
+    }
+
     public String getGatewayExecutionId() {
         return gatewayExecutionId;
     }
@@ -148,6 +157,7 @@ public class ExperimentResource extends AbstractExpCatResource {
     public void setEmailAddresses(String emailAddresses) {
         this.emailAddresses = emailAddresses;
     }
+
 
     public ExperimentCatResource create(ResourceType type) throws RegistryException{
        switch (type){
@@ -506,6 +516,7 @@ public class ExperimentResource extends AbstractExpCatResource {
             experiment.setCreationTime(creationTime);
             experiment.setDescription(description);
             experiment.setExecutionId(executionId);
+            experiment.setGatewayInstanceId(gatewayInstanceId);
             experiment.setGatewayExecutionId(gatewayExecutionId);
             experiment.setEnableEmailNotification(enableEmailNotification);
             experiment.setEmailAddresses(emailAddresses);

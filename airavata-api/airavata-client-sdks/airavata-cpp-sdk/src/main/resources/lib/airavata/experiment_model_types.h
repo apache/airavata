@@ -179,11 +179,12 @@ inline std::ostream& operator<<(std::ostream& out, const UserConfigurationDataMo
 }
 
 typedef struct _ExperimentModel__isset {
-  _ExperimentModel__isset() : creationTime(false), description(false), executionId(false), gatewayExecutionId(false), enableEmailNotification(false), emailAddresses(false), userConfigurationData(false), experimentInputs(false), experimentOutputs(false), experimentStatus(false), errors(false), processes(false) {}
+  _ExperimentModel__isset() : creationTime(false), description(false), executionId(false), gatewayExecutionId(false), gatewayInstanceId(false), enableEmailNotification(false), emailAddresses(false), userConfigurationData(false), experimentInputs(false), experimentOutputs(false), experimentStatus(false), errors(false), processes(false) {}
   bool creationTime :1;
   bool description :1;
   bool executionId :1;
   bool gatewayExecutionId :1;
+  bool gatewayInstanceId :1;
   bool enableEmailNotification :1;
   bool emailAddresses :1;
   bool userConfigurationData :1;
@@ -199,7 +200,7 @@ class ExperimentModel {
 
   ExperimentModel(const ExperimentModel&);
   ExperimentModel& operator=(const ExperimentModel&);
-  ExperimentModel() : experimentId("DO_NOT_SET_AT_CLIENTS"), projectId(), gatewayId(), experimentType((ExperimentType::type)0), userName(), experimentName(), creationTime(0), description(), executionId(), gatewayExecutionId(), enableEmailNotification(0) {
+  ExperimentModel() : experimentId("DO_NOT_SET_AT_CLIENTS"), projectId(), gatewayId(), experimentType((ExperimentType::type)0), userName(), experimentName(), creationTime(0), description(), executionId(), gatewayExecutionId(), gatewayInstanceId(), enableEmailNotification(0) {
     experimentType = (ExperimentType::type)0;
 
   }
@@ -215,6 +216,7 @@ class ExperimentModel {
   std::string description;
   std::string executionId;
   std::string gatewayExecutionId;
+  std::string gatewayInstanceId;
   bool enableEmailNotification;
   std::vector<std::string>  emailAddresses;
   UserConfigurationDataModel userConfigurationData;
@@ -245,6 +247,8 @@ class ExperimentModel {
   void __set_executionId(const std::string& val);
 
   void __set_gatewayExecutionId(const std::string& val);
+
+  void __set_gatewayInstanceId(const std::string& val);
 
   void __set_enableEmailNotification(const bool val);
 
@@ -291,6 +295,10 @@ class ExperimentModel {
     if (__isset.gatewayExecutionId != rhs.__isset.gatewayExecutionId)
       return false;
     else if (__isset.gatewayExecutionId && !(gatewayExecutionId == rhs.gatewayExecutionId))
+      return false;
+    if (__isset.gatewayInstanceId != rhs.__isset.gatewayInstanceId)
+      return false;
+    else if (__isset.gatewayInstanceId && !(gatewayInstanceId == rhs.gatewayInstanceId))
       return false;
     if (__isset.enableEmailNotification != rhs.__isset.enableEmailNotification)
       return false;

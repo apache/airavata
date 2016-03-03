@@ -22,9 +22,9 @@
 package org.apache.airavata.registry.core.app.catalog.impl;
 
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
 import org.apache.airavata.model.appcatalog.appdeployment.CommandObject;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
+import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.cpi.AppCatalogException;
