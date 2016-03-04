@@ -539,6 +539,7 @@ public class Utils {
             processResource.setUserDn(o.getUserDn());
             processResource.setGenerateCert(o.getGenerateCert());
             processResource.setExperimentDataDir(o.getExperimentDataDir());
+            processResource.setArchive(o.isArchive());
         }
         return processResource;
     }

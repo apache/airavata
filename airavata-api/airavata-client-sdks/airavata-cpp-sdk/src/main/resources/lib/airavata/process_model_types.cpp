@@ -143,6 +143,11 @@ void ProcessModel::__set_experimentDataDir(const std::string& val) {
 __isset.experimentDataDir = true;
 }
 
+void ProcessModel::__set_archive(const bool val) {
+  this->archive = val;
+__isset.archive = true;
+}
+
 uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -390,6 +395,14 @@ uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 23:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->archive);
+          this->__isset.archive = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -551,6 +564,11 @@ uint32_t ProcessModel::write(::apache::thrift::protocol::TProtocol* oprot) const
     xfer += oprot->writeString(this->experimentDataDir);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.archive) {
+    xfer += oprot->writeFieldBegin("archive", ::apache::thrift::protocol::T_BOOL, 23);
+    xfer += oprot->writeBool(this->archive);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -580,6 +598,7 @@ void swap(ProcessModel &a, ProcessModel &b) {
   swap(a.userDn, b.userDn);
   swap(a.generateCert, b.generateCert);
   swap(a.experimentDataDir, b.experimentDataDir);
+  swap(a.archive, b.archive);
   swap(a.__isset, b.__isset);
 }
 
@@ -606,6 +625,7 @@ ProcessModel::ProcessModel(const ProcessModel& other24) {
   userDn = other24.userDn;
   generateCert = other24.generateCert;
   experimentDataDir = other24.experimentDataDir;
+  archive = other24.archive;
   __isset = other24.__isset;
 }
 ProcessModel& ProcessModel::operator=(const ProcessModel& other25) {
@@ -631,6 +651,7 @@ ProcessModel& ProcessModel::operator=(const ProcessModel& other25) {
   userDn = other25.userDn;
   generateCert = other25.generateCert;
   experimentDataDir = other25.experimentDataDir;
+  archive = other25.archive;
   __isset = other25.__isset;
   return *this;
 }
@@ -659,6 +680,7 @@ void ProcessModel::printTo(std::ostream& out) const {
   out << ", " << "userDn="; (__isset.userDn ? (out << to_string(userDn)) : (out << "<null>"));
   out << ", " << "generateCert="; (__isset.generateCert ? (out << to_string(generateCert)) : (out << "<null>"));
   out << ", " << "experimentDataDir="; (__isset.experimentDataDir ? (out << to_string(experimentDataDir)) : (out << "<null>"));
+  out << ", " << "archive="; (__isset.archive ? (out << to_string(archive)) : (out << "<null>"));
   out << ")";
 }
 
