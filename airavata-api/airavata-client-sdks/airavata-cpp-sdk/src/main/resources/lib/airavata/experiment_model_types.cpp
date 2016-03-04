@@ -420,6 +420,11 @@ void ExperimentModel::__set_processes(const std::vector< ::apache::airavata::mod
 __isset.processes = true;
 }
 
+void ExperimentModel::__set_archive(const bool val) {
+  this->archive = val;
+__isset.archive = true;
+}
+
 uint32_t ExperimentModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -661,6 +666,14 @@ uint32_t ExperimentModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 20:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->archive);
+          this->__isset.archive = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -819,6 +832,11 @@ uint32_t ExperimentModel::write(::apache::thrift::protocol::TProtocol* oprot) co
     }
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.archive) {
+    xfer += oprot->writeFieldBegin("archive", ::apache::thrift::protocol::T_BOOL, 20);
+    xfer += oprot->writeBool(this->archive);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -845,6 +863,7 @@ void swap(ExperimentModel &a, ExperimentModel &b) {
   swap(a.experimentStatus, b.experimentStatus);
   swap(a.errors, b.errors);
   swap(a.processes, b.processes);
+  swap(a.archive, b.archive);
   swap(a.__isset, b.__isset);
 }
 
@@ -868,6 +887,7 @@ ExperimentModel::ExperimentModel(const ExperimentModel& other33) {
   experimentStatus = other33.experimentStatus;
   errors = other33.errors;
   processes = other33.processes;
+  archive = other33.archive;
   __isset = other33.__isset;
 }
 ExperimentModel& ExperimentModel::operator=(const ExperimentModel& other34) {
@@ -890,6 +910,7 @@ ExperimentModel& ExperimentModel::operator=(const ExperimentModel& other34) {
   experimentStatus = other34.experimentStatus;
   errors = other34.errors;
   processes = other34.processes;
+  archive = other34.archive;
   __isset = other34.__isset;
   return *this;
 }
@@ -915,6 +936,7 @@ void ExperimentModel::printTo(std::ostream& out) const {
   out << ", " << "experimentStatus="; (__isset.experimentStatus ? (out << to_string(experimentStatus)) : (out << "<null>"));
   out << ", " << "errors="; (__isset.errors ? (out << to_string(errors)) : (out << "<null>"));
   out << ", " << "processes="; (__isset.processes ? (out << to_string(processes)) : (out << "<null>"));
+  out << ", " << "archive="; (__isset.archive ? (out << to_string(archive)) : (out << "<null>"));
   out << ")";
 }
 

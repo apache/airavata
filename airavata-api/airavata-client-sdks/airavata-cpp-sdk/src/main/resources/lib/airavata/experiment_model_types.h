@@ -179,7 +179,7 @@ inline std::ostream& operator<<(std::ostream& out, const UserConfigurationDataMo
 }
 
 typedef struct _ExperimentModel__isset {
-  _ExperimentModel__isset() : creationTime(false), description(false), executionId(false), gatewayExecutionId(false), gatewayInstanceId(false), enableEmailNotification(false), emailAddresses(false), userConfigurationData(false), experimentInputs(false), experimentOutputs(false), experimentStatus(false), errors(false), processes(false) {}
+  _ExperimentModel__isset() : creationTime(false), description(false), executionId(false), gatewayExecutionId(false), gatewayInstanceId(false), enableEmailNotification(false), emailAddresses(false), userConfigurationData(false), experimentInputs(false), experimentOutputs(false), experimentStatus(false), errors(false), processes(false), archive(false) {}
   bool creationTime :1;
   bool description :1;
   bool executionId :1;
@@ -193,6 +193,7 @@ typedef struct _ExperimentModel__isset {
   bool experimentStatus :1;
   bool errors :1;
   bool processes :1;
+  bool archive :1;
 } _ExperimentModel__isset;
 
 class ExperimentModel {
@@ -200,7 +201,7 @@ class ExperimentModel {
 
   ExperimentModel(const ExperimentModel&);
   ExperimentModel& operator=(const ExperimentModel&);
-  ExperimentModel() : experimentId("DO_NOT_SET_AT_CLIENTS"), projectId(), gatewayId(), experimentType((ExperimentType::type)0), userName(), experimentName(), creationTime(0), description(), executionId(), gatewayExecutionId(), gatewayInstanceId(), enableEmailNotification(0) {
+  ExperimentModel() : experimentId("DO_NOT_SET_AT_CLIENTS"), projectId(), gatewayId(), experimentType((ExperimentType::type)0), userName(), experimentName(), creationTime(0), description(), executionId(), gatewayExecutionId(), gatewayInstanceId(), enableEmailNotification(0), archive(0) {
     experimentType = (ExperimentType::type)0;
 
   }
@@ -225,6 +226,7 @@ class ExperimentModel {
    ::apache::airavata::model::status::ExperimentStatus experimentStatus;
   std::vector< ::apache::airavata::model::commons::ErrorModel>  errors;
   std::vector< ::apache::airavata::model::process::ProcessModel>  processes;
+  bool archive;
 
   _ExperimentModel__isset __isset;
 
@@ -265,6 +267,8 @@ class ExperimentModel {
   void __set_errors(const std::vector< ::apache::airavata::model::commons::ErrorModel> & val);
 
   void __set_processes(const std::vector< ::apache::airavata::model::process::ProcessModel> & val);
+
+  void __set_archive(const bool val);
 
   bool operator == (const ExperimentModel & rhs) const
   {
@@ -331,6 +335,10 @@ class ExperimentModel {
     if (__isset.processes != rhs.__isset.processes)
       return false;
     else if (__isset.processes && !(processes == rhs.processes))
+      return false;
+    if (__isset.archive != rhs.__isset.archive)
+      return false;
+    else if (__isset.archive && !(archive == rhs.archive))
       return false;
     return true;
   }
