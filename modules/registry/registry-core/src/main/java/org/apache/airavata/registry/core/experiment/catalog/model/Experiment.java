@@ -44,6 +44,7 @@ public class Experiment {
     private String gatewayInstanceId;
 
     private Boolean enableEmailNotification;
+    private Boolean archive;
     private String emailAddresses;
     private Users user;
     private Project project;
@@ -161,6 +162,15 @@ public class Experiment {
 
     public void setEnableEmailNotification(Boolean enableEmailNotification) {
         this.enableEmailNotification = enableEmailNotification;
+    }
+
+    @Column(name = "ARCHIVE")
+    public Boolean getArchive() {
+        return archive;
+    }
+
+    public void setArchive(Boolean archive) {
+        this.archive = archive;
     }
 
     @Lob
@@ -281,4 +291,6 @@ public class Experiment {
     public void setUserConfigurationData(UserConfigurationData userConfigurationDataByExperimentId) {
         this.userConfigurationData = userConfigurationDataByExperimentId;
     }
+
+
 }
