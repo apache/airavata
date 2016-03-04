@@ -281,6 +281,7 @@ class ExperimentModel:
    - experimentStatus
    - errors
    - processes
+   - archive
   """
 
   thrift_spec = (
@@ -304,9 +305,10 @@ class ExperimentModel:
     (17, TType.STRUCT, 'experimentStatus', (apache.airavata.model.status.ttypes.ExperimentStatus, apache.airavata.model.status.ttypes.ExperimentStatus.thrift_spec), None, ), # 17
     (18, TType.LIST, 'errors', (TType.STRUCT,(apache.airavata.model.commons.ttypes.ErrorModel, apache.airavata.model.commons.ttypes.ErrorModel.thrift_spec)), None, ), # 18
     (19, TType.LIST, 'processes', (TType.STRUCT,(apache.airavata.model.process.ttypes.ProcessModel, apache.airavata.model.process.ttypes.ProcessModel.thrift_spec)), None, ), # 19
+    (20, TType.BOOL, 'archive', None, None, ), # 20
   )
 
-  def __init__(self, experimentId=thrift_spec[1][4], projectId=None, gatewayId=None, experimentType=thrift_spec[4][4], userName=None, experimentName=None, creationTime=None, description=None, executionId=None, gatewayExecutionId=None, gatewayInstanceId=None, enableEmailNotification=None, emailAddresses=None, userConfigurationData=None, experimentInputs=None, experimentOutputs=None, experimentStatus=None, errors=None, processes=None,):
+  def __init__(self, experimentId=thrift_spec[1][4], projectId=None, gatewayId=None, experimentType=thrift_spec[4][4], userName=None, experimentName=None, creationTime=None, description=None, executionId=None, gatewayExecutionId=None, gatewayInstanceId=None, enableEmailNotification=None, emailAddresses=None, userConfigurationData=None, experimentInputs=None, experimentOutputs=None, experimentStatus=None, errors=None, processes=None, archive=None,):
     self.experimentId = experimentId
     self.projectId = projectId
     self.gatewayId = gatewayId
@@ -326,6 +328,7 @@ class ExperimentModel:
     self.experimentStatus = experimentStatus
     self.errors = errors
     self.processes = processes
+    self.archive = archive
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -462,6 +465,11 @@ class ExperimentModel:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
+      elif fid == 20:
+        if ftype == TType.BOOL:
+          self.archive = iprot.readBool()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -563,6 +571,10 @@ class ExperimentModel:
         iter34.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
+    if self.archive is not None:
+      oprot.writeFieldBegin('archive', TType.BOOL, 20)
+      oprot.writeBool(self.archive)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -603,6 +615,7 @@ class ExperimentModel:
     value = (value * 31) ^ hash(self.experimentStatus)
     value = (value * 31) ^ hash(self.errors)
     value = (value * 31) ^ hash(self.processes)
+    value = (value * 31) ^ hash(self.archive)
     return value
 
   def __repr__(self):

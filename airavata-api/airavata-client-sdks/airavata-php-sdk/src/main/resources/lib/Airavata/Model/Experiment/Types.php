@@ -409,6 +409,10 @@ class ExperimentModel {
    * @var \Airavata\Model\Process\ProcessModel[]
    */
   public $processes = null;
+  /**
+   * @var bool
+   */
+  public $archive = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -515,6 +519,10 @@ class ExperimentModel {
             'class' => '\Airavata\Model\Process\ProcessModel',
             ),
           ),
+        20 => array(
+          'var' => 'archive',
+          'type' => TType::BOOL,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -574,6 +582,9 @@ class ExperimentModel {
       }
       if (isset($vals['processes'])) {
         $this->processes = $vals['processes'];
+      }
+      if (isset($vals['archive'])) {
+        $this->archive = $vals['archive'];
       }
     }
   }
@@ -786,6 +797,13 @@ class ExperimentModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 20:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->archive);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -958,6 +976,11 @@ class ExperimentModel {
         }
         $output->writeListEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->archive !== null) {
+      $xfer += $output->writeFieldBegin('archive', TType::BOOL, 20);
+      $xfer += $output->writeBool($this->archive);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
