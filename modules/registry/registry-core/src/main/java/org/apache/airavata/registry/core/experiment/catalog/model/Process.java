@@ -54,6 +54,7 @@ public class Process {
     private Collection<Task> tasks;
     private String userDn;
     private boolean generateCert;
+    private boolean archive;
 
     @Id
     @Column(name = "PROCESS_ID")
@@ -203,7 +204,16 @@ public class Process {
         this.experimentDataDir = experimentDataDir;
     }
 
-//    @Override
+    @Column(name = "ARCHIVE")
+    public boolean isArchive() {
+        return archive;
+    }
+
+    public void setArchive(boolean archive) {
+        this.archive = archive;
+    }
+
+    //    @Override
 //    public boolean equals(Object o) {
 //        if (this == o) return true;
 //        if (o == null || getClass() != o.getClass()) return false;

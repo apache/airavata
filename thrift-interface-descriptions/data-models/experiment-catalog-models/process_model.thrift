@@ -61,5 +61,6 @@ struct ProcessModel {
     19: optional string storageResourceId,
     20: optional string userDn,
     21: optional bool generateCert = 0,
-    22: optional string experimentDataDir
+    22: optional string experimentDataDir,
+    23: optional bool archive
 }
