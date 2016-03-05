@@ -50,13 +50,15 @@ const std::map<int, const char*> _TaskTypes_VALUES_TO_NAMES(::apache::thrift::TE
 
 int _kDataStageTypeValues[] = {
   DataStageType::INPUT,
-  DataStageType::OUPUT
+  DataStageType::OUPUT,
+  DataStageType::ARCHIVE_OUTPUT
 };
 const char* _kDataStageTypeNames[] = {
   "INPUT",
-  "OUPUT"
+  "OUPUT",
+  "ARCHIVE_OUTPUT"
 };
-const std::map<int, const char*> _DataStageType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kDataStageTypeValues, _kDataStageTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _DataStageType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(3, _kDataStageTypeValues, _kDataStageTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 
 TaskModel::~TaskModel() throw() {

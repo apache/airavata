@@ -63,15 +63,18 @@ class DataStageType:
   """
   INPUT = 0
   OUPUT = 1
+  ARCHIVE_OUTPUT = 2
 
   _VALUES_TO_NAMES = {
     0: "INPUT",
     1: "OUPUT",
+    2: "ARCHIVE_OUTPUT",
   }
 
   _NAMES_TO_VALUES = {
     "INPUT": 0,
     "OUPUT": 1,
+    "ARCHIVE_OUTPUT": 2,
   }
 
 

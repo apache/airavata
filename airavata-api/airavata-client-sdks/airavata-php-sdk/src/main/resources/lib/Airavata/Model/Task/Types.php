@@ -48,9 +48,11 @@ final class TaskTypes {
 final class DataStageType {
   const INPUT = 0;
   const OUPUT = 1;
+  const ARCHIVE_OUTPUT = 2;
   static public $__names = array(
     0 => 'INPUT',
     1 => 'OUPUT',
+    2 => 'ARCHIVE_OUTPUT',
   );
 }
 

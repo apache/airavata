@@ -58,7 +58,8 @@ extern const std::map<int, const char*> _TaskTypes_VALUES_TO_NAMES;
 struct DataStageType {
   enum type {
     INPUT = 0,
-    OUPUT = 1
+    OUPUT = 1,
+    ARCHIVE_OUTPUT = 2
   };
 };
 
