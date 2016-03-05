@@ -37,7 +37,8 @@ import org.apache.thrift.TEnum;
  */
 public enum DataStageType implements org.apache.thrift.TEnum {
   INPUT(0),
-  OUPUT(1);
+  OUPUT(1),
+  ARCHIVE_OUTPUT(2);
 
   private final int value;
 
@@ -62,6 +63,8 @@ public enum DataStageType implements org.apache.thrift.TEnum {
         return INPUT;
       case 1:
         return OUPUT;
+      case 2:
+        return ARCHIVE_OUTPUT;
       default:
         return null;
     }

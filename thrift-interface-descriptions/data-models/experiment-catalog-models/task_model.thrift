@@ -75,7 +75,8 @@ struct TaskModel {
 
 enum DataStageType {
 	INPUT,
-	OUPUT
+	OUPUT,
+	ARCHIVE_OUTPUT
 
 }
 struct DataStagingTaskModel {

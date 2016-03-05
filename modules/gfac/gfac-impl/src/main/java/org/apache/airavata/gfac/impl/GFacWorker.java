@@ -164,7 +164,7 @@ public class GFacWorker implements Runnable {
 	}
 
 	private void completeProcess() throws GFacException {
-        ProcessStatus status = new ProcessStatus(ProcessState.COMPLETED);
+		ProcessStatus status = new ProcessStatus(ProcessState.COMPLETED);
         status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         processContext.setProcessStatus(status);
 		GFacUtils.saveAndPublishProcessStatus(processContext);

@@ -398,38 +398,14 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 switch (type) {
                     case STDOUT :
                         processOutput.setValue(appName + ".stdout");
-                        try {
-                            TaskModel outputDataStagingTask = getOutputDataStagingTask(processModel, processOutput, gatewayId);
-                            String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, outputDataStagingTask,
-                                    processModel.getProcessId());
-                            outputDataStagingTask.setTaskId(taskId);
-                            dataStagingTaskIds.add(outputDataStagingTask.getTaskId());
-                        } catch (TException e) {
-                            throw new RegistryException("Error while serializing data staging sub task model", e);
-                        }
+                        createOutputDataSatagingTasks(processModel, gatewayId, dataStagingTaskIds, processOutput);
                         break;
                     case STDERR:
                         processOutput.setValue(appName + ".stderr");
-                        try {
-                            TaskModel outputDataStagingTask = getOutputDataStagingTask(processModel, processOutput, gatewayId);
-                            String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, outputDataStagingTask,
-                                    processModel.getProcessId());
-                            outputDataStagingTask.setTaskId(taskId);
-                            dataStagingTaskIds.add(outputDataStagingTask.getTaskId());
-                        } catch (TException e) {
-                            throw new RegistryException("Error while serializing data staging sub task model", e);
-                        }
+                        createOutputDataSatagingTasks(processModel, gatewayId, dataStagingTaskIds, processOutput);
                         break;
                     case URI:
-                        try {
-                            TaskModel outputDataStagingTask = getOutputDataStagingTask(processModel, processOutput, gatewayId);
-                            String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, outputDataStagingTask,
-                                    processModel.getProcessId());
-                            outputDataStagingTask.setTaskId(taskId);
-                            dataStagingTaskIds.add(outputDataStagingTask.getTaskId());
-                        } catch (TException e) {
-                            throw new RegistryException("Error while serializing data staging sub task model", e);
-                        }
+                        createOutputDataSatagingTasks(processModel, gatewayId, dataStagingTaskIds, processOutput);
                         break;
                     default:
                         // nothing to do
@@ -438,6 +414,18 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             }
         }
         return dataStagingTaskIds;
+    }
+
+    private void createOutputDataSatagingTasks(ProcessModel processModel, String gatewayId, List<String> dataStagingTaskIds, OutputDataObjectType processOutput) throws RegistryException {
+        try {
+            TaskModel outputDataStagingTask = getOutputDataStagingTask(processModel, processOutput, gatewayId);
+            String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, outputDataStagingTask,
+                    processModel.getProcessId());
+            outputDataStagingTask.setTaskId(taskId);
+            dataStagingTaskIds.add(outputDataStagingTask.getTaskId());
+        } catch (TException e) {
+            throw new RegistryException("Error while serializing data staging sub task model", e);
+        }
     }
 
     private List<String> createAndSaveSubmissionTasks(String gatewayId, JobSubmissionInterface jobSubmissionInterface, ProcessModel processModel, int wallTime)
@@ -581,6 +569,24 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         } catch (AppCatalogException | TaskException e) {
            throw new RegistryException("Error occurred while retrieving data movement from app catalog", e);
         }
+    }
+
+
+    private TaskModel getArchiveOutTask(ProcessModel processModel, OutputDataObjectType processOutput, String gatewayId) throws RegistryException, TException {
+
+        // create new task model for this task
+        TaskModel taskModel = new TaskModel();
+        taskModel.setParentProcessId(processModel.getProcessId());
+        taskModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
+        taskModel.setLastUpdateTime(taskModel.getCreationTime());
+        TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
+        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        taskModel.setTaskStatus(taskStatus);
+        taskModel.setTaskType(TaskTypes.DATA_STAGING);
+        DataStagingTaskModel submodel = new DataStagingTaskModel();
+        submodel.setType(DataStageType.ARCHIVE_OUTPUT);
+        taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
+        return taskModel;
     }
 
 

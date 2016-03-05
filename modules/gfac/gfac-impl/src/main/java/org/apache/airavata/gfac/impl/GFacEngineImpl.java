@@ -36,6 +36,7 @@ import org.apache.airavata.gfac.core.monitor.JobMonitor;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
+import org.apache.airavata.gfac.impl.task.DataStageTask;
 import org.apache.airavata.gfac.impl.task.DataStreamingTask;
 import org.apache.airavata.gfac.impl.task.EnvironmentSetupTask;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -279,20 +280,27 @@ public class GFacEngineImpl implements GFacEngine {
                             return;
                         }
                         DataStagingTaskModel subTaskModel = (DataStagingTaskModel) taskContext.getSubTaskModel();
-                        if (subTaskModel.getType() == DataStageType.INPUT) {
-                            status = new ProcessStatus(ProcessState.INPUT_DATA_STAGING);
-                            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                            processContext.setProcessStatus(status);
-                            GFacUtils.saveAndPublishProcessStatus(processContext);
-                            taskContext.setProcessInput(subTaskModel.getProcessInput());
-                            inputDataStaging(taskContext, processContext.isRecovery());
-                        } else {
-                            status = new ProcessStatus(ProcessState.OUTPUT_DATA_STAGING);
-                            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                            processContext.setProcessStatus(status);
-                            GFacUtils.saveAndPublishProcessStatus(processContext);
-                            taskContext.setProcessOutput(subTaskModel.getProcessOutput());
-                            outputDataStaging(taskContext, processContext.isRecovery());
+                        DataStageType type = subTaskModel.getType();
+                        switch (type) {
+                            case INPUT:
+                                status = new ProcessStatus(ProcessState.INPUT_DATA_STAGING);
+                                status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                                processContext.setProcessStatus(status);
+                                GFacUtils.saveAndPublishProcessStatus(processContext);
+                                taskContext.setProcessInput(subTaskModel.getProcessInput());
+                                inputDataStaging(taskContext, processContext.isRecovery());
+                                break;
+                            case OUPUT:
+                                status = new ProcessStatus(ProcessState.OUTPUT_DATA_STAGING);
+                                status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                                processContext.setProcessStatus(status);
+                                GFacUtils.saveAndPublishProcessStatus(processContext);
+                                taskContext.setProcessOutput(subTaskModel.getProcessOutput());
+                                outputDataStaging(taskContext, processContext.isRecovery());
+                                break;
+                            case ARCHIVE_OUTPUT:
+                                // TODO - implement output archive logic
+
                         }
                         // checkpoint
                         if (processContext.isInterrupted()) {
