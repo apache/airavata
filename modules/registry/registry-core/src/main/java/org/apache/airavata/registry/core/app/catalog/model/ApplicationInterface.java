@@ -42,7 +42,8 @@ public class ApplicationInterface implements Serializable {
     private Timestamp creationTime;
     @Column(name = "GATEWAY_ID")
     private String gatewayId;
-
+    @Column(name = "ARCHIVE_WORKING_DIRECTORY")
+    private boolean archiveWorkingDirectory;
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
@@ -52,6 +53,14 @@ public class ApplicationInterface implements Serializable {
 
     public void setGatewayId(String gatewayId) {
         this.gatewayId = gatewayId;
+    }
+
+    public boolean isArchiveWorkingDirectory() {
+        return archiveWorkingDirectory;
+    }
+
+    public void setArchiveWorkingDirectory(boolean archiveWorkingDirectory) {
+        this.archiveWorkingDirectory = archiveWorkingDirectory;
     }
 
     public Timestamp getCreationTime() {
