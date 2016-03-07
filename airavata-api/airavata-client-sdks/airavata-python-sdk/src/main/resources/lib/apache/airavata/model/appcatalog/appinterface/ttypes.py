@@ -41,6 +41,7 @@ class ApplicationInterfaceDescription:
    - applicationModules
    - applicationInputs
    - applicationOutputs
+   - archiveWorkingDirectory
   """
 
   thrift_spec = (
@@ -51,15 +52,17 @@ class ApplicationInterfaceDescription:
     (4, TType.LIST, 'applicationModules', (TType.STRING,None), None, ), # 4
     (5, TType.LIST, 'applicationInputs', (TType.STRUCT,(apache.airavata.model.application.io.ttypes.InputDataObjectType, apache.airavata.model.application.io.ttypes.InputDataObjectType.thrift_spec)), None, ), # 5
     (6, TType.LIST, 'applicationOutputs', (TType.STRUCT,(apache.airavata.model.application.io.ttypes.OutputDataObjectType, apache.airavata.model.application.io.ttypes.OutputDataObjectType.thrift_spec)), None, ), # 6
+    (7, TType.BOOL, 'archiveWorkingDirectory', None, False, ), # 7
   )
 
-  def __init__(self, applicationInterfaceId=thrift_spec[1][4], applicationName=None, applicationDescription=None, applicationModules=None, applicationInputs=None, applicationOutputs=None,):
+  def __init__(self, applicationInterfaceId=thrift_spec[1][4], applicationName=None, applicationDescription=None, applicationModules=None, applicationInputs=None, applicationOutputs=None, archiveWorkingDirectory=thrift_spec[7][4],):
     self.applicationInterfaceId = applicationInterfaceId
     self.applicationName = applicationName
     self.applicationDescription = applicationDescription
     self.applicationModules = applicationModules
     self.applicationInputs = applicationInputs
     self.applicationOutputs = applicationOutputs
+    self.archiveWorkingDirectory = archiveWorkingDirectory
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -117,6 +120,11 @@ class ApplicationInterfaceDescription:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
+      elif fid == 7:
+        if ftype == TType.BOOL:
+          self.archiveWorkingDirectory = iprot.readBool()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -160,6 +168,10 @@ class ApplicationInterfaceDescription:
         iter20.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
+    if self.archiveWorkingDirectory is not None:
+      oprot.writeFieldBegin('archiveWorkingDirectory', TType.BOOL, 7)
+      oprot.writeBool(self.archiveWorkingDirectory)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -179,6 +191,7 @@ class ApplicationInterfaceDescription:
     value = (value * 31) ^ hash(self.applicationModules)
     value = (value * 31) ^ hash(self.applicationInputs)
     value = (value * 31) ^ hash(self.applicationOutputs)
+    value = (value * 31) ^ hash(self.archiveWorkingDirectory)
     return value
 
   def __repr__(self):
