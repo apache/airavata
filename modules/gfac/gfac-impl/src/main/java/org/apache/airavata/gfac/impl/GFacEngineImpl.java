@@ -296,10 +296,15 @@ public class GFacEngineImpl implements GFacEngine {
                                 processContext.setProcessStatus(status);
                                 GFacUtils.saveAndPublishProcessStatus(processContext);
                                 taskContext.setProcessOutput(subTaskModel.getProcessOutput());
-                                outputDataStaging(taskContext, processContext.isRecovery());
+                                outputDataStaging(taskContext, processContext.isRecovery(), false);
                                 break;
                             case ARCHIVE_OUTPUT:
-                                // TODO - implement output archive logic
+                                status = new ProcessStatus(ProcessState.OUTPUT_DATA_STAGING);
+                                status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                                processContext.setProcessStatus(status);
+                                GFacUtils.saveAndPublishProcessStatus(processContext);
+                                outputDataStaging(taskContext, processContext.isRecovery(), true);
+                                break;
 
                         }
                         // checkpoint
@@ -668,14 +673,19 @@ public class GFacEngineImpl implements GFacEngine {
      * @return <code>true</code> if process execution interrupted , <code>false</code> otherwise.
      * @throws GFacException
      */
-    private boolean outputDataStaging(TaskContext taskContext, boolean recovery) throws GFacException {
+    private boolean outputDataStaging(TaskContext taskContext, boolean recovery, boolean isArchive) throws GFacException {
         TaskStatus taskStatus = new TaskStatus(TaskState.EXECUTING);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         taskContext.setTaskStatus(taskStatus);
         GFacUtils.saveAndPublishTaskStatus(taskContext);
 
         ProcessContext processContext = taskContext.getParentProcessContext();
-        Task dMoveTask = Factory.getDataMovementTask(processContext.getDataMovementProtocol());
+        Task dMoveTask = null;
+        if (isArchive) {
+            dMoveTask = Factory.getArchiveTask();
+        } else {
+            dMoveTask = Factory.getDataMovementTask(processContext.getDataMovementProtocol());
+        }
         taskStatus = executeTask(taskContext, dMoveTask, recovery);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         taskContext.setTaskStatus(taskStatus);
@@ -698,6 +708,7 @@ public class GFacEngineImpl implements GFacEngine {
         }
         return false;
     }
+
 
     @Override
     public void cancelProcess(ProcessContext processContext) throws GFacException {
