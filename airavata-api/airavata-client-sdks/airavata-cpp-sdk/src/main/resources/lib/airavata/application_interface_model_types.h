@@ -41,11 +41,12 @@ namespace apache { namespace airavata { namespace model { namespace appcatalog {
 class ApplicationInterfaceDescription;
 
 typedef struct _ApplicationInterfaceDescription__isset {
-  _ApplicationInterfaceDescription__isset() : applicationDescription(false), applicationModules(false), applicationInputs(false), applicationOutputs(false) {}
+  _ApplicationInterfaceDescription__isset() : applicationDescription(false), applicationModules(false), applicationInputs(false), applicationOutputs(false), archiveWorkingDirectory(true) {}
   bool applicationDescription :1;
   bool applicationModules :1;
   bool applicationInputs :1;
   bool applicationOutputs :1;
+  bool archiveWorkingDirectory :1;
 } _ApplicationInterfaceDescription__isset;
 
 class ApplicationInterfaceDescription {
@@ -53,7 +54,7 @@ class ApplicationInterfaceDescription {
 
   ApplicationInterfaceDescription(const ApplicationInterfaceDescription&);
   ApplicationInterfaceDescription& operator=(const ApplicationInterfaceDescription&);
-  ApplicationInterfaceDescription() : applicationInterfaceId("DO_NOT_SET_AT_CLIENTS"), applicationName(), applicationDescription() {
+  ApplicationInterfaceDescription() : applicationInterfaceId("DO_NOT_SET_AT_CLIENTS"), applicationName(), applicationDescription(), archiveWorkingDirectory(false) {
   }
 
   virtual ~ApplicationInterfaceDescription() throw();
@@ -63,6 +64,7 @@ class ApplicationInterfaceDescription {
   std::vector<std::string>  applicationModules;
   std::vector< ::apache::airavata::model::application::io::InputDataObjectType>  applicationInputs;
   std::vector< ::apache::airavata::model::application::io::OutputDataObjectType>  applicationOutputs;
+  bool archiveWorkingDirectory;
 
   _ApplicationInterfaceDescription__isset __isset;
 
@@ -77,6 +79,8 @@ class ApplicationInterfaceDescription {
   void __set_applicationInputs(const std::vector< ::apache::airavata::model::application::io::InputDataObjectType> & val);
 
   void __set_applicationOutputs(const std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & val);
+
+  void __set_archiveWorkingDirectory(const bool val);
 
   bool operator == (const ApplicationInterfaceDescription & rhs) const
   {
@@ -99,6 +103,10 @@ class ApplicationInterfaceDescription {
     if (__isset.applicationOutputs != rhs.__isset.applicationOutputs)
       return false;
     else if (__isset.applicationOutputs && !(applicationOutputs == rhs.applicationOutputs))
+      return false;
+    if (__isset.archiveWorkingDirectory != rhs.__isset.archiveWorkingDirectory)
+      return false;
+    else if (__isset.archiveWorkingDirectory && !(archiveWorkingDirectory == rhs.archiveWorkingDirectory))
       return false;
     return true;
   }

@@ -74,6 +74,7 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
   private static final org.apache.thrift.protocol.TField APPLICATION_MODULES_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationModules", org.apache.thrift.protocol.TType.LIST, (short)4);
   private static final org.apache.thrift.protocol.TField APPLICATION_INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInputs", org.apache.thrift.protocol.TType.LIST, (short)5);
   private static final org.apache.thrift.protocol.TField APPLICATION_OUTPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationOutputs", org.apache.thrift.protocol.TType.LIST, (short)6);
+  private static final org.apache.thrift.protocol.TField ARCHIVE_WORKING_DIRECTORY_FIELD_DESC = new org.apache.thrift.protocol.TField("archiveWorkingDirectory", org.apache.thrift.protocol.TType.BOOL, (short)7);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -87,6 +88,7 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
   private List<String> applicationModules; // optional
   private List<org.apache.airavata.model.application.io.InputDataObjectType> applicationInputs; // optional
   private List<org.apache.airavata.model.application.io.OutputDataObjectType> applicationOutputs; // optional
+  private boolean archiveWorkingDirectory; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -95,7 +97,8 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
     APPLICATION_DESCRIPTION((short)3, "applicationDescription"),
     APPLICATION_MODULES((short)4, "applicationModules"),
     APPLICATION_INPUTS((short)5, "applicationInputs"),
-    APPLICATION_OUTPUTS((short)6, "applicationOutputs");
+    APPLICATION_OUTPUTS((short)6, "applicationOutputs"),
+    ARCHIVE_WORKING_DIRECTORY((short)7, "archiveWorkingDirectory");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -122,6 +125,8 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
           return APPLICATION_INPUTS;
         case 6: // APPLICATION_OUTPUTS
           return APPLICATION_OUTPUTS;
+        case 7: // ARCHIVE_WORKING_DIRECTORY
+          return ARCHIVE_WORKING_DIRECTORY;
         default:
           return null;
       }
@@ -162,7 +167,9 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
   }
 
   // isset id assignments
-  private static final _Fields optionals[] = {_Fields.APPLICATION_DESCRIPTION,_Fields.APPLICATION_MODULES,_Fields.APPLICATION_INPUTS,_Fields.APPLICATION_OUTPUTS};
+  private static final int __ARCHIVEWORKINGDIRECTORY_ISSET_ID = 0;
+  private byte __isset_bitfield = 0;
+  private static final _Fields optionals[] = {_Fields.APPLICATION_DESCRIPTION,_Fields.APPLICATION_MODULES,_Fields.APPLICATION_INPUTS,_Fields.APPLICATION_OUTPUTS,_Fields.ARCHIVE_WORKING_DIRECTORY};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -181,12 +188,16 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
     tmpMap.put(_Fields.APPLICATION_OUTPUTS, new org.apache.thrift.meta_data.FieldMetaData("applicationOutputs", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.application.io.OutputDataObjectType.class))));
+    tmpMap.put(_Fields.ARCHIVE_WORKING_DIRECTORY, new org.apache.thrift.meta_data.FieldMetaData("archiveWorkingDirectory", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ApplicationInterfaceDescription.class, metaDataMap);
   }
 
   public ApplicationInterfaceDescription() {
     this.applicationInterfaceId = "DO_NOT_SET_AT_CLIENTS";
+
+    this.archiveWorkingDirectory = false;
 
   }
 
@@ -203,6 +214,7 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
    * Performs a deep copy on <i>other</i>.
    */
   public ApplicationInterfaceDescription(ApplicationInterfaceDescription other) {
+    __isset_bitfield = other.__isset_bitfield;
     if (other.isSetApplicationInterfaceId()) {
       this.applicationInterfaceId = other.applicationInterfaceId;
     }
@@ -230,6 +242,7 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
       }
       this.applicationOutputs = __this__applicationOutputs;
     }
+    this.archiveWorkingDirectory = other.archiveWorkingDirectory;
   }
 
   public ApplicationInterfaceDescription deepCopy() {
@@ -245,6 +258,8 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
     this.applicationModules = null;
     this.applicationInputs = null;
     this.applicationOutputs = null;
+    this.archiveWorkingDirectory = false;
+
   }
 
   public String getApplicationInterfaceId() {
@@ -430,6 +445,28 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
     }
   }
 
+  public boolean isArchiveWorkingDirectory() {
+    return this.archiveWorkingDirectory;
+  }
+
+  public void setArchiveWorkingDirectory(boolean archiveWorkingDirectory) {
+    this.archiveWorkingDirectory = archiveWorkingDirectory;
+    setArchiveWorkingDirectoryIsSet(true);
+  }
+
+  public void unsetArchiveWorkingDirectory() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ARCHIVEWORKINGDIRECTORY_ISSET_ID);
+  }
+
+  /** Returns true if field archiveWorkingDirectory is set (has been assigned a value) and false otherwise */
+  public boolean isSetArchiveWorkingDirectory() {
+    return EncodingUtils.testBit(__isset_bitfield, __ARCHIVEWORKINGDIRECTORY_ISSET_ID);
+  }
+
+  public void setArchiveWorkingDirectoryIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ARCHIVEWORKINGDIRECTORY_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case APPLICATION_INTERFACE_ID:
@@ -480,6 +517,14 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
       }
       break;
 
+    case ARCHIVE_WORKING_DIRECTORY:
+      if (value == null) {
+        unsetArchiveWorkingDirectory();
+      } else {
+        setArchiveWorkingDirectory((Boolean)value);
+      }
+      break;
+
     }
   }
 
@@ -502,6 +547,9 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
 
     case APPLICATION_OUTPUTS:
       return getApplicationOutputs();
+
+    case ARCHIVE_WORKING_DIRECTORY:
+      return isArchiveWorkingDirectory();
 
     }
     throw new IllegalStateException();
@@ -526,6 +574,8 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
       return isSetApplicationInputs();
     case APPLICATION_OUTPUTS:
       return isSetApplicationOutputs();
+    case ARCHIVE_WORKING_DIRECTORY:
+      return isSetArchiveWorkingDirectory();
     }
     throw new IllegalStateException();
   }
@@ -597,6 +647,15 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
         return false;
     }
 
+    boolean this_present_archiveWorkingDirectory = true && this.isSetArchiveWorkingDirectory();
+    boolean that_present_archiveWorkingDirectory = true && that.isSetArchiveWorkingDirectory();
+    if (this_present_archiveWorkingDirectory || that_present_archiveWorkingDirectory) {
+      if (!(this_present_archiveWorkingDirectory && that_present_archiveWorkingDirectory))
+        return false;
+      if (this.archiveWorkingDirectory != that.archiveWorkingDirectory)
+        return false;
+    }
+
     return true;
   }
 
@@ -633,6 +692,11 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
     list.add(present_applicationOutputs);
     if (present_applicationOutputs)
       list.add(applicationOutputs);
+
+    boolean present_archiveWorkingDirectory = true && (isSetArchiveWorkingDirectory());
+    list.add(present_archiveWorkingDirectory);
+    if (present_archiveWorkingDirectory)
+      list.add(archiveWorkingDirectory);
 
     return list.hashCode();
   }
@@ -701,6 +765,16 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
     }
     if (isSetApplicationOutputs()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.applicationOutputs, other.applicationOutputs);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetArchiveWorkingDirectory()).compareTo(other.isSetArchiveWorkingDirectory());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetArchiveWorkingDirectory()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.archiveWorkingDirectory, other.archiveWorkingDirectory);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -780,6 +854,12 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
       }
       first = false;
     }
+    if (isSetArchiveWorkingDirectory()) {
+      if (!first) sb.append(", ");
+      sb.append("archiveWorkingDirectory:");
+      sb.append(this.archiveWorkingDirectory);
+      first = false;
+    }
     sb.append(")");
     return sb.toString();
   }
@@ -807,6 +887,8 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
     try {
+      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (org.apache.thrift.TException te) {
       throw new java.io.IOException(te);
@@ -911,6 +993,14 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 7: // ARCHIVE_WORKING_DIRECTORY
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.archiveWorkingDirectory = iprot.readBool();
+              struct.setArchiveWorkingDirectoryIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -983,6 +1073,11 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
           oprot.writeFieldEnd();
         }
       }
+      if (struct.isSetArchiveWorkingDirectory()) {
+        oprot.writeFieldBegin(ARCHIVE_WORKING_DIRECTORY_FIELD_DESC);
+        oprot.writeBool(struct.archiveWorkingDirectory);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1015,7 +1110,10 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
       if (struct.isSetApplicationOutputs()) {
         optionals.set(3);
       }
-      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetArchiveWorkingDirectory()) {
+        optionals.set(4);
+      }
+      oprot.writeBitSet(optionals, 5);
       if (struct.isSetApplicationDescription()) {
         oprot.writeString(struct.applicationDescription);
       }
@@ -1046,6 +1144,9 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
           }
         }
       }
+      if (struct.isSetArchiveWorkingDirectory()) {
+        oprot.writeBool(struct.archiveWorkingDirectory);
+      }
     }
 
     @Override
@@ -1055,7 +1156,7 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
       struct.setApplicationInterfaceIdIsSet(true);
       struct.applicationName = iprot.readString();
       struct.setApplicationNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(4);
+      BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
         struct.applicationDescription = iprot.readString();
         struct.setApplicationDescriptionIsSet(true);
@@ -1100,6 +1201,10 @@ public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<
           }
         }
         struct.setApplicationOutputsIsSet(true);
+      }
+      if (incoming.get(4)) {
+        struct.archiveWorkingDirectory = iprot.readBool();
+        struct.setArchiveWorkingDirectoryIsSet(true);
       }
     }
   }

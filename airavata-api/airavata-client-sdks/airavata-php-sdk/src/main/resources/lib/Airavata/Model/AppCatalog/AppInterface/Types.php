@@ -57,6 +57,10 @@ class ApplicationInterfaceDescription {
    * @var \Airavata\Model\Application\Io\OutputDataObjectType[]
    */
   public $applicationOutputs = null;
+  /**
+   * @var bool
+   */
+  public $archiveWorkingDirectory = false;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -99,6 +103,10 @@ class ApplicationInterfaceDescription {
             'class' => '\Airavata\Model\Application\Io\OutputDataObjectType',
             ),
           ),
+        7 => array(
+          'var' => 'archiveWorkingDirectory',
+          'type' => TType::BOOL,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -119,6 +127,9 @@ class ApplicationInterfaceDescription {
       }
       if (isset($vals['applicationOutputs'])) {
         $this->applicationOutputs = $vals['applicationOutputs'];
+      }
+      if (isset($vals['archiveWorkingDirectory'])) {
+        $this->archiveWorkingDirectory = $vals['archiveWorkingDirectory'];
       }
     }
   }
@@ -216,6 +227,13 @@ class ApplicationInterfaceDescription {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 7:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->archiveWorkingDirectory);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -293,6 +311,11 @@ class ApplicationInterfaceDescription {
         }
         $output->writeListEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->archiveWorkingDirectory !== null) {
+      $xfer += $output->writeFieldBegin('archiveWorkingDirectory', TType::BOOL, 7);
+      $xfer += $output->writeBool($this->archiveWorkingDirectory);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

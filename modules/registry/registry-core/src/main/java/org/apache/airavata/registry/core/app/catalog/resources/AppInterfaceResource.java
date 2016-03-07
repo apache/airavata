@@ -45,6 +45,7 @@ public class AppInterfaceResource extends AppCatAbstractResource {
     private Timestamp createdTime;
     private Timestamp updatedTime;
     private String gatewayId;
+    private boolean archiveWorkingDirectory;
 
     public String getGatewayId() {
         return gatewayId;
@@ -52,6 +53,14 @@ public class AppInterfaceResource extends AppCatAbstractResource {
 
     public void setGatewayId(String gatewayId) {
         this.gatewayId = gatewayId;
+    }
+
+    public boolean isArchiveWorkingDirectory() {
+        return archiveWorkingDirectory;
+    }
+
+    public void setArchiveWorkingDirectory(boolean archiveWorkingDirectory) {
+        this.archiveWorkingDirectory = archiveWorkingDirectory;
     }
 
     public Timestamp getCreatedTime() {
@@ -360,6 +369,7 @@ public class AppInterfaceResource extends AppCatAbstractResource {
                 existigAppInterface.setAppDescription(appDescription);
                 existigAppInterface.setUpdateTime(AiravataUtils.getCurrentTimestamp());
                 existigAppInterface.setGatewayId(gatewayId);
+                existigAppInterface.setArchiveWorkingDirectory(archiveWorkingDirectory);
                 em.merge(existigAppInterface);
             }else {
                 ApplicationInterface applicationInterface = new ApplicationInterface();
@@ -368,6 +378,7 @@ public class AppInterfaceResource extends AppCatAbstractResource {
                 applicationInterface.setAppDescription(appDescription);
                 applicationInterface.setCreationTime(AiravataUtils.getCurrentTimestamp());
                 applicationInterface.setGatewayId(gatewayId);
+                applicationInterface.setArchiveWorkingDirectory(archiveWorkingDirectory);
                 em.persist(applicationInterface);
             }
             em.getTransaction().commit();

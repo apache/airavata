@@ -76,6 +76,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             }
             resource.setAppDescription(applicationInterfaceDescription.getApplicationDescription());
             resource.setGatewayId(gatewayId);
+            resource.setArchiveWorkingDirectory(applicationInterfaceDescription.isArchiveWorkingDirectory());
             resource.save();
             applicationInterfaceDescription.setApplicationInterfaceId(resource.getInterfaceId());
 
@@ -177,6 +178,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             AppInterfaceResource existingInterface = (AppInterfaceResource) resource.get(interfaceId);
             existingInterface.setAppName(updatedInterface.getApplicationName());
             existingInterface.setAppDescription(updatedInterface.getApplicationDescription());
+            existingInterface.setArchiveWorkingDirectory(updatedInterface.isArchiveWorkingDirectory());
             existingInterface.save();
 
             // remove existing modules before adding
