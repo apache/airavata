@@ -53,6 +53,7 @@ import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
 import org.apache.airavata.gfac.core.watcher.RedeliveryRequestWatcher;
 import org.apache.airavata.gfac.impl.job.*;
+import org.apache.airavata.gfac.impl.task.ArchiveTask;
 import org.apache.airavata.gfac.impl.watcher.CancelRequestWatcherImpl;
 import org.apache.airavata.gfac.impl.watcher.RedeliveryRequestWatcherImpl;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
@@ -447,6 +448,10 @@ public abstract class Factory {
 		}
 		return sessionMap.get(key);
 
+	}
+
+	public static Task getArchiveTask() {
+		return new ArchiveTask();
 	}
 
 	private static class DefaultUserInfo implements UserInfo {
