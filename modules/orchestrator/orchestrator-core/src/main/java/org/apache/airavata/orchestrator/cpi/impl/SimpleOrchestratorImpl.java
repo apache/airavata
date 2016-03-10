@@ -413,7 +413,25 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 }
             }
         }
+
+        if (processModel.isArchive()) {
+            createArchiveDataStatgingTask(processModel, gatewayId, dataStagingTaskIds);
+        }
         return dataStagingTaskIds;
+    }
+
+    private void createArchiveDataStatgingTask(ProcessModel processModel, String gatewayId, List<String> dataStagingTaskIds) throws RegistryException {
+        TaskModel archiveTask = null;
+        try {
+            archiveTask = getOutputDataStagingTask(processModel, null, gatewayId);
+        } catch (TException e) {
+            throw new RegistryException("Error! DataStaging sub task serialization failed");
+        }
+        String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, archiveTask,
+                processModel.getProcessId());
+        archiveTask.setTaskId(taskId);
+        dataStagingTaskIds.add(archiveTask.getTaskId());
+
     }
 
     private void createOutputDataSatagingTasks(ProcessModel processModel, String gatewayId, List<String> dataStagingTaskIds, OutputDataObjectType processOutput) throws RegistryException {
@@ -545,16 +563,26 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             String remoteOutputDir = computeResourcePreference.getScratchLocation() + File.separator + processModel.getProcessId();
             remoteOutputDir = remoteOutputDir.endsWith("/") ? remoteOutputDir : remoteOutputDir + "/";
             DataStagingTaskModel submodel = new DataStagingTaskModel();
-            submodel.setType(DataStageType.OUPUT);
-            submodel.setProcessOutput(processOutput);
+            DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(orchestratorContext, processModel, gatewayId);
             URI source = null;
             try {
-                DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(orchestratorContext, processModel, gatewayId);
-                source = new URI(dataMovementProtocol.name(),
-                        computeResourcePreference.getLoginUserName(),
-                        computeResource.getHostName(),
-                        OrchestratorUtils.getDataMovementPort(orchestratorContext, processModel, gatewayId),
-                        remoteOutputDir + processOutput.getValue(), null, null);
+                if (processOutput != null) {
+                    submodel.setType(DataStageType.OUPUT);
+                    submodel.setProcessOutput(processOutput);
+                    source = new URI(dataMovementProtocol.name(),
+                            computeResourcePreference.getLoginUserName(),
+                            computeResource.getHostName(),
+                            OrchestratorUtils.getDataMovementPort(orchestratorContext, processModel, gatewayId),
+                            remoteOutputDir + processOutput.getValue(), null, null);
+                } else {
+                    // archive
+                    submodel.setType(DataStageType.ARCHIVE_OUTPUT);
+                    source = new URI(dataMovementProtocol.name(),
+                            computeResourcePreference.getLoginUserName(),
+                            computeResource.getHostName(),
+                            OrchestratorUtils.getDataMovementPort(orchestratorContext, processModel, gatewayId),
+                            remoteOutputDir, null, null);
+                }
             } catch (URISyntaxException e) {
                 throw new TaskException("Error while constructing source file URI");
             }
@@ -569,24 +597,6 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         } catch (AppCatalogException | TaskException e) {
            throw new RegistryException("Error occurred while retrieving data movement from app catalog", e);
         }
-    }
-
-
-    private TaskModel getArchiveOutTask(ProcessModel processModel, OutputDataObjectType processOutput, String gatewayId) throws RegistryException, TException {
-
-        // create new task model for this task
-        TaskModel taskModel = new TaskModel();
-        taskModel.setParentProcessId(processModel.getProcessId());
-        taskModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
-        taskModel.setLastUpdateTime(taskModel.getCreationTime());
-        TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
-        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        taskModel.setTaskStatus(taskStatus);
-        taskModel.setTaskType(TaskTypes.DATA_STAGING);
-        DataStagingTaskModel submodel = new DataStagingTaskModel();
-        submodel.setType(DataStageType.ARCHIVE_OUTPUT);
-        taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
-        return taskModel;
     }
 
 
