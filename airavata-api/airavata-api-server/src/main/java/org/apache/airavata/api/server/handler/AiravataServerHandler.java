@@ -112,6 +112,27 @@ public class AiravataServerHandler implements Airavata.Iface {
         return airavata_apiConstants.AIRAVATA_API_VERSION;
     }
 
+    /**
+     * Verify if User Exists within Airavata.
+     *
+     * @param authzToken
+     * @param gatewayId
+     * @param userName
+     * @return true/false
+     */
+    @Override
+    public boolean isUserExists(AuthzToken authzToken, String gatewayId, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return ExpCatResourceUtils.isUserExist(userName, gatewayId);
+        } catch (RegistryException e) {
+            logger.error("Error while verifying user", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while verifying user. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     @Override
     @SecurityCheck
     public String addGateway(AuthzToken authzToken, Gateway gateway) throws InvalidRequestException,
