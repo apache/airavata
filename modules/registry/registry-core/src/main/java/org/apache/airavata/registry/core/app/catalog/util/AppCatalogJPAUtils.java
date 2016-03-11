@@ -792,6 +792,7 @@ public class AppCatalogJPAUtils {
             resource.setAppDescription(o.getAppDescription());
             resource.setCreatedTime(o.getCreationTime());
             resource.setGatewayId(o.getGatewayId());
+            resource.setArchiveWorkingDirectory(o.isArchiveWorkingDirectory());
             if (o.getUpdateTime() != null) {
                 resource.setUpdatedTime(o.getUpdateTime());
             }
