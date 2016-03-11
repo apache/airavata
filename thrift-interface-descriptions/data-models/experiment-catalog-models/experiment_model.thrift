@@ -96,9 +96,8 @@ struct ExperimentModel {
     16: optional list<application_io_models.OutputDataObjectType> experimentOutputs,
     17: optional status_models.ExperimentStatus experimentStatus,
     18: optional list<airavata_commons.ErrorModel> errors,
-    19: optional list<process_model.ProcessModel> processes,
-    20: optional bool archive
-}
+    19: optional list<process_model.ProcessModel> processes
+    }
 
 struct ExperimentSummaryModel {
     1: required string experimentId,

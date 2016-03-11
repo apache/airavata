@@ -23,6 +23,7 @@ package org.apache.airavata.orchestrator.cpi.impl;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.gfac.core.task.TaskException;
+import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.application.io.DataType;
@@ -45,6 +46,7 @@ import org.apache.airavata.orchestrator.core.impl.GFACPassiveJobSubmitter;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
@@ -414,10 +416,20 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             }
         }
 
-        if (processModel.isArchive()) {
-            createArchiveDataStatgingTask(processModel, gatewayId, dataStagingTaskIds);
+        try {
+            if (isArchive(processModel, gatewayId)) {
+                createArchiveDataStatgingTask(processModel, gatewayId, dataStagingTaskIds);
+            }
+        } catch (AppCatalogException e) {
+            throw new RegistryException("Error! Application interface retrieval failed");
         }
         return dataStagingTaskIds;
+    }
+
+    private boolean isArchive(ProcessModel processModel, String gatewayId) throws AppCatalogException {
+        AppCatalog appCatalog = RegistryFactory.getAppCatalog();
+        ApplicationInterfaceDescription appInterface = appCatalog.getApplicationInterface().getApplicationInterface(processModel.getApplicationInterfaceId());
+        return appInterface.isArchiveWorkingDirectory();
     }
 
     private void createArchiveDataStatgingTask(ProcessModel processModel, String gatewayId, List<String> dataStagingTaskIds) throws RegistryException {

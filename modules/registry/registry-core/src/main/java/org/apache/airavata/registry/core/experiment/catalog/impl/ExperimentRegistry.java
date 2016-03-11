@@ -91,7 +91,6 @@ public class ExperimentRegistry {
             experimentResource.setExecutionId(experiment.getExecutionId());
             experimentResource.setGatewayExecutionId(experiment.getGatewayExecutionId());
             experimentResource.setGatewayInstanceId(experiment.getGatewayInstanceId());
-            experimentResource.setArchive(experiment.isArchive());
             if(experiment.isEnableEmailNotification()){
                 experimentResource.setEnableEmailNotification(true);
                 if(experiment.getEmailAddresses() != null){
@@ -281,7 +280,6 @@ public class ExperimentRegistry {
             processResource.setUserDn(process.getUserDn());
             processResource.setGenerateCert(process.isGenerateCert());
             processResource.setExperimentDataDir(process.getExperimentDataDir());
-            processResource.setArchive(process.isArchive());
             if(process.isEnableEmailNotification()){
                 processResource.setEnableEmailNotification(true);
                 if(process.getEmailAddresses() != null){
@@ -589,7 +587,6 @@ public class ExperimentRegistry {
             existingExperiment.setDescription(experiment.getDescription());
             existingExperiment.setExecutionId(experiment.getExecutionId());
             existingExperiment.setEnableEmailNotification(experiment.isEnableEmailNotification());
-            existingExperiment.setArchive(experiment.isArchive());
 
             existingExperiment.save();
 
@@ -737,7 +734,6 @@ public class ExperimentRegistry {
             processResource.setUserDn(process.getUserDn());
             processResource.setGenerateCert(process.isGenerateCert());
             processResource.setExperimentDataDir(process.getExperimentDataDir());
-            processResource.setArchive(process.isArchive());
             if(process.isEnableEmailNotification()){
                 processResource.setEnableEmailNotification(true);
                 if(process.getEmailAddresses() != null){

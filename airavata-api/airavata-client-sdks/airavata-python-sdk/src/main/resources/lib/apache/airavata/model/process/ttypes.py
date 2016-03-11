@@ -56,7 +56,6 @@ class ProcessModel:
    - userDn
    - generateCert
    - experimentDataDir
-   - archive
   """
 
   thrift_spec = (
@@ -83,10 +82,9 @@ class ProcessModel:
     (20, TType.STRING, 'userDn', None, None, ), # 20
     (21, TType.BOOL, 'generateCert', None, False, ), # 21
     (22, TType.STRING, 'experimentDataDir', None, None, ), # 22
-    (23, TType.BOOL, 'archive', None, None, ), # 23
   )
 
-  def __init__(self, processId=thrift_spec[1][4], experimentId=None, creationTime=None, lastUpdateTime=None, processStatus=None, processDetail=None, applicationInterfaceId=None, applicationDeploymentId=None, computeResourceId=None, processInputs=None, processOutputs=None, resourceSchedule=None, tasks=None, taskDag=None, processError=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None, storageResourceId=None, userDn=None, generateCert=thrift_spec[21][4], experimentDataDir=None, archive=None,):
+  def __init__(self, processId=thrift_spec[1][4], experimentId=None, creationTime=None, lastUpdateTime=None, processStatus=None, processDetail=None, applicationInterfaceId=None, applicationDeploymentId=None, computeResourceId=None, processInputs=None, processOutputs=None, resourceSchedule=None, tasks=None, taskDag=None, processError=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None, storageResourceId=None, userDn=None, generateCert=thrift_spec[21][4], experimentDataDir=None,):
     self.processId = processId
     self.experimentId = experimentId
     self.creationTime = creationTime
@@ -109,7 +107,6 @@ class ProcessModel:
     self.userDn = userDn
     self.generateCert = generateCert
     self.experimentDataDir = experimentDataDir
-    self.archive = archive
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -256,11 +253,6 @@ class ProcessModel:
           self.experimentDataDir = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 23:
-        if ftype == TType.BOOL:
-          self.archive = iprot.readBool()
-        else:
-          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -371,10 +363,6 @@ class ProcessModel:
       oprot.writeFieldBegin('experimentDataDir', TType.STRING, 22)
       oprot.writeString(self.experimentDataDir)
       oprot.writeFieldEnd()
-    if self.archive is not None:
-      oprot.writeFieldBegin('archive', TType.BOOL, 23)
-      oprot.writeBool(self.archive)
-      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -410,7 +398,6 @@ class ProcessModel:
     value = (value * 31) ^ hash(self.userDn)
     value = (value * 31) ^ hash(self.generateCert)
     value = (value * 31) ^ hash(self.experimentDataDir)
-    value = (value * 31) ^ hash(self.archive)
     return value
 
   def __repr__(self):

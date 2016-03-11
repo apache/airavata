@@ -53,7 +53,6 @@ public class ExperimentResource extends AbstractExpCatResource {
     private String gatewayInstanceId;
     private boolean enableEmailNotification;
     private String emailAddresses;
-    private boolean archive;
 
     public String getExperimentId() {
         return experimentId;
@@ -157,14 +156,6 @@ public class ExperimentResource extends AbstractExpCatResource {
 
     public void setEmailAddresses(String emailAddresses) {
         this.emailAddresses = emailAddresses;
-    }
-
-    public boolean isArchive() {
-        return archive;
-    }
-
-    public void setArchive(boolean archive) {
-        this.archive = archive;
     }
 
     public ExperimentCatResource create(ResourceType type) throws RegistryException{
@@ -528,7 +519,6 @@ public class ExperimentResource extends AbstractExpCatResource {
             experiment.setGatewayExecutionId(gatewayExecutionId);
             experiment.setEnableEmailNotification(enableEmailNotification);
             experiment.setEmailAddresses(emailAddresses);
-            experiment.setArchive(archive);
             if (existingExp == null){
                 em.persist(experiment);
             }else {

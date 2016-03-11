@@ -56,7 +56,6 @@ public class ProcessResource extends AbstractExpCatResource {
     private String userDn;
     private boolean generateCert;
     private String experimentDataDir;
-    private boolean archive;
 
     public String getProcessId() {
         return processId;
@@ -184,14 +183,6 @@ public class ProcessResource extends AbstractExpCatResource {
 
     public void setExperimentDataDir(String experimentDataDir) {
         this.experimentDataDir = experimentDataDir;
-    }
-
-    public boolean isArchive() {
-        return archive;
-    }
-
-    public void setArchive(boolean archive) {
-        this.archive = archive;
     }
 
     public ExperimentCatResource create(ResourceType type) throws RegistryException{
@@ -599,7 +590,6 @@ public class ProcessResource extends AbstractExpCatResource {
             process.setUserDn(userDn);
             process.setGenerateCert(generateCert);
             process.setExperimentDataDir(experimentDataDir);
-            process.setArchive(archive);
             if (existingProcess == null){
                 em.persist(process);
             }else {
