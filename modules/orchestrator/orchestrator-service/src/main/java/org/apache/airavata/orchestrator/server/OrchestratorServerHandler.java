@@ -135,36 +135,35 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	public boolean launchExperiment(String experimentId, String gatewayId) throws TException {
         ExperimentModel experiment = null;
         try {
-
             String experimentNodePath = GFacUtils.getExperimentNodePath (experimentId);
 			ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentNodePath);
 			String experimentCancelNode = ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
 			ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
-
             experiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
             if (experiment == null) {
                 log.error(experimentId, "Error retrieving the Experiment by the given experimentID: {} ", experimentId);
                 return false;
             }
 
-			ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().
+            ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().
 					getComputeResourcePreference(gatewayId,
 							experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
-			String token = computeResourcePreference.getResourceSpecificCredentialStoreToken();
-			if (token == null || token.isEmpty()){
-				// try with gateway profile level token
-				GatewayResourceProfile gatewayProfile = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
-				token = gatewayProfile.getCredentialStoreToken();
-			}
-			// still the token is empty, then we fail the experiment
-			if (token == null || token.isEmpty()){
-				log.error("You have not configured credential store token at gateway profile or compute resource preference. Please provide the correct token at gateway profile or compute resource preference.");
-				return false;
-			}
-			ExperimentType executionType = experiment.getExperimentType();
-			if (executionType == ExperimentType.SINGLE_APPLICATION) {
-				//its an single application execution experiment
-				List<ProcessModel> processes = orchestrator.createProcesses(experimentId, gatewayId);
+            String token = computeResourcePreference.getResourceSpecificCredentialStoreToken();
+            if (token == null || token.isEmpty()){
+                // try with gateway profile level token
+                GatewayResourceProfile gatewayProfile = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
+                token = gatewayProfile.getCredentialStoreToken();
+            }
+            // still the token is empty, then we fail the experiment
+            if (token == null || token.isEmpty()){
+                log.error("You have not configured credential store token at gateway profile or compute resource preference. Please provide the correct token at gateway profile or compute resource preference.");
+                return false;
+            }
+            ExperimentType executionType = experiment.getExperimentType();
+            if (executionType == ExperimentType.SINGLE_APPLICATION) {
+                //its an single application execution experiment
+                List<ProcessModel> processes = orchestrator.createProcesses(experimentId, gatewayId);
+
 				for (ProcessModel processModel : processes){
 					String taskDag = orchestrator.createAndSaveTasks(gatewayId, processModel, experiment.getUserConfigurationData().isAiravataAutoSchedule());
 					processModel.setTaskDag(taskDag);
