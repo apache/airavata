@@ -511,8 +511,5 @@ public class ProcessContext {
 		this.recoveryWithCancel = recoveryWithCancel;
 	}
 
-	public boolean isArchive() {
-		return getProcessModel().isArchive();
-	}
 }
 

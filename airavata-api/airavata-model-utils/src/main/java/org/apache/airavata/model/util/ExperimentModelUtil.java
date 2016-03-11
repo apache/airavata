@@ -81,7 +81,6 @@ public class ExperimentModelUtil {
         processModel.setExperimentId(experiment.getExperimentId());
         processModel.setApplicationInterfaceId(experiment.getExecutionId());
         processModel.setEnableEmailNotification(experiment.isEnableEmailNotification());
-        processModel.setArchive(experiment.isArchive());
         List<String> emailAddresses = experiment.getEmailAddresses();
         if (emailAddresses != null && !emailAddresses.isEmpty()){
             processModel.setEmailAddresses(emailAddresses);

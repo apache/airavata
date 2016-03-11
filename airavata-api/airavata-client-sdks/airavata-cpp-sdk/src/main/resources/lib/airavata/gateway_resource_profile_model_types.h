@@ -228,11 +228,10 @@ inline std::ostream& operator<<(std::ostream& out, const StoragePreference& obj)
 }
 
 typedef struct _GatewayResourceProfile__isset {
-  _GatewayResourceProfile__isset() : credentialStoreToken(false), computeResourcePreferences(false), storagePreferences(false), usageReportingGatewayId(false) {}
+  _GatewayResourceProfile__isset() : credentialStoreToken(false), computeResourcePreferences(false), storagePreferences(false) {}
   bool credentialStoreToken :1;
   bool computeResourcePreferences :1;
   bool storagePreferences :1;
-  bool usageReportingGatewayId :1;
 } _GatewayResourceProfile__isset;
 
 class GatewayResourceProfile {
@@ -240,7 +239,7 @@ class GatewayResourceProfile {
 
   GatewayResourceProfile(const GatewayResourceProfile&);
   GatewayResourceProfile& operator=(const GatewayResourceProfile&);
-  GatewayResourceProfile() : gatewayID(), credentialStoreToken(), usageReportingGatewayId() {
+  GatewayResourceProfile() : gatewayID(), credentialStoreToken() {
   }
 
   virtual ~GatewayResourceProfile() throw();
@@ -248,7 +247,6 @@ class GatewayResourceProfile {
   std::string credentialStoreToken;
   std::vector<ComputeResourcePreference>  computeResourcePreferences;
   std::vector<StoragePreference>  storagePreferences;
-  std::string usageReportingGatewayId;
 
   _GatewayResourceProfile__isset __isset;
 
@@ -259,8 +257,6 @@ class GatewayResourceProfile {
   void __set_computeResourcePreferences(const std::vector<ComputeResourcePreference> & val);
 
   void __set_storagePreferences(const std::vector<StoragePreference> & val);
-
-  void __set_usageReportingGatewayId(const std::string& val);
 
   bool operator == (const GatewayResourceProfile & rhs) const
   {
@@ -277,10 +273,6 @@ class GatewayResourceProfile {
     if (__isset.storagePreferences != rhs.__isset.storagePreferences)
       return false;
     else if (__isset.storagePreferences && !(storagePreferences == rhs.storagePreferences))
-      return false;
-    if (__isset.usageReportingGatewayId != rhs.__isset.usageReportingGatewayId)
-      return false;
-    else if (__isset.usageReportingGatewayId && !(usageReportingGatewayId == rhs.usageReportingGatewayId))
       return false;
     return true;
   }

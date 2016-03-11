@@ -425,11 +425,6 @@ public class Utils {
             experimentResource.setGatewayInstanceId(o.getGatewayInstanceId());
             experimentResource.setEnableEmailNotification(o.getEnableEmailNotification());
             experimentResource.setEmailAddresses(o.getEmailAddresses());
-            if(o.getArchive() == null){
-                experimentResource.setArchive(false);
-            }else {
-                experimentResource.setArchive(o.getArchive());
-            }
         }
         return experimentResource;
     }
@@ -543,7 +538,6 @@ public class Utils {
             processResource.setUserDn(o.getUserDn());
             processResource.setGenerateCert(o.getGenerateCert());
             processResource.setExperimentDataDir(o.getExperimentDataDir());
-            processResource.setArchive(o.isArchive());
         }
         return processResource;
     }

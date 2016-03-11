@@ -54,7 +54,6 @@ public class Process {
     private Collection<Task> tasks;
     private String userDn;
     private boolean generateCert;
-    private boolean archive;
 
     @Id
     @Column(name = "PROCESS_ID")
@@ -202,15 +201,6 @@ public class Process {
 
     public void setExperimentDataDir(String experimentDataDir) {
         this.experimentDataDir = experimentDataDir;
-    }
-
-    @Column(name = "ARCHIVE")
-    public boolean isArchive() {
-        return archive;
-    }
-
-    public void setArchive(boolean archive) {
-        this.archive = archive;
     }
 
     //    @Override
