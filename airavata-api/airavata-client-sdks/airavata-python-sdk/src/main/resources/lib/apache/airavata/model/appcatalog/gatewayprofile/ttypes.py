@@ -364,6 +364,7 @@ class GatewayResourceProfile:
    - credentialStoreToken
    - computeResourcePreferences
    - storagePreferences
+   - usageReportingGatewayId
   """
 
   thrift_spec = (
@@ -372,13 +373,15 @@ class GatewayResourceProfile:
     (2, TType.STRING, 'credentialStoreToken', None, None, ), # 2
     (3, TType.LIST, 'computeResourcePreferences', (TType.STRUCT,(ComputeResourcePreference, ComputeResourcePreference.thrift_spec)), None, ), # 3
     (4, TType.LIST, 'storagePreferences', (TType.STRUCT,(StoragePreference, StoragePreference.thrift_spec)), None, ), # 4
+    (5, TType.STRING, 'usageReportingGatewayId', None, None, ), # 5
   )
 
-  def __init__(self, gatewayID=None, credentialStoreToken=None, computeResourcePreferences=None, storagePreferences=None,):
+  def __init__(self, gatewayID=None, credentialStoreToken=None, computeResourcePreferences=None, storagePreferences=None, usageReportingGatewayId=None,):
     self.gatewayID = gatewayID
     self.credentialStoreToken = credentialStoreToken
     self.computeResourcePreferences = computeResourcePreferences
     self.storagePreferences = storagePreferences
+    self.usageReportingGatewayId = usageReportingGatewayId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -421,6 +424,11 @@ class GatewayResourceProfile:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.STRING:
+          self.usageReportingGatewayId = iprot.readString()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -453,6 +461,10 @@ class GatewayResourceProfile:
         iter13.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
+    if self.usageReportingGatewayId is not None:
+      oprot.writeFieldBegin('usageReportingGatewayId', TType.STRING, 5)
+      oprot.writeString(self.usageReportingGatewayId)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -468,6 +480,7 @@ class GatewayResourceProfile:
     value = (value * 31) ^ hash(self.credentialStoreToken)
     value = (value * 31) ^ hash(self.computeResourcePreferences)
     value = (value * 31) ^ hash(self.storagePreferences)
+    value = (value * 31) ^ hash(self.usageReportingGatewayId)
     return value
 
   def __repr__(self):
