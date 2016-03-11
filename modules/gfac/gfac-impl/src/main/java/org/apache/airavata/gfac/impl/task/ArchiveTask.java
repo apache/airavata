@@ -121,24 +121,26 @@ public class ArchiveTask implements Task {
             workingDirName = path.substring(path.lastIndexOf(File.separator) + 1, path.length());
             // tar working dir
             // cd /Users/syodage/Desktop/temp/.. && tar -cvf path/workingDir.tar temp
-            String archiveTar = workingDirName + ".tar";
-            CommandInfo commandInfo = new RawCommandInfo("cd " + path + "/.. && tar -cvf "
-                    + path + "/" + archiveTar + " " + workingDirName);
+            String archiveTar =  "archive.tar";
+            String resourceAbsTarFilePath  = path + "/" + archiveTar;
+            CommandInfo commandInfo = new RawCommandInfo("cd " + path + " && tar -cvf "
+                    + resourceAbsTarFilePath + " ./* ");
 
             // move tar to storage resource
-            path += "/" + archiveTar;
             remoteCluster.execute(commandInfo);
             destinationURI = getDestinationURI(taskContext, archiveTar);
-            remoteCluster.scpThirdParty(path ,destinationURI.getPath() , sshSession, RemoteCluster.DIRECTION.FROM, true);
+            remoteCluster.scpThirdParty(resourceAbsTarFilePath ,destinationURI.getPath() , sshSession, RemoteCluster.DIRECTION.FROM, true);
 
             // delete tar in remote computer resource
-            commandInfo = new RawCommandInfo("rm " + path + "/" + archiveTar);
+            commandInfo = new RawCommandInfo("rm " + resourceAbsTarFilePath);
             remoteCluster.execute(commandInfo);
 
             // untar file and delete tar in storage resource
             String destPath = destinationURI.getPath();
             String destParent = destPath.substring(0, destPath.lastIndexOf("/"));
-            commandInfo = new RawCommandInfo("cd " + destParent + " && tar -xvf " + archiveTar + " && rm " + archiveTar);
+            String storageArchiveDir = "ARCHIVE";
+            commandInfo = new RawCommandInfo("cd " + destParent + " && mkdir " + storageArchiveDir +
+                    " && tar -xvf " + archiveTar + " -C " + storageArchiveDir + " && rm " + archiveTar);
             executeCommand(sshSession, commandInfo, new StandardOutReader());
         } catch (GFacException | AiravataException | URISyntaxException | SSHApiException e) {
             String msg = "Error! Archive task failed";
