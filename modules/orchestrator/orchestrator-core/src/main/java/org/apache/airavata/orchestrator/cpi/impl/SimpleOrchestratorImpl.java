@@ -572,8 +572,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             ComputeResourcePreference computeResourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
             ComputeResourceDescription computeResource = orchestratorContext.getRegistry().getAppCatalog().getComputeResource().getComputeResource(processModel.getComputeResourceId());
 
-            String remoteOutputDir = computeResourcePreference.getScratchLocation(); // TODO check tail '/' in scratch path
-            remoteOutputDir = remoteOutputDir.endsWith("/") ? remoteOutputDir + processModel.getProcessId() : remoteOutputDir + "/" + processModel.getProcessId();
+            String remoteOutputDir = computeResourcePreference.getScratchLocation() + File.separator + processModel.getProcessId();
+            remoteOutputDir = remoteOutputDir.endsWith("/") ? remoteOutputDir : remoteOutputDir + "/";
             DataStagingTaskModel submodel = new DataStagingTaskModel();
             DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(orchestratorContext, processModel, gatewayId);
             URI source = null;
