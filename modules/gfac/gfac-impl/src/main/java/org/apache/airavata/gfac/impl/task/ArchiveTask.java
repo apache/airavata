@@ -129,10 +129,13 @@ public class ArchiveTask implements Task {
             path += "/" + archiveTar;
             remoteCluster.execute(commandInfo);
             destinationURI = getDestinationURI(taskContext, archiveTar);
-
             remoteCluster.scpThirdParty(path ,destinationURI.getPath() , sshSession, RemoteCluster.DIRECTION.FROM, true);
 
-            // untar file and delete tar
+            // delete tar in remote computer resource
+            commandInfo = new RawCommandInfo("rm " + path + "/" + archiveTar);
+            remoteCluster.execute(commandInfo);
+
+            // untar file and delete tar in storage resource
             String destPath = destinationURI.getPath();
             String destParent = destPath.substring(0, destPath.lastIndexOf("/"));
             commandInfo = new RawCommandInfo("cd " + destParent + " && tar -xvf " + archiveTar + " && rm " + archiveTar);
