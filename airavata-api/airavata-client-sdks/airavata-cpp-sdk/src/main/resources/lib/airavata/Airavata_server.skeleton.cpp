@@ -51,6 +51,26 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * Verify if User Exists within Airavata.
+   * 
+   * @param gatewayId
+   * 
+   *  @param userName
+   * 
+   * @return true/false
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   * @param userName
+   */
+  bool isUserExists(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName) {
+    // Your implementation goes here
+    printf("isUserExists\n");
+  }
+
+  /**
    * Register a Gateway with Airavata.
    * 
    * @param gateway

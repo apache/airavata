@@ -48,6 +48,23 @@ class AiravataIf {
   virtual void getAPIVersion(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) = 0;
 
   /**
+   * Verify if User Exists within Airavata.
+   * 
+   * @param gatewayId
+   * 
+   *  @param userName
+   * 
+   * @return true/false
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   * @param userName
+   */
+  virtual bool isUserExists(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName) = 0;
+
+  /**
    * Register a Gateway with Airavata.
    * 
    * @param gateway
@@ -2639,6 +2656,10 @@ class AiravataNull : virtual public AiravataIf {
   void getAPIVersion(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */) {
     return;
   }
+  bool isUserExists(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */) {
+    bool _return = false;
+    return _return;
+  }
   void addGateway(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::apache::airavata::model::workspace::Gateway& /* gateway */) {
     return;
   }
@@ -3222,6 +3243,148 @@ class Airavata_getAPIVersion_presult {
    ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_getAPIVersion_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_isUserExists_args {
+ public:
+
+  Airavata_isUserExists_args(const Airavata_isUserExists_args&);
+  Airavata_isUserExists_args& operator=(const Airavata_isUserExists_args&);
+  Airavata_isUserExists_args() : gatewayId(), userName() {
+  }
+
+  virtual ~Airavata_isUserExists_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string gatewayId;
+  std::string userName;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_gatewayId(const std::string& val);
+
+  void __set_userName(const std::string& val);
+
+  bool operator == (const Airavata_isUserExists_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    if (!(userName == rhs.userName))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_isUserExists_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_isUserExists_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_isUserExists_pargs {
+ public:
+
+
+  virtual ~Airavata_isUserExists_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* gatewayId;
+  const std::string* userName;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_isUserExists_result__isset {
+  _Airavata_isUserExists_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_isUserExists_result__isset;
+
+class Airavata_isUserExists_result {
+ public:
+
+  Airavata_isUserExists_result(const Airavata_isUserExists_result&);
+  Airavata_isUserExists_result& operator=(const Airavata_isUserExists_result&);
+  Airavata_isUserExists_result() : success(0) {
+  }
+
+  virtual ~Airavata_isUserExists_result() throw();
+  bool success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_isUserExists_result__isset __isset;
+
+  void __set_success(const bool val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_isUserExists_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_isUserExists_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_isUserExists_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_isUserExists_presult__isset {
+  _Airavata_isUserExists_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_isUserExists_presult__isset;
+
+class Airavata_isUserExists_presult {
+ public:
+
+
+  virtual ~Airavata_isUserExists_presult() throw();
+  bool* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_isUserExists_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -22717,6 +22880,9 @@ class AiravataClient : virtual public AiravataIf {
   void getAPIVersion(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken);
   void send_getAPIVersion(const  ::apache::airavata::model::security::AuthzToken& authzToken);
   void recv_getAPIVersion(std::string& _return);
+  bool isUserExists(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
+  void send_isUserExists(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
+  bool recv_isUserExists();
   void addGateway(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Gateway& gateway);
   void send_addGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Gateway& gateway);
   void recv_addGateway(std::string& _return);
@@ -23147,6 +23313,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
   void process_getAPIVersion(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_isUserExists(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_addGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -23289,6 +23456,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   AiravataProcessor(boost::shared_ptr<AiravataIf> iface) :
     iface_(iface) {
     processMap_["getAPIVersion"] = &AiravataProcessor::process_getAPIVersion;
+    processMap_["isUserExists"] = &AiravataProcessor::process_isUserExists;
     processMap_["addGateway"] = &AiravataProcessor::process_addGateway;
     processMap_["updateGateway"] = &AiravataProcessor::process_updateGateway;
     processMap_["getGateway"] = &AiravataProcessor::process_getGateway;
@@ -23463,6 +23631,15 @@ class AiravataMultiface : virtual public AiravataIf {
     }
     ifaces_[i]->getAPIVersion(_return, authzToken);
     return;
+  }
+
+  bool isUserExists(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->isUserExists(authzToken, gatewayId, userName);
+    }
+    return ifaces_[i]->isUserExists(authzToken, gatewayId, userName);
   }
 
   void addGateway(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Gateway& gateway) {
@@ -24825,6 +25002,9 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void getAPIVersion(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken);
   int32_t send_getAPIVersion(const  ::apache::airavata::model::security::AuthzToken& authzToken);
   void recv_getAPIVersion(std::string& _return, const int32_t seqid);
+  bool isUserExists(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
+  int32_t send_isUserExists(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
+  bool recv_isUserExists(const int32_t seqid);
   void addGateway(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Gateway& gateway);
   int32_t send_addGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Gateway& gateway);
   void recv_addGateway(std::string& _return, const int32_t seqid);
