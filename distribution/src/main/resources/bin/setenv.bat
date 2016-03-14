@@ -17,15 +17,6 @@ rem under the License.
 
 @echo off
 
-:checkJava
-if "%JAVA_HOME%" == "" goto noJavaHome
-if not exist "%JAVA_HOME%\bin\java.exe" goto noJavaHome
-goto initialize
-
-:noJavaHome
-echo You must set the JAVA_HOME environment variable before running Airavata.
-goto end
-
 :initialize
 if "%AIRAVATA_HOME%"=="" set AIRAVATA_HOME=%~sdp0..
 SET curDrive=%cd:~0,1%
@@ -36,8 +27,7 @@ goto updateClasspath
 rem ----- update classpath -----------------------------------------------------
 :updateClasspath
 cd %AIRAVATA_HOME%
-set XBAYA_CLASSPATH=
-FOR %%C in ("%AIRAVATA_HOME%\lib\*.jar") DO set XBAYA_CLASSPATH=!XBAYA_CLASSPATH!;..\lib\%%~nC%%~xC
-FOR %%C in ("%AIRAVATA_HOME%\repository\services\*.jar") DO set XBAYA_CLASSPATH=!XBAYA_CLASSPATH!;..\repository\services\%%~nC%%~xC
+set AIRAVATA_CLASSPATH=
+FOR %%C in ("%AIRAVATA_HOME%\lib\*.jar") DO set AIRAVATA_CLASSPATH=!AIRAVATA_CLASSPATH!;..\lib\%%~nC%%~xC
 
 :end
