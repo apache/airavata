@@ -140,7 +140,8 @@ public class ArchiveTask implements Task {
             String destParent = destPath.substring(0, destPath.lastIndexOf("/"));
             String storageArchiveDir = "ARCHIVE";
             commandInfo = new RawCommandInfo("cd " + destParent + " && mkdir " + storageArchiveDir +
-                    " && tar -xvf " + archiveTar + " -C " + storageArchiveDir + " && rm " + archiveTar);
+                    " && tar -xvf " + archiveTar + " -C " + storageArchiveDir + " && rm " + archiveTar +
+                    " && chmod 744 -R " + storageArchiveDir + "/*");
             executeCommand(sshSession, commandInfo, new StandardOutReader());
         } catch (GFacException | AiravataException | URISyntaxException | SSHApiException e) {
             String msg = "Error! Archive task failed";
