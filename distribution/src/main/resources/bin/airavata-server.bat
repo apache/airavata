@@ -50,6 +50,6 @@ cd "%AIRAVATA_HOME%\bin"
 set LOGO_FILE="logo.txt"
 if exist "%LOGO_FILE%" type "%LOGO_FILE%"
 
-java %JAVA_OPTS% -classpath "%XBAYA_CLASSPATH%" -Djava.endorsed.dirs="%AIRAVATA_HOME%/lib/endorsed":"%JAVA_HOME%/jre/lib/endorsed":"%JAVA_HOME%/lib/endorsed" org.apache.airavata.server.ServerMain -repo "%AIRAVATA_HOME%"/repository/services -conf "%AIRAVATA_HOME%"/conf/axis2.xml %*
+java %JAVA_OPTS% -classpath "%AIRAVATA_CLASSPATH%" org.apache.airavata.server.ServerMain %*
 
 :end
