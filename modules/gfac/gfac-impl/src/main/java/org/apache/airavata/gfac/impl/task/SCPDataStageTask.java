@@ -287,16 +287,15 @@ public class SCPDataStageTask implements Task {
 
     public URI getDestinationURI(TaskContext taskContext, String fileName) throws URISyntaxException {
         String experimentDataDir = taskContext.getParentProcessContext().getProcessModel().getExperimentDataDir();
-        String filePath;
+        String filePath = "";
         if(experimentDataDir != null && !experimentDataDir.isEmpty()) {
-            if(experimentDataDir.startsWith(File.separator)){
-                experimentDataDir = experimentDataDir.substring(1);
-            }
             if(!experimentDataDir.endsWith(File.separator)){
                 experimentDataDir += File.separator;
             }
-           filePath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator) + experimentDataDir +
-                    taskContext.getParentProcessContext().getProcessId() + File.separator + fileName;
+            if(!experimentDataDir.startsWith(File.separator)){
+                filePath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
+            }
+           filePath = filePath + experimentDataDir + fileName;
         } else {
            filePath =(inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator) +
                     taskContext.getParentProcessContext().getProcessId() + File.separator + fileName;
