@@ -422,7 +422,8 @@ public abstract class Factory {
 	public static Session getSSHSession(AuthenticationInfo authenticationInfo, ServerInfo serverInfo) throws AiravataException {
 		SSHKeyAuthentication authentication = null;
 		String key = serverInfo.getUserName() + "_" + serverInfo.getHost() + "_" + serverInfo.getPort();
-		if (sessionMap.get(key) == null) {
+		Session session = sessionMap.get(key);
+		if (session == null || !session.isConnected()) {
 			try {
 				if (authenticationInfo instanceof SSHKeyAuthentication) {
 					authentication = (SSHKeyAuthentication) authenticationInfo;
@@ -432,7 +433,7 @@ public abstract class Factory {
 				JSch jSch = new JSch();
 				jSch.addIdentity(UUID.randomUUID().toString(), authentication.getPrivateKey(), authentication.getPublicKey(),
 						authentication.getPassphrase().getBytes());
-				Session session = jSch.getSession(serverInfo.getUserName(), serverInfo.getHost(),
+				session = jSch.getSession(serverInfo.getUserName(), serverInfo.getHost(),
 						serverInfo.getPort());
 				session.setUserInfo(new DefaultUserInfo(serverInfo.getUserName(), null, authentication.getPassphrase()));
 				if (authentication.getStrictHostKeyChecking().equals("yes")) {
