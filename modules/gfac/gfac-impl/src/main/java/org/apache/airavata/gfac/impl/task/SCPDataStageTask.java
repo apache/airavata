@@ -72,10 +72,7 @@ public class SCPDataStageTask implements Task {
 
     @Override
     public void init(Map<String, String> propertyMap) throws TaskException {
-        // we use what expressed in gfac-config.yaml by default, later replace with storage preferences
-        inputPath = propertyMap.get("inputPath");
-        hostName = propertyMap.get("hostName");
-        userName = propertyMap.get("userName");
+
     }
 
     @Override
@@ -126,13 +123,18 @@ public class SCPDataStageTask implements Task {
             StorageResourceDescription storageResource = taskContext.getParentProcessContext().getStorageResource();
             StoragePreference storagePreference = taskContext.getParentProcessContext().getStoragePreference();
 
-            if (storageResource != null){
+            if (storageResource != null) {
                 hostName = storageResource.getHostName();
+            } else {
+                throw new SSHApiException("Storage Resource is null");
             }
 
-            if (storagePreference != null){
+            if (storagePreference != null) {
                 userName = storagePreference.getLoginUserName();
                 inputPath = storagePreference.getFileSystemRootLocation();
+                inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
+            } else {
+                throw new SSHApiException("Storage Preference is null");
             }
 
             // use rsync instead of scp if source and destination host and user name is same.
@@ -141,7 +143,7 @@ public class SCPDataStageTask implements Task {
                     sourceURI.getPath().length());
             URI destinationURI = null;
             if (subTaskModel.getDestination().startsWith("dummy")) {
-                destinationURI = getDestinationURI(taskContext, fileName);
+                destinationURI = TaskUtils.getDestinationURI(taskContext, hostName, inputPath, fileName);
                 subTaskModel.setDestination(destinationURI.toString());
             } else {
                 destinationURI = new URI(subTaskModel.getDestination());
@@ -190,7 +192,7 @@ public class SCPDataStageTask implements Task {
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskError(errorModel);
         } catch (URISyntaxException e) {
-            String msg = "Sorce or destination uri is not correct source : " + subTaskModel.getSource() + ", " +
+            String msg = "Source or destination uri is not correct source : " + subTaskModel.getSource() + ", " +
                     "destination : " + subTaskModel.getDestination();
             log.error(msg, e);
             status.setState(TaskState.FAILED);
@@ -285,22 +287,4 @@ public class SCPDataStageTask implements Task {
         return TaskTypes.DATA_STAGING;
     }
 
-    public URI getDestinationURI(TaskContext taskContext, String fileName) throws URISyntaxException {
-        String experimentDataDir = taskContext.getParentProcessContext().getProcessModel().getExperimentDataDir();
-        String filePath = "";
-        if(experimentDataDir != null && !experimentDataDir.isEmpty()) {
-            if(!experimentDataDir.endsWith(File.separator)){
-                experimentDataDir += File.separator;
-            }
-            if(!experimentDataDir.startsWith(File.separator)){
-                filePath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
-            }
-           filePath = filePath + experimentDataDir + fileName;
-        } else {
-           filePath =(inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator) +
-                    taskContext.getParentProcessContext().getProcessId() + File.separator + fileName;
-        }
-        return new URI("SCP", hostName, filePath, null);
-
-    }
 }
