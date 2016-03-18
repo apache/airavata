@@ -77,17 +77,6 @@ public class ArchiveTask implements Task {
         RemoteCluster remoteCluster = processContext.getJobSubmissionRemoteCluster();
         AuthenticationInfo authenticationInfo = null;
 
-        StorageResourceDescription storageResource = taskContext.getParentProcessContext().getStorageResource();
-        StoragePreference storagePreference = taskContext.getParentProcessContext().getStoragePreference();
-
-        if (storageResource != null){
-            hostName = storageResource.getHostName();
-        }
-
-        if (storagePreference != null){
-            userName = storagePreference.getLoginUserName();
-            inputPath = storagePreference.getFileSystemRootLocation();
-        }
         DataStagingTaskModel subTaskModel = null;
         try {
             subTaskModel = (DataStagingTaskModel) ThriftUtils.getSubTaskModel
@@ -105,6 +94,24 @@ public class ArchiveTask implements Task {
         }
 
         try {
+            StorageResourceDescription storageResource = taskContext.getParentProcessContext().getStorageResource();
+            StoragePreference storagePreference = taskContext.getParentProcessContext().getStoragePreference();
+
+            if (storageResource != null) {
+                hostName = storageResource.getHostName();
+            } else {
+                throw new GFacException("Storage Resource is null");
+            }
+
+            if (storagePreference != null) {
+                userName = storagePreference.getLoginUserName();
+                inputPath = storagePreference.getFileSystemRootLocation();
+                inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
+            } else {
+                throw new GFacException("Storage Preference is null");
+            }
+
+
             authenticationInfo = Factory.getStorageSSHKeyAuthentication(taskContext.getParentProcessContext());
             status = new TaskStatus(TaskState.COMPLETED);
 
@@ -128,7 +135,7 @@ public class ArchiveTask implements Task {
 
             // move tar to storage resource
             remoteCluster.execute(commandInfo);
-            destinationURI = getDestinationURI(taskContext, archiveTar);
+            destinationURI = TaskUtils.getDestinationURI(taskContext, hostName, inputPath, archiveTar);
             remoteCluster.scpThirdParty(resourceAbsTarFilePath ,destinationURI.getPath() , sshSession, RemoteCluster.DIRECTION.FROM, true);
 
             // delete tar in remote computer resource
@@ -168,25 +175,6 @@ public class ArchiveTask implements Task {
         return TaskTypes.DATA_STAGING;
     }
 
-    public URI getDestinationURI(TaskContext taskContext, String fileName) throws URISyntaxException {
-        String experimentDataDir = taskContext.getParentProcessContext().getProcessModel().getExperimentDataDir();
-        String filePath;
-        if(experimentDataDir != null && !experimentDataDir.isEmpty()) {
-            if(experimentDataDir.startsWith(File.separator)){
-                experimentDataDir = experimentDataDir.substring(1);
-            }
-            if(!experimentDataDir.endsWith(File.separator)){
-                experimentDataDir += File.separator;
-            }
-            filePath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator) + experimentDataDir +
-                    taskContext.getParentProcessContext().getProcessId() + File.separator + fileName;
-        } else {
-            filePath =(inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator) +
-                    taskContext.getParentProcessContext().getProcessId() + File.separator + fileName;
-        }
-        return new URI("SCP", hostName, filePath, null);
-
-    }
 
 
     private void executeCommand(Session session,CommandInfo commandInfo, CommandOutput commandOutput) throws SSHApiException {
