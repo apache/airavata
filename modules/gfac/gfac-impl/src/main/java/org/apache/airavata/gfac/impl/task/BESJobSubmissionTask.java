@@ -43,7 +43,10 @@ import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskTypes;
+import org.apache.airavata.registry.core.experiment.catalog.model.UserConfigurationData;
 import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.xmlbeans.XmlCursor;
 import org.ggf.schemas.bes.x2006.x08.besFactory.*;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
@@ -72,6 +75,20 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
     public TaskStatus execute(TaskContext taskContext) {
         TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
         StorageClient sc = null;
+
+        //TODO - initialize securityContext secProperties
+        try {
+            if (secProperties == null) {
+                secProperties = getSecurityConfig(taskContext.getParentProcessContext());
+            }  // try secProperties = secProperties.clone() if we can't use already initialized ClientConfigurations.
+        } catch (GFacException e) {
+            String msg = "Unicorn security context initialization error";
+            log.error(msg, e);
+            taskStatus.setState(TaskState.FAILED);
+            taskStatus.setReason(msg);
+            return taskStatus;
+        }
+
         try {
             ProcessContext processContext = taskContext.getParentProcessContext();
             JobSubmissionProtocol protocol = processContext.getJobSubmissionProtocol();
@@ -190,6 +207,26 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
         return taskStatus;
     }
 
+    private DefaultClientConfiguration getSecurityConfig(ProcessContext pc) throws GFacException {
+        DefaultClientConfiguration clientConfig = null;
+        try {
+            UNICORESecurityContext unicoreSecurityContext = SecurityUtils.getSecurityContext(pc);
+            UserConfigurationData userConfigData = (UserConfigurationData) pc.getExperimentCatalog().
+                    get(ExperimentCatalogModelType.USER_CONFIGURATION_DATA, pc.getExperimentId());
+            if (userConfigData.getGenerateCert()) {
+                clientConfig = unicoreSecurityContext.getDefaultConfiguration(false, userConfigData);
+            } else {
+                clientConfig = unicoreSecurityContext.getDefaultConfiguration(false);
+            }
+        } catch (RegistryException e) {
+            throw new GFacException("Error! reading user configuration data from registry", e);
+        } catch (ApplicationSettingsException e) {
+            throw new GFacException("Error! retrieving default client configurations", e);
+        }
+
+        return clientConfig;
+    }
+
     protected String formatStatusMessage(String activityUrl, String status) {
         return String.format("Activity %s is %s.\n", activityUrl, status);
     }
@@ -304,5 +341,37 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
                 acursor.dispose();
         }
         return JobState.UNKNOWN;
+    }
+
+    /**
+     * EndpointReference need to be saved to make cancel work.
+     *
+     * @param processContext
+     * @throws GFacException
+     */
+    public boolean cancelJob(ProcessContext processContext) throws GFacException {
+        try {
+            String activityEpr = processContext.getJobModel().getJobDescription();
+            // initSecurityProperties(processContext);
+            EndpointReferenceType eprt = EndpointReferenceType.Factory
+                    .parse(activityEpr);
+            JobSubmissionProtocol protocol = processContext.getJobSubmissionProtocol();
+            String interfaceId = processContext.getApplicationInterfaceDescription().getApplicationInterfaceId();
+            String factoryUrl = null;
+            if (protocol.equals(JobSubmissionProtocol.UNICORE)) {
+                UnicoreJobSubmission unicoreJobSubmission = GFacUtils.getUnicoreJobSubmission(interfaceId);
+                factoryUrl = unicoreJobSubmission.getUnicoreEndPointURL();
+            }
+            EndpointReferenceType epr = EndpointReferenceType.Factory
+                    .newInstance();
+            epr.addNewAddress().setStringValue(factoryUrl);
+
+            FactoryClient factory = new FactoryClient(epr, secProperties);
+            factory.terminateActivity(eprt);
+            return true;
+        } catch (Exception e) {
+            throw new GFacException(e.getLocalizedMessage(), e);
+        }
+
     }
 }

@@ -59,32 +59,27 @@ public class SecurityUtils {
 	private final static Logger logger = LoggerFactory.getLogger(SecurityUtils.class);
 	
 	
-	public static void addSecurityContext(ProcessContext processContext) throws GFacException {
-		
-	        if (!processContext.getJobSubmissionProtocol().equals(JobSubmissionProtocol.UNICORE)) {
-	            logger.error("This is a wrong method to invoke for UNICORE host types,please check your gfac-config.xml");
-	        }
-	        else
-	        {	
-	        	String credentialStoreToken = processContext.getTokenId(); // set by the framework
-	            RequestData requestData;
-				try {
-					requestData = new RequestData(ServerSettings.getDefaultUserGateway());
-				} catch (ApplicationSettingsException e1) {
-					throw new GFacException(e1);
-				} // coming from top tier
-	            requestData.setTokenId(credentialStoreToken);
-	            
-	            CredentialReader credentialReader = null;
-	            try{
-	            	credentialReader = GFacUtils.getCredentialReader();
-	            }catch (Exception e){
-	            	logger.warn("Cannot get credential reader instance");
-	            }
-	            
-            	UNICORESecurityContext secCtx = new UNICORESecurityContext(credentialReader, requestData);
-//            	processContext.setJobSubmissionRemoteCluster(X509SecurityContext.X509_SECURITY_CONTEXT, secCtx);
-	        }
+	public static UNICORESecurityContext getSecurityContext(ProcessContext processContext) throws GFacException {
+
+		if (processContext.getJobSubmissionProtocol().equals(JobSubmissionProtocol.UNICORE)) {
+			String credentialStoreToken = processContext.getTokenId(); // set by the framework
+			RequestData requestData;
+			requestData = new RequestData(processContext.getProcessModel().getUserDn());
+			requestData.setTokenId(credentialStoreToken);
+			CredentialReader credentialReader = null;
+			try {
+				credentialReader = GFacUtils.getCredentialReader();
+				if (credentialReader == null) {
+					throw new GFacException("Credential reader returns null");
+				}
+			} catch (Exception e) {
+				throw new GFacException("Error while initializing credential reader");
+			}
+			return new UNICORESecurityContext(credentialReader, requestData);
+		} else {
+			throw new GFacException("Only support UNICORE job submissions, invalid job submission protocol " +
+					processContext.getJobSubmissionProtocol().name());
+		}
 	}
 	
 	public static final KeyAndCertCredential generateShortLivedCertificate(String userDN,
