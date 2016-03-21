@@ -167,8 +167,13 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	@Override
 	public void scpThirdParty(String sourceFile, String destinationFile, Session clientSession, DIRECTION direction, boolean ignoreEmptyFile) throws SSHApiException {
 		try {
-			if(!session.isConnected()){
+			if (!session.isConnected()) {
+				// FIXME - move following info log to debug
+				log.info("Reinitialize a new SSH session for key :" + serverInfo.getUserName() + "-" + serverInfo.getHost() + "-" + serverInfo.getPort());
 				session = getOpenSession();
+			} else {
+				// FIXME - move following info logs to debug
+				log.info("Reuse SSH session for key :" + serverInfo.getUserName() + "-" + serverInfo.getHost() + "-" + serverInfo.getPort());
 			}
 			log.info("Transferring from:" + sourceFile + " To: " + destinationFile);
             if (direction == DIRECTION.TO) {
@@ -186,7 +191,12 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	public void makeDirectory(String directoryPath) throws SSHApiException {
 		try {
 			if (!session.isConnected()) {
+				// FIXME - move following info log to debug
+				log.info("Reinitialize a new SSH session for key :" + serverInfo.getUserName() + "-" + serverInfo.getHost() + "-" + serverInfo.getPort());
 				session = getOpenSession();
+			} else {
+				// FIXME - move following info log to debug
+				log.info("Reuse SSH session for key :" + serverInfo.getUserName() + "-" + serverInfo.getHost() + "-" + serverInfo.getPort());
 			}
 			log.info("Creating directory: " + serverInfo.getHost() + ":" + directoryPath);
 			SSHUtils.makeDirectory(directoryPath, session);
