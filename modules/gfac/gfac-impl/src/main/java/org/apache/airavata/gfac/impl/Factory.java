@@ -20,6 +20,8 @@
  */
 package org.apache.airavata.gfac.impl;
 
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -35,6 +37,7 @@ import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.JobManagerConfiguration;
+import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
 import org.apache.airavata.gfac.core.cluster.OutputParser;
@@ -63,9 +66,7 @@ import org.apache.airavata.messaging.core.impl.RabbitMQStatusPublisher;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
-import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
@@ -423,8 +424,21 @@ public abstract class Factory {
 		SSHKeyAuthentication authentication = null;
 		String key = serverInfo.getUserName() + "_" + serverInfo.getHost() + "_" + serverInfo.getPort();
 		Session session = sessionMap.get(key);
-		if (session == null || !session.isConnected()) {
-			// FIXME - move following info logs to debug
+		boolean valid = isValidSession(session);
+		// FIXME - move following info logs to debug
+		if (valid) {
+			log.info("SSH Session validation succeeded, key :" + key);
+			valid = testChannelCreation(session);
+			if (valid) {
+				log.info("Channel creation test succeeded, key :" + key);
+			} else {
+				log.info("Channel creation test failed, key :" + key);
+			}
+		} else {
+			log.info("Session validation failed, key :" + key);
+		}
+
+		if (!valid) {
 			if (session != null) {
 				log.info("Reinitialize a new SSH session for :" + key);
 			} else {
@@ -458,6 +472,32 @@ public abstract class Factory {
 		}
 		return sessionMap.get(key);
 
+	}
+
+	private static boolean testChannelCreation(Session session) {
+
+		String command = "ls ";
+		Channel channel = null;
+		try {
+			channel = session.openChannel("exec");
+			StandardOutReader stdOutReader = new StandardOutReader();
+			((ChannelExec) channel).setCommand(command);
+			((ChannelExec) channel).setErrStream(stdOutReader.getStandardError());
+			channel.connect();
+			stdOutReader.onOutput(channel);
+		} catch (JSchException e) {
+			log.error("Test Channel creation failed.", e);
+			return false;
+		} finally {
+			if (channel != null) {
+				channel.disconnect();
+			}
+		}
+		return true;
+	}
+
+	private static boolean isValidSession(Session session) {
+		return session != null && session.isConnected();
 	}
 
 	public static Task getArchiveTask() {

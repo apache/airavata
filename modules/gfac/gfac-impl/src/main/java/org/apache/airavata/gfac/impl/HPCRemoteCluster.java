@@ -63,7 +63,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 			jSch = new JSch();
 			jSch.addIdentity(UUID.randomUUID().toString(), authentication.getPrivateKey(), authentication.getPublicKey(),
 					authentication.getPassphrase().getBytes());
-			session = getOpenSession();
+			session = Factory.getSSHSession(authenticationInfo, serverInfo);
 		} catch (JSchException e) {
 			throw new AiravataException("JSch initialization error ", e);
 		}
@@ -109,7 +109,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 		while (retry > 0) {
 			try {
 				if (!session.isConnected()) {
-					session = getOpenSession();
+					session = Factory.getSSHSession(authenticationInfo, serverInfo);
 				}
 				log.info("Transferring localhost:" + localFile  + " to " + serverInfo.getHost() + ":" + remoteFile);
 				SSHUtils.scpTo(localFile, remoteFile, session);
@@ -118,8 +118,8 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 				retry--;
 				if (!session.isConnected()) {
 					try {
-						session = getOpenSession();
-					} catch (JSchException e1) {
+						session = Factory.getSSHSession(authenticationInfo, serverInfo);
+					} catch (AiravataException e1) {
 						throw new SSHApiException("JSch Session connection failed", e1);
 					}
 				}
@@ -140,7 +140,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 		while(retry>0) {
 			try {
 				if (!session.isConnected()) {
-					session = getOpenSession();
+					session = Factory.getSSHSession(authenticationInfo, serverInfo);
 				}
 				log.info("Transferring " + serverInfo.getHost() + ":" + remoteFile + " To localhost:" + localFile);
 				SSHUtils.scpFrom(remoteFile, localFile, session);
@@ -149,8 +149,8 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 				retry--;
 				if (!session.isConnected()) {
 					try {
-						session = getOpenSession();
-					} catch (JSchException e1) {
+						session = Factory.getSSHSession(authenticationInfo, serverInfo);
+					} catch (AiravataException e1) {
 						throw new SSHApiException("JSch Session connection failed", e1);
 					}
 				}
@@ -170,7 +170,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 			if (!session.isConnected()) {
 				// FIXME - move following info log to debug
 				log.info("Reinitialize a new SSH session for key :" + serverInfo.getUserName() + "-" + serverInfo.getHost() + "-" + serverInfo.getPort());
-				session = getOpenSession();
+				session = Factory.getSSHSession(authenticationInfo, serverInfo);
 			} else {
 				// FIXME - move following info logs to debug
 				log.info("Reuse SSH session for key :" + serverInfo.getUserName() + "-" + serverInfo.getHost() + "-" + serverInfo.getPort());
@@ -181,7 +181,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
             } else {
                 SSHUtils.scpThirdParty(sourceFile, session, destinationFile, clientSession, ignoreEmptyFile);
             }
-        } catch (IOException | JSchException e) {
+        } catch (IOException | AiravataException | JSchException e) {
 			throw new SSHApiException("Failed scp file:" + sourceFile + " to remote file "
 					+destinationFile , e);
 		}
@@ -193,14 +193,14 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 			if (!session.isConnected()) {
 				// FIXME - move following info log to debug
 				log.info("Reinitialize a new SSH session for key :" + serverInfo.getUserName() + "-" + serverInfo.getHost() + "-" + serverInfo.getPort());
-				session = getOpenSession();
+				session = Factory.getSSHSession(authenticationInfo, serverInfo);
 			} else {
 				// FIXME - move following info log to debug
 				log.info("Reuse SSH session for key :" + serverInfo.getUserName() + "-" + serverInfo.getHost() + "-" + serverInfo.getPort());
 			}
 			log.info("Creating directory: " + serverInfo.getHost() + ":" + directoryPath);
 			SSHUtils.makeDirectory(directoryPath, session);
-		} catch (JSchException | IOException e) {
+		} catch (JSchException | AiravataException | IOException e) {
 			throw new SSHApiException("Failed to create directory " + serverInfo.getHost() + ":" + directoryPath, e);
 		}
 	}
@@ -246,11 +246,11 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	public List<String> listDirectory(String directoryPath) throws SSHApiException {
 		try {
 			if (!session.isConnected()) {
-				session = getOpenSession();
+				session = Factory.getSSHSession(authenticationInfo, serverInfo);
 			}
 			log.info("Creating directory: " + serverInfo.getHost() + ":" + directoryPath);
 			return SSHUtils.listDirectory(directoryPath, session);
-		} catch (JSchException | IOException e) {
+		} catch (JSchException | AiravataException | IOException e) {
 			throw new SSHApiException("Failed to list directory " + serverInfo.getHost() + ":" + directoryPath, e);
 		}
 	}
@@ -297,7 +297,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 		ChannelExec channelExec = null;
 		try {
 			if (!session.isConnected()) {
-				session = getOpenSession();
+				session = Factory.getSSHSession(authenticationInfo, serverInfo);
 			}
 			channelExec = ((ChannelExec) session.openChannel("exec"));
 			channelExec.setCommand(command);
@@ -306,9 +306,9 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 			log.info("Executing command {}", commandInfo.getCommand());
 			channelExec.connect();
 			commandOutput.onOutput(channelExec);
-		} catch (JSchException e) {
+		} catch (JSchException | AiravataException e) {
 			throw new SSHApiException("Unable to execute command - ", e);
-		}finally {
+		} finally {
 			//Only disconnecting the channel, session can be reused
 			if (channelExec != null) {
 				commandOutput.exitCode(channelExec.getExitStatus());
