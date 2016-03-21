@@ -424,6 +424,12 @@ public abstract class Factory {
 		String key = serverInfo.getUserName() + "_" + serverInfo.getHost() + "_" + serverInfo.getPort();
 		Session session = sessionMap.get(key);
 		if (session == null || !session.isConnected()) {
+			// FIXME - move following info logs to debug
+			if (session != null) {
+				log.info("Reinitialize a new SSH session for :" + key);
+			} else {
+				log.info("Initialize a new SSH session for :" + key);
+			}
 			try {
 				if (authenticationInfo instanceof SSHKeyAuthentication) {
 					authentication = (SSHKeyAuthentication) authenticationInfo;
@@ -439,13 +445,16 @@ public abstract class Factory {
 				if (authentication.getStrictHostKeyChecking().equals("yes")) {
 					jSch.setKnownHosts(authentication.getKnownHostsFilePath());
 				} else {
-					session.setConfig("StrictHostKeyChecking","no");
+					session.setConfig("StrictHostKeyChecking", "no");
 				}
 				session.connect(); // 0 connection timeout
 				sessionMap.put(key, session);
 			} catch (JSchException e) {
 				throw new AiravataException("JSch initialization error ", e);
 			}
+		} else {
+			// FIXME - move following info log to debug
+			log.info("Reuse SSH session for :" + key);
 		}
 		return sessionMap.get(key);
 
