@@ -474,9 +474,13 @@ public abstract class Factory {
 
 	}
 
+	public static void disconnectSSHSession(ServerInfo serverInfo) {
+		// TODO - remove session from map and call disconnect
+	}
+
 	private static boolean testChannelCreation(Session session) {
 
-		String command = "ls ";
+		String command = "pwd ";
 		Channel channel = null;
 		try {
 			channel = session.openChannel("exec");
