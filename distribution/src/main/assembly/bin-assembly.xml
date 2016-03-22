@@ -26,89 +26,89 @@
         <!ELEMENT dependencySet (outputDirectory|outputFileNameMapping|includes)*>
         ]>
 <assembly>
-	<id>bin</id>
-	<includeBaseDirectory>true</includeBaseDirectory>
-	<baseDirectory>${archieve.name}-${version}</baseDirectory>
-	<formats>
-		<format>tar.gz</format>
-		<format>zip</format>
-	</formats>
+    <id>bin</id>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <baseDirectory>${archieve.name}-${version}</baseDirectory>
+    <formats>
+        <format>tar.gz</format>
+        <format>zip</format>
+    </formats>
 
-	<fileSets>
+    <fileSets>
 
-		<!-- ********************** copy release notes files ********************** -->
-		<fileSet>
-			<directory>../../../</directory>
-			<outputDirectory>.</outputDirectory>
-			<includes>
-				<include>RELEASE_NOTES</include>
-			</includes>
-		</fileSet>
-		<!-- ********************** copy licenses, readme etc. ********************** -->
-		<fileSet>
-			<directory>src/main/resources/</directory>
-			<outputDirectory>.</outputDirectory>
-			<includes>
-				<include>LICENSE</include>
-				<include>NOTICE</include>
-				<include>README</include>
-				<include>INSTALL</include>
-			</includes>
-		</fileSet>
+        <!-- ********************** copy release notes files ********************** -->
+        <fileSet>
+            <directory>../../../</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>RELEASE_NOTES</include>
+            </includes>
+        </fileSet>
+        <!-- ********************** copy licenses, readme etc. ********************** -->
+        <fileSet>
+            <directory>src/main/resources/</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>LICENSE</include>
+                <include>NOTICE</include>
+                <include>README</include>
+                <include>INSTALL</include>
+            </includes>
+        </fileSet>
 
-		<!-- ********************** copy database scripts ********************** -->
-		<fileSet>
-			<directory>../modules/registry/registry-core/src/main/resources/
-			</directory>
-			<outputDirectory>bin/database_scripts
-			</outputDirectory>
-			<includes>
-				<include>*sql*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>src/main/resources/bin</directory>
-			<outputDirectory>bin</outputDirectory>
-			<fileMode>777</fileMode>
-			<includes>
-				<include>*.sh</include>
-				<include>*.bat</include>
-				<include>logo.txt</include>
-				<include>startNetworkServer</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>src/main/resources/samples</directory>
-			<outputDirectory>samples</outputDirectory>
-			<fileMode>777</fileMode>
-			<includes>
-				<include>*.sh</include>
-				<include>**/*.sh</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>${project.build.directory}/conf</directory>
-			<outputDirectory>bin</outputDirectory>
-			<includes>
-				<include>airavata-server.properties</include>
-				<include>zoo.cfg</include>
-				<include>registry.properties</include>
-				<include>log4j.properties</include>
-				<include>host.xml</include>
-				<include>persistence.xml</include>
-				<include>provenance.sql</include>
-				<include>gfac-config.yaml</include>
-				<include>PBSTemplate.xslt</include>
-				<include>SLURMTemplate.xslt</include>
-				<include>LSFTemplate.xslt</include>
-				<include>UGETemplate.xslt</include>
-				<include>ForkTemplate.xslt</include>
-				<include>gsissh.properties</include>
-				<include>airavata.jks</include>
-				<include>client_truststore.jks</include>
-				<include>airavata-default-xacml-policy.xml</include>
-			</includes>
-		</fileSet>
+        <!-- ********************** copy database scripts ********************** -->
+        <fileSet>
+            <directory>../modules/registry/registry-core/src/main/resources/
+            </directory>
+            <outputDirectory>bin/database_scripts
+            </outputDirectory>
+            <includes>
+                <include>*sql*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>777</fileMode>
+            <includes>
+                <include>*.sh</include>
+                <include>*.bat</include>
+                <include>logo.txt</include>
+                <include>startNetworkServer</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/samples</directory>
+            <outputDirectory>samples</outputDirectory>
+            <fileMode>777</fileMode>
+            <includes>
+                <include>*.sh</include>
+                <include>**/*.sh</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.build.directory}/conf</directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>airavata-server.properties</include>
+                <include>zoo.cfg</include>
+                <include>registry.properties</include>
+                <include>log4j.properties</include>
+                <include>host.xml</include>
+                <include>persistence.xml</include>
+                <include>provenance.sql</include>
+                <include>gfac-config.yaml</include>
+                <include>PBSTemplate.xslt</include>
+                <include>SLURMTemplate.xslt</include>
+                <include>LSFTemplate.xslt</include>
+                <include>UGETemplate.xslt</include>
+                <include>ForkTemplate.xslt</include>
+                <include>gsissh.properties</include>
+                <include>airavata.jks</include>
+                <include>client_truststore.jks</include>
+                <include>airavata-default-xacml-policy.xml</include>
+            </includes>
+        </fileSet>
 
         <!-- Create logs directory -->
         <fileSet>
@@ -119,39 +119,42 @@
             </excludes>
         </fileSet>
 
-		<!-- ********************** Copy samples ********************** -->
-		<fileSet>
-			<directory>${project.build.directory}/samples/applications
-			</directory>
-			<outputDirectory>samples</outputDirectory>
-			<includes>
-				<include>*.sh</include>
-				<include>*.bat</include>
-			</includes>
-		</fileSet>
-
-	</fileSets>
-
-	<dependencySets>
-		<dependencySet>
-			<useProjectArtifact>false</useProjectArtifact>
-			<outputDirectory>lib</outputDirectory>
-			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
-			<includes>
-				<include>org.apache.derby:derby:jar</include>
-				<include>org.apache.derby:derbytools:jar</include>
-				<include>org.apache.derby:derbynet:jar</include>
-				<include>org.apache.derby:derbyclient:jar</include>
-			</includes>
-		</dependencySet>
-		<dependencySet>
-			<useProjectArtifact>false</useProjectArtifact>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>*:*:jar</include>
+        <!-- ********************** Copy samples ********************** -->
+        <fileSet>
+            <directory>${project.build.directory}/samples/applications
+            </directory>
+            <outputDirectory>samples</outputDirectory>
+            <includes>
+                <include>*.sh</include>
+                <include>*.bat</include>
             </includes>
-		</dependencySet>
+        </fileSet>
 
-	</dependencySets>
+    </fileSets>
+
+    <dependencySets>
+        <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>lib</outputDirectory>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+            <includes>
+                <include>org.apache.derby:derby:jar</include>
+                <include>org.apache.derby:derbytools:jar</include>
+                <include>org.apache.derby:derbynet:jar</include>
+                <include>org.apache.derby:derbyclient:jar</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>*:*:jar</include>
+            </includes>
+            <excludes>
+                <exclude>mysql:mysql-connector-java</exclude>
+            </excludes>
+        </dependencySet>
+
+    </dependencySets>
 
 </assembly>
