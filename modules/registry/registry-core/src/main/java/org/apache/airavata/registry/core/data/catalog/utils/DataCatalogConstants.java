@@ -22,11 +22,11 @@ package org.apache.airavata.registry.core.data.catalog.utils;
 
 public class DataCatalogConstants {
 	// table names
-	public static final String DATA_RESOURCE = "DataResource";
+	public static final String DATA_RESOURCE = "DataProduct";
 	public static final String DATA_REPLICA_LOCATION = "DataReplicaLocation";
 	public static final String CONFIGURATION = "Configuration";
 
-	// DataResource Table
+	// DataProduct Table
 	public final class DataResourceConstants {
 		public static final String RESOURCE_ID = "resourceId";
 		public static final String RESOURCE_NAME = "resourceName";

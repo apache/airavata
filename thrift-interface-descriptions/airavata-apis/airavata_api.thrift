@@ -40,7 +40,7 @@ include "../data-models/resource-catalog-models/storage_resource_model.thrift"
 include "../data-models/resource-catalog-models/gateway_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
 include "../data-models/workflow-models/workflow_data_model.thrift"
-include "../data-models/data-catalog-models/replica_catalog_models.thrift"
+include "../data-models/data-catalog-models/data_catalog_models.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API
@@ -2153,7 +2153,7 @@ service Airavata {
    * Add a Local data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
-   * @param resourceId
+   * @param productId
    *   The identifier of the compute resource to which JobSubmission protocol to be added
    *
    * @param DMType
@@ -2170,7 +2170,7 @@ service Airavata {
    *
    **/
   string addLocalDataMovementDetails(1: required security_model.AuthzToken authzToken,
-            2: required string resourceId,
+            2: required string productId,
             3: required data_movement_models.DMType dataMoveType,
             4: required i32 priorityOrder,
             5: required data_movement_models.LOCALDataMovement localDataMovement)
@@ -2223,7 +2223,7 @@ service Airavata {
    * Add a SCP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
-   * @param resourceId
+   * @param productId
    *   The identifier of the compute resource to which JobSubmission protocol to be added
    *
    * @param priorityOrder
@@ -2237,7 +2237,7 @@ service Airavata {
    *
   */
   string addSCPDataMovementDetails(1: required security_model.AuthzToken authzToken,
-            2: required string resourceId,
+            2: required string productId,
             3: required data_movement_models.DMType dataMoveType,
             4: required i32 priorityOrder,
             5: required data_movement_models.SCPDataMovement scpDataMovement)
@@ -2289,7 +2289,7 @@ service Airavata {
    * Add a UNICORE data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
-   * @param resourceId
+   * @param productId
    *   The identifier of the compute resource to which data movement protocol to be added
    *
    * @param priorityOrder
@@ -2303,7 +2303,7 @@ service Airavata {
    *
   */
  string addUnicoreDataMovementDetails(1: required security_model.AuthzToken authzToken,
-              2: required string resourceId,
+              2: required string productId,
               3: required data_movement_models.DMType dataMoveType,
               4: required i32 priorityOrder,
               5: required data_movement_models.UnicoreDataMovement unicoreDataMovement)
@@ -2358,7 +2358,7 @@ service Airavata {
    * Add a GridFTP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
-   * @param resourceId
+   * @param productId
    *   The identifier of the compute resource to which dataMovement protocol to be added
    *
    * @param DMType
@@ -2376,7 +2376,7 @@ service Airavata {
    **/
 
   string addGridFTPDataMovementDetails(1: required security_model.AuthzToken authzToken,
-            2: required string resourceId,
+            2: required string productId,
             3: required data_movement_models.DMType dataMoveType,
             4: required i32 priorityOrder,
             5: required data_movement_models.GridFTPDataMovement gridFTPDataMovement)
@@ -2529,7 +2529,7 @@ service Airavata {
    *
    **/
 
-  bool deleteDataMovementInterface(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
+  bool deleteDataMovementInterface(1: required security_model.AuthzToken authzToken, 2: required string productId,
             3: required string dataMovementInterfaceId,
             4: required data_movement_models.DMType dataMoveType,)
   	throws (1: airavata_errors.InvalidRequestException ire,
@@ -2959,55 +2959,6 @@ service Airavata {
                   2: airavata_errors.AiravataClientException ace,
                   3: airavata_errors.AiravataSystemException ase,
                   4: airavata_errors.AuthorizationException ae)
-
- /**
-  *
-  * Data Manager Related API Methods.
-  *
- **/
- string registerDataResource(1: required security_model.AuthzToken authzToken, 2: required replica_catalog_models.DataResourceModel dataResourceModel)
-          throws (1: airavata_errors.InvalidRequestException ire,
-                  2: airavata_errors.AiravataClientException ace,
-                  3: airavata_errors.AiravataSystemException ase,
-                  4: airavata_errors.AuthorizationException ae)
-
- void updateDataResource(1: required security_model.AuthzToken authzToken, 2: required replica_catalog_models.DataResourceModel dataResourceModel)
-           throws (1: airavata_errors.InvalidRequestException ire,
-                   2: airavata_errors.AiravataClientException ace,
-                   3: airavata_errors.AiravataSystemException ase,
-                   4: airavata_errors.AuthorizationException ae)
-
- void removeDataResource(1: required security_model.AuthzToken authzToken, 2: required string resourceId)
-           throws (1: airavata_errors.InvalidRequestException ire,
-                   2: airavata_errors.AiravataClientException ace,
-                   3: airavata_errors.AiravataSystemException ase,
-                   4: airavata_errors.AuthorizationException ae)
-
- replica_catalog_models.DataResourceModel getDataResource(1: required security_model.AuthzToken authzToken, 2: required string resourceId)
-            throws (1: airavata_errors.InvalidRequestException ire,
-                    2: airavata_errors.AiravataClientException ace,
-                    3: airavata_errors.AiravataSystemException ase,
-                    4: airavata_errors.AuthorizationException ae)
-
- string copyDataResource(1: required security_model.AuthzToken authzToken,
-                         2: required string resourceId,
-                         3: required string destStorageResourceId,
-                         4: required string destinationParentPath)
-           throws (1: airavata_errors.InvalidRequestException ire,
-                   2: airavata_errors.AiravataClientException ace,
-                   3: airavata_errors.AiravataSystemException ase,
-                   4: airavata_errors.AuthorizationException ae)
-
- string copyDataReplica(1: required security_model.AuthzToken authzToken,
-                         2: required string resourceId,
-                         3: required string replicaId,
-                         4: required string destStorageResourceId,
-                         5: required string destinationParentPath)
-           throws (1: airavata_errors.InvalidRequestException ire,
-                   2: airavata_errors.AiravataClientException ace,
-                   3: airavata_errors.AiravataSystemException ase,
-                   4: airavata_errors.AuthorizationException ae)
-
  //End of API
  }
 

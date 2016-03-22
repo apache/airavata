@@ -19,19 +19,21 @@
 
 package org.apache.airavata.registry.cpi;
 
-import org.apache.airavata.model.data.resource.*;
+
+import org.apache.airavata.model.data.product.DataProductModel;
+import org.apache.airavata.model.data.product.DataReplicaLocationModel;
 
 import java.util.List;
 
 public interface DataCatalog {
 
-    String registerResource(DataResourceModel resource) throws DataCatalogException;
+    String registerDataProduct(DataProductModel resource) throws DataCatalogException;
 
-    boolean removeResource(String resourceId) throws DataCatalogException;
+    boolean removeDataProduct(String resourceId) throws DataCatalogException;
 
-    boolean updateResource(DataResourceModel resource) throws DataCatalogException;
+    boolean updateDataProduct(DataProductModel resource) throws DataCatalogException;
 
-    DataResourceModel getResource(String resourceId) throws DataCatalogException;
+    DataProductModel getDataProduct(String resourceId) throws DataCatalogException;
 
     String registerReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws DataCatalogException;
 

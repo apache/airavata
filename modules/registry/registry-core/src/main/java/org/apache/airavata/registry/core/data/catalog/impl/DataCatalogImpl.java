@@ -21,11 +21,11 @@
 
 package org.apache.airavata.registry.core.data.catalog.impl;
 
-import org.apache.airavata.model.data.resource.DataReplicaLocationModel;
-import org.apache.airavata.model.data.resource.DataResourceModel;
+import org.apache.airavata.model.data.product.DataProductModel;
+import org.apache.airavata.model.data.product.DataReplicaLocationModel;
+import org.apache.airavata.registry.core.data.catalog.model.DataProduct;
 import org.apache.airavata.registry.core.data.catalog.model.DataReplicaLocation;
 import org.apache.airavata.registry.core.data.catalog.utils.DataCatalogJPAUtils;
-import org.apache.airavata.registry.core.data.catalog.model.DataResource;
 import org.apache.airavata.registry.core.data.catalog.utils.ThriftDataModelConversion;
 import org.apache.airavata.registry.cpi.DataCatalog;
 import org.apache.airavata.registry.cpi.DataCatalogException;
@@ -42,28 +42,28 @@ public class DataCatalogImpl implements DataCatalog {
     private final static Logger logger = LoggerFactory.getLogger(DataCatalogImpl.class);
 
     @Override
-    public String registerResource(DataResourceModel resourceModel) throws DataCatalogException {
-        String resourceId = UUID.randomUUID().toString();
-        resourceModel.setResourceId(resourceId);
+    public String registerDataProduct(DataProductModel productModel) throws DataCatalogException {
+        String productId = UUID.randomUUID().toString();
+        productModel.setProductId(productId);
         long currentTime = System.currentTimeMillis();
-        resourceModel.setCreationTime(currentTime);
-        resourceModel.setLastModifiedTime(currentTime);
-        if(resourceModel.getReplicaLocations() != null){
-            resourceModel.getReplicaLocations().stream().forEach(r-> {
-                r.setResourceId(resourceId);
+        productModel.setCreationTime(currentTime);
+        productModel.setLastModifiedTime(currentTime);
+        if(productModel.getReplicaLocations() != null){
+            productModel.getReplicaLocations().stream().forEach(r-> {
+                r.setProductId(productId);
                 r.setReplicaId(UUID.randomUUID().toString());
                 r.setCreationTime(currentTime);
                 r.setLastModifiedTime(currentTime);
             });
         }
-        resourceModel.setCreationTime(System.currentTimeMillis());
-        resourceModel.setLastModifiedTime(System.currentTimeMillis());
-        DataResource dataResource = ThriftDataModelConversion.getDataResource(resourceModel);
+        productModel.setCreationTime(System.currentTimeMillis());
+        productModel.setLastModifiedTime(System.currentTimeMillis());
+        DataProduct dataProduct = ThriftDataModelConversion.getDataProduct(productModel);
         EntityManager em = null;
         try {
             em = DataCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            em.persist(dataResource);
+            em.persist(dataProduct);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
@@ -77,19 +77,19 @@ public class DataCatalogImpl implements DataCatalog {
                 em.close();
             }
         }
-        return resourceId;
+        return productId;
     }
 
     @Override
-    public boolean removeResource(String resourceId) throws DataCatalogException {
+    public boolean removeDataProduct(String productId) throws DataCatalogException {
         EntityManager em = null;
         try {
             em = DataCatalogJPAUtils.getEntityManager();
-            DataResource dataResource = em.find(DataResource.class, resourceId);
-            if(dataResource == null)
+            DataProduct dataProduct = em.find(DataProduct.class, productId);
+            if(dataProduct == null)
                 return false;
             em.getTransaction().begin();
-            em.remove(dataResource);
+            em.remove(dataProduct);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
@@ -107,17 +107,17 @@ public class DataCatalogImpl implements DataCatalog {
     }
 
     @Override
-    public boolean updateResource(DataResourceModel resourceModel) throws DataCatalogException {
+    public boolean updateDataProduct(DataProductModel productModel) throws DataCatalogException {
         EntityManager em = null;
         try {
             em = DataCatalogJPAUtils.getEntityManager();
-            DataResource dataResource = em.find(DataResource.class, resourceModel.getResourceId());
-            if(dataResource == null)
+            DataProduct dataProduct = em.find(DataProduct.class, productModel.getProductId());
+            if(dataProduct == null)
                 return false;
             em.getTransaction().begin();
-            resourceModel.setCreationTime(dataResource.getCreationTime().getTime());
-            resourceModel.setLastModifiedTime(System.currentTimeMillis());
-            em.merge(ThriftDataModelConversion.getUpdatedDataResource(resourceModel, dataResource));
+            productModel.setCreationTime(dataProduct.getCreationTime().getTime());
+            productModel.setLastModifiedTime(System.currentTimeMillis());
+            em.merge(ThriftDataModelConversion.getUpdatedDataProduct(productModel, dataProduct));
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
@@ -135,12 +135,12 @@ public class DataCatalogImpl implements DataCatalog {
     }
 
     @Override
-    public DataResourceModel getResource(String resourceId) throws DataCatalogException {
+    public DataProductModel getDataProduct(String productId) throws DataCatalogException {
         EntityManager em = null;
         try {
             em = DataCatalogJPAUtils.getEntityManager();
-            DataResource dataResource = em.find(DataResource.class, resourceId);
-            return ThriftDataModelConversion.getDataResourceModel(dataResource);
+            DataProduct dataProduct = em.find(DataProduct.class, productId);
+            return ThriftDataModelConversion.getDataProductModel(dataProduct);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new DataCatalogException(e);
@@ -260,15 +260,16 @@ public class DataCatalogImpl implements DataCatalog {
     }
 
     @Override
-    public List<DataReplicaLocationModel> getAllReplicaLocations(String resourceId) throws DataCatalogException {
+    public List<DataReplicaLocationModel> getAllReplicaLocations(String
+                                                                             productId) throws DataCatalogException {
         EntityManager em = null;
         try {
             em = DataCatalogJPAUtils.getEntityManager();
-            DataResource dataResource = em.find(DataResource.class, resourceId);
-            if(dataResource == null)
+            DataProduct dataProduct = em.find(DataProduct.class, productId);
+            if(dataProduct == null)
                 return null;
             ArrayList<DataReplicaLocationModel> dataReplicaLocationModels = new ArrayList<>();
-            dataResource.getDataReplicaLocations().stream().forEach(rl->dataReplicaLocationModels
+            dataProduct.getDataReplicaLocations().stream().forEach(rl->dataReplicaLocationModels
                     .add(ThriftDataModelConversion.getDataReplicaLocationModel(rl)));
             return dataReplicaLocationModels;
         } catch (Exception e) {
