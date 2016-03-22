@@ -32,7 +32,7 @@ import java.util.Collection;
 public class DataReplicaLocation {
     private final static Logger logger = LoggerFactory.getLogger(DataReplicaLocation.class);
     private String replicaId;
-    private String resourceId;
+    private String productId;
     private String replicaName;
     private String replicaDescription;
     private String storageResourceId;
@@ -43,7 +43,7 @@ public class DataReplicaLocation {
     private Timestamp lastModifiedTime;
     private Timestamp validUntilTime;
 
-    private DataResource dataResource;
+    private DataProduct dataProduct;
     private Collection<DataReplicaMetaData> dataReplicaMetaData;
 
     @Id
@@ -56,13 +56,13 @@ public class DataReplicaLocation {
         this.replicaId = replicaId;
     }
 
-    @Column(name = "RESOURCE_ID")
-    public String getResourceId() {
-        return resourceId;
+    @Column(name = "PRODUCT_ID")
+    public String getProductId() {
+        return productId;
     }
 
-    public void setResourceId(String resourceId) {
-        this.resourceId = resourceId;
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
 
@@ -149,13 +149,13 @@ public class DataReplicaLocation {
     }
 
     @ManyToOne
-    @JoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID")
-    public DataResource getDataResource() {
-        return dataResource;
+    @JoinColumn(name = "PRODUCT_ID", referencedColumnName = "PRODUCT_ID")
+    public DataProduct getDataProduct() {
+        return dataProduct;
     }
 
-    public void setDataResource(DataResource dataResource) {
-        this.dataResource = dataResource;
+    public void setDataProduct(DataProduct dataProduct) {
+        this.dataProduct = dataProduct;
     }
 
     @OneToMany(mappedBy = "dataReplicaLocation", cascade = {CascadeType.ALL})

@@ -95,9 +95,9 @@
     </persistence-unit>
     <persistence-unit name="datacatalog_data">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-        <class>org.apache.airavata.registry.core.data.catalog.model.DataResource</class>
+        <class>org.apache.airavata.registry.core.data.catalog.model.DataProduct</class>
         <class>org.apache.airavata.registry.core.data.catalog.model.DataReplicaLocation</class>
-        <class>org.apache.airavata.registry.core.data.catalog.model.DataResourceMetaData</class>
+        <class>org.apache.airavata.registry.core.data.catalog.model.DataProductMetaData</class>
         <class>org.apache.airavata.registry.core.data.catalog.model.DataReplicaMetaData</class>
         <class>org.apache.airavata.registry.core.data.catalog.model.Configuration</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>

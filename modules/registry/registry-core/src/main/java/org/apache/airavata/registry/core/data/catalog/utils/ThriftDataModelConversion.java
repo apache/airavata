@@ -21,11 +21,11 @@
 
 package org.apache.airavata.registry.core.data.catalog.utils;
 
-import org.apache.airavata.model.data.resource.*;
+import org.apache.airavata.model.data.product.*;
+import org.apache.airavata.registry.core.data.catalog.model.DataProduct;
+import org.apache.airavata.registry.core.data.catalog.model.DataProductMetaData;
 import org.apache.airavata.registry.core.data.catalog.model.DataReplicaLocation;
 import org.apache.airavata.registry.core.data.catalog.model.DataReplicaMetaData;
-import org.apache.airavata.registry.core.data.catalog.model.DataResource;
-import org.apache.airavata.registry.core.data.catalog.model.DataResourceMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,115 +39,115 @@ public class ThriftDataModelConversion {
 
     private final static Logger logger = LoggerFactory.getLogger(ThriftDataModelConversion.class);
 
-    public static DataResourceModel getDataResourceModel(DataResource dataResource){
-        if (dataResource != null) {
-            DataResourceModel dataResourceModel = new DataResourceModel();
-            dataResourceModel.setResourceId(dataResource.getResourceId());
-            dataResourceModel.setGatewayId(dataResource.getGatewayId());
-            dataResourceModel.setParentResourceId(dataResource.getParentResourceId());
-            dataResourceModel.setResourceName(dataResource.getResourceName());
-            if(dataResource.getDataResourceType() != null)
-                dataResourceModel.setDataResourceType(DataResourceType.valueOf(dataResource.getDataResourceType()));
+    public static DataProductModel getDataProductModel(DataProduct dataProduct){
+        if (dataProduct != null) {
+            DataProductModel dataProductModel = new DataProductModel();
+            dataProductModel.setProductId(dataProduct.getResourceId());
+            dataProductModel.setGatewayId(dataProduct.getGatewayId());
+            dataProductModel.setParentProductId(dataProduct.getParentProductId());
+            dataProductModel.setProductName(dataProduct.getProductName());
+            if(dataProduct.getDataProductType() != null)
+                dataProductModel.setDataProductType(DataProductType.valueOf(dataProduct.getDataProductType()));
             else
-                dataResourceModel.setDataResourceType(DataResourceType.FILE);
-            dataResourceModel.setResourceDescription(dataResource.getResourceDescription());
-            dataResourceModel.setOwnerName(dataResource.getOwnerName());
-            dataResourceModel.setResourceSize(dataResource.getResourceSize());
-            if(dataResource.getCreationTime() != null)
-                dataResourceModel.setCreationTime(dataResource.getCreationTime().getTime());
-            if(dataResource.getLastModifiedTime() != null)
-                dataResourceModel.setLastModifiedTime(dataResource.getLastModifiedTime().getTime());
-            dataResourceModel.setResourceMetadata(getResourceMetaData(dataResource.getDataResourceMetaData()));
-            if(dataResource.getDataReplicaLocations() != null){
+                dataProductModel.setDataProductType(DataProductType.FILE);
+            dataProductModel.setProductDescription(dataProduct.getProductDescription());
+            dataProductModel.setOwnerName(dataProduct.getOwnerName());
+            dataProductModel.setProductSize(dataProduct.getProductSize());
+            if(dataProduct.getCreationTime() != null)
+                dataProductModel.setCreationTime(dataProduct.getCreationTime().getTime());
+            if(dataProduct.getLastModifiedTime() != null)
+                dataProductModel.setLastModifiedTime(dataProduct.getLastModifiedTime().getTime());
+            dataProductModel.setProductMetadata(getResourceMetaData(dataProduct.getDataProductMetaData()));
+            if(dataProduct.getDataReplicaLocations() != null){
                 ArrayList<DataReplicaLocationModel> dataReplicaLocationModels = new ArrayList<>();
-                dataResource.getDataReplicaLocations().stream().forEach(r->dataReplicaLocationModels
+                dataProduct.getDataReplicaLocations().stream().forEach(r->dataReplicaLocationModels
                         .add(getDataReplicaLocationModel(r)));
-                dataResourceModel.setReplicaLocations(dataReplicaLocationModels);
+                dataProductModel.setReplicaLocations(dataReplicaLocationModels);
             }
-            if(dataResourceModel.getDataResourceType().equals(DataResourceType.COLLECTION) && dataResource.getChildDataResources() != null){
-                ArrayList<DataResourceModel> childDataResources = new ArrayList<>();
-                dataResource.getChildDataResources().stream().forEach(r->childDataResources.add(getDataResourceModel(r)));
-                dataResourceModel.setChildResources(childDataResources);
+            if(dataProductModel.getDataProductType().equals(DataProductType.COLLECTION) && dataProduct.getChildDataProducts() != null){
+                ArrayList<DataProductModel> childDataProducts = new ArrayList<>();
+                dataProduct.getChildDataProducts().stream().forEach(r->childDataProducts.add(getDataProductModel(r)));
+                dataProductModel.setChildProducts(childDataProducts);
             }
-            return dataResourceModel;
+            return dataProductModel;
         }
         return null;
     }
 
-    public static DataResource getDataResource(DataResourceModel dataResourceModel){
-        if(dataResourceModel != null){
-            DataResource dataResource = new DataResource();
-            return getUpdatedDataResource(dataResourceModel, dataResource);
+    public static DataProduct getDataProduct(DataProductModel dataProductModel){
+        if(dataProductModel != null){
+            DataProduct dataProduct = new DataProduct();
+            return getUpdatedDataProduct(dataProductModel, dataProduct);
         }
         return null;
     }
 
-    public static DataResource getUpdatedDataResource(DataResourceModel dataResourceModel, DataResource dataResource){
-        dataResource.setResourceId(dataResourceModel.getResourceId());
-        dataResource.setGatewayId(dataResourceModel.getGatewayId());
-        dataResource.setResourceName(dataResourceModel.getResourceName());
-        dataResource.setParentResourceId(dataResourceModel.getParentResourceId());
-        if(dataResourceModel.getDataResourceType() != null)
-            dataResource.setDataResourceType(dataResourceModel.getDataResourceType().toString());
+    public static DataProduct getUpdatedDataProduct(DataProductModel dataProductModel, DataProduct dataProduct){
+        dataProduct.setResourceId(dataProductModel.getProductId());
+        dataProduct.setGatewayId(dataProductModel.getGatewayId());
+        dataProduct.setProductName(dataProductModel.getProductName());
+        dataProduct.setParentProductId(dataProductModel.getParentProductId());
+        if(dataProductModel.getDataProductType() != null)
+            dataProduct.setDataProductType(dataProductModel.getDataProductType().toString());
         else
-            dataResource.setDataResourceType(DataResourceType.FILE.toString());
-        dataResource.setResourceDescription(dataResourceModel.getResourceDescription());
-        dataResource.setOwnerName(dataResourceModel.getOwnerName());
-        dataResource.setResourceSize(dataResourceModel.getResourceSize());
-        if(dataResourceModel.getCreationTime() > 0)
-            dataResource.setCreationTime(new Timestamp(dataResourceModel.getCreationTime()));
-        if(dataResourceModel.getLastModifiedTime() > 0)
-            dataResource.setLastModifiedTime(new Timestamp(dataResourceModel.getLastModifiedTime()));
-        ArrayList<DataResourceMetaData> dataResourceMetaData = new ArrayList<>();
-        if(dataResourceModel.getResourceMetadata() != null) {
-            dataResourceModel.getResourceMetadata().keySet().stream().forEach(k -> {
-                String v = dataResourceModel.getResourceMetadata().get(k);
-                DataResourceMetaData temp = new DataResourceMetaData();
-                temp.setResourceId(dataResource.getResourceId());
+            dataProduct.setDataProductType(DataProductType.FILE.toString());
+        dataProduct.setProductDescription(dataProductModel.getProductDescription());
+        dataProduct.setOwnerName(dataProductModel.getOwnerName());
+        dataProduct.setProductSize(dataProductModel.getProductSize());
+        if(dataProductModel.getCreationTime() > 0)
+            dataProduct.setCreationTime(new Timestamp(dataProductModel.getCreationTime()));
+        if(dataProductModel.getLastModifiedTime() > 0)
+            dataProduct.setLastModifiedTime(new Timestamp(dataProductModel.getLastModifiedTime()));
+        ArrayList<DataProductMetaData> dataProductMetaData = new ArrayList<>();
+        if(dataProductModel.getProductMetadata() != null) {
+            dataProductModel.getProductMetadata().keySet().stream().forEach(k -> {
+                String v = dataProductModel.getProductMetadata().get(k);
+                DataProductMetaData temp = new DataProductMetaData();
+                temp.setProductId(dataProduct.getResourceId());
                 temp.setKey(k);
                 temp.setValue(v);
-                dataResourceMetaData.add(temp);
+                dataProductMetaData.add(temp);
             });
-            dataResource.setDataResourceMetaData(dataResourceMetaData);
+            dataProduct.setDataProductMetaData(dataProductMetaData);
         }
-        if(dataResourceModel.getReplicaLocations() != null){
+        if(dataProductModel.getReplicaLocations() != null){
             ArrayList<DataReplicaLocation> dataReplicaLocations = new ArrayList<>();
-            dataResourceModel.getReplicaLocations().stream().forEach(r->{
+            dataProductModel.getReplicaLocations().stream().forEach(r->{
                 DataReplicaLocation dataReplicaLocationModel = getDataReplicaLocation(r);
-                dataReplicaLocationModel.setResourceId(dataResourceModel.getResourceId());
+                dataReplicaLocationModel.setProductId(dataProductModel.getProductId());
                 dataReplicaLocations.add(dataReplicaLocationModel);
             });
-            dataResource.setDataReplicaLocations(dataReplicaLocations);
+            dataProduct.setDataReplicaLocations(dataReplicaLocations);
         }
-        if(dataResourceModel.getDataResourceType() == DataResourceType.COLLECTION && dataResourceModel.getChildResources() != null){
-            ArrayList<DataResource> childDataResources = new ArrayList<>();
-            dataResourceModel.getChildResources().stream().forEach(r->childDataResources.add(getDataResource(r)));
-            dataResource.setChildDataResources(childDataResources);
+        if(dataProductModel.getDataProductType() == DataProductType.COLLECTION && dataProductModel.getChildProducts() != null){
+            ArrayList<DataProduct> childDataProducts = new ArrayList<>();
+            dataProductModel.getChildProducts().stream().forEach(r->childDataProducts.add(getDataProduct(r)));
+            dataProduct.setChildDataProducts(childDataProducts);
         }
-        return dataResource;
+        return dataProduct;
     }
 
     public static DataReplicaLocationModel getDataReplicaLocationModel(DataReplicaLocation replicaLocation){
         if (replicaLocation != null) {
             DataReplicaLocationModel replicaLocationModel = new DataReplicaLocationModel();
             replicaLocationModel.setReplicaId(replicaLocation.getReplicaId());
-            replicaLocationModel.setResourceId(replicaLocation.getResourceId());
+            replicaLocationModel.setProductId(replicaLocation.getProductId());
             replicaLocationModel.setReplicaName(replicaLocation.getReplicaName());
             replicaLocationModel.setReplicaDescription(replicaLocation.getReplicaDescription());
             replicaLocationModel.setStorageResourceId(replicaLocation.getStorageResourceId());
             if(replicaLocation.getValidUntilTime() != null)
                 replicaLocationModel.setValidUntilTime(replicaLocation.getValidUntilTime().getTime());
-            replicaLocationModel.setFileAbsolutePath(replicaLocation.getFileAbsolutePath());
+            replicaLocationModel.setFilePath(replicaLocation.getFileAbsolutePath());
             if(replicaLocation.getCreationTime() != null)
                 replicaLocationModel.setCreationTime(replicaLocation.getCreationTime().getTime());
             if(replicaLocation.getLastModifiedTime() != null)
                 replicaLocationModel.setLastModifiedTime(replicaLocation.getLastModifiedTime().getTime());
             if(replicaLocation.getReplicaLocationCategory() != null)
                 replicaLocationModel.setReplicaLocationCategory(ReplicaLocationCategory.valueOf(replicaLocation
-                    .getReplicaLocationCategory().toString()));
+                        .getReplicaLocationCategory().toString()));
             if(replicaLocation.getReplicaPersistentType() != null)
                 replicaLocationModel.setReplicaPersistentType(ReplicaPersistentType.valueOf(replicaLocation
-                    .getReplicaPersistentType().toString()));
+                        .getReplicaPersistentType().toString()));
             replicaLocationModel.setReplicaMetadata(getReplicaMetaData(replicaLocation.getDataReplicaMetaData()));
             return replicaLocationModel;
         }
@@ -165,11 +165,11 @@ public class ThriftDataModelConversion {
     public static DataReplicaLocation getUpdatedDataReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel,
                                                                     DataReplicaLocation dataReplicaLocation){
         dataReplicaLocation.setReplicaId(dataReplicaLocationModel.getReplicaId());
-        dataReplicaLocation.setResourceId(dataReplicaLocationModel.getResourceId());
+        dataReplicaLocation.setProductId(dataReplicaLocationModel.getProductId());
         dataReplicaLocation.setReplicaName(dataReplicaLocationModel.getReplicaName());
         dataReplicaLocation.setReplicaDescription(dataReplicaLocationModel.getReplicaDescription());
         dataReplicaLocation.setStorageResourceId(dataReplicaLocationModel.getStorageResourceId());
-        dataReplicaLocation.setFileAbsolutePath(dataReplicaLocationModel.getFileAbsolutePath());
+        dataReplicaLocation.setFileAbsolutePath(dataReplicaLocationModel.getFilePath());
         if(dataReplicaLocationModel.getValidUntilTime() > 0)
             dataReplicaLocation.setValidUntilTime(new Timestamp(dataReplicaLocationModel.getValidUntilTime()));
         if(dataReplicaLocationModel.getCreationTime() > 0)
@@ -185,7 +185,7 @@ public class ThriftDataModelConversion {
             dataReplicaLocationModel.getReplicaMetadata().keySet().stream().forEach(k -> {
                 String v = dataReplicaLocationModel.getReplicaMetadata().get(k);
                 DataReplicaMetaData temp = new DataReplicaMetaData();
-                temp.setReplicaId(dataReplicaLocationModel.getResourceId());
+                temp.setReplicaId(dataReplicaLocationModel.getProductId());
                 temp.setKey(k);
                 temp.setValue(v);
                 dataReplicaMetadata.add(temp);
@@ -195,10 +195,10 @@ public class ThriftDataModelConversion {
         return dataReplicaLocation;
     }
 
-    public static Map<String, String> getResourceMetaData(Collection<DataResourceMetaData> dataResourceMetaData){
+    public static Map<String, String> getResourceMetaData(Collection<DataProductMetaData> dataProductMetaData){
         HashMap<String, String> metadata = new HashMap<>();
-        if(dataResourceMetaData!=null && !dataResourceMetaData.isEmpty()) {
-            dataResourceMetaData.stream().forEach(m -> metadata.put(m.getKey(),m.getValue()));
+        if(dataProductMetaData!=null && !dataProductMetaData.isEmpty()) {
+            dataProductMetaData.stream().forEach(m -> metadata.put(m.getKey(),m.getValue()));
         }
         return metadata;
     }

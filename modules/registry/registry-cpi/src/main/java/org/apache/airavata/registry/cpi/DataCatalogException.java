@@ -20,7 +20,6 @@
 package org.apache.airavata.registry.cpi;
 
 public class DataCatalogException extends Exception{
-    private static final long serialVersionUID = -2849422320739447602L;
 
     public DataCatalogException(Throwable e) {
         super(e);
