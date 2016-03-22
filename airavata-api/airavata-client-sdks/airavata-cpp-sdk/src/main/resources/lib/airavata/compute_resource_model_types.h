@@ -314,6 +314,10 @@ inline std::ostream& operator<<(std::ostream& out, const BatchQueue& obj)
   return out;
 }
 
+typedef struct _LOCALSubmission__isset {
+  _LOCALSubmission__isset() : securityProtocol(false) {}
+  bool securityProtocol :1;
+} _LOCALSubmission__isset;
 
 class LOCALSubmission {
  public:
@@ -325,22 +329,26 @@ class LOCALSubmission {
 
   virtual ~LOCALSubmission() throw();
   std::string jobSubmissionInterfaceId;
-   ::apache::airavata::model::data::movement::SecurityProtocol::type securityProtocol;
   ResourceJobManager resourceJobManager;
+   ::apache::airavata::model::data::movement::SecurityProtocol::type securityProtocol;
+
+  _LOCALSubmission__isset __isset;
 
   void __set_jobSubmissionInterfaceId(const std::string& val);
 
-  void __set_securityProtocol(const  ::apache::airavata::model::data::movement::SecurityProtocol::type val);
-
   void __set_resourceJobManager(const ResourceJobManager& val);
+
+  void __set_securityProtocol(const  ::apache::airavata::model::data::movement::SecurityProtocol::type val);
 
   bool operator == (const LOCALSubmission & rhs) const
   {
     if (!(jobSubmissionInterfaceId == rhs.jobSubmissionInterfaceId))
       return false;
-    if (!(securityProtocol == rhs.securityProtocol))
-      return false;
     if (!(resourceJobManager == rhs.resourceJobManager))
+      return false;
+    if (__isset.securityProtocol != rhs.__isset.securityProtocol)
+      return false;
+    else if (__isset.securityProtocol && !(securityProtocol == rhs.securityProtocol))
       return false;
     return true;
   }

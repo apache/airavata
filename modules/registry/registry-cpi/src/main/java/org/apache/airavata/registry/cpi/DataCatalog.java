@@ -26,6 +26,7 @@ import org.apache.airavata.model.data.product.DataReplicaLocationModel;
 import java.util.List;
 
 public interface DataCatalog {
+    String schema = "airavata-dp";
 
     String registerDataProduct(DataProductModel resource) throws DataCatalogException;
 
