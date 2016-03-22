@@ -717,13 +717,13 @@ class LOCALSubmission {
    */
   public $jobSubmissionInterfaceId = "DO_NOT_SET_AT_CLIENTS";
   /**
-   * @var int
-   */
-  public $securityProtocol = null;
-  /**
    * @var \Airavata\Model\AppCatalog\ComputeResource\ResourceJobManager
    */
   public $resourceJobManager = null;
+  /**
+   * @var int
+   */
+  public $securityProtocol = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -733,13 +733,13 @@ class LOCALSubmission {
           'type' => TType::STRING,
           ),
         2 => array(
-          'var' => 'securityProtocol',
-          'type' => TType::I32,
-          ),
-        3 => array(
           'var' => 'resourceJobManager',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\AppCatalog\ComputeResource\ResourceJobManager',
+          ),
+        3 => array(
+          'var' => 'securityProtocol',
+          'type' => TType::I32,
           ),
         );
     }
@@ -747,11 +747,11 @@ class LOCALSubmission {
       if (isset($vals['jobSubmissionInterfaceId'])) {
         $this->jobSubmissionInterfaceId = $vals['jobSubmissionInterfaceId'];
       }
-      if (isset($vals['securityProtocol'])) {
-        $this->securityProtocol = $vals['securityProtocol'];
-      }
       if (isset($vals['resourceJobManager'])) {
         $this->resourceJobManager = $vals['resourceJobManager'];
+      }
+      if (isset($vals['securityProtocol'])) {
+        $this->securityProtocol = $vals['securityProtocol'];
       }
     }
   }
@@ -783,16 +783,16 @@ class LOCALSubmission {
           }
           break;
         case 2:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->securityProtocol);
+          if ($ftype == TType::STRUCT) {
+            $this->resourceJobManager = new \Airavata\Model\AppCatalog\ComputeResource\ResourceJobManager();
+            $xfer += $this->resourceJobManager->read($input);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 3:
-          if ($ftype == TType::STRUCT) {
-            $this->resourceJobManager = new \Airavata\Model\AppCatalog\ComputeResource\ResourceJobManager();
-            $xfer += $this->resourceJobManager->read($input);
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->securityProtocol);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -815,17 +815,17 @@ class LOCALSubmission {
       $xfer += $output->writeString($this->jobSubmissionInterfaceId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->securityProtocol !== null) {
-      $xfer += $output->writeFieldBegin('securityProtocol', TType::I32, 2);
-      $xfer += $output->writeI32($this->securityProtocol);
-      $xfer += $output->writeFieldEnd();
-    }
     if ($this->resourceJobManager !== null) {
       if (!is_object($this->resourceJobManager)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('resourceJobManager', TType::STRUCT, 3);
+      $xfer += $output->writeFieldBegin('resourceJobManager', TType::STRUCT, 2);
       $xfer += $this->resourceJobManager->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->securityProtocol !== null) {
+      $xfer += $output->writeFieldBegin('securityProtocol', TType::I32, 3);
+      $xfer += $output->writeI32($this->securityProtocol);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

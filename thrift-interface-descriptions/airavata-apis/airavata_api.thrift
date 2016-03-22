@@ -2959,6 +2959,29 @@ service Airavata {
                   2: airavata_errors.AiravataClientException ace,
                   3: airavata_errors.AiravataSystemException ase,
                   4: airavata_errors.AuthorizationException ae)
+
+
+ /**
+ * API Methods related to data catalog
+ **/
+ string registerDataProduct(1: required security_model.AuthzToken authzToken, 2: required  data_catalog_models.DataProductModel dataProductModel)
+            throws (1: airavata_errors.InvalidRequestException ire,
+                              2: airavata_errors.AiravataClientException ace,
+                              3: airavata_errors.AiravataSystemException ase,
+                              4: airavata_errors.AuthorizationException ae)
+
+ data_catalog_models.DataProductModel getDataProduct(1: required security_model.AuthzToken authzToken, 2: required  string dataProductUri)
+             throws (1: airavata_errors.InvalidRequestException ire,
+                               2: airavata_errors.AiravataClientException ace,
+                               3: airavata_errors.AiravataSystemException ase,
+                               4: airavata_errors.AuthorizationException ae)
+
+ string registerReplicaLocation(1: required security_model.AuthzToken authzToken, 2: required  data_catalog_models.DataReplicaLocationModel replicaLocationModel)
+              throws (1: airavata_errors.InvalidRequestException ire,
+                                2: airavata_errors.AiravataClientException ace,
+                                3: airavata_errors.AiravataSystemException ase,
+                                4: airavata_errors.AuthorizationException ae)
+
  //End of API
  }
 

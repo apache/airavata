@@ -2179,7 +2179,7 @@ class AiravataHandler : virtual public AiravataIf {
    * Add a Local data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
-   * @param productId
+   * @param productUri
    *   The identifier of the compute resource to which JobSubmission protocol to be added
    * 
    * @param DMType
@@ -2197,12 +2197,12 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * 
    * @param authzToken
-   * @param productId
+   * @param productUri
    * @param dataMoveType
    * @param priorityOrder
    * @param localDataMovement
    */
-  void addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement) {
+  void addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement) {
     // Your implementation goes here
     printf("addLocalDataMovementDetails\n");
   }
@@ -2255,7 +2255,7 @@ class AiravataHandler : virtual public AiravataIf {
    * Add a SCP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
-   * @param productId
+   * @param productUri
    *   The identifier of the compute resource to which JobSubmission protocol to be added
    * 
    * @param priorityOrder
@@ -2269,12 +2269,12 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * 
    * @param authzToken
-   * @param productId
+   * @param productUri
    * @param dataMoveType
    * @param priorityOrder
    * @param scpDataMovement
    */
-  void addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement) {
+  void addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement) {
     // Your implementation goes here
     printf("addSCPDataMovementDetails\n");
   }
@@ -2326,7 +2326,7 @@ class AiravataHandler : virtual public AiravataIf {
    * Add a UNICORE data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
-   * @param productId
+   * @param productUri
    *   The identifier of the compute resource to which data movement protocol to be added
    * 
    * @param priorityOrder
@@ -2340,12 +2340,12 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * 
    * @param authzToken
-   * @param productId
+   * @param productUri
    * @param dataMoveType
    * @param priorityOrder
    * @param unicoreDataMovement
    */
-  void addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement) {
+  void addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement) {
     // Your implementation goes here
     printf("addUnicoreDataMovementDetails\n");
   }
@@ -2399,7 +2399,7 @@ class AiravataHandler : virtual public AiravataIf {
    * Add a GridFTP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
-   * @param productId
+   * @param productUri
    *   The identifier of the compute resource to which dataMovement protocol to be added
    * 
    * @param DMType
@@ -2417,12 +2417,12 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * 
    * @param authzToken
-   * @param productId
+   * @param productUri
    * @param dataMoveType
    * @param priorityOrder
    * @param gridFTPDataMovement
    */
-  void addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement) {
+  void addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement) {
     // Your implementation goes here
     printf("addGridFTPDataMovementDetails\n");
   }
@@ -2584,11 +2584,11 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * 
    * @param authzToken
-   * @param productId
+   * @param productUri
    * @param dataMovementInterfaceId
    * @param dataMoveType
    */
-  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType) {
+  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType) {
     // Your implementation goes here
     printf("deleteDataMovementInterface\n");
   }
@@ -3020,6 +3020,28 @@ class AiravataHandler : virtual public AiravataIf {
   bool isWorkflowExistWithName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName) {
     // Your implementation goes here
     printf("isWorkflowExistWithName\n");
+  }
+
+  /**
+   * API Methods related to data catalog
+   * 
+   * 
+   * @param authzToken
+   * @param dataProductModel
+   */
+  void registerDataProduct(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataProductModel& dataProductModel) {
+    // Your implementation goes here
+    printf("registerDataProduct\n");
+  }
+
+  void getDataProduct( ::apache::airavata::model::data::product::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataProductUri) {
+    // Your implementation goes here
+    printf("getDataProduct\n");
+  }
+
+  void registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataReplicaLocationModel& replicaLocationModel) {
+    // Your implementation goes here
+    printf("registerReplicaLocation\n");
   }
 
 };

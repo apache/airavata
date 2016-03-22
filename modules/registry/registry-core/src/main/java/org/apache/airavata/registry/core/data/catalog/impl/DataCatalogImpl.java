@@ -43,7 +43,18 @@ public class DataCatalogImpl implements DataCatalog {
 
     @Override
     public String registerDataProduct(DataProductModel productModel) throws DataCatalogException {
-        String productUri = UUID.randomUUID().toString();
+        if(productModel.getOwnerName() == null || productModel.getGatewayId() == null || productModel
+                .getLogicalPath() == null || !productModel.getLogicalPath().startsWith("/")){
+            throw new DataCatalogException("owner name, gateway id and logical path should be non empty and logical path" +
+                    " should start with /");
+        }
+        if(!productModel.getLogicalPath().endsWith(productModel.getProductName())){
+            if(!productModel.getLogicalPath().endsWith("/"))
+                productModel.setLogicalPath(productModel.getLogicalPath()+"/");
+            productModel.setLogicalPath(productModel.getLogicalPath()+productModel.getProductName());
+        }
+        String productUri = DataCatalog.schema + "://" + productModel.getOwnerName() + "@" + productModel.getGatewayId()
+                + productModel.getLogicalPath();
         productModel.setProductUri(productUri);
         long currentTime = System.currentTimeMillis();
         productModel.setCreationTime(currentTime);
@@ -260,8 +271,7 @@ public class DataCatalogImpl implements DataCatalog {
     }
 
     @Override
-    public List<DataReplicaLocationModel> getAllReplicaLocations(String
-                                                                             productUri) throws DataCatalogException {
+    public List<DataReplicaLocationModel> getAllReplicaLocations(String productUri) throws DataCatalogException {
         EntityManager em = null;
         try {
             em = DataCatalogJPAUtils.getEntityManager();
