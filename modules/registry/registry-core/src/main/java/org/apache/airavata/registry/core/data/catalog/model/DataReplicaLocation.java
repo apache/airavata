@@ -32,11 +32,11 @@ import java.util.Collection;
 public class DataReplicaLocation {
     private final static Logger logger = LoggerFactory.getLogger(DataReplicaLocation.class);
     private String replicaId;
-    private String productId;
+    private String productUri;
     private String replicaName;
     private String replicaDescription;
     private String storageResourceId;
-    private String fileAbsolutePath;
+    private String filePath;
     private String replicaLocationCategory;
     private String replicaPersistentType;
     private Timestamp creationTime;
@@ -56,13 +56,13 @@ public class DataReplicaLocation {
         this.replicaId = replicaId;
     }
 
-    @Column(name = "PRODUCT_ID")
-    public String getProductId() {
-        return productId;
+    @Column(name = "PRODUCT_URI")
+    public String getProductUri() {
+        return productUri;
     }
 
-    public void setProductId(String productId) {
-        this.productId = productId;
+    public void setProductUri(String productUri) {
+        this.productUri = productUri;
     }
 
 
@@ -93,13 +93,13 @@ public class DataReplicaLocation {
         this.storageResourceId = storageResourceId;
     }
 
-    @Column(name = "FILE_ABSOLUTE_PATH")
-    public String getFileAbsolutePath() {
-        return fileAbsolutePath;
+    @Column(name = "FILE_PATH")
+    public String getFilePath() {
+        return filePath;
     }
 
-    public void setFileAbsolutePath(String fileAbsolutePath) {
-        this.fileAbsolutePath = fileAbsolutePath;
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
     @Column(name = "CREATION_TIME")
@@ -149,7 +149,7 @@ public class DataReplicaLocation {
     }
 
     @ManyToOne
-    @JoinColumn(name = "PRODUCT_ID", referencedColumnName = "PRODUCT_ID")
+    @JoinColumn(name = "PRODUCT_URI", referencedColumnName = "PRODUCT_URI")
     public DataProduct getDataProduct() {
         return dataProduct;
     }

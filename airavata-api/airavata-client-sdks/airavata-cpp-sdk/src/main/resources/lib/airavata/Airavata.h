@@ -1910,7 +1910,7 @@ class AiravataIf {
    * Add a Local data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
-   * @param resourceId
+   * @param productId
    *   The identifier of the compute resource to which JobSubmission protocol to be added
    * 
    * @param DMType
@@ -1928,12 +1928,12 @@ class AiravataIf {
    * 
    * 
    * @param authzToken
-   * @param resourceId
+   * @param productId
    * @param dataMoveType
    * @param priorityOrder
    * @param localDataMovement
    */
-  virtual void addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement) = 0;
+  virtual void addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement) = 0;
 
   /**
    * 
@@ -1977,7 +1977,7 @@ class AiravataIf {
    * Add a SCP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
-   * @param resourceId
+   * @param productId
    *   The identifier of the compute resource to which JobSubmission protocol to be added
    * 
    * @param priorityOrder
@@ -1991,12 +1991,12 @@ class AiravataIf {
    * 
    * 
    * @param authzToken
-   * @param resourceId
+   * @param productId
    * @param dataMoveType
    * @param priorityOrder
    * @param scpDataMovement
    */
-  virtual void addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement) = 0;
+  virtual void addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement) = 0;
 
   /**
    * 
@@ -2039,7 +2039,7 @@ class AiravataIf {
    * Add a UNICORE data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
-   * @param resourceId
+   * @param productId
    *   The identifier of the compute resource to which data movement protocol to be added
    * 
    * @param priorityOrder
@@ -2053,12 +2053,12 @@ class AiravataIf {
    * 
    * 
    * @param authzToken
-   * @param resourceId
+   * @param productId
    * @param dataMoveType
    * @param priorityOrder
    * @param unicoreDataMovement
    */
-  virtual void addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement) = 0;
+  virtual void addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement) = 0;
 
   /**
    * 
@@ -2103,7 +2103,7 @@ class AiravataIf {
    * Add a GridFTP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
-   * @param resourceId
+   * @param productId
    *   The identifier of the compute resource to which dataMovement protocol to be added
    * 
    * @param DMType
@@ -2121,12 +2121,12 @@ class AiravataIf {
    * 
    * 
    * @param authzToken
-   * @param resourceId
+   * @param productId
    * @param dataMoveType
    * @param priorityOrder
    * @param gridFTPDataMovement
    */
-  virtual void addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement) = 0;
+  virtual void addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement) = 0;
 
   /**
    * Update the given GridFTP data movement details to a compute resource
@@ -2264,11 +2264,11 @@ class AiravataIf {
    * 
    * 
    * @param authzToken
-   * @param resourceId
+   * @param productId
    * @param dataMovementInterfaceId
    * @param dataMoveType
    */
-  virtual bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType) = 0;
+  virtual bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType) = 0;
   virtual void registerResourceJobManager(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager) = 0;
   virtual bool updateResourceJobManager(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceJobManagerId, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& updatedResourceJobManager) = 0;
   virtual void getResourceJobManager( ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceJobManagerId) = 0;
@@ -2925,7 +2925,7 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  void addLocalDataMovementDetails(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* resourceId */, const  ::apache::airavata::model::data::movement::DMType::type /* dataMoveType */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::data::movement::LOCALDataMovement& /* localDataMovement */) {
+  void addLocalDataMovementDetails(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* productId */, const  ::apache::airavata::model::data::movement::DMType::type /* dataMoveType */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::data::movement::LOCALDataMovement& /* localDataMovement */) {
     return;
   }
   bool updateLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* dataMovementInterfaceId */, const  ::apache::airavata::model::data::movement::LOCALDataMovement& /* localDataMovement */) {
@@ -2935,7 +2935,7 @@ class AiravataNull : virtual public AiravataIf {
   void getLocalDataMovement( ::apache::airavata::model::data::movement::LOCALDataMovement& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* dataMovementId */) {
     return;
   }
-  void addSCPDataMovementDetails(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* resourceId */, const  ::apache::airavata::model::data::movement::DMType::type /* dataMoveType */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::data::movement::SCPDataMovement& /* scpDataMovement */) {
+  void addSCPDataMovementDetails(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* productId */, const  ::apache::airavata::model::data::movement::DMType::type /* dataMoveType */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::data::movement::SCPDataMovement& /* scpDataMovement */) {
     return;
   }
   bool updateSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* dataMovementInterfaceId */, const  ::apache::airavata::model::data::movement::SCPDataMovement& /* scpDataMovement */) {
@@ -2945,7 +2945,7 @@ class AiravataNull : virtual public AiravataIf {
   void getSCPDataMovement( ::apache::airavata::model::data::movement::SCPDataMovement& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* dataMovementId */) {
     return;
   }
-  void addUnicoreDataMovementDetails(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* resourceId */, const  ::apache::airavata::model::data::movement::DMType::type /* dataMoveType */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& /* unicoreDataMovement */) {
+  void addUnicoreDataMovementDetails(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* productId */, const  ::apache::airavata::model::data::movement::DMType::type /* dataMoveType */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& /* unicoreDataMovement */) {
     return;
   }
   bool updateUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* dataMovementInterfaceId */, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& /* unicoreDataMovement */) {
@@ -2955,7 +2955,7 @@ class AiravataNull : virtual public AiravataIf {
   void getUnicoreDataMovement( ::apache::airavata::model::data::movement::UnicoreDataMovement& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* dataMovementId */) {
     return;
   }
-  void addGridFTPDataMovementDetails(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* resourceId */, const  ::apache::airavata::model::data::movement::DMType::type /* dataMoveType */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& /* gridFTPDataMovement */) {
+  void addGridFTPDataMovementDetails(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* productId */, const  ::apache::airavata::model::data::movement::DMType::type /* dataMoveType */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& /* gridFTPDataMovement */) {
     return;
   }
   bool updateGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* dataMovementInterfaceId */, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& /* gridFTPDataMovement */) {
@@ -2985,7 +2985,7 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* resourceId */, const std::string& /* dataMovementInterfaceId */, const  ::apache::airavata::model::data::movement::DMType::type /* dataMoveType */) {
+  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* productId */, const std::string& /* dataMovementInterfaceId */, const  ::apache::airavata::model::data::movement::DMType::type /* dataMoveType */) {
     bool _return = false;
     return _return;
   }
@@ -15668,19 +15668,19 @@ class Airavata_addLocalDataMovementDetails_args {
 
   Airavata_addLocalDataMovementDetails_args(const Airavata_addLocalDataMovementDetails_args&);
   Airavata_addLocalDataMovementDetails_args& operator=(const Airavata_addLocalDataMovementDetails_args&);
-  Airavata_addLocalDataMovementDetails_args() : resourceId(), dataMoveType(( ::apache::airavata::model::data::movement::DMType::type)0), priorityOrder(0) {
+  Airavata_addLocalDataMovementDetails_args() : productId(), dataMoveType(( ::apache::airavata::model::data::movement::DMType::type)0), priorityOrder(0) {
   }
 
   virtual ~Airavata_addLocalDataMovementDetails_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
-  std::string resourceId;
+  std::string productId;
    ::apache::airavata::model::data::movement::DMType::type dataMoveType;
   int32_t priorityOrder;
    ::apache::airavata::model::data::movement::LOCALDataMovement localDataMovement;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
-  void __set_resourceId(const std::string& val);
+  void __set_productId(const std::string& val);
 
   void __set_dataMoveType(const  ::apache::airavata::model::data::movement::DMType::type val);
 
@@ -15692,7 +15692,7 @@ class Airavata_addLocalDataMovementDetails_args {
   {
     if (!(authzToken == rhs.authzToken))
       return false;
-    if (!(resourceId == rhs.resourceId))
+    if (!(productId == rhs.productId))
       return false;
     if (!(dataMoveType == rhs.dataMoveType))
       return false;
@@ -15720,7 +15720,7 @@ class Airavata_addLocalDataMovementDetails_pargs {
 
   virtual ~Airavata_addLocalDataMovementDetails_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* resourceId;
+  const std::string* productId;
   const  ::apache::airavata::model::data::movement::DMType::type* dataMoveType;
   const int32_t* priorityOrder;
   const  ::apache::airavata::model::data::movement::LOCALDataMovement* localDataMovement;
@@ -16100,19 +16100,19 @@ class Airavata_addSCPDataMovementDetails_args {
 
   Airavata_addSCPDataMovementDetails_args(const Airavata_addSCPDataMovementDetails_args&);
   Airavata_addSCPDataMovementDetails_args& operator=(const Airavata_addSCPDataMovementDetails_args&);
-  Airavata_addSCPDataMovementDetails_args() : resourceId(), dataMoveType(( ::apache::airavata::model::data::movement::DMType::type)0), priorityOrder(0) {
+  Airavata_addSCPDataMovementDetails_args() : productId(), dataMoveType(( ::apache::airavata::model::data::movement::DMType::type)0), priorityOrder(0) {
   }
 
   virtual ~Airavata_addSCPDataMovementDetails_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
-  std::string resourceId;
+  std::string productId;
    ::apache::airavata::model::data::movement::DMType::type dataMoveType;
   int32_t priorityOrder;
    ::apache::airavata::model::data::movement::SCPDataMovement scpDataMovement;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
-  void __set_resourceId(const std::string& val);
+  void __set_productId(const std::string& val);
 
   void __set_dataMoveType(const  ::apache::airavata::model::data::movement::DMType::type val);
 
@@ -16124,7 +16124,7 @@ class Airavata_addSCPDataMovementDetails_args {
   {
     if (!(authzToken == rhs.authzToken))
       return false;
-    if (!(resourceId == rhs.resourceId))
+    if (!(productId == rhs.productId))
       return false;
     if (!(dataMoveType == rhs.dataMoveType))
       return false;
@@ -16152,7 +16152,7 @@ class Airavata_addSCPDataMovementDetails_pargs {
 
   virtual ~Airavata_addSCPDataMovementDetails_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* resourceId;
+  const std::string* productId;
   const  ::apache::airavata::model::data::movement::DMType::type* dataMoveType;
   const int32_t* priorityOrder;
   const  ::apache::airavata::model::data::movement::SCPDataMovement* scpDataMovement;
@@ -16532,19 +16532,19 @@ class Airavata_addUnicoreDataMovementDetails_args {
 
   Airavata_addUnicoreDataMovementDetails_args(const Airavata_addUnicoreDataMovementDetails_args&);
   Airavata_addUnicoreDataMovementDetails_args& operator=(const Airavata_addUnicoreDataMovementDetails_args&);
-  Airavata_addUnicoreDataMovementDetails_args() : resourceId(), dataMoveType(( ::apache::airavata::model::data::movement::DMType::type)0), priorityOrder(0) {
+  Airavata_addUnicoreDataMovementDetails_args() : productId(), dataMoveType(( ::apache::airavata::model::data::movement::DMType::type)0), priorityOrder(0) {
   }
 
   virtual ~Airavata_addUnicoreDataMovementDetails_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
-  std::string resourceId;
+  std::string productId;
    ::apache::airavata::model::data::movement::DMType::type dataMoveType;
   int32_t priorityOrder;
    ::apache::airavata::model::data::movement::UnicoreDataMovement unicoreDataMovement;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
-  void __set_resourceId(const std::string& val);
+  void __set_productId(const std::string& val);
 
   void __set_dataMoveType(const  ::apache::airavata::model::data::movement::DMType::type val);
 
@@ -16556,7 +16556,7 @@ class Airavata_addUnicoreDataMovementDetails_args {
   {
     if (!(authzToken == rhs.authzToken))
       return false;
-    if (!(resourceId == rhs.resourceId))
+    if (!(productId == rhs.productId))
       return false;
     if (!(dataMoveType == rhs.dataMoveType))
       return false;
@@ -16584,7 +16584,7 @@ class Airavata_addUnicoreDataMovementDetails_pargs {
 
   virtual ~Airavata_addUnicoreDataMovementDetails_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* resourceId;
+  const std::string* productId;
   const  ::apache::airavata::model::data::movement::DMType::type* dataMoveType;
   const int32_t* priorityOrder;
   const  ::apache::airavata::model::data::movement::UnicoreDataMovement* unicoreDataMovement;
@@ -16964,19 +16964,19 @@ class Airavata_addGridFTPDataMovementDetails_args {
 
   Airavata_addGridFTPDataMovementDetails_args(const Airavata_addGridFTPDataMovementDetails_args&);
   Airavata_addGridFTPDataMovementDetails_args& operator=(const Airavata_addGridFTPDataMovementDetails_args&);
-  Airavata_addGridFTPDataMovementDetails_args() : resourceId(), dataMoveType(( ::apache::airavata::model::data::movement::DMType::type)0), priorityOrder(0) {
+  Airavata_addGridFTPDataMovementDetails_args() : productId(), dataMoveType(( ::apache::airavata::model::data::movement::DMType::type)0), priorityOrder(0) {
   }
 
   virtual ~Airavata_addGridFTPDataMovementDetails_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
-  std::string resourceId;
+  std::string productId;
    ::apache::airavata::model::data::movement::DMType::type dataMoveType;
   int32_t priorityOrder;
    ::apache::airavata::model::data::movement::GridFTPDataMovement gridFTPDataMovement;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
-  void __set_resourceId(const std::string& val);
+  void __set_productId(const std::string& val);
 
   void __set_dataMoveType(const  ::apache::airavata::model::data::movement::DMType::type val);
 
@@ -16988,7 +16988,7 @@ class Airavata_addGridFTPDataMovementDetails_args {
   {
     if (!(authzToken == rhs.authzToken))
       return false;
-    if (!(resourceId == rhs.resourceId))
+    if (!(productId == rhs.productId))
       return false;
     if (!(dataMoveType == rhs.dataMoveType))
       return false;
@@ -17016,7 +17016,7 @@ class Airavata_addGridFTPDataMovementDetails_pargs {
 
   virtual ~Airavata_addGridFTPDataMovementDetails_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* resourceId;
+  const std::string* productId;
   const  ::apache::airavata::model::data::movement::DMType::type* dataMoveType;
   const int32_t* priorityOrder;
   const  ::apache::airavata::model::data::movement::GridFTPDataMovement* gridFTPDataMovement;
@@ -18094,18 +18094,18 @@ class Airavata_deleteDataMovementInterface_args {
 
   Airavata_deleteDataMovementInterface_args(const Airavata_deleteDataMovementInterface_args&);
   Airavata_deleteDataMovementInterface_args& operator=(const Airavata_deleteDataMovementInterface_args&);
-  Airavata_deleteDataMovementInterface_args() : resourceId(), dataMovementInterfaceId(), dataMoveType(( ::apache::airavata::model::data::movement::DMType::type)0) {
+  Airavata_deleteDataMovementInterface_args() : productId(), dataMovementInterfaceId(), dataMoveType(( ::apache::airavata::model::data::movement::DMType::type)0) {
   }
 
   virtual ~Airavata_deleteDataMovementInterface_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
-  std::string resourceId;
+  std::string productId;
   std::string dataMovementInterfaceId;
    ::apache::airavata::model::data::movement::DMType::type dataMoveType;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
-  void __set_resourceId(const std::string& val);
+  void __set_productId(const std::string& val);
 
   void __set_dataMovementInterfaceId(const std::string& val);
 
@@ -18115,7 +18115,7 @@ class Airavata_deleteDataMovementInterface_args {
   {
     if (!(authzToken == rhs.authzToken))
       return false;
-    if (!(resourceId == rhs.resourceId))
+    if (!(productId == rhs.productId))
       return false;
     if (!(dataMovementInterfaceId == rhs.dataMovementInterfaceId))
       return false;
@@ -18141,7 +18141,7 @@ class Airavata_deleteDataMovementInterface_pargs {
 
   virtual ~Airavata_deleteDataMovementInterface_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* resourceId;
+  const std::string* productId;
   const std::string* dataMovementInterfaceId;
   const  ::apache::airavata::model::data::movement::DMType::type* dataMoveType;
 
@@ -22280,8 +22280,8 @@ class AiravataClient : virtual public AiravataIf {
   bool updateUnicoreJobSubmissionDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission);
   void send_updateUnicoreJobSubmissionDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission);
   bool recv_updateUnicoreJobSubmissionDetails();
-  void addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement);
-  void send_addLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement);
+  void addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement);
+  void send_addLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement);
   void recv_addLocalDataMovementDetails(std::string& _return);
   bool updateLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement);
   void send_updateLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement);
@@ -22289,8 +22289,8 @@ class AiravataClient : virtual public AiravataIf {
   void getLocalDataMovement( ::apache::airavata::model::data::movement::LOCALDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId);
   void send_getLocalDataMovement(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId);
   void recv_getLocalDataMovement( ::apache::airavata::model::data::movement::LOCALDataMovement& _return);
-  void addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement);
-  void send_addSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement);
+  void addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement);
+  void send_addSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement);
   void recv_addSCPDataMovementDetails(std::string& _return);
   bool updateSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement);
   void send_updateSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement);
@@ -22298,8 +22298,8 @@ class AiravataClient : virtual public AiravataIf {
   void getSCPDataMovement( ::apache::airavata::model::data::movement::SCPDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId);
   void send_getSCPDataMovement(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId);
   void recv_getSCPDataMovement( ::apache::airavata::model::data::movement::SCPDataMovement& _return);
-  void addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement);
-  void send_addUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement);
+  void addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement);
+  void send_addUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement);
   void recv_addUnicoreDataMovementDetails(std::string& _return);
   bool updateUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement);
   void send_updateUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement);
@@ -22307,8 +22307,8 @@ class AiravataClient : virtual public AiravataIf {
   void getUnicoreDataMovement( ::apache::airavata::model::data::movement::UnicoreDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId);
   void send_getUnicoreDataMovement(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId);
   void recv_getUnicoreDataMovement( ::apache::airavata::model::data::movement::UnicoreDataMovement& _return);
-  void addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement);
-  void send_addGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement);
+  void addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement);
+  void send_addGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement);
   void recv_addGridFTPDataMovementDetails(std::string& _return);
   bool updateGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement);
   void send_updateGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement);
@@ -22331,8 +22331,8 @@ class AiravataClient : virtual public AiravataIf {
   bool deleteJobSubmissionInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& jobSubmissionInterfaceId);
   void send_deleteJobSubmissionInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& jobSubmissionInterfaceId);
   bool recv_deleteJobSubmissionInterface();
-  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType);
-  void send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType);
+  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType);
+  void send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType);
   bool recv_deleteDataMovementInterface();
   void registerResourceJobManager(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager);
   void send_registerResourceJobManager(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager);
@@ -23591,13 +23591,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->updateUnicoreJobSubmissionDetails(authzToken, jobSubmissionInterfaceId, unicoreJobSubmission);
   }
 
-  void addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement) {
+  void addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->addLocalDataMovementDetails(_return, authzToken, resourceId, dataMoveType, priorityOrder, localDataMovement);
+      ifaces_[i]->addLocalDataMovementDetails(_return, authzToken, productId, dataMoveType, priorityOrder, localDataMovement);
     }
-    ifaces_[i]->addLocalDataMovementDetails(_return, authzToken, resourceId, dataMoveType, priorityOrder, localDataMovement);
+    ifaces_[i]->addLocalDataMovementDetails(_return, authzToken, productId, dataMoveType, priorityOrder, localDataMovement);
     return;
   }
 
@@ -23620,13 +23620,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement) {
+  void addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->addSCPDataMovementDetails(_return, authzToken, resourceId, dataMoveType, priorityOrder, scpDataMovement);
+      ifaces_[i]->addSCPDataMovementDetails(_return, authzToken, productId, dataMoveType, priorityOrder, scpDataMovement);
     }
-    ifaces_[i]->addSCPDataMovementDetails(_return, authzToken, resourceId, dataMoveType, priorityOrder, scpDataMovement);
+    ifaces_[i]->addSCPDataMovementDetails(_return, authzToken, productId, dataMoveType, priorityOrder, scpDataMovement);
     return;
   }
 
@@ -23649,13 +23649,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement) {
+  void addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->addUnicoreDataMovementDetails(_return, authzToken, resourceId, dataMoveType, priorityOrder, unicoreDataMovement);
+      ifaces_[i]->addUnicoreDataMovementDetails(_return, authzToken, productId, dataMoveType, priorityOrder, unicoreDataMovement);
     }
-    ifaces_[i]->addUnicoreDataMovementDetails(_return, authzToken, resourceId, dataMoveType, priorityOrder, unicoreDataMovement);
+    ifaces_[i]->addUnicoreDataMovementDetails(_return, authzToken, productId, dataMoveType, priorityOrder, unicoreDataMovement);
     return;
   }
 
@@ -23678,13 +23678,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement) {
+  void addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->addGridFTPDataMovementDetails(_return, authzToken, resourceId, dataMoveType, priorityOrder, gridFTPDataMovement);
+      ifaces_[i]->addGridFTPDataMovementDetails(_return, authzToken, productId, dataMoveType, priorityOrder, gridFTPDataMovement);
     }
-    ifaces_[i]->addGridFTPDataMovementDetails(_return, authzToken, resourceId, dataMoveType, priorityOrder, gridFTPDataMovement);
+    ifaces_[i]->addGridFTPDataMovementDetails(_return, authzToken, productId, dataMoveType, priorityOrder, gridFTPDataMovement);
     return;
   }
 
@@ -23752,13 +23752,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->deleteJobSubmissionInterface(authzToken, computeResourceId, jobSubmissionInterfaceId);
   }
 
-  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType) {
+  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->deleteDataMovementInterface(authzToken, resourceId, dataMovementInterfaceId, dataMoveType);
+      ifaces_[i]->deleteDataMovementInterface(authzToken, productId, dataMovementInterfaceId, dataMoveType);
     }
-    return ifaces_[i]->deleteDataMovementInterface(authzToken, resourceId, dataMovementInterfaceId, dataMoveType);
+    return ifaces_[i]->deleteDataMovementInterface(authzToken, productId, dataMovementInterfaceId, dataMoveType);
   }
 
   void registerResourceJobManager(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager) {
@@ -24314,8 +24314,8 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   bool updateUnicoreJobSubmissionDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission);
   int32_t send_updateUnicoreJobSubmissionDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission);
   bool recv_updateUnicoreJobSubmissionDetails(const int32_t seqid);
-  void addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement);
-  int32_t send_addLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement);
+  void addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement);
+  int32_t send_addLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement);
   void recv_addLocalDataMovementDetails(std::string& _return, const int32_t seqid);
   bool updateLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement);
   int32_t send_updateLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement);
@@ -24323,8 +24323,8 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void getLocalDataMovement( ::apache::airavata::model::data::movement::LOCALDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId);
   int32_t send_getLocalDataMovement(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId);
   void recv_getLocalDataMovement( ::apache::airavata::model::data::movement::LOCALDataMovement& _return, const int32_t seqid);
-  void addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement);
-  int32_t send_addSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement);
+  void addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement);
+  int32_t send_addSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement);
   void recv_addSCPDataMovementDetails(std::string& _return, const int32_t seqid);
   bool updateSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement);
   int32_t send_updateSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement);
@@ -24332,8 +24332,8 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void getSCPDataMovement( ::apache::airavata::model::data::movement::SCPDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId);
   int32_t send_getSCPDataMovement(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId);
   void recv_getSCPDataMovement( ::apache::airavata::model::data::movement::SCPDataMovement& _return, const int32_t seqid);
-  void addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement);
-  int32_t send_addUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement);
+  void addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement);
+  int32_t send_addUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement);
   void recv_addUnicoreDataMovementDetails(std::string& _return, const int32_t seqid);
   bool updateUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement);
   int32_t send_updateUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement);
@@ -24341,8 +24341,8 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void getUnicoreDataMovement( ::apache::airavata::model::data::movement::UnicoreDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId);
   int32_t send_getUnicoreDataMovement(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId);
   void recv_getUnicoreDataMovement( ::apache::airavata::model::data::movement::UnicoreDataMovement& _return, const int32_t seqid);
-  void addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement);
-  int32_t send_addGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement);
+  void addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement);
+  int32_t send_addGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement);
   void recv_addGridFTPDataMovementDetails(std::string& _return, const int32_t seqid);
   bool updateGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement);
   int32_t send_updateGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement);
@@ -24365,8 +24365,8 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   bool deleteJobSubmissionInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& jobSubmissionInterfaceId);
   int32_t send_deleteJobSubmissionInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& jobSubmissionInterfaceId);
   bool recv_deleteJobSubmissionInterface(const int32_t seqid);
-  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType);
-  int32_t send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType);
+  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType);
+  int32_t send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType);
   bool recv_deleteDataMovementInterface(const int32_t seqid);
   void registerResourceJobManager(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager);
   int32_t send_registerResourceJobManager(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager);

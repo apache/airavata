@@ -42,9 +42,10 @@ public class ThriftDataModelConversion {
     public static DataProductModel getDataProductModel(DataProduct dataProduct){
         if (dataProduct != null) {
             DataProductModel dataProductModel = new DataProductModel();
-            dataProductModel.setProductId(dataProduct.getResourceId());
+            dataProductModel.setProductUri(dataProduct.getProductUri());
+            dataProductModel.setLogicalPath(dataProduct.getLogicalPath());
             dataProductModel.setGatewayId(dataProduct.getGatewayId());
-            dataProductModel.setParentProductId(dataProduct.getParentProductId());
+            dataProductModel.setParentProductUri(dataProduct.getParentProductUri());
             dataProductModel.setProductName(dataProduct.getProductName());
             if(dataProduct.getDataProductType() != null)
                 dataProductModel.setDataProductType(DataProductType.valueOf(dataProduct.getDataProductType()));
@@ -83,10 +84,11 @@ public class ThriftDataModelConversion {
     }
 
     public static DataProduct getUpdatedDataProduct(DataProductModel dataProductModel, DataProduct dataProduct){
-        dataProduct.setResourceId(dataProductModel.getProductId());
+        dataProduct.setProductUri(dataProductModel.getProductUri());
+        dataProduct.setLogicalPath(dataProductModel.getLogicalPath());
         dataProduct.setGatewayId(dataProductModel.getGatewayId());
         dataProduct.setProductName(dataProductModel.getProductName());
-        dataProduct.setParentProductId(dataProductModel.getParentProductId());
+        dataProduct.setParentProductUri(dataProductModel.getParentProductUri());
         if(dataProductModel.getDataProductType() != null)
             dataProduct.setDataProductType(dataProductModel.getDataProductType().toString());
         else
@@ -103,7 +105,7 @@ public class ThriftDataModelConversion {
             dataProductModel.getProductMetadata().keySet().stream().forEach(k -> {
                 String v = dataProductModel.getProductMetadata().get(k);
                 DataProductMetaData temp = new DataProductMetaData();
-                temp.setProductId(dataProduct.getResourceId());
+                temp.setProductUri(dataProduct.getProductUri());
                 temp.setKey(k);
                 temp.setValue(v);
                 dataProductMetaData.add(temp);
@@ -114,7 +116,7 @@ public class ThriftDataModelConversion {
             ArrayList<DataReplicaLocation> dataReplicaLocations = new ArrayList<>();
             dataProductModel.getReplicaLocations().stream().forEach(r->{
                 DataReplicaLocation dataReplicaLocationModel = getDataReplicaLocation(r);
-                dataReplicaLocationModel.setProductId(dataProductModel.getProductId());
+                dataReplicaLocationModel.setProductUri(dataProductModel.getProductUri());
                 dataReplicaLocations.add(dataReplicaLocationModel);
             });
             dataProduct.setDataReplicaLocations(dataReplicaLocations);
@@ -131,13 +133,13 @@ public class ThriftDataModelConversion {
         if (replicaLocation != null) {
             DataReplicaLocationModel replicaLocationModel = new DataReplicaLocationModel();
             replicaLocationModel.setReplicaId(replicaLocation.getReplicaId());
-            replicaLocationModel.setProductId(replicaLocation.getProductId());
+            replicaLocationModel.setProductUri(replicaLocation.getProductUri());
             replicaLocationModel.setReplicaName(replicaLocation.getReplicaName());
             replicaLocationModel.setReplicaDescription(replicaLocation.getReplicaDescription());
             replicaLocationModel.setStorageResourceId(replicaLocation.getStorageResourceId());
             if(replicaLocation.getValidUntilTime() != null)
                 replicaLocationModel.setValidUntilTime(replicaLocation.getValidUntilTime().getTime());
-            replicaLocationModel.setFilePath(replicaLocation.getFileAbsolutePath());
+            replicaLocationModel.setFilePath(replicaLocation.getFilePath());
             if(replicaLocation.getCreationTime() != null)
                 replicaLocationModel.setCreationTime(replicaLocation.getCreationTime().getTime());
             if(replicaLocation.getLastModifiedTime() != null)
@@ -165,11 +167,11 @@ public class ThriftDataModelConversion {
     public static DataReplicaLocation getUpdatedDataReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel,
                                                                     DataReplicaLocation dataReplicaLocation){
         dataReplicaLocation.setReplicaId(dataReplicaLocationModel.getReplicaId());
-        dataReplicaLocation.setProductId(dataReplicaLocationModel.getProductId());
+        dataReplicaLocation.setProductUri(dataReplicaLocationModel.getProductUri());
         dataReplicaLocation.setReplicaName(dataReplicaLocationModel.getReplicaName());
         dataReplicaLocation.setReplicaDescription(dataReplicaLocationModel.getReplicaDescription());
         dataReplicaLocation.setStorageResourceId(dataReplicaLocationModel.getStorageResourceId());
-        dataReplicaLocation.setFileAbsolutePath(dataReplicaLocationModel.getFilePath());
+        dataReplicaLocation.setFilePath(dataReplicaLocationModel.getFilePath());
         if(dataReplicaLocationModel.getValidUntilTime() > 0)
             dataReplicaLocation.setValidUntilTime(new Timestamp(dataReplicaLocationModel.getValidUntilTime()));
         if(dataReplicaLocationModel.getCreationTime() > 0)
@@ -185,7 +187,7 @@ public class ThriftDataModelConversion {
             dataReplicaLocationModel.getReplicaMetadata().keySet().stream().forEach(k -> {
                 String v = dataReplicaLocationModel.getReplicaMetadata().get(k);
                 DataReplicaMetaData temp = new DataReplicaMetaData();
-                temp.setReplicaId(dataReplicaLocationModel.getProductId());
+                temp.setReplicaId(dataReplicaLocationModel.getProductUri());
                 temp.setKey(k);
                 temp.setValue(v);
                 dataReplicaMetadata.add(temp);

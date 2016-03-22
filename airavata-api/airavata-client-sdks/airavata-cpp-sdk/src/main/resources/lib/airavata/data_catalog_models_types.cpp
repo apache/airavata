@@ -71,9 +71,9 @@ DataProductModel::~DataProductModel() throw() {
 }
 
 
-void DataProductModel::__set_productId(const std::string& val) {
-  this->productId = val;
-__isset.productId = true;
+void DataProductModel::__set_productUri(const std::string& val) {
+  this->productUri = val;
+__isset.productUri = true;
 }
 
 void DataProductModel::__set_gatewayId(const std::string& val) {
@@ -81,9 +81,14 @@ void DataProductModel::__set_gatewayId(const std::string& val) {
 __isset.gatewayId = true;
 }
 
-void DataProductModel::__set_parentProductId(const std::string& val) {
-  this->parentProductId = val;
-__isset.parentProductId = true;
+void DataProductModel::__set_parentProductUri(const std::string& val) {
+  this->parentProductUri = val;
+__isset.parentProductUri = true;
+}
+
+void DataProductModel::__set_logicalPath(const std::string& val) {
+  this->logicalPath = val;
+__isset.logicalPath = true;
 }
 
 void DataProductModel::__set_productName(const std::string& val) {
@@ -159,8 +164,8 @@ uint32_t DataProductModel::read(::apache::thrift::protocol::TProtocol* iprot) {
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->productId);
-          this->__isset.productId = true;
+          xfer += iprot->readString(this->productUri);
+          this->__isset.productUri = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -175,13 +180,21 @@ uint32_t DataProductModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->parentProductId);
-          this->__isset.parentProductId = true;
+          xfer += iprot->readString(this->parentProductUri);
+          this->__isset.parentProductUri = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->logicalPath);
+          this->__isset.logicalPath = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->productName);
           this->__isset.productName = true;
@@ -189,7 +202,7 @@ uint32_t DataProductModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 5:
+      case 6:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->productDescription);
           this->__isset.productDescription = true;
@@ -197,7 +210,7 @@ uint32_t DataProductModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 6:
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->ownerName);
           this->__isset.ownerName = true;
@@ -205,7 +218,7 @@ uint32_t DataProductModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 7:
+      case 8:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast0;
           xfer += iprot->readI32(ecast0);
@@ -215,7 +228,7 @@ uint32_t DataProductModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 8:
+      case 9:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->productSize);
           this->__isset.productSize = true;
@@ -223,7 +236,7 @@ uint32_t DataProductModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 9:
+      case 10:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->creationTime);
           this->__isset.creationTime = true;
@@ -231,7 +244,7 @@ uint32_t DataProductModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 10:
+      case 11:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->lastModifiedTime);
           this->__isset.lastModifiedTime = true;
@@ -239,7 +252,7 @@ uint32_t DataProductModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 11:
+      case 12:
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->productMetadata.clear();
@@ -262,7 +275,7 @@ uint32_t DataProductModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 12:
+      case 13:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->replicaLocations.clear();
@@ -282,7 +295,7 @@ uint32_t DataProductModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 13:
+      case 14:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->childProducts.clear();
@@ -319,9 +332,9 @@ uint32_t DataProductModel::write(::apache::thrift::protocol::TProtocol* oprot) c
   apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
   xfer += oprot->writeStructBegin("DataProductModel");
 
-  if (this->__isset.productId) {
-    xfer += oprot->writeFieldBegin("productId", ::apache::thrift::protocol::T_STRING, 1);
-    xfer += oprot->writeString(this->productId);
+  if (this->__isset.productUri) {
+    xfer += oprot->writeFieldBegin("productUri", ::apache::thrift::protocol::T_STRING, 1);
+    xfer += oprot->writeString(this->productUri);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.gatewayId) {
@@ -329,48 +342,53 @@ uint32_t DataProductModel::write(::apache::thrift::protocol::TProtocol* oprot) c
     xfer += oprot->writeString(this->gatewayId);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.parentProductId) {
-    xfer += oprot->writeFieldBegin("parentProductId", ::apache::thrift::protocol::T_STRING, 3);
-    xfer += oprot->writeString(this->parentProductId);
+  if (this->__isset.parentProductUri) {
+    xfer += oprot->writeFieldBegin("parentProductUri", ::apache::thrift::protocol::T_STRING, 3);
+    xfer += oprot->writeString(this->parentProductUri);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.logicalPath) {
+    xfer += oprot->writeFieldBegin("logicalPath", ::apache::thrift::protocol::T_STRING, 4);
+    xfer += oprot->writeString(this->logicalPath);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.productName) {
-    xfer += oprot->writeFieldBegin("productName", ::apache::thrift::protocol::T_STRING, 4);
+    xfer += oprot->writeFieldBegin("productName", ::apache::thrift::protocol::T_STRING, 5);
     xfer += oprot->writeString(this->productName);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.productDescription) {
-    xfer += oprot->writeFieldBegin("productDescription", ::apache::thrift::protocol::T_STRING, 5);
+    xfer += oprot->writeFieldBegin("productDescription", ::apache::thrift::protocol::T_STRING, 6);
     xfer += oprot->writeString(this->productDescription);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.ownerName) {
-    xfer += oprot->writeFieldBegin("ownerName", ::apache::thrift::protocol::T_STRING, 6);
+    xfer += oprot->writeFieldBegin("ownerName", ::apache::thrift::protocol::T_STRING, 7);
     xfer += oprot->writeString(this->ownerName);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.dataProductType) {
-    xfer += oprot->writeFieldBegin("dataProductType", ::apache::thrift::protocol::T_I32, 7);
+    xfer += oprot->writeFieldBegin("dataProductType", ::apache::thrift::protocol::T_I32, 8);
     xfer += oprot->writeI32((int32_t)this->dataProductType);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.productSize) {
-    xfer += oprot->writeFieldBegin("productSize", ::apache::thrift::protocol::T_I32, 8);
+    xfer += oprot->writeFieldBegin("productSize", ::apache::thrift::protocol::T_I32, 9);
     xfer += oprot->writeI32(this->productSize);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.creationTime) {
-    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 9);
+    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 10);
     xfer += oprot->writeI64(this->creationTime);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.lastModifiedTime) {
-    xfer += oprot->writeFieldBegin("lastModifiedTime", ::apache::thrift::protocol::T_I64, 10);
+    xfer += oprot->writeFieldBegin("lastModifiedTime", ::apache::thrift::protocol::T_I64, 11);
     xfer += oprot->writeI64(this->lastModifiedTime);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.productMetadata) {
-    xfer += oprot->writeFieldBegin("productMetadata", ::apache::thrift::protocol::T_MAP, 11);
+    xfer += oprot->writeFieldBegin("productMetadata", ::apache::thrift::protocol::T_MAP, 12);
     {
       xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->productMetadata.size()));
       std::map<std::string, std::string> ::const_iterator _iter18;
@@ -384,7 +402,7 @@ uint32_t DataProductModel::write(::apache::thrift::protocol::TProtocol* oprot) c
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.replicaLocations) {
-    xfer += oprot->writeFieldBegin("replicaLocations", ::apache::thrift::protocol::T_LIST, 12);
+    xfer += oprot->writeFieldBegin("replicaLocations", ::apache::thrift::protocol::T_LIST, 13);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->replicaLocations.size()));
       std::vector<DataReplicaLocationModel> ::const_iterator _iter19;
@@ -397,7 +415,7 @@ uint32_t DataProductModel::write(::apache::thrift::protocol::TProtocol* oprot) c
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.childProducts) {
-    xfer += oprot->writeFieldBegin("childProducts", ::apache::thrift::protocol::T_LIST, 13);
+    xfer += oprot->writeFieldBegin("childProducts", ::apache::thrift::protocol::T_LIST, 14);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->childProducts.size()));
       std::vector<DataProductModel> ::const_iterator _iter20;
@@ -416,9 +434,10 @@ uint32_t DataProductModel::write(::apache::thrift::protocol::TProtocol* oprot) c
 
 void swap(DataProductModel &a, DataProductModel &b) {
   using ::std::swap;
-  swap(a.productId, b.productId);
+  swap(a.productUri, b.productUri);
   swap(a.gatewayId, b.gatewayId);
-  swap(a.parentProductId, b.parentProductId);
+  swap(a.parentProductUri, b.parentProductUri);
+  swap(a.logicalPath, b.logicalPath);
   swap(a.productName, b.productName);
   swap(a.productDescription, b.productDescription);
   swap(a.ownerName, b.ownerName);
@@ -433,9 +452,10 @@ void swap(DataProductModel &a, DataProductModel &b) {
 }
 
 DataProductModel::DataProductModel(const DataProductModel& other21) {
-  productId = other21.productId;
+  productUri = other21.productUri;
   gatewayId = other21.gatewayId;
-  parentProductId = other21.parentProductId;
+  parentProductUri = other21.parentProductUri;
+  logicalPath = other21.logicalPath;
   productName = other21.productName;
   productDescription = other21.productDescription;
   ownerName = other21.ownerName;
@@ -449,9 +469,10 @@ DataProductModel::DataProductModel(const DataProductModel& other21) {
   __isset = other21.__isset;
 }
 DataProductModel& DataProductModel::operator=(const DataProductModel& other22) {
-  productId = other22.productId;
+  productUri = other22.productUri;
   gatewayId = other22.gatewayId;
-  parentProductId = other22.parentProductId;
+  parentProductUri = other22.parentProductUri;
+  logicalPath = other22.logicalPath;
   productName = other22.productName;
   productDescription = other22.productDescription;
   ownerName = other22.ownerName;
@@ -468,9 +489,10 @@ DataProductModel& DataProductModel::operator=(const DataProductModel& other22) {
 void DataProductModel::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
   out << "DataProductModel(";
-  out << "productId="; (__isset.productId ? (out << to_string(productId)) : (out << "<null>"));
+  out << "productUri="; (__isset.productUri ? (out << to_string(productUri)) : (out << "<null>"));
   out << ", " << "gatewayId="; (__isset.gatewayId ? (out << to_string(gatewayId)) : (out << "<null>"));
-  out << ", " << "parentProductId="; (__isset.parentProductId ? (out << to_string(parentProductId)) : (out << "<null>"));
+  out << ", " << "parentProductUri="; (__isset.parentProductUri ? (out << to_string(parentProductUri)) : (out << "<null>"));
+  out << ", " << "logicalPath="; (__isset.logicalPath ? (out << to_string(logicalPath)) : (out << "<null>"));
   out << ", " << "productName="; (__isset.productName ? (out << to_string(productName)) : (out << "<null>"));
   out << ", " << "productDescription="; (__isset.productDescription ? (out << to_string(productDescription)) : (out << "<null>"));
   out << ", " << "ownerName="; (__isset.ownerName ? (out << to_string(ownerName)) : (out << "<null>"));
@@ -494,9 +516,9 @@ void DataReplicaLocationModel::__set_replicaId(const std::string& val) {
 __isset.replicaId = true;
 }
 
-void DataReplicaLocationModel::__set_productId(const std::string& val) {
-  this->productId = val;
-__isset.productId = true;
+void DataReplicaLocationModel::__set_productUri(const std::string& val) {
+  this->productUri = val;
+__isset.productUri = true;
 }
 
 void DataReplicaLocationModel::__set_replicaName(const std::string& val) {
@@ -539,9 +561,9 @@ void DataReplicaLocationModel::__set_storageResourceId(const std::string& val) {
 __isset.storageResourceId = true;
 }
 
-void DataReplicaLocationModel::__set_fileAbsolutePath(const std::string& val) {
-  this->fileAbsolutePath = val;
-__isset.fileAbsolutePath = true;
+void DataReplicaLocationModel::__set_filePath(const std::string& val) {
+  this->filePath = val;
+__isset.filePath = true;
 }
 
 void DataReplicaLocationModel::__set_replicaMetadata(const std::map<std::string, std::string> & val) {
@@ -580,8 +602,8 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->productId);
-          this->__isset.productId = true;
+          xfer += iprot->readString(this->productUri);
+          this->__isset.productUri = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -656,8 +678,8 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
         break;
       case 11:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->fileAbsolutePath);
-          this->__isset.fileAbsolutePath = true;
+          xfer += iprot->readString(this->filePath);
+          this->__isset.filePath = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -707,9 +729,9 @@ uint32_t DataReplicaLocationModel::write(::apache::thrift::protocol::TProtocol* 
     xfer += oprot->writeString(this->replicaId);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.productId) {
-    xfer += oprot->writeFieldBegin("productId", ::apache::thrift::protocol::T_STRING, 2);
-    xfer += oprot->writeString(this->productId);
+  if (this->__isset.productUri) {
+    xfer += oprot->writeFieldBegin("productUri", ::apache::thrift::protocol::T_STRING, 2);
+    xfer += oprot->writeString(this->productUri);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.replicaName) {
@@ -752,9 +774,9 @@ uint32_t DataReplicaLocationModel::write(::apache::thrift::protocol::TProtocol* 
     xfer += oprot->writeString(this->storageResourceId);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.fileAbsolutePath) {
-    xfer += oprot->writeFieldBegin("fileAbsolutePath", ::apache::thrift::protocol::T_STRING, 11);
-    xfer += oprot->writeString(this->fileAbsolutePath);
+  if (this->__isset.filePath) {
+    xfer += oprot->writeFieldBegin("filePath", ::apache::thrift::protocol::T_STRING, 11);
+    xfer += oprot->writeString(this->filePath);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.replicaMetadata) {
@@ -779,7 +801,7 @@ uint32_t DataReplicaLocationModel::write(::apache::thrift::protocol::TProtocol* 
 void swap(DataReplicaLocationModel &a, DataReplicaLocationModel &b) {
   using ::std::swap;
   swap(a.replicaId, b.replicaId);
-  swap(a.productId, b.productId);
+  swap(a.productUri, b.productUri);
   swap(a.replicaName, b.replicaName);
   swap(a.replicaDescription, b.replicaDescription);
   swap(a.creationTime, b.creationTime);
@@ -788,14 +810,14 @@ void swap(DataReplicaLocationModel &a, DataReplicaLocationModel &b) {
   swap(a.replicaLocationCategory, b.replicaLocationCategory);
   swap(a.replicaPersistentType, b.replicaPersistentType);
   swap(a.storageResourceId, b.storageResourceId);
-  swap(a.fileAbsolutePath, b.fileAbsolutePath);
+  swap(a.filePath, b.filePath);
   swap(a.replicaMetadata, b.replicaMetadata);
   swap(a.__isset, b.__isset);
 }
 
 DataReplicaLocationModel::DataReplicaLocationModel(const DataReplicaLocationModel& other33) {
   replicaId = other33.replicaId;
-  productId = other33.productId;
+  productUri = other33.productUri;
   replicaName = other33.replicaName;
   replicaDescription = other33.replicaDescription;
   creationTime = other33.creationTime;
@@ -804,13 +826,13 @@ DataReplicaLocationModel::DataReplicaLocationModel(const DataReplicaLocationMode
   replicaLocationCategory = other33.replicaLocationCategory;
   replicaPersistentType = other33.replicaPersistentType;
   storageResourceId = other33.storageResourceId;
-  fileAbsolutePath = other33.fileAbsolutePath;
+  filePath = other33.filePath;
   replicaMetadata = other33.replicaMetadata;
   __isset = other33.__isset;
 }
 DataReplicaLocationModel& DataReplicaLocationModel::operator=(const DataReplicaLocationModel& other34) {
   replicaId = other34.replicaId;
-  productId = other34.productId;
+  productUri = other34.productUri;
   replicaName = other34.replicaName;
   replicaDescription = other34.replicaDescription;
   creationTime = other34.creationTime;
@@ -819,7 +841,7 @@ DataReplicaLocationModel& DataReplicaLocationModel::operator=(const DataReplicaL
   replicaLocationCategory = other34.replicaLocationCategory;
   replicaPersistentType = other34.replicaPersistentType;
   storageResourceId = other34.storageResourceId;
-  fileAbsolutePath = other34.fileAbsolutePath;
+  filePath = other34.filePath;
   replicaMetadata = other34.replicaMetadata;
   __isset = other34.__isset;
   return *this;
@@ -828,7 +850,7 @@ void DataReplicaLocationModel::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
   out << "DataReplicaLocationModel(";
   out << "replicaId="; (__isset.replicaId ? (out << to_string(replicaId)) : (out << "<null>"));
-  out << ", " << "productId="; (__isset.productId ? (out << to_string(productId)) : (out << "<null>"));
+  out << ", " << "productUri="; (__isset.productUri ? (out << to_string(productUri)) : (out << "<null>"));
   out << ", " << "replicaName="; (__isset.replicaName ? (out << to_string(replicaName)) : (out << "<null>"));
   out << ", " << "replicaDescription="; (__isset.replicaDescription ? (out << to_string(replicaDescription)) : (out << "<null>"));
   out << ", " << "creationTime="; (__isset.creationTime ? (out << to_string(creationTime)) : (out << "<null>"));
@@ -837,7 +859,7 @@ void DataReplicaLocationModel::printTo(std::ostream& out) const {
   out << ", " << "replicaLocationCategory="; (__isset.replicaLocationCategory ? (out << to_string(replicaLocationCategory)) : (out << "<null>"));
   out << ", " << "replicaPersistentType="; (__isset.replicaPersistentType ? (out << to_string(replicaPersistentType)) : (out << "<null>"));
   out << ", " << "storageResourceId="; (__isset.storageResourceId ? (out << to_string(storageResourceId)) : (out << "<null>"));
-  out << ", " << "fileAbsolutePath="; (__isset.fileAbsolutePath ? (out << to_string(fileAbsolutePath)) : (out << "<null>"));
+  out << ", " << "filePath="; (__isset.filePath ? (out << to_string(filePath)) : (out << "<null>"));
   out << ", " << "replicaMetadata="; (__isset.replicaMetadata ? (out << to_string(replicaMetadata)) : (out << "<null>"));
   out << ")";
 }

@@ -56,7 +56,7 @@ class DataProductModel {
   /**
    * @var string
    */
-  public $productId = null;
+  public $productUri = null;
   /**
    * @var string
    */
@@ -64,7 +64,11 @@ class DataProductModel {
   /**
    * @var string
    */
-  public $parentProductId = null;
+  public $parentProductUri = null;
+  /**
+   * @var string
+   */
+  public $logicalPath = null;
   /**
    * @var string
    */
@@ -110,7 +114,7 @@ class DataProductModel {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'productId',
+          'var' => 'productUri',
           'type' => TType::STRING,
           ),
         2 => array(
@@ -118,38 +122,42 @@ class DataProductModel {
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'parentProductId',
+          'var' => 'parentProductUri',
           'type' => TType::STRING,
           ),
         4 => array(
-          'var' => 'productName',
+          'var' => 'logicalPath',
           'type' => TType::STRING,
           ),
         5 => array(
-          'var' => 'productDescription',
+          'var' => 'productName',
           'type' => TType::STRING,
           ),
         6 => array(
-          'var' => 'ownerName',
+          'var' => 'productDescription',
           'type' => TType::STRING,
           ),
         7 => array(
+          'var' => 'ownerName',
+          'type' => TType::STRING,
+          ),
+        8 => array(
           'var' => 'dataProductType',
           'type' => TType::I32,
           ),
-        8 => array(
+        9 => array(
           'var' => 'productSize',
           'type' => TType::I32,
           ),
-        9 => array(
+        10 => array(
           'var' => 'creationTime',
           'type' => TType::I64,
           ),
-        10 => array(
+        11 => array(
           'var' => 'lastModifiedTime',
           'type' => TType::I64,
           ),
-        11 => array(
+        12 => array(
           'var' => 'productMetadata',
           'type' => TType::MAP,
           'ktype' => TType::STRING,
@@ -161,7 +169,7 @@ class DataProductModel {
             'type' => TType::STRING,
             ),
           ),
-        12 => array(
+        13 => array(
           'var' => 'replicaLocations',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -170,7 +178,7 @@ class DataProductModel {
             'class' => '\Airavata\Model\Data\Product\DataReplicaLocationModel',
             ),
           ),
-        13 => array(
+        14 => array(
           'var' => 'childProducts',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -182,14 +190,17 @@ class DataProductModel {
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['productId'])) {
-        $this->productId = $vals['productId'];
+      if (isset($vals['productUri'])) {
+        $this->productUri = $vals['productUri'];
       }
       if (isset($vals['gatewayId'])) {
         $this->gatewayId = $vals['gatewayId'];
       }
-      if (isset($vals['parentProductId'])) {
-        $this->parentProductId = $vals['parentProductId'];
+      if (isset($vals['parentProductUri'])) {
+        $this->parentProductUri = $vals['parentProductUri'];
+      }
+      if (isset($vals['logicalPath'])) {
+        $this->logicalPath = $vals['logicalPath'];
       }
       if (isset($vals['productName'])) {
         $this->productName = $vals['productName'];
@@ -245,7 +256,7 @@ class DataProductModel {
       {
         case 1:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->productId);
+            $xfer += $input->readString($this->productUri);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -259,61 +270,68 @@ class DataProductModel {
           break;
         case 3:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->parentProductId);
+            $xfer += $input->readString($this->parentProductUri);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 4:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->productName);
+            $xfer += $input->readString($this->logicalPath);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 5:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->productDescription);
+            $xfer += $input->readString($this->productName);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 6:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->ownerName);
+            $xfer += $input->readString($this->productDescription);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 7:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->dataProductType);
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->ownerName);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 8:
           if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->productSize);
+            $xfer += $input->readI32($this->dataProductType);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 9:
-          if ($ftype == TType::I64) {
-            $xfer += $input->readI64($this->creationTime);
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->productSize);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 10:
           if ($ftype == TType::I64) {
-            $xfer += $input->readI64($this->lastModifiedTime);
+            $xfer += $input->readI64($this->creationTime);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 11:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->lastModifiedTime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 12:
           if ($ftype == TType::MAP) {
             $this->productMetadata = array();
             $_size0 = 0;
@@ -333,7 +351,7 @@ class DataProductModel {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 12:
+        case 13:
           if ($ftype == TType::LST) {
             $this->replicaLocations = array();
             $_size7 = 0;
@@ -351,7 +369,7 @@ class DataProductModel {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 13:
+        case 14:
           if ($ftype == TType::LST) {
             $this->childProducts = array();
             $_size13 = 0;
@@ -382,9 +400,9 @@ class DataProductModel {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('DataProductModel');
-    if ($this->productId !== null) {
-      $xfer += $output->writeFieldBegin('productId', TType::STRING, 1);
-      $xfer += $output->writeString($this->productId);
+    if ($this->productUri !== null) {
+      $xfer += $output->writeFieldBegin('productUri', TType::STRING, 1);
+      $xfer += $output->writeString($this->productUri);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->gatewayId !== null) {
@@ -392,43 +410,48 @@ class DataProductModel {
       $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->parentProductId !== null) {
-      $xfer += $output->writeFieldBegin('parentProductId', TType::STRING, 3);
-      $xfer += $output->writeString($this->parentProductId);
+    if ($this->parentProductUri !== null) {
+      $xfer += $output->writeFieldBegin('parentProductUri', TType::STRING, 3);
+      $xfer += $output->writeString($this->parentProductUri);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->logicalPath !== null) {
+      $xfer += $output->writeFieldBegin('logicalPath', TType::STRING, 4);
+      $xfer += $output->writeString($this->logicalPath);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->productName !== null) {
-      $xfer += $output->writeFieldBegin('productName', TType::STRING, 4);
+      $xfer += $output->writeFieldBegin('productName', TType::STRING, 5);
       $xfer += $output->writeString($this->productName);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->productDescription !== null) {
-      $xfer += $output->writeFieldBegin('productDescription', TType::STRING, 5);
+      $xfer += $output->writeFieldBegin('productDescription', TType::STRING, 6);
       $xfer += $output->writeString($this->productDescription);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->ownerName !== null) {
-      $xfer += $output->writeFieldBegin('ownerName', TType::STRING, 6);
+      $xfer += $output->writeFieldBegin('ownerName', TType::STRING, 7);
       $xfer += $output->writeString($this->ownerName);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->dataProductType !== null) {
-      $xfer += $output->writeFieldBegin('dataProductType', TType::I32, 7);
+      $xfer += $output->writeFieldBegin('dataProductType', TType::I32, 8);
       $xfer += $output->writeI32($this->dataProductType);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->productSize !== null) {
-      $xfer += $output->writeFieldBegin('productSize', TType::I32, 8);
+      $xfer += $output->writeFieldBegin('productSize', TType::I32, 9);
       $xfer += $output->writeI32($this->productSize);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->creationTime !== null) {
-      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 9);
+      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 10);
       $xfer += $output->writeI64($this->creationTime);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->lastModifiedTime !== null) {
-      $xfer += $output->writeFieldBegin('lastModifiedTime', TType::I64, 10);
+      $xfer += $output->writeFieldBegin('lastModifiedTime', TType::I64, 11);
       $xfer += $output->writeI64($this->lastModifiedTime);
       $xfer += $output->writeFieldEnd();
     }
@@ -436,7 +459,7 @@ class DataProductModel {
       if (!is_array($this->productMetadata)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('productMetadata', TType::MAP, 11);
+      $xfer += $output->writeFieldBegin('productMetadata', TType::MAP, 12);
       {
         $output->writeMapBegin(TType::STRING, TType::STRING, count($this->productMetadata));
         {
@@ -454,7 +477,7 @@ class DataProductModel {
       if (!is_array($this->replicaLocations)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('replicaLocations', TType::LST, 12);
+      $xfer += $output->writeFieldBegin('replicaLocations', TType::LST, 13);
       {
         $output->writeListBegin(TType::STRUCT, count($this->replicaLocations));
         {
@@ -471,7 +494,7 @@ class DataProductModel {
       if (!is_array($this->childProducts)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('childProducts', TType::LST, 13);
+      $xfer += $output->writeFieldBegin('childProducts', TType::LST, 14);
       {
         $output->writeListBegin(TType::STRUCT, count($this->childProducts));
         {
@@ -501,7 +524,7 @@ class DataReplicaLocationModel {
   /**
    * @var string
    */
-  public $productId = null;
+  public $productUri = null;
   /**
    * @var string
    */
@@ -537,7 +560,7 @@ class DataReplicaLocationModel {
   /**
    * @var string
    */
-  public $fileAbsolutePath = null;
+  public $filePath = null;
   /**
    * @var array
    */
@@ -551,7 +574,7 @@ class DataReplicaLocationModel {
           'type' => TType::STRING,
           ),
         2 => array(
-          'var' => 'productId',
+          'var' => 'productUri',
           'type' => TType::STRING,
           ),
         3 => array(
@@ -587,7 +610,7 @@ class DataReplicaLocationModel {
           'type' => TType::STRING,
           ),
         11 => array(
-          'var' => 'fileAbsolutePath',
+          'var' => 'filePath',
           'type' => TType::STRING,
           ),
         12 => array(
@@ -608,8 +631,8 @@ class DataReplicaLocationModel {
       if (isset($vals['replicaId'])) {
         $this->replicaId = $vals['replicaId'];
       }
-      if (isset($vals['productId'])) {
-        $this->productId = $vals['productId'];
+      if (isset($vals['productUri'])) {
+        $this->productUri = $vals['productUri'];
       }
       if (isset($vals['replicaName'])) {
         $this->replicaName = $vals['replicaName'];
@@ -635,8 +658,8 @@ class DataReplicaLocationModel {
       if (isset($vals['storageResourceId'])) {
         $this->storageResourceId = $vals['storageResourceId'];
       }
-      if (isset($vals['fileAbsolutePath'])) {
-        $this->fileAbsolutePath = $vals['fileAbsolutePath'];
+      if (isset($vals['filePath'])) {
+        $this->filePath = $vals['filePath'];
       }
       if (isset($vals['replicaMetadata'])) {
         $this->replicaMetadata = $vals['replicaMetadata'];
@@ -672,7 +695,7 @@ class DataReplicaLocationModel {
           break;
         case 2:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->productId);
+            $xfer += $input->readString($this->productUri);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -735,7 +758,7 @@ class DataReplicaLocationModel {
           break;
         case 11:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->fileAbsolutePath);
+            $xfer += $input->readString($this->filePath);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -778,9 +801,9 @@ class DataReplicaLocationModel {
       $xfer += $output->writeString($this->replicaId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->productId !== null) {
-      $xfer += $output->writeFieldBegin('productId', TType::STRING, 2);
-      $xfer += $output->writeString($this->productId);
+    if ($this->productUri !== null) {
+      $xfer += $output->writeFieldBegin('productUri', TType::STRING, 2);
+      $xfer += $output->writeString($this->productUri);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->replicaName !== null) {
@@ -823,9 +846,9 @@ class DataReplicaLocationModel {
       $xfer += $output->writeString($this->storageResourceId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->fileAbsolutePath !== null) {
-      $xfer += $output->writeFieldBegin('fileAbsolutePath', TType::STRING, 11);
-      $xfer += $output->writeString($this->fileAbsolutePath);
+    if ($this->filePath !== null) {
+      $xfer += $output->writeFieldBegin('filePath', TType::STRING, 11);
+      $xfer += $output->writeString($this->filePath);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->replicaMetadata !== null) {

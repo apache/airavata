@@ -71,9 +71,10 @@ class DataProductType:
 class DataProductModel:
   """
   Attributes:
-   - productId
+   - productUri
    - gatewayId
-   - parentProductId
+   - parentProductUri
+   - logicalPath
    - productName
    - productDescription
    - ownerName
@@ -88,25 +89,27 @@ class DataProductModel:
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'productId', None, None, ), # 1
+    (1, TType.STRING, 'productUri', None, None, ), # 1
     (2, TType.STRING, 'gatewayId', None, None, ), # 2
-    (3, TType.STRING, 'parentProductId', None, None, ), # 3
-    (4, TType.STRING, 'productName', None, None, ), # 4
-    (5, TType.STRING, 'productDescription', None, None, ), # 5
-    (6, TType.STRING, 'ownerName', None, None, ), # 6
-    (7, TType.I32, 'dataProductType', None, None, ), # 7
-    (8, TType.I32, 'productSize', None, None, ), # 8
-    (9, TType.I64, 'creationTime', None, None, ), # 9
-    (10, TType.I64, 'lastModifiedTime', None, None, ), # 10
-    (11, TType.MAP, 'productMetadata', (TType.STRING,None,TType.STRING,None), None, ), # 11
-    (12, TType.LIST, 'replicaLocations', (TType.STRUCT,(DataReplicaLocationModel, DataReplicaLocationModel.thrift_spec)), None, ), # 12
-    (13, TType.LIST, 'childProducts', (TType.STRUCT,(DataProductModel, DataProductModel.thrift_spec)), None, ), # 13
+    (3, TType.STRING, 'parentProductUri', None, None, ), # 3
+    (4, TType.STRING, 'logicalPath', None, None, ), # 4
+    (5, TType.STRING, 'productName', None, None, ), # 5
+    (6, TType.STRING, 'productDescription', None, None, ), # 6
+    (7, TType.STRING, 'ownerName', None, None, ), # 7
+    (8, TType.I32, 'dataProductType', None, None, ), # 8
+    (9, TType.I32, 'productSize', None, None, ), # 9
+    (10, TType.I64, 'creationTime', None, None, ), # 10
+    (11, TType.I64, 'lastModifiedTime', None, None, ), # 11
+    (12, TType.MAP, 'productMetadata', (TType.STRING,None,TType.STRING,None), None, ), # 12
+    (13, TType.LIST, 'replicaLocations', (TType.STRUCT,(DataReplicaLocationModel, DataReplicaLocationModel.thrift_spec)), None, ), # 13
+    (14, TType.LIST, 'childProducts', (TType.STRUCT,(DataProductModel, DataProductModel.thrift_spec)), None, ), # 14
   )
 
-  def __init__(self, productId=None, gatewayId=None, parentProductId=None, productName=None, productDescription=None, ownerName=None, dataProductType=None, productSize=None, creationTime=None, lastModifiedTime=None, productMetadata=None, replicaLocations=None, childProducts=None,):
-    self.productId = productId
+  def __init__(self, productUri=None, gatewayId=None, parentProductUri=None, logicalPath=None, productName=None, productDescription=None, ownerName=None, dataProductType=None, productSize=None, creationTime=None, lastModifiedTime=None, productMetadata=None, replicaLocations=None, childProducts=None,):
+    self.productUri = productUri
     self.gatewayId = gatewayId
-    self.parentProductId = parentProductId
+    self.parentProductUri = parentProductUri
+    self.logicalPath = logicalPath
     self.productName = productName
     self.productDescription = productDescription
     self.ownerName = ownerName
@@ -129,7 +132,7 @@ class DataProductModel:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.productId = iprot.readString()
+          self.productUri = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -139,45 +142,50 @@ class DataProductModel:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
-          self.parentProductId = iprot.readString()
+          self.parentProductUri = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 4:
         if ftype == TType.STRING:
-          self.productName = iprot.readString()
+          self.logicalPath = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 5:
         if ftype == TType.STRING:
-          self.productDescription = iprot.readString()
+          self.productName = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 6:
         if ftype == TType.STRING:
-          self.ownerName = iprot.readString()
+          self.productDescription = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 7:
-        if ftype == TType.I32:
-          self.dataProductType = iprot.readI32()
+        if ftype == TType.STRING:
+          self.ownerName = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 8:
         if ftype == TType.I32:
-          self.productSize = iprot.readI32()
+          self.dataProductType = iprot.readI32()
         else:
           iprot.skip(ftype)
       elif fid == 9:
-        if ftype == TType.I64:
-          self.creationTime = iprot.readI64()
+        if ftype == TType.I32:
+          self.productSize = iprot.readI32()
         else:
           iprot.skip(ftype)
       elif fid == 10:
         if ftype == TType.I64:
-          self.lastModifiedTime = iprot.readI64()
+          self.creationTime = iprot.readI64()
         else:
           iprot.skip(ftype)
       elif fid == 11:
+        if ftype == TType.I64:
+          self.lastModifiedTime = iprot.readI64()
+        else:
+          iprot.skip(ftype)
+      elif fid == 12:
         if ftype == TType.MAP:
           self.productMetadata = {}
           (_ktype1, _vtype2, _size0 ) = iprot.readMapBegin()
@@ -188,7 +196,7 @@ class DataProductModel:
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 12:
+      elif fid == 13:
         if ftype == TType.LIST:
           self.replicaLocations = []
           (_etype10, _size7) = iprot.readListBegin()
@@ -199,7 +207,7 @@ class DataProductModel:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 13:
+      elif fid == 14:
         if ftype == TType.LIST:
           self.childProducts = []
           (_etype16, _size13) = iprot.readListBegin()
@@ -220,48 +228,52 @@ class DataProductModel:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('DataProductModel')
-    if self.productId is not None:
-      oprot.writeFieldBegin('productId', TType.STRING, 1)
-      oprot.writeString(self.productId)
+    if self.productUri is not None:
+      oprot.writeFieldBegin('productUri', TType.STRING, 1)
+      oprot.writeString(self.productUri)
       oprot.writeFieldEnd()
     if self.gatewayId is not None:
       oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
       oprot.writeString(self.gatewayId)
       oprot.writeFieldEnd()
-    if self.parentProductId is not None:
-      oprot.writeFieldBegin('parentProductId', TType.STRING, 3)
-      oprot.writeString(self.parentProductId)
+    if self.parentProductUri is not None:
+      oprot.writeFieldBegin('parentProductUri', TType.STRING, 3)
+      oprot.writeString(self.parentProductUri)
+      oprot.writeFieldEnd()
+    if self.logicalPath is not None:
+      oprot.writeFieldBegin('logicalPath', TType.STRING, 4)
+      oprot.writeString(self.logicalPath)
       oprot.writeFieldEnd()
     if self.productName is not None:
-      oprot.writeFieldBegin('productName', TType.STRING, 4)
+      oprot.writeFieldBegin('productName', TType.STRING, 5)
       oprot.writeString(self.productName)
       oprot.writeFieldEnd()
     if self.productDescription is not None:
-      oprot.writeFieldBegin('productDescription', TType.STRING, 5)
+      oprot.writeFieldBegin('productDescription', TType.STRING, 6)
       oprot.writeString(self.productDescription)
       oprot.writeFieldEnd()
     if self.ownerName is not None:
-      oprot.writeFieldBegin('ownerName', TType.STRING, 6)
+      oprot.writeFieldBegin('ownerName', TType.STRING, 7)
       oprot.writeString(self.ownerName)
       oprot.writeFieldEnd()
     if self.dataProductType is not None:
-      oprot.writeFieldBegin('dataProductType', TType.I32, 7)
+      oprot.writeFieldBegin('dataProductType', TType.I32, 8)
       oprot.writeI32(self.dataProductType)
       oprot.writeFieldEnd()
     if self.productSize is not None:
-      oprot.writeFieldBegin('productSize', TType.I32, 8)
+      oprot.writeFieldBegin('productSize', TType.I32, 9)
       oprot.writeI32(self.productSize)
       oprot.writeFieldEnd()
     if self.creationTime is not None:
-      oprot.writeFieldBegin('creationTime', TType.I64, 9)
+      oprot.writeFieldBegin('creationTime', TType.I64, 10)
       oprot.writeI64(self.creationTime)
       oprot.writeFieldEnd()
     if self.lastModifiedTime is not None:
-      oprot.writeFieldBegin('lastModifiedTime', TType.I64, 10)
+      oprot.writeFieldBegin('lastModifiedTime', TType.I64, 11)
       oprot.writeI64(self.lastModifiedTime)
       oprot.writeFieldEnd()
     if self.productMetadata is not None:
-      oprot.writeFieldBegin('productMetadata', TType.MAP, 11)
+      oprot.writeFieldBegin('productMetadata', TType.MAP, 12)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.productMetadata))
       for kiter19,viter20 in self.productMetadata.items():
         oprot.writeString(kiter19)
@@ -269,14 +281,14 @@ class DataProductModel:
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.replicaLocations is not None:
-      oprot.writeFieldBegin('replicaLocations', TType.LIST, 12)
+      oprot.writeFieldBegin('replicaLocations', TType.LIST, 13)
       oprot.writeListBegin(TType.STRUCT, len(self.replicaLocations))
       for iter21 in self.replicaLocations:
         iter21.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.childProducts is not None:
-      oprot.writeFieldBegin('childProducts', TType.LIST, 13)
+      oprot.writeFieldBegin('childProducts', TType.LIST, 14)
       oprot.writeListBegin(TType.STRUCT, len(self.childProducts))
       for iter22 in self.childProducts:
         iter22.write(oprot)
@@ -291,9 +303,10 @@ class DataProductModel:
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.productId)
+    value = (value * 31) ^ hash(self.productUri)
     value = (value * 31) ^ hash(self.gatewayId)
-    value = (value * 31) ^ hash(self.parentProductId)
+    value = (value * 31) ^ hash(self.parentProductUri)
+    value = (value * 31) ^ hash(self.logicalPath)
     value = (value * 31) ^ hash(self.productName)
     value = (value * 31) ^ hash(self.productDescription)
     value = (value * 31) ^ hash(self.ownerName)
@@ -321,7 +334,7 @@ class DataReplicaLocationModel:
   """
   Attributes:
    - replicaId
-   - productId
+   - productUri
    - replicaName
    - replicaDescription
    - creationTime
@@ -330,14 +343,14 @@ class DataReplicaLocationModel:
    - replicaLocationCategory
    - replicaPersistentType
    - storageResourceId
-   - fileAbsolutePath
+   - filePath
    - replicaMetadata
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'replicaId', None, None, ), # 1
-    (2, TType.STRING, 'productId', None, None, ), # 2
+    (2, TType.STRING, 'productUri', None, None, ), # 2
     (3, TType.STRING, 'replicaName', None, None, ), # 3
     (4, TType.STRING, 'replicaDescription', None, None, ), # 4
     (5, TType.I64, 'creationTime', None, None, ), # 5
@@ -346,13 +359,13 @@ class DataReplicaLocationModel:
     (8, TType.I32, 'replicaLocationCategory', None, None, ), # 8
     (9, TType.I32, 'replicaPersistentType', None, None, ), # 9
     (10, TType.STRING, 'storageResourceId', None, None, ), # 10
-    (11, TType.STRING, 'fileAbsolutePath', None, None, ), # 11
+    (11, TType.STRING, 'filePath', None, None, ), # 11
     (12, TType.MAP, 'replicaMetadata', (TType.STRING,None,TType.STRING,None), None, ), # 12
   )
 
-  def __init__(self, replicaId=None, productId=None, replicaName=None, replicaDescription=None, creationTime=None, lastModifiedTime=None, validUntilTime=None, replicaLocationCategory=None, replicaPersistentType=None, storageResourceId=None, fileAbsolutePath=None, replicaMetadata=None,):
+  def __init__(self, replicaId=None, productUri=None, replicaName=None, replicaDescription=None, creationTime=None, lastModifiedTime=None, validUntilTime=None, replicaLocationCategory=None, replicaPersistentType=None, storageResourceId=None, filePath=None, replicaMetadata=None,):
     self.replicaId = replicaId
-    self.productId = productId
+    self.productUri = productUri
     self.replicaName = replicaName
     self.replicaDescription = replicaDescription
     self.creationTime = creationTime
@@ -361,7 +374,7 @@ class DataReplicaLocationModel:
     self.replicaLocationCategory = replicaLocationCategory
     self.replicaPersistentType = replicaPersistentType
     self.storageResourceId = storageResourceId
-    self.fileAbsolutePath = fileAbsolutePath
+    self.filePath = filePath
     self.replicaMetadata = replicaMetadata
 
   def read(self, iprot):
@@ -380,7 +393,7 @@ class DataReplicaLocationModel:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.productId = iprot.readString()
+          self.productUri = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 3:
@@ -425,7 +438,7 @@ class DataReplicaLocationModel:
           iprot.skip(ftype)
       elif fid == 11:
         if ftype == TType.STRING:
-          self.fileAbsolutePath = iprot.readString()
+          self.filePath = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 12:
@@ -453,9 +466,9 @@ class DataReplicaLocationModel:
       oprot.writeFieldBegin('replicaId', TType.STRING, 1)
       oprot.writeString(self.replicaId)
       oprot.writeFieldEnd()
-    if self.productId is not None:
-      oprot.writeFieldBegin('productId', TType.STRING, 2)
-      oprot.writeString(self.productId)
+    if self.productUri is not None:
+      oprot.writeFieldBegin('productUri', TType.STRING, 2)
+      oprot.writeString(self.productUri)
       oprot.writeFieldEnd()
     if self.replicaName is not None:
       oprot.writeFieldBegin('replicaName', TType.STRING, 3)
@@ -489,9 +502,9 @@ class DataReplicaLocationModel:
       oprot.writeFieldBegin('storageResourceId', TType.STRING, 10)
       oprot.writeString(self.storageResourceId)
       oprot.writeFieldEnd()
-    if self.fileAbsolutePath is not None:
-      oprot.writeFieldBegin('fileAbsolutePath', TType.STRING, 11)
-      oprot.writeString(self.fileAbsolutePath)
+    if self.filePath is not None:
+      oprot.writeFieldBegin('filePath', TType.STRING, 11)
+      oprot.writeString(self.filePath)
       oprot.writeFieldEnd()
     if self.replicaMetadata is not None:
       oprot.writeFieldBegin('replicaMetadata', TType.MAP, 12)
@@ -511,7 +524,7 @@ class DataReplicaLocationModel:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.replicaId)
-    value = (value * 31) ^ hash(self.productId)
+    value = (value * 31) ^ hash(self.productUri)
     value = (value * 31) ^ hash(self.replicaName)
     value = (value * 31) ^ hash(self.replicaDescription)
     value = (value * 31) ^ hash(self.creationTime)
@@ -520,7 +533,7 @@ class DataReplicaLocationModel:
     value = (value * 31) ^ hash(self.replicaLocationCategory)
     value = (value * 31) ^ hash(self.replicaPersistentType)
     value = (value * 31) ^ hash(self.storageResourceId)
-    value = (value * 31) ^ hash(self.fileAbsolutePath)
+    value = (value * 31) ^ hash(self.filePath)
     value = (value * 31) ^ hash(self.replicaMetadata)
     return value
 

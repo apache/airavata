@@ -41,24 +41,25 @@ enum DataProductType {
 }
 
 struct DataProductModel {
-    1: optional string productId,
+    1: optional string productUri,
     2: optional string gatewayId,
-    3: optional string parentProductId,
-    4: optional string productName,
-    5: optional string productDescription,
-    6: optional string ownerName,
-    7: optional DataProductType dataProductType,
-    8: optional i32 productSize,
-    9: optional i64 creationTime,
-    10: optional i64 lastModifiedTime,
-    11: optional map<string, string> productMetadata,
-    12: optional list<DataReplicaLocationModel> replicaLocations,
-    13: optional list<DataProductModel> childProducts
+    3: optional string parentProductUri,
+    4: optional string logicalPath,
+    5: optional string productName,
+    6: optional string productDescription,
+    7: optional string ownerName,
+    8: optional DataProductType dataProductType,
+    9: optional i32 productSize,
+    10: optional i64 creationTime,
+    11: optional i64 lastModifiedTime,
+    12: optional map<string, string> productMetadata,
+    13: optional list<DataReplicaLocationModel> replicaLocations,
+    14: optional list<DataProductModel> childProducts
 }
 
 struct DataReplicaLocationModel {
     1: optional string replicaId,
-    2: optional string productId,
+    2: optional string productUri,
     3: optional string replicaName,
     4: optional string replicaDescription,
     5: optional i64 creationTime,

@@ -43,14 +43,14 @@ public class DataCatalogImpl implements DataCatalog {
 
     @Override
     public String registerDataProduct(DataProductModel productModel) throws DataCatalogException {
-        String productId = UUID.randomUUID().toString();
-        productModel.setProductId(productId);
+        String productUri = UUID.randomUUID().toString();
+        productModel.setProductUri(productUri);
         long currentTime = System.currentTimeMillis();
         productModel.setCreationTime(currentTime);
         productModel.setLastModifiedTime(currentTime);
         if(productModel.getReplicaLocations() != null){
             productModel.getReplicaLocations().stream().forEach(r-> {
-                r.setProductId(productId);
+                r.setProductUri(productUri);
                 r.setReplicaId(UUID.randomUUID().toString());
                 r.setCreationTime(currentTime);
                 r.setLastModifiedTime(currentTime);
@@ -77,15 +77,15 @@ public class DataCatalogImpl implements DataCatalog {
                 em.close();
             }
         }
-        return productId;
+        return productUri;
     }
 
     @Override
-    public boolean removeDataProduct(String productId) throws DataCatalogException {
+    public boolean removeDataProduct(String productUri) throws DataCatalogException {
         EntityManager em = null;
         try {
             em = DataCatalogJPAUtils.getEntityManager();
-            DataProduct dataProduct = em.find(DataProduct.class, productId);
+            DataProduct dataProduct = em.find(DataProduct.class, productUri);
             if(dataProduct == null)
                 return false;
             em.getTransaction().begin();
@@ -111,7 +111,7 @@ public class DataCatalogImpl implements DataCatalog {
         EntityManager em = null;
         try {
             em = DataCatalogJPAUtils.getEntityManager();
-            DataProduct dataProduct = em.find(DataProduct.class, productModel.getProductId());
+            DataProduct dataProduct = em.find(DataProduct.class, productModel.getProductUri());
             if(dataProduct == null)
                 return false;
             em.getTransaction().begin();
@@ -135,11 +135,11 @@ public class DataCatalogImpl implements DataCatalog {
     }
 
     @Override
-    public DataProductModel getDataProduct(String productId) throws DataCatalogException {
+    public DataProductModel getDataProduct(String productUri) throws DataCatalogException {
         EntityManager em = null;
         try {
             em = DataCatalogJPAUtils.getEntityManager();
-            DataProduct dataProduct = em.find(DataProduct.class, productId);
+            DataProduct dataProduct = em.find(DataProduct.class, productUri);
             return ThriftDataModelConversion.getDataProductModel(dataProduct);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -261,11 +261,11 @@ public class DataCatalogImpl implements DataCatalog {
 
     @Override
     public List<DataReplicaLocationModel> getAllReplicaLocations(String
-                                                                             productId) throws DataCatalogException {
+                                                                             productUri) throws DataCatalogException {
         EntityManager em = null;
         try {
             em = DataCatalogJPAUtils.getEntityManager();
-            DataProduct dataProduct = em.find(DataProduct.class, productId);
+            DataProduct dataProduct = em.find(DataProduct.class, productUri);
             if(dataProduct == null)
                 return null;
             ArrayList<DataReplicaLocationModel> dataReplicaLocationModels = new ArrayList<>();

@@ -71,10 +71,11 @@ class DataProductModel;
 class DataReplicaLocationModel;
 
 typedef struct _DataProductModel__isset {
-  _DataProductModel__isset() : productId(false), gatewayId(false), parentProductId(false), productName(false), productDescription(false), ownerName(false), dataProductType(false), productSize(false), creationTime(false), lastModifiedTime(false), productMetadata(false), replicaLocations(false), childProducts(false) {}
-  bool productId :1;
+  _DataProductModel__isset() : productUri(false), gatewayId(false), parentProductUri(false), logicalPath(false), productName(false), productDescription(false), ownerName(false), dataProductType(false), productSize(false), creationTime(false), lastModifiedTime(false), productMetadata(false), replicaLocations(false), childProducts(false) {}
+  bool productUri :1;
   bool gatewayId :1;
-  bool parentProductId :1;
+  bool parentProductUri :1;
+  bool logicalPath :1;
   bool productName :1;
   bool productDescription :1;
   bool ownerName :1;
@@ -92,13 +93,14 @@ class DataProductModel {
 
   DataProductModel(const DataProductModel&);
   DataProductModel& operator=(const DataProductModel&);
-  DataProductModel() : productId(), gatewayId(), parentProductId(), productName(), productDescription(), ownerName(), dataProductType((DataProductType::type)0), productSize(0), creationTime(0), lastModifiedTime(0) {
+  DataProductModel() : productUri(), gatewayId(), parentProductUri(), logicalPath(), productName(), productDescription(), ownerName(), dataProductType((DataProductType::type)0), productSize(0), creationTime(0), lastModifiedTime(0) {
   }
 
   virtual ~DataProductModel() throw();
-  std::string productId;
+  std::string productUri;
   std::string gatewayId;
-  std::string parentProductId;
+  std::string parentProductUri;
+  std::string logicalPath;
   std::string productName;
   std::string productDescription;
   std::string ownerName;
@@ -112,11 +114,13 @@ class DataProductModel {
 
   _DataProductModel__isset __isset;
 
-  void __set_productId(const std::string& val);
+  void __set_productUri(const std::string& val);
 
   void __set_gatewayId(const std::string& val);
 
-  void __set_parentProductId(const std::string& val);
+  void __set_parentProductUri(const std::string& val);
+
+  void __set_logicalPath(const std::string& val);
 
   void __set_productName(const std::string& val);
 
@@ -140,17 +144,21 @@ class DataProductModel {
 
   bool operator == (const DataProductModel & rhs) const
   {
-    if (__isset.productId != rhs.__isset.productId)
+    if (__isset.productUri != rhs.__isset.productUri)
       return false;
-    else if (__isset.productId && !(productId == rhs.productId))
+    else if (__isset.productUri && !(productUri == rhs.productUri))
       return false;
     if (__isset.gatewayId != rhs.__isset.gatewayId)
       return false;
     else if (__isset.gatewayId && !(gatewayId == rhs.gatewayId))
       return false;
-    if (__isset.parentProductId != rhs.__isset.parentProductId)
+    if (__isset.parentProductUri != rhs.__isset.parentProductUri)
       return false;
-    else if (__isset.parentProductId && !(parentProductId == rhs.parentProductId))
+    else if (__isset.parentProductUri && !(parentProductUri == rhs.parentProductUri))
+      return false;
+    if (__isset.logicalPath != rhs.__isset.logicalPath)
+      return false;
+    else if (__isset.logicalPath && !(logicalPath == rhs.logicalPath))
       return false;
     if (__isset.productName != rhs.__isset.productName)
       return false;
@@ -215,9 +223,9 @@ inline std::ostream& operator<<(std::ostream& out, const DataProductModel& obj)
 }
 
 typedef struct _DataReplicaLocationModel__isset {
-  _DataReplicaLocationModel__isset() : replicaId(false), productId(false), replicaName(false), replicaDescription(false), creationTime(false), lastModifiedTime(false), validUntilTime(false), replicaLocationCategory(false), replicaPersistentType(false), storageResourceId(false), fileAbsolutePath(false), replicaMetadata(false) {}
+  _DataReplicaLocationModel__isset() : replicaId(false), productUri(false), replicaName(false), replicaDescription(false), creationTime(false), lastModifiedTime(false), validUntilTime(false), replicaLocationCategory(false), replicaPersistentType(false), storageResourceId(false), filePath(false), replicaMetadata(false) {}
   bool replicaId :1;
-  bool productId :1;
+  bool productUri :1;
   bool replicaName :1;
   bool replicaDescription :1;
   bool creationTime :1;
@@ -226,7 +234,7 @@ typedef struct _DataReplicaLocationModel__isset {
   bool replicaLocationCategory :1;
   bool replicaPersistentType :1;
   bool storageResourceId :1;
-  bool fileAbsolutePath :1;
+  bool filePath :1;
   bool replicaMetadata :1;
 } _DataReplicaLocationModel__isset;
 
@@ -235,12 +243,12 @@ class DataReplicaLocationModel {
 
   DataReplicaLocationModel(const DataReplicaLocationModel&);
   DataReplicaLocationModel& operator=(const DataReplicaLocationModel&);
-  DataReplicaLocationModel() : replicaId(), productId(), replicaName(), replicaDescription(), creationTime(0), lastModifiedTime(0), validUntilTime(0), replicaLocationCategory((ReplicaLocationCategory::type)0), replicaPersistentType((ReplicaPersistentType::type)0), storageResourceId(), fileAbsolutePath() {
+  DataReplicaLocationModel() : replicaId(), productUri(), replicaName(), replicaDescription(), creationTime(0), lastModifiedTime(0), validUntilTime(0), replicaLocationCategory((ReplicaLocationCategory::type)0), replicaPersistentType((ReplicaPersistentType::type)0), storageResourceId(), filePath() {
   }
 
   virtual ~DataReplicaLocationModel() throw();
   std::string replicaId;
-  std::string productId;
+  std::string productUri;
   std::string replicaName;
   std::string replicaDescription;
   int64_t creationTime;
@@ -249,14 +257,14 @@ class DataReplicaLocationModel {
   ReplicaLocationCategory::type replicaLocationCategory;
   ReplicaPersistentType::type replicaPersistentType;
   std::string storageResourceId;
-  std::string fileAbsolutePath;
+  std::string filePath;
   std::map<std::string, std::string>  replicaMetadata;
 
   _DataReplicaLocationModel__isset __isset;
 
   void __set_replicaId(const std::string& val);
 
-  void __set_productId(const std::string& val);
+  void __set_productUri(const std::string& val);
 
   void __set_replicaName(const std::string& val);
 
@@ -274,7 +282,7 @@ class DataReplicaLocationModel {
 
   void __set_storageResourceId(const std::string& val);
 
-  void __set_fileAbsolutePath(const std::string& val);
+  void __set_filePath(const std::string& val);
 
   void __set_replicaMetadata(const std::map<std::string, std::string> & val);
 
@@ -284,9 +292,9 @@ class DataReplicaLocationModel {
       return false;
     else if (__isset.replicaId && !(replicaId == rhs.replicaId))
       return false;
-    if (__isset.productId != rhs.__isset.productId)
+    if (__isset.productUri != rhs.__isset.productUri)
       return false;
-    else if (__isset.productId && !(productId == rhs.productId))
+    else if (__isset.productUri && !(productUri == rhs.productUri))
       return false;
     if (__isset.replicaName != rhs.__isset.replicaName)
       return false;
@@ -320,9 +328,9 @@ class DataReplicaLocationModel {
       return false;
     else if (__isset.storageResourceId && !(storageResourceId == rhs.storageResourceId))
       return false;
-    if (__isset.fileAbsolutePath != rhs.__isset.fileAbsolutePath)
+    if (__isset.filePath != rhs.__isset.filePath)
       return false;
-    else if (__isset.fileAbsolutePath && !(fileAbsolutePath == rhs.fileAbsolutePath))
+    else if (__isset.filePath && !(filePath == rhs.filePath))
       return false;
     if (__isset.replicaMetadata != rhs.__isset.replicaMetadata)
       return false;
