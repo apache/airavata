@@ -45,6 +45,7 @@ class ResourceJobManagerType:
   SLURM = 2
   LSF = 3
   UGE = 4
+  SGE = 5
 
   _VALUES_TO_NAMES = {
     0: "FORK",
@@ -52,6 +53,7 @@ class ResourceJobManagerType:
     2: "SLURM",
     3: "LSF",
     4: "UGE",
+    5: "SGE",
   }
 
   _NAMES_TO_VALUES = {
@@ -60,6 +62,7 @@ class ResourceJobManagerType:
     "SLURM": 2,
     "LSF": 3,
     "UGE": 4,
+    "SGE": 5,
   }
 
 class JobManagerCommand:

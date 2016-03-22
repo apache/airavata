@@ -102,6 +102,7 @@
 				<include>SLURMTemplate.xslt</include>
 				<include>LSFTemplate.xslt</include>
 				<include>UGETemplate.xslt</include>
+				<include>SGETemplate.xslt</include>
 				<include>ForkTemplate.xslt</include>
 				<include>gsissh.properties</include>
 				<include>airavata.jks</include>

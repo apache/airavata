@@ -98,6 +98,12 @@ resources:
     resourceEmailAddresses:
       - ls4.tacc.utexas.edu # contain Lonestar
 
+  - jobManagerType: SGE
+    commandOutputParser: org.apache.airavata.gfac.impl.job.UGEOutputParser
+    emailParser: org.apache.airavata.gfac.monitor.email.parser.UGEEmailParser
+    resourceEmailAddresses:
+      - wurnet.nl # wur
+      
   - jobManagerType: LSF
     commandOutputParser: org.apache.airavata.gfac.impl.job.LSFOutputParser
     emailParser: org.apache.airavata.gfac.monitor.email.parser.LSFEmailParser
