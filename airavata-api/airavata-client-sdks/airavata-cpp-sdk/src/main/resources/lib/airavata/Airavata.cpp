@@ -28145,7 +28145,7 @@ uint32_t Airavata_addLocalDataMovementDetails_args::read(::apache::thrift::proto
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_authzToken = false;
-  bool isset_resourceId = false;
+  bool isset_productId = false;
   bool isset_dataMoveType = false;
   bool isset_priorityOrder = false;
   bool isset_localDataMovement = false;
@@ -28168,8 +28168,8 @@ uint32_t Airavata_addLocalDataMovementDetails_args::read(::apache::thrift::proto
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->resourceId);
-          isset_resourceId = true;
+          xfer += iprot->readString(this->productId);
+          isset_productId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -28211,7 +28211,7 @@ uint32_t Airavata_addLocalDataMovementDetails_args::read(::apache::thrift::proto
 
   if (!isset_authzToken)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_resourceId)
+  if (!isset_productId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_dataMoveType)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -28231,8 +28231,8 @@ uint32_t Airavata_addLocalDataMovementDetails_args::write(::apache::thrift::prot
   xfer += this->authzToken.write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->resourceId);
+  xfer += oprot->writeFieldBegin("productId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->productId);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("dataMoveType", ::apache::thrift::protocol::T_I32, 3);
@@ -28266,8 +28266,8 @@ uint32_t Airavata_addLocalDataMovementDetails_pargs::write(::apache::thrift::pro
   xfer += (*(this->authzToken)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString((*(this->resourceId)));
+  xfer += oprot->writeFieldBegin("productId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->productId)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("dataMoveType", ::apache::thrift::protocol::T_I32, 3);
@@ -29090,7 +29090,7 @@ uint32_t Airavata_addSCPDataMovementDetails_args::read(::apache::thrift::protoco
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_authzToken = false;
-  bool isset_resourceId = false;
+  bool isset_productId = false;
   bool isset_dataMoveType = false;
   bool isset_priorityOrder = false;
   bool isset_scpDataMovement = false;
@@ -29113,8 +29113,8 @@ uint32_t Airavata_addSCPDataMovementDetails_args::read(::apache::thrift::protoco
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->resourceId);
-          isset_resourceId = true;
+          xfer += iprot->readString(this->productId);
+          isset_productId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -29156,7 +29156,7 @@ uint32_t Airavata_addSCPDataMovementDetails_args::read(::apache::thrift::protoco
 
   if (!isset_authzToken)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_resourceId)
+  if (!isset_productId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_dataMoveType)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -29176,8 +29176,8 @@ uint32_t Airavata_addSCPDataMovementDetails_args::write(::apache::thrift::protoc
   xfer += this->authzToken.write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->resourceId);
+  xfer += oprot->writeFieldBegin("productId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->productId);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("dataMoveType", ::apache::thrift::protocol::T_I32, 3);
@@ -29211,8 +29211,8 @@ uint32_t Airavata_addSCPDataMovementDetails_pargs::write(::apache::thrift::proto
   xfer += (*(this->authzToken)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString((*(this->resourceId)));
+  xfer += oprot->writeFieldBegin("productId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->productId)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("dataMoveType", ::apache::thrift::protocol::T_I32, 3);
@@ -30035,7 +30035,7 @@ uint32_t Airavata_addUnicoreDataMovementDetails_args::read(::apache::thrift::pro
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_authzToken = false;
-  bool isset_resourceId = false;
+  bool isset_productId = false;
   bool isset_dataMoveType = false;
   bool isset_priorityOrder = false;
   bool isset_unicoreDataMovement = false;
@@ -30058,8 +30058,8 @@ uint32_t Airavata_addUnicoreDataMovementDetails_args::read(::apache::thrift::pro
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->resourceId);
-          isset_resourceId = true;
+          xfer += iprot->readString(this->productId);
+          isset_productId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -30101,7 +30101,7 @@ uint32_t Airavata_addUnicoreDataMovementDetails_args::read(::apache::thrift::pro
 
   if (!isset_authzToken)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_resourceId)
+  if (!isset_productId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_dataMoveType)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -30121,8 +30121,8 @@ uint32_t Airavata_addUnicoreDataMovementDetails_args::write(::apache::thrift::pr
   xfer += this->authzToken.write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->resourceId);
+  xfer += oprot->writeFieldBegin("productId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->productId);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("dataMoveType", ::apache::thrift::protocol::T_I32, 3);
@@ -30156,8 +30156,8 @@ uint32_t Airavata_addUnicoreDataMovementDetails_pargs::write(::apache::thrift::p
   xfer += (*(this->authzToken)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString((*(this->resourceId)));
+  xfer += oprot->writeFieldBegin("productId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->productId)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("dataMoveType", ::apache::thrift::protocol::T_I32, 3);
@@ -30980,7 +30980,7 @@ uint32_t Airavata_addGridFTPDataMovementDetails_args::read(::apache::thrift::pro
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_authzToken = false;
-  bool isset_resourceId = false;
+  bool isset_productId = false;
   bool isset_dataMoveType = false;
   bool isset_priorityOrder = false;
   bool isset_gridFTPDataMovement = false;
@@ -31003,8 +31003,8 @@ uint32_t Airavata_addGridFTPDataMovementDetails_args::read(::apache::thrift::pro
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->resourceId);
-          isset_resourceId = true;
+          xfer += iprot->readString(this->productId);
+          isset_productId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -31046,7 +31046,7 @@ uint32_t Airavata_addGridFTPDataMovementDetails_args::read(::apache::thrift::pro
 
   if (!isset_authzToken)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_resourceId)
+  if (!isset_productId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_dataMoveType)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -31066,8 +31066,8 @@ uint32_t Airavata_addGridFTPDataMovementDetails_args::write(::apache::thrift::pr
   xfer += this->authzToken.write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->resourceId);
+  xfer += oprot->writeFieldBegin("productId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->productId);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("dataMoveType", ::apache::thrift::protocol::T_I32, 3);
@@ -31101,8 +31101,8 @@ uint32_t Airavata_addGridFTPDataMovementDetails_pargs::write(::apache::thrift::p
   xfer += (*(this->authzToken)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString((*(this->resourceId)));
+  xfer += oprot->writeFieldBegin("productId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->productId)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("dataMoveType", ::apache::thrift::protocol::T_I32, 3);
@@ -33493,7 +33493,7 @@ uint32_t Airavata_deleteDataMovementInterface_args::read(::apache::thrift::proto
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_authzToken = false;
-  bool isset_resourceId = false;
+  bool isset_productId = false;
   bool isset_dataMovementInterfaceId = false;
   bool isset_dataMoveType = false;
 
@@ -33515,8 +33515,8 @@ uint32_t Airavata_deleteDataMovementInterface_args::read(::apache::thrift::proto
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->resourceId);
-          isset_resourceId = true;
+          xfer += iprot->readString(this->productId);
+          isset_productId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -33550,7 +33550,7 @@ uint32_t Airavata_deleteDataMovementInterface_args::read(::apache::thrift::proto
 
   if (!isset_authzToken)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_resourceId)
+  if (!isset_productId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_dataMovementInterfaceId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -33568,8 +33568,8 @@ uint32_t Airavata_deleteDataMovementInterface_args::write(::apache::thrift::prot
   xfer += this->authzToken.write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->resourceId);
+  xfer += oprot->writeFieldBegin("productId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->productId);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("dataMovementInterfaceId", ::apache::thrift::protocol::T_STRING, 3);
@@ -33599,8 +33599,8 @@ uint32_t Airavata_deleteDataMovementInterface_pargs::write(::apache::thrift::pro
   xfer += (*(this->authzToken)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString((*(this->resourceId)));
+  xfer += oprot->writeFieldBegin("productId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->productId)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("dataMovementInterfaceId", ::apache::thrift::protocol::T_STRING, 3);
@@ -48375,20 +48375,20 @@ bool AiravataClient::recv_updateUnicoreJobSubmissionDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateUnicoreJobSubmissionDetails failed: unknown result");
 }
 
-void AiravataClient::addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement)
+void AiravataClient::addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement)
 {
-  send_addLocalDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, localDataMovement);
+  send_addLocalDataMovementDetails(authzToken, productId, dataMoveType, priorityOrder, localDataMovement);
   recv_addLocalDataMovementDetails(_return);
 }
 
-void AiravataClient::send_addLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement)
+void AiravataClient::send_addLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("addLocalDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_addLocalDataMovementDetails_pargs args;
   args.authzToken = &authzToken;
-  args.resourceId = &resourceId;
+  args.productId = &productId;
   args.dataMoveType = &dataMoveType;
   args.priorityOrder = &priorityOrder;
   args.localDataMovement = &localDataMovement;
@@ -48592,20 +48592,20 @@ void AiravataClient::recv_getLocalDataMovement( ::apache::airavata::model::data:
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getLocalDataMovement failed: unknown result");
 }
 
-void AiravataClient::addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement)
+void AiravataClient::addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement)
 {
-  send_addSCPDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, scpDataMovement);
+  send_addSCPDataMovementDetails(authzToken, productId, dataMoveType, priorityOrder, scpDataMovement);
   recv_addSCPDataMovementDetails(_return);
 }
 
-void AiravataClient::send_addSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement)
+void AiravataClient::send_addSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("addSCPDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_addSCPDataMovementDetails_pargs args;
   args.authzToken = &authzToken;
-  args.resourceId = &resourceId;
+  args.productId = &productId;
   args.dataMoveType = &dataMoveType;
   args.priorityOrder = &priorityOrder;
   args.scpDataMovement = &scpDataMovement;
@@ -48809,20 +48809,20 @@ void AiravataClient::recv_getSCPDataMovement( ::apache::airavata::model::data::m
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getSCPDataMovement failed: unknown result");
 }
 
-void AiravataClient::addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement)
+void AiravataClient::addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement)
 {
-  send_addUnicoreDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, unicoreDataMovement);
+  send_addUnicoreDataMovementDetails(authzToken, productId, dataMoveType, priorityOrder, unicoreDataMovement);
   recv_addUnicoreDataMovementDetails(_return);
 }
 
-void AiravataClient::send_addUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement)
+void AiravataClient::send_addUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("addUnicoreDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_addUnicoreDataMovementDetails_pargs args;
   args.authzToken = &authzToken;
-  args.resourceId = &resourceId;
+  args.productId = &productId;
   args.dataMoveType = &dataMoveType;
   args.priorityOrder = &priorityOrder;
   args.unicoreDataMovement = &unicoreDataMovement;
@@ -49026,20 +49026,20 @@ void AiravataClient::recv_getUnicoreDataMovement( ::apache::airavata::model::dat
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getUnicoreDataMovement failed: unknown result");
 }
 
-void AiravataClient::addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement)
+void AiravataClient::addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement)
 {
-  send_addGridFTPDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, gridFTPDataMovement);
+  send_addGridFTPDataMovementDetails(authzToken, productId, dataMoveType, priorityOrder, gridFTPDataMovement);
   recv_addGridFTPDataMovementDetails(_return);
 }
 
-void AiravataClient::send_addGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement)
+void AiravataClient::send_addGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("addGridFTPDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_addGridFTPDataMovementDetails_pargs args;
   args.authzToken = &authzToken;
-  args.resourceId = &resourceId;
+  args.productId = &productId;
   args.dataMoveType = &dataMoveType;
   args.priorityOrder = &priorityOrder;
   args.gridFTPDataMovement = &gridFTPDataMovement;
@@ -49601,20 +49601,20 @@ bool AiravataClient::recv_deleteJobSubmissionInterface()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "deleteJobSubmissionInterface failed: unknown result");
 }
 
-bool AiravataClient::deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType)
+bool AiravataClient::deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType)
 {
-  send_deleteDataMovementInterface(authzToken, resourceId, dataMovementInterfaceId, dataMoveType);
+  send_deleteDataMovementInterface(authzToken, productId, dataMovementInterfaceId, dataMoveType);
   return recv_deleteDataMovementInterface();
 }
 
-void AiravataClient::send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType)
+void AiravataClient::send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("deleteDataMovementInterface", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_deleteDataMovementInterface_pargs args;
   args.authzToken = &authzToken;
-  args.resourceId = &resourceId;
+  args.productId = &productId;
   args.dataMovementInterfaceId = &dataMovementInterfaceId;
   args.dataMoveType = &dataMoveType;
   args.write(oprot_);
@@ -57521,7 +57521,7 @@ void AiravataProcessor::process_addLocalDataMovementDetails(int32_t seqid, ::apa
 
   Airavata_addLocalDataMovementDetails_result result;
   try {
-    iface_->addLocalDataMovementDetails(result.success, args.authzToken, args.resourceId, args.dataMoveType, args.priorityOrder, args.localDataMovement);
+    iface_->addLocalDataMovementDetails(result.success, args.authzToken, args.productId, args.dataMoveType, args.priorityOrder, args.localDataMovement);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -57719,7 +57719,7 @@ void AiravataProcessor::process_addSCPDataMovementDetails(int32_t seqid, ::apach
 
   Airavata_addSCPDataMovementDetails_result result;
   try {
-    iface_->addSCPDataMovementDetails(result.success, args.authzToken, args.resourceId, args.dataMoveType, args.priorityOrder, args.scpDataMovement);
+    iface_->addSCPDataMovementDetails(result.success, args.authzToken, args.productId, args.dataMoveType, args.priorityOrder, args.scpDataMovement);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -57917,7 +57917,7 @@ void AiravataProcessor::process_addUnicoreDataMovementDetails(int32_t seqid, ::a
 
   Airavata_addUnicoreDataMovementDetails_result result;
   try {
-    iface_->addUnicoreDataMovementDetails(result.success, args.authzToken, args.resourceId, args.dataMoveType, args.priorityOrder, args.unicoreDataMovement);
+    iface_->addUnicoreDataMovementDetails(result.success, args.authzToken, args.productId, args.dataMoveType, args.priorityOrder, args.unicoreDataMovement);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -58115,7 +58115,7 @@ void AiravataProcessor::process_addGridFTPDataMovementDetails(int32_t seqid, ::a
 
   Airavata_addGridFTPDataMovementDetails_result result;
   try {
-    iface_->addGridFTPDataMovementDetails(result.success, args.authzToken, args.resourceId, args.dataMoveType, args.priorityOrder, args.gridFTPDataMovement);
+    iface_->addGridFTPDataMovementDetails(result.success, args.authzToken, args.productId, args.dataMoveType, args.priorityOrder, args.gridFTPDataMovement);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -58643,7 +58643,7 @@ void AiravataProcessor::process_deleteDataMovementInterface(int32_t seqid, ::apa
 
   Airavata_deleteDataMovementInterface_result result;
   try {
-    result.success = iface_->deleteDataMovementInterface(args.authzToken, args.resourceId, args.dataMovementInterfaceId, args.dataMoveType);
+    result.success = iface_->deleteDataMovementInterface(args.authzToken, args.productId, args.dataMovementInterfaceId, args.dataMoveType);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -69517,13 +69517,13 @@ bool AiravataConcurrentClient::recv_updateUnicoreJobSubmissionDetails(const int3
   } // end while(true)
 }
 
-void AiravataConcurrentClient::addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement)
+void AiravataConcurrentClient::addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement)
 {
-  int32_t seqid = send_addLocalDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, localDataMovement);
+  int32_t seqid = send_addLocalDataMovementDetails(authzToken, productId, dataMoveType, priorityOrder, localDataMovement);
   recv_addLocalDataMovementDetails(_return, seqid);
 }
 
-int32_t AiravataConcurrentClient::send_addLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement)
+int32_t AiravataConcurrentClient::send_addLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::LOCALDataMovement& localDataMovement)
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
@@ -69531,7 +69531,7 @@ int32_t AiravataConcurrentClient::send_addLocalDataMovementDetails(const  ::apac
 
   Airavata_addLocalDataMovementDetails_pargs args;
   args.authzToken = &authzToken;
-  args.resourceId = &resourceId;
+  args.productId = &productId;
   args.dataMoveType = &dataMoveType;
   args.priorityOrder = &priorityOrder;
   args.localDataMovement = &localDataMovement;
@@ -69824,13 +69824,13 @@ void AiravataConcurrentClient::recv_getLocalDataMovement( ::apache::airavata::mo
   } // end while(true)
 }
 
-void AiravataConcurrentClient::addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement)
+void AiravataConcurrentClient::addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement)
 {
-  int32_t seqid = send_addSCPDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, scpDataMovement);
+  int32_t seqid = send_addSCPDataMovementDetails(authzToken, productId, dataMoveType, priorityOrder, scpDataMovement);
   recv_addSCPDataMovementDetails(_return, seqid);
 }
 
-int32_t AiravataConcurrentClient::send_addSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement)
+int32_t AiravataConcurrentClient::send_addSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::SCPDataMovement& scpDataMovement)
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
@@ -69838,7 +69838,7 @@ int32_t AiravataConcurrentClient::send_addSCPDataMovementDetails(const  ::apache
 
   Airavata_addSCPDataMovementDetails_pargs args;
   args.authzToken = &authzToken;
-  args.resourceId = &resourceId;
+  args.productId = &productId;
   args.dataMoveType = &dataMoveType;
   args.priorityOrder = &priorityOrder;
   args.scpDataMovement = &scpDataMovement;
@@ -70131,13 +70131,13 @@ void AiravataConcurrentClient::recv_getSCPDataMovement( ::apache::airavata::mode
   } // end while(true)
 }
 
-void AiravataConcurrentClient::addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement)
+void AiravataConcurrentClient::addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement)
 {
-  int32_t seqid = send_addUnicoreDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, unicoreDataMovement);
+  int32_t seqid = send_addUnicoreDataMovementDetails(authzToken, productId, dataMoveType, priorityOrder, unicoreDataMovement);
   recv_addUnicoreDataMovementDetails(_return, seqid);
 }
 
-int32_t AiravataConcurrentClient::send_addUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement)
+int32_t AiravataConcurrentClient::send_addUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::UnicoreDataMovement& unicoreDataMovement)
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
@@ -70145,7 +70145,7 @@ int32_t AiravataConcurrentClient::send_addUnicoreDataMovementDetails(const  ::ap
 
   Airavata_addUnicoreDataMovementDetails_pargs args;
   args.authzToken = &authzToken;
-  args.resourceId = &resourceId;
+  args.productId = &productId;
   args.dataMoveType = &dataMoveType;
   args.priorityOrder = &priorityOrder;
   args.unicoreDataMovement = &unicoreDataMovement;
@@ -70438,13 +70438,13 @@ void AiravataConcurrentClient::recv_getUnicoreDataMovement( ::apache::airavata::
   } // end while(true)
 }
 
-void AiravataConcurrentClient::addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement)
+void AiravataConcurrentClient::addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement)
 {
-  int32_t seqid = send_addGridFTPDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, gridFTPDataMovement);
+  int32_t seqid = send_addGridFTPDataMovementDetails(authzToken, productId, dataMoveType, priorityOrder, gridFTPDataMovement);
   recv_addGridFTPDataMovementDetails(_return, seqid);
 }
 
-int32_t AiravataConcurrentClient::send_addGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement)
+int32_t AiravataConcurrentClient::send_addGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType, const int32_t priorityOrder, const  ::apache::airavata::model::data::movement::GridFTPDataMovement& gridFTPDataMovement)
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
@@ -70452,7 +70452,7 @@ int32_t AiravataConcurrentClient::send_addGridFTPDataMovementDetails(const  ::ap
 
   Airavata_addGridFTPDataMovementDetails_pargs args;
   args.authzToken = &authzToken;
-  args.resourceId = &resourceId;
+  args.productId = &productId;
   args.dataMoveType = &dataMoveType;
   args.priorityOrder = &priorityOrder;
   args.gridFTPDataMovement = &gridFTPDataMovement;
@@ -71253,13 +71253,13 @@ bool AiravataConcurrentClient::recv_deleteJobSubmissionInterface(const int32_t s
   } // end while(true)
 }
 
-bool AiravataConcurrentClient::deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType)
+bool AiravataConcurrentClient::deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType)
 {
-  int32_t seqid = send_deleteDataMovementInterface(authzToken, resourceId, dataMovementInterfaceId, dataMoveType);
+  int32_t seqid = send_deleteDataMovementInterface(authzToken, productId, dataMovementInterfaceId, dataMoveType);
   return recv_deleteDataMovementInterface(seqid);
 }
 
-int32_t AiravataConcurrentClient::send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType)
+int32_t AiravataConcurrentClient::send_deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productId, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::data::movement::DMType::type dataMoveType)
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
@@ -71267,7 +71267,7 @@ int32_t AiravataConcurrentClient::send_deleteDataMovementInterface(const  ::apac
 
   Airavata_deleteDataMovementInterface_pargs args;
   args.authzToken = &authzToken;
-  args.resourceId = &resourceId;
+  args.productId = &productId;
   args.dataMovementInterfaceId = &dataMovementInterfaceId;
   args.dataMoveType = &dataMoveType;
   args.write(oprot_);

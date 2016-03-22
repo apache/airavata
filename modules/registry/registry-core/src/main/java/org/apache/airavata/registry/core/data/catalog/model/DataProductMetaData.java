@@ -30,20 +30,20 @@ import javax.persistence.*;
 @IdClass(DataProductMetaData_PK.class)
 public class DataProductMetaData {
     private final static Logger logger = LoggerFactory.getLogger(DataProductMetaData.class);
-    private String productId;
+    private String productUri;
     private String key;
     private String value;
 
     private DataProduct dataProduct;
 
     @Id
-    @Column(name = "PRODUCT_ID")
-    public String getProductId() {
-        return productId;
+    @Column(name = "PRODUCT_URI")
+    public String getProductUri() {
+        return productUri;
     }
 
-    public void setProductId(String productId) {
-        this.productId = productId;
+    public void setProductUri(String productUri) {
+        this.productUri = productUri;
     }
 
     @Id
@@ -66,7 +66,7 @@ public class DataProductMetaData {
     }
 
     @ManyToOne
-    @JoinColumn(name = "PRODUCT_ID", referencedColumnName = "PRODUCT_ID")
+    @JoinColumn(name = "PRODUCT_URI", referencedColumnName = "PRODUCT_URI")
     public DataProduct getDataProduct() {
         return dataProduct;
     }

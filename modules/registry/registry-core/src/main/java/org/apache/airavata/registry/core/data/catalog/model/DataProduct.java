@@ -31,13 +31,14 @@ import java.util.Collection;
 @Table(name = "DATA_PRODUCT")
 public class DataProduct {
     private final static Logger logger = LoggerFactory.getLogger(DataProduct.class);
-    private String resourceId;
+    private String productUri;
     private String gatewayId;
     private String productName;
+    private String logicalPath;
     private String productDescription;
     private String dataProductType;
     private String ownerName;
-    private String parentProductId;
+    private String parentProductUri;
     private int productSize;
     private Timestamp creationTime;
     private Timestamp lastModifiedTime;
@@ -48,13 +49,13 @@ public class DataProduct {
     private Collection<DataProduct> childDataProducts;
 
     @Id
-    @Column(name = "PRODUCT_ID")
-    public String getResourceId() {
-        return resourceId;
+    @Column(name = "PRODUCT_URI")
+    public String getProductUri() {
+        return productUri;
     }
 
-    public void setResourceId(String resourceId) {
-        this.resourceId = resourceId;
+    public void setProductUri(String productUri) {
+        this.productUri = productUri;
     }
 
     @Column(name = "GATEWAY_ID")
@@ -84,6 +85,15 @@ public class DataProduct {
         this.productDescription = productDescription;
     }
 
+    @Column(name = "LOGICAL_PATH")
+    public String getLogicalPath() {
+        return logicalPath;
+    }
+
+    public void setLogicalPath(String logicalPath) {
+        this.logicalPath = logicalPath;
+    }
+
     @Column(name = "OWNER_NAME")
     public String getOwnerName() {
         return ownerName;
@@ -93,13 +103,13 @@ public class DataProduct {
         this.ownerName = ownerName;
     }
 
-    @Column(name = "PARENT_PRODUCT_ID")
-    public String getParentProductId() {
-        return parentProductId;
+    @Column(name = "PARENT_PRODUCT_URI")
+    public String getParentProductUri() {
+        return parentProductUri;
     }
 
-    public void setParentProductId(String parentProductId) {
-        this.parentProductId = parentProductId;
+    public void setParentProductUri(String parentProductUri) {
+        this.parentProductUri = parentProductUri;
     }
 
     @Column(name = "PRODUCT_TYPE")
@@ -157,7 +167,7 @@ public class DataProduct {
     }
 
     @ManyToOne
-    @JoinColumn(name = "PARENT_PRODUCT_ID", referencedColumnName = "PRODUCT_ID")
+    @JoinColumn(name = "PARENT_PRODUCT_URI", referencedColumnName = "PRODUCT_URI")
     public DataProduct getParentDataProduct() {
         return parentDataProduct;
     }

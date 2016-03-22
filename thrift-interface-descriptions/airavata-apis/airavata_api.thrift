@@ -2153,7 +2153,7 @@ service Airavata {
    * Add a Local data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
-   * @param productId
+   * @param productUri
    *   The identifier of the compute resource to which JobSubmission protocol to be added
    *
    * @param DMType
@@ -2170,7 +2170,7 @@ service Airavata {
    *
    **/
   string addLocalDataMovementDetails(1: required security_model.AuthzToken authzToken,
-            2: required string productId,
+            2: required string productUri,
             3: required data_movement_models.DMType dataMoveType,
             4: required i32 priorityOrder,
             5: required data_movement_models.LOCALDataMovement localDataMovement)
@@ -2223,7 +2223,7 @@ service Airavata {
    * Add a SCP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
-   * @param productId
+   * @param productUri
    *   The identifier of the compute resource to which JobSubmission protocol to be added
    *
    * @param priorityOrder
@@ -2237,7 +2237,7 @@ service Airavata {
    *
   */
   string addSCPDataMovementDetails(1: required security_model.AuthzToken authzToken,
-            2: required string productId,
+            2: required string productUri,
             3: required data_movement_models.DMType dataMoveType,
             4: required i32 priorityOrder,
             5: required data_movement_models.SCPDataMovement scpDataMovement)
@@ -2289,7 +2289,7 @@ service Airavata {
    * Add a UNICORE data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
-   * @param productId
+   * @param productUri
    *   The identifier of the compute resource to which data movement protocol to be added
    *
    * @param priorityOrder
@@ -2303,7 +2303,7 @@ service Airavata {
    *
   */
  string addUnicoreDataMovementDetails(1: required security_model.AuthzToken authzToken,
-              2: required string productId,
+              2: required string productUri,
               3: required data_movement_models.DMType dataMoveType,
               4: required i32 priorityOrder,
               5: required data_movement_models.UnicoreDataMovement unicoreDataMovement)
@@ -2358,7 +2358,7 @@ service Airavata {
    * Add a GridFTP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
-   * @param productId
+   * @param productUri
    *   The identifier of the compute resource to which dataMovement protocol to be added
    *
    * @param DMType
@@ -2376,7 +2376,7 @@ service Airavata {
    **/
 
   string addGridFTPDataMovementDetails(1: required security_model.AuthzToken authzToken,
-            2: required string productId,
+            2: required string productUri,
             3: required data_movement_models.DMType dataMoveType,
             4: required i32 priorityOrder,
             5: required data_movement_models.GridFTPDataMovement gridFTPDataMovement)
@@ -2529,7 +2529,7 @@ service Airavata {
    *
    **/
 
-  bool deleteDataMovementInterface(1: required security_model.AuthzToken authzToken, 2: required string productId,
+  bool deleteDataMovementInterface(1: required security_model.AuthzToken authzToken, 2: required string productUri,
             3: required string dataMovementInterfaceId,
             4: required data_movement_models.DMType dataMoveType,)
   	throws (1: airavata_errors.InvalidRequestException ire,

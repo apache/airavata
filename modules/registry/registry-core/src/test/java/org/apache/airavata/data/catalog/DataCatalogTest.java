@@ -78,8 +78,8 @@ public class DataCatalogTest {
     @Test
     public void testPublishDataProduct(){
         try {
-            String productId = datacatalog.registerDataProduct(dataProductModel);
-            org.junit.Assert.assertNotNull(productId);
+            String productUri = datacatalog.registerDataProduct(dataProductModel);
+            org.junit.Assert.assertNotNull(productUri);
         } catch (DataCatalogException e) {
             e.printStackTrace();
             Assert.fail();
@@ -91,11 +91,11 @@ public class DataCatalogTest {
         try {
             boolean result = datacatalog.removeDataProduct("234234234");
             Assert.assertFalse(result);
-            String productId = datacatalog.registerDataProduct(dataProductModel);
-            Assert.assertNotNull(productId);
-            result = datacatalog.removeDataProduct(productId);
+            String productUri = datacatalog.registerDataProduct(dataProductModel);
+            Assert.assertNotNull(productUri);
+            result = datacatalog.removeDataProduct(productUri);
             Assert.assertTrue(result);
-            result = datacatalog.removeDataProduct(productId);
+            result = datacatalog.removeDataProduct(productUri);
             Assert.assertFalse(result);
         } catch (DataCatalogException e) {
             e.printStackTrace();
@@ -107,15 +107,15 @@ public class DataCatalogTest {
     public void testGetDataProduct(){
         try {
             dataProductModel.setDataProductType(DataProductType.COLLECTION);
-            String productId = datacatalog.registerDataProduct(dataProductModel);
-            Assert.assertNotNull(productId);
-            DataProductModel persistedCopy = datacatalog.getDataProduct(productId);
+            String productUri = datacatalog.registerDataProduct(dataProductModel);
+            Assert.assertNotNull(productUri);
+            DataProductModel persistedCopy = datacatalog.getDataProduct(productUri);
             Assert.assertNotNull(persistedCopy);
-            dataProductModel.setParentProductId(productId);
+            dataProductModel.setParentProductUri(productUri);
             dataProductModel.setDataProductType(DataProductType.FILE);
             datacatalog.registerDataProduct(dataProductModel);
             datacatalog.registerDataProduct(dataProductModel);
-            persistedCopy = datacatalog.getDataProduct(productId);
+            persistedCopy = datacatalog.getDataProduct(productUri);
             Assert.assertTrue(persistedCopy.getChildProducts().size()==2);
         } catch (DataCatalogException e) {
             e.printStackTrace();
@@ -126,18 +126,18 @@ public class DataCatalogTest {
     @Test
     public void testUpdateDataProduct(){
         try {
-            dataProductModel.setProductId(UUID.randomUUID().toString());
+            dataProductModel.setProductUri(UUID.randomUUID().toString());
             boolean result = datacatalog.updateDataProduct(dataProductModel);
             Assert.assertFalse(result);
             datacatalog.registerDataProduct(dataProductModel);
             dataProductModel.setProductName("updated-name");
             datacatalog.updateDataProduct(dataProductModel);
-            dataProductModel = datacatalog.getDataProduct(dataProductModel.getProductId());
+            dataProductModel = datacatalog.getDataProduct(dataProductModel.getProductUri());
             Assert.assertTrue(dataProductModel.getProductName().equals("updated-name"));
             Assert.assertTrue(dataProductModel.getProductMetadata().size()==1);
             dataProductModel.getProductMetadata().put("name2","name2");
             datacatalog.updateDataProduct(dataProductModel);
-            dataProductModel = datacatalog.getDataProduct(dataProductModel.getProductId());
+            dataProductModel = datacatalog.getDataProduct(dataProductModel.getProductUri());
             Assert.assertTrue(dataProductModel.getProductMetadata().size()==2);
         } catch (DataCatalogException e) {
             e.printStackTrace();
@@ -148,8 +148,8 @@ public class DataCatalogTest {
     @Test
     public void testPublishReplicaLocation(){
         try {
-            String productId = datacatalog.registerDataProduct(dataProductModel);
-            replicaLocationModel.setProductId(productId);
+            String productUri = datacatalog.registerDataProduct(dataProductModel);
+            replicaLocationModel.setProductUri(productUri);
             String replicaId = datacatalog.registerReplicaLocation(replicaLocationModel);
             Assert.assertNotNull(replicaId);;
         } catch (DataCatalogException e) {
@@ -161,8 +161,8 @@ public class DataCatalogTest {
     @Test
     public void testRemoveReplicaLocation(){
         try {
-            String productId = datacatalog.registerDataProduct(dataProductModel);
-            replicaLocationModel.setProductId(productId);
+            String productUri = datacatalog.registerDataProduct(dataProductModel);
+            replicaLocationModel.setProductUri(productUri);
             String replicaId = datacatalog.registerReplicaLocation(replicaLocationModel);
             boolean result = datacatalog.removeReplicaLocation(replicaId);
             Assert.assertTrue(result);
@@ -177,8 +177,8 @@ public class DataCatalogTest {
     @Test
     public void testGetReplicaLocation(){
         try {
-            String productId = datacatalog.registerDataProduct(dataProductModel);
-            replicaLocationModel.setProductId(productId);
+            String productUri = datacatalog.registerDataProduct(dataProductModel);
+            replicaLocationModel.setProductUri(productUri);
             String replicaId = datacatalog.registerReplicaLocation(replicaLocationModel);
             DataReplicaLocationModel persistedCopy = datacatalog.getReplicaLocation(replicaId);
             Assert.assertNotNull(persistedCopy);
@@ -191,8 +191,8 @@ public class DataCatalogTest {
     @Test
     public void testUpdateReplicaLocation(){
         try {
-            String productId = datacatalog.registerDataProduct(dataProductModel);
-            replicaLocationModel.setProductId(productId);
+            String productUri = datacatalog.registerDataProduct(dataProductModel);
+            replicaLocationModel.setProductUri(productUri);
             String replicaId = datacatalog.registerReplicaLocation(replicaLocationModel);
             DataReplicaLocationModel persistedCopy = datacatalog.getReplicaLocation(replicaId);
             persistedCopy.setReplicaDescription("updated-description");
@@ -209,10 +209,10 @@ public class DataCatalogTest {
     @Test
     public void testGetAllReplicaLocations(){
         try {
-            String productId = datacatalog.registerDataProduct(dataProductModel);
-            replicaLocationModel.setProductId(productId);
+            String productUri = datacatalog.registerDataProduct(dataProductModel);
+            replicaLocationModel.setProductUri(productUri);
             datacatalog.registerReplicaLocation(replicaLocationModel);
-            List<DataReplicaLocationModel> replicaLocationModelList = datacatalog.getAllReplicaLocations(productId);
+            List<DataReplicaLocationModel> replicaLocationModelList = datacatalog.getAllReplicaLocations(productUri);
             Assert.assertNotNull(replicaLocationModelList.get(0).getReplicaId());
         } catch (DataCatalogException e) {
             e.printStackTrace();

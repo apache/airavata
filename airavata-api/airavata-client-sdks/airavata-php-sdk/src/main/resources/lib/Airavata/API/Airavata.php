@@ -2413,7 +2413,7 @@ interface AiravataIf {
    * Add a Local data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
-   * @param resourceId
+   * @param productId
    *   The identifier of the compute resource to which JobSubmission protocol to be added
    * 
    * @param DMType
@@ -2431,7 +2431,7 @@ interface AiravataIf {
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
-   * @param string $resourceId
+   * @param string $productId
    * @param int $dataMoveType
    * @param int $priorityOrder
    * @param \Airavata\Model\Data\Movement\LOCALDataMovement $localDataMovement
@@ -2441,7 +2441,7 @@ interface AiravataIf {
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function addLocalDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\LOCALDataMovement $localDataMovement);
+  public function addLocalDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $productId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\LOCALDataMovement $localDataMovement);
   /**
    * 
    * Update the given Local data movement details
@@ -2499,7 +2499,7 @@ interface AiravataIf {
    * Add a SCP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
-   * @param resourceId
+   * @param productId
    *   The identifier of the compute resource to which JobSubmission protocol to be added
    * 
    * @param priorityOrder
@@ -2513,7 +2513,7 @@ interface AiravataIf {
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
-   * @param string $resourceId
+   * @param string $productId
    * @param int $dataMoveType
    * @param int $priorityOrder
    * @param \Airavata\Model\Data\Movement\SCPDataMovement $scpDataMovement
@@ -2523,7 +2523,7 @@ interface AiravataIf {
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function addSCPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\SCPDataMovement $scpDataMovement);
+  public function addSCPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $productId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\SCPDataMovement $scpDataMovement);
   /**
    * 
    * Update the given scp data movement details
@@ -2580,7 +2580,7 @@ interface AiravataIf {
    * Add a UNICORE data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
-   * @param resourceId
+   * @param productId
    *   The identifier of the compute resource to which data movement protocol to be added
    * 
    * @param priorityOrder
@@ -2594,7 +2594,7 @@ interface AiravataIf {
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
-   * @param string $resourceId
+   * @param string $productId
    * @param int $dataMoveType
    * @param int $priorityOrder
    * @param \Airavata\Model\Data\Movement\UnicoreDataMovement $unicoreDataMovement
@@ -2604,7 +2604,7 @@ interface AiravataIf {
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function addUnicoreDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\UnicoreDataMovement $unicoreDataMovement);
+  public function addUnicoreDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $productId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\UnicoreDataMovement $unicoreDataMovement);
   /**
    * 
    * Update a selected UNICORE data movement details
@@ -2660,7 +2660,7 @@ interface AiravataIf {
    * Add a GridFTP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    * 
-   * @param resourceId
+   * @param productId
    *   The identifier of the compute resource to which dataMovement protocol to be added
    * 
    * @param DMType
@@ -2678,7 +2678,7 @@ interface AiravataIf {
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
-   * @param string $resourceId
+   * @param string $productId
    * @param int $dataMoveType
    * @param int $priorityOrder
    * @param \Airavata\Model\Data\Movement\GridFTPDataMovement $gridFTPDataMovement
@@ -2688,7 +2688,7 @@ interface AiravataIf {
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function addGridFTPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\GridFTPDataMovement $gridFTPDataMovement);
+  public function addGridFTPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $productId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\GridFTPDataMovement $gridFTPDataMovement);
   /**
    * Update the given GridFTP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
@@ -2860,7 +2860,7 @@ interface AiravataIf {
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
-   * @param string $resourceId
+   * @param string $productId
    * @param string $dataMovementInterfaceId
    * @param int $dataMoveType
    * @return bool
@@ -2869,7 +2869,7 @@ interface AiravataIf {
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function deleteDataMovementInterface(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMovementInterfaceId, $dataMoveType);
+  public function deleteDataMovementInterface(\Airavata\Model\Security\AuthzToken $authzToken, $productId, $dataMovementInterfaceId, $dataMoveType);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param \Airavata\Model\AppCatalog\ComputeResource\ResourceJobManager $resourceJobManager
@@ -9201,17 +9201,17 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("updateUnicoreJobSubmissionDetails failed: unknown result");
   }
 
-  public function addLocalDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\LOCALDataMovement $localDataMovement)
+  public function addLocalDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $productId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\LOCALDataMovement $localDataMovement)
   {
-    $this->send_addLocalDataMovementDetails($authzToken, $resourceId, $dataMoveType, $priorityOrder, $localDataMovement);
+    $this->send_addLocalDataMovementDetails($authzToken, $productId, $dataMoveType, $priorityOrder, $localDataMovement);
     return $this->recv_addLocalDataMovementDetails();
   }
 
-  public function send_addLocalDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\LOCALDataMovement $localDataMovement)
+  public function send_addLocalDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $productId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\LOCALDataMovement $localDataMovement)
   {
     $args = new \Airavata\API\Airavata_addLocalDataMovementDetails_args();
     $args->authzToken = $authzToken;
-    $args->resourceId = $resourceId;
+    $args->productId = $productId;
     $args->dataMoveType = $dataMoveType;
     $args->priorityOrder = $priorityOrder;
     $args->localDataMovement = $localDataMovement;
@@ -9397,17 +9397,17 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getLocalDataMovement failed: unknown result");
   }
 
-  public function addSCPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\SCPDataMovement $scpDataMovement)
+  public function addSCPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $productId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\SCPDataMovement $scpDataMovement)
   {
-    $this->send_addSCPDataMovementDetails($authzToken, $resourceId, $dataMoveType, $priorityOrder, $scpDataMovement);
+    $this->send_addSCPDataMovementDetails($authzToken, $productId, $dataMoveType, $priorityOrder, $scpDataMovement);
     return $this->recv_addSCPDataMovementDetails();
   }
 
-  public function send_addSCPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\SCPDataMovement $scpDataMovement)
+  public function send_addSCPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $productId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\SCPDataMovement $scpDataMovement)
   {
     $args = new \Airavata\API\Airavata_addSCPDataMovementDetails_args();
     $args->authzToken = $authzToken;
-    $args->resourceId = $resourceId;
+    $args->productId = $productId;
     $args->dataMoveType = $dataMoveType;
     $args->priorityOrder = $priorityOrder;
     $args->scpDataMovement = $scpDataMovement;
@@ -9593,17 +9593,17 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getSCPDataMovement failed: unknown result");
   }
 
-  public function addUnicoreDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\UnicoreDataMovement $unicoreDataMovement)
+  public function addUnicoreDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $productId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\UnicoreDataMovement $unicoreDataMovement)
   {
-    $this->send_addUnicoreDataMovementDetails($authzToken, $resourceId, $dataMoveType, $priorityOrder, $unicoreDataMovement);
+    $this->send_addUnicoreDataMovementDetails($authzToken, $productId, $dataMoveType, $priorityOrder, $unicoreDataMovement);
     return $this->recv_addUnicoreDataMovementDetails();
   }
 
-  public function send_addUnicoreDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\UnicoreDataMovement $unicoreDataMovement)
+  public function send_addUnicoreDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $productId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\UnicoreDataMovement $unicoreDataMovement)
   {
     $args = new \Airavata\API\Airavata_addUnicoreDataMovementDetails_args();
     $args->authzToken = $authzToken;
-    $args->resourceId = $resourceId;
+    $args->productId = $productId;
     $args->dataMoveType = $dataMoveType;
     $args->priorityOrder = $priorityOrder;
     $args->unicoreDataMovement = $unicoreDataMovement;
@@ -9789,17 +9789,17 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getUnicoreDataMovement failed: unknown result");
   }
 
-  public function addGridFTPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\GridFTPDataMovement $gridFTPDataMovement)
+  public function addGridFTPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $productId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\GridFTPDataMovement $gridFTPDataMovement)
   {
-    $this->send_addGridFTPDataMovementDetails($authzToken, $resourceId, $dataMoveType, $priorityOrder, $gridFTPDataMovement);
+    $this->send_addGridFTPDataMovementDetails($authzToken, $productId, $dataMoveType, $priorityOrder, $gridFTPDataMovement);
     return $this->recv_addGridFTPDataMovementDetails();
   }
 
-  public function send_addGridFTPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\GridFTPDataMovement $gridFTPDataMovement)
+  public function send_addGridFTPDataMovementDetails(\Airavata\Model\Security\AuthzToken $authzToken, $productId, $dataMoveType, $priorityOrder, \Airavata\Model\Data\Movement\GridFTPDataMovement $gridFTPDataMovement)
   {
     $args = new \Airavata\API\Airavata_addGridFTPDataMovementDetails_args();
     $args->authzToken = $authzToken;
-    $args->resourceId = $resourceId;
+    $args->productId = $productId;
     $args->dataMoveType = $dataMoveType;
     $args->priorityOrder = $priorityOrder;
     $args->gridFTPDataMovement = $gridFTPDataMovement;
@@ -10308,17 +10308,17 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("deleteJobSubmissionInterface failed: unknown result");
   }
 
-  public function deleteDataMovementInterface(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMovementInterfaceId, $dataMoveType)
+  public function deleteDataMovementInterface(\Airavata\Model\Security\AuthzToken $authzToken, $productId, $dataMovementInterfaceId, $dataMoveType)
   {
-    $this->send_deleteDataMovementInterface($authzToken, $resourceId, $dataMovementInterfaceId, $dataMoveType);
+    $this->send_deleteDataMovementInterface($authzToken, $productId, $dataMovementInterfaceId, $dataMoveType);
     return $this->recv_deleteDataMovementInterface();
   }
 
-  public function send_deleteDataMovementInterface(\Airavata\Model\Security\AuthzToken $authzToken, $resourceId, $dataMovementInterfaceId, $dataMoveType)
+  public function send_deleteDataMovementInterface(\Airavata\Model\Security\AuthzToken $authzToken, $productId, $dataMovementInterfaceId, $dataMoveType)
   {
     $args = new \Airavata\API\Airavata_deleteDataMovementInterface_args();
     $args->authzToken = $authzToken;
-    $args->resourceId = $resourceId;
+    $args->productId = $productId;
     $args->dataMovementInterfaceId = $dataMovementInterfaceId;
     $args->dataMoveType = $dataMoveType;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
@@ -39673,7 +39673,7 @@ class Airavata_addLocalDataMovementDetails_args {
   /**
    * @var string
    */
-  public $resourceId = null;
+  public $productId = null;
   /**
    * @var int
    */
@@ -39696,7 +39696,7 @@ class Airavata_addLocalDataMovementDetails_args {
           'class' => '\Airavata\Model\Security\AuthzToken',
           ),
         2 => array(
-          'var' => 'resourceId',
+          'var' => 'productId',
           'type' => TType::STRING,
           ),
         3 => array(
@@ -39718,8 +39718,8 @@ class Airavata_addLocalDataMovementDetails_args {
       if (isset($vals['authzToken'])) {
         $this->authzToken = $vals['authzToken'];
       }
-      if (isset($vals['resourceId'])) {
-        $this->resourceId = $vals['resourceId'];
+      if (isset($vals['productId'])) {
+        $this->productId = $vals['productId'];
       }
       if (isset($vals['dataMoveType'])) {
         $this->dataMoveType = $vals['dataMoveType'];
@@ -39762,7 +39762,7 @@ class Airavata_addLocalDataMovementDetails_args {
           break;
         case 2:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->resourceId);
+            $xfer += $input->readString($this->productId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -39810,9 +39810,9 @@ class Airavata_addLocalDataMovementDetails_args {
       $xfer += $this->authzToken->write($output);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->resourceId !== null) {
-      $xfer += $output->writeFieldBegin('resourceId', TType::STRING, 2);
-      $xfer += $output->writeString($this->resourceId);
+    if ($this->productId !== null) {
+      $xfer += $output->writeFieldBegin('productId', TType::STRING, 2);
+      $xfer += $output->writeString($this->productId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->dataMoveType !== null) {
@@ -40614,7 +40614,7 @@ class Airavata_addSCPDataMovementDetails_args {
   /**
    * @var string
    */
-  public $resourceId = null;
+  public $productId = null;
   /**
    * @var int
    */
@@ -40637,7 +40637,7 @@ class Airavata_addSCPDataMovementDetails_args {
           'class' => '\Airavata\Model\Security\AuthzToken',
           ),
         2 => array(
-          'var' => 'resourceId',
+          'var' => 'productId',
           'type' => TType::STRING,
           ),
         3 => array(
@@ -40659,8 +40659,8 @@ class Airavata_addSCPDataMovementDetails_args {
       if (isset($vals['authzToken'])) {
         $this->authzToken = $vals['authzToken'];
       }
-      if (isset($vals['resourceId'])) {
-        $this->resourceId = $vals['resourceId'];
+      if (isset($vals['productId'])) {
+        $this->productId = $vals['productId'];
       }
       if (isset($vals['dataMoveType'])) {
         $this->dataMoveType = $vals['dataMoveType'];
@@ -40703,7 +40703,7 @@ class Airavata_addSCPDataMovementDetails_args {
           break;
         case 2:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->resourceId);
+            $xfer += $input->readString($this->productId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -40751,9 +40751,9 @@ class Airavata_addSCPDataMovementDetails_args {
       $xfer += $this->authzToken->write($output);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->resourceId !== null) {
-      $xfer += $output->writeFieldBegin('resourceId', TType::STRING, 2);
-      $xfer += $output->writeString($this->resourceId);
+    if ($this->productId !== null) {
+      $xfer += $output->writeFieldBegin('productId', TType::STRING, 2);
+      $xfer += $output->writeString($this->productId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->dataMoveType !== null) {
@@ -41555,7 +41555,7 @@ class Airavata_addUnicoreDataMovementDetails_args {
   /**
    * @var string
    */
-  public $resourceId = null;
+  public $productId = null;
   /**
    * @var int
    */
@@ -41578,7 +41578,7 @@ class Airavata_addUnicoreDataMovementDetails_args {
           'class' => '\Airavata\Model\Security\AuthzToken',
           ),
         2 => array(
-          'var' => 'resourceId',
+          'var' => 'productId',
           'type' => TType::STRING,
           ),
         3 => array(
@@ -41600,8 +41600,8 @@ class Airavata_addUnicoreDataMovementDetails_args {
       if (isset($vals['authzToken'])) {
         $this->authzToken = $vals['authzToken'];
       }
-      if (isset($vals['resourceId'])) {
-        $this->resourceId = $vals['resourceId'];
+      if (isset($vals['productId'])) {
+        $this->productId = $vals['productId'];
       }
       if (isset($vals['dataMoveType'])) {
         $this->dataMoveType = $vals['dataMoveType'];
@@ -41644,7 +41644,7 @@ class Airavata_addUnicoreDataMovementDetails_args {
           break;
         case 2:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->resourceId);
+            $xfer += $input->readString($this->productId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -41692,9 +41692,9 @@ class Airavata_addUnicoreDataMovementDetails_args {
       $xfer += $this->authzToken->write($output);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->resourceId !== null) {
-      $xfer += $output->writeFieldBegin('resourceId', TType::STRING, 2);
-      $xfer += $output->writeString($this->resourceId);
+    if ($this->productId !== null) {
+      $xfer += $output->writeFieldBegin('productId', TType::STRING, 2);
+      $xfer += $output->writeString($this->productId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->dataMoveType !== null) {
@@ -42496,7 +42496,7 @@ class Airavata_addGridFTPDataMovementDetails_args {
   /**
    * @var string
    */
-  public $resourceId = null;
+  public $productId = null;
   /**
    * @var int
    */
@@ -42519,7 +42519,7 @@ class Airavata_addGridFTPDataMovementDetails_args {
           'class' => '\Airavata\Model\Security\AuthzToken',
           ),
         2 => array(
-          'var' => 'resourceId',
+          'var' => 'productId',
           'type' => TType::STRING,
           ),
         3 => array(
@@ -42541,8 +42541,8 @@ class Airavata_addGridFTPDataMovementDetails_args {
       if (isset($vals['authzToken'])) {
         $this->authzToken = $vals['authzToken'];
       }
-      if (isset($vals['resourceId'])) {
-        $this->resourceId = $vals['resourceId'];
+      if (isset($vals['productId'])) {
+        $this->productId = $vals['productId'];
       }
       if (isset($vals['dataMoveType'])) {
         $this->dataMoveType = $vals['dataMoveType'];
@@ -42585,7 +42585,7 @@ class Airavata_addGridFTPDataMovementDetails_args {
           break;
         case 2:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->resourceId);
+            $xfer += $input->readString($this->productId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -42633,9 +42633,9 @@ class Airavata_addGridFTPDataMovementDetails_args {
       $xfer += $this->authzToken->write($output);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->resourceId !== null) {
-      $xfer += $output->writeFieldBegin('resourceId', TType::STRING, 2);
-      $xfer += $output->writeString($this->resourceId);
+    if ($this->productId !== null) {
+      $xfer += $output->writeFieldBegin('productId', TType::STRING, 2);
+      $xfer += $output->writeString($this->productId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->dataMoveType !== null) {
@@ -44964,7 +44964,7 @@ class Airavata_deleteDataMovementInterface_args {
   /**
    * @var string
    */
-  public $resourceId = null;
+  public $productId = null;
   /**
    * @var string
    */
@@ -44983,7 +44983,7 @@ class Airavata_deleteDataMovementInterface_args {
           'class' => '\Airavata\Model\Security\AuthzToken',
           ),
         2 => array(
-          'var' => 'resourceId',
+          'var' => 'productId',
           'type' => TType::STRING,
           ),
         3 => array(
@@ -45000,8 +45000,8 @@ class Airavata_deleteDataMovementInterface_args {
       if (isset($vals['authzToken'])) {
         $this->authzToken = $vals['authzToken'];
       }
-      if (isset($vals['resourceId'])) {
-        $this->resourceId = $vals['resourceId'];
+      if (isset($vals['productId'])) {
+        $this->productId = $vals['productId'];
       }
       if (isset($vals['dataMovementInterfaceId'])) {
         $this->dataMovementInterfaceId = $vals['dataMovementInterfaceId'];
@@ -45041,7 +45041,7 @@ class Airavata_deleteDataMovementInterface_args {
           break;
         case 2:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->resourceId);
+            $xfer += $input->readString($this->productId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -45081,9 +45081,9 @@ class Airavata_deleteDataMovementInterface_args {
       $xfer += $this->authzToken->write($output);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->resourceId !== null) {
-      $xfer += $output->writeFieldBegin('resourceId', TType::STRING, 2);
-      $xfer += $output->writeString($this->resourceId);
+    if ($this->productId !== null) {
+      $xfer += $output->writeFieldBegin('productId', TType::STRING, 2);
+      $xfer += $output->writeString($this->productId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->dataMovementInterfaceId !== null) {

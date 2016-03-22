@@ -28,15 +28,15 @@ import java.io.Serializable;
 public class DataProductMetaData_PK implements Serializable {
     private final static Logger logger = LoggerFactory.getLogger(DataProductMetaData_PK.class);
 
-    private String productId;
+    private String productUri;
     private String key;
 
-    public String getProductId() {
-        return productId;
+    public String getProductUri() {
+        return productUri;
     }
 
-    public void setProductId(String productId) {
-        this.productId = productId;
+    public void setProductUri(String productUri) {
+        this.productUri = productUri;
     }
 
     public String getKey() {
