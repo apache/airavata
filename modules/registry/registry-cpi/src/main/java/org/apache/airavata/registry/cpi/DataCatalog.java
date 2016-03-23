@@ -36,6 +36,8 @@ public interface DataCatalog {
 
     DataProductModel getDataProduct(String productUri) throws DataCatalogException;
 
+    boolean isExists(String productUri) throws DataCatalogException;
+
     String registerReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws DataCatalogException;
 
     boolean removeReplicaLocation(String replicaId) throws DataCatalogException;

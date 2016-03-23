@@ -34,6 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -54,6 +56,37 @@ public class DataCatalogImpl implements DataCatalog {
                 productModel.setLogicalPath(productModel.getLogicalPath()+"/");
             productModel.setLogicalPath(productModel.getLogicalPath()+productModel.getProductName());
         }
+        //Creating parent logical dir if not exist too
+        String parentUri = DataCatalog.schema + productModel.getOwnerName() + "@" + productModel.getGatewayId() + "/" ;
+        DataProductModel tempDp;
+        if(!isExists(parentUri)){
+            tempDp = new DataProductModel();
+            tempDp.setProductUri(parentUri);
+            tempDp.setLogicalPath("/");
+            tempDp.setOwnerName(productModel.getOwnerName());
+            tempDp.setGatewayId(productModel.getGatewayId());
+            tempDp.setDataProductType(DataProductType.DIR);
+            createDataProduct(tempDp);
+        }
+        String[] bits = productModel.getLogicalPath().split("/");
+        for(int i=0; i<bits.length-1;i++){
+            String dir = bits[i];
+            if(!isExists(parentUri + dir)){
+                tempDp = new DataProductModel();
+                try {
+                    tempDp.setLogicalPath((new URI(parentUri + dir)).getPath());
+                } catch (URISyntaxException e) {
+                    throw new DataCatalogException(e);
+                }
+                tempDp.setProductUri(parentUri + dir);
+                tempDp.setOwnerName(productModel.getOwnerName());
+                tempDp.setGatewayId(productModel.getGatewayId());
+                tempDp.setDataProductType(DataProductType.DIR);
+                tempDp.setParentProductUri(parentUri);
+                parentUri = createDataProduct(tempDp);
+            }
+        }
+
         String productUri = DataCatalog.schema + "://" + productModel.getOwnerName() + "@" + productModel.getGatewayId()
                 + productModel.getLogicalPath();
         productModel.setProductUri(productUri);
@@ -70,6 +103,10 @@ public class DataCatalogImpl implements DataCatalog {
         }
         productModel.setCreationTime(System.currentTimeMillis());
         productModel.setLastModifiedTime(System.currentTimeMillis());
+        return createDataProduct(productModel);
+    }
+
+    private String createDataProduct(DataProductModel productModel) throws DataCatalogException {
         DataProduct dataProduct = ThriftDataModelConversion.getDataProduct(productModel);
         EntityManager em = null;
         try {
@@ -89,7 +126,7 @@ public class DataCatalogImpl implements DataCatalog {
                 em.close();
             }
         }
-        return productUri;
+        return dataProduct.getProductUri();
     }
 
     @Override
@@ -153,6 +190,26 @@ public class DataCatalogImpl implements DataCatalog {
             em = DataCatalogJPAUtils.getEntityManager();
             DataProduct dataProduct = em.find(DataProduct.class, productUri);
             return ThriftDataModelConversion.getDataProductModel(dataProduct);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new DataCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+    }
+
+    @Override
+    public boolean isExists(String productUri) throws DataCatalogException {
+        EntityManager em = null;
+        try {
+            em = DataCatalogJPAUtils.getEntityManager();
+            DataProduct dataProduct = em.find(DataProduct.class, productUri);
+            return dataProduct != null;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new DataCatalogException(e);
