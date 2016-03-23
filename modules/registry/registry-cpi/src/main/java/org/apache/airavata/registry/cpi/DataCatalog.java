@@ -28,13 +28,13 @@ import java.util.List;
 public interface DataCatalog {
     String schema = "airavata-dp";
 
-    String registerDataProduct(DataProductModel resource) throws DataCatalogException;
+    String registerDataProduct(DataProductModel product) throws DataCatalogException;
 
-    boolean removeDataProduct(String resourceId) throws DataCatalogException;
+    boolean removeDataProduct(String productUri) throws DataCatalogException;
 
-    boolean updateDataProduct(DataProductModel resource) throws DataCatalogException;
+    boolean updateDataProduct(DataProductModel product) throws DataCatalogException;
 
-    DataProductModel getDataProduct(String resourceId) throws DataCatalogException;
+    DataProductModel getDataProduct(String productUri) throws DataCatalogException;
 
     String registerReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws DataCatalogException;
 
@@ -44,5 +44,5 @@ public interface DataCatalog {
 
     DataReplicaLocationModel getReplicaLocation(String replicaId) throws DataCatalogException;
 
-    List<DataReplicaLocationModel> getAllReplicaLocations(String resourceId) throws DataCatalogException;
+    List<DataReplicaLocationModel> getAllReplicaLocations(String productUri) throws DataCatalogException;
 }
