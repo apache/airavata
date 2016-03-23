@@ -22,6 +22,7 @@
 package org.apache.airavata.registry.core.data.catalog.impl;
 
 import org.apache.airavata.model.data.product.DataProductModel;
+import org.apache.airavata.model.data.product.DataProductType;
 import org.apache.airavata.model.data.product.DataReplicaLocationModel;
 import org.apache.airavata.registry.core.data.catalog.model.DataProduct;
 import org.apache.airavata.registry.core.data.catalog.model.DataReplicaLocation;
@@ -48,7 +49,7 @@ public class DataCatalogImpl implements DataCatalog {
             throw new DataCatalogException("owner name, gateway id and logical path should be non empty and logical path" +
                     " should start with /");
         }
-        if(!productModel.getLogicalPath().endsWith(productModel.getProductName())){
+        if(productModel.getDataProductType().equals(DataProductType.FILE) && !productModel.getLogicalPath().endsWith(productModel.getProductName())){
             if(!productModel.getLogicalPath().endsWith("/"))
                 productModel.setLogicalPath(productModel.getLogicalPath()+"/");
             productModel.setLogicalPath(productModel.getLogicalPath()+productModel.getProductName());
