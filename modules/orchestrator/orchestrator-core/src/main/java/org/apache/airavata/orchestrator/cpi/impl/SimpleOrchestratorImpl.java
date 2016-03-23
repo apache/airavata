@@ -284,14 +284,15 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             }
             ComputeResourceDescription computeResource = appCatalog.getComputeResource().getComputeResource(resourceHostId);
             JobSubmissionInterface preferredJobSubmissionInterface = OrchestratorUtils.getPreferredJobSubmissionInterface(orchestratorContext, processModel, gatewayId);
-            List<String> taskIdList = createAndSaveEnvSetupTask(gatewayId, processModel, experimentCatalog);
-
             ComputeResourcePreference resourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
+            List<String> taskIdList = new ArrayList<>();
+
             if (resourcePreference.getPreferredJobSubmissionProtocol() == JobSubmissionProtocol.UNICORE) {
+                // TODO - breakdown unicore all in one task to multiple tasks, then we don't need to handle UNICORE here.
                 taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId, preferredJobSubmissionInterface, processModel, userGivenWallTime));
             } else {
+                taskIdList.addAll(createAndSaveEnvSetupTask(gatewayId, processModel, experimentCatalog));
                 taskIdList.addAll(createAndSaveInputDataStagingTasks(processModel, gatewayId));
-
                 if (autoSchedule) {
                     List<BatchQueue> definedBatchQueues = computeResource.getBatchQueues();
                     for (BatchQueue batchQueue : definedBatchQueues) {
@@ -316,10 +317,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 } else {
                     taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId,preferredJobSubmissionInterface, processModel, userGivenWallTime));
                 }
-
                 taskIdList.addAll(createAndSaveOutputDataStagingTasks(processModel, gatewayId));
             }
-
             // update process scheduling
             experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processModel.getProcessId());
             return getTaskDag(taskIdList);
