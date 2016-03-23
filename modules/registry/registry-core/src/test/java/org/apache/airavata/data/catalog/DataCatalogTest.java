@@ -21,10 +21,7 @@
 package org.apache.airavata.data.catalog;
 
 import org.apache.airavata.data.catalog.util.Initialize;
-import org.apache.airavata.model.data.product.DataProductModel;
-import org.apache.airavata.model.data.product.DataReplicaLocationModel;
-import org.apache.airavata.model.data.product.ReplicaLocationCategory;
-import org.apache.airavata.model.data.product.ReplicaPersistentType;
+import org.apache.airavata.model.data.product.*;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.DataCatalog;
 import org.apache.airavata.registry.cpi.DataCatalogException;
@@ -56,6 +53,7 @@ public class DataCatalogTest {
             dataProductModel.setOwnerName("scnakandala");
             dataProductModel.setGatewayId("default");
             dataProductModel.setLogicalPath("/test/test/test");
+            dataProductModel.setDataProductType(DataProductType.FILE);
             HashMap<String, String> resMetadata = new HashMap<>();
             resMetadata.put("name", "name");
             dataProductModel.setProductMetadata(resMetadata);
