@@ -31,6 +31,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.RequestData;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.registry.core.experiment.catalog.model.UserConfigurationData;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.slf4j.Logger;
@@ -68,13 +69,13 @@ public class UNICORESecurityContext extends X509SecurityContext {
 		return secProperties;
 	}
 
-	public DefaultClientConfiguration getDefaultConfiguration(Boolean enableMessageLogging, UserConfigurationData userData) throws GFacException, ApplicationSettingsException {
+	public DefaultClientConfiguration getDefaultConfiguration(Boolean enableMessageLogging, UserConfigurationDataModel userDataModel) throws GFacException, ApplicationSettingsException {
 		X509Credential cred = null;
 		
 		try{
-			boolean genCert = userData.getGenerateCert();
+			boolean genCert = userDataModel.isGenerateCert();
 				if(genCert) {
-					String userDN = userData.getUserDn();
+					String userDN = userDataModel.getUserDN();
 					if (userDN == null || "".equals(userDN)){
 						log.warn("Cannot generate cert, falling back to GFAC configured MyProxy credentials");
 						return getDefaultConfiguration(enableMessageLogging);
