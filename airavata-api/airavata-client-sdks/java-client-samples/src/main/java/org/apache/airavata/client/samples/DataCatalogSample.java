@@ -63,7 +63,7 @@ public class DataCatalogSample {
             System.out.println(productUri);
 
 
-            dataProductModel = client.getDataProduct(authzToken, productUri);
+            dataProductModel = client.getDataProduct(authzToken, "airavata-dp://Eroma2016@seagrid/");
             System.out.println(dataProductModel.getReplicaLocations().size());
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
