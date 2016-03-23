@@ -87,6 +87,7 @@ public class DataCatalogImpl implements DataCatalog {
             }
         }
 
+        productModel.setProductUri(parentUri);
         String productUri = DataCatalog.schema + "://" + productModel.getOwnerName() + "@" + productModel.getGatewayId()
                 + ":" + productModel.getLogicalPath();
         productModel.setProductUri(productUri);
