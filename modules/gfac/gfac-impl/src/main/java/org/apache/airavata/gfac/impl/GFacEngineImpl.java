@@ -178,9 +178,15 @@ public class GFacEngineImpl implements GFacEngine {
             processModel.setProcessOutputs(applicationOutputs);
 
             processContext.setSshKeyAuthentication(Factory.getComputerResourceSSHKeyAuthentication(processContext));
-            processContext.setResourceJobManager(getResourceJobManager(processContext));
-            processContext.setJobSubmissionRemoteCluster(Factory.getJobSubmissionRemoteCluster(processContext));
-            processContext.setDataMovementRemoteCluster(Factory.getDataMovementRemoteCluster(processContext));
+            if (processContext.getJobSubmissionProtocol() == JobSubmissionProtocol.UNICORE) {
+                // process monitor mode set in getResourceJobManager method, but unicore doesn't have resource job manager.
+                // hence we set process monitor mode here.
+                processContext.setMonitorMode(MonitorMode.FORK);
+            } else {
+                processContext.setResourceJobManager(getResourceJobManager(processContext));
+                processContext.setJobSubmissionRemoteCluster(Factory.getJobSubmissionRemoteCluster(processContext));
+                processContext.setDataMovementRemoteCluster(Factory.getDataMovementRemoteCluster(processContext));
+            }
 
             String inputPath = ServerSettings.getLocalDataLocation();
             if (inputPath != null) {

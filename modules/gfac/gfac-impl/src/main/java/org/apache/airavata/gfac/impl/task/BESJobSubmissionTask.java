@@ -35,8 +35,10 @@ import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.task.utils.bes.*;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
@@ -92,10 +94,11 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
         try {
             ProcessContext processContext = taskContext.getParentProcessContext();
             JobSubmissionProtocol protocol = processContext.getJobSubmissionProtocol();
-            String interfaceId = processContext.getApplicationInterfaceDescription().getApplicationInterfaceId();
+            JobSubmissionInterface jobSubmissionInterface = GFacUtils.getPreferredJobSubmissionInterface(processContext);
             String factoryUrl = null;
             if (protocol.equals(JobSubmissionProtocol.UNICORE)) {
-                UnicoreJobSubmission unicoreJobSubmission = GFacUtils.getUnicoreJobSubmission(interfaceId);
+                UnicoreJobSubmission unicoreJobSubmission = GFacUtils.getUnicoreJobSubmission(
+                        jobSubmissionInterface.getJobSubmissionInterfaceId());
                 factoryUrl = unicoreJobSubmission.getUnicoreEndPointURL();
             }
             EndpointReferenceType eprt = EndpointReferenceType.Factory.newInstance();
@@ -200,7 +203,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             log.error("Error while retrieving UNICORE job submission..");
             taskStatus.setState(TaskState.FAILED);
         } catch (Exception e) {
-            log.error("Cannot create storage..");
+            log.error("Cannot create storage..", e);
             taskStatus.setState(TaskState.FAILED);
         }
 
@@ -211,10 +214,13 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
         DefaultClientConfiguration clientConfig = null;
         try {
             UNICORESecurityContext unicoreSecurityContext = SecurityUtils.getSecurityContext(pc);
-            UserConfigurationData userConfigData = (UserConfigurationData) pc.getExperimentCatalog().
+            UserConfigurationDataModel userConfigDataModel = (UserConfigurationDataModel) pc.getExperimentCatalog().
                     get(ExperimentCatalogModelType.USER_CONFIGURATION_DATA, pc.getExperimentId());
-            if (userConfigData.getGenerateCert()) {
-                clientConfig = unicoreSecurityContext.getDefaultConfiguration(false, userConfigData);
+            // FIXME - remove following setter lines, and use original value comes with user configuration data model.
+            userConfigDataModel.setGenerateCert(true);
+            userConfigDataModel.setUserDN("CN=swus3, O=Ultrascan Gateway, C=DE");
+            if (userConfigDataModel.isGenerateCert()) {
+                clientConfig = unicoreSecurityContext.getDefaultConfiguration(false, userConfigDataModel);
             } else {
                 clientConfig = unicoreSecurityContext.getDefaultConfiguration(false);
             }
@@ -266,12 +272,12 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
 
     @Override
     public TaskStatus recover(TaskContext taskContext) {
-        return null;
+        return execute(taskContext);
     }
 
     @Override
     public TaskTypes getType() {
-        return null;
+        return TaskTypes.JOB_SUBMISSION;
     }
 
     protected ActivityStatusType getStatus(FactoryClient fc, EndpointReferenceType activityEpr)

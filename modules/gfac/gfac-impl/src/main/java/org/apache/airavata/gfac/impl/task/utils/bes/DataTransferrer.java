@@ -57,8 +57,8 @@ public class DataTransferrer {
 	
 	protected String gatewayDownloadLocation, stdoutLocation, stderrLocation;
 	
-	public DataTransferrer(ProcessContext jobContext, StorageClient storageClient) {
-		this.processContext = jobContext;
+	public DataTransferrer(ProcessContext processContext, StorageClient storageClient) {
+		this.processContext = processContext;
 		this.storageClient = storageClient;
 		resultantOutputsLst = new ArrayList<OutputDataObjectType>();
 		initStdoutsLocation();
@@ -103,13 +103,16 @@ public class DataTransferrer {
 	}
 
     public void uploadLocalFiles() throws GFacException {
-        List<String> inFilePrms = extractInFileParams();
+        List<String> inFilePrms = new ArrayList<>();
+        // FIXME - remove hard coded file path.
+//        inFilePrms.addAll(extractInFileParams());
+        inFilePrms.add("file://home/airavata/test/hpcinput-localhost-uslims3_cauma3d-00950.tar");
         for (String uri : inFilePrms) {
             String fileName = new File(uri).getName();
             if (uri.startsWith("file")) {
                 try {
-                    String uriWithoutProtocol = uri.substring(uri.lastIndexOf("://") + 1, uri.length());
-                    FileUploader fileUploader = new FileUploader(uriWithoutProtocol,fileName,Mode.overwrite);
+                    String uriWithoutProtocol = uri.substring(uri.lastIndexOf("://") + 2, uri.length());
+                    FileUploader fileUploader = new FileUploader(uriWithoutProtocol, fileName, Mode.overwrite, false);
                     fileUploader.perform(storageClient);
                 } catch (FileNotFoundException e3) {
                     throw new GFacException(
