@@ -57,7 +57,7 @@ public class DataCatalogImpl implements DataCatalog {
             productModel.setLogicalPath(productModel.getLogicalPath()+productModel.getProductName());
         }
         //Creating parent logical dir if not exist too
-        String parentUri = DataCatalog.schema + "://" + productModel.getOwnerName() + "@" + productModel.getGatewayId() + "/" ;
+        String parentUri = DataCatalog.schema + "://" + productModel.getOwnerName() + "@" + productModel.getGatewayId() + ":/" ;
         DataProductModel tempDp;
         if(!isExists(parentUri)){
             tempDp = new DataProductModel();
@@ -88,7 +88,7 @@ public class DataCatalogImpl implements DataCatalog {
         }
 
         String productUri = DataCatalog.schema + "://" + productModel.getOwnerName() + "@" + productModel.getGatewayId()
-                + productModel.getLogicalPath();
+                + ":" + productModel.getLogicalPath();
         productModel.setProductUri(productUri);
         long currentTime = System.currentTimeMillis();
         productModel.setCreationTime(currentTime);
