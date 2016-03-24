@@ -37,8 +37,8 @@ import java.net.URI;
 import java.sql.*;
 import java.util.StringTokenizer;
 
-public class DataCatInit {
-    private static final Logger logger = LoggerFactory.getLogger(DataCatInit.class);
+public class ReplicaCatInit {
+    private static final Logger logger = LoggerFactory.getLogger(ReplicaCatInit.class);
     public static final String DERBY_SERVER_MODE_SYS_PROPERTY = "derby.drda.startNetworkServer";
     public  String scriptName = "replicacatalog-derby.sql";
     private NetworkServerControl server;
@@ -48,7 +48,7 @@ public class DataCatInit {
     private String jdbcUser = null;
     private String jdbcPassword = null;
 
-    public DataCatInit(String scriptName) {
+    public ReplicaCatInit(String scriptName) {
         this.scriptName = scriptName;
     }
 
@@ -94,10 +94,10 @@ public class DataCatInit {
 
     public void initializeDB() {
         try{
-            jdbcDriver = ServerSettings.getSetting("datacatalog.jdbc.driver");
-            jdbcUrl = ServerSettings.getSetting("datacatalog.jdbc.url");
-            jdbcUser = ServerSettings.getSetting("datacatalog.jdbc.user");
-            jdbcPassword = ServerSettings.getSetting("datacatalog.jdbc.password");
+            jdbcDriver = ServerSettings.getSetting("replicacatalog.jdbc.driver");
+            jdbcUrl = ServerSettings.getSetting("replicacatalog.jdbc.url");
+            jdbcUser = ServerSettings.getSetting("replicacatalog.jdbc.user");
+            jdbcPassword = ServerSettings.getSetting("replicacatalog.jdbc.password");
             jdbcUrl = jdbcUrl + "?" + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read properties", e);

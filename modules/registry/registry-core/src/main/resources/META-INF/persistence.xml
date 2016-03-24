@@ -93,7 +93,7 @@
         <class>org.apache.airavata.registry.core.experiment.catalog.model.JobStatus</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
-    <persistence-unit name="datacatalog_data">
+    <persistence-unit name="replicacatalog_data">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
         <class>org.apache.airavata.registry.core.replica.catalog.model.DataProduct</class>
         <class>org.apache.airavata.registry.core.replica.catalog.model.DataReplicaLocation</class>

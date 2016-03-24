@@ -166,7 +166,7 @@ public class DataProduct {
         this.dataProductMetaData = dataProductMetaData;
     }
 
-    @ManyToOne
+    @ManyToOne(optional = true)
     @JoinColumn(name = "PARENT_PRODUCT_URI", referencedColumnName = "PRODUCT_URI")
     public DataProduct getParentDataProduct() {
         return parentDataProduct;

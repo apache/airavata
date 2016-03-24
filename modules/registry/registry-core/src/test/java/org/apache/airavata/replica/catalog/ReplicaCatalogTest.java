@@ -37,7 +37,7 @@ import java.util.HashMap;
 public class ReplicaCatalogTest {
     private final static Logger logger = LoggerFactory.getLogger(ReplicaCatalogTest.class);
     private static Initialize initialize;
-    private static ReplicaCatalog datacatalog;
+    private static ReplicaCatalog replicacatalog;
     private static DataProductModel dataProductModel;
     private static DataReplicaLocationModel replicaLocationModel;
 
@@ -47,7 +47,7 @@ public class ReplicaCatalogTest {
             System.out.println("********** SET UP ************");
             initialize = new Initialize("replicacatalog-derby.sql");
             initialize.initializeDB();
-            datacatalog = RegistryFactory.getReplicaCatalog();
+            replicacatalog = RegistryFactory.getReplicaCatalog();
             dataProductModel = new DataProductModel();
             dataProductModel.setProductName("test-file.txt");
             dataProductModel.setOwnerName("scnakandala");
@@ -80,17 +80,17 @@ public class ReplicaCatalogTest {
     @Test
     public void testReplicaCatalog(){
         try {
-            String productUri = datacatalog.registerDataProduct(dataProductModel);
+            String productUri = replicacatalog.registerDataProduct(dataProductModel);
             org.junit.Assert.assertNotNull(productUri);
-            dataProductModel = datacatalog.getDataProduct(productUri);
+            dataProductModel = replicacatalog.getDataProduct(productUri);
             Assert.assertNotNull(dataProductModel);
-            boolean result = datacatalog.removeDataProduct(productUri);
+            boolean result = replicacatalog.removeDataProduct(productUri);
             Assert.assertTrue(result);
-            productUri = datacatalog.registerDataProduct(dataProductModel);
+            productUri = replicacatalog.registerDataProduct(dataProductModel);
             Assert.assertNotNull(productUri);
-            result = datacatalog.removeDataProduct(productUri);
+            result = replicacatalog.removeDataProduct(productUri);
             Assert.assertTrue(result);
-            result = datacatalog.removeDataProduct(productUri);
+            result = replicacatalog.removeDataProduct(productUri);
             Assert.assertFalse(result);
         } catch (ReplicaCatalogException e) {
             e.printStackTrace();
