@@ -65,11 +65,6 @@ public class ThriftDataModelConversion {
                         .add(getDataReplicaLocationModel(r)));
                 dataProductModel.setReplicaLocations(dataReplicaLocationModels);
             }
-            if(!dataProductModel.getDataProductType().equals(DataProductType.FILE) && dataProduct.getChildDataProducts() != null){
-                ArrayList<DataProductModel> childDataProducts = new ArrayList<>();
-                dataProduct.getChildDataProducts().stream().forEach(r->childDataProducts.add(getDataProductModel(r)));
-                dataProductModel.setChildProducts(childDataProducts);
-            }
             return dataProductModel;
         }
         return null;
@@ -120,11 +115,6 @@ public class ThriftDataModelConversion {
                 dataReplicaLocations.add(dataReplicaLocationModel);
             });
             dataProduct.setDataReplicaLocations(dataReplicaLocations);
-        }
-        if(dataProductModel.getDataProductType() == DataProductType.COLLECTION && dataProductModel.getChildProducts() != null){
-            ArrayList<DataProduct> childDataProducts = new ArrayList<>();
-            dataProductModel.getChildProducts().stream().forEach(r->childDataProducts.add(getDataProduct(r)));
-            dataProduct.setChildDataProducts(childDataProducts);
         }
         return dataProduct;
     }

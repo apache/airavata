@@ -54,7 +54,6 @@ struct DataProductModel {
     11: optional i64 lastModifiedTime,
     12: optional map<string, string> productMetadata,
     13: optional list<DataReplicaLocationModel> replicaLocations,
-    14: optional list<DataProductModel> childProducts
 }
 
 struct DataReplicaLocationModel {

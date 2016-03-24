@@ -84,7 +84,6 @@ class DataProductModel:
    - lastModifiedTime
    - productMetadata
    - replicaLocations
-   - childProducts
   """
 
   thrift_spec = (
@@ -102,10 +101,9 @@ class DataProductModel:
     (11, TType.I64, 'lastModifiedTime', None, None, ), # 11
     (12, TType.MAP, 'productMetadata', (TType.STRING,None,TType.STRING,None), None, ), # 12
     (13, TType.LIST, 'replicaLocations', (TType.STRUCT,(DataReplicaLocationModel, DataReplicaLocationModel.thrift_spec)), None, ), # 13
-    (14, TType.LIST, 'childProducts', (TType.STRUCT,(DataProductModel, DataProductModel.thrift_spec)), None, ), # 14
   )
 
-  def __init__(self, productUri=None, gatewayId=None, parentProductUri=None, logicalPath=None, productName=None, productDescription=None, ownerName=None, dataProductType=None, productSize=None, creationTime=None, lastModifiedTime=None, productMetadata=None, replicaLocations=None, childProducts=None,):
+  def __init__(self, productUri=None, gatewayId=None, parentProductUri=None, logicalPath=None, productName=None, productDescription=None, ownerName=None, dataProductType=None, productSize=None, creationTime=None, lastModifiedTime=None, productMetadata=None, replicaLocations=None,):
     self.productUri = productUri
     self.gatewayId = gatewayId
     self.parentProductUri = parentProductUri
@@ -119,7 +117,6 @@ class DataProductModel:
     self.lastModifiedTime = lastModifiedTime
     self.productMetadata = productMetadata
     self.replicaLocations = replicaLocations
-    self.childProducts = childProducts
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -207,17 +204,6 @@ class DataProductModel:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 14:
-        if ftype == TType.LIST:
-          self.childProducts = []
-          (_etype16, _size13) = iprot.readListBegin()
-          for _i17 in xrange(_size13):
-            _elem18 = DataProductModel()
-            _elem18.read(iprot)
-            self.childProducts.append(_elem18)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -275,23 +261,16 @@ class DataProductModel:
     if self.productMetadata is not None:
       oprot.writeFieldBegin('productMetadata', TType.MAP, 12)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.productMetadata))
-      for kiter19,viter20 in self.productMetadata.items():
-        oprot.writeString(kiter19)
-        oprot.writeString(viter20)
+      for kiter13,viter14 in self.productMetadata.items():
+        oprot.writeString(kiter13)
+        oprot.writeString(viter14)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.replicaLocations is not None:
       oprot.writeFieldBegin('replicaLocations', TType.LIST, 13)
       oprot.writeListBegin(TType.STRUCT, len(self.replicaLocations))
-      for iter21 in self.replicaLocations:
-        iter21.write(oprot)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
-    if self.childProducts is not None:
-      oprot.writeFieldBegin('childProducts', TType.LIST, 14)
-      oprot.writeListBegin(TType.STRUCT, len(self.childProducts))
-      for iter22 in self.childProducts:
-        iter22.write(oprot)
+      for iter15 in self.replicaLocations:
+        iter15.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -316,7 +295,6 @@ class DataProductModel:
     value = (value * 31) ^ hash(self.lastModifiedTime)
     value = (value * 31) ^ hash(self.productMetadata)
     value = (value * 31) ^ hash(self.replicaLocations)
-    value = (value * 31) ^ hash(self.childProducts)
     return value
 
   def __repr__(self):
@@ -444,11 +422,11 @@ class DataReplicaLocationModel:
       elif fid == 12:
         if ftype == TType.MAP:
           self.replicaMetadata = {}
-          (_ktype24, _vtype25, _size23 ) = iprot.readMapBegin()
-          for _i27 in xrange(_size23):
-            _key28 = iprot.readString()
-            _val29 = iprot.readString()
-            self.replicaMetadata[_key28] = _val29
+          (_ktype17, _vtype18, _size16 ) = iprot.readMapBegin()
+          for _i20 in xrange(_size16):
+            _key21 = iprot.readString()
+            _val22 = iprot.readString()
+            self.replicaMetadata[_key21] = _val22
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -509,9 +487,9 @@ class DataReplicaLocationModel:
     if self.replicaMetadata is not None:
       oprot.writeFieldBegin('replicaMetadata', TType.MAP, 12)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.replicaMetadata))
-      for kiter30,viter31 in self.replicaMetadata.items():
-        oprot.writeString(kiter30)
-        oprot.writeString(viter31)
+      for kiter23,viter24 in self.replicaMetadata.items():
+        oprot.writeString(kiter23)
+        oprot.writeString(viter24)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()

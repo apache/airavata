@@ -2610,7 +2610,7 @@ class AiravataIf {
   virtual bool isWorkflowExistWithName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName) = 0;
 
   /**
-   * API Methods related to data catalog
+   * API Methods related to replica catalog
    * 
    * 
    * @param authzToken
@@ -2619,6 +2619,8 @@ class AiravataIf {
   virtual void registerDataProduct(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataProductModel& dataProductModel) = 0;
   virtual void getDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataProductUri) = 0;
   virtual void registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& replicaLocationModel) = 0;
+  virtual void getParentDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri) = 0;
+  virtual void getChildDataProducts(std::vector< ::apache::airavata::model::data::replica::DataProductModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri) = 0;
 };
 
 class AiravataIfFactory {
@@ -3100,6 +3102,12 @@ class AiravataNull : virtual public AiravataIf {
     return;
   }
   void registerReplicaLocation(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& /* replicaLocationModel */) {
+    return;
+  }
+  void getParentDataProduct( ::apache::airavata::model::data::replica::DataProductModel& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* productUri */) {
+    return;
+  }
+  void getChildDataProducts(std::vector< ::apache::airavata::model::data::replica::DataProductModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* productUri */) {
     return;
   }
 };
@@ -22416,6 +22424,278 @@ class Airavata_registerReplicaLocation_presult {
 
 };
 
+
+class Airavata_getParentDataProduct_args {
+ public:
+
+  Airavata_getParentDataProduct_args(const Airavata_getParentDataProduct_args&);
+  Airavata_getParentDataProduct_args& operator=(const Airavata_getParentDataProduct_args&);
+  Airavata_getParentDataProduct_args() : productUri() {
+  }
+
+  virtual ~Airavata_getParentDataProduct_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string productUri;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_productUri(const std::string& val);
+
+  bool operator == (const Airavata_getParentDataProduct_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(productUri == rhs.productUri))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getParentDataProduct_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getParentDataProduct_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getParentDataProduct_pargs {
+ public:
+
+
+  virtual ~Airavata_getParentDataProduct_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* productUri;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getParentDataProduct_result__isset {
+  _Airavata_getParentDataProduct_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getParentDataProduct_result__isset;
+
+class Airavata_getParentDataProduct_result {
+ public:
+
+  Airavata_getParentDataProduct_result(const Airavata_getParentDataProduct_result&);
+  Airavata_getParentDataProduct_result& operator=(const Airavata_getParentDataProduct_result&);
+  Airavata_getParentDataProduct_result() {
+  }
+
+  virtual ~Airavata_getParentDataProduct_result() throw();
+   ::apache::airavata::model::data::replica::DataProductModel success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getParentDataProduct_result__isset __isset;
+
+  void __set_success(const  ::apache::airavata::model::data::replica::DataProductModel& val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_getParentDataProduct_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getParentDataProduct_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getParentDataProduct_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getParentDataProduct_presult__isset {
+  _Airavata_getParentDataProduct_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getParentDataProduct_presult__isset;
+
+class Airavata_getParentDataProduct_presult {
+ public:
+
+
+  virtual ~Airavata_getParentDataProduct_presult() throw();
+   ::apache::airavata::model::data::replica::DataProductModel* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getParentDataProduct_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getChildDataProducts_args {
+ public:
+
+  Airavata_getChildDataProducts_args(const Airavata_getChildDataProducts_args&);
+  Airavata_getChildDataProducts_args& operator=(const Airavata_getChildDataProducts_args&);
+  Airavata_getChildDataProducts_args() : productUri() {
+  }
+
+  virtual ~Airavata_getChildDataProducts_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string productUri;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_productUri(const std::string& val);
+
+  bool operator == (const Airavata_getChildDataProducts_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(productUri == rhs.productUri))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getChildDataProducts_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getChildDataProducts_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getChildDataProducts_pargs {
+ public:
+
+
+  virtual ~Airavata_getChildDataProducts_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* productUri;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getChildDataProducts_result__isset {
+  _Airavata_getChildDataProducts_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getChildDataProducts_result__isset;
+
+class Airavata_getChildDataProducts_result {
+ public:
+
+  Airavata_getChildDataProducts_result(const Airavata_getChildDataProducts_result&);
+  Airavata_getChildDataProducts_result& operator=(const Airavata_getChildDataProducts_result&);
+  Airavata_getChildDataProducts_result() {
+  }
+
+  virtual ~Airavata_getChildDataProducts_result() throw();
+  std::vector< ::apache::airavata::model::data::replica::DataProductModel>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getChildDataProducts_result__isset __isset;
+
+  void __set_success(const std::vector< ::apache::airavata::model::data::replica::DataProductModel> & val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_getChildDataProducts_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getChildDataProducts_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getChildDataProducts_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getChildDataProducts_presult__isset {
+  _Airavata_getChildDataProducts_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getChildDataProducts_presult__isset;
+
+class Airavata_getChildDataProducts_presult {
+ public:
+
+
+  virtual ~Airavata_getChildDataProducts_presult() throw();
+  std::vector< ::apache::airavata::model::data::replica::DataProductModel> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getChildDataProducts_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class AiravataClient : virtual public AiravataIf {
  public:
   AiravataClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) {
@@ -22852,6 +23132,12 @@ class AiravataClient : virtual public AiravataIf {
   void registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& replicaLocationModel);
   void send_registerReplicaLocation(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& replicaLocationModel);
   void recv_registerReplicaLocation(std::string& _return);
+  void getParentDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri);
+  void send_getParentDataProduct(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri);
+  void recv_getParentDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return);
+  void getChildDataProducts(std::vector< ::apache::airavata::model::data::replica::DataProductModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri);
+  void send_getChildDataProducts(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri);
+  void recv_getChildDataProducts(std::vector< ::apache::airavata::model::data::replica::DataProductModel> & _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -23004,6 +23290,8 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_registerDataProduct(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getDataProduct(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_registerReplicaLocation(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getParentDataProduct(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getChildDataProducts(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   AiravataProcessor(boost::shared_ptr<AiravataIf> iface) :
     iface_(iface) {
@@ -23144,6 +23432,8 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["registerDataProduct"] = &AiravataProcessor::process_registerDataProduct;
     processMap_["getDataProduct"] = &AiravataProcessor::process_getDataProduct;
     processMap_["registerReplicaLocation"] = &AiravataProcessor::process_registerReplicaLocation;
+    processMap_["getParentDataProduct"] = &AiravataProcessor::process_getParentDataProduct;
+    processMap_["getChildDataProducts"] = &AiravataProcessor::process_getChildDataProducts;
   }
 
   virtual ~AiravataProcessor() {}
@@ -24490,6 +24780,26 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
+  void getParentDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getParentDataProduct(_return, authzToken, productUri);
+    }
+    ifaces_[i]->getParentDataProduct(_return, authzToken, productUri);
+    return;
+  }
+
+  void getChildDataProducts(std::vector< ::apache::airavata::model::data::replica::DataProductModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getChildDataProducts(_return, authzToken, productUri);
+    }
+    ifaces_[i]->getChildDataProducts(_return, authzToken, productUri);
+    return;
+  }
+
 };
 
 // The 'concurrent' client is a thread safe client that correctly handles
@@ -24931,6 +25241,12 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& replicaLocationModel);
   int32_t send_registerReplicaLocation(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& replicaLocationModel);
   void recv_registerReplicaLocation(std::string& _return, const int32_t seqid);
+  void getParentDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri);
+  int32_t send_getParentDataProduct(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri);
+  void recv_getParentDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return, const int32_t seqid);
+  void getChildDataProducts(std::vector< ::apache::airavata::model::data::replica::DataProductModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri);
+  int32_t send_getChildDataProducts(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri);
+  void recv_getChildDataProducts(std::vector< ::apache::airavata::model::data::replica::DataProductModel> & _return, const int32_t seqid);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;

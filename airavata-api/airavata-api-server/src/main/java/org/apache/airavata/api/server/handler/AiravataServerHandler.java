@@ -4343,7 +4343,39 @@ public class AiravataServerHandler implements Airavata.Iface {
             String replicaId = dataCatalog.registerReplicaLocation(replicaLocationModel);
             return replicaId;
         } catch (Exception e) {
-            String msg = "Error in retreiving the data product "+replicaLocationModel.getReplicaName()+".";
+            String msg = "Error in retreiving the replica "+replicaLocationModel.getReplicaName()+".";
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public DataProductModel getParentDataProduct(AuthzToken authzToken, String productUri) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            dataCatalog = RegistryFactory.getReplicaCatalog();
+            DataProductModel dataProductModel = dataCatalog.getParentDataProduct(productUri;
+            return dataProductModel;
+        } catch (Exception e) {
+            String msg = "Error in retreiving the parent data product for "+ productUri+".";
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public List<DataProductModel> getChildDataProducts(AuthzToken authzToken, String productUri) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            dataCatalog = RegistryFactory.getReplicaCatalog();
+            List<DataProductModel> dataProductModels = dataCatalog.getChildDataProducts(productUri);
+            return dataProductModels;
+        } catch (Exception e) {
+            String msg = "Error in retreiving the child products for "+productUri+".";
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg+" More info : " + e.getMessage());

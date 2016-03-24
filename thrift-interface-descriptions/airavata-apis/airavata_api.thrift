@@ -2982,6 +2982,17 @@ service Airavata {
                                 3: airavata_errors.AiravataSystemException ase,
                                 4: airavata_errors.AuthorizationException ae)
 
+ replica_catalog_models.DataProductModel getParentDataProduct(1: required security_model.AuthzToken authzToken, 2: required  string productUri)
+               throws (1: airavata_errors.InvalidRequestException ire,
+                                 2: airavata_errors.AiravataClientException ace,
+                                 3: airavata_errors.AiravataSystemException ase,
+                                 4: airavata_errors.AuthorizationException ae)
+
+ list<replica_catalog_models.DataProductModel> getChildDataProducts(1: required security_model.AuthzToken authzToken, 2: required  string productUri)
+               throws (1: airavata_errors.InvalidRequestException ire,
+                                 2: airavata_errors.AiravataClientException ace,
+                                 3: airavata_errors.AiravataSystemException ase,
+                                 4: airavata_errors.AuthorizationException ae)
  //End of API
  }
 

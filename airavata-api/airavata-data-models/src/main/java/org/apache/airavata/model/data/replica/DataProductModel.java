@@ -68,7 +68,6 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
   private static final org.apache.thrift.protocol.TField LAST_MODIFIED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("lastModifiedTime", org.apache.thrift.protocol.TType.I64, (short)11);
   private static final org.apache.thrift.protocol.TField PRODUCT_METADATA_FIELD_DESC = new org.apache.thrift.protocol.TField("productMetadata", org.apache.thrift.protocol.TType.MAP, (short)12);
   private static final org.apache.thrift.protocol.TField REPLICA_LOCATIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("replicaLocations", org.apache.thrift.protocol.TType.LIST, (short)13);
-  private static final org.apache.thrift.protocol.TField CHILD_PRODUCTS_FIELD_DESC = new org.apache.thrift.protocol.TField("childProducts", org.apache.thrift.protocol.TType.LIST, (short)14);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -89,7 +88,6 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
   private long lastModifiedTime; // optional
   private Map<String,String> productMetadata; // optional
   private List<DataReplicaLocationModel> replicaLocations; // optional
-  private List<DataProductModel> childProducts; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -109,8 +107,7 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
     CREATION_TIME((short)10, "creationTime"),
     LAST_MODIFIED_TIME((short)11, "lastModifiedTime"),
     PRODUCT_METADATA((short)12, "productMetadata"),
-    REPLICA_LOCATIONS((short)13, "replicaLocations"),
-    CHILD_PRODUCTS((short)14, "childProducts");
+    REPLICA_LOCATIONS((short)13, "replicaLocations");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -151,8 +148,6 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
           return PRODUCT_METADATA;
         case 13: // REPLICA_LOCATIONS
           return REPLICA_LOCATIONS;
-        case 14: // CHILD_PRODUCTS
-          return CHILD_PRODUCTS;
         default:
           return null;
       }
@@ -197,7 +192,7 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
   private static final int __CREATIONTIME_ISSET_ID = 1;
   private static final int __LASTMODIFIEDTIME_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.PRODUCT_URI,_Fields.GATEWAY_ID,_Fields.PARENT_PRODUCT_URI,_Fields.LOGICAL_PATH,_Fields.PRODUCT_NAME,_Fields.PRODUCT_DESCRIPTION,_Fields.OWNER_NAME,_Fields.DATA_PRODUCT_TYPE,_Fields.PRODUCT_SIZE,_Fields.CREATION_TIME,_Fields.LAST_MODIFIED_TIME,_Fields.PRODUCT_METADATA,_Fields.REPLICA_LOCATIONS,_Fields.CHILD_PRODUCTS};
+  private static final _Fields optionals[] = {_Fields.PRODUCT_URI,_Fields.GATEWAY_ID,_Fields.PARENT_PRODUCT_URI,_Fields.LOGICAL_PATH,_Fields.PRODUCT_NAME,_Fields.PRODUCT_DESCRIPTION,_Fields.OWNER_NAME,_Fields.DATA_PRODUCT_TYPE,_Fields.PRODUCT_SIZE,_Fields.CREATION_TIME,_Fields.LAST_MODIFIED_TIME,_Fields.PRODUCT_METADATA,_Fields.REPLICA_LOCATIONS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -230,9 +225,6 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
     tmpMap.put(_Fields.REPLICA_LOCATIONS, new org.apache.thrift.meta_data.FieldMetaData("replicaLocations", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT            , "DataReplicaLocationModel"))));
-    tmpMap.put(_Fields.CHILD_PRODUCTS, new org.apache.thrift.meta_data.FieldMetaData("childProducts", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT            , "DataProductModel"))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(DataProductModel.class, metaDataMap);
   }
@@ -283,13 +275,6 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
       }
       this.replicaLocations = __this__replicaLocations;
     }
-    if (other.isSetChildProducts()) {
-      List<DataProductModel> __this__childProducts = new ArrayList<DataProductModel>(other.childProducts.size());
-      for (DataProductModel other_element : other.childProducts) {
-        __this__childProducts.add(other_element);
-      }
-      this.childProducts = __this__childProducts;
-    }
   }
 
   public DataProductModel deepCopy() {
@@ -314,7 +299,6 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
     this.lastModifiedTime = 0;
     this.productMetadata = null;
     this.replicaLocations = null;
-    this.childProducts = null;
   }
 
   public String getProductUri() {
@@ -647,44 +631,6 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
     }
   }
 
-  public int getChildProductsSize() {
-    return (this.childProducts == null) ? 0 : this.childProducts.size();
-  }
-
-  public java.util.Iterator<DataProductModel> getChildProductsIterator() {
-    return (this.childProducts == null) ? null : this.childProducts.iterator();
-  }
-
-  public void addToChildProducts(DataProductModel elem) {
-    if (this.childProducts == null) {
-      this.childProducts = new ArrayList<DataProductModel>();
-    }
-    this.childProducts.add(elem);
-  }
-
-  public List<DataProductModel> getChildProducts() {
-    return this.childProducts;
-  }
-
-  public void setChildProducts(List<DataProductModel> childProducts) {
-    this.childProducts = childProducts;
-  }
-
-  public void unsetChildProducts() {
-    this.childProducts = null;
-  }
-
-  /** Returns true if field childProducts is set (has been assigned a value) and false otherwise */
-  public boolean isSetChildProducts() {
-    return this.childProducts != null;
-  }
-
-  public void setChildProductsIsSet(boolean value) {
-    if (!value) {
-      this.childProducts = null;
-    }
-  }
-
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case PRODUCT_URI:
@@ -791,14 +737,6 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
       }
       break;
 
-    case CHILD_PRODUCTS:
-      if (value == null) {
-        unsetChildProducts();
-      } else {
-        setChildProducts((List<DataProductModel>)value);
-      }
-      break;
-
     }
   }
 
@@ -843,9 +781,6 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
     case REPLICA_LOCATIONS:
       return getReplicaLocations();
 
-    case CHILD_PRODUCTS:
-      return getChildProducts();
-
     }
     throw new IllegalStateException();
   }
@@ -883,8 +818,6 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
       return isSetProductMetadata();
     case REPLICA_LOCATIONS:
       return isSetReplicaLocations();
-    case CHILD_PRODUCTS:
-      return isSetChildProducts();
     }
     throw new IllegalStateException();
   }
@@ -1019,15 +952,6 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
         return false;
     }
 
-    boolean this_present_childProducts = true && this.isSetChildProducts();
-    boolean that_present_childProducts = true && that.isSetChildProducts();
-    if (this_present_childProducts || that_present_childProducts) {
-      if (!(this_present_childProducts && that_present_childProducts))
-        return false;
-      if (!this.childProducts.equals(that.childProducts))
-        return false;
-    }
-
     return true;
   }
 
@@ -1099,11 +1023,6 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
     list.add(present_replicaLocations);
     if (present_replicaLocations)
       list.add(replicaLocations);
-
-    boolean present_childProducts = true && (isSetChildProducts());
-    list.add(present_childProducts);
-    if (present_childProducts)
-      list.add(childProducts);
 
     return list.hashCode();
   }
@@ -1246,16 +1165,6 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetChildProducts()).compareTo(other.isSetChildProducts());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetChildProducts()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.childProducts, other.childProducts);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     return 0;
   }
 
@@ -1390,16 +1299,6 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
         sb.append("null");
       } else {
         sb.append(this.replicaLocations);
-      }
-      first = false;
-    }
-    if (isSetChildProducts()) {
-      if (!first) sb.append(", ");
-      sb.append("childProducts:");
-      if (this.childProducts == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.childProducts);
       }
       first = false;
     }
@@ -1575,25 +1474,6 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 14: // CHILD_PRODUCTS
-            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
-              {
-                org.apache.thrift.protocol.TList _list7 = iprot.readListBegin();
-                struct.childProducts = new ArrayList<DataProductModel>(_list7.size);
-                DataProductModel _elem8;
-                for (int _i9 = 0; _i9 < _list7.size; ++_i9)
-                {
-                  _elem8 = new DataProductModel();
-                  _elem8.read(iprot);
-                  struct.childProducts.add(_elem8);
-                }
-                iprot.readListEnd();
-              }
-              struct.setChildProductsIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1683,10 +1563,10 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
           oprot.writeFieldBegin(PRODUCT_METADATA_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, struct.productMetadata.size()));
-            for (Map.Entry<String, String> _iter10 : struct.productMetadata.entrySet())
+            for (Map.Entry<String, String> _iter7 : struct.productMetadata.entrySet())
             {
-              oprot.writeString(_iter10.getKey());
-              oprot.writeString(_iter10.getValue());
+              oprot.writeString(_iter7.getKey());
+              oprot.writeString(_iter7.getValue());
             }
             oprot.writeMapEnd();
           }
@@ -1698,23 +1578,9 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
           oprot.writeFieldBegin(REPLICA_LOCATIONS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.replicaLocations.size()));
-            for (DataReplicaLocationModel _iter11 : struct.replicaLocations)
+            for (DataReplicaLocationModel _iter8 : struct.replicaLocations)
             {
-              _iter11.write(oprot);
-            }
-            oprot.writeListEnd();
-          }
-          oprot.writeFieldEnd();
-        }
-      }
-      if (struct.childProducts != null) {
-        if (struct.isSetChildProducts()) {
-          oprot.writeFieldBegin(CHILD_PRODUCTS_FIELD_DESC);
-          {
-            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.childProducts.size()));
-            for (DataProductModel _iter12 : struct.childProducts)
-            {
-              _iter12.write(oprot);
+              _iter8.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1778,10 +1644,7 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
       if (struct.isSetReplicaLocations()) {
         optionals.set(12);
       }
-      if (struct.isSetChildProducts()) {
-        optionals.set(13);
-      }
-      oprot.writeBitSet(optionals, 14);
+      oprot.writeBitSet(optionals, 13);
       if (struct.isSetProductUri()) {
         oprot.writeString(struct.productUri);
       }
@@ -1818,28 +1681,19 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
       if (struct.isSetProductMetadata()) {
         {
           oprot.writeI32(struct.productMetadata.size());
-          for (Map.Entry<String, String> _iter13 : struct.productMetadata.entrySet())
+          for (Map.Entry<String, String> _iter9 : struct.productMetadata.entrySet())
           {
-            oprot.writeString(_iter13.getKey());
-            oprot.writeString(_iter13.getValue());
+            oprot.writeString(_iter9.getKey());
+            oprot.writeString(_iter9.getValue());
           }
         }
       }
       if (struct.isSetReplicaLocations()) {
         {
           oprot.writeI32(struct.replicaLocations.size());
-          for (DataReplicaLocationModel _iter14 : struct.replicaLocations)
+          for (DataReplicaLocationModel _iter10 : struct.replicaLocations)
           {
-            _iter14.write(oprot);
-          }
-        }
-      }
-      if (struct.isSetChildProducts()) {
-        {
-          oprot.writeI32(struct.childProducts.size());
-          for (DataProductModel _iter15 : struct.childProducts)
-          {
-            _iter15.write(oprot);
+            _iter10.write(oprot);
           }
         }
       }
@@ -1848,7 +1702,7 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, DataProductModel struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(14);
+      BitSet incoming = iprot.readBitSet(13);
       if (incoming.get(0)) {
         struct.productUri = iprot.readString();
         struct.setProductUriIsSet(true);
@@ -1895,46 +1749,32 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
       }
       if (incoming.get(11)) {
         {
-          org.apache.thrift.protocol.TMap _map16 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.productMetadata = new HashMap<String,String>(2*_map16.size);
-          String _key17;
-          String _val18;
-          for (int _i19 = 0; _i19 < _map16.size; ++_i19)
+          org.apache.thrift.protocol.TMap _map11 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.productMetadata = new HashMap<String,String>(2*_map11.size);
+          String _key12;
+          String _val13;
+          for (int _i14 = 0; _i14 < _map11.size; ++_i14)
           {
-            _key17 = iprot.readString();
-            _val18 = iprot.readString();
-            struct.productMetadata.put(_key17, _val18);
+            _key12 = iprot.readString();
+            _val13 = iprot.readString();
+            struct.productMetadata.put(_key12, _val13);
           }
         }
         struct.setProductMetadataIsSet(true);
       }
       if (incoming.get(12)) {
         {
-          org.apache.thrift.protocol.TList _list20 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.replicaLocations = new ArrayList<DataReplicaLocationModel>(_list20.size);
-          DataReplicaLocationModel _elem21;
-          for (int _i22 = 0; _i22 < _list20.size; ++_i22)
+          org.apache.thrift.protocol.TList _list15 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.replicaLocations = new ArrayList<DataReplicaLocationModel>(_list15.size);
+          DataReplicaLocationModel _elem16;
+          for (int _i17 = 0; _i17 < _list15.size; ++_i17)
           {
-            _elem21 = new DataReplicaLocationModel();
-            _elem21.read(iprot);
-            struct.replicaLocations.add(_elem21);
+            _elem16 = new DataReplicaLocationModel();
+            _elem16.read(iprot);
+            struct.replicaLocations.add(_elem16);
           }
         }
         struct.setReplicaLocationsIsSet(true);
-      }
-      if (incoming.get(13)) {
-        {
-          org.apache.thrift.protocol.TList _list23 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.childProducts = new ArrayList<DataProductModel>(_list23.size);
-          DataProductModel _elem24;
-          for (int _i25 = 0; _i25 < _list23.size; ++_i25)
-          {
-            _elem24 = new DataProductModel();
-            _elem24.read(iprot);
-            struct.childProducts.add(_elem24);
-          }
-        }
-        struct.setChildProductsIsSet(true);
       }
     }
   }

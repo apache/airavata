@@ -47,4 +47,8 @@ public interface ReplicaCatalog {
     DataReplicaLocationModel getReplicaLocation(String replicaId) throws ReplicaCatalogException;
 
     List<DataReplicaLocationModel> getAllReplicaLocations(String productUri) throws ReplicaCatalogException;
+
+    DataProductModel getParentDataProduct(String productUri) throws ReplicaCatalogException;
+
+    List<DataProductModel> getChildDataProducts(String productUri) throws ReplicaCatalogException;
 }
