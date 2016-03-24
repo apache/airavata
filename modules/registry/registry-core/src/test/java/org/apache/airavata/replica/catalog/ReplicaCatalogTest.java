@@ -45,7 +45,7 @@ public class ReplicaCatalogTest {
     public static void setUp() {
         try {
             System.out.println("********** SET UP ************");
-            initialize = new Initialize("datacatalog-derby.sql");
+            initialize = new Initialize("replicacatalog-derby.sql");
             initialize.initializeDB();
             datacatalog = RegistryFactory.getReplicaCatalog();
             dataProductModel = new DataProductModel();
