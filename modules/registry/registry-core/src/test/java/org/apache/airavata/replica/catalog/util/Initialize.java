@@ -94,10 +94,10 @@ public class Initialize {
 
     public void initializeDB() {
         try{
-            jdbcDriver = ServerSettings.getSetting("datacatalog.jdbc.driver");
-            jdbcUrl = ServerSettings.getSetting("datacatalog.jdbc.url");
-            jdbcUser = ServerSettings.getSetting("datacatalog.jdbc.user");
-            jdbcPassword = ServerSettings.getSetting("datacatalog.jdbc.password");
+            jdbcDriver = ServerSettings.getSetting("replicacatalog.jdbc.driver");
+            jdbcUrl = ServerSettings.getSetting("replicacatalog.jdbc.url");
+            jdbcUser = ServerSettings.getSetting("replicacatalog.jdbc.user");
+            jdbcPassword = ServerSettings.getSetting("replicacatalog.jdbc.password");
             jdbcUrl = jdbcUrl + "?" + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read properties", e);

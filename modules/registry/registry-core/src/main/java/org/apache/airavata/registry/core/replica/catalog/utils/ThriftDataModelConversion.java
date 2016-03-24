@@ -65,7 +65,7 @@ public class ThriftDataModelConversion {
                         .add(getDataReplicaLocationModel(r)));
                 dataProductModel.setReplicaLocations(dataReplicaLocationModels);
             }
-            if(dataProductModel.getDataProductType().equals(DataProductType.COLLECTION) && dataProduct.getChildDataProducts() != null){
+            if(!dataProductModel.getDataProductType().equals(DataProductType.FILE) && dataProduct.getChildDataProducts() != null){
                 ArrayList<DataProductModel> childDataProducts = new ArrayList<>();
                 dataProduct.getChildDataProducts().stream().forEach(r->childDataProducts.add(getDataProductModel(r)));
                 dataProductModel.setChildProducts(childDataProducts);

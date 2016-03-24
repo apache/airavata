@@ -33,26 +33,26 @@ import java.util.Map;
 public class ReplicaCatalogJPAUtils {
     private final static Logger logger = LoggerFactory.getLogger(ReplicaCatalogJPAUtils.class);
 
-    private static final String PERSISTENCE_UNIT_NAME = "datacatalog_data";
-    private static final String DATACATALOG_JDBC_DRIVER = "datacatalog.jdbc.driver";
-    private static final String DATACATALOG_JDBC_URL = "datacatalog.jdbc.url";
-    private static final String DATACATALOG_JDBC_USER = "datacatalog.jdbc.user";
-    private static final String DATACATALOG_JDBC_PWD = "datacatalog.jdbc.password";
-    private static final String DATACATALOG_VALIDATION_QUERY = "datacatalog.validationQuery";
+    private static final String PERSISTENCE_UNIT_NAME = "replicacatalog_data";
+    private static final String REPLICACATALOG_JDBC_DRIVER = "replicacatalog.jdbc.driver";
+    private static final String REPLICACATALOG_JDBC_URL = "replicacatalog.jdbc.url";
+    private static final String REPLICACATALOG_JDBC_USER = "replicacatalog.jdbc.user";
+    private static final String REPLICACATALOG_JDBC_PWD = "replicacatalog.jdbc.password";
+    private static final String REPLICACATALOG_VALIDATION_QUERY = "replicacatalog.validationQuery";
 
-    @PersistenceUnit(unitName="datacatalog_data")
+    @PersistenceUnit(unitName="replicacatalog_data")
     protected static EntityManagerFactory factory;
 
-    @PersistenceContext(unitName="datacatalog_data")
+    @PersistenceContext(unitName="replicacatalog_data")
     private static EntityManager dataCatEntityManager;
 
     public static EntityManager getEntityManager() throws ApplicationSettingsException {
         if (factory == null) {
-            String connectionProperties = "DriverClassName=" + readServerProperties(DATACATALOG_JDBC_DRIVER) + "," +
-                    "Url=" + readServerProperties(DATACATALOG_JDBC_URL) + "?autoReconnect=true," +
-                    "Username=" + readServerProperties(DATACATALOG_JDBC_USER) + "," +
-                    "Password=" + readServerProperties(DATACATALOG_JDBC_PWD) +
-                    ",validationQuery=" + readServerProperties(DATACATALOG_VALIDATION_QUERY);
+            String connectionProperties = "DriverClassName=" + readServerProperties(REPLICACATALOG_JDBC_DRIVER) + "," +
+                    "Url=" + readServerProperties(REPLICACATALOG_JDBC_URL) + "?autoReconnect=true," +
+                    "Username=" + readServerProperties(REPLICACATALOG_JDBC_USER) + "," +
+                    "Password=" + readServerProperties(REPLICACATALOG_JDBC_PWD) +
+                    ",validationQuery=" + readServerProperties(REPLICACATALOG_VALIDATION_QUERY);
             System.out.println(connectionProperties);
             Map<String, String> properties = new HashMap<String, String>();
             properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");

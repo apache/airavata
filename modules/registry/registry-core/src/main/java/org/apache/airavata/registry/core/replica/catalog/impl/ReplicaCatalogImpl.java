@@ -59,12 +59,16 @@ public class ReplicaCatalogImpl implements ReplicaCatalog {
         //Creating parent logical dir if not exist too
         String parentUri = ReplicaCatalog.schema + "://" + productModel.getOwnerName() + "@" + productModel.getGatewayId() + ":/" ;
         DataProductModel tempDp;
+        final long currentTime = System.currentTimeMillis();
         if(!isExists(parentUri)){
             tempDp = new DataProductModel();
             tempDp.setProductUri(parentUri);
             tempDp.setLogicalPath("/");
             tempDp.setOwnerName(productModel.getOwnerName());
             tempDp.setGatewayId(productModel.getGatewayId());
+            tempDp.setProductName("/");
+            tempDp.setCreationTime(currentTime);
+            tempDp.setLastModifiedTime(currentTime);
             tempDp.setDataProductType(DataProductType.DIR);
             createDataProduct(tempDp);
         }
@@ -73,8 +77,8 @@ public class ReplicaCatalogImpl implements ReplicaCatalog {
             String dir = bits[i];
             if(!isExists(parentUri + dir)){
                 tempDp = new DataProductModel();
-                if(!parentUri.endsWith("/")) parentUri += "/";
                 try {
+                    if(!parentUri.endsWith("/")) dir = "/" + dir;
                     tempDp.setLogicalPath((new URI(parentUri + dir)).getPath());
                 } catch (URISyntaxException e) {
                     throw new ReplicaCatalogException(e);
@@ -82,6 +86,9 @@ public class ReplicaCatalogImpl implements ReplicaCatalog {
                 tempDp.setProductUri(parentUri + dir);
                 tempDp.setOwnerName(productModel.getOwnerName());
                 tempDp.setGatewayId(productModel.getGatewayId());
+                tempDp.setProductName(dir.substring(1));
+                tempDp.setCreationTime(currentTime);
+                tempDp.setLastModifiedTime(currentTime);
                 tempDp.setDataProductType(DataProductType.DIR);
                 tempDp.setParentProductUri(parentUri);
                 parentUri = createDataProduct(tempDp);
@@ -92,7 +99,6 @@ public class ReplicaCatalogImpl implements ReplicaCatalog {
         String productUri = ReplicaCatalog.schema + "://" + productModel.getOwnerName() + "@" + productModel.getGatewayId()
                 + ":" + productModel.getLogicalPath();
         productModel.setProductUri(productUri);
-        long currentTime = System.currentTimeMillis();
         productModel.setCreationTime(currentTime);
         productModel.setLastModifiedTime(currentTime);
         if(productModel.getReplicaLocations() != null){
