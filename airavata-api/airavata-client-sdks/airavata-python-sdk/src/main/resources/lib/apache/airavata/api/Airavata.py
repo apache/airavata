@@ -44188,7 +44188,7 @@ class registerDataProduct_args:
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'dataProductModel', (apache.airavata.model.data.product.ttypes.DataProductModel, apache.airavata.model.data.product.ttypes.DataProductModel.thrift_spec), None, ), # 2
+    (2, TType.STRUCT, 'dataProductModel', (apache.airavata.model.data.replica.ttypes.DataProductModel, apache.airavata.model.data.replica.ttypes.DataProductModel.thrift_spec), None, ), # 2
   )
 
   def __init__(self, authzToken=None, dataProductModel=None,):
@@ -44212,7 +44212,7 @@ class registerDataProduct_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRUCT:
-          self.dataProductModel = apache.airavata.model.data.product.ttypes.DataProductModel()
+          self.dataProductModel = apache.airavata.model.data.replica.ttypes.DataProductModel()
           self.dataProductModel.read(iprot)
         else:
           iprot.skip(ftype)
@@ -44476,7 +44476,7 @@ class getDataProduct_result:
   """
 
   thrift_spec = (
-    (0, TType.STRUCT, 'success', (apache.airavata.model.data.product.ttypes.DataProductModel, apache.airavata.model.data.product.ttypes.DataProductModel.thrift_spec), None, ), # 0
+    (0, TType.STRUCT, 'success', (apache.airavata.model.data.replica.ttypes.DataProductModel, apache.airavata.model.data.replica.ttypes.DataProductModel.thrift_spec), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -44501,7 +44501,7 @@ class getDataProduct_result:
         break
       if fid == 0:
         if ftype == TType.STRUCT:
-          self.success = apache.airavata.model.data.product.ttypes.DataProductModel()
+          self.success = apache.airavata.model.data.replica.ttypes.DataProductModel()
           self.success.read(iprot)
         else:
           iprot.skip(ftype)
@@ -44596,7 +44596,7 @@ class registerReplicaLocation_args:
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'replicaLocationModel', (apache.airavata.model.data.product.ttypes.DataReplicaLocationModel, apache.airavata.model.data.product.ttypes.DataReplicaLocationModel.thrift_spec), None, ), # 2
+    (2, TType.STRUCT, 'replicaLocationModel', (apache.airavata.model.data.replica.ttypes.DataReplicaLocationModel, apache.airavata.model.data.replica.ttypes.DataReplicaLocationModel.thrift_spec), None, ), # 2
   )
 
   def __init__(self, authzToken=None, replicaLocationModel=None,):
@@ -44620,7 +44620,7 @@ class registerReplicaLocation_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRUCT:
-          self.replicaLocationModel = apache.airavata.model.data.product.ttypes.DataReplicaLocationModel()
+          self.replicaLocationModel = apache.airavata.model.data.replica.ttypes.DataReplicaLocationModel()
           self.replicaLocationModel.read(iprot)
         else:
           iprot.skip(ftype)

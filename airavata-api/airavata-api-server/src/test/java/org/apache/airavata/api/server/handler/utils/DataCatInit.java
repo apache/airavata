@@ -23,7 +23,7 @@ package org.apache.airavata.api.server.handler.utils;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.registry.core.data.catalog.utils.DataCatalogConstants;
+import org.apache.airavata.registry.core.replica.catalog.utils.ReplicaCatalogConstants;
 import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,7 +111,7 @@ public class DataCatInit {
         try {
             Class.forName(jdbcDriver).newInstance();
             conn = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPassword);
-            if (!isDatabaseStructureCreated(DataCatalogConstants.CONFIGURATION, conn)) {
+            if (!isDatabaseStructureCreated(ReplicaCatalogConstants.CONFIGURATION, conn)) {
                 executeSQLScript(conn);
                 logger.info("New Database created for Data Catalog !!!");
             } else {

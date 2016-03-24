@@ -24,7 +24,7 @@ package org.apache.airavata.registry.core.experiment.catalog.impl;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.registry.core.app.catalog.impl.AppCatalogImpl;
-import org.apache.airavata.registry.core.data.catalog.impl.DataCatalogImpl;
+import org.apache.airavata.registry.core.replica.catalog.impl.ReplicaCatalogImpl;
 import org.apache.airavata.registry.core.impl.RegistryImpl;
 import org.apache.airavata.registry.cpi.*;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class RegistryFactory {
     private static ExperimentCatalog experimentCatalog;
     private static AppCatalog appCatalog;
-    private static DataCatalog replicaCatalog;
+    private static ReplicaCatalog replicaCatalog;
     private static Registry registry;
     private static Logger logger = LoggerFactory.getLogger(RegistryFactory.class);
 
@@ -100,14 +100,14 @@ public class RegistryFactory {
         return appCatalog;
     }
 
-    public static DataCatalog getDataCatalog() throws DataCatalogException {
+    public static ReplicaCatalog getReplicaCatalog() throws ReplicaCatalogException {
         try {
             if (replicaCatalog == null) {
-                replicaCatalog = new DataCatalogImpl();
+                replicaCatalog = new ReplicaCatalogImpl();
             }
         } catch (Exception e) {
             logger.error("Unable to create data catalog instance", e);
-            throw new DataCatalogException(e);
+            throw new ReplicaCatalogException(e);
         }
         return replicaCatalog;
     }

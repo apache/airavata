@@ -40,7 +40,7 @@ include "../data-models/resource-catalog-models/storage_resource_model.thrift"
 include "../data-models/resource-catalog-models/gateway_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
 include "../data-models/workflow-models/workflow_data_model.thrift"
-include "../data-models/data-catalog-models/data_catalog_models.thrift"
+include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API
@@ -2962,21 +2962,21 @@ service Airavata {
 
 
  /**
- * API Methods related to data catalog
+ * API Methods related to replica catalog
  **/
- string registerDataProduct(1: required security_model.AuthzToken authzToken, 2: required  data_catalog_models.DataProductModel dataProductModel)
+ string registerDataProduct(1: required security_model.AuthzToken authzToken, 2: required  replica_catalog_models.DataProductModel dataProductModel)
             throws (1: airavata_errors.InvalidRequestException ire,
                               2: airavata_errors.AiravataClientException ace,
                               3: airavata_errors.AiravataSystemException ase,
                               4: airavata_errors.AuthorizationException ae)
 
- data_catalog_models.DataProductModel getDataProduct(1: required security_model.AuthzToken authzToken, 2: required  string dataProductUri)
+ replica_catalog_models.DataProductModel getDataProduct(1: required security_model.AuthzToken authzToken, 2: required  string dataProductUri)
              throws (1: airavata_errors.InvalidRequestException ire,
                                2: airavata_errors.AiravataClientException ace,
                                3: airavata_errors.AiravataSystemException ase,
                                4: airavata_errors.AuthorizationException ae)
 
- string registerReplicaLocation(1: required security_model.AuthzToken authzToken, 2: required  data_catalog_models.DataReplicaLocationModel replicaLocationModel)
+ string registerReplicaLocation(1: required security_model.AuthzToken authzToken, 2: required  replica_catalog_models.DataReplicaLocationModel replicaLocationModel)
               throws (1: airavata_errors.InvalidRequestException ire,
                                 2: airavata_errors.AiravataClientException ace,
                                 3: airavata_errors.AiravataSystemException ase,

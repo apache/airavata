@@ -19,7 +19,7 @@ import apache.airavata.model.process.ttypes
 import apache.airavata.model.scheduling.ttypes
 import apache.airavata.model.status.ttypes
 import apache.airavata.model.data.movement.ttypes
-import apache.airavata.model.data.product.ttypes
+import apache.airavata.model.data.replica.ttypes
 
 
 from thrift.transport import TTransport
