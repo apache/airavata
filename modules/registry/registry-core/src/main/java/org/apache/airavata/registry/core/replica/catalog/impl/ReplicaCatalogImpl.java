@@ -73,6 +73,7 @@ public class ReplicaCatalogImpl implements ReplicaCatalog {
             String dir = bits[i];
             if(!isExists(parentUri + dir)){
                 tempDp = new DataProductModel();
+                if(!parentUri.endsWith("/")) parentUri += "/";
                 try {
                     tempDp.setLogicalPath((new URI(parentUri + dir)).getPath());
                 } catch (URISyntaxException e) {
