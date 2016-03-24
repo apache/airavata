@@ -2616,9 +2616,9 @@ class AiravataIf {
    * @param authzToken
    * @param dataProductModel
    */
-  virtual void registerDataProduct(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataProductModel& dataProductModel) = 0;
-  virtual void getDataProduct( ::apache::airavata::model::data::product::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataProductUri) = 0;
-  virtual void registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataReplicaLocationModel& replicaLocationModel) = 0;
+  virtual void registerDataProduct(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataProductModel& dataProductModel) = 0;
+  virtual void getDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataProductUri) = 0;
+  virtual void registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& replicaLocationModel) = 0;
 };
 
 class AiravataIfFactory {
@@ -3093,13 +3093,13 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  void registerDataProduct(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::apache::airavata::model::data::product::DataProductModel& /* dataProductModel */) {
+  void registerDataProduct(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::apache::airavata::model::data::replica::DataProductModel& /* dataProductModel */) {
     return;
   }
-  void getDataProduct( ::apache::airavata::model::data::product::DataProductModel& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* dataProductUri */) {
+  void getDataProduct( ::apache::airavata::model::data::replica::DataProductModel& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* dataProductUri */) {
     return;
   }
-  void registerReplicaLocation(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::apache::airavata::model::data::product::DataReplicaLocationModel& /* replicaLocationModel */) {
+  void registerReplicaLocation(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& /* replicaLocationModel */) {
     return;
   }
 };
@@ -22019,11 +22019,11 @@ class Airavata_registerDataProduct_args {
 
   virtual ~Airavata_registerDataProduct_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
-   ::apache::airavata::model::data::product::DataProductModel dataProductModel;
+   ::apache::airavata::model::data::replica::DataProductModel dataProductModel;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
-  void __set_dataProductModel(const  ::apache::airavata::model::data::product::DataProductModel& val);
+  void __set_dataProductModel(const  ::apache::airavata::model::data::replica::DataProductModel& val);
 
   bool operator == (const Airavata_registerDataProduct_args & rhs) const
   {
@@ -22051,7 +22051,7 @@ class Airavata_registerDataProduct_pargs {
 
   virtual ~Airavata_registerDataProduct_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const  ::apache::airavata::model::data::product::DataProductModel* dataProductModel;
+  const  ::apache::airavata::model::data::replica::DataProductModel* dataProductModel;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -22211,7 +22211,7 @@ class Airavata_getDataProduct_result {
   }
 
   virtual ~Airavata_getDataProduct_result() throw();
-   ::apache::airavata::model::data::product::DataProductModel success;
+   ::apache::airavata::model::data::replica::DataProductModel success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -22219,7 +22219,7 @@ class Airavata_getDataProduct_result {
 
   _Airavata_getDataProduct_result__isset __isset;
 
-  void __set_success(const  ::apache::airavata::model::data::product::DataProductModel& val);
+  void __set_success(const  ::apache::airavata::model::data::replica::DataProductModel& val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -22268,7 +22268,7 @@ class Airavata_getDataProduct_presult {
 
 
   virtual ~Airavata_getDataProduct_presult() throw();
-   ::apache::airavata::model::data::product::DataProductModel* success;
+   ::apache::airavata::model::data::replica::DataProductModel* success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -22291,11 +22291,11 @@ class Airavata_registerReplicaLocation_args {
 
   virtual ~Airavata_registerReplicaLocation_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
-   ::apache::airavata::model::data::product::DataReplicaLocationModel replicaLocationModel;
+   ::apache::airavata::model::data::replica::DataReplicaLocationModel replicaLocationModel;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
-  void __set_replicaLocationModel(const  ::apache::airavata::model::data::product::DataReplicaLocationModel& val);
+  void __set_replicaLocationModel(const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& val);
 
   bool operator == (const Airavata_registerReplicaLocation_args & rhs) const
   {
@@ -22323,7 +22323,7 @@ class Airavata_registerReplicaLocation_pargs {
 
   virtual ~Airavata_registerReplicaLocation_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const  ::apache::airavata::model::data::product::DataReplicaLocationModel* replicaLocationModel;
+  const  ::apache::airavata::model::data::replica::DataReplicaLocationModel* replicaLocationModel;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -22843,14 +22843,14 @@ class AiravataClient : virtual public AiravataIf {
   bool isWorkflowExistWithName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName);
   void send_isWorkflowExistWithName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName);
   bool recv_isWorkflowExistWithName();
-  void registerDataProduct(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataProductModel& dataProductModel);
-  void send_registerDataProduct(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataProductModel& dataProductModel);
+  void registerDataProduct(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataProductModel& dataProductModel);
+  void send_registerDataProduct(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataProductModel& dataProductModel);
   void recv_registerDataProduct(std::string& _return);
-  void getDataProduct( ::apache::airavata::model::data::product::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataProductUri);
+  void getDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataProductUri);
   void send_getDataProduct(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataProductUri);
-  void recv_getDataProduct( ::apache::airavata::model::data::product::DataProductModel& _return);
-  void registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataReplicaLocationModel& replicaLocationModel);
-  void send_registerReplicaLocation(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataReplicaLocationModel& replicaLocationModel);
+  void recv_getDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return);
+  void registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& replicaLocationModel);
+  void send_registerReplicaLocation(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& replicaLocationModel);
   void recv_registerReplicaLocation(std::string& _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
@@ -24460,7 +24460,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->isWorkflowExistWithName(authzToken, workflowName);
   }
 
-  void registerDataProduct(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataProductModel& dataProductModel) {
+  void registerDataProduct(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataProductModel& dataProductModel) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -24470,7 +24470,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getDataProduct( ::apache::airavata::model::data::product::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataProductUri) {
+  void getDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataProductUri) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -24480,7 +24480,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataReplicaLocationModel& replicaLocationModel) {
+  void registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& replicaLocationModel) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -24922,14 +24922,14 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   bool isWorkflowExistWithName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName);
   int32_t send_isWorkflowExistWithName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName);
   bool recv_isWorkflowExistWithName(const int32_t seqid);
-  void registerDataProduct(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataProductModel& dataProductModel);
-  int32_t send_registerDataProduct(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataProductModel& dataProductModel);
+  void registerDataProduct(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataProductModel& dataProductModel);
+  int32_t send_registerDataProduct(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataProductModel& dataProductModel);
   void recv_registerDataProduct(std::string& _return, const int32_t seqid);
-  void getDataProduct( ::apache::airavata::model::data::product::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataProductUri);
+  void getDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataProductUri);
   int32_t send_getDataProduct(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataProductUri);
-  void recv_getDataProduct( ::apache::airavata::model::data::product::DataProductModel& _return, const int32_t seqid);
-  void registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataReplicaLocationModel& replicaLocationModel);
-  int32_t send_registerReplicaLocation(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataReplicaLocationModel& replicaLocationModel);
+  void recv_getDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return, const int32_t seqid);
+  void registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& replicaLocationModel);
+  int32_t send_registerReplicaLocation(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& replicaLocationModel);
   void recv_registerReplicaLocation(std::string& _return, const int32_t seqid);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;

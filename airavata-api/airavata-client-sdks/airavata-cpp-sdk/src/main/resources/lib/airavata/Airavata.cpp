@@ -52464,13 +52464,13 @@ bool AiravataClient::recv_isWorkflowExistWithName()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "isWorkflowExistWithName failed: unknown result");
 }
 
-void AiravataClient::registerDataProduct(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataProductModel& dataProductModel)
+void AiravataClient::registerDataProduct(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataProductModel& dataProductModel)
 {
   send_registerDataProduct(authzToken, dataProductModel);
   recv_registerDataProduct(_return);
 }
 
-void AiravataClient::send_registerDataProduct(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataProductModel& dataProductModel)
+void AiravataClient::send_registerDataProduct(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataProductModel& dataProductModel)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("registerDataProduct", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -52535,7 +52535,7 @@ void AiravataClient::recv_registerDataProduct(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "registerDataProduct failed: unknown result");
 }
 
-void AiravataClient::getDataProduct( ::apache::airavata::model::data::product::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataProductUri)
+void AiravataClient::getDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataProductUri)
 {
   send_getDataProduct(authzToken, dataProductUri);
   recv_getDataProduct(_return);
@@ -52556,7 +52556,7 @@ void AiravataClient::send_getDataProduct(const  ::apache::airavata::model::secur
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getDataProduct( ::apache::airavata::model::data::product::DataProductModel& _return)
+void AiravataClient::recv_getDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return)
 {
 
   int32_t rseqid = 0;
@@ -52606,13 +52606,13 @@ void AiravataClient::recv_getDataProduct( ::apache::airavata::model::data::produ
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getDataProduct failed: unknown result");
 }
 
-void AiravataClient::registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataReplicaLocationModel& replicaLocationModel)
+void AiravataClient::registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& replicaLocationModel)
 {
   send_registerReplicaLocation(authzToken, replicaLocationModel);
   recv_registerReplicaLocation(_return);
 }
 
-void AiravataClient::send_registerReplicaLocation(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataReplicaLocationModel& replicaLocationModel)
+void AiravataClient::send_registerReplicaLocation(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& replicaLocationModel)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("registerReplicaLocation", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -75365,13 +75365,13 @@ bool AiravataConcurrentClient::recv_isWorkflowExistWithName(const int32_t seqid)
   } // end while(true)
 }
 
-void AiravataConcurrentClient::registerDataProduct(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataProductModel& dataProductModel)
+void AiravataConcurrentClient::registerDataProduct(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataProductModel& dataProductModel)
 {
   int32_t seqid = send_registerDataProduct(authzToken, dataProductModel);
   recv_registerDataProduct(_return, seqid);
 }
 
-int32_t AiravataConcurrentClient::send_registerDataProduct(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataProductModel& dataProductModel)
+int32_t AiravataConcurrentClient::send_registerDataProduct(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataProductModel& dataProductModel)
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
@@ -75466,7 +75466,7 @@ void AiravataConcurrentClient::recv_registerDataProduct(std::string& _return, co
   } // end while(true)
 }
 
-void AiravataConcurrentClient::getDataProduct( ::apache::airavata::model::data::product::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataProductUri)
+void AiravataConcurrentClient::getDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataProductUri)
 {
   int32_t seqid = send_getDataProduct(authzToken, dataProductUri);
   recv_getDataProduct(_return, seqid);
@@ -75491,7 +75491,7 @@ int32_t AiravataConcurrentClient::send_getDataProduct(const  ::apache::airavata:
   return cseqid;
 }
 
-void AiravataConcurrentClient::recv_getDataProduct( ::apache::airavata::model::data::product::DataProductModel& _return, const int32_t seqid)
+void AiravataConcurrentClient::recv_getDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return, const int32_t seqid)
 {
 
   int32_t rseqid = 0;
@@ -75567,13 +75567,13 @@ void AiravataConcurrentClient::recv_getDataProduct( ::apache::airavata::model::d
   } // end while(true)
 }
 
-void AiravataConcurrentClient::registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataReplicaLocationModel& replicaLocationModel)
+void AiravataConcurrentClient::registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& replicaLocationModel)
 {
   int32_t seqid = send_registerReplicaLocation(authzToken, replicaLocationModel);
   recv_registerReplicaLocation(_return, seqid);
 }
 
-int32_t AiravataConcurrentClient::send_registerReplicaLocation(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataReplicaLocationModel& replicaLocationModel)
+int32_t AiravataConcurrentClient::send_registerReplicaLocation(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& replicaLocationModel)
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);

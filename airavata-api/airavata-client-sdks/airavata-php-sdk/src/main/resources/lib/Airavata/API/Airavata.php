@@ -3426,18 +3426,18 @@ interface AiravataIf {
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
-   * @param \Airavata\Model\Data\Product\DataProductModel $dataProductModel
+   * @param \Airavata\Model\Data\Replica\DataProductModel $dataProductModel
    * @return string
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function registerDataProduct(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Product\DataProductModel $dataProductModel);
+  public function registerDataProduct(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Replica\DataProductModel $dataProductModel);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $dataProductUri
-   * @return \Airavata\Model\Data\Product\DataProductModel
+   * @return \Airavata\Model\Data\Replica\DataProductModel
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
@@ -3446,14 +3446,14 @@ interface AiravataIf {
   public function getDataProduct(\Airavata\Model\Security\AuthzToken $authzToken, $dataProductUri);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
-   * @param \Airavata\Model\Data\Product\DataReplicaLocationModel $replicaLocationModel
+   * @param \Airavata\Model\Data\Replica\DataReplicaLocationModel $replicaLocationModel
    * @return string
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function registerReplicaLocation(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Product\DataReplicaLocationModel $replicaLocationModel);
+  public function registerReplicaLocation(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Replica\DataReplicaLocationModel $replicaLocationModel);
 }
 
 class AiravataClient implements \Airavata\API\AiravataIf {
@@ -12145,13 +12145,13 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("isWorkflowExistWithName failed: unknown result");
   }
 
-  public function registerDataProduct(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Product\DataProductModel $dataProductModel)
+  public function registerDataProduct(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Replica\DataProductModel $dataProductModel)
   {
     $this->send_registerDataProduct($authzToken, $dataProductModel);
     return $this->recv_registerDataProduct();
   }
 
-  public function send_registerDataProduct(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Product\DataProductModel $dataProductModel)
+  public function send_registerDataProduct(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Replica\DataProductModel $dataProductModel)
   {
     $args = new \Airavata\API\Airavata_registerDataProduct_args();
     $args->authzToken = $authzToken;
@@ -12273,13 +12273,13 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getDataProduct failed: unknown result");
   }
 
-  public function registerReplicaLocation(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Product\DataReplicaLocationModel $replicaLocationModel)
+  public function registerReplicaLocation(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Replica\DataReplicaLocationModel $replicaLocationModel)
   {
     $this->send_registerReplicaLocation($authzToken, $replicaLocationModel);
     return $this->recv_registerReplicaLocation();
   }
 
-  public function send_registerReplicaLocation(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Product\DataReplicaLocationModel $replicaLocationModel)
+  public function send_registerReplicaLocation(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Replica\DataReplicaLocationModel $replicaLocationModel)
   {
     $args = new \Airavata\API\Airavata_registerReplicaLocation_args();
     $args->authzToken = $authzToken;
@@ -53524,7 +53524,7 @@ class Airavata_registerDataProduct_args {
    */
   public $authzToken = null;
   /**
-   * @var \Airavata\Model\Data\Product\DataProductModel
+   * @var \Airavata\Model\Data\Replica\DataProductModel
    */
   public $dataProductModel = null;
 
@@ -53539,7 +53539,7 @@ class Airavata_registerDataProduct_args {
         2 => array(
           'var' => 'dataProductModel',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Data\Product\DataProductModel',
+          'class' => '\Airavata\Model\Data\Replica\DataProductModel',
           ),
         );
     }
@@ -53582,7 +53582,7 @@ class Airavata_registerDataProduct_args {
           break;
         case 2:
           if ($ftype == TType::STRUCT) {
-            $this->dataProductModel = new \Airavata\Model\Data\Product\DataProductModel();
+            $this->dataProductModel = new \Airavata\Model\Data\Replica\DataProductModel();
             $xfer += $this->dataProductModel->read($input);
           } else {
             $xfer += $input->skip($ftype);
@@ -53906,7 +53906,7 @@ class Airavata_getDataProduct_result {
   static $_TSPEC;
 
   /**
-   * @var \Airavata\Model\Data\Product\DataProductModel
+   * @var \Airavata\Model\Data\Replica\DataProductModel
    */
   public $success = null;
   /**
@@ -53932,7 +53932,7 @@ class Airavata_getDataProduct_result {
         0 => array(
           'var' => 'success',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Data\Product\DataProductModel',
+          'class' => '\Airavata\Model\Data\Replica\DataProductModel',
           ),
         1 => array(
           'var' => 'ire',
@@ -53996,7 +53996,7 @@ class Airavata_getDataProduct_result {
       {
         case 0:
           if ($ftype == TType::STRUCT) {
-            $this->success = new \Airavata\Model\Data\Product\DataProductModel();
+            $this->success = new \Airavata\Model\Data\Replica\DataProductModel();
             $xfer += $this->success->read($input);
           } else {
             $xfer += $input->skip($ftype);
@@ -54090,7 +54090,7 @@ class Airavata_registerReplicaLocation_args {
    */
   public $authzToken = null;
   /**
-   * @var \Airavata\Model\Data\Product\DataReplicaLocationModel
+   * @var \Airavata\Model\Data\Replica\DataReplicaLocationModel
    */
   public $replicaLocationModel = null;
 
@@ -54105,7 +54105,7 @@ class Airavata_registerReplicaLocation_args {
         2 => array(
           'var' => 'replicaLocationModel',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Data\Product\DataReplicaLocationModel',
+          'class' => '\Airavata\Model\Data\Replica\DataReplicaLocationModel',
           ),
         );
     }
@@ -54148,7 +54148,7 @@ class Airavata_registerReplicaLocation_args {
           break;
         case 2:
           if ($ftype == TType::STRUCT) {
-            $this->replicaLocationModel = new \Airavata\Model\Data\Product\DataReplicaLocationModel();
+            $this->replicaLocationModel = new \Airavata\Model\Data\Replica\DataReplicaLocationModel();
             $xfer += $this->replicaLocationModel->read($input);
           } else {
             $xfer += $input->skip($ftype);

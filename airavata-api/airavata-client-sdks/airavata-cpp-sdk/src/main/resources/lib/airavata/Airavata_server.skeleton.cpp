@@ -3029,17 +3029,17 @@ class AiravataHandler : virtual public AiravataIf {
    * @param authzToken
    * @param dataProductModel
    */
-  void registerDataProduct(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataProductModel& dataProductModel) {
+  void registerDataProduct(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataProductModel& dataProductModel) {
     // Your implementation goes here
     printf("registerDataProduct\n");
   }
 
-  void getDataProduct( ::apache::airavata::model::data::product::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataProductUri) {
+  void getDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataProductUri) {
     // Your implementation goes here
     printf("getDataProduct\n");
   }
 
-  void registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::product::DataReplicaLocationModel& replicaLocationModel) {
+  void registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& replicaLocationModel) {
     // Your implementation goes here
     printf("registerReplicaLocation\n");
   }
