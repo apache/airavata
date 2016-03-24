@@ -4356,7 +4356,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             dataCatalog = RegistryFactory.getReplicaCatalog();
-            DataProductModel dataProductModel = dataCatalog.getParentDataProduct(productUri;
+            DataProductModel dataProductModel = dataCatalog.getParentDataProduct(productUri);
             return dataProductModel;
         } catch (Exception e) {
             String msg = "Error in retreiving the parent data product for "+ productUri+".";
