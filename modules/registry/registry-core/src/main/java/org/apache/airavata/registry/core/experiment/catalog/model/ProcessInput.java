@@ -43,6 +43,7 @@ public class ProcessInput {
     private boolean isRequired;
     private boolean requiredToAddedToCmd;
     private boolean dataStaged;
+    private String storageResourceId;
     private Process process;
 
     @Id
@@ -155,6 +156,16 @@ public class ProcessInput {
     public void setDataStaged(boolean dataStaged) {
         this.dataStaged = dataStaged;
     }
+
+    @Column(name = "STORAGE_RESOURCE_ID")
+    public String getStorageResourceId() {
+        return storageResourceId;
+    }
+
+    public void setStorageResourceId(String storageResourceId) {
+        this.storageResourceId = storageResourceId;
+    }
+
 
 //    @Override
 //    public boolean equals(Object o) {

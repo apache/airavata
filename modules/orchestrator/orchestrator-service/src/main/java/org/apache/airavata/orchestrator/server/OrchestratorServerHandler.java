@@ -170,8 +170,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 								DataProductModel dataProductModel = replicaCatalog.getDataProduct(pi.getValue());
 								dataProductModel.getReplicaLocations().stream().filter(rpModel -> rpModel.getReplicaLocationCategory()
 										.equals(ReplicaLocationCategory.GATEWAY_DATA_STORE)).forEach(rpModel -> {
-									//TODO Should set storage resource id specific to each of these inputs
 									pi.setValue(rpModel.getFilePath());
+									pi.setStorageResourceId(rpModel.getStorageResourceId());
 								});
 							} catch (ReplicaCatalogException e) {
 								log.error(e.getMessage(), e);

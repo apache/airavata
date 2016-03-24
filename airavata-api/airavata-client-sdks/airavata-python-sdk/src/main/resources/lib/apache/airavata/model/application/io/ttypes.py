@@ -88,6 +88,7 @@ class InputDataObjectType:
    - isRequired
    - requiredToAddedToCommandLine
    - dataStaged
+   - storageResourceId
   """
 
   thrift_spec = (
@@ -103,9 +104,10 @@ class InputDataObjectType:
     (9, TType.BOOL, 'isRequired', None, None, ), # 9
     (10, TType.BOOL, 'requiredToAddedToCommandLine', None, None, ), # 10
     (11, TType.BOOL, 'dataStaged', None, None, ), # 11
+    (12, TType.STRING, 'storageResourceId', None, None, ), # 12
   )
 
-  def __init__(self, name=None, value=None, type=None, applicationArgument=None, standardInput=None, userFriendlyDescription=None, metaData=None, inputOrder=None, isRequired=None, requiredToAddedToCommandLine=None, dataStaged=None,):
+  def __init__(self, name=None, value=None, type=None, applicationArgument=None, standardInput=None, userFriendlyDescription=None, metaData=None, inputOrder=None, isRequired=None, requiredToAddedToCommandLine=None, dataStaged=None, storageResourceId=None,):
     self.name = name
     self.value = value
     self.type = type
@@ -117,6 +119,7 @@ class InputDataObjectType:
     self.isRequired = isRequired
     self.requiredToAddedToCommandLine = requiredToAddedToCommandLine
     self.dataStaged = dataStaged
+    self.storageResourceId = storageResourceId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -182,6 +185,11 @@ class InputDataObjectType:
           self.dataStaged = iprot.readBool()
         else:
           iprot.skip(ftype)
+      elif fid == 12:
+        if ftype == TType.STRING:
+          self.storageResourceId = iprot.readString()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -236,6 +244,10 @@ class InputDataObjectType:
       oprot.writeFieldBegin('dataStaged', TType.BOOL, 11)
       oprot.writeBool(self.dataStaged)
       oprot.writeFieldEnd()
+    if self.storageResourceId is not None:
+      oprot.writeFieldBegin('storageResourceId', TType.STRING, 12)
+      oprot.writeString(self.storageResourceId)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -258,6 +270,7 @@ class InputDataObjectType:
     value = (value * 31) ^ hash(self.isRequired)
     value = (value * 31) ^ hash(self.requiredToAddedToCommandLine)
     value = (value * 31) ^ hash(self.dataStaged)
+    value = (value * 31) ^ hash(self.storageResourceId)
     return value
 
   def __repr__(self):
@@ -309,6 +322,7 @@ class OutputDataObjectType:
    - location
    - searchQuery
    - outputStreaming
+   - storageResourceId
   """
 
   thrift_spec = (
@@ -323,9 +337,10 @@ class OutputDataObjectType:
     (8, TType.STRING, 'location', None, None, ), # 8
     (9, TType.STRING, 'searchQuery', None, None, ), # 9
     (10, TType.BOOL, 'outputStreaming', None, None, ), # 10
+    (11, TType.STRING, 'storageResourceId', None, None, ), # 11
   )
 
-  def __init__(self, name=None, value=None, type=None, applicationArgument=None, isRequired=None, requiredToAddedToCommandLine=None, dataMovement=None, location=None, searchQuery=None, outputStreaming=None,):
+  def __init__(self, name=None, value=None, type=None, applicationArgument=None, isRequired=None, requiredToAddedToCommandLine=None, dataMovement=None, location=None, searchQuery=None, outputStreaming=None, storageResourceId=None,):
     self.name = name
     self.value = value
     self.type = type
@@ -336,6 +351,7 @@ class OutputDataObjectType:
     self.location = location
     self.searchQuery = searchQuery
     self.outputStreaming = outputStreaming
+    self.storageResourceId = storageResourceId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -396,6 +412,11 @@ class OutputDataObjectType:
           self.outputStreaming = iprot.readBool()
         else:
           iprot.skip(ftype)
+      elif fid == 11:
+        if ftype == TType.STRING:
+          self.storageResourceId = iprot.readString()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -446,6 +467,10 @@ class OutputDataObjectType:
       oprot.writeFieldBegin('outputStreaming', TType.BOOL, 10)
       oprot.writeBool(self.outputStreaming)
       oprot.writeFieldEnd()
+    if self.storageResourceId is not None:
+      oprot.writeFieldBegin('storageResourceId', TType.STRING, 11)
+      oprot.writeString(self.storageResourceId)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -467,6 +492,7 @@ class OutputDataObjectType:
     value = (value * 31) ^ hash(self.location)
     value = (value * 31) ^ hash(self.searchQuery)
     value = (value * 31) ^ hash(self.outputStreaming)
+    value = (value * 31) ^ hash(self.storageResourceId)
     return value
 
   def __repr__(self):

@@ -166,6 +166,7 @@ public class ThriftDataModelConversion {
                 dataObjectType.setIsRequired(inputResource.getIsRequired());
                 dataObjectType.setRequiredToAddedToCommandLine(inputResource.getRequiredToAddedToCmd());
                 dataObjectType.setDataStaged(inputResource.getDataStaged());
+                dataObjectType.setStorageResourceId(inputResource.getStorageResourceId());
                 return dataObjectType;
             }else if (object instanceof ProcessInputResource){
                 ProcessInputResource inputResource = (ProcessInputResource)object;
@@ -180,6 +181,7 @@ public class ThriftDataModelConversion {
                 dataObjectType.setIsRequired(inputResource.getIsRequired());
                 dataObjectType.setRequiredToAddedToCommandLine(inputResource.getRequiredToAddedToCmd());
                 dataObjectType.setDataStaged(inputResource.getDataStaged());
+                dataObjectType.setStorageResourceId(inputResource.getStorageResourceId());
                 return dataObjectType;
             }else {
                 return null;
@@ -203,6 +205,7 @@ public class ThriftDataModelConversion {
                 dataObjectType.setLocation(outputResource.getLocation());
                 dataObjectType.setSearchQuery(outputResource.getSearchQuery());
                 dataObjectType.setOutputStreaming(outputResource.isOutputStreaming());
+                dataObjectType.setStorageResourceId(outputResource.getStorageResourceId());
                 return dataObjectType;
             }else if (object instanceof ProcessOutputResource) {
                 ProcessOutputResource outputResource = (ProcessOutputResource) object;
@@ -216,6 +219,7 @@ public class ThriftDataModelConversion {
                 dataObjectType.setLocation(outputResource.getLocation());
                 dataObjectType.setSearchQuery(outputResource.getSearchQuery());
                 dataObjectType.setOutputStreaming(outputResource.isOutputStreaming());
+                dataObjectType.setStorageResourceId(outputResource.getStorageResourceId());
                 return dataObjectType;
             } else {
                 return null;

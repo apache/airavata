@@ -46,6 +46,7 @@ public class ExperimentOutputResource extends AbstractExpCatResource {
     private String location;
     private String searchQuery;
     private boolean outputStreaming;
+    private String storageResourceId;
 
     public String getExperimentId() {
         return experimentId;
@@ -135,6 +136,14 @@ public class ExperimentOutputResource extends AbstractExpCatResource {
         return outputStreaming;
     }
 
+    public String getStorageResourceId() {
+        return storageResourceId;
+    }
+
+    public void setStorageResourceId(String storageResourceId) {
+        this.storageResourceId = storageResourceId;
+    }
+
     public ExperimentCatResource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for process output data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
@@ -196,6 +205,7 @@ public class ExperimentOutputResource extends AbstractExpCatResource {
             experimentOutput.setLocation(location);
             experimentOutput.setSearchQuery(searchQuery);
             experimentOutput.setOutputStreaming(outputStreaming);
+            experimentOutput.setStorageResourceId(storageResourceId);
             if (existingExpOutput == null){
                 em.persist(experimentOutput);
             }else {
