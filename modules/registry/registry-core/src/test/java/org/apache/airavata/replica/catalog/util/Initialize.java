@@ -40,7 +40,7 @@ import java.util.StringTokenizer;
 public class Initialize {
     private static final Logger logger = LoggerFactory.getLogger(Initialize.class);
     public static final String DERBY_SERVER_MODE_SYS_PROPERTY = "derby.drda.startNetworkServer";
-    public  String scriptName = "datacatalog-derby.sql";
+    public  String scriptName = "replicacatalog-derby.sql";
     private NetworkServerControl server;
     private static final String delimiter = ";";
     private String jdbcUrl = null;
