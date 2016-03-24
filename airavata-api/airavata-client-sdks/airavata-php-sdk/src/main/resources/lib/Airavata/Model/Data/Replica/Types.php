@@ -105,10 +105,6 @@ class DataProductModel {
    * @var \Airavata\Model\Data\Replica\DataReplicaLocationModel[]
    */
   public $replicaLocations = null;
-  /**
-   * @var \Airavata\Model\Data\Replica\DataProductModel[]
-   */
-  public $childProducts = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -178,15 +174,6 @@ class DataProductModel {
             'class' => '\Airavata\Model\Data\Replica\DataReplicaLocationModel',
             ),
           ),
-        14 => array(
-          'var' => 'childProducts',
-          'type' => TType::LST,
-          'etype' => TType::STRUCT,
-          'elem' => array(
-            'type' => TType::STRUCT,
-            'class' => '\Airavata\Model\Data\Replica\DataProductModel',
-            ),
-          ),
         );
     }
     if (is_array($vals)) {
@@ -228,9 +215,6 @@ class DataProductModel {
       }
       if (isset($vals['replicaLocations'])) {
         $this->replicaLocations = $vals['replicaLocations'];
-      }
-      if (isset($vals['childProducts'])) {
-        $this->childProducts = $vals['childProducts'];
       }
     }
   }
@@ -369,24 +353,6 @@ class DataProductModel {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 14:
-          if ($ftype == TType::LST) {
-            $this->childProducts = array();
-            $_size13 = 0;
-            $_etype16 = 0;
-            $xfer += $input->readListBegin($_etype16, $_size13);
-            for ($_i17 = 0; $_i17 < $_size13; ++$_i17)
-            {
-              $elem18 = null;
-              $elem18 = new \Airavata\Model\Data\Replica\DataProductModel();
-              $xfer += $elem18->read($input);
-              $this->childProducts []= $elem18;
-            }
-            $xfer += $input->readListEnd();
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -463,10 +429,10 @@ class DataProductModel {
       {
         $output->writeMapBegin(TType::STRING, TType::STRING, count($this->productMetadata));
         {
-          foreach ($this->productMetadata as $kiter19 => $viter20)
+          foreach ($this->productMetadata as $kiter13 => $viter14)
           {
-            $xfer += $output->writeString($kiter19);
-            $xfer += $output->writeString($viter20);
+            $xfer += $output->writeString($kiter13);
+            $xfer += $output->writeString($viter14);
           }
         }
         $output->writeMapEnd();
@@ -481,26 +447,9 @@ class DataProductModel {
       {
         $output->writeListBegin(TType::STRUCT, count($this->replicaLocations));
         {
-          foreach ($this->replicaLocations as $iter21)
+          foreach ($this->replicaLocations as $iter15)
           {
-            $xfer += $iter21->write($output);
-          }
-        }
-        $output->writeListEnd();
-      }
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->childProducts !== null) {
-      if (!is_array($this->childProducts)) {
-        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
-      }
-      $xfer += $output->writeFieldBegin('childProducts', TType::LST, 14);
-      {
-        $output->writeListBegin(TType::STRUCT, count($this->childProducts));
-        {
-          foreach ($this->childProducts as $iter22)
-          {
-            $xfer += $iter22->write($output);
+            $xfer += $iter15->write($output);
           }
         }
         $output->writeListEnd();
@@ -766,17 +715,17 @@ class DataReplicaLocationModel {
         case 12:
           if ($ftype == TType::MAP) {
             $this->replicaMetadata = array();
-            $_size23 = 0;
-            $_ktype24 = 0;
-            $_vtype25 = 0;
-            $xfer += $input->readMapBegin($_ktype24, $_vtype25, $_size23);
-            for ($_i27 = 0; $_i27 < $_size23; ++$_i27)
+            $_size16 = 0;
+            $_ktype17 = 0;
+            $_vtype18 = 0;
+            $xfer += $input->readMapBegin($_ktype17, $_vtype18, $_size16);
+            for ($_i20 = 0; $_i20 < $_size16; ++$_i20)
             {
-              $key28 = '';
-              $val29 = '';
-              $xfer += $input->readString($key28);
-              $xfer += $input->readString($val29);
-              $this->replicaMetadata[$key28] = $val29;
+              $key21 = '';
+              $val22 = '';
+              $xfer += $input->readString($key21);
+              $xfer += $input->readString($val22);
+              $this->replicaMetadata[$key21] = $val22;
             }
             $xfer += $input->readMapEnd();
           } else {
@@ -859,10 +808,10 @@ class DataReplicaLocationModel {
       {
         $output->writeMapBegin(TType::STRING, TType::STRING, count($this->replicaMetadata));
         {
-          foreach ($this->replicaMetadata as $kiter30 => $viter31)
+          foreach ($this->replicaMetadata as $kiter23 => $viter24)
           {
-            $xfer += $output->writeString($kiter30);
-            $xfer += $output->writeString($viter31);
+            $xfer += $output->writeString($kiter23);
+            $xfer += $output->writeString($viter24);
           }
         }
         $output->writeMapEnd();

@@ -136,11 +136,6 @@ void DataProductModel::__set_replicaLocations(const std::vector<DataReplicaLocat
 __isset.replicaLocations = true;
 }
 
-void DataProductModel::__set_childProducts(const std::vector<DataProductModel> & val) {
-  this->childProducts = val;
-__isset.childProducts = true;
-}
-
 uint32_t DataProductModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -295,26 +290,6 @@ uint32_t DataProductModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 14:
-        if (ftype == ::apache::thrift::protocol::T_LIST) {
-          {
-            this->childProducts.clear();
-            uint32_t _size13;
-            ::apache::thrift::protocol::TType _etype16;
-            xfer += iprot->readListBegin(_etype16, _size13);
-            this->childProducts.resize(_size13);
-            uint32_t _i17;
-            for (_i17 = 0; _i17 < _size13; ++_i17)
-            {
-              xfer += this->childProducts[_i17].read(iprot);
-            }
-            xfer += iprot->readListEnd();
-          }
-          this->__isset.childProducts = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -391,11 +366,11 @@ uint32_t DataProductModel::write(::apache::thrift::protocol::TProtocol* oprot) c
     xfer += oprot->writeFieldBegin("productMetadata", ::apache::thrift::protocol::T_MAP, 12);
     {
       xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->productMetadata.size()));
-      std::map<std::string, std::string> ::const_iterator _iter18;
-      for (_iter18 = this->productMetadata.begin(); _iter18 != this->productMetadata.end(); ++_iter18)
+      std::map<std::string, std::string> ::const_iterator _iter13;
+      for (_iter13 = this->productMetadata.begin(); _iter13 != this->productMetadata.end(); ++_iter13)
       {
-        xfer += oprot->writeString(_iter18->first);
-        xfer += oprot->writeString(_iter18->second);
+        xfer += oprot->writeString(_iter13->first);
+        xfer += oprot->writeString(_iter13->second);
       }
       xfer += oprot->writeMapEnd();
     }
@@ -405,23 +380,10 @@ uint32_t DataProductModel::write(::apache::thrift::protocol::TProtocol* oprot) c
     xfer += oprot->writeFieldBegin("replicaLocations", ::apache::thrift::protocol::T_LIST, 13);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->replicaLocations.size()));
-      std::vector<DataReplicaLocationModel> ::const_iterator _iter19;
-      for (_iter19 = this->replicaLocations.begin(); _iter19 != this->replicaLocations.end(); ++_iter19)
+      std::vector<DataReplicaLocationModel> ::const_iterator _iter14;
+      for (_iter14 = this->replicaLocations.begin(); _iter14 != this->replicaLocations.end(); ++_iter14)
       {
-        xfer += (*_iter19).write(oprot);
-      }
-      xfer += oprot->writeListEnd();
-    }
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.childProducts) {
-    xfer += oprot->writeFieldBegin("childProducts", ::apache::thrift::protocol::T_LIST, 14);
-    {
-      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->childProducts.size()));
-      std::vector<DataProductModel> ::const_iterator _iter20;
-      for (_iter20 = this->childProducts.begin(); _iter20 != this->childProducts.end(); ++_iter20)
-      {
-        xfer += (*_iter20).write(oprot);
+        xfer += (*_iter14).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -447,43 +409,40 @@ void swap(DataProductModel &a, DataProductModel &b) {
   swap(a.lastModifiedTime, b.lastModifiedTime);
   swap(a.productMetadata, b.productMetadata);
   swap(a.replicaLocations, b.replicaLocations);
-  swap(a.childProducts, b.childProducts);
   swap(a.__isset, b.__isset);
 }
 
-DataProductModel::DataProductModel(const DataProductModel& other21) {
-  productUri = other21.productUri;
-  gatewayId = other21.gatewayId;
-  parentProductUri = other21.parentProductUri;
-  logicalPath = other21.logicalPath;
-  productName = other21.productName;
-  productDescription = other21.productDescription;
-  ownerName = other21.ownerName;
-  dataProductType = other21.dataProductType;
-  productSize = other21.productSize;
-  creationTime = other21.creationTime;
-  lastModifiedTime = other21.lastModifiedTime;
-  productMetadata = other21.productMetadata;
-  replicaLocations = other21.replicaLocations;
-  childProducts = other21.childProducts;
-  __isset = other21.__isset;
+DataProductModel::DataProductModel(const DataProductModel& other15) {
+  productUri = other15.productUri;
+  gatewayId = other15.gatewayId;
+  parentProductUri = other15.parentProductUri;
+  logicalPath = other15.logicalPath;
+  productName = other15.productName;
+  productDescription = other15.productDescription;
+  ownerName = other15.ownerName;
+  dataProductType = other15.dataProductType;
+  productSize = other15.productSize;
+  creationTime = other15.creationTime;
+  lastModifiedTime = other15.lastModifiedTime;
+  productMetadata = other15.productMetadata;
+  replicaLocations = other15.replicaLocations;
+  __isset = other15.__isset;
 }
-DataProductModel& DataProductModel::operator=(const DataProductModel& other22) {
-  productUri = other22.productUri;
-  gatewayId = other22.gatewayId;
-  parentProductUri = other22.parentProductUri;
-  logicalPath = other22.logicalPath;
-  productName = other22.productName;
-  productDescription = other22.productDescription;
-  ownerName = other22.ownerName;
-  dataProductType = other22.dataProductType;
-  productSize = other22.productSize;
-  creationTime = other22.creationTime;
-  lastModifiedTime = other22.lastModifiedTime;
-  productMetadata = other22.productMetadata;
-  replicaLocations = other22.replicaLocations;
-  childProducts = other22.childProducts;
-  __isset = other22.__isset;
+DataProductModel& DataProductModel::operator=(const DataProductModel& other16) {
+  productUri = other16.productUri;
+  gatewayId = other16.gatewayId;
+  parentProductUri = other16.parentProductUri;
+  logicalPath = other16.logicalPath;
+  productName = other16.productName;
+  productDescription = other16.productDescription;
+  ownerName = other16.ownerName;
+  dataProductType = other16.dataProductType;
+  productSize = other16.productSize;
+  creationTime = other16.creationTime;
+  lastModifiedTime = other16.lastModifiedTime;
+  productMetadata = other16.productMetadata;
+  replicaLocations = other16.replicaLocations;
+  __isset = other16.__isset;
   return *this;
 }
 void DataProductModel::printTo(std::ostream& out) const {
@@ -502,7 +461,6 @@ void DataProductModel::printTo(std::ostream& out) const {
   out << ", " << "lastModifiedTime="; (__isset.lastModifiedTime ? (out << to_string(lastModifiedTime)) : (out << "<null>"));
   out << ", " << "productMetadata="; (__isset.productMetadata ? (out << to_string(productMetadata)) : (out << "<null>"));
   out << ", " << "replicaLocations="; (__isset.replicaLocations ? (out << to_string(replicaLocations)) : (out << "<null>"));
-  out << ", " << "childProducts="; (__isset.childProducts ? (out << to_string(childProducts)) : (out << "<null>"));
   out << ")";
 }
 
@@ -650,9 +608,9 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
         break;
       case 8:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast23;
-          xfer += iprot->readI32(ecast23);
-          this->replicaLocationCategory = (ReplicaLocationCategory::type)ecast23;
+          int32_t ecast17;
+          xfer += iprot->readI32(ecast17);
+          this->replicaLocationCategory = (ReplicaLocationCategory::type)ecast17;
           this->__isset.replicaLocationCategory = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -660,9 +618,9 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
         break;
       case 9:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast24;
-          xfer += iprot->readI32(ecast24);
-          this->replicaPersistentType = (ReplicaPersistentType::type)ecast24;
+          int32_t ecast18;
+          xfer += iprot->readI32(ecast18);
+          this->replicaPersistentType = (ReplicaPersistentType::type)ecast18;
           this->__isset.replicaPersistentType = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -688,17 +646,17 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->replicaMetadata.clear();
-            uint32_t _size25;
-            ::apache::thrift::protocol::TType _ktype26;
-            ::apache::thrift::protocol::TType _vtype27;
-            xfer += iprot->readMapBegin(_ktype26, _vtype27, _size25);
-            uint32_t _i29;
-            for (_i29 = 0; _i29 < _size25; ++_i29)
+            uint32_t _size19;
+            ::apache::thrift::protocol::TType _ktype20;
+            ::apache::thrift::protocol::TType _vtype21;
+            xfer += iprot->readMapBegin(_ktype20, _vtype21, _size19);
+            uint32_t _i23;
+            for (_i23 = 0; _i23 < _size19; ++_i23)
             {
-              std::string _key30;
-              xfer += iprot->readString(_key30);
-              std::string& _val31 = this->replicaMetadata[_key30];
-              xfer += iprot->readString(_val31);
+              std::string _key24;
+              xfer += iprot->readString(_key24);
+              std::string& _val25 = this->replicaMetadata[_key24];
+              xfer += iprot->readString(_val25);
             }
             xfer += iprot->readMapEnd();
           }
@@ -783,11 +741,11 @@ uint32_t DataReplicaLocationModel::write(::apache::thrift::protocol::TProtocol* 
     xfer += oprot->writeFieldBegin("replicaMetadata", ::apache::thrift::protocol::T_MAP, 12);
     {
       xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->replicaMetadata.size()));
-      std::map<std::string, std::string> ::const_iterator _iter32;
-      for (_iter32 = this->replicaMetadata.begin(); _iter32 != this->replicaMetadata.end(); ++_iter32)
+      std::map<std::string, std::string> ::const_iterator _iter26;
+      for (_iter26 = this->replicaMetadata.begin(); _iter26 != this->replicaMetadata.end(); ++_iter26)
       {
-        xfer += oprot->writeString(_iter32->first);
-        xfer += oprot->writeString(_iter32->second);
+        xfer += oprot->writeString(_iter26->first);
+        xfer += oprot->writeString(_iter26->second);
       }
       xfer += oprot->writeMapEnd();
     }
@@ -815,35 +773,35 @@ void swap(DataReplicaLocationModel &a, DataReplicaLocationModel &b) {
   swap(a.__isset, b.__isset);
 }
 
-DataReplicaLocationModel::DataReplicaLocationModel(const DataReplicaLocationModel& other33) {
-  replicaId = other33.replicaId;
-  productUri = other33.productUri;
-  replicaName = other33.replicaName;
-  replicaDescription = other33.replicaDescription;
-  creationTime = other33.creationTime;
-  lastModifiedTime = other33.lastModifiedTime;
-  validUntilTime = other33.validUntilTime;
-  replicaLocationCategory = other33.replicaLocationCategory;
-  replicaPersistentType = other33.replicaPersistentType;
-  storageResourceId = other33.storageResourceId;
-  filePath = other33.filePath;
-  replicaMetadata = other33.replicaMetadata;
-  __isset = other33.__isset;
+DataReplicaLocationModel::DataReplicaLocationModel(const DataReplicaLocationModel& other27) {
+  replicaId = other27.replicaId;
+  productUri = other27.productUri;
+  replicaName = other27.replicaName;
+  replicaDescription = other27.replicaDescription;
+  creationTime = other27.creationTime;
+  lastModifiedTime = other27.lastModifiedTime;
+  validUntilTime = other27.validUntilTime;
+  replicaLocationCategory = other27.replicaLocationCategory;
+  replicaPersistentType = other27.replicaPersistentType;
+  storageResourceId = other27.storageResourceId;
+  filePath = other27.filePath;
+  replicaMetadata = other27.replicaMetadata;
+  __isset = other27.__isset;
 }
-DataReplicaLocationModel& DataReplicaLocationModel::operator=(const DataReplicaLocationModel& other34) {
-  replicaId = other34.replicaId;
-  productUri = other34.productUri;
-  replicaName = other34.replicaName;
-  replicaDescription = other34.replicaDescription;
-  creationTime = other34.creationTime;
-  lastModifiedTime = other34.lastModifiedTime;
-  validUntilTime = other34.validUntilTime;
-  replicaLocationCategory = other34.replicaLocationCategory;
-  replicaPersistentType = other34.replicaPersistentType;
-  storageResourceId = other34.storageResourceId;
-  filePath = other34.filePath;
-  replicaMetadata = other34.replicaMetadata;
-  __isset = other34.__isset;
+DataReplicaLocationModel& DataReplicaLocationModel::operator=(const DataReplicaLocationModel& other28) {
+  replicaId = other28.replicaId;
+  productUri = other28.productUri;
+  replicaName = other28.replicaName;
+  replicaDescription = other28.replicaDescription;
+  creationTime = other28.creationTime;
+  lastModifiedTime = other28.lastModifiedTime;
+  validUntilTime = other28.validUntilTime;
+  replicaLocationCategory = other28.replicaLocationCategory;
+  replicaPersistentType = other28.replicaPersistentType;
+  storageResourceId = other28.storageResourceId;
+  filePath = other28.filePath;
+  replicaMetadata = other28.replicaMetadata;
+  __isset = other28.__isset;
   return *this;
 }
 void DataReplicaLocationModel::printTo(std::ostream& out) const {

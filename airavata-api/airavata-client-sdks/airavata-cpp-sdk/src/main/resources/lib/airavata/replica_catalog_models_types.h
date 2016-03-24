@@ -71,7 +71,7 @@ class DataProductModel;
 class DataReplicaLocationModel;
 
 typedef struct _DataProductModel__isset {
-  _DataProductModel__isset() : productUri(false), gatewayId(false), parentProductUri(false), logicalPath(false), productName(false), productDescription(false), ownerName(false), dataProductType(false), productSize(false), creationTime(false), lastModifiedTime(false), productMetadata(false), replicaLocations(false), childProducts(false) {}
+  _DataProductModel__isset() : productUri(false), gatewayId(false), parentProductUri(false), logicalPath(false), productName(false), productDescription(false), ownerName(false), dataProductType(false), productSize(false), creationTime(false), lastModifiedTime(false), productMetadata(false), replicaLocations(false) {}
   bool productUri :1;
   bool gatewayId :1;
   bool parentProductUri :1;
@@ -85,7 +85,6 @@ typedef struct _DataProductModel__isset {
   bool lastModifiedTime :1;
   bool productMetadata :1;
   bool replicaLocations :1;
-  bool childProducts :1;
 } _DataProductModel__isset;
 
 class DataProductModel {
@@ -110,7 +109,6 @@ class DataProductModel {
   int64_t lastModifiedTime;
   std::map<std::string, std::string>  productMetadata;
   std::vector<DataReplicaLocationModel>  replicaLocations;
-  std::vector<DataProductModel>  childProducts;
 
   _DataProductModel__isset __isset;
 
@@ -139,8 +137,6 @@ class DataProductModel {
   void __set_productMetadata(const std::map<std::string, std::string> & val);
 
   void __set_replicaLocations(const std::vector<DataReplicaLocationModel> & val);
-
-  void __set_childProducts(const std::vector<DataProductModel> & val);
 
   bool operator == (const DataProductModel & rhs) const
   {
@@ -195,10 +191,6 @@ class DataProductModel {
     if (__isset.replicaLocations != rhs.__isset.replicaLocations)
       return false;
     else if (__isset.replicaLocations && !(replicaLocations == rhs.replicaLocations))
-      return false;
-    if (__isset.childProducts != rhs.__isset.childProducts)
-      return false;
-    else if (__isset.childProducts && !(childProducts == rhs.childProducts))
       return false;
     return true;
   }

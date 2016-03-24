@@ -3023,7 +3023,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * API Methods related to data catalog
+   * API Methods related to replica catalog
    * 
    * 
    * @param authzToken
@@ -3042,6 +3042,16 @@ class AiravataHandler : virtual public AiravataIf {
   void registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& replicaLocationModel) {
     // Your implementation goes here
     printf("registerReplicaLocation\n");
+  }
+
+  void getParentDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri) {
+    // Your implementation goes here
+    printf("getParentDataProduct\n");
+  }
+
+  void getChildDataProducts(std::vector< ::apache::airavata::model::data::replica::DataProductModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri) {
+    // Your implementation goes here
+    printf("getChildDataProducts\n");
   }
 
 };

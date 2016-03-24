@@ -37,6 +37,7 @@ import javax.persistence.EntityManager;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -348,6 +349,51 @@ public class ReplicaCatalogImpl implements ReplicaCatalog {
             dataProduct.getDataReplicaLocations().stream().forEach(rl->dataReplicaLocationModels
                     .add(ThriftDataModelConversion.getDataReplicaLocationModel(rl)));
             return dataReplicaLocationModels;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new ReplicaCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+    }
+
+    @Override
+    public DataProductModel getParentDataProduct(String productUri) throws ReplicaCatalogException {
+        EntityManager em = null;
+        try {
+            em = ReplicaCatalogJPAUtils.getEntityManager();
+            DataProduct dataProduct = em.find(DataProduct.class, productUri);
+            return ThriftDataModelConversion.getDataProductModel(dataProduct.getParentDataProduct());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new ReplicaCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+    }
+
+    @Override
+    public List<DataProductModel> getChildDataProducts(String productUri) throws ReplicaCatalogException {
+        EntityManager em = null;
+        try {
+            em = ReplicaCatalogJPAUtils.getEntityManager();
+            DataProduct dataProduct = em.find(DataProduct.class, productUri);
+            Collection<DataProduct> childProducts = dataProduct.getChildDataProducts();
+            ArrayList<DataProductModel> returnModels = new ArrayList<>();
+            childProducts.stream().forEach(cp->{
+                returnModels.add(ThriftDataModelConversion.getDataProductModel(cp));
+            });
+            return returnModels;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new ReplicaCatalogException(e);
