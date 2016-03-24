@@ -92,6 +92,7 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
   private static final org.apache.thrift.protocol.TField IS_REQUIRED_FIELD_DESC = new org.apache.thrift.protocol.TField("isRequired", org.apache.thrift.protocol.TType.BOOL, (short)9);
   private static final org.apache.thrift.protocol.TField REQUIRED_TO_ADDED_TO_COMMAND_LINE_FIELD_DESC = new org.apache.thrift.protocol.TField("requiredToAddedToCommandLine", org.apache.thrift.protocol.TType.BOOL, (short)10);
   private static final org.apache.thrift.protocol.TField DATA_STAGED_FIELD_DESC = new org.apache.thrift.protocol.TField("dataStaged", org.apache.thrift.protocol.TType.BOOL, (short)11);
+  private static final org.apache.thrift.protocol.TField STORAGE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("storageResourceId", org.apache.thrift.protocol.TType.STRING, (short)12);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -110,6 +111,7 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
   private boolean isRequired; // optional
   private boolean requiredToAddedToCommandLine; // optional
   private boolean dataStaged; // optional
+  private String storageResourceId; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -127,7 +129,8 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
     INPUT_ORDER((short)8, "inputOrder"),
     IS_REQUIRED((short)9, "isRequired"),
     REQUIRED_TO_ADDED_TO_COMMAND_LINE((short)10, "requiredToAddedToCommandLine"),
-    DATA_STAGED((short)11, "dataStaged");
+    DATA_STAGED((short)11, "dataStaged"),
+    STORAGE_RESOURCE_ID((short)12, "storageResourceId");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -164,6 +167,8 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
           return REQUIRED_TO_ADDED_TO_COMMAND_LINE;
         case 11: // DATA_STAGED
           return DATA_STAGED;
+        case 12: // STORAGE_RESOURCE_ID
+          return STORAGE_RESOURCE_ID;
         default:
           return null;
       }
@@ -210,7 +215,7 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
   private static final int __REQUIREDTOADDEDTOCOMMANDLINE_ISSET_ID = 3;
   private static final int __DATASTAGED_ISSET_ID = 4;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE,_Fields.APPLICATION_ARGUMENT,_Fields.STANDARD_INPUT,_Fields.USER_FRIENDLY_DESCRIPTION,_Fields.META_DATA,_Fields.INPUT_ORDER,_Fields.IS_REQUIRED,_Fields.REQUIRED_TO_ADDED_TO_COMMAND_LINE,_Fields.DATA_STAGED};
+  private static final _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE,_Fields.APPLICATION_ARGUMENT,_Fields.STANDARD_INPUT,_Fields.USER_FRIENDLY_DESCRIPTION,_Fields.META_DATA,_Fields.INPUT_ORDER,_Fields.IS_REQUIRED,_Fields.REQUIRED_TO_ADDED_TO_COMMAND_LINE,_Fields.DATA_STAGED,_Fields.STORAGE_RESOURCE_ID};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -236,6 +241,8 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.DATA_STAGED, new org.apache.thrift.meta_data.FieldMetaData("dataStaged", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+    tmpMap.put(_Fields.STORAGE_RESOURCE_ID, new org.apache.thrift.meta_data.FieldMetaData("storageResourceId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(InputDataObjectType.class, metaDataMap);
   }
@@ -278,6 +285,9 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
     this.isRequired = other.isRequired;
     this.requiredToAddedToCommandLine = other.requiredToAddedToCommandLine;
     this.dataStaged = other.dataStaged;
+    if (other.isSetStorageResourceId()) {
+      this.storageResourceId = other.storageResourceId;
+    }
   }
 
   public InputDataObjectType deepCopy() {
@@ -302,6 +312,7 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
     this.requiredToAddedToCommandLine = false;
     setDataStagedIsSet(false);
     this.dataStaged = false;
+    this.storageResourceId = null;
   }
 
   public String getName() {
@@ -560,6 +571,29 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DATASTAGED_ISSET_ID, value);
   }
 
+  public String getStorageResourceId() {
+    return this.storageResourceId;
+  }
+
+  public void setStorageResourceId(String storageResourceId) {
+    this.storageResourceId = storageResourceId;
+  }
+
+  public void unsetStorageResourceId() {
+    this.storageResourceId = null;
+  }
+
+  /** Returns true if field storageResourceId is set (has been assigned a value) and false otherwise */
+  public boolean isSetStorageResourceId() {
+    return this.storageResourceId != null;
+  }
+
+  public void setStorageResourceIdIsSet(boolean value) {
+    if (!value) {
+      this.storageResourceId = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case NAME:
@@ -650,6 +684,14 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
       }
       break;
 
+    case STORAGE_RESOURCE_ID:
+      if (value == null) {
+        unsetStorageResourceId();
+      } else {
+        setStorageResourceId((String)value);
+      }
+      break;
+
     }
   }
 
@@ -688,6 +730,9 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
     case DATA_STAGED:
       return isDataStaged();
 
+    case STORAGE_RESOURCE_ID:
+      return getStorageResourceId();
+
     }
     throw new IllegalStateException();
   }
@@ -721,6 +766,8 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
       return isSetRequiredToAddedToCommandLine();
     case DATA_STAGED:
       return isSetDataStaged();
+    case STORAGE_RESOURCE_ID:
+      return isSetStorageResourceId();
     }
     throw new IllegalStateException();
   }
@@ -837,6 +884,15 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
         return false;
     }
 
+    boolean this_present_storageResourceId = true && this.isSetStorageResourceId();
+    boolean that_present_storageResourceId = true && that.isSetStorageResourceId();
+    if (this_present_storageResourceId || that_present_storageResourceId) {
+      if (!(this_present_storageResourceId && that_present_storageResourceId))
+        return false;
+      if (!this.storageResourceId.equals(that.storageResourceId))
+        return false;
+    }
+
     return true;
   }
 
@@ -898,6 +954,11 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
     list.add(present_dataStaged);
     if (present_dataStaged)
       list.add(dataStaged);
+
+    boolean present_storageResourceId = true && (isSetStorageResourceId());
+    list.add(present_storageResourceId);
+    if (present_storageResourceId)
+      list.add(storageResourceId);
 
     return list.hashCode();
   }
@@ -1020,6 +1081,16 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetStorageResourceId()).compareTo(other.isSetStorageResourceId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetStorageResourceId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.storageResourceId, other.storageResourceId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1125,6 +1196,16 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
       if (!first) sb.append(", ");
       sb.append("dataStaged:");
       sb.append(this.dataStaged);
+      first = false;
+    }
+    if (isSetStorageResourceId()) {
+      if (!first) sb.append(", ");
+      sb.append("storageResourceId:");
+      if (this.storageResourceId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.storageResourceId);
+      }
       first = false;
     }
     sb.append(")");
@@ -1264,6 +1345,14 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 12: // STORAGE_RESOURCE_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.storageResourceId = iprot.readString();
+              struct.setStorageResourceIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1342,6 +1431,13 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
         oprot.writeBool(struct.dataStaged);
         oprot.writeFieldEnd();
       }
+      if (struct.storageResourceId != null) {
+        if (struct.isSetStorageResourceId()) {
+          oprot.writeFieldBegin(STORAGE_RESOURCE_ID_FIELD_DESC);
+          oprot.writeString(struct.storageResourceId);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1391,7 +1487,10 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
       if (struct.isSetDataStaged()) {
         optionals.set(9);
       }
-      oprot.writeBitSet(optionals, 10);
+      if (struct.isSetStorageResourceId()) {
+        optionals.set(10);
+      }
+      oprot.writeBitSet(optionals, 11);
       if (struct.isSetValue()) {
         oprot.writeString(struct.value);
       }
@@ -1422,6 +1521,9 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
       if (struct.isSetDataStaged()) {
         oprot.writeBool(struct.dataStaged);
       }
+      if (struct.isSetStorageResourceId()) {
+        oprot.writeString(struct.storageResourceId);
+      }
     }
 
     @Override
@@ -1429,7 +1531,7 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.name = iprot.readString();
       struct.setNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(10);
+      BitSet incoming = iprot.readBitSet(11);
       if (incoming.get(0)) {
         struct.value = iprot.readString();
         struct.setValueIsSet(true);
@@ -1469,6 +1571,10 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
       if (incoming.get(9)) {
         struct.dataStaged = iprot.readBool();
         struct.setDataStagedIsSet(true);
+      }
+      if (incoming.get(10)) {
+        struct.storageResourceId = iprot.readString();
+        struct.setStorageResourceIdIsSet(true);
       }
     }
   }

@@ -75,7 +75,8 @@ struct InputDataObjectType {
     8: optional i32 inputOrder,
     9: optional bool isRequired,
     10: optional bool requiredToAddedToCommandLine,
-    11: optional bool dataStaged
+    11: optional bool dataStaged,
+    12: optional string storageResourceId
 }
 
 /**
@@ -114,5 +115,6 @@ struct OutputDataObjectType {
     7: optional bool dataMovement,
     8: optional string location,
     9: optional string searchQuery,
-    10: optional bool outputStreaming
+    10: optional bool outputStreaming,
+    11: optional string storageResourceId,
 }
