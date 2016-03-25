@@ -43,7 +43,6 @@ public class ThriftDataModelConversion {
         if (dataProduct != null) {
             DataProductModel dataProductModel = new DataProductModel();
             dataProductModel.setProductUri(dataProduct.getProductUri());
-            dataProductModel.setLogicalPath(dataProduct.getLogicalPath());
             dataProductModel.setGatewayId(dataProduct.getGatewayId());
             dataProductModel.setParentProductUri(dataProduct.getParentProductUri());
             dataProductModel.setProductName(dataProduct.getProductName());
@@ -80,7 +79,6 @@ public class ThriftDataModelConversion {
 
     public static DataProduct getUpdatedDataProduct(DataProductModel dataProductModel, DataProduct dataProduct){
         dataProduct.setProductUri(dataProductModel.getProductUri());
-        dataProduct.setLogicalPath(dataProductModel.getLogicalPath());
         dataProduct.setGatewayId(dataProductModel.getGatewayId());
         dataProduct.setProductName(dataProductModel.getProductName());
         dataProduct.setParentProductUri(dataProductModel.getParentProductUri());

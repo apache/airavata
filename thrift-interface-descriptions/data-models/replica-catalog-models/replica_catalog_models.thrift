@@ -35,7 +35,6 @@ enum ReplicaPersistentType {
 }
 
 enum DataProductType {
-    DIR,
     FILE,
     COLLECTION,
 }
@@ -44,16 +43,15 @@ struct DataProductModel {
     1: optional string productUri,
     2: optional string gatewayId,
     3: optional string parentProductUri,
-    4: optional string logicalPath,
-    5: optional string productName,
-    6: optional string productDescription,
-    7: optional string ownerName,
-    8: optional DataProductType dataProductType,
-    9: optional i32 productSize,
-    10: optional i64 creationTime,
-    11: optional i64 lastModifiedTime,
-    12: optional map<string, string> productMetadata,
-    13: optional list<DataReplicaLocationModel> replicaLocations,
+    4: optional string productName,
+    5: optional string productDescription,
+    6: optional string ownerName,
+    7: optional DataProductType dataProductType,
+    8: optional i32 productSize,
+    9: optional i64 creationTime,
+    10: optional i64 lastModifiedTime,
+    11: optional map<string, string> productMetadata,
+    12: optional list<DataReplicaLocationModel> replicaLocations,
 }
 
 struct DataReplicaLocationModel {

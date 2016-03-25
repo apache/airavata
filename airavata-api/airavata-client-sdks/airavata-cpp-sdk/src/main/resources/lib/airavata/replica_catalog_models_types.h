@@ -58,9 +58,8 @@ extern const std::map<int, const char*> _ReplicaPersistentType_VALUES_TO_NAMES;
 
 struct DataProductType {
   enum type {
-    DIR = 0,
-    FILE = 1,
-    COLLECTION = 2
+    FILE = 0,
+    COLLECTION = 1
   };
 };
 
@@ -71,11 +70,10 @@ class DataProductModel;
 class DataReplicaLocationModel;
 
 typedef struct _DataProductModel__isset {
-  _DataProductModel__isset() : productUri(false), gatewayId(false), parentProductUri(false), logicalPath(false), productName(false), productDescription(false), ownerName(false), dataProductType(false), productSize(false), creationTime(false), lastModifiedTime(false), productMetadata(false), replicaLocations(false) {}
+  _DataProductModel__isset() : productUri(false), gatewayId(false), parentProductUri(false), productName(false), productDescription(false), ownerName(false), dataProductType(false), productSize(false), creationTime(false), lastModifiedTime(false), productMetadata(false), replicaLocations(false) {}
   bool productUri :1;
   bool gatewayId :1;
   bool parentProductUri :1;
-  bool logicalPath :1;
   bool productName :1;
   bool productDescription :1;
   bool ownerName :1;
@@ -92,14 +90,13 @@ class DataProductModel {
 
   DataProductModel(const DataProductModel&);
   DataProductModel& operator=(const DataProductModel&);
-  DataProductModel() : productUri(), gatewayId(), parentProductUri(), logicalPath(), productName(), productDescription(), ownerName(), dataProductType((DataProductType::type)0), productSize(0), creationTime(0), lastModifiedTime(0) {
+  DataProductModel() : productUri(), gatewayId(), parentProductUri(), productName(), productDescription(), ownerName(), dataProductType((DataProductType::type)0), productSize(0), creationTime(0), lastModifiedTime(0) {
   }
 
   virtual ~DataProductModel() throw();
   std::string productUri;
   std::string gatewayId;
   std::string parentProductUri;
-  std::string logicalPath;
   std::string productName;
   std::string productDescription;
   std::string ownerName;
@@ -117,8 +114,6 @@ class DataProductModel {
   void __set_gatewayId(const std::string& val);
 
   void __set_parentProductUri(const std::string& val);
-
-  void __set_logicalPath(const std::string& val);
 
   void __set_productName(const std::string& val);
 
@@ -151,10 +146,6 @@ class DataProductModel {
     if (__isset.parentProductUri != rhs.__isset.parentProductUri)
       return false;
     else if (__isset.parentProductUri && !(parentProductUri == rhs.parentProductUri))
-      return false;
-    if (__isset.logicalPath != rhs.__isset.logicalPath)
-      return false;
-    else if (__isset.logicalPath && !(logicalPath == rhs.logicalPath))
       return false;
     if (__isset.productName != rhs.__isset.productName)
       return false;

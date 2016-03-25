@@ -52,7 +52,6 @@ public class ReplicaCatalogTest {
             dataProductModel.setProductName("test-file.txt");
             dataProductModel.setOwnerName("scnakandala");
             dataProductModel.setGatewayId("default");
-            dataProductModel.setLogicalPath("/test/test/test");
             dataProductModel.setDataProductType(DataProductType.FILE);
             HashMap<String, String> resMetadata = new HashMap<>();
             resMetadata.put("name", "name");

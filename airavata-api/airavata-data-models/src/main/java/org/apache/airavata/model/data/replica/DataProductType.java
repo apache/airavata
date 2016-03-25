@@ -29,9 +29,8 @@ import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 public enum DataProductType implements org.apache.thrift.TEnum {
-  DIR(0),
-  FILE(1),
-  COLLECTION(2);
+  FILE(0),
+  COLLECTION(1);
 
   private final int value;
 
@@ -53,10 +52,8 @@ public enum DataProductType implements org.apache.thrift.TEnum {
   public static DataProductType findByValue(int value) { 
     switch (value) {
       case 0:
-        return DIR;
-      case 1:
         return FILE;
-      case 2:
+      case 1:
         return COLLECTION;
       default:
         return null;

@@ -19,7 +19,7 @@
 
 package org.apache.airavata.registry.cpi;
 
-public class ReplicaCatalogException extends Exception{
+public class ReplicaCatalogException extends RegistryException{
 
     public ReplicaCatalogException(Throwable e) {
         super(e);

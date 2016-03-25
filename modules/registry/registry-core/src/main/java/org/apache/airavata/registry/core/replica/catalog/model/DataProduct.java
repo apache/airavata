@@ -34,7 +34,6 @@ public class DataProduct {
     private String productUri;
     private String gatewayId;
     private String productName;
-    private String logicalPath;
     private String productDescription;
     private String dataProductType;
     private String ownerName;
@@ -83,15 +82,6 @@ public class DataProduct {
 
     public void setProductDescription(String productDescription) {
         this.productDescription = productDescription;
-    }
-
-    @Column(name = "LOGICAL_PATH")
-    public String getLogicalPath() {
-        return logicalPath;
-    }
-
-    public void setLogicalPath(String logicalPath) {
-        this.logicalPath = logicalPath;
     }
 
     @Column(name = "OWNER_NAME")
