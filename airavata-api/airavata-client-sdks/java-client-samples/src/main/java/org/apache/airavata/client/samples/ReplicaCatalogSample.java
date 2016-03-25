@@ -47,7 +47,6 @@ public class ReplicaCatalogSample {
             dataProductModel.setGatewayId(DEFAULT_GATEWAY);
             dataProductModel.setOwnerName(USER_NAME);
             dataProductModel.setProductName("test-1");
-            dataProductModel.setLogicalPath("/test/test/test/" + System.currentTimeMillis());
             dataProductModel.setDataProductType(DataProductType.FILE);
 
             DataReplicaLocationModel replicaLocationModel = new DataReplicaLocationModel();
