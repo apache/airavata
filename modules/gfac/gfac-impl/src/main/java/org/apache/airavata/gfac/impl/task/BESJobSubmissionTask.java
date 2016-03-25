@@ -77,8 +77,9 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
     public TaskStatus execute(TaskContext taskContext) {
         TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
         StorageClient sc = null;
+        // FIXME - use original output dir
+        taskContext.getParentProcessContext().setOutputDir("");
 
-        //TODO - initialize securityContext secProperties
         try {
             if (secProperties == null) {
                 secProperties = getSecurityConfig(taskContext.getParentProcessContext());
@@ -121,6 +122,8 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             dt.uploadLocalFiles();
 
             JobModel jobDetails = new JobModel();
+            jobDetails.setTaskId(taskContext.getTaskId());
+            jobDetails.setProcessId(taskContext.getProcessId());
             FactoryClient factory = new FactoryClient(eprt, secProperties);
 
             log.info(String.format("Activity Submitting to %s ... \n",
@@ -143,6 +146,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             jobDetails.setJobDescription(activityEpr.toString());
             jobDetails.setJobStatus(new JobStatus(JobState.SUBMITTED));
             processContext.setJobModel(jobDetails);
+            GFacUtils.saveJobModel(processContext, jobDetails);
             GFacUtils.saveJobStatus(processContext, jobDetails);
             log.info(formatStatusMessage(activityEpr.getAddress()
                     .getStringValue(), factory.getActivityStatus(activityEpr)
@@ -164,7 +168,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
                         + "\n"
                         + activityStatus.getFault().getFaultstring()
                         + "\n EXITCODE: " + activityStatus.getExitCode();
-                log.info(error);
+                log.error(error);
 
                 JobState applicationJobStatus = JobState.FAILED;
                 jobDetails.setJobStatus(new JobStatus(applicationJobStatus));
@@ -173,7 +177,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
 
                 //What if job is failed before execution and there are not stdouts generated yet?
                 log.debug("Downloading any standard output and error files, if they were produced.");
-                dt.downloadStdOuts();
+                dt.downloadRemoteFiles();
 
             } else if (activityStatus.getState() == ActivityStateEnumeration.CANCELLED) {
                 JobState applicationJobStatus = JobState.CANCELED;
@@ -184,17 +188,19 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             } else if (activityStatus.getState() == ActivityStateEnumeration.FINISHED) {
                 try {
                     Thread.sleep(5000);
-                    JobState applicationJobStatus = JobState.COMPLETE;
-                    jobDetails.setJobStatus(new JobStatus(applicationJobStatus));
-                    GFacUtils.saveJobStatus(processContext, jobDetails);
+                } catch (InterruptedException ignored) {
+                }
+                JobState applicationJobStatus = JobState.COMPLETE;
+                jobDetails.setJobStatus(new JobStatus(applicationJobStatus));
+                GFacUtils.saveJobStatus(processContext, jobDetails);
+                log.info("Job Id: {}, exit code: {}, exit status: {}", jobDetails.getJobId(),
+                        activityStatus.getExitCode(), ActivityStateEnumeration.FINISHED.toString());
 
-                } catch (InterruptedException e) {
-                }
-                if (activityStatus.getExitCode() == 0) {
-                    dt.downloadRemoteFiles();
-                } else {
-                    dt.downloadStdOuts();
-                }
+//                if (activityStatus.getExitCode() == 0) {
+//                } else {
+//                    dt.downloadStdOuts();
+//                }
+                dt.downloadRemoteFiles();
             }
 
             dt.publishFinalOutputs();
@@ -243,22 +249,22 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             FactoryClient factoryClient = new FactoryClient(factoryEpr, secProperties);
             JobState applicationJobStatus = null;
 
-            while ((factoryClient.getActivityStatus(activityEpr) != ActivityStateEnumeration.FINISHED)
-                    && (factoryClient.getActivityStatus(activityEpr) != ActivityStateEnumeration.FAILED)
-                    && (factoryClient.getActivityStatus(activityEpr) != ActivityStateEnumeration.CANCELLED)
+            ActivityStateEnumeration.Enum activityStatus = factoryClient.getActivityStatus(activityEpr);
+            while ((activityStatus != ActivityStateEnumeration.FINISHED)
+                    && (activityStatus != ActivityStateEnumeration.FAILED)
+                    && (activityStatus != ActivityStateEnumeration.CANCELLED)
                     && (applicationJobStatus != JobState.COMPLETE)) {
 
-                ActivityStatusType activityStatus = getStatus(factoryClient, activityEpr);
-                applicationJobStatus = getApplicationJobStatus(activityStatus);
-
+                ActivityStatusType activityStatusType = getStatus(factoryClient, activityEpr);
+                applicationJobStatus = getApplicationJobStatus(activityStatusType);
                 sendNotification(processContext,processContext.getJobModel());
-
                 // GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId,
                 // applicationJobStatus);
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {}
-                continue;
+
+                activityStatus = factoryClient.getActivityStatus(activityEpr);
             }
         } catch(Exception e) {
             log.error("Error monitoring job status..");
