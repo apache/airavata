@@ -35,6 +35,7 @@ import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
+import org.apache.airavata.model.data.replica.*;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.messaging.event.*;
@@ -862,7 +863,23 @@ public class GFacUtils {
             if (experimentOutputs != null && !experimentOutputs.isEmpty()){
                 for (OutputDataObjectType expOutput : experimentOutputs){
                     if (expOutput.getName().equals(outputName)){
-                        expOutput.setValue(outputVal);
+                        DataProductModel dataProductModel = new DataProductModel();
+                        //FIXME We need to set the username here
+                        dataProductModel.setGatewayId(processContext.getGatewayId());
+                        dataProductModel.setProductName(outputName);
+                        dataProductModel.setDataProductType(DataProductType.FILE);
+
+                        DataReplicaLocationModel replicaLocationModel = new DataReplicaLocationModel();
+                        replicaLocationModel.setStorageResourceId(processContext.getStorageResource().getStorageResourceId());
+                        replicaLocationModel.setReplicaName(outputName + " gateway data store copy");
+                        replicaLocationModel.setReplicaLocationCategory(ReplicaLocationCategory.GATEWAY_DATA_STORE);
+                        replicaLocationModel.setReplicaPersistentType(ReplicaPersistentType.TRANSIENT);
+                        replicaLocationModel.setFilePath(outputVal);
+                        dataProductModel.addToReplicaLocations(replicaLocationModel);
+
+                        ReplicaCatalog replicaCatalog = RegistryFactory.getReplicaCatalog();
+                        String productUri = replicaCatalog.registerDataProduct(dataProductModel);
+                        expOutput.setValue(productUri);
                     }
                 }
             }

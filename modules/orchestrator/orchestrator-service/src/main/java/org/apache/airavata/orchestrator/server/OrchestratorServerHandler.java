@@ -37,8 +37,8 @@ import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescr
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.application.io.DataType;
-import org.apache.airavata.model.data.product.DataProductModel;
-import org.apache.airavata.model.data.product.ReplicaLocationCategory;
+import org.apache.airavata.model.data.replica.DataProductModel;
+import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
@@ -163,17 +163,17 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 				for (ProcessModel processModel : processes){
 					//FIXME Resolving replica if available. This is a very crude way of resolving input replicas. A full featured
 					//FIXME replica resolving logic should come here
-					DataCatalog dataCatalog = RegistryFactory.getDataCatalog();
+					ReplicaCatalog replicaCatalog = RegistryFactory.getReplicaCatalog();
 					processModel.getProcessInputs().stream().forEach(pi -> {
 						if (pi.getType().equals(DataType.URI) && pi.getValue().startsWith("airavata-dp://")) {
 							try {
-								DataProductModel dataProductModel = dataCatalog.getDataProduct(pi.getValue());
+								DataProductModel dataProductModel = replicaCatalog.getDataProduct(pi.getValue());
 								dataProductModel.getReplicaLocations().stream().filter(rpModel -> rpModel.getReplicaLocationCategory()
 										.equals(ReplicaLocationCategory.GATEWAY_DATA_STORE)).forEach(rpModel -> {
-									//TODO Should set storage resource id specific to each of these inputs
 									pi.setValue(rpModel.getFilePath());
+									pi.setStorageResourceId(rpModel.getStorageResourceId());
 								});
-							} catch (DataCatalogException e) {
+							} catch (ReplicaCatalogException e) {
 								log.error(e.getMessage(), e);
 							}
 						}
