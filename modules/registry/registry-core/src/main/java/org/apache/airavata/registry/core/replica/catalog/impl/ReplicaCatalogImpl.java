@@ -34,8 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -47,58 +45,17 @@ public class ReplicaCatalogImpl implements ReplicaCatalog {
 
     @Override
     public String registerDataProduct(DataProductModel productModel) throws ReplicaCatalogException {
-        if(productModel.getOwnerName() == null || productModel.getGatewayId() == null || productModel
-                .getLogicalPath() == null || !productModel.getLogicalPath().startsWith("/")){
-            throw new ReplicaCatalogException("owner name, gateway id and logical path should be non empty and logical path" +
-                    " should start with /");
-        }
-        if(productModel.getDataProductType().equals(DataProductType.FILE) && !productModel.getLogicalPath().endsWith(productModel.getProductName())){
-            if(!productModel.getLogicalPath().endsWith("/"))
-                productModel.setLogicalPath(productModel.getLogicalPath()+"/");
-            productModel.setLogicalPath(productModel.getLogicalPath()+productModel.getProductName());
-        }
-        //Creating parent logical dir if not exist too
-        String parentUri = ReplicaCatalog.schema + "://" + productModel.getOwnerName() + "@" + productModel.getGatewayId() + ":/" ;
-        DataProductModel tempDp;
-        final long currentTime = System.currentTimeMillis();
-        if(!isExists(parentUri)){
-            tempDp = new DataProductModel();
-            tempDp.setProductUri(parentUri);
-            tempDp.setLogicalPath("/");
-            tempDp.setOwnerName(productModel.getOwnerName());
-            tempDp.setGatewayId(productModel.getGatewayId());
-            tempDp.setProductName("/");
-            tempDp.setCreationTime(currentTime);
-            tempDp.setLastModifiedTime(currentTime);
-            tempDp.setDataProductType(DataProductType.DIR);
-            createDataProduct(tempDp);
-        }
-        String[] bits = productModel.getLogicalPath().split("/");
-        for(int i=0; i<bits.length-1;i++){
-            String dir = bits[i];
-            if(!isExists(parentUri + dir)){
-                tempDp = new DataProductModel();
-                try {
-                    if(!parentUri.endsWith("/")) dir = "/" + dir;
-                    tempDp.setLogicalPath((new URI(parentUri + dir)).getPath());
-                } catch (URISyntaxException e) {
-                    throw new ReplicaCatalogException(e);
-                }
-                tempDp.setProductUri(parentUri + dir);
-                tempDp.setOwnerName(productModel.getOwnerName());
-                tempDp.setGatewayId(productModel.getGatewayId());
-                tempDp.setProductName(dir.substring(1));
-                tempDp.setCreationTime(currentTime);
-                tempDp.setLastModifiedTime(currentTime);
-                tempDp.setDataProductType(DataProductType.DIR);
-                tempDp.setParentProductUri(parentUri);
-                parentUri = createDataProduct(tempDp);
-            }
+        if(productModel.getOwnerName() == null || productModel.getGatewayId() == null){
+            throw new ReplicaCatalogException("owner name and gateway id should be non empty");
         }
 
-        productModel.setParentProductUri(parentUri);
-        String productUri = ReplicaCatalog.schema + "://" + productModel.getOwnerName() + "@" + productModel.getGatewayId()
-                + ":" + productModel.getLogicalPath();
+        if(productModel.getParentProductUri() != null && (!isExists(productModel.getParentProductUri())
+                || !getDataProduct(productModel.getParentProductUri()).getDataProductType().equals(DataProductType.COLLECTION))){
+            throw new ReplicaCatalogException("Parent Product does not exists or parent type is not Collection");
+        }
+
+        final long currentTime = System.currentTimeMillis();
+        String productUri = ReplicaCatalog.schema + "://" + UUID.randomUUID().toString();
         productModel.setProductUri(productUri);
         productModel.setCreationTime(currentTime);
         productModel.setLastModifiedTime(currentTime);

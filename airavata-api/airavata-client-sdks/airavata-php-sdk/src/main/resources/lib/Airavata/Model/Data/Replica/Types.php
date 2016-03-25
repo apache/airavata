@@ -40,13 +40,11 @@ final class ReplicaPersistentType {
 }
 
 final class DataProductType {
-  const DIR = 0;
-  const FILE = 1;
-  const COLLECTION = 2;
+  const FILE = 0;
+  const COLLECTION = 1;
   static public $__names = array(
-    0 => 'DIR',
-    1 => 'FILE',
-    2 => 'COLLECTION',
+    0 => 'FILE',
+    1 => 'COLLECTION',
   );
 }
 
@@ -65,10 +63,6 @@ class DataProductModel {
    * @var string
    */
   public $parentProductUri = null;
-  /**
-   * @var string
-   */
-  public $logicalPath = null;
   /**
    * @var string
    */
@@ -122,38 +116,34 @@ class DataProductModel {
           'type' => TType::STRING,
           ),
         4 => array(
-          'var' => 'logicalPath',
-          'type' => TType::STRING,
-          ),
-        5 => array(
           'var' => 'productName',
           'type' => TType::STRING,
           ),
-        6 => array(
+        5 => array(
           'var' => 'productDescription',
           'type' => TType::STRING,
           ),
-        7 => array(
+        6 => array(
           'var' => 'ownerName',
           'type' => TType::STRING,
           ),
-        8 => array(
+        7 => array(
           'var' => 'dataProductType',
           'type' => TType::I32,
           ),
-        9 => array(
+        8 => array(
           'var' => 'productSize',
           'type' => TType::I32,
           ),
-        10 => array(
+        9 => array(
           'var' => 'creationTime',
           'type' => TType::I64,
           ),
-        11 => array(
+        10 => array(
           'var' => 'lastModifiedTime',
           'type' => TType::I64,
           ),
-        12 => array(
+        11 => array(
           'var' => 'productMetadata',
           'type' => TType::MAP,
           'ktype' => TType::STRING,
@@ -165,7 +155,7 @@ class DataProductModel {
             'type' => TType::STRING,
             ),
           ),
-        13 => array(
+        12 => array(
           'var' => 'replicaLocations',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -185,9 +175,6 @@ class DataProductModel {
       }
       if (isset($vals['parentProductUri'])) {
         $this->parentProductUri = $vals['parentProductUri'];
-      }
-      if (isset($vals['logicalPath'])) {
-        $this->logicalPath = $vals['logicalPath'];
       }
       if (isset($vals['productName'])) {
         $this->productName = $vals['productName'];
@@ -261,61 +248,54 @@ class DataProductModel {
           break;
         case 4:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->logicalPath);
+            $xfer += $input->readString($this->productName);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 5:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->productName);
+            $xfer += $input->readString($this->productDescription);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 6:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->productDescription);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 7:
-          if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->ownerName);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 8:
+        case 7:
           if ($ftype == TType::I32) {
             $xfer += $input->readI32($this->dataProductType);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 9:
+        case 8:
           if ($ftype == TType::I32) {
             $xfer += $input->readI32($this->productSize);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 10:
+        case 9:
           if ($ftype == TType::I64) {
             $xfer += $input->readI64($this->creationTime);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 11:
+        case 10:
           if ($ftype == TType::I64) {
             $xfer += $input->readI64($this->lastModifiedTime);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 12:
+        case 11:
           if ($ftype == TType::MAP) {
             $this->productMetadata = array();
             $_size0 = 0;
@@ -335,7 +315,7 @@ class DataProductModel {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 13:
+        case 12:
           if ($ftype == TType::LST) {
             $this->replicaLocations = array();
             $_size7 = 0;
@@ -381,43 +361,38 @@ class DataProductModel {
       $xfer += $output->writeString($this->parentProductUri);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->logicalPath !== null) {
-      $xfer += $output->writeFieldBegin('logicalPath', TType::STRING, 4);
-      $xfer += $output->writeString($this->logicalPath);
-      $xfer += $output->writeFieldEnd();
-    }
     if ($this->productName !== null) {
-      $xfer += $output->writeFieldBegin('productName', TType::STRING, 5);
+      $xfer += $output->writeFieldBegin('productName', TType::STRING, 4);
       $xfer += $output->writeString($this->productName);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->productDescription !== null) {
-      $xfer += $output->writeFieldBegin('productDescription', TType::STRING, 6);
+      $xfer += $output->writeFieldBegin('productDescription', TType::STRING, 5);
       $xfer += $output->writeString($this->productDescription);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->ownerName !== null) {
-      $xfer += $output->writeFieldBegin('ownerName', TType::STRING, 7);
+      $xfer += $output->writeFieldBegin('ownerName', TType::STRING, 6);
       $xfer += $output->writeString($this->ownerName);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->dataProductType !== null) {
-      $xfer += $output->writeFieldBegin('dataProductType', TType::I32, 8);
+      $xfer += $output->writeFieldBegin('dataProductType', TType::I32, 7);
       $xfer += $output->writeI32($this->dataProductType);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->productSize !== null) {
-      $xfer += $output->writeFieldBegin('productSize', TType::I32, 9);
+      $xfer += $output->writeFieldBegin('productSize', TType::I32, 8);
       $xfer += $output->writeI32($this->productSize);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->creationTime !== null) {
-      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 10);
+      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 9);
       $xfer += $output->writeI64($this->creationTime);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->lastModifiedTime !== null) {
-      $xfer += $output->writeFieldBegin('lastModifiedTime', TType::I64, 11);
+      $xfer += $output->writeFieldBegin('lastModifiedTime', TType::I64, 10);
       $xfer += $output->writeI64($this->lastModifiedTime);
       $xfer += $output->writeFieldEnd();
     }
@@ -425,7 +400,7 @@ class DataProductModel {
       if (!is_array($this->productMetadata)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('productMetadata', TType::MAP, 12);
+      $xfer += $output->writeFieldBegin('productMetadata', TType::MAP, 11);
       {
         $output->writeMapBegin(TType::STRING, TType::STRING, count($this->productMetadata));
         {
@@ -443,7 +418,7 @@ class DataProductModel {
       if (!is_array($this->replicaLocations)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('replicaLocations', TType::LST, 13);
+      $xfer += $output->writeFieldBegin('replicaLocations', TType::LST, 12);
       {
         $output->writeListBegin(TType::STRUCT, count($this->replicaLocations));
         {
