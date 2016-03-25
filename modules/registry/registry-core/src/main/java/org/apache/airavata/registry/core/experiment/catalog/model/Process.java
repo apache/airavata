@@ -118,7 +118,7 @@ public class Process {
     }
 
     public void setUserName(String userName) {
-        this.userDn = userName;
+        this.userName = userName;
     }
 
     @Column(name = "STORAGE_RESOURCE_ID")
