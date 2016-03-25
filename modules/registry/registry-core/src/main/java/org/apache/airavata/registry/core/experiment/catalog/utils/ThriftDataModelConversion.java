@@ -380,6 +380,7 @@ public class ThriftDataModelConversion {
             processModel.setStorageResourceId(processResource.getStorageResourceId());
             processModel.setUserDn(processResource.getUserDn());
             processModel.setGenerateCert(processResource.isGenerateCert());
+            processModel.setUserName(processResource.getUserName());
             return processModel;
         }
         return null;

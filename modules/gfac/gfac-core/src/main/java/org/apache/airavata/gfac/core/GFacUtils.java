@@ -864,8 +864,8 @@ public class GFacUtils {
                 for (OutputDataObjectType expOutput : experimentOutputs){
                     if (expOutput.getName().equals(outputName)){
                         DataProductModel dataProductModel = new DataProductModel();
-                        //FIXME We need to set the username here
                         dataProductModel.setGatewayId(processContext.getGatewayId());
+                        dataProductModel.setOwnerName(processContext.getProcessModel().getUserName());
                         dataProductModel.setProductName(outputName);
                         dataProductModel.setDataProductType(DataProductType.FILE);
 

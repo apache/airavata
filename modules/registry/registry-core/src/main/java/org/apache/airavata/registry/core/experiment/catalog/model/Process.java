@@ -45,6 +45,7 @@ public class Process {
     private String emailAddresses;
     private String storageId;
     private String experimentDataDir;
+    private String userName;
     private Experiment experiment;
     private Collection<ProcessError> processErrors;
     private Collection<ProcessInput> processInputs;
@@ -109,6 +110,15 @@ public class Process {
 
     public void setApplicationInterfaceId(String applicationInterfaceId) {
         this.applicationInterfaceId = applicationInterfaceId;
+    }
+
+    @Column(name = "USERNAME")
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userDn = userName;
     }
 
     @Column(name = "STORAGE_RESOURCE_ID")
