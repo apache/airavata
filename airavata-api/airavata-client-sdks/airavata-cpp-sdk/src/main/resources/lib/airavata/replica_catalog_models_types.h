@@ -32,10 +32,9 @@
 #include <thrift/transport/TTransport.h>
 
 #include <thrift/cxxfunctional.h>
-#include "data_movement_models_types.h"
 
 
-namespace apache { namespace airavata { namespace model { namespace data { namespace resource {
+namespace apache { namespace airavata { namespace model { namespace data { namespace replica {
 
 struct ReplicaLocationCategory {
   enum type {
@@ -57,120 +56,116 @@ struct ReplicaPersistentType {
 
 extern const std::map<int, const char*> _ReplicaPersistentType_VALUES_TO_NAMES;
 
-struct DataResourceType {
+struct DataProductType {
   enum type {
-    COLLECTION = 0,
-    FILE = 1
+    FILE = 0,
+    COLLECTION = 1
   };
 };
 
-extern const std::map<int, const char*> _DataResourceType_VALUES_TO_NAMES;
+extern const std::map<int, const char*> _DataProductType_VALUES_TO_NAMES;
 
-class DataResourceModel;
+class DataProductModel;
 
 class DataReplicaLocationModel;
 
-typedef struct _DataResourceModel__isset {
-  _DataResourceModel__isset() : resourceId(false), gatewayId(false), parentResourceId(false), resourceName(false), resourceDescription(false), ownerName(false), dataResourceType(false), resourceSize(false), creationTime(false), lastModifiedTime(false), resourceMetadata(false), replicaLocations(false), childResources(false) {}
-  bool resourceId :1;
+typedef struct _DataProductModel__isset {
+  _DataProductModel__isset() : productUri(false), gatewayId(false), parentProductUri(false), productName(false), productDescription(false), ownerName(false), dataProductType(false), productSize(false), creationTime(false), lastModifiedTime(false), productMetadata(false), replicaLocations(false) {}
+  bool productUri :1;
   bool gatewayId :1;
-  bool parentResourceId :1;
-  bool resourceName :1;
-  bool resourceDescription :1;
+  bool parentProductUri :1;
+  bool productName :1;
+  bool productDescription :1;
   bool ownerName :1;
-  bool dataResourceType :1;
-  bool resourceSize :1;
+  bool dataProductType :1;
+  bool productSize :1;
   bool creationTime :1;
   bool lastModifiedTime :1;
-  bool resourceMetadata :1;
+  bool productMetadata :1;
   bool replicaLocations :1;
-  bool childResources :1;
-} _DataResourceModel__isset;
+} _DataProductModel__isset;
 
-class DataResourceModel {
+class DataProductModel {
  public:
 
-  DataResourceModel(const DataResourceModel&);
-  DataResourceModel& operator=(const DataResourceModel&);
-  DataResourceModel() : resourceId(), gatewayId(), parentResourceId(), resourceName(), resourceDescription(), ownerName(), dataResourceType((DataResourceType::type)0), resourceSize(0), creationTime(0), lastModifiedTime(0) {
+  DataProductModel(const DataProductModel&);
+  DataProductModel& operator=(const DataProductModel&);
+  DataProductModel() : productUri(), gatewayId(), parentProductUri(), productName(), productDescription(), ownerName(), dataProductType((DataProductType::type)0), productSize(0), creationTime(0), lastModifiedTime(0) {
   }
 
-  virtual ~DataResourceModel() throw();
-  std::string resourceId;
+  virtual ~DataProductModel() throw();
+  std::string productUri;
   std::string gatewayId;
-  std::string parentResourceId;
-  std::string resourceName;
-  std::string resourceDescription;
+  std::string parentProductUri;
+  std::string productName;
+  std::string productDescription;
   std::string ownerName;
-  DataResourceType::type dataResourceType;
-  int32_t resourceSize;
+  DataProductType::type dataProductType;
+  int32_t productSize;
   int64_t creationTime;
   int64_t lastModifiedTime;
-  std::map<std::string, std::string>  resourceMetadata;
+  std::map<std::string, std::string>  productMetadata;
   std::vector<DataReplicaLocationModel>  replicaLocations;
-  std::vector<DataResourceModel>  childResources;
 
-  _DataResourceModel__isset __isset;
+  _DataProductModel__isset __isset;
 
-  void __set_resourceId(const std::string& val);
+  void __set_productUri(const std::string& val);
 
   void __set_gatewayId(const std::string& val);
 
-  void __set_parentResourceId(const std::string& val);
+  void __set_parentProductUri(const std::string& val);
 
-  void __set_resourceName(const std::string& val);
+  void __set_productName(const std::string& val);
 
-  void __set_resourceDescription(const std::string& val);
+  void __set_productDescription(const std::string& val);
 
   void __set_ownerName(const std::string& val);
 
-  void __set_dataResourceType(const DataResourceType::type val);
+  void __set_dataProductType(const DataProductType::type val);
 
-  void __set_resourceSize(const int32_t val);
+  void __set_productSize(const int32_t val);
 
   void __set_creationTime(const int64_t val);
 
   void __set_lastModifiedTime(const int64_t val);
 
-  void __set_resourceMetadata(const std::map<std::string, std::string> & val);
+  void __set_productMetadata(const std::map<std::string, std::string> & val);
 
   void __set_replicaLocations(const std::vector<DataReplicaLocationModel> & val);
 
-  void __set_childResources(const std::vector<DataResourceModel> & val);
-
-  bool operator == (const DataResourceModel & rhs) const
+  bool operator == (const DataProductModel & rhs) const
   {
-    if (__isset.resourceId != rhs.__isset.resourceId)
+    if (__isset.productUri != rhs.__isset.productUri)
       return false;
-    else if (__isset.resourceId && !(resourceId == rhs.resourceId))
+    else if (__isset.productUri && !(productUri == rhs.productUri))
       return false;
     if (__isset.gatewayId != rhs.__isset.gatewayId)
       return false;
     else if (__isset.gatewayId && !(gatewayId == rhs.gatewayId))
       return false;
-    if (__isset.parentResourceId != rhs.__isset.parentResourceId)
+    if (__isset.parentProductUri != rhs.__isset.parentProductUri)
       return false;
-    else if (__isset.parentResourceId && !(parentResourceId == rhs.parentResourceId))
+    else if (__isset.parentProductUri && !(parentProductUri == rhs.parentProductUri))
       return false;
-    if (__isset.resourceName != rhs.__isset.resourceName)
+    if (__isset.productName != rhs.__isset.productName)
       return false;
-    else if (__isset.resourceName && !(resourceName == rhs.resourceName))
+    else if (__isset.productName && !(productName == rhs.productName))
       return false;
-    if (__isset.resourceDescription != rhs.__isset.resourceDescription)
+    if (__isset.productDescription != rhs.__isset.productDescription)
       return false;
-    else if (__isset.resourceDescription && !(resourceDescription == rhs.resourceDescription))
+    else if (__isset.productDescription && !(productDescription == rhs.productDescription))
       return false;
     if (__isset.ownerName != rhs.__isset.ownerName)
       return false;
     else if (__isset.ownerName && !(ownerName == rhs.ownerName))
       return false;
-    if (__isset.dataResourceType != rhs.__isset.dataResourceType)
+    if (__isset.dataProductType != rhs.__isset.dataProductType)
       return false;
-    else if (__isset.dataResourceType && !(dataResourceType == rhs.dataResourceType))
+    else if (__isset.dataProductType && !(dataProductType == rhs.dataProductType))
       return false;
-    if (__isset.resourceSize != rhs.__isset.resourceSize)
+    if (__isset.productSize != rhs.__isset.productSize)
       return false;
-    else if (__isset.resourceSize && !(resourceSize == rhs.resourceSize))
+    else if (__isset.productSize && !(productSize == rhs.productSize))
       return false;
     if (__isset.creationTime != rhs.__isset.creationTime)
       return false;
@@ -180,25 +175,21 @@ class DataResourceModel {
       return false;
     else if (__isset.lastModifiedTime && !(lastModifiedTime == rhs.lastModifiedTime))
       return false;
-    if (__isset.resourceMetadata != rhs.__isset.resourceMetadata)
+    if (__isset.productMetadata != rhs.__isset.productMetadata)
       return false;
-    else if (__isset.resourceMetadata && !(resourceMetadata == rhs.resourceMetadata))
+    else if (__isset.productMetadata && !(productMetadata == rhs.productMetadata))
       return false;
     if (__isset.replicaLocations != rhs.__isset.replicaLocations)
       return false;
     else if (__isset.replicaLocations && !(replicaLocations == rhs.replicaLocations))
       return false;
-    if (__isset.childResources != rhs.__isset.childResources)
-      return false;
-    else if (__isset.childResources && !(childResources == rhs.childResources))
-      return false;
     return true;
   }
-  bool operator != (const DataResourceModel &rhs) const {
+  bool operator != (const DataProductModel &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DataResourceModel & ) const;
+  bool operator < (const DataProductModel & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -206,18 +197,18 @@ class DataResourceModel {
   virtual void printTo(std::ostream& out) const;
 };
 
-void swap(DataResourceModel &a, DataResourceModel &b);
+void swap(DataProductModel &a, DataProductModel &b);
 
-inline std::ostream& operator<<(std::ostream& out, const DataResourceModel& obj)
+inline std::ostream& operator<<(std::ostream& out, const DataProductModel& obj)
 {
   obj.printTo(out);
   return out;
 }
 
 typedef struct _DataReplicaLocationModel__isset {
-  _DataReplicaLocationModel__isset() : replicaId(false), resourceId(false), replicaName(false), replicaDescription(false), creationTime(false), lastModifiedTime(false), validUntilTime(false), replicaLocationCategory(false), replicaPersistentType(false), storageResourceId(false), fileAbsolutePath(false), replicaMetadata(false) {}
+  _DataReplicaLocationModel__isset() : replicaId(false), productUri(false), replicaName(false), replicaDescription(false), creationTime(false), lastModifiedTime(false), validUntilTime(false), replicaLocationCategory(false), replicaPersistentType(false), storageResourceId(false), filePath(false), replicaMetadata(false) {}
   bool replicaId :1;
-  bool resourceId :1;
+  bool productUri :1;
   bool replicaName :1;
   bool replicaDescription :1;
   bool creationTime :1;
@@ -226,7 +217,7 @@ typedef struct _DataReplicaLocationModel__isset {
   bool replicaLocationCategory :1;
   bool replicaPersistentType :1;
   bool storageResourceId :1;
-  bool fileAbsolutePath :1;
+  bool filePath :1;
   bool replicaMetadata :1;
 } _DataReplicaLocationModel__isset;
 
@@ -235,12 +226,12 @@ class DataReplicaLocationModel {
 
   DataReplicaLocationModel(const DataReplicaLocationModel&);
   DataReplicaLocationModel& operator=(const DataReplicaLocationModel&);
-  DataReplicaLocationModel() : replicaId(), resourceId(), replicaName(), replicaDescription(), creationTime(0), lastModifiedTime(0), validUntilTime(0), replicaLocationCategory((ReplicaLocationCategory::type)0), replicaPersistentType((ReplicaPersistentType::type)0), storageResourceId(), fileAbsolutePath() {
+  DataReplicaLocationModel() : replicaId(), productUri(), replicaName(), replicaDescription(), creationTime(0), lastModifiedTime(0), validUntilTime(0), replicaLocationCategory((ReplicaLocationCategory::type)0), replicaPersistentType((ReplicaPersistentType::type)0), storageResourceId(), filePath() {
   }
 
   virtual ~DataReplicaLocationModel() throw();
   std::string replicaId;
-  std::string resourceId;
+  std::string productUri;
   std::string replicaName;
   std::string replicaDescription;
   int64_t creationTime;
@@ -249,14 +240,14 @@ class DataReplicaLocationModel {
   ReplicaLocationCategory::type replicaLocationCategory;
   ReplicaPersistentType::type replicaPersistentType;
   std::string storageResourceId;
-  std::string fileAbsolutePath;
+  std::string filePath;
   std::map<std::string, std::string>  replicaMetadata;
 
   _DataReplicaLocationModel__isset __isset;
 
   void __set_replicaId(const std::string& val);
 
-  void __set_resourceId(const std::string& val);
+  void __set_productUri(const std::string& val);
 
   void __set_replicaName(const std::string& val);
 
@@ -274,7 +265,7 @@ class DataReplicaLocationModel {
 
   void __set_storageResourceId(const std::string& val);
 
-  void __set_fileAbsolutePath(const std::string& val);
+  void __set_filePath(const std::string& val);
 
   void __set_replicaMetadata(const std::map<std::string, std::string> & val);
 
@@ -284,9 +275,9 @@ class DataReplicaLocationModel {
       return false;
     else if (__isset.replicaId && !(replicaId == rhs.replicaId))
       return false;
-    if (__isset.resourceId != rhs.__isset.resourceId)
+    if (__isset.productUri != rhs.__isset.productUri)
       return false;
-    else if (__isset.resourceId && !(resourceId == rhs.resourceId))
+    else if (__isset.productUri && !(productUri == rhs.productUri))
       return false;
     if (__isset.replicaName != rhs.__isset.replicaName)
       return false;
@@ -320,9 +311,9 @@ class DataReplicaLocationModel {
       return false;
     else if (__isset.storageResourceId && !(storageResourceId == rhs.storageResourceId))
       return false;
-    if (__isset.fileAbsolutePath != rhs.__isset.fileAbsolutePath)
+    if (__isset.filePath != rhs.__isset.filePath)
       return false;
-    else if (__isset.fileAbsolutePath && !(fileAbsolutePath == rhs.fileAbsolutePath))
+    else if (__isset.filePath && !(filePath == rhs.filePath))
       return false;
     if (__isset.replicaMetadata != rhs.__isset.replicaMetadata)
       return false;

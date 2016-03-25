@@ -43,6 +43,7 @@ public class ProcessOutput {
     private String searchQuery;
     private Process process;
     private boolean outputStreaming;
+    private String storageResourceId;
 
     @Id
     @Column(name = "PROCESS_ID")
@@ -145,6 +146,16 @@ public class ProcessOutput {
     public void setOutputStreaming(boolean outputStreaming) {
         this.outputStreaming = outputStreaming;
     }
+
+    @Column(name = "STORAGE_RESOURCE_ID")
+    public String getStorageResourceId() {
+        return storageResourceId;
+    }
+
+    public void setStorageResourceId(String storageResourceId) {
+        this.storageResourceId = storageResourceId;
+    }
+
 
     //    @Override
 //    public boolean equals(Object o) {

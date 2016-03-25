@@ -49,8 +49,8 @@ import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.data.movement.DMType;
 import org.apache.airavata.model.data.movement.*;
-import org.apache.airavata.model.data.product.DataProductModel;
-import org.apache.airavata.model.data.product.DataReplicaLocationModel;
+import org.apache.airavata.model.data.replica.DataProductModel;
+import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.model.job.JobModel;
@@ -88,7 +88,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     private ExperimentCatalog experimentCatalog;
     private AppCatalog appCatalog;
     private Publisher publisher;
-    private DataCatalog dataCatalog;
+    private ReplicaCatalog dataCatalog;
 	private WorkflowCatalog workflowCatalog;
     private CredentialStoreService.Client csClient;
 
@@ -1992,6 +1992,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             logger.info("Airavata cloned experiment with experiment id : " + existingExperimentID);
             return (String) experimentCatalog.add(ExpCatParentDataType.EXPERIMENT, existingExperiment, gatewayId);
         } catch (Exception e) {
+
             logger.error(existingExperimentID, "Error while cloning the experiment with existing configuration...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -4295,7 +4296,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 	}
 
     /**
-     * DataCatalog Related Methods
+     * ReplicaCatalog Related Methods
      * @return
      * @throws TException
      * @throws ApplicationSettingsException
@@ -4305,10 +4306,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String registerDataProduct(AuthzToken authzToken, DataProductModel dataProductModel) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
-            dataCatalog = RegistryFactory.getDataCatalog();
+            dataCatalog = RegistryFactory.getReplicaCatalog();
             String productUrl = dataCatalog.registerDataProduct(dataProductModel);
             return productUrl;
-        } catch (Exception e) {
+        } catch (RegistryException e) {
             String msg = "Error in registering the data resource"+dataProductModel.getProductName()+".";
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -4322,10 +4323,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     public DataProductModel getDataProduct(AuthzToken authzToken, String productUri) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
-            dataCatalog = RegistryFactory.getDataCatalog();
+            dataCatalog = RegistryFactory.getReplicaCatalog();
             DataProductModel dataProductModel = dataCatalog.getDataProduct(productUri);
             return dataProductModel;
-        } catch (Exception e) {
+        } catch (RegistryException e) {
             String msg = "Error in retreiving the data product "+productUri+".";
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -4339,11 +4340,43 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String registerReplicaLocation(AuthzToken authzToken, DataReplicaLocationModel replicaLocationModel) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
-            dataCatalog = RegistryFactory.getDataCatalog();
+            dataCatalog = RegistryFactory.getReplicaCatalog();
             String replicaId = dataCatalog.registerReplicaLocation(replicaLocationModel);
             return replicaId;
-        } catch (Exception e) {
-            String msg = "Error in retreiving the data product "+replicaLocationModel.getReplicaName()+".";
+        } catch (RegistryException e) {
+            String msg = "Error in retreiving the replica "+replicaLocationModel.getReplicaName()+".";
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public DataProductModel getParentDataProduct(AuthzToken authzToken, String productUri) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            dataCatalog = RegistryFactory.getReplicaCatalog();
+            DataProductModel dataProductModel = dataCatalog.getParentDataProduct(productUri);
+            return dataProductModel;
+        } catch (RegistryException e) {
+            String msg = "Error in retreiving the parent data product for "+ productUri+".";
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public List<DataProductModel> getChildDataProducts(AuthzToken authzToken, String productUri) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            dataCatalog = RegistryFactory.getReplicaCatalog();
+            List<DataProductModel> dataProductModels = dataCatalog.getChildDataProducts(productUri);
+            return dataProductModels;
+        } catch (RegistryException e) {
+            String msg = "Error in retreiving the child products for "+productUri+".";
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg+" More info : " + e.getMessage());

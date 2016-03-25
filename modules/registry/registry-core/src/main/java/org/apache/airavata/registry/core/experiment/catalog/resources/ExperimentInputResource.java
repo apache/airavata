@@ -47,6 +47,7 @@ public class ExperimentInputResource extends AbstractExpCatResource {
     private boolean isRequired;
     private boolean requiredToAddedToCmd;
     private boolean dataStaged = false;
+    private String storageResourceId;
 
     public String getExperimentId() {
         return experimentId;
@@ -136,6 +137,14 @@ public class ExperimentInputResource extends AbstractExpCatResource {
         this.requiredToAddedToCmd = requiredToAddedToCmd;
     }
 
+    public String getStorageResourceId() {
+        return storageResourceId;
+    }
+
+    public void setStorageResourceId(String storageResourceId) {
+        this.storageResourceId = storageResourceId;
+    }
+
     public boolean getDataStaged() {
         return dataStaged;
     }
@@ -206,6 +215,7 @@ public class ExperimentInputResource extends AbstractExpCatResource {
             experimentInput.setIsRequired(isRequired);
             experimentInput.setRequiredToAddedToCmd(requiredToAddedToCmd);
             experimentInput.setDataStaged(dataStaged);
+            experimentInput.setStorageResourceId(storageResourceId);
             if (existingExpInput == null){
                 em.persist(experimentInput);
             }else {
