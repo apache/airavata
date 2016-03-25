@@ -35,8 +35,10 @@ import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.task.utils.bes.*;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
@@ -75,8 +77,9 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
     public TaskStatus execute(TaskContext taskContext) {
         TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
         StorageClient sc = null;
+        // FIXME - use original output dir
+        taskContext.getParentProcessContext().setOutputDir("");
 
-        //TODO - initialize securityContext secProperties
         try {
             if (secProperties == null) {
                 secProperties = getSecurityConfig(taskContext.getParentProcessContext());
@@ -92,10 +95,11 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
         try {
             ProcessContext processContext = taskContext.getParentProcessContext();
             JobSubmissionProtocol protocol = processContext.getJobSubmissionProtocol();
-            String interfaceId = processContext.getApplicationInterfaceDescription().getApplicationInterfaceId();
+            JobSubmissionInterface jobSubmissionInterface = GFacUtils.getPreferredJobSubmissionInterface(processContext);
             String factoryUrl = null;
             if (protocol.equals(JobSubmissionProtocol.UNICORE)) {
-                UnicoreJobSubmission unicoreJobSubmission = GFacUtils.getUnicoreJobSubmission(interfaceId);
+                UnicoreJobSubmission unicoreJobSubmission = GFacUtils.getUnicoreJobSubmission(
+                        jobSubmissionInterface.getJobSubmissionInterfaceId());
                 factoryUrl = unicoreJobSubmission.getUnicoreEndPointURL();
             }
             EndpointReferenceType eprt = EndpointReferenceType.Factory.newInstance();
@@ -118,6 +122,8 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             dt.uploadLocalFiles();
 
             JobModel jobDetails = new JobModel();
+            jobDetails.setTaskId(taskContext.getTaskId());
+            jobDetails.setProcessId(taskContext.getProcessId());
             FactoryClient factory = new FactoryClient(eprt, secProperties);
 
             log.info(String.format("Activity Submitting to %s ... \n",
@@ -140,6 +146,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             jobDetails.setJobDescription(activityEpr.toString());
             jobDetails.setJobStatus(new JobStatus(JobState.SUBMITTED));
             processContext.setJobModel(jobDetails);
+            GFacUtils.saveJobModel(processContext, jobDetails);
             GFacUtils.saveJobStatus(processContext, jobDetails);
             log.info(formatStatusMessage(activityEpr.getAddress()
                     .getStringValue(), factory.getActivityStatus(activityEpr)
@@ -161,7 +168,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
                         + "\n"
                         + activityStatus.getFault().getFaultstring()
                         + "\n EXITCODE: " + activityStatus.getExitCode();
-                log.info(error);
+                log.error(error);
 
                 JobState applicationJobStatus = JobState.FAILED;
                 jobDetails.setJobStatus(new JobStatus(applicationJobStatus));
@@ -170,7 +177,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
 
                 //What if job is failed before execution and there are not stdouts generated yet?
                 log.debug("Downloading any standard output and error files, if they were produced.");
-                dt.downloadStdOuts();
+                dt.downloadRemoteFiles();
 
             } else if (activityStatus.getState() == ActivityStateEnumeration.CANCELLED) {
                 JobState applicationJobStatus = JobState.CANCELED;
@@ -181,17 +188,19 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             } else if (activityStatus.getState() == ActivityStateEnumeration.FINISHED) {
                 try {
                     Thread.sleep(5000);
-                    JobState applicationJobStatus = JobState.COMPLETE;
-                    jobDetails.setJobStatus(new JobStatus(applicationJobStatus));
-                    GFacUtils.saveJobStatus(processContext, jobDetails);
+                } catch (InterruptedException ignored) {
+                }
+                JobState applicationJobStatus = JobState.COMPLETE;
+                jobDetails.setJobStatus(new JobStatus(applicationJobStatus));
+                GFacUtils.saveJobStatus(processContext, jobDetails);
+                log.info("Job Id: {}, exit code: {}, exit status: {}", jobDetails.getJobId(),
+                        activityStatus.getExitCode(), ActivityStateEnumeration.FINISHED.toString());
 
-                } catch (InterruptedException e) {
-                }
-                if (activityStatus.getExitCode() == 0) {
-                    dt.downloadRemoteFiles();
-                } else {
-                    dt.downloadStdOuts();
-                }
+//                if (activityStatus.getExitCode() == 0) {
+//                } else {
+//                    dt.downloadStdOuts();
+//                }
+                dt.downloadRemoteFiles();
             }
 
             dt.publishFinalOutputs();
@@ -200,7 +209,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             log.error("Error while retrieving UNICORE job submission..");
             taskStatus.setState(TaskState.FAILED);
         } catch (Exception e) {
-            log.error("Cannot create storage..");
+            log.error("Cannot create storage..", e);
             taskStatus.setState(TaskState.FAILED);
         }
 
@@ -211,10 +220,13 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
         DefaultClientConfiguration clientConfig = null;
         try {
             UNICORESecurityContext unicoreSecurityContext = SecurityUtils.getSecurityContext(pc);
-            UserConfigurationData userConfigData = (UserConfigurationData) pc.getExperimentCatalog().
+            UserConfigurationDataModel userConfigDataModel = (UserConfigurationDataModel) pc.getExperimentCatalog().
                     get(ExperimentCatalogModelType.USER_CONFIGURATION_DATA, pc.getExperimentId());
-            if (userConfigData.getGenerateCert()) {
-                clientConfig = unicoreSecurityContext.getDefaultConfiguration(false, userConfigData);
+            // FIXME - remove following setter lines, and use original value comes with user configuration data model.
+            userConfigDataModel.setGenerateCert(true);
+            userConfigDataModel.setUserDN("CN=swus3, O=Ultrascan Gateway, C=DE");
+            if (userConfigDataModel.isGenerateCert()) {
+                clientConfig = unicoreSecurityContext.getDefaultConfiguration(false, userConfigDataModel);
             } else {
                 clientConfig = unicoreSecurityContext.getDefaultConfiguration(false);
             }
@@ -237,22 +249,22 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             FactoryClient factoryClient = new FactoryClient(factoryEpr, secProperties);
             JobState applicationJobStatus = null;
 
-            while ((factoryClient.getActivityStatus(activityEpr) != ActivityStateEnumeration.FINISHED)
-                    && (factoryClient.getActivityStatus(activityEpr) != ActivityStateEnumeration.FAILED)
-                    && (factoryClient.getActivityStatus(activityEpr) != ActivityStateEnumeration.CANCELLED)
+            ActivityStateEnumeration.Enum activityStatus = factoryClient.getActivityStatus(activityEpr);
+            while ((activityStatus != ActivityStateEnumeration.FINISHED)
+                    && (activityStatus != ActivityStateEnumeration.FAILED)
+                    && (activityStatus != ActivityStateEnumeration.CANCELLED)
                     && (applicationJobStatus != JobState.COMPLETE)) {
 
-                ActivityStatusType activityStatus = getStatus(factoryClient, activityEpr);
-                applicationJobStatus = getApplicationJobStatus(activityStatus);
-
+                ActivityStatusType activityStatusType = getStatus(factoryClient, activityEpr);
+                applicationJobStatus = getApplicationJobStatus(activityStatusType);
                 sendNotification(processContext,processContext.getJobModel());
-
                 // GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId,
                 // applicationJobStatus);
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {}
-                continue;
+
+                activityStatus = factoryClient.getActivityStatus(activityEpr);
             }
         } catch(Exception e) {
             log.error("Error monitoring job status..");
@@ -266,12 +278,12 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
 
     @Override
     public TaskStatus recover(TaskContext taskContext) {
-        return null;
+        return execute(taskContext);
     }
 
     @Override
     public TaskTypes getType() {
-        return null;
+        return TaskTypes.JOB_SUBMISSION;
     }
 
     protected ActivityStatusType getStatus(FactoryClient fc, EndpointReferenceType activityEpr)

@@ -113,16 +113,16 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  bool updateSSHJobSubmissionDetails(AuthzToken authzToken, string jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission)')
   print('  bool updateCloudJobSubmissionDetails(AuthzToken authzToken, string jobSubmissionInterfaceId, CloudJobSubmission sshJobSubmission)')
   print('  bool updateUnicoreJobSubmissionDetails(AuthzToken authzToken, string jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission)')
-  print('  string addLocalDataMovementDetails(AuthzToken authzToken, string resourceId, DMType dataMoveType, i32 priorityOrder, LOCALDataMovement localDataMovement)')
+  print('  string addLocalDataMovementDetails(AuthzToken authzToken, string productUri, DMType dataMoveType, i32 priorityOrder, LOCALDataMovement localDataMovement)')
   print('  bool updateLocalDataMovementDetails(AuthzToken authzToken, string dataMovementInterfaceId, LOCALDataMovement localDataMovement)')
   print('  LOCALDataMovement getLocalDataMovement(AuthzToken authzToken, string dataMovementId)')
-  print('  string addSCPDataMovementDetails(AuthzToken authzToken, string resourceId, DMType dataMoveType, i32 priorityOrder, SCPDataMovement scpDataMovement)')
+  print('  string addSCPDataMovementDetails(AuthzToken authzToken, string productUri, DMType dataMoveType, i32 priorityOrder, SCPDataMovement scpDataMovement)')
   print('  bool updateSCPDataMovementDetails(AuthzToken authzToken, string dataMovementInterfaceId, SCPDataMovement scpDataMovement)')
   print('  SCPDataMovement getSCPDataMovement(AuthzToken authzToken, string dataMovementId)')
-  print('  string addUnicoreDataMovementDetails(AuthzToken authzToken, string resourceId, DMType dataMoveType, i32 priorityOrder, UnicoreDataMovement unicoreDataMovement)')
+  print('  string addUnicoreDataMovementDetails(AuthzToken authzToken, string productUri, DMType dataMoveType, i32 priorityOrder, UnicoreDataMovement unicoreDataMovement)')
   print('  bool updateUnicoreDataMovementDetails(AuthzToken authzToken, string dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement)')
   print('  UnicoreDataMovement getUnicoreDataMovement(AuthzToken authzToken, string dataMovementId)')
-  print('  string addGridFTPDataMovementDetails(AuthzToken authzToken, string resourceId, DMType dataMoveType, i32 priorityOrder, GridFTPDataMovement gridFTPDataMovement)')
+  print('  string addGridFTPDataMovementDetails(AuthzToken authzToken, string productUri, DMType dataMoveType, i32 priorityOrder, GridFTPDataMovement gridFTPDataMovement)')
   print('  bool updateGridFTPDataMovementDetails(AuthzToken authzToken, string dataMovementInterfaceId, GridFTPDataMovement gridFTPDataMovement)')
   print('  GridFTPDataMovement getGridFTPDataMovement(AuthzToken authzToken, string dataMovementId)')
   print('  bool changeJobSubmissionPriority(AuthzToken authzToken, string jobSubmissionInterfaceId, i32 newPriorityOrder)')
@@ -130,7 +130,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  bool changeJobSubmissionPriorities(AuthzToken authzToken,  jobSubmissionPriorityMap)')
   print('  bool changeDataMovementPriorities(AuthzToken authzToken,  dataMovementPriorityMap)')
   print('  bool deleteJobSubmissionInterface(AuthzToken authzToken, string computeResourceId, string jobSubmissionInterfaceId)')
-  print('  bool deleteDataMovementInterface(AuthzToken authzToken, string resourceId, string dataMovementInterfaceId, DMType dataMoveType)')
+  print('  bool deleteDataMovementInterface(AuthzToken authzToken, string productUri, string dataMovementInterfaceId, DMType dataMoveType)')
   print('  string registerResourceJobManager(AuthzToken authzToken, ResourceJobManager resourceJobManager)')
   print('  bool updateResourceJobManager(AuthzToken authzToken, string resourceJobManagerId, ResourceJobManager updatedResourceJobManager)')
   print('  ResourceJobManager getResourceJobManager(AuthzToken authzToken, string resourceJobManagerId)')
@@ -158,12 +158,11 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  void updateWorkflow(AuthzToken authzToken, string workflowTemplateId, WorkflowModel workflow)')
   print('  string getWorkflowTemplateId(AuthzToken authzToken, string workflowName)')
   print('  bool isWorkflowExistWithName(AuthzToken authzToken, string workflowName)')
-  print('  string registerDataResource(AuthzToken authzToken, DataResourceModel dataResourceModel)')
-  print('  void updateDataResource(AuthzToken authzToken, DataResourceModel dataResourceModel)')
-  print('  void removeDataResource(AuthzToken authzToken, string resourceId)')
-  print('  DataResourceModel getDataResource(AuthzToken authzToken, string resourceId)')
-  print('  string copyDataResource(AuthzToken authzToken, string resourceId, string destStorageResourceId, string destinationParentPath)')
-  print('  string copyDataReplica(AuthzToken authzToken, string resourceId, string replicaId, string destStorageResourceId, string destinationParentPath)')
+  print('  string registerDataProduct(AuthzToken authzToken, DataProductModel dataProductModel)')
+  print('  DataProductModel getDataProduct(AuthzToken authzToken, string dataProductUri)')
+  print('  string registerReplicaLocation(AuthzToken authzToken, DataReplicaLocationModel replicaLocationModel)')
+  print('  DataProductModel getParentDataProduct(AuthzToken authzToken, string productUri)')
+  print('   getChildDataProducts(AuthzToken authzToken, string productUri)')
   print('')
   sys.exit(0)
 
@@ -1024,41 +1023,35 @@ elif cmd == 'isWorkflowExistWithName':
     sys.exit(1)
   pp.pprint(client.isWorkflowExistWithName(eval(args[0]),args[1],))
 
-elif cmd == 'registerDataResource':
+elif cmd == 'registerDataProduct':
   if len(args) != 2:
-    print('registerDataResource requires 2 args')
+    print('registerDataProduct requires 2 args')
     sys.exit(1)
-  pp.pprint(client.registerDataResource(eval(args[0]),eval(args[1]),))
+  pp.pprint(client.registerDataProduct(eval(args[0]),eval(args[1]),))
 
-elif cmd == 'updateDataResource':
+elif cmd == 'getDataProduct':
   if len(args) != 2:
-    print('updateDataResource requires 2 args')
+    print('getDataProduct requires 2 args')
     sys.exit(1)
-  pp.pprint(client.updateDataResource(eval(args[0]),eval(args[1]),))
+  pp.pprint(client.getDataProduct(eval(args[0]),args[1],))
 
-elif cmd == 'removeDataResource':
+elif cmd == 'registerReplicaLocation':
   if len(args) != 2:
-    print('removeDataResource requires 2 args')
+    print('registerReplicaLocation requires 2 args')
     sys.exit(1)
-  pp.pprint(client.removeDataResource(eval(args[0]),args[1],))
+  pp.pprint(client.registerReplicaLocation(eval(args[0]),eval(args[1]),))
 
-elif cmd == 'getDataResource':
+elif cmd == 'getParentDataProduct':
   if len(args) != 2:
-    print('getDataResource requires 2 args')
+    print('getParentDataProduct requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getDataResource(eval(args[0]),args[1],))
+  pp.pprint(client.getParentDataProduct(eval(args[0]),args[1],))
 
-elif cmd == 'copyDataResource':
-  if len(args) != 4:
-    print('copyDataResource requires 4 args')
+elif cmd == 'getChildDataProducts':
+  if len(args) != 2:
+    print('getChildDataProducts requires 2 args')
     sys.exit(1)
-  pp.pprint(client.copyDataResource(eval(args[0]),args[1],args[2],args[3],))
-
-elif cmd == 'copyDataReplica':
-  if len(args) != 5:
-    print('copyDataReplica requires 5 args')
-    sys.exit(1)
-  pp.pprint(client.copyDataReplica(eval(args[0]),args[1],args[2],args[3],args[4],))
+  pp.pprint(client.getChildDataProducts(eval(args[0]),args[1],))
 
 else:
   print('Unrecognized method %s' % cmd)

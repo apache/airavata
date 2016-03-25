@@ -107,6 +107,7 @@ public class ExperimentModelUtil {
                 processModel.setComputeResourceId(scheduling.getResourceHostId());
             }
         }
+        processModel.setUserName(experiment.getUserName());
         return processModel;
     }
 }

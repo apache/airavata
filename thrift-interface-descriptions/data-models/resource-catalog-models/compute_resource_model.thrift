@@ -214,8 +214,8 @@ enum DMType {
 */
 struct LOCALSubmission {
     1: required string jobSubmissionInterfaceId = airavata_commons.DEFAULT_ID,
-    2: required data_movement_models.SecurityProtocol securityProtocol,
-    3: required ResourceJobManager resourceJobManager
+    2: required ResourceJobManager resourceJobManager,
+    3: optional data_movement_models.SecurityProtocol securityProtocol
 }
 
 /**

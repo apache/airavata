@@ -41,6 +41,7 @@ public class ExperimentOutput {
     private boolean dataMovement;
     private String location;
     private String searchQuery;
+    private String storageResourceId;
     private Experiment experiment;
 
 
@@ -145,6 +146,16 @@ public class ExperimentOutput {
     public void setSearchQuery(String searchQuery) {
         this.searchQuery = searchQuery;
     }
+
+    @Column(name = "STORAGE_RESOURCE_ID")
+    public String getStorageResourceId() {
+        return storageResourceId;
+    }
+
+    public void setStorageResourceId(String storageResourceId) {
+        this.storageResourceId = storageResourceId;
+    }
+
 
 //    @Override
 //    public boolean equals(Object o) {

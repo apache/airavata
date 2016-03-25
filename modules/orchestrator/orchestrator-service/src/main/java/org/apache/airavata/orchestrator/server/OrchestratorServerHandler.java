@@ -29,17 +29,16 @@ import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
-import org.apache.airavata.messaging.core.MessageContext;
-import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.airavata.messaging.core.MessagingConstants;
-import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.messaging.core.PublisherFactory;
+import org.apache.airavata.messaging.core.*;
 import org.apache.airavata.messaging.core.impl.RabbitMQStatusConsumer;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.data.replica.DataProductModel;
+import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
@@ -71,11 +70,7 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	private static Logger log = LoggerFactory.getLogger(OrchestratorServerHandler.class);
@@ -156,7 +151,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             }
             // still the token is empty, then we fail the experiment
             if (token == null || token.isEmpty()){
-                log.error("You have not configured credential store token at gateway profile or compute resource preference. Please provide the correct token at gateway profile or compute resource preference.");
+                log.error("You have not configured credential store token at gateway profile or compute resource preference." +
+						" Please provide the correct token at gateway profile or compute resource preference.");
                 return false;
             }
             ExperimentType executionType = experiment.getExperimentType();
@@ -165,9 +161,26 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 List<ProcessModel> processes = orchestrator.createProcesses(experimentId, gatewayId);
 
 				for (ProcessModel processModel : processes){
+					//FIXME Resolving replica if available. This is a very crude way of resolving input replicas. A full featured
+					//FIXME replica resolving logic should come here
+					ReplicaCatalog replicaCatalog = RegistryFactory.getReplicaCatalog();
+					processModel.getProcessInputs().stream().forEach(pi -> {
+						if (pi.getType().equals(DataType.URI) && pi.getValue().startsWith("airavata-dp://")) {
+							try {
+								DataProductModel dataProductModel = replicaCatalog.getDataProduct(pi.getValue());
+								dataProductModel.getReplicaLocations().stream().filter(rpModel -> rpModel.getReplicaLocationCategory()
+										.equals(ReplicaLocationCategory.GATEWAY_DATA_STORE)).forEach(rpModel -> {
+									pi.setValue(rpModel.getFilePath());
+									pi.setStorageResourceId(rpModel.getStorageResourceId());
+								});
+							} catch (ReplicaCatalogException e) {
+								log.error(e.getMessage(), e);
+							}
+						}
+					});
 					String taskDag = orchestrator.createAndSaveTasks(gatewayId, processModel, experiment.getUserConfigurationData().isAiravataAutoSchedule());
 					processModel.setTaskDag(taskDag);
-					experimentCatalog.update(ExperimentCatalogModelType.PROCESS,processModel, processModel.getProcessId());
+					experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processModel.getProcessId());
 				}
 
 				if (!validateProcess(experimentId, processes)) {
