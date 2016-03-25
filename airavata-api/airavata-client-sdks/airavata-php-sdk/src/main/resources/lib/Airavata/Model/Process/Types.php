@@ -117,6 +117,10 @@ class ProcessModel {
    * @var string
    */
   public $experimentDataDir = null;
+  /**
+   * @var string
+   */
+  public $userName = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -231,6 +235,10 @@ class ProcessModel {
           'var' => 'experimentDataDir',
           'type' => TType::STRING,
           ),
+        23 => array(
+          'var' => 'userName',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -299,6 +307,9 @@ class ProcessModel {
       }
       if (isset($vals['experimentDataDir'])) {
         $this->experimentDataDir = $vals['experimentDataDir'];
+      }
+      if (isset($vals['userName'])) {
+        $this->userName = $vals['userName'];
       }
     }
   }
@@ -522,6 +533,13 @@ class ProcessModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 23:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -700,6 +718,11 @@ class ProcessModel {
     if ($this->experimentDataDir !== null) {
       $xfer += $output->writeFieldBegin('experimentDataDir', TType::STRING, 22);
       $xfer += $output->writeString($this->experimentDataDir);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userName !== null) {
+      $xfer += $output->writeFieldBegin('userName', TType::STRING, 23);
+      $xfer += $output->writeString($this->userName);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

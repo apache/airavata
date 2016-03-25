@@ -54,6 +54,7 @@ public class ProcessResource extends AbstractExpCatResource {
     private String emailAddresses;
     private String storageResourceId;
     private String userDn;
+    private String userName;
     private boolean generateCert;
     private String experimentDataDir;
 
@@ -183,6 +184,14 @@ public class ProcessResource extends AbstractExpCatResource {
 
     public void setExperimentDataDir(String experimentDataDir) {
         this.experimentDataDir = experimentDataDir;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public ExperimentCatResource create(ResourceType type) throws RegistryException{
@@ -590,6 +599,7 @@ public class ProcessResource extends AbstractExpCatResource {
             process.setUserDn(userDn);
             process.setGenerateCert(generateCert);
             process.setExperimentDataDir(experimentDataDir);
+            process.setUserName(userName);
             if (existingProcess == null){
                 em.persist(process);
             }else {
