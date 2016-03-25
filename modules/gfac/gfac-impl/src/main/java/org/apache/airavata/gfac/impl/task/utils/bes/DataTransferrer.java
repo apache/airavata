@@ -24,6 +24,7 @@ package org.apache.airavata.gfac.impl.task.utils.bes;
 import de.fzj.unicore.uas.client.StorageClient;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.gfac.core.GFacException;
+import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
@@ -105,8 +106,8 @@ public class DataTransferrer {
     public void uploadLocalFiles() throws GFacException {
         List<String> inFilePrms = new ArrayList<>();
         // FIXME - remove hard coded file path.
-//        inFilePrms.addAll(extractInFileParams());
-        inFilePrms.add("file://home/airavata/test/hpcinput-localhost-uslims3_cauma3d-00950.tar");
+        inFilePrms.addAll(extractInFileParams());
+//        inFilePrms.add("file://home/airavata/test/hpcinput-localhost-uslims3_cauma3d-00950.tar");
         for (String uri : inFilePrms) {
             String fileName = new File(uri).getName();
             if (uri.startsWith("file")) {
@@ -256,7 +257,7 @@ public class DataTransferrer {
 		return tmpOutputDir;
 	}
 
-    public void downloadRemoteFiles() throws GFacException {
+    public List<OutputDataObjectType> downloadRemoteFiles() throws GFacException {
 
         if(log.isDebugEnabled()) {
             log.debug("Download location is:" + gatewayDownloadLocation);
@@ -269,12 +270,12 @@ public class DataTransferrer {
                     continue;
                 }
                 if(output.getType().equals(DataType.STDOUT)) {
-                    output.setValue(processContext.getStdoutLocation());
+                    output.setValue(stdoutLocation);
                     resultantOutputsLst.add(output);
                 } else if(output.getType().equals(DataType.STDERR)) {
-                    output.setValue(processContext.getStderrLocation());
+                    output.setValue(stderrLocation);
                     resultantOutputsLst.add(output);
-                } else if (output.getType().equals(DataType.STRING)) {
+                } else if (output.getType().equals(DataType.URI)) {
                     String value = null;
                     if (!output.getLocation().isEmpty()) {
                         value = output.getLocation() + File.separator + output.getValue();
@@ -305,6 +306,7 @@ public class DataTransferrer {
         }
 
         downloadStdOuts();
+        return resultantOutputsLst;
 
     }
 
