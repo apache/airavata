@@ -42,6 +42,7 @@ public class ExperimentInput {
     private boolean isRequired;
     private boolean requiredToAddedToCmd;
     private boolean dataStaged;
+    private String storageResourceId;
     private Experiment experiment;
 
     @Id
@@ -144,6 +145,15 @@ public class ExperimentInput {
 
     public void setRequiredToAddedToCmd(boolean requiredToAddedToCmd) {
         this.requiredToAddedToCmd = requiredToAddedToCmd;
+    }
+
+    @Column(name = "STORAGE_RESOURCE_ID")
+    public String getStorageResourceId() {
+        return storageResourceId;
+    }
+
+    public void setStorageResourceId(String storageResourceId) {
+        this.storageResourceId = storageResourceId;
     }
 
     @Column(name = "DATA_STAGED")

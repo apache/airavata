@@ -44,7 +44,7 @@ namespace apache { namespace airavata { namespace model { namespace process {
 class ProcessModel;
 
 typedef struct _ProcessModel__isset {
-  _ProcessModel__isset() : creationTime(false), lastUpdateTime(false), processStatus(false), processDetail(false), applicationInterfaceId(false), applicationDeploymentId(false), computeResourceId(false), processInputs(false), processOutputs(false), resourceSchedule(false), tasks(false), taskDag(false), processError(false), gatewayExecutionId(false), enableEmailNotification(false), emailAddresses(false), storageResourceId(false), userDn(false), generateCert(true), experimentDataDir(false) {}
+  _ProcessModel__isset() : creationTime(false), lastUpdateTime(false), processStatus(false), processDetail(false), applicationInterfaceId(false), applicationDeploymentId(false), computeResourceId(false), processInputs(false), processOutputs(false), resourceSchedule(false), tasks(false), taskDag(false), processError(false), gatewayExecutionId(false), enableEmailNotification(false), emailAddresses(false), storageResourceId(false), userDn(false), generateCert(true), experimentDataDir(false), userName(false) {}
   bool creationTime :1;
   bool lastUpdateTime :1;
   bool processStatus :1;
@@ -65,6 +65,7 @@ typedef struct _ProcessModel__isset {
   bool userDn :1;
   bool generateCert :1;
   bool experimentDataDir :1;
+  bool userName :1;
 } _ProcessModel__isset;
 
 class ProcessModel {
@@ -72,7 +73,7 @@ class ProcessModel {
 
   ProcessModel(const ProcessModel&);
   ProcessModel& operator=(const ProcessModel&);
-  ProcessModel() : processId("DO_NOT_SET_AT_CLIENTS"), experimentId(), creationTime(0), lastUpdateTime(0), processDetail(), applicationInterfaceId(), applicationDeploymentId(), computeResourceId(), taskDag(), gatewayExecutionId(), enableEmailNotification(0), storageResourceId(), userDn(), generateCert(false), experimentDataDir() {
+  ProcessModel() : processId("DO_NOT_SET_AT_CLIENTS"), experimentId(), creationTime(0), lastUpdateTime(0), processDetail(), applicationInterfaceId(), applicationDeploymentId(), computeResourceId(), taskDag(), gatewayExecutionId(), enableEmailNotification(0), storageResourceId(), userDn(), generateCert(false), experimentDataDir(), userName() {
   }
 
   virtual ~ProcessModel() throw();
@@ -98,6 +99,7 @@ class ProcessModel {
   std::string userDn;
   bool generateCert;
   std::string experimentDataDir;
+  std::string userName;
 
   _ProcessModel__isset __isset;
 
@@ -144,6 +146,8 @@ class ProcessModel {
   void __set_generateCert(const bool val);
 
   void __set_experimentDataDir(const std::string& val);
+
+  void __set_userName(const std::string& val);
 
   bool operator == (const ProcessModel & rhs) const
   {
@@ -230,6 +234,10 @@ class ProcessModel {
     if (__isset.experimentDataDir != rhs.__isset.experimentDataDir)
       return false;
     else if (__isset.experimentDataDir && !(experimentDataDir == rhs.experimentDataDir))
+      return false;
+    if (__isset.userName != rhs.__isset.userName)
+      return false;
+    else if (__isset.userName && !(userName == rhs.userName))
       return false;
     return true;
   }

@@ -35,7 +35,6 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
-import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.resources.*;
 import org.apache.airavata.registry.core.experiment.catalog.utils.ThriftDataModelConversion;
@@ -171,6 +170,7 @@ public class ExperimentRegistry {
                 resource.setInputOrder(input.getInputOrder());
                 resource.setIsRequired(input.isIsRequired());
                 resource.setRequiredToAddedToCmd(input.isRequiredToAddedToCommandLine());
+                resource.setStorageResourceId(input.getStorageResourceId());
                 resource.save();
             }
         } catch (Exception e) {
@@ -197,6 +197,7 @@ public class ExperimentRegistry {
                 resource.setLocation(output.getLocation());
                 resource.setSearchQuery(output.getSearchQuery());
                 resource.setOutputStreaming(output.isOutputStreaming());
+                resource.setStorageResourceId(output.getStorageResourceId());
                 resource.save();
             }
         } catch (Exception e) {
@@ -280,6 +281,7 @@ public class ExperimentRegistry {
             processResource.setUserDn(process.getUserDn());
             processResource.setGenerateCert(process.isGenerateCert());
             processResource.setExperimentDataDir(process.getExperimentDataDir());
+            processResource.setUserName(process.getUserName());
             if(process.isEnableEmailNotification()){
                 processResource.setEnableEmailNotification(true);
                 if(process.getEmailAddresses() != null){
@@ -350,6 +352,7 @@ public class ExperimentRegistry {
                 resource.setInputOrder(input.getInputOrder());
                 resource.setIsRequired(input.isIsRequired());
                 resource.setRequiredToAddedToCmd(input.isRequiredToAddedToCommandLine());
+                resource.setStorageResourceId(input.getStorageResourceId());
                 resource.save();
             }
             return processID;
@@ -376,6 +379,7 @@ public class ExperimentRegistry {
                 resource.setLocation(output.getLocation());
                 resource.setSearchQuery(output.getSearchQuery());
                 resource.setOutputStreaming(output.isOutputStreaming());
+                resource.setStorageResourceId(output.getStorageResourceId());
                 resource.save();
             }
             return processID;
@@ -638,6 +642,7 @@ public class ExperimentRegistry {
                         exinput.setInputOrder(input.getInputOrder());
                         exinput.setIsRequired(input.isIsRequired());
                         exinput.setRequiredToAddedToCmd(input.isRequiredToAddedToCommandLine());
+                        exinput.setStorageResourceId(input.getStorageResourceId());
                         exinput.save();
                     }
                 }
@@ -668,6 +673,7 @@ public class ExperimentRegistry {
                         resource.setApplicationArgument(output.getApplicationArgument());
                         resource.setSearchQuery(output.getSearchQuery());
                         resource.setOutputStreaming(output.isOutputStreaming());
+                        resource.setStorageResourceId(output.getStorageResourceId());
                         resource.save();
                     }
                 }
@@ -734,6 +740,7 @@ public class ExperimentRegistry {
             processResource.setUserDn(process.getUserDn());
             processResource.setGenerateCert(process.isGenerateCert());
             processResource.setExperimentDataDir(process.getExperimentDataDir());
+            processResource.setUserName(process.getUserName());
             if(process.isEnableEmailNotification()){
                 processResource.setEnableEmailNotification(true);
                 if(process.getEmailAddresses() != null){
@@ -810,6 +817,7 @@ public class ExperimentRegistry {
                         exinput.setInputOrder(input.getInputOrder());
                         exinput.setIsRequired(input.isIsRequired());
                         exinput.setRequiredToAddedToCmd(input.isRequiredToAddedToCommandLine());
+                        exinput.setStorageResourceId(input.getStorageResourceId());
                         exinput.save();
                     }
                 }
@@ -841,6 +849,7 @@ public class ExperimentRegistry {
                         resource.setApplicationArgument(output.getApplicationArgument());
                         resource.setSearchQuery(output.getSearchQuery());
                         resource.setOutputStreaming(output.isOutputStreaming());
+                        resource.setStorageResourceId(output.getStorageResourceId());
                         resource.save();
                     }
                 }

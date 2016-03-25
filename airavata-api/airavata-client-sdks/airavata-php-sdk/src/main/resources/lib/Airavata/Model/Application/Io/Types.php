@@ -111,6 +111,10 @@ class InputDataObjectType {
    * @var bool
    */
   public $dataStaged = null;
+  /**
+   * @var string
+   */
+  public $storageResourceId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -159,6 +163,10 @@ class InputDataObjectType {
           'var' => 'dataStaged',
           'type' => TType::BOOL,
           ),
+        12 => array(
+          'var' => 'storageResourceId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -194,6 +202,9 @@ class InputDataObjectType {
       }
       if (isset($vals['dataStaged'])) {
         $this->dataStaged = $vals['dataStaged'];
+      }
+      if (isset($vals['storageResourceId'])) {
+        $this->storageResourceId = $vals['storageResourceId'];
       }
     }
   }
@@ -294,6 +305,13 @@ class InputDataObjectType {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 12:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->storageResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -360,6 +378,11 @@ class InputDataObjectType {
     if ($this->dataStaged !== null) {
       $xfer += $output->writeFieldBegin('dataStaged', TType::BOOL, 11);
       $xfer += $output->writeBool($this->dataStaged);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->storageResourceId !== null) {
+      $xfer += $output->writeFieldBegin('storageResourceId', TType::STRING, 12);
+      $xfer += $output->writeString($this->storageResourceId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -438,6 +461,10 @@ class OutputDataObjectType {
    * @var bool
    */
   public $outputStreaming = null;
+  /**
+   * @var string
+   */
+  public $storageResourceId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -482,6 +509,10 @@ class OutputDataObjectType {
           'var' => 'outputStreaming',
           'type' => TType::BOOL,
           ),
+        11 => array(
+          'var' => 'storageResourceId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -514,6 +545,9 @@ class OutputDataObjectType {
       }
       if (isset($vals['outputStreaming'])) {
         $this->outputStreaming = $vals['outputStreaming'];
+      }
+      if (isset($vals['storageResourceId'])) {
+        $this->storageResourceId = $vals['storageResourceId'];
       }
     }
   }
@@ -607,6 +641,13 @@ class OutputDataObjectType {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 11:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->storageResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -668,6 +709,11 @@ class OutputDataObjectType {
     if ($this->outputStreaming !== null) {
       $xfer += $output->writeFieldBegin('outputStreaming', TType::BOOL, 10);
       $xfer += $output->writeBool($this->outputStreaming);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->storageResourceId !== null) {
+      $xfer += $output->writeFieldBegin('storageResourceId', TType::STRING, 11);
+      $xfer += $output->writeString($this->storageResourceId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
