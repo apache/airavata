@@ -260,15 +260,14 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
                 switch (output.getType()) {
                     case STDERR: case STDOUT: case STRING: case URI:
                         localFilePath = output.getValue();
-                        if (localFilePath.indexOf("://") != -1) {
+                        if (localFilePath.contains("://")) {
                             localFilePath = localFilePath.substring(localFilePath.indexOf("://") + 2, localFilePath.length());
                         }
                         fileName = localFilePath.substring(localFilePath.lastIndexOf("/") + 1);
                         URI destinationURI = TaskUtils.getDestinationURI(taskContext, hostName, inputPath, fileName);
                         remoteFilePath = destinationURI.getPath();
-//                        = pc.getInputDir() + File.separator + fileName;
                         SSHUtils.scpTo(localFilePath, remoteFilePath, sshSession);
-                        output.setValue("file:/" + destinationURI.getPath());
+                        output.setValue(destinationURI.toString());
                         break;
                     default:
                         break;
