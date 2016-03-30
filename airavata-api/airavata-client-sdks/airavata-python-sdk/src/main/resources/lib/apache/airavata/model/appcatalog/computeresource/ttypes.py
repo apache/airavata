@@ -599,21 +599,21 @@ class LOCALSubmission:
 
   Attributes:
    - jobSubmissionInterfaceId
-   - securityProtocol
    - resourceJobManager
+   - securityProtocol
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'jobSubmissionInterfaceId', None, "DO_NOT_SET_AT_CLIENTS", ), # 1
-    (2, TType.I32, 'securityProtocol', None, None, ), # 2
-    (3, TType.STRUCT, 'resourceJobManager', (ResourceJobManager, ResourceJobManager.thrift_spec), None, ), # 3
+    (2, TType.STRUCT, 'resourceJobManager', (ResourceJobManager, ResourceJobManager.thrift_spec), None, ), # 2
+    (3, TType.I32, 'securityProtocol', None, None, ), # 3
   )
 
-  def __init__(self, jobSubmissionInterfaceId=thrift_spec[1][4], securityProtocol=None, resourceJobManager=None,):
+  def __init__(self, jobSubmissionInterfaceId=thrift_spec[1][4], resourceJobManager=None, securityProtocol=None,):
     self.jobSubmissionInterfaceId = jobSubmissionInterfaceId
-    self.securityProtocol = securityProtocol
     self.resourceJobManager = resourceJobManager
+    self.securityProtocol = securityProtocol
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -630,14 +630,14 @@ class LOCALSubmission:
         else:
           iprot.skip(ftype)
       elif fid == 2:
-        if ftype == TType.I32:
-          self.securityProtocol = iprot.readI32()
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
         if ftype == TType.STRUCT:
           self.resourceJobManager = ResourceJobManager()
           self.resourceJobManager.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I32:
+          self.securityProtocol = iprot.readI32()
         else:
           iprot.skip(ftype)
       else:
@@ -654,13 +654,13 @@ class LOCALSubmission:
       oprot.writeFieldBegin('jobSubmissionInterfaceId', TType.STRING, 1)
       oprot.writeString(self.jobSubmissionInterfaceId)
       oprot.writeFieldEnd()
-    if self.securityProtocol is not None:
-      oprot.writeFieldBegin('securityProtocol', TType.I32, 2)
-      oprot.writeI32(self.securityProtocol)
-      oprot.writeFieldEnd()
     if self.resourceJobManager is not None:
-      oprot.writeFieldBegin('resourceJobManager', TType.STRUCT, 3)
+      oprot.writeFieldBegin('resourceJobManager', TType.STRUCT, 2)
       self.resourceJobManager.write(oprot)
+      oprot.writeFieldEnd()
+    if self.securityProtocol is not None:
+      oprot.writeFieldBegin('securityProtocol', TType.I32, 3)
+      oprot.writeI32(self.securityProtocol)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -668,8 +668,6 @@ class LOCALSubmission:
   def validate(self):
     if self.jobSubmissionInterfaceId is None:
       raise TProtocol.TProtocolException(message='Required field jobSubmissionInterfaceId is unset!')
-    if self.securityProtocol is None:
-      raise TProtocol.TProtocolException(message='Required field securityProtocol is unset!')
     if self.resourceJobManager is None:
       raise TProtocol.TProtocolException(message='Required field resourceJobManager is unset!')
     return
@@ -678,8 +676,8 @@ class LOCALSubmission:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.jobSubmissionInterfaceId)
-    value = (value * 31) ^ hash(self.securityProtocol)
     value = (value * 31) ^ hash(self.resourceJobManager)
+    value = (value * 31) ^ hash(self.securityProtocol)
     return value
 
   def __repr__(self):

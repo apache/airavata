@@ -53,7 +53,7 @@
     </xsl:choose>
     <xsl:choose>
     <xsl:when test="(ns:nodes)">
-#$ -pe serial <xsl:value-of select="ns:nodes"/>
+#$ -pe serial <xsl:value-of select="ns:processesPerNode"/>
 <xsl:text>&#xa;</xsl:text>
     </xsl:when>
     </xsl:choose>

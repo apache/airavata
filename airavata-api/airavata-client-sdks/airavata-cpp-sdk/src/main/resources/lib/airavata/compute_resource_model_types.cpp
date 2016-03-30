@@ -624,12 +624,13 @@ void LOCALSubmission::__set_jobSubmissionInterfaceId(const std::string& val) {
   this->jobSubmissionInterfaceId = val;
 }
 
-void LOCALSubmission::__set_securityProtocol(const  ::apache::airavata::model::data::movement::SecurityProtocol::type val) {
-  this->securityProtocol = val;
-}
-
 void LOCALSubmission::__set_resourceJobManager(const ResourceJobManager& val) {
   this->resourceJobManager = val;
+}
+
+void LOCALSubmission::__set_securityProtocol(const  ::apache::airavata::model::data::movement::SecurityProtocol::type val) {
+  this->securityProtocol = val;
+__isset.securityProtocol = true;
 }
 
 uint32_t LOCALSubmission::read(::apache::thrift::protocol::TProtocol* iprot) {
@@ -645,7 +646,6 @@ uint32_t LOCALSubmission::read(::apache::thrift::protocol::TProtocol* iprot) {
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_jobSubmissionInterfaceId = false;
-  bool isset_securityProtocol = false;
   bool isset_resourceJobManager = false;
 
   while (true)
@@ -665,19 +665,19 @@ uint32_t LOCALSubmission::read(::apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 2:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast23;
-          xfer += iprot->readI32(ecast23);
-          this->securityProtocol = ( ::apache::airavata::model::data::movement::SecurityProtocol::type)ecast23;
-          isset_securityProtocol = true;
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->resourceJobManager.read(iprot);
+          isset_resourceJobManager = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 3:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->resourceJobManager.read(iprot);
-          isset_resourceJobManager = true;
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast23;
+          xfer += iprot->readI32(ecast23);
+          this->securityProtocol = ( ::apache::airavata::model::data::movement::SecurityProtocol::type)ecast23;
+          this->__isset.securityProtocol = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -693,8 +693,6 @@ uint32_t LOCALSubmission::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   if (!isset_jobSubmissionInterfaceId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_securityProtocol)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_resourceJobManager)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -709,14 +707,15 @@ uint32_t LOCALSubmission::write(::apache::thrift::protocol::TProtocol* oprot) co
   xfer += oprot->writeString(this->jobSubmissionInterfaceId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("securityProtocol", ::apache::thrift::protocol::T_I32, 2);
-  xfer += oprot->writeI32((int32_t)this->securityProtocol);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("resourceJobManager", ::apache::thrift::protocol::T_STRUCT, 3);
+  xfer += oprot->writeFieldBegin("resourceJobManager", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += this->resourceJobManager.write(oprot);
   xfer += oprot->writeFieldEnd();
 
+  if (this->__isset.securityProtocol) {
+    xfer += oprot->writeFieldBegin("securityProtocol", ::apache::thrift::protocol::T_I32, 3);
+    xfer += oprot->writeI32((int32_t)this->securityProtocol);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -725,27 +724,30 @@ uint32_t LOCALSubmission::write(::apache::thrift::protocol::TProtocol* oprot) co
 void swap(LOCALSubmission &a, LOCALSubmission &b) {
   using ::std::swap;
   swap(a.jobSubmissionInterfaceId, b.jobSubmissionInterfaceId);
-  swap(a.securityProtocol, b.securityProtocol);
   swap(a.resourceJobManager, b.resourceJobManager);
+  swap(a.securityProtocol, b.securityProtocol);
+  swap(a.__isset, b.__isset);
 }
 
 LOCALSubmission::LOCALSubmission(const LOCALSubmission& other24) {
   jobSubmissionInterfaceId = other24.jobSubmissionInterfaceId;
-  securityProtocol = other24.securityProtocol;
   resourceJobManager = other24.resourceJobManager;
+  securityProtocol = other24.securityProtocol;
+  __isset = other24.__isset;
 }
 LOCALSubmission& LOCALSubmission::operator=(const LOCALSubmission& other25) {
   jobSubmissionInterfaceId = other25.jobSubmissionInterfaceId;
-  securityProtocol = other25.securityProtocol;
   resourceJobManager = other25.resourceJobManager;
+  securityProtocol = other25.securityProtocol;
+  __isset = other25.__isset;
   return *this;
 }
 void LOCALSubmission::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
   out << "LOCALSubmission(";
   out << "jobSubmissionInterfaceId=" << to_string(jobSubmissionInterfaceId);
-  out << ", " << "securityProtocol=" << to_string(securityProtocol);
   out << ", " << "resourceJobManager=" << to_string(resourceJobManager);
+  out << ", " << "securityProtocol="; (__isset.securityProtocol ? (out << to_string(securityProtocol)) : (out << "<null>"));
   out << ")";
 }
 

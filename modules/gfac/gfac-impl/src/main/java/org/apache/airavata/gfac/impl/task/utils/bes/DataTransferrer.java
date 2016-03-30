@@ -24,6 +24,7 @@ package org.apache.airavata.gfac.impl.task.utils.bes;
 import de.fzj.unicore.uas.client.StorageClient;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.gfac.core.GFacException;
+import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
@@ -57,8 +58,8 @@ public class DataTransferrer {
 	
 	protected String gatewayDownloadLocation, stdoutLocation, stderrLocation;
 	
-	public DataTransferrer(ProcessContext jobContext, StorageClient storageClient) {
-		this.processContext = jobContext;
+	public DataTransferrer(ProcessContext processContext, StorageClient storageClient) {
+		this.processContext = processContext;
 		this.storageClient = storageClient;
 		resultantOutputsLst = new ArrayList<OutputDataObjectType>();
 		initStdoutsLocation();
@@ -103,13 +104,17 @@ public class DataTransferrer {
 	}
 
     public void uploadLocalFiles() throws GFacException {
-        List<String> inFilePrms = extractInFileParams();
+        List<String> inFilePrms = new ArrayList<>();
+        // FIXME - remove hard coded file path.
+        inFilePrms.addAll(extractInFileParams());
+//        inFilePrms.add("file://home/airavata/test/hpcinput-localhost-uslims3_cauma3d-00950.tar");
         for (String uri : inFilePrms) {
             String fileName = new File(uri).getName();
             if (uri.startsWith("file")) {
                 try {
-                    String uriWithoutProtocol = uri.substring(uri.lastIndexOf("://") + 1, uri.length());
-                    FileUploader fileUploader = new FileUploader(uriWithoutProtocol,fileName,Mode.overwrite);
+                    String uriWithoutProtocol = uri.substring(uri.lastIndexOf("://") + 2, uri.length());
+                    FileUploader fileUploader = new FileUploader(uriWithoutProtocol, fileName, Mode.overwrite, false);
+                    log.info("Uploading file {}", fileName);
                     fileUploader.perform(storageClient);
                 } catch (FileNotFoundException e3) {
                     throw new GFacException(
@@ -147,25 +152,32 @@ public class DataTransferrer {
         String stderrFileName = new File(stderrLocation).getName();
 
         FileDownloader f1 = null;
+        log.info("Downloading stdout and stderr..");
+        log.info(stdoutFileName + " -> " + stdoutLocation);
+
+        f1 = new FileDownloader(stdoutFileName, stdoutLocation, Mode.overwrite);
         try {
-            log.info("Downloading stdout and stderr..");
-            log.info(stdoutFileName + " -> "+stdoutLocation);
-
-            f1 = new FileDownloader(stdoutFileName,stdoutLocation, Mode.overwrite);
             f1.perform(storageClient);
-            String stdoutput = readFile(stdoutLocation);
+//            String stdoutput = readFile(stdoutLocation);
+        } catch (Exception e) {
+            log.error("Error while downloading " + stdoutFileName + " to location " + stdoutLocation, e);
+        }
 
-            log.info(stderrFileName + " -> " + stderrLocation);
-            f1.setFrom(stderrFileName);
-            f1.setTo(stderrLocation);
+        log.info(stderrFileName + " -> " + stderrLocation);
+        f1.setFrom(stderrFileName);
+        f1.setTo(stderrLocation);
+        try {
             f1.perform(storageClient);
-            String stderror = readFile(stderrLocation);
-
-            if(UASDataStagingProcessor.isUnicoreEndpoint(processContext)) {
-                String scriptExitCodeFName = "UNICORE_SCRIPT_EXIT_CODE";
-                String scriptCodeLocation = gatewayDownloadLocation+File.separator+scriptExitCodeFName;
-                f1.setFrom(scriptExitCodeFName);
-                f1.setTo(scriptCodeLocation);
+//            String stderror = readFile(stderrLocation);
+        } catch (Exception e) {
+            log.error("Error while downloading " + stderrFileName + " to location " + stderrLocation);
+        }
+        String scriptExitCodeFName = "UNICORE_SCRIPT_EXIT_CODE";
+        String scriptCodeLocation = gatewayDownloadLocation + File.separator + scriptExitCodeFName;
+        if (UASDataStagingProcessor.isUnicoreEndpoint(processContext)) {
+            f1.setFrom(scriptExitCodeFName);
+            f1.setTo(scriptCodeLocation);
+            try {
                 f1.perform(storageClient);
                 OutputDataObjectType output = new OutputDataObjectType();
                 output.setName(scriptExitCodeFName);
@@ -173,13 +185,12 @@ public class DataTransferrer {
                 output.setType(DataType.URI);
                 output.setIsRequired(true);
                 processContext.getProcessModel().getProcessOutputs().add(output);
-                log.info("UNICORE_SCRIPT_EXIT_CODE -> "+scriptCodeLocation);
-                log.info("EXIT CODE: "+ readFile(scriptCodeLocation));
+                log.info("UNICORE_SCRIPT_EXIT_CODE -> " + scriptCodeLocation);
+                log.info("EXIT CODE: " + readFile(scriptCodeLocation));
+            } catch (Exception e) {
+                log.error("Error downloading file " + scriptExitCodeFName + " to location " + scriptCodeLocation, e);
             }
-        } catch (Exception e) {
-            throw new GFacException(e.getLocalizedMessage(),e);
         }
-
     }
 
     private String readFile(String localFile) throws IOException {
@@ -247,10 +258,10 @@ public class DataTransferrer {
 		return tmpOutputDir;
 	}
 
-    public void downloadRemoteFiles() throws GFacException {
+    public List<OutputDataObjectType> downloadRemoteFiles() throws GFacException {
 
         if(log.isDebugEnabled()) {
-            log.debug("Download location is:"+gatewayDownloadLocation);
+            log.debug("Download location is:" + gatewayDownloadLocation);
         }
 
         List<OutputDataObjectType> applicationOutputs = processContext.getProcessModel().getProcessOutputs();
@@ -260,37 +271,36 @@ public class DataTransferrer {
                     continue;
                 }
                 if(output.getType().equals(DataType.STDOUT)) {
-                    output.setValue(processContext.getStdoutLocation());
+                    output.setValue(stdoutLocation);
                     resultantOutputsLst.add(output);
-                }
-
-                else if(output.getType().equals(DataType.STDERR)) {
-                    output.setValue(processContext.getStderrLocation());
+                } else if(output.getType().equals(DataType.STDERR)) {
+                    output.setValue(stderrLocation);
                     resultantOutputsLst.add(output);
-                }
-                else if(output.getType().equals(DataType.STRING)) {
+                } else if (output.getType().equals(DataType.URI)) {
                     String value = null;
-                    if(!output.getLocation().isEmpty()){
+                    if (!output.getLocation().isEmpty()) {
                         value = output.getLocation() + File.separator + output.getValue();
-                    }else{
+                    } else {
                         value = output.getValue();
                     }
                     String outputPath = gatewayDownloadLocation + File.separator + output.getValue();
                     File f = new File(gatewayDownloadLocation);
-                    if(!f.exists())
+                    if (!f.exists())
                         f.mkdirs();
 
-                    FileDownloader fileDownloader = new FileDownloader(value,outputPath, Mode.overwrite);
+                    FileDownloader fileDownloader = new FileDownloader(value, outputPath, Mode.overwrite);
                     try {
+                        log.info("Downloading file {}", value);
                         fileDownloader.perform(storageClient);
                         output.setType(DataType.URI);
                         output.setValue(outputPath);
-                        processContext.getProcessModel().getProcessOutputs().add(output);
                         resultantOutputsLst.add(output);
                     } catch (Exception e) {
-                        log.error("Error downloading "+value+" from job working directory. ");
-                        throw new GFacException(e.getLocalizedMessage(),e);
+                        log.error("Error downloading " + value + " from job working directory. ");
+//                        throw new GFacException(e.getLocalizedMessage(),e);
                     }
+                } else {
+                    log.info("Ignore output file {}, type {}", output.getValue(), output.getType().toString());
                 }
 
             }
@@ -298,6 +308,7 @@ public class DataTransferrer {
         }
 
         downloadStdOuts();
+        return resultantOutputsLst;
 
     }
 

@@ -28,7 +28,7 @@
 
 #include <thrift/TToString.h>
 
-namespace apache { namespace airavata { namespace model { namespace data { namespace resource {
+namespace apache { namespace airavata { namespace model { namespace data { namespace replica {
 
 int _kReplicaLocationCategoryValues[] = {
   ReplicaLocationCategory::GATEWAY_DATA_STORE,
@@ -54,87 +54,82 @@ const char* _kReplicaPersistentTypeNames[] = {
 };
 const std::map<int, const char*> _ReplicaPersistentType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kReplicaPersistentTypeValues, _kReplicaPersistentTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
-int _kDataResourceTypeValues[] = {
-  DataResourceType::COLLECTION,
-  DataResourceType::FILE
+int _kDataProductTypeValues[] = {
+  DataProductType::FILE,
+  DataProductType::COLLECTION
 };
-const char* _kDataResourceTypeNames[] = {
-  "COLLECTION",
-  "FILE"
+const char* _kDataProductTypeNames[] = {
+  "FILE",
+  "COLLECTION"
 };
-const std::map<int, const char*> _DataResourceType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kDataResourceTypeValues, _kDataResourceTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _DataProductType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kDataProductTypeValues, _kDataProductTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 
-DataResourceModel::~DataResourceModel() throw() {
+DataProductModel::~DataProductModel() throw() {
 }
 
 
-void DataResourceModel::__set_resourceId(const std::string& val) {
-  this->resourceId = val;
-__isset.resourceId = true;
+void DataProductModel::__set_productUri(const std::string& val) {
+  this->productUri = val;
+__isset.productUri = true;
 }
 
-void DataResourceModel::__set_gatewayId(const std::string& val) {
+void DataProductModel::__set_gatewayId(const std::string& val) {
   this->gatewayId = val;
 __isset.gatewayId = true;
 }
 
-void DataResourceModel::__set_parentResourceId(const std::string& val) {
-  this->parentResourceId = val;
-__isset.parentResourceId = true;
+void DataProductModel::__set_parentProductUri(const std::string& val) {
+  this->parentProductUri = val;
+__isset.parentProductUri = true;
 }
 
-void DataResourceModel::__set_resourceName(const std::string& val) {
-  this->resourceName = val;
-__isset.resourceName = true;
+void DataProductModel::__set_productName(const std::string& val) {
+  this->productName = val;
+__isset.productName = true;
 }
 
-void DataResourceModel::__set_resourceDescription(const std::string& val) {
-  this->resourceDescription = val;
-__isset.resourceDescription = true;
+void DataProductModel::__set_productDescription(const std::string& val) {
+  this->productDescription = val;
+__isset.productDescription = true;
 }
 
-void DataResourceModel::__set_ownerName(const std::string& val) {
+void DataProductModel::__set_ownerName(const std::string& val) {
   this->ownerName = val;
 __isset.ownerName = true;
 }
 
-void DataResourceModel::__set_dataResourceType(const DataResourceType::type val) {
-  this->dataResourceType = val;
-__isset.dataResourceType = true;
+void DataProductModel::__set_dataProductType(const DataProductType::type val) {
+  this->dataProductType = val;
+__isset.dataProductType = true;
 }
 
-void DataResourceModel::__set_resourceSize(const int32_t val) {
-  this->resourceSize = val;
-__isset.resourceSize = true;
+void DataProductModel::__set_productSize(const int32_t val) {
+  this->productSize = val;
+__isset.productSize = true;
 }
 
-void DataResourceModel::__set_creationTime(const int64_t val) {
+void DataProductModel::__set_creationTime(const int64_t val) {
   this->creationTime = val;
 __isset.creationTime = true;
 }
 
-void DataResourceModel::__set_lastModifiedTime(const int64_t val) {
+void DataProductModel::__set_lastModifiedTime(const int64_t val) {
   this->lastModifiedTime = val;
 __isset.lastModifiedTime = true;
 }
 
-void DataResourceModel::__set_resourceMetadata(const std::map<std::string, std::string> & val) {
-  this->resourceMetadata = val;
-__isset.resourceMetadata = true;
+void DataProductModel::__set_productMetadata(const std::map<std::string, std::string> & val) {
+  this->productMetadata = val;
+__isset.productMetadata = true;
 }
 
-void DataResourceModel::__set_replicaLocations(const std::vector<DataReplicaLocationModel> & val) {
+void DataProductModel::__set_replicaLocations(const std::vector<DataReplicaLocationModel> & val) {
   this->replicaLocations = val;
 __isset.replicaLocations = true;
 }
 
-void DataResourceModel::__set_childResources(const std::vector<DataResourceModel> & val) {
-  this->childResources = val;
-__isset.childResources = true;
-}
-
-uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t DataProductModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
   uint32_t xfer = 0;
@@ -157,8 +152,8 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->resourceId);
-          this->__isset.resourceId = true;
+          xfer += iprot->readString(this->productUri);
+          this->__isset.productUri = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -173,24 +168,24 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->parentResourceId);
-          this->__isset.parentResourceId = true;
+          xfer += iprot->readString(this->parentProductUri);
+          this->__isset.parentProductUri = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 4:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->resourceName);
-          this->__isset.resourceName = true;
+          xfer += iprot->readString(this->productName);
+          this->__isset.productName = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 5:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->resourceDescription);
-          this->__isset.resourceDescription = true;
+          xfer += iprot->readString(this->productDescription);
+          this->__isset.productDescription = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -207,16 +202,16 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast0;
           xfer += iprot->readI32(ecast0);
-          this->dataResourceType = (DataResourceType::type)ecast0;
-          this->__isset.dataResourceType = true;
+          this->dataProductType = (DataProductType::type)ecast0;
+          this->__isset.dataProductType = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 8:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->resourceSize);
-          this->__isset.resourceSize = true;
+          xfer += iprot->readI32(this->productSize);
+          this->__isset.productSize = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -240,7 +235,7 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
       case 11:
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
-            this->resourceMetadata.clear();
+            this->productMetadata.clear();
             uint32_t _size1;
             ::apache::thrift::protocol::TType _ktype2;
             ::apache::thrift::protocol::TType _vtype3;
@@ -250,12 +245,12 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
             {
               std::string _key6;
               xfer += iprot->readString(_key6);
-              std::string& _val7 = this->resourceMetadata[_key6];
+              std::string& _val7 = this->productMetadata[_key6];
               xfer += iprot->readString(_val7);
             }
             xfer += iprot->readMapEnd();
           }
-          this->__isset.resourceMetadata = true;
+          this->__isset.productMetadata = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -280,26 +275,6 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 13:
-        if (ftype == ::apache::thrift::protocol::T_LIST) {
-          {
-            this->childResources.clear();
-            uint32_t _size13;
-            ::apache::thrift::protocol::TType _etype16;
-            xfer += iprot->readListBegin(_etype16, _size13);
-            this->childResources.resize(_size13);
-            uint32_t _i17;
-            for (_i17 = 0; _i17 < _size13; ++_i17)
-            {
-              xfer += this->childResources[_i17].read(iprot);
-            }
-            xfer += iprot->readListEnd();
-          }
-          this->__isset.childResources = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -312,14 +287,14 @@ uint32_t DataResourceModel::read(::apache::thrift::protocol::TProtocol* iprot) {
   return xfer;
 }
 
-uint32_t DataResourceModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t DataProductModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("DataResourceModel");
+  xfer += oprot->writeStructBegin("DataProductModel");
 
-  if (this->__isset.resourceId) {
-    xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 1);
-    xfer += oprot->writeString(this->resourceId);
+  if (this->__isset.productUri) {
+    xfer += oprot->writeFieldBegin("productUri", ::apache::thrift::protocol::T_STRING, 1);
+    xfer += oprot->writeString(this->productUri);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.gatewayId) {
@@ -327,19 +302,19 @@ uint32_t DataResourceModel::write(::apache::thrift::protocol::TProtocol* oprot) 
     xfer += oprot->writeString(this->gatewayId);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.parentResourceId) {
-    xfer += oprot->writeFieldBegin("parentResourceId", ::apache::thrift::protocol::T_STRING, 3);
-    xfer += oprot->writeString(this->parentResourceId);
+  if (this->__isset.parentProductUri) {
+    xfer += oprot->writeFieldBegin("parentProductUri", ::apache::thrift::protocol::T_STRING, 3);
+    xfer += oprot->writeString(this->parentProductUri);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.resourceName) {
-    xfer += oprot->writeFieldBegin("resourceName", ::apache::thrift::protocol::T_STRING, 4);
-    xfer += oprot->writeString(this->resourceName);
+  if (this->__isset.productName) {
+    xfer += oprot->writeFieldBegin("productName", ::apache::thrift::protocol::T_STRING, 4);
+    xfer += oprot->writeString(this->productName);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.resourceDescription) {
-    xfer += oprot->writeFieldBegin("resourceDescription", ::apache::thrift::protocol::T_STRING, 5);
-    xfer += oprot->writeString(this->resourceDescription);
+  if (this->__isset.productDescription) {
+    xfer += oprot->writeFieldBegin("productDescription", ::apache::thrift::protocol::T_STRING, 5);
+    xfer += oprot->writeString(this->productDescription);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.ownerName) {
@@ -347,14 +322,14 @@ uint32_t DataResourceModel::write(::apache::thrift::protocol::TProtocol* oprot) 
     xfer += oprot->writeString(this->ownerName);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.dataResourceType) {
-    xfer += oprot->writeFieldBegin("dataResourceType", ::apache::thrift::protocol::T_I32, 7);
-    xfer += oprot->writeI32((int32_t)this->dataResourceType);
+  if (this->__isset.dataProductType) {
+    xfer += oprot->writeFieldBegin("dataProductType", ::apache::thrift::protocol::T_I32, 7);
+    xfer += oprot->writeI32((int32_t)this->dataProductType);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.resourceSize) {
-    xfer += oprot->writeFieldBegin("resourceSize", ::apache::thrift::protocol::T_I32, 8);
-    xfer += oprot->writeI32(this->resourceSize);
+  if (this->__isset.productSize) {
+    xfer += oprot->writeFieldBegin("productSize", ::apache::thrift::protocol::T_I32, 8);
+    xfer += oprot->writeI32(this->productSize);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.creationTime) {
@@ -367,15 +342,15 @@ uint32_t DataResourceModel::write(::apache::thrift::protocol::TProtocol* oprot) 
     xfer += oprot->writeI64(this->lastModifiedTime);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.resourceMetadata) {
-    xfer += oprot->writeFieldBegin("resourceMetadata", ::apache::thrift::protocol::T_MAP, 11);
+  if (this->__isset.productMetadata) {
+    xfer += oprot->writeFieldBegin("productMetadata", ::apache::thrift::protocol::T_MAP, 11);
     {
-      xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->resourceMetadata.size()));
-      std::map<std::string, std::string> ::const_iterator _iter18;
-      for (_iter18 = this->resourceMetadata.begin(); _iter18 != this->resourceMetadata.end(); ++_iter18)
+      xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->productMetadata.size()));
+      std::map<std::string, std::string> ::const_iterator _iter13;
+      for (_iter13 = this->productMetadata.begin(); _iter13 != this->productMetadata.end(); ++_iter13)
       {
-        xfer += oprot->writeString(_iter18->first);
-        xfer += oprot->writeString(_iter18->second);
+        xfer += oprot->writeString(_iter13->first);
+        xfer += oprot->writeString(_iter13->second);
       }
       xfer += oprot->writeMapEnd();
     }
@@ -385,23 +360,10 @@ uint32_t DataResourceModel::write(::apache::thrift::protocol::TProtocol* oprot) 
     xfer += oprot->writeFieldBegin("replicaLocations", ::apache::thrift::protocol::T_LIST, 12);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->replicaLocations.size()));
-      std::vector<DataReplicaLocationModel> ::const_iterator _iter19;
-      for (_iter19 = this->replicaLocations.begin(); _iter19 != this->replicaLocations.end(); ++_iter19)
+      std::vector<DataReplicaLocationModel> ::const_iterator _iter14;
+      for (_iter14 = this->replicaLocations.begin(); _iter14 != this->replicaLocations.end(); ++_iter14)
       {
-        xfer += (*_iter19).write(oprot);
-      }
-      xfer += oprot->writeListEnd();
-    }
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.childResources) {
-    xfer += oprot->writeFieldBegin("childResources", ::apache::thrift::protocol::T_LIST, 13);
-    {
-      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->childResources.size()));
-      std::vector<DataResourceModel> ::const_iterator _iter20;
-      for (_iter20 = this->childResources.begin(); _iter20 != this->childResources.end(); ++_iter20)
-      {
-        xfer += (*_iter20).write(oprot);
+        xfer += (*_iter14).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -412,73 +374,69 @@ uint32_t DataResourceModel::write(::apache::thrift::protocol::TProtocol* oprot) 
   return xfer;
 }
 
-void swap(DataResourceModel &a, DataResourceModel &b) {
+void swap(DataProductModel &a, DataProductModel &b) {
   using ::std::swap;
-  swap(a.resourceId, b.resourceId);
+  swap(a.productUri, b.productUri);
   swap(a.gatewayId, b.gatewayId);
-  swap(a.parentResourceId, b.parentResourceId);
-  swap(a.resourceName, b.resourceName);
-  swap(a.resourceDescription, b.resourceDescription);
+  swap(a.parentProductUri, b.parentProductUri);
+  swap(a.productName, b.productName);
+  swap(a.productDescription, b.productDescription);
   swap(a.ownerName, b.ownerName);
-  swap(a.dataResourceType, b.dataResourceType);
-  swap(a.resourceSize, b.resourceSize);
+  swap(a.dataProductType, b.dataProductType);
+  swap(a.productSize, b.productSize);
   swap(a.creationTime, b.creationTime);
   swap(a.lastModifiedTime, b.lastModifiedTime);
-  swap(a.resourceMetadata, b.resourceMetadata);
+  swap(a.productMetadata, b.productMetadata);
   swap(a.replicaLocations, b.replicaLocations);
-  swap(a.childResources, b.childResources);
   swap(a.__isset, b.__isset);
 }
 
-DataResourceModel::DataResourceModel(const DataResourceModel& other21) {
-  resourceId = other21.resourceId;
-  gatewayId = other21.gatewayId;
-  parentResourceId = other21.parentResourceId;
-  resourceName = other21.resourceName;
-  resourceDescription = other21.resourceDescription;
-  ownerName = other21.ownerName;
-  dataResourceType = other21.dataResourceType;
-  resourceSize = other21.resourceSize;
-  creationTime = other21.creationTime;
-  lastModifiedTime = other21.lastModifiedTime;
-  resourceMetadata = other21.resourceMetadata;
-  replicaLocations = other21.replicaLocations;
-  childResources = other21.childResources;
-  __isset = other21.__isset;
+DataProductModel::DataProductModel(const DataProductModel& other15) {
+  productUri = other15.productUri;
+  gatewayId = other15.gatewayId;
+  parentProductUri = other15.parentProductUri;
+  productName = other15.productName;
+  productDescription = other15.productDescription;
+  ownerName = other15.ownerName;
+  dataProductType = other15.dataProductType;
+  productSize = other15.productSize;
+  creationTime = other15.creationTime;
+  lastModifiedTime = other15.lastModifiedTime;
+  productMetadata = other15.productMetadata;
+  replicaLocations = other15.replicaLocations;
+  __isset = other15.__isset;
 }
-DataResourceModel& DataResourceModel::operator=(const DataResourceModel& other22) {
-  resourceId = other22.resourceId;
-  gatewayId = other22.gatewayId;
-  parentResourceId = other22.parentResourceId;
-  resourceName = other22.resourceName;
-  resourceDescription = other22.resourceDescription;
-  ownerName = other22.ownerName;
-  dataResourceType = other22.dataResourceType;
-  resourceSize = other22.resourceSize;
-  creationTime = other22.creationTime;
-  lastModifiedTime = other22.lastModifiedTime;
-  resourceMetadata = other22.resourceMetadata;
-  replicaLocations = other22.replicaLocations;
-  childResources = other22.childResources;
-  __isset = other22.__isset;
+DataProductModel& DataProductModel::operator=(const DataProductModel& other16) {
+  productUri = other16.productUri;
+  gatewayId = other16.gatewayId;
+  parentProductUri = other16.parentProductUri;
+  productName = other16.productName;
+  productDescription = other16.productDescription;
+  ownerName = other16.ownerName;
+  dataProductType = other16.dataProductType;
+  productSize = other16.productSize;
+  creationTime = other16.creationTime;
+  lastModifiedTime = other16.lastModifiedTime;
+  productMetadata = other16.productMetadata;
+  replicaLocations = other16.replicaLocations;
+  __isset = other16.__isset;
   return *this;
 }
-void DataResourceModel::printTo(std::ostream& out) const {
+void DataProductModel::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
-  out << "DataResourceModel(";
-  out << "resourceId="; (__isset.resourceId ? (out << to_string(resourceId)) : (out << "<null>"));
+  out << "DataProductModel(";
+  out << "productUri="; (__isset.productUri ? (out << to_string(productUri)) : (out << "<null>"));
   out << ", " << "gatewayId="; (__isset.gatewayId ? (out << to_string(gatewayId)) : (out << "<null>"));
-  out << ", " << "parentResourceId="; (__isset.parentResourceId ? (out << to_string(parentResourceId)) : (out << "<null>"));
-  out << ", " << "resourceName="; (__isset.resourceName ? (out << to_string(resourceName)) : (out << "<null>"));
-  out << ", " << "resourceDescription="; (__isset.resourceDescription ? (out << to_string(resourceDescription)) : (out << "<null>"));
+  out << ", " << "parentProductUri="; (__isset.parentProductUri ? (out << to_string(parentProductUri)) : (out << "<null>"));
+  out << ", " << "productName="; (__isset.productName ? (out << to_string(productName)) : (out << "<null>"));
+  out << ", " << "productDescription="; (__isset.productDescription ? (out << to_string(productDescription)) : (out << "<null>"));
   out << ", " << "ownerName="; (__isset.ownerName ? (out << to_string(ownerName)) : (out << "<null>"));
-  out << ", " << "dataResourceType="; (__isset.dataResourceType ? (out << to_string(dataResourceType)) : (out << "<null>"));
-  out << ", " << "resourceSize="; (__isset.resourceSize ? (out << to_string(resourceSize)) : (out << "<null>"));
+  out << ", " << "dataProductType="; (__isset.dataProductType ? (out << to_string(dataProductType)) : (out << "<null>"));
+  out << ", " << "productSize="; (__isset.productSize ? (out << to_string(productSize)) : (out << "<null>"));
   out << ", " << "creationTime="; (__isset.creationTime ? (out << to_string(creationTime)) : (out << "<null>"));
   out << ", " << "lastModifiedTime="; (__isset.lastModifiedTime ? (out << to_string(lastModifiedTime)) : (out << "<null>"));
-  out << ", " << "resourceMetadata="; (__isset.resourceMetadata ? (out << to_string(resourceMetadata)) : (out << "<null>"));
+  out << ", " << "productMetadata="; (__isset.productMetadata ? (out << to_string(productMetadata)) : (out << "<null>"));
   out << ", " << "replicaLocations="; (__isset.replicaLocations ? (out << to_string(replicaLocations)) : (out << "<null>"));
-  out << ", " << "childResources="; (__isset.childResources ? (out << to_string(childResources)) : (out << "<null>"));
   out << ")";
 }
 
@@ -492,9 +450,9 @@ void DataReplicaLocationModel::__set_replicaId(const std::string& val) {
 __isset.replicaId = true;
 }
 
-void DataReplicaLocationModel::__set_resourceId(const std::string& val) {
-  this->resourceId = val;
-__isset.resourceId = true;
+void DataReplicaLocationModel::__set_productUri(const std::string& val) {
+  this->productUri = val;
+__isset.productUri = true;
 }
 
 void DataReplicaLocationModel::__set_replicaName(const std::string& val) {
@@ -537,9 +495,9 @@ void DataReplicaLocationModel::__set_storageResourceId(const std::string& val) {
 __isset.storageResourceId = true;
 }
 
-void DataReplicaLocationModel::__set_fileAbsolutePath(const std::string& val) {
-  this->fileAbsolutePath = val;
-__isset.fileAbsolutePath = true;
+void DataReplicaLocationModel::__set_filePath(const std::string& val) {
+  this->filePath = val;
+__isset.filePath = true;
 }
 
 void DataReplicaLocationModel::__set_replicaMetadata(const std::map<std::string, std::string> & val) {
@@ -578,8 +536,8 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->resourceId);
-          this->__isset.resourceId = true;
+          xfer += iprot->readString(this->productUri);
+          this->__isset.productUri = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -626,9 +584,9 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
         break;
       case 8:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast23;
-          xfer += iprot->readI32(ecast23);
-          this->replicaLocationCategory = (ReplicaLocationCategory::type)ecast23;
+          int32_t ecast17;
+          xfer += iprot->readI32(ecast17);
+          this->replicaLocationCategory = (ReplicaLocationCategory::type)ecast17;
           this->__isset.replicaLocationCategory = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -636,9 +594,9 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
         break;
       case 9:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast24;
-          xfer += iprot->readI32(ecast24);
-          this->replicaPersistentType = (ReplicaPersistentType::type)ecast24;
+          int32_t ecast18;
+          xfer += iprot->readI32(ecast18);
+          this->replicaPersistentType = (ReplicaPersistentType::type)ecast18;
           this->__isset.replicaPersistentType = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -654,8 +612,8 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
         break;
       case 11:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->fileAbsolutePath);
-          this->__isset.fileAbsolutePath = true;
+          xfer += iprot->readString(this->filePath);
+          this->__isset.filePath = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -664,17 +622,17 @@ uint32_t DataReplicaLocationModel::read(::apache::thrift::protocol::TProtocol* i
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->replicaMetadata.clear();
-            uint32_t _size25;
-            ::apache::thrift::protocol::TType _ktype26;
-            ::apache::thrift::protocol::TType _vtype27;
-            xfer += iprot->readMapBegin(_ktype26, _vtype27, _size25);
-            uint32_t _i29;
-            for (_i29 = 0; _i29 < _size25; ++_i29)
+            uint32_t _size19;
+            ::apache::thrift::protocol::TType _ktype20;
+            ::apache::thrift::protocol::TType _vtype21;
+            xfer += iprot->readMapBegin(_ktype20, _vtype21, _size19);
+            uint32_t _i23;
+            for (_i23 = 0; _i23 < _size19; ++_i23)
             {
-              std::string _key30;
-              xfer += iprot->readString(_key30);
-              std::string& _val31 = this->replicaMetadata[_key30];
-              xfer += iprot->readString(_val31);
+              std::string _key24;
+              xfer += iprot->readString(_key24);
+              std::string& _val25 = this->replicaMetadata[_key24];
+              xfer += iprot->readString(_val25);
             }
             xfer += iprot->readMapEnd();
           }
@@ -705,9 +663,9 @@ uint32_t DataReplicaLocationModel::write(::apache::thrift::protocol::TProtocol* 
     xfer += oprot->writeString(this->replicaId);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.resourceId) {
-    xfer += oprot->writeFieldBegin("resourceId", ::apache::thrift::protocol::T_STRING, 2);
-    xfer += oprot->writeString(this->resourceId);
+  if (this->__isset.productUri) {
+    xfer += oprot->writeFieldBegin("productUri", ::apache::thrift::protocol::T_STRING, 2);
+    xfer += oprot->writeString(this->productUri);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.replicaName) {
@@ -750,20 +708,20 @@ uint32_t DataReplicaLocationModel::write(::apache::thrift::protocol::TProtocol* 
     xfer += oprot->writeString(this->storageResourceId);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.fileAbsolutePath) {
-    xfer += oprot->writeFieldBegin("fileAbsolutePath", ::apache::thrift::protocol::T_STRING, 11);
-    xfer += oprot->writeString(this->fileAbsolutePath);
+  if (this->__isset.filePath) {
+    xfer += oprot->writeFieldBegin("filePath", ::apache::thrift::protocol::T_STRING, 11);
+    xfer += oprot->writeString(this->filePath);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.replicaMetadata) {
     xfer += oprot->writeFieldBegin("replicaMetadata", ::apache::thrift::protocol::T_MAP, 12);
     {
       xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->replicaMetadata.size()));
-      std::map<std::string, std::string> ::const_iterator _iter32;
-      for (_iter32 = this->replicaMetadata.begin(); _iter32 != this->replicaMetadata.end(); ++_iter32)
+      std::map<std::string, std::string> ::const_iterator _iter26;
+      for (_iter26 = this->replicaMetadata.begin(); _iter26 != this->replicaMetadata.end(); ++_iter26)
       {
-        xfer += oprot->writeString(_iter32->first);
-        xfer += oprot->writeString(_iter32->second);
+        xfer += oprot->writeString(_iter26->first);
+        xfer += oprot->writeString(_iter26->second);
       }
       xfer += oprot->writeMapEnd();
     }
@@ -777,7 +735,7 @@ uint32_t DataReplicaLocationModel::write(::apache::thrift::protocol::TProtocol* 
 void swap(DataReplicaLocationModel &a, DataReplicaLocationModel &b) {
   using ::std::swap;
   swap(a.replicaId, b.replicaId);
-  swap(a.resourceId, b.resourceId);
+  swap(a.productUri, b.productUri);
   swap(a.replicaName, b.replicaName);
   swap(a.replicaDescription, b.replicaDescription);
   swap(a.creationTime, b.creationTime);
@@ -786,47 +744,47 @@ void swap(DataReplicaLocationModel &a, DataReplicaLocationModel &b) {
   swap(a.replicaLocationCategory, b.replicaLocationCategory);
   swap(a.replicaPersistentType, b.replicaPersistentType);
   swap(a.storageResourceId, b.storageResourceId);
-  swap(a.fileAbsolutePath, b.fileAbsolutePath);
+  swap(a.filePath, b.filePath);
   swap(a.replicaMetadata, b.replicaMetadata);
   swap(a.__isset, b.__isset);
 }
 
-DataReplicaLocationModel::DataReplicaLocationModel(const DataReplicaLocationModel& other33) {
-  replicaId = other33.replicaId;
-  resourceId = other33.resourceId;
-  replicaName = other33.replicaName;
-  replicaDescription = other33.replicaDescription;
-  creationTime = other33.creationTime;
-  lastModifiedTime = other33.lastModifiedTime;
-  validUntilTime = other33.validUntilTime;
-  replicaLocationCategory = other33.replicaLocationCategory;
-  replicaPersistentType = other33.replicaPersistentType;
-  storageResourceId = other33.storageResourceId;
-  fileAbsolutePath = other33.fileAbsolutePath;
-  replicaMetadata = other33.replicaMetadata;
-  __isset = other33.__isset;
+DataReplicaLocationModel::DataReplicaLocationModel(const DataReplicaLocationModel& other27) {
+  replicaId = other27.replicaId;
+  productUri = other27.productUri;
+  replicaName = other27.replicaName;
+  replicaDescription = other27.replicaDescription;
+  creationTime = other27.creationTime;
+  lastModifiedTime = other27.lastModifiedTime;
+  validUntilTime = other27.validUntilTime;
+  replicaLocationCategory = other27.replicaLocationCategory;
+  replicaPersistentType = other27.replicaPersistentType;
+  storageResourceId = other27.storageResourceId;
+  filePath = other27.filePath;
+  replicaMetadata = other27.replicaMetadata;
+  __isset = other27.__isset;
 }
-DataReplicaLocationModel& DataReplicaLocationModel::operator=(const DataReplicaLocationModel& other34) {
-  replicaId = other34.replicaId;
-  resourceId = other34.resourceId;
-  replicaName = other34.replicaName;
-  replicaDescription = other34.replicaDescription;
-  creationTime = other34.creationTime;
-  lastModifiedTime = other34.lastModifiedTime;
-  validUntilTime = other34.validUntilTime;
-  replicaLocationCategory = other34.replicaLocationCategory;
-  replicaPersistentType = other34.replicaPersistentType;
-  storageResourceId = other34.storageResourceId;
-  fileAbsolutePath = other34.fileAbsolutePath;
-  replicaMetadata = other34.replicaMetadata;
-  __isset = other34.__isset;
+DataReplicaLocationModel& DataReplicaLocationModel::operator=(const DataReplicaLocationModel& other28) {
+  replicaId = other28.replicaId;
+  productUri = other28.productUri;
+  replicaName = other28.replicaName;
+  replicaDescription = other28.replicaDescription;
+  creationTime = other28.creationTime;
+  lastModifiedTime = other28.lastModifiedTime;
+  validUntilTime = other28.validUntilTime;
+  replicaLocationCategory = other28.replicaLocationCategory;
+  replicaPersistentType = other28.replicaPersistentType;
+  storageResourceId = other28.storageResourceId;
+  filePath = other28.filePath;
+  replicaMetadata = other28.replicaMetadata;
+  __isset = other28.__isset;
   return *this;
 }
 void DataReplicaLocationModel::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
   out << "DataReplicaLocationModel(";
   out << "replicaId="; (__isset.replicaId ? (out << to_string(replicaId)) : (out << "<null>"));
-  out << ", " << "resourceId="; (__isset.resourceId ? (out << to_string(resourceId)) : (out << "<null>"));
+  out << ", " << "productUri="; (__isset.productUri ? (out << to_string(productUri)) : (out << "<null>"));
   out << ", " << "replicaName="; (__isset.replicaName ? (out << to_string(replicaName)) : (out << "<null>"));
   out << ", " << "replicaDescription="; (__isset.replicaDescription ? (out << to_string(replicaDescription)) : (out << "<null>"));
   out << ", " << "creationTime="; (__isset.creationTime ? (out << to_string(creationTime)) : (out << "<null>"));
@@ -835,7 +793,7 @@ void DataReplicaLocationModel::printTo(std::ostream& out) const {
   out << ", " << "replicaLocationCategory="; (__isset.replicaLocationCategory ? (out << to_string(replicaLocationCategory)) : (out << "<null>"));
   out << ", " << "replicaPersistentType="; (__isset.replicaPersistentType ? (out << to_string(replicaPersistentType)) : (out << "<null>"));
   out << ", " << "storageResourceId="; (__isset.storageResourceId ? (out << to_string(storageResourceId)) : (out << "<null>"));
-  out << ", " << "fileAbsolutePath="; (__isset.fileAbsolutePath ? (out << to_string(fileAbsolutePath)) : (out << "<null>"));
+  out << ", " << "filePath="; (__isset.filePath ? (out << to_string(filePath)) : (out << "<null>"));
   out << ", " << "replicaMetadata="; (__isset.replicaMetadata ? (out << to_string(replicaMetadata)) : (out << "<null>"));
   out << ")";
 }

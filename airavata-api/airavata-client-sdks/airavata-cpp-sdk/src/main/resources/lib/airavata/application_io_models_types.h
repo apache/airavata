@@ -55,7 +55,7 @@ class InputDataObjectType;
 class OutputDataObjectType;
 
 typedef struct _InputDataObjectType__isset {
-  _InputDataObjectType__isset() : value(false), type(false), applicationArgument(false), standardInput(false), userFriendlyDescription(false), metaData(false), inputOrder(false), isRequired(false), requiredToAddedToCommandLine(false), dataStaged(false) {}
+  _InputDataObjectType__isset() : value(false), type(false), applicationArgument(false), standardInput(false), userFriendlyDescription(false), metaData(false), inputOrder(false), isRequired(false), requiredToAddedToCommandLine(false), dataStaged(false), storageResourceId(false) {}
   bool value :1;
   bool type :1;
   bool applicationArgument :1;
@@ -66,6 +66,7 @@ typedef struct _InputDataObjectType__isset {
   bool isRequired :1;
   bool requiredToAddedToCommandLine :1;
   bool dataStaged :1;
+  bool storageResourceId :1;
 } _InputDataObjectType__isset;
 
 class InputDataObjectType {
@@ -73,7 +74,7 @@ class InputDataObjectType {
 
   InputDataObjectType(const InputDataObjectType&);
   InputDataObjectType& operator=(const InputDataObjectType&);
-  InputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), standardInput(0), userFriendlyDescription(), metaData(), inputOrder(0), isRequired(0), requiredToAddedToCommandLine(0), dataStaged(0) {
+  InputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), standardInput(0), userFriendlyDescription(), metaData(), inputOrder(0), isRequired(0), requiredToAddedToCommandLine(0), dataStaged(0), storageResourceId() {
   }
 
   virtual ~InputDataObjectType() throw();
@@ -88,6 +89,7 @@ class InputDataObjectType {
   bool isRequired;
   bool requiredToAddedToCommandLine;
   bool dataStaged;
+  std::string storageResourceId;
 
   _InputDataObjectType__isset __isset;
 
@@ -112,6 +114,8 @@ class InputDataObjectType {
   void __set_requiredToAddedToCommandLine(const bool val);
 
   void __set_dataStaged(const bool val);
+
+  void __set_storageResourceId(const std::string& val);
 
   bool operator == (const InputDataObjectType & rhs) const
   {
@@ -157,6 +161,10 @@ class InputDataObjectType {
       return false;
     else if (__isset.dataStaged && !(dataStaged == rhs.dataStaged))
       return false;
+    if (__isset.storageResourceId != rhs.__isset.storageResourceId)
+      return false;
+    else if (__isset.storageResourceId && !(storageResourceId == rhs.storageResourceId))
+      return false;
     return true;
   }
   bool operator != (const InputDataObjectType &rhs) const {
@@ -180,7 +188,7 @@ inline std::ostream& operator<<(std::ostream& out, const InputDataObjectType& ob
 }
 
 typedef struct _OutputDataObjectType__isset {
-  _OutputDataObjectType__isset() : value(false), type(false), applicationArgument(false), isRequired(false), requiredToAddedToCommandLine(false), dataMovement(false), location(false), searchQuery(false), outputStreaming(false) {}
+  _OutputDataObjectType__isset() : value(false), type(false), applicationArgument(false), isRequired(false), requiredToAddedToCommandLine(false), dataMovement(false), location(false), searchQuery(false), outputStreaming(false), storageResourceId(false) {}
   bool value :1;
   bool type :1;
   bool applicationArgument :1;
@@ -190,6 +198,7 @@ typedef struct _OutputDataObjectType__isset {
   bool location :1;
   bool searchQuery :1;
   bool outputStreaming :1;
+  bool storageResourceId :1;
 } _OutputDataObjectType__isset;
 
 class OutputDataObjectType {
@@ -197,7 +206,7 @@ class OutputDataObjectType {
 
   OutputDataObjectType(const OutputDataObjectType&);
   OutputDataObjectType& operator=(const OutputDataObjectType&);
-  OutputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), isRequired(0), requiredToAddedToCommandLine(0), dataMovement(0), location(), searchQuery(), outputStreaming(0) {
+  OutputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), isRequired(0), requiredToAddedToCommandLine(0), dataMovement(0), location(), searchQuery(), outputStreaming(0), storageResourceId() {
   }
 
   virtual ~OutputDataObjectType() throw();
@@ -211,6 +220,7 @@ class OutputDataObjectType {
   std::string location;
   std::string searchQuery;
   bool outputStreaming;
+  std::string storageResourceId;
 
   _OutputDataObjectType__isset __isset;
 
@@ -233,6 +243,8 @@ class OutputDataObjectType {
   void __set_searchQuery(const std::string& val);
 
   void __set_outputStreaming(const bool val);
+
+  void __set_storageResourceId(const std::string& val);
 
   bool operator == (const OutputDataObjectType & rhs) const
   {
@@ -273,6 +285,10 @@ class OutputDataObjectType {
     if (__isset.outputStreaming != rhs.__isset.outputStreaming)
       return false;
     else if (__isset.outputStreaming && !(outputStreaming == rhs.outputStreaming))
+      return false;
+    if (__isset.storageResourceId != rhs.__isset.storageResourceId)
+      return false;
+    else if (__isset.storageResourceId && !(storageResourceId == rhs.storageResourceId))
       return false;
     return true;
   }

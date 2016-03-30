@@ -107,6 +107,11 @@ void InputDataObjectType::__set_dataStaged(const bool val) {
 __isset.dataStaged = true;
 }
 
+void InputDataObjectType::__set_storageResourceId(const std::string& val) {
+  this->storageResourceId = val;
+__isset.storageResourceId = true;
+}
+
 uint32_t InputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -219,6 +224,14 @@ uint32_t InputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
+      case 12:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->storageResourceId);
+          this->__isset.storageResourceId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -292,6 +305,11 @@ uint32_t InputDataObjectType::write(::apache::thrift::protocol::TProtocol* oprot
     xfer += oprot->writeBool(this->dataStaged);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.storageResourceId) {
+    xfer += oprot->writeFieldBegin("storageResourceId", ::apache::thrift::protocol::T_STRING, 12);
+    xfer += oprot->writeString(this->storageResourceId);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -310,6 +328,7 @@ void swap(InputDataObjectType &a, InputDataObjectType &b) {
   swap(a.isRequired, b.isRequired);
   swap(a.requiredToAddedToCommandLine, b.requiredToAddedToCommandLine);
   swap(a.dataStaged, b.dataStaged);
+  swap(a.storageResourceId, b.storageResourceId);
   swap(a.__isset, b.__isset);
 }
 
@@ -325,6 +344,7 @@ InputDataObjectType::InputDataObjectType(const InputDataObjectType& other1) {
   isRequired = other1.isRequired;
   requiredToAddedToCommandLine = other1.requiredToAddedToCommandLine;
   dataStaged = other1.dataStaged;
+  storageResourceId = other1.storageResourceId;
   __isset = other1.__isset;
 }
 InputDataObjectType& InputDataObjectType::operator=(const InputDataObjectType& other2) {
@@ -339,6 +359,7 @@ InputDataObjectType& InputDataObjectType::operator=(const InputDataObjectType& o
   isRequired = other2.isRequired;
   requiredToAddedToCommandLine = other2.requiredToAddedToCommandLine;
   dataStaged = other2.dataStaged;
+  storageResourceId = other2.storageResourceId;
   __isset = other2.__isset;
   return *this;
 }
@@ -356,6 +377,7 @@ void InputDataObjectType::printTo(std::ostream& out) const {
   out << ", " << "isRequired="; (__isset.isRequired ? (out << to_string(isRequired)) : (out << "<null>"));
   out << ", " << "requiredToAddedToCommandLine="; (__isset.requiredToAddedToCommandLine ? (out << to_string(requiredToAddedToCommandLine)) : (out << "<null>"));
   out << ", " << "dataStaged="; (__isset.dataStaged ? (out << to_string(dataStaged)) : (out << "<null>"));
+  out << ", " << "storageResourceId="; (__isset.storageResourceId ? (out << to_string(storageResourceId)) : (out << "<null>"));
   out << ")";
 }
 
@@ -411,6 +433,11 @@ __isset.searchQuery = true;
 void OutputDataObjectType::__set_outputStreaming(const bool val) {
   this->outputStreaming = val;
 __isset.outputStreaming = true;
+}
+
+void OutputDataObjectType::__set_storageResourceId(const std::string& val) {
+  this->storageResourceId = val;
+__isset.storageResourceId = true;
 }
 
 uint32_t OutputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot) {
@@ -517,6 +544,14 @@ uint32_t OutputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
+      case 11:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->storageResourceId);
+          this->__isset.storageResourceId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -585,6 +620,11 @@ uint32_t OutputDataObjectType::write(::apache::thrift::protocol::TProtocol* opro
     xfer += oprot->writeBool(this->outputStreaming);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.storageResourceId) {
+    xfer += oprot->writeFieldBegin("storageResourceId", ::apache::thrift::protocol::T_STRING, 11);
+    xfer += oprot->writeString(this->storageResourceId);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -602,6 +642,7 @@ void swap(OutputDataObjectType &a, OutputDataObjectType &b) {
   swap(a.location, b.location);
   swap(a.searchQuery, b.searchQuery);
   swap(a.outputStreaming, b.outputStreaming);
+  swap(a.storageResourceId, b.storageResourceId);
   swap(a.__isset, b.__isset);
 }
 
@@ -616,6 +657,7 @@ OutputDataObjectType::OutputDataObjectType(const OutputDataObjectType& other4) {
   location = other4.location;
   searchQuery = other4.searchQuery;
   outputStreaming = other4.outputStreaming;
+  storageResourceId = other4.storageResourceId;
   __isset = other4.__isset;
 }
 OutputDataObjectType& OutputDataObjectType::operator=(const OutputDataObjectType& other5) {
@@ -629,6 +671,7 @@ OutputDataObjectType& OutputDataObjectType::operator=(const OutputDataObjectType
   location = other5.location;
   searchQuery = other5.searchQuery;
   outputStreaming = other5.outputStreaming;
+  storageResourceId = other5.storageResourceId;
   __isset = other5.__isset;
   return *this;
 }
@@ -645,6 +688,7 @@ void OutputDataObjectType::printTo(std::ostream& out) const {
   out << ", " << "location="; (__isset.location ? (out << to_string(location)) : (out << "<null>"));
   out << ", " << "searchQuery="; (__isset.searchQuery ? (out << to_string(searchQuery)) : (out << "<null>"));
   out << ", " << "outputStreaming="; (__isset.outputStreaming ? (out << to_string(outputStreaming)) : (out << "<null>"));
+  out << ", " << "storageResourceId="; (__isset.storageResourceId ? (out << to_string(storageResourceId)) : (out << "<null>"));
   out << ")";
 }
 

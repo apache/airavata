@@ -283,36 +283,42 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 throw new OrchestratorException("Compute Resource Id cannot be null at this point");
             }
             ComputeResourceDescription computeResource = appCatalog.getComputeResource().getComputeResource(resourceHostId);
-
-            List<String> taskIdList = createAndSaveEnvSetupTask(gatewayId, processModel, experimentCatalog);
-            taskIdList.addAll(createAndSaveInputDataStagingTasks(processModel, gatewayId));
-
             JobSubmissionInterface preferredJobSubmissionInterface = OrchestratorUtils.getPreferredJobSubmissionInterface(orchestratorContext, processModel, gatewayId);
-            if (autoSchedule) {
-                List<BatchQueue> definedBatchQueues = computeResource.getBatchQueues();
-                for (BatchQueue batchQueue : definedBatchQueues) {
-                    if (batchQueue.getQueueName().equals(userGivenQueueName)) {
-                        int maxRunTime = batchQueue.getMaxRunTime();
-                        if (maxRunTime < userGivenWallTime) {
-                            resourceSchedule.setWallTimeLimit(maxRunTime);
-                            // need to create more job submissions
-                            int numOfMaxWallTimeJobs = ((int) Math.floor(userGivenWallTime / maxRunTime));
-                            for (int i = 1; i <= numOfMaxWallTimeJobs; i++) {
-                                taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId,preferredJobSubmissionInterface, processModel, maxRunTime));
+            ComputeResourcePreference resourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
+            List<String> taskIdList = new ArrayList<>();
+
+            if (resourcePreference.getPreferredJobSubmissionProtocol() == JobSubmissionProtocol.UNICORE) {
+                // TODO - breakdown unicore all in one task to multiple tasks, then we don't need to handle UNICORE here.
+                taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId, preferredJobSubmissionInterface, processModel, userGivenWallTime));
+            } else {
+                taskIdList.addAll(createAndSaveEnvSetupTask(gatewayId, processModel, experimentCatalog));
+                taskIdList.addAll(createAndSaveInputDataStagingTasks(processModel, gatewayId));
+                if (autoSchedule) {
+                    List<BatchQueue> definedBatchQueues = computeResource.getBatchQueues();
+                    for (BatchQueue batchQueue : definedBatchQueues) {
+                        if (batchQueue.getQueueName().equals(userGivenQueueName)) {
+                            int maxRunTime = batchQueue.getMaxRunTime();
+                            if (maxRunTime < userGivenWallTime) {
+                                resourceSchedule.setWallTimeLimit(maxRunTime);
+                                // need to create more job submissions
+                                int numOfMaxWallTimeJobs = ((int) Math.floor(userGivenWallTime / maxRunTime));
+                                for (int i = 1; i <= numOfMaxWallTimeJobs; i++) {
+                                    taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId,preferredJobSubmissionInterface, processModel, maxRunTime));
+                                }
+                                int leftWallTime = userGivenWallTime % maxRunTime;
+                                if (leftWallTime != 0) {
+                                    taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId,preferredJobSubmissionInterface, processModel, leftWallTime));
+                                }
+                            } else {
+                                taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId,preferredJobSubmissionInterface, processModel, userGivenWallTime));
                             }
-                            int leftWallTime = userGivenWallTime % maxRunTime;
-                            if (leftWallTime != 0) {
-                                taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId,preferredJobSubmissionInterface, processModel, leftWallTime));
-                            }
-                        } else {
-                            taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId,preferredJobSubmissionInterface, processModel, userGivenWallTime));
                         }
                     }
+                } else {
+                    taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId,preferredJobSubmissionInterface, processModel, userGivenWallTime));
                 }
-            } else {
-                taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId,preferredJobSubmissionInterface, processModel, userGivenWallTime));
+                taskIdList.addAll(createAndSaveOutputDataStagingTasks(processModel, gatewayId));
             }
-            taskIdList.addAll(createAndSaveOutputDataStagingTasks(processModel, gatewayId));
             // update process scheduling
             experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processModel.getProcessId());
             return getTaskDag(taskIdList);
@@ -466,7 +472,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         if (jobSubmissionProtocol == JobSubmissionProtocol.SSH || jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK) {
             SSHJobSubmission sshJobSubmission = OrchestratorUtils.getSSHJobSubmission(orchestratorContext, jobSubmissionInterface.getJobSubmissionInterfaceId());
             monitorMode = sshJobSubmission.getMonitorMode();
-        }else {
+        } else if (jobSubmissionProtocol == JobSubmissionProtocol.UNICORE) {
+            monitorMode = MonitorMode.FORK;
+        } else {
             logger.error("expId : {}, processId : {} :- Unsupported Job submission protocol {}.",
                     processModel.getExperimentId(), processModel.getProcessId(), jobSubmissionProtocol.name());
             throw new OrchestratorException("Unsupported Job Submission Protocol " + jobSubmissionProtocol.name());
@@ -482,8 +490,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
         JobSubmissionTaskModel submissionSubTask = new JobSubmissionTaskModel();
         submissionSubTask.setMonitorMode(monitorMode);
-        submissionSubTask.setJobSubmissionProtocol(
-                OrchestratorUtils.getPreferredJobSubmissionProtocol(orchestratorContext, processModel, gatewayId));
+        submissionSubTask.setJobSubmissionProtocol(jobSubmissionProtocol);
         submissionSubTask.setWallTime(wallTime);
         byte[] bytes = ThriftUtils.serializeThriftObject(submissionSubTask);
         taskModel.setSubTaskModel(bytes);

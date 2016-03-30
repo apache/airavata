@@ -2075,13 +2075,13 @@ class Iface:
     """
     pass
 
-  def addLocalDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, localDataMovement):
+  def addLocalDataMovementDetails(self, authzToken, productUri, dataMoveType, priorityOrder, localDataMovement):
     """
 
     Add a Local data movement details to a compute resource
      App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
 
-    @param resourceId
+    @param productUri
       The identifier of the compute resource to which JobSubmission protocol to be added
 
     @param DMType
@@ -2100,7 +2100,7 @@ class Iface:
 
     Parameters:
      - authzToken
-     - resourceId
+     - productUri
      - dataMoveType
      - priorityOrder
      - localDataMovement
@@ -2148,13 +2148,13 @@ class Iface:
     """
     pass
 
-  def addSCPDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, scpDataMovement):
+  def addSCPDataMovementDetails(self, authzToken, productUri, dataMoveType, priorityOrder, scpDataMovement):
     """
 
     Add a SCP data movement details to a compute resource
      App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
 
-    @param resourceId
+    @param productUri
       The identifier of the compute resource to which JobSubmission protocol to be added
 
     @param priorityOrder
@@ -2169,7 +2169,7 @@ class Iface:
 
     Parameters:
      - authzToken
-     - resourceId
+     - productUri
      - dataMoveType
      - priorityOrder
      - scpDataMovement
@@ -2216,13 +2216,13 @@ class Iface:
     """
     pass
 
-  def addUnicoreDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, unicoreDataMovement):
+  def addUnicoreDataMovementDetails(self, authzToken, productUri, dataMoveType, priorityOrder, unicoreDataMovement):
     """
 
     Add a UNICORE data movement details to a compute resource
      App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
 
-    @param resourceId
+    @param productUri
       The identifier of the compute resource to which data movement protocol to be added
 
     @param priorityOrder
@@ -2237,7 +2237,7 @@ class Iface:
 
     Parameters:
      - authzToken
-     - resourceId
+     - productUri
      - dataMoveType
      - priorityOrder
      - unicoreDataMovement
@@ -2286,13 +2286,13 @@ class Iface:
     """
     pass
 
-  def addGridFTPDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, gridFTPDataMovement):
+  def addGridFTPDataMovementDetails(self, authzToken, productUri, dataMoveType, priorityOrder, gridFTPDataMovement):
     """
 
     Add a GridFTP data movement details to a compute resource
      App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
 
-    @param resourceId
+    @param productUri
       The identifier of the compute resource to which dataMovement protocol to be added
 
     @param DMType
@@ -2311,7 +2311,7 @@ class Iface:
 
     Parameters:
      - authzToken
-     - resourceId
+     - productUri
      - dataMoveType
      - priorityOrder
      - gridFTPDataMovement
@@ -2456,7 +2456,7 @@ class Iface:
     """
     pass
 
-  def deleteDataMovementInterface(self, authzToken, resourceId, dataMovementInterfaceId, dataMoveType):
+  def deleteDataMovementInterface(self, authzToken, productUri, dataMovementInterfaceId, dataMoveType):
     """
     Delete a given data movement interface
 
@@ -2470,7 +2470,7 @@ class Iface:
 
     Parameters:
      - authzToken
-     - resourceId
+     - productUri
      - dataMovementInterfaceId
      - dataMoveType
     """
@@ -2917,61 +2917,46 @@ class Iface:
     """
     pass
 
-  def registerDataResource(self, authzToken, dataResourceModel):
+  def registerDataProduct(self, authzToken, dataProductModel):
     """
-     *
-     * Data Manager Related API Methods.
-     *
-    *
+    API Methods related to replica catalog
+
 
     Parameters:
      - authzToken
-     - dataResourceModel
+     - dataProductModel
     """
     pass
 
-  def updateDataResource(self, authzToken, dataResourceModel):
+  def getDataProduct(self, authzToken, dataProductUri):
     """
     Parameters:
      - authzToken
-     - dataResourceModel
+     - dataProductUri
     """
     pass
 
-  def removeDataResource(self, authzToken, resourceId):
+  def registerReplicaLocation(self, authzToken, replicaLocationModel):
     """
     Parameters:
      - authzToken
-     - resourceId
+     - replicaLocationModel
     """
     pass
 
-  def getDataResource(self, authzToken, resourceId):
+  def getParentDataProduct(self, authzToken, productUri):
     """
     Parameters:
      - authzToken
-     - resourceId
+     - productUri
     """
     pass
 
-  def copyDataResource(self, authzToken, resourceId, destStorageResourceId, destinationParentPath):
+  def getChildDataProducts(self, authzToken, productUri):
     """
     Parameters:
      - authzToken
-     - resourceId
-     - destStorageResourceId
-     - destinationParentPath
-    """
-    pass
-
-  def copyDataReplica(self, authzToken, resourceId, replicaId, destStorageResourceId, destinationParentPath):
-    """
-    Parameters:
-     - authzToken
-     - resourceId
-     - replicaId
-     - destStorageResourceId
-     - destinationParentPath
+     - productUri
     """
     pass
 
@@ -8049,13 +8034,13 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "updateUnicoreJobSubmissionDetails failed: unknown result")
 
-  def addLocalDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, localDataMovement):
+  def addLocalDataMovementDetails(self, authzToken, productUri, dataMoveType, priorityOrder, localDataMovement):
     """
 
     Add a Local data movement details to a compute resource
      App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
 
-    @param resourceId
+    @param productUri
       The identifier of the compute resource to which JobSubmission protocol to be added
 
     @param DMType
@@ -8074,19 +8059,19 @@ class Client(Iface):
 
     Parameters:
      - authzToken
-     - resourceId
+     - productUri
      - dataMoveType
      - priorityOrder
      - localDataMovement
     """
-    self.send_addLocalDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, localDataMovement)
+    self.send_addLocalDataMovementDetails(authzToken, productUri, dataMoveType, priorityOrder, localDataMovement)
     return self.recv_addLocalDataMovementDetails()
 
-  def send_addLocalDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, localDataMovement):
+  def send_addLocalDataMovementDetails(self, authzToken, productUri, dataMoveType, priorityOrder, localDataMovement):
     self._oprot.writeMessageBegin('addLocalDataMovementDetails', TMessageType.CALL, self._seqid)
     args = addLocalDataMovementDetails_args()
     args.authzToken = authzToken
-    args.resourceId = resourceId
+    args.productUri = productUri
     args.dataMoveType = dataMoveType
     args.priorityOrder = priorityOrder
     args.localDataMovement = localDataMovement
@@ -8225,13 +8210,13 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getLocalDataMovement failed: unknown result")
 
-  def addSCPDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, scpDataMovement):
+  def addSCPDataMovementDetails(self, authzToken, productUri, dataMoveType, priorityOrder, scpDataMovement):
     """
 
     Add a SCP data movement details to a compute resource
      App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
 
-    @param resourceId
+    @param productUri
       The identifier of the compute resource to which JobSubmission protocol to be added
 
     @param priorityOrder
@@ -8246,19 +8231,19 @@ class Client(Iface):
 
     Parameters:
      - authzToken
-     - resourceId
+     - productUri
      - dataMoveType
      - priorityOrder
      - scpDataMovement
     """
-    self.send_addSCPDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, scpDataMovement)
+    self.send_addSCPDataMovementDetails(authzToken, productUri, dataMoveType, priorityOrder, scpDataMovement)
     return self.recv_addSCPDataMovementDetails()
 
-  def send_addSCPDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, scpDataMovement):
+  def send_addSCPDataMovementDetails(self, authzToken, productUri, dataMoveType, priorityOrder, scpDataMovement):
     self._oprot.writeMessageBegin('addSCPDataMovementDetails', TMessageType.CALL, self._seqid)
     args = addSCPDataMovementDetails_args()
     args.authzToken = authzToken
-    args.resourceId = resourceId
+    args.productUri = productUri
     args.dataMoveType = dataMoveType
     args.priorityOrder = priorityOrder
     args.scpDataMovement = scpDataMovement
@@ -8396,13 +8381,13 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getSCPDataMovement failed: unknown result")
 
-  def addUnicoreDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, unicoreDataMovement):
+  def addUnicoreDataMovementDetails(self, authzToken, productUri, dataMoveType, priorityOrder, unicoreDataMovement):
     """
 
     Add a UNICORE data movement details to a compute resource
      App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
 
-    @param resourceId
+    @param productUri
       The identifier of the compute resource to which data movement protocol to be added
 
     @param priorityOrder
@@ -8417,19 +8402,19 @@ class Client(Iface):
 
     Parameters:
      - authzToken
-     - resourceId
+     - productUri
      - dataMoveType
      - priorityOrder
      - unicoreDataMovement
     """
-    self.send_addUnicoreDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, unicoreDataMovement)
+    self.send_addUnicoreDataMovementDetails(authzToken, productUri, dataMoveType, priorityOrder, unicoreDataMovement)
     return self.recv_addUnicoreDataMovementDetails()
 
-  def send_addUnicoreDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, unicoreDataMovement):
+  def send_addUnicoreDataMovementDetails(self, authzToken, productUri, dataMoveType, priorityOrder, unicoreDataMovement):
     self._oprot.writeMessageBegin('addUnicoreDataMovementDetails', TMessageType.CALL, self._seqid)
     args = addUnicoreDataMovementDetails_args()
     args.authzToken = authzToken
-    args.resourceId = resourceId
+    args.productUri = productUri
     args.dataMoveType = dataMoveType
     args.priorityOrder = priorityOrder
     args.unicoreDataMovement = unicoreDataMovement
@@ -8569,13 +8554,13 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getUnicoreDataMovement failed: unknown result")
 
-  def addGridFTPDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, gridFTPDataMovement):
+  def addGridFTPDataMovementDetails(self, authzToken, productUri, dataMoveType, priorityOrder, gridFTPDataMovement):
     """
 
     Add a GridFTP data movement details to a compute resource
      App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
 
-    @param resourceId
+    @param productUri
       The identifier of the compute resource to which dataMovement protocol to be added
 
     @param DMType
@@ -8594,19 +8579,19 @@ class Client(Iface):
 
     Parameters:
      - authzToken
-     - resourceId
+     - productUri
      - dataMoveType
      - priorityOrder
      - gridFTPDataMovement
     """
-    self.send_addGridFTPDataMovementDetails(authzToken, resourceId, dataMoveType, priorityOrder, gridFTPDataMovement)
+    self.send_addGridFTPDataMovementDetails(authzToken, productUri, dataMoveType, priorityOrder, gridFTPDataMovement)
     return self.recv_addGridFTPDataMovementDetails()
 
-  def send_addGridFTPDataMovementDetails(self, authzToken, resourceId, dataMoveType, priorityOrder, gridFTPDataMovement):
+  def send_addGridFTPDataMovementDetails(self, authzToken, productUri, dataMoveType, priorityOrder, gridFTPDataMovement):
     self._oprot.writeMessageBegin('addGridFTPDataMovementDetails', TMessageType.CALL, self._seqid)
     args = addGridFTPDataMovementDetails_args()
     args.authzToken = authzToken
-    args.resourceId = resourceId
+    args.productUri = productUri
     args.dataMoveType = dataMoveType
     args.priorityOrder = priorityOrder
     args.gridFTPDataMovement = gridFTPDataMovement
@@ -9010,7 +8995,7 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "deleteJobSubmissionInterface failed: unknown result")
 
-  def deleteDataMovementInterface(self, authzToken, resourceId, dataMovementInterfaceId, dataMoveType):
+  def deleteDataMovementInterface(self, authzToken, productUri, dataMovementInterfaceId, dataMoveType):
     """
     Delete a given data movement interface
 
@@ -9024,18 +9009,18 @@ class Client(Iface):
 
     Parameters:
      - authzToken
-     - resourceId
+     - productUri
      - dataMovementInterfaceId
      - dataMoveType
     """
-    self.send_deleteDataMovementInterface(authzToken, resourceId, dataMovementInterfaceId, dataMoveType)
+    self.send_deleteDataMovementInterface(authzToken, productUri, dataMovementInterfaceId, dataMoveType)
     return self.recv_deleteDataMovementInterface()
 
-  def send_deleteDataMovementInterface(self, authzToken, resourceId, dataMovementInterfaceId, dataMoveType):
+  def send_deleteDataMovementInterface(self, authzToken, productUri, dataMovementInterfaceId, dataMoveType):
     self._oprot.writeMessageBegin('deleteDataMovementInterface', TMessageType.CALL, self._seqid)
     args = deleteDataMovementInterface_args()
     args.authzToken = authzToken
-    args.resourceId = resourceId
+    args.productUri = productUri
     args.dataMovementInterfaceId = dataMovementInterfaceId
     args.dataMoveType = dataMoveType
     args.write(self._oprot)
@@ -10409,30 +10394,28 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "isWorkflowExistWithName failed: unknown result")
 
-  def registerDataResource(self, authzToken, dataResourceModel):
+  def registerDataProduct(self, authzToken, dataProductModel):
     """
-     *
-     * Data Manager Related API Methods.
-     *
-    *
+    API Methods related to replica catalog
+
 
     Parameters:
      - authzToken
-     - dataResourceModel
+     - dataProductModel
     """
-    self.send_registerDataResource(authzToken, dataResourceModel)
-    return self.recv_registerDataResource()
+    self.send_registerDataProduct(authzToken, dataProductModel)
+    return self.recv_registerDataProduct()
 
-  def send_registerDataResource(self, authzToken, dataResourceModel):
-    self._oprot.writeMessageBegin('registerDataResource', TMessageType.CALL, self._seqid)
-    args = registerDataResource_args()
+  def send_registerDataProduct(self, authzToken, dataProductModel):
+    self._oprot.writeMessageBegin('registerDataProduct', TMessageType.CALL, self._seqid)
+    args = registerDataProduct_args()
     args.authzToken = authzToken
-    args.dataResourceModel = dataResourceModel
+    args.dataProductModel = dataProductModel
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_registerDataResource(self):
+  def recv_registerDataProduct(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -10440,7 +10423,7 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = registerDataResource_result()
+    result = registerDataProduct_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
@@ -10453,27 +10436,27 @@ class Client(Iface):
       raise result.ase
     if result.ae is not None:
       raise result.ae
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "registerDataResource failed: unknown result")
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "registerDataProduct failed: unknown result")
 
-  def updateDataResource(self, authzToken, dataResourceModel):
+  def getDataProduct(self, authzToken, dataProductUri):
     """
     Parameters:
      - authzToken
-     - dataResourceModel
+     - dataProductUri
     """
-    self.send_updateDataResource(authzToken, dataResourceModel)
-    self.recv_updateDataResource()
+    self.send_getDataProduct(authzToken, dataProductUri)
+    return self.recv_getDataProduct()
 
-  def send_updateDataResource(self, authzToken, dataResourceModel):
-    self._oprot.writeMessageBegin('updateDataResource', TMessageType.CALL, self._seqid)
-    args = updateDataResource_args()
+  def send_getDataProduct(self, authzToken, dataProductUri):
+    self._oprot.writeMessageBegin('getDataProduct', TMessageType.CALL, self._seqid)
+    args = getDataProduct_args()
     args.authzToken = authzToken
-    args.dataResourceModel = dataResourceModel
+    args.dataProductUri = dataProductUri
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_updateDataResource(self):
+  def recv_getDataProduct(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -10481,85 +10464,7 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = updateDataResource_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.ire is not None:
-      raise result.ire
-    if result.ace is not None:
-      raise result.ace
-    if result.ase is not None:
-      raise result.ase
-    if result.ae is not None:
-      raise result.ae
-    return
-
-  def removeDataResource(self, authzToken, resourceId):
-    """
-    Parameters:
-     - authzToken
-     - resourceId
-    """
-    self.send_removeDataResource(authzToken, resourceId)
-    self.recv_removeDataResource()
-
-  def send_removeDataResource(self, authzToken, resourceId):
-    self._oprot.writeMessageBegin('removeDataResource', TMessageType.CALL, self._seqid)
-    args = removeDataResource_args()
-    args.authzToken = authzToken
-    args.resourceId = resourceId
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_removeDataResource(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = removeDataResource_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.ire is not None:
-      raise result.ire
-    if result.ace is not None:
-      raise result.ace
-    if result.ase is not None:
-      raise result.ase
-    if result.ae is not None:
-      raise result.ae
-    return
-
-  def getDataResource(self, authzToken, resourceId):
-    """
-    Parameters:
-     - authzToken
-     - resourceId
-    """
-    self.send_getDataResource(authzToken, resourceId)
-    return self.recv_getDataResource()
-
-  def send_getDataResource(self, authzToken, resourceId):
-    self._oprot.writeMessageBegin('getDataResource', TMessageType.CALL, self._seqid)
-    args = getDataResource_args()
-    args.authzToken = authzToken
-    args.resourceId = resourceId
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_getDataResource(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = getDataResource_result()
+    result = getDataProduct_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
@@ -10572,31 +10477,27 @@ class Client(Iface):
       raise result.ase
     if result.ae is not None:
       raise result.ae
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "getDataResource failed: unknown result")
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getDataProduct failed: unknown result")
 
-  def copyDataResource(self, authzToken, resourceId, destStorageResourceId, destinationParentPath):
+  def registerReplicaLocation(self, authzToken, replicaLocationModel):
     """
     Parameters:
      - authzToken
-     - resourceId
-     - destStorageResourceId
-     - destinationParentPath
+     - replicaLocationModel
     """
-    self.send_copyDataResource(authzToken, resourceId, destStorageResourceId, destinationParentPath)
-    return self.recv_copyDataResource()
+    self.send_registerReplicaLocation(authzToken, replicaLocationModel)
+    return self.recv_registerReplicaLocation()
 
-  def send_copyDataResource(self, authzToken, resourceId, destStorageResourceId, destinationParentPath):
-    self._oprot.writeMessageBegin('copyDataResource', TMessageType.CALL, self._seqid)
-    args = copyDataResource_args()
+  def send_registerReplicaLocation(self, authzToken, replicaLocationModel):
+    self._oprot.writeMessageBegin('registerReplicaLocation', TMessageType.CALL, self._seqid)
+    args = registerReplicaLocation_args()
     args.authzToken = authzToken
-    args.resourceId = resourceId
-    args.destStorageResourceId = destStorageResourceId
-    args.destinationParentPath = destinationParentPath
+    args.replicaLocationModel = replicaLocationModel
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_copyDataResource(self):
+  def recv_registerReplicaLocation(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -10604,7 +10505,7 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = copyDataResource_result()
+    result = registerReplicaLocation_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
@@ -10617,33 +10518,27 @@ class Client(Iface):
       raise result.ase
     if result.ae is not None:
       raise result.ae
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "copyDataResource failed: unknown result")
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "registerReplicaLocation failed: unknown result")
 
-  def copyDataReplica(self, authzToken, resourceId, replicaId, destStorageResourceId, destinationParentPath):
+  def getParentDataProduct(self, authzToken, productUri):
     """
     Parameters:
      - authzToken
-     - resourceId
-     - replicaId
-     - destStorageResourceId
-     - destinationParentPath
+     - productUri
     """
-    self.send_copyDataReplica(authzToken, resourceId, replicaId, destStorageResourceId, destinationParentPath)
-    return self.recv_copyDataReplica()
+    self.send_getParentDataProduct(authzToken, productUri)
+    return self.recv_getParentDataProduct()
 
-  def send_copyDataReplica(self, authzToken, resourceId, replicaId, destStorageResourceId, destinationParentPath):
-    self._oprot.writeMessageBegin('copyDataReplica', TMessageType.CALL, self._seqid)
-    args = copyDataReplica_args()
+  def send_getParentDataProduct(self, authzToken, productUri):
+    self._oprot.writeMessageBegin('getParentDataProduct', TMessageType.CALL, self._seqid)
+    args = getParentDataProduct_args()
     args.authzToken = authzToken
-    args.resourceId = resourceId
-    args.replicaId = replicaId
-    args.destStorageResourceId = destStorageResourceId
-    args.destinationParentPath = destinationParentPath
+    args.productUri = productUri
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_copyDataReplica(self):
+  def recv_getParentDataProduct(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -10651,7 +10546,7 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = copyDataReplica_result()
+    result = getParentDataProduct_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
@@ -10664,7 +10559,48 @@ class Client(Iface):
       raise result.ase
     if result.ae is not None:
       raise result.ae
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "copyDataReplica failed: unknown result")
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getParentDataProduct failed: unknown result")
+
+  def getChildDataProducts(self, authzToken, productUri):
+    """
+    Parameters:
+     - authzToken
+     - productUri
+    """
+    self.send_getChildDataProducts(authzToken, productUri)
+    return self.recv_getChildDataProducts()
+
+  def send_getChildDataProducts(self, authzToken, productUri):
+    self._oprot.writeMessageBegin('getChildDataProducts', TMessageType.CALL, self._seqid)
+    args = getChildDataProducts_args()
+    args.authzToken = authzToken
+    args.productUri = productUri
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_getChildDataProducts(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = getChildDataProducts_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getChildDataProducts failed: unknown result")
 
 
 class Processor(Iface, TProcessor):
@@ -10805,12 +10741,11 @@ class Processor(Iface, TProcessor):
     self._processMap["updateWorkflow"] = Processor.process_updateWorkflow
     self._processMap["getWorkflowTemplateId"] = Processor.process_getWorkflowTemplateId
     self._processMap["isWorkflowExistWithName"] = Processor.process_isWorkflowExistWithName
-    self._processMap["registerDataResource"] = Processor.process_registerDataResource
-    self._processMap["updateDataResource"] = Processor.process_updateDataResource
-    self._processMap["removeDataResource"] = Processor.process_removeDataResource
-    self._processMap["getDataResource"] = Processor.process_getDataResource
-    self._processMap["copyDataResource"] = Processor.process_copyDataResource
-    self._processMap["copyDataReplica"] = Processor.process_copyDataReplica
+    self._processMap["registerDataProduct"] = Processor.process_registerDataProduct
+    self._processMap["getDataProduct"] = Processor.process_getDataProduct
+    self._processMap["registerReplicaLocation"] = Processor.process_registerReplicaLocation
+    self._processMap["getParentDataProduct"] = Processor.process_getParentDataProduct
+    self._processMap["getChildDataProducts"] = Processor.process_getChildDataProducts
 
   def process(self, iprot, oprot):
     (name, type, seqid) = iprot.readMessageBegin()
@@ -13607,7 +13542,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = addLocalDataMovementDetails_result()
     try:
-      result.success = self._handler.addLocalDataMovementDetails(args.authzToken, args.resourceId, args.dataMoveType, args.priorityOrder, args.localDataMovement)
+      result.success = self._handler.addLocalDataMovementDetails(args.authzToken, args.productUri, args.dataMoveType, args.priorityOrder, args.localDataMovement)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -13700,7 +13635,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = addSCPDataMovementDetails_result()
     try:
-      result.success = self._handler.addSCPDataMovementDetails(args.authzToken, args.resourceId, args.dataMoveType, args.priorityOrder, args.scpDataMovement)
+      result.success = self._handler.addSCPDataMovementDetails(args.authzToken, args.productUri, args.dataMoveType, args.priorityOrder, args.scpDataMovement)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -13793,7 +13728,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = addUnicoreDataMovementDetails_result()
     try:
-      result.success = self._handler.addUnicoreDataMovementDetails(args.authzToken, args.resourceId, args.dataMoveType, args.priorityOrder, args.unicoreDataMovement)
+      result.success = self._handler.addUnicoreDataMovementDetails(args.authzToken, args.productUri, args.dataMoveType, args.priorityOrder, args.unicoreDataMovement)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -13886,7 +13821,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = addGridFTPDataMovementDetails_result()
     try:
-      result.success = self._handler.addGridFTPDataMovementDetails(args.authzToken, args.resourceId, args.dataMoveType, args.priorityOrder, args.gridFTPDataMovement)
+      result.success = self._handler.addGridFTPDataMovementDetails(args.authzToken, args.productUri, args.dataMoveType, args.priorityOrder, args.gridFTPDataMovement)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -14134,7 +14069,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = deleteDataMovementInterface_result()
     try:
-      result.success = self._handler.deleteDataMovementInterface(args.authzToken, args.resourceId, args.dataMovementInterfaceId, args.dataMoveType)
+      result.success = self._handler.deleteDataMovementInterface(args.authzToken, args.productUri, args.dataMovementInterfaceId, args.dataMoveType)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -14996,13 +14931,13 @@ class Processor(Iface, TProcessor):
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_registerDataResource(self, seqid, iprot, oprot):
-    args = registerDataResource_args()
+  def process_registerDataProduct(self, seqid, iprot, oprot):
+    args = registerDataProduct_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = registerDataResource_result()
+    result = registerDataProduct_result()
     try:
-      result.success = self._handler.registerDataResource(args.authzToken, args.dataResourceModel)
+      result.success = self._handler.registerDataProduct(args.authzToken, args.dataProductModel)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -15022,18 +14957,18 @@ class Processor(Iface, TProcessor):
       msg_type = TMessageType.EXCEPTION
       logging.exception(ex)
       result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-    oprot.writeMessageBegin("registerDataResource", msg_type, seqid)
+    oprot.writeMessageBegin("registerDataProduct", msg_type, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_updateDataResource(self, seqid, iprot, oprot):
-    args = updateDataResource_args()
+  def process_getDataProduct(self, seqid, iprot, oprot):
+    args = getDataProduct_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = updateDataResource_result()
+    result = getDataProduct_result()
     try:
-      self._handler.updateDataResource(args.authzToken, args.dataResourceModel)
+      result.success = self._handler.getDataProduct(args.authzToken, args.dataProductUri)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -15053,18 +14988,18 @@ class Processor(Iface, TProcessor):
       msg_type = TMessageType.EXCEPTION
       logging.exception(ex)
       result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-    oprot.writeMessageBegin("updateDataResource", msg_type, seqid)
+    oprot.writeMessageBegin("getDataProduct", msg_type, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_removeDataResource(self, seqid, iprot, oprot):
-    args = removeDataResource_args()
+  def process_registerReplicaLocation(self, seqid, iprot, oprot):
+    args = registerReplicaLocation_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = removeDataResource_result()
+    result = registerReplicaLocation_result()
     try:
-      self._handler.removeDataResource(args.authzToken, args.resourceId)
+      result.success = self._handler.registerReplicaLocation(args.authzToken, args.replicaLocationModel)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -15084,18 +15019,18 @@ class Processor(Iface, TProcessor):
       msg_type = TMessageType.EXCEPTION
       logging.exception(ex)
       result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-    oprot.writeMessageBegin("removeDataResource", msg_type, seqid)
+    oprot.writeMessageBegin("registerReplicaLocation", msg_type, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_getDataResource(self, seqid, iprot, oprot):
-    args = getDataResource_args()
+  def process_getParentDataProduct(self, seqid, iprot, oprot):
+    args = getParentDataProduct_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = getDataResource_result()
+    result = getParentDataProduct_result()
     try:
-      result.success = self._handler.getDataResource(args.authzToken, args.resourceId)
+      result.success = self._handler.getParentDataProduct(args.authzToken, args.productUri)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -15115,18 +15050,18 @@ class Processor(Iface, TProcessor):
       msg_type = TMessageType.EXCEPTION
       logging.exception(ex)
       result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-    oprot.writeMessageBegin("getDataResource", msg_type, seqid)
+    oprot.writeMessageBegin("getParentDataProduct", msg_type, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_copyDataResource(self, seqid, iprot, oprot):
-    args = copyDataResource_args()
+  def process_getChildDataProducts(self, seqid, iprot, oprot):
+    args = getChildDataProducts_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = copyDataResource_result()
+    result = getChildDataProducts_result()
     try:
-      result.success = self._handler.copyDataResource(args.authzToken, args.resourceId, args.destStorageResourceId, args.destinationParentPath)
+      result.success = self._handler.getChildDataProducts(args.authzToken, args.productUri)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -15146,38 +15081,7 @@ class Processor(Iface, TProcessor):
       msg_type = TMessageType.EXCEPTION
       logging.exception(ex)
       result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-    oprot.writeMessageBegin("copyDataResource", msg_type, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_copyDataReplica(self, seqid, iprot, oprot):
-    args = copyDataReplica_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = copyDataReplica_result()
-    try:
-      result.success = self._handler.copyDataReplica(args.authzToken, args.resourceId, args.replicaId, args.destStorageResourceId, args.destinationParentPath)
-      msg_type = TMessageType.REPLY
-    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
-      raise
-    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
-      msg_type = TMessageType.REPLY
-      result.ire = ire
-    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
-      msg_type = TMessageType.REPLY
-      result.ace = ace
-    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
-      msg_type = TMessageType.REPLY
-      result.ase = ase
-    except apache.airavata.api.error.ttypes.AuthorizationException as ae:
-      msg_type = TMessageType.REPLY
-      result.ae = ae
-    except Exception as ex:
-      msg_type = TMessageType.EXCEPTION
-      logging.exception(ex)
-      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-    oprot.writeMessageBegin("copyDataReplica", msg_type, seqid)
+    oprot.writeMessageBegin("getChildDataProducts", msg_type, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -34692,7 +34596,7 @@ class addLocalDataMovementDetails_args:
   """
   Attributes:
    - authzToken
-   - resourceId
+   - productUri
    - dataMoveType
    - priorityOrder
    - localDataMovement
@@ -34701,15 +34605,15 @@ class addLocalDataMovementDetails_args:
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRING, 'resourceId', None, None, ), # 2
+    (2, TType.STRING, 'productUri', None, None, ), # 2
     (3, TType.I32, 'dataMoveType', None, None, ), # 3
     (4, TType.I32, 'priorityOrder', None, None, ), # 4
     (5, TType.STRUCT, 'localDataMovement', (apache.airavata.model.data.movement.ttypes.LOCALDataMovement, apache.airavata.model.data.movement.ttypes.LOCALDataMovement.thrift_spec), None, ), # 5
   )
 
-  def __init__(self, authzToken=None, resourceId=None, dataMoveType=None, priorityOrder=None, localDataMovement=None,):
+  def __init__(self, authzToken=None, productUri=None, dataMoveType=None, priorityOrder=None, localDataMovement=None,):
     self.authzToken = authzToken
-    self.resourceId = resourceId
+    self.productUri = productUri
     self.dataMoveType = dataMoveType
     self.priorityOrder = priorityOrder
     self.localDataMovement = localDataMovement
@@ -34731,7 +34635,7 @@ class addLocalDataMovementDetails_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.resourceId = iprot.readString()
+          self.productUri = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 3:
@@ -34764,9 +34668,9 @@ class addLocalDataMovementDetails_args:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
       oprot.writeFieldEnd()
-    if self.resourceId is not None:
-      oprot.writeFieldBegin('resourceId', TType.STRING, 2)
-      oprot.writeString(self.resourceId)
+    if self.productUri is not None:
+      oprot.writeFieldBegin('productUri', TType.STRING, 2)
+      oprot.writeString(self.productUri)
       oprot.writeFieldEnd()
     if self.dataMoveType is not None:
       oprot.writeFieldBegin('dataMoveType', TType.I32, 3)
@@ -34786,8 +34690,8 @@ class addLocalDataMovementDetails_args:
   def validate(self):
     if self.authzToken is None:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
-    if self.resourceId is None:
-      raise TProtocol.TProtocolException(message='Required field resourceId is unset!')
+    if self.productUri is None:
+      raise TProtocol.TProtocolException(message='Required field productUri is unset!')
     if self.dataMoveType is None:
       raise TProtocol.TProtocolException(message='Required field dataMoveType is unset!')
     if self.priorityOrder is None:
@@ -34800,7 +34704,7 @@ class addLocalDataMovementDetails_args:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
-    value = (value * 31) ^ hash(self.resourceId)
+    value = (value * 31) ^ hash(self.productUri)
     value = (value * 31) ^ hash(self.dataMoveType)
     value = (value * 31) ^ hash(self.priorityOrder)
     value = (value * 31) ^ hash(self.localDataMovement)
@@ -35364,7 +35268,7 @@ class addSCPDataMovementDetails_args:
   """
   Attributes:
    - authzToken
-   - resourceId
+   - productUri
    - dataMoveType
    - priorityOrder
    - scpDataMovement
@@ -35373,15 +35277,15 @@ class addSCPDataMovementDetails_args:
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRING, 'resourceId', None, None, ), # 2
+    (2, TType.STRING, 'productUri', None, None, ), # 2
     (3, TType.I32, 'dataMoveType', None, None, ), # 3
     (4, TType.I32, 'priorityOrder', None, None, ), # 4
     (5, TType.STRUCT, 'scpDataMovement', (apache.airavata.model.data.movement.ttypes.SCPDataMovement, apache.airavata.model.data.movement.ttypes.SCPDataMovement.thrift_spec), None, ), # 5
   )
 
-  def __init__(self, authzToken=None, resourceId=None, dataMoveType=None, priorityOrder=None, scpDataMovement=None,):
+  def __init__(self, authzToken=None, productUri=None, dataMoveType=None, priorityOrder=None, scpDataMovement=None,):
     self.authzToken = authzToken
-    self.resourceId = resourceId
+    self.productUri = productUri
     self.dataMoveType = dataMoveType
     self.priorityOrder = priorityOrder
     self.scpDataMovement = scpDataMovement
@@ -35403,7 +35307,7 @@ class addSCPDataMovementDetails_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.resourceId = iprot.readString()
+          self.productUri = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 3:
@@ -35436,9 +35340,9 @@ class addSCPDataMovementDetails_args:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
       oprot.writeFieldEnd()
-    if self.resourceId is not None:
-      oprot.writeFieldBegin('resourceId', TType.STRING, 2)
-      oprot.writeString(self.resourceId)
+    if self.productUri is not None:
+      oprot.writeFieldBegin('productUri', TType.STRING, 2)
+      oprot.writeString(self.productUri)
       oprot.writeFieldEnd()
     if self.dataMoveType is not None:
       oprot.writeFieldBegin('dataMoveType', TType.I32, 3)
@@ -35458,8 +35362,8 @@ class addSCPDataMovementDetails_args:
   def validate(self):
     if self.authzToken is None:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
-    if self.resourceId is None:
-      raise TProtocol.TProtocolException(message='Required field resourceId is unset!')
+    if self.productUri is None:
+      raise TProtocol.TProtocolException(message='Required field productUri is unset!')
     if self.dataMoveType is None:
       raise TProtocol.TProtocolException(message='Required field dataMoveType is unset!')
     if self.priorityOrder is None:
@@ -35472,7 +35376,7 @@ class addSCPDataMovementDetails_args:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
-    value = (value * 31) ^ hash(self.resourceId)
+    value = (value * 31) ^ hash(self.productUri)
     value = (value * 31) ^ hash(self.dataMoveType)
     value = (value * 31) ^ hash(self.priorityOrder)
     value = (value * 31) ^ hash(self.scpDataMovement)
@@ -36036,7 +35940,7 @@ class addUnicoreDataMovementDetails_args:
   """
   Attributes:
    - authzToken
-   - resourceId
+   - productUri
    - dataMoveType
    - priorityOrder
    - unicoreDataMovement
@@ -36045,15 +35949,15 @@ class addUnicoreDataMovementDetails_args:
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRING, 'resourceId', None, None, ), # 2
+    (2, TType.STRING, 'productUri', None, None, ), # 2
     (3, TType.I32, 'dataMoveType', None, None, ), # 3
     (4, TType.I32, 'priorityOrder', None, None, ), # 4
     (5, TType.STRUCT, 'unicoreDataMovement', (apache.airavata.model.data.movement.ttypes.UnicoreDataMovement, apache.airavata.model.data.movement.ttypes.UnicoreDataMovement.thrift_spec), None, ), # 5
   )
 
-  def __init__(self, authzToken=None, resourceId=None, dataMoveType=None, priorityOrder=None, unicoreDataMovement=None,):
+  def __init__(self, authzToken=None, productUri=None, dataMoveType=None, priorityOrder=None, unicoreDataMovement=None,):
     self.authzToken = authzToken
-    self.resourceId = resourceId
+    self.productUri = productUri
     self.dataMoveType = dataMoveType
     self.priorityOrder = priorityOrder
     self.unicoreDataMovement = unicoreDataMovement
@@ -36075,7 +35979,7 @@ class addUnicoreDataMovementDetails_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.resourceId = iprot.readString()
+          self.productUri = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 3:
@@ -36108,9 +36012,9 @@ class addUnicoreDataMovementDetails_args:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
       oprot.writeFieldEnd()
-    if self.resourceId is not None:
-      oprot.writeFieldBegin('resourceId', TType.STRING, 2)
-      oprot.writeString(self.resourceId)
+    if self.productUri is not None:
+      oprot.writeFieldBegin('productUri', TType.STRING, 2)
+      oprot.writeString(self.productUri)
       oprot.writeFieldEnd()
     if self.dataMoveType is not None:
       oprot.writeFieldBegin('dataMoveType', TType.I32, 3)
@@ -36130,8 +36034,8 @@ class addUnicoreDataMovementDetails_args:
   def validate(self):
     if self.authzToken is None:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
-    if self.resourceId is None:
-      raise TProtocol.TProtocolException(message='Required field resourceId is unset!')
+    if self.productUri is None:
+      raise TProtocol.TProtocolException(message='Required field productUri is unset!')
     if self.dataMoveType is None:
       raise TProtocol.TProtocolException(message='Required field dataMoveType is unset!')
     if self.priorityOrder is None:
@@ -36144,7 +36048,7 @@ class addUnicoreDataMovementDetails_args:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
-    value = (value * 31) ^ hash(self.resourceId)
+    value = (value * 31) ^ hash(self.productUri)
     value = (value * 31) ^ hash(self.dataMoveType)
     value = (value * 31) ^ hash(self.priorityOrder)
     value = (value * 31) ^ hash(self.unicoreDataMovement)
@@ -36708,7 +36612,7 @@ class addGridFTPDataMovementDetails_args:
   """
   Attributes:
    - authzToken
-   - resourceId
+   - productUri
    - dataMoveType
    - priorityOrder
    - gridFTPDataMovement
@@ -36717,15 +36621,15 @@ class addGridFTPDataMovementDetails_args:
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRING, 'resourceId', None, None, ), # 2
+    (2, TType.STRING, 'productUri', None, None, ), # 2
     (3, TType.I32, 'dataMoveType', None, None, ), # 3
     (4, TType.I32, 'priorityOrder', None, None, ), # 4
     (5, TType.STRUCT, 'gridFTPDataMovement', (apache.airavata.model.data.movement.ttypes.GridFTPDataMovement, apache.airavata.model.data.movement.ttypes.GridFTPDataMovement.thrift_spec), None, ), # 5
   )
 
-  def __init__(self, authzToken=None, resourceId=None, dataMoveType=None, priorityOrder=None, gridFTPDataMovement=None,):
+  def __init__(self, authzToken=None, productUri=None, dataMoveType=None, priorityOrder=None, gridFTPDataMovement=None,):
     self.authzToken = authzToken
-    self.resourceId = resourceId
+    self.productUri = productUri
     self.dataMoveType = dataMoveType
     self.priorityOrder = priorityOrder
     self.gridFTPDataMovement = gridFTPDataMovement
@@ -36747,7 +36651,7 @@ class addGridFTPDataMovementDetails_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.resourceId = iprot.readString()
+          self.productUri = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 3:
@@ -36780,9 +36684,9 @@ class addGridFTPDataMovementDetails_args:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
       oprot.writeFieldEnd()
-    if self.resourceId is not None:
-      oprot.writeFieldBegin('resourceId', TType.STRING, 2)
-      oprot.writeString(self.resourceId)
+    if self.productUri is not None:
+      oprot.writeFieldBegin('productUri', TType.STRING, 2)
+      oprot.writeString(self.productUri)
       oprot.writeFieldEnd()
     if self.dataMoveType is not None:
       oprot.writeFieldBegin('dataMoveType', TType.I32, 3)
@@ -36802,8 +36706,8 @@ class addGridFTPDataMovementDetails_args:
   def validate(self):
     if self.authzToken is None:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
-    if self.resourceId is None:
-      raise TProtocol.TProtocolException(message='Required field resourceId is unset!')
+    if self.productUri is None:
+      raise TProtocol.TProtocolException(message='Required field productUri is unset!')
     if self.dataMoveType is None:
       raise TProtocol.TProtocolException(message='Required field dataMoveType is unset!')
     if self.priorityOrder is None:
@@ -36816,7 +36720,7 @@ class addGridFTPDataMovementDetails_args:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
-    value = (value * 31) ^ hash(self.resourceId)
+    value = (value * 31) ^ hash(self.productUri)
     value = (value * 31) ^ hash(self.dataMoveType)
     value = (value * 31) ^ hash(self.priorityOrder)
     value = (value * 31) ^ hash(self.gridFTPDataMovement)
@@ -38460,7 +38364,7 @@ class deleteDataMovementInterface_args:
   """
   Attributes:
    - authzToken
-   - resourceId
+   - productUri
    - dataMovementInterfaceId
    - dataMoveType
   """
@@ -38468,14 +38372,14 @@ class deleteDataMovementInterface_args:
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRING, 'resourceId', None, None, ), # 2
+    (2, TType.STRING, 'productUri', None, None, ), # 2
     (3, TType.STRING, 'dataMovementInterfaceId', None, None, ), # 3
     (4, TType.I32, 'dataMoveType', None, None, ), # 4
   )
 
-  def __init__(self, authzToken=None, resourceId=None, dataMovementInterfaceId=None, dataMoveType=None,):
+  def __init__(self, authzToken=None, productUri=None, dataMovementInterfaceId=None, dataMoveType=None,):
     self.authzToken = authzToken
-    self.resourceId = resourceId
+    self.productUri = productUri
     self.dataMovementInterfaceId = dataMovementInterfaceId
     self.dataMoveType = dataMoveType
 
@@ -38496,7 +38400,7 @@ class deleteDataMovementInterface_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.resourceId = iprot.readString()
+          self.productUri = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 3:
@@ -38523,9 +38427,9 @@ class deleteDataMovementInterface_args:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
       oprot.writeFieldEnd()
-    if self.resourceId is not None:
-      oprot.writeFieldBegin('resourceId', TType.STRING, 2)
-      oprot.writeString(self.resourceId)
+    if self.productUri is not None:
+      oprot.writeFieldBegin('productUri', TType.STRING, 2)
+      oprot.writeString(self.productUri)
       oprot.writeFieldEnd()
     if self.dataMovementInterfaceId is not None:
       oprot.writeFieldBegin('dataMovementInterfaceId', TType.STRING, 3)
@@ -38541,8 +38445,8 @@ class deleteDataMovementInterface_args:
   def validate(self):
     if self.authzToken is None:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
-    if self.resourceId is None:
-      raise TProtocol.TProtocolException(message='Required field resourceId is unset!')
+    if self.productUri is None:
+      raise TProtocol.TProtocolException(message='Required field productUri is unset!')
     if self.dataMovementInterfaceId is None:
       raise TProtocol.TProtocolException(message='Required field dataMovementInterfaceId is unset!')
     if self.dataMoveType is None:
@@ -38553,7 +38457,7 @@ class deleteDataMovementInterface_args:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
-    value = (value * 31) ^ hash(self.resourceId)
+    value = (value * 31) ^ hash(self.productUri)
     value = (value * 31) ^ hash(self.dataMovementInterfaceId)
     value = (value * 31) ^ hash(self.dataMoveType)
     return value
@@ -44436,22 +44340,22 @@ class isWorkflowExistWithName_result:
   def __ne__(self, other):
     return not (self == other)
 
-class registerDataResource_args:
+class registerDataProduct_args:
   """
   Attributes:
    - authzToken
-   - dataResourceModel
+   - dataProductModel
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'dataResourceModel', (apache.airavata.model.data.resource.ttypes.DataResourceModel, apache.airavata.model.data.resource.ttypes.DataResourceModel.thrift_spec), None, ), # 2
+    (2, TType.STRUCT, 'dataProductModel', (apache.airavata.model.data.replica.ttypes.DataProductModel, apache.airavata.model.data.replica.ttypes.DataProductModel.thrift_spec), None, ), # 2
   )
 
-  def __init__(self, authzToken=None, dataResourceModel=None,):
+  def __init__(self, authzToken=None, dataProductModel=None,):
     self.authzToken = authzToken
-    self.dataResourceModel = dataResourceModel
+    self.dataProductModel = dataProductModel
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -44470,8 +44374,8 @@ class registerDataResource_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRUCT:
-          self.dataResourceModel = apache.airavata.model.data.resource.ttypes.DataResourceModel()
-          self.dataResourceModel.read(iprot)
+          self.dataProductModel = apache.airavata.model.data.replica.ttypes.DataProductModel()
+          self.dataProductModel.read(iprot)
         else:
           iprot.skip(ftype)
       else:
@@ -44483,14 +44387,14 @@ class registerDataResource_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('registerDataResource_args')
+    oprot.writeStructBegin('registerDataProduct_args')
     if self.authzToken is not None:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
       oprot.writeFieldEnd()
-    if self.dataResourceModel is not None:
-      oprot.writeFieldBegin('dataResourceModel', TType.STRUCT, 2)
-      self.dataResourceModel.write(oprot)
+    if self.dataProductModel is not None:
+      oprot.writeFieldBegin('dataProductModel', TType.STRUCT, 2)
+      self.dataProductModel.write(oprot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -44498,15 +44402,15 @@ class registerDataResource_args:
   def validate(self):
     if self.authzToken is None:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
-    if self.dataResourceModel is None:
-      raise TProtocol.TProtocolException(message='Required field dataResourceModel is unset!')
+    if self.dataProductModel is None:
+      raise TProtocol.TProtocolException(message='Required field dataProductModel is unset!')
     return
 
 
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
-    value = (value * 31) ^ hash(self.dataResourceModel)
+    value = (value * 31) ^ hash(self.dataProductModel)
     return value
 
   def __repr__(self):
@@ -44520,7 +44424,7 @@ class registerDataResource_args:
   def __ne__(self, other):
     return not (self == other)
 
-class registerDataResource_result:
+class registerDataProduct_result:
   """
   Attributes:
    - success
@@ -44592,7 +44496,7 @@ class registerDataResource_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('registerDataResource_result')
+    oprot.writeStructBegin('registerDataProduct_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.STRING, 0)
       oprot.writeString(self.success)
@@ -44640,214 +44544,22 @@ class registerDataResource_result:
   def __ne__(self, other):
     return not (self == other)
 
-class updateDataResource_args:
+class getDataProduct_args:
   """
   Attributes:
    - authzToken
-   - dataResourceModel
+   - dataProductUri
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'dataResourceModel', (apache.airavata.model.data.resource.ttypes.DataResourceModel, apache.airavata.model.data.resource.ttypes.DataResourceModel.thrift_spec), None, ), # 2
+    (2, TType.STRING, 'dataProductUri', None, None, ), # 2
   )
 
-  def __init__(self, authzToken=None, dataResourceModel=None,):
+  def __init__(self, authzToken=None, dataProductUri=None,):
     self.authzToken = authzToken
-    self.dataResourceModel = dataResourceModel
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRUCT:
-          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
-          self.authzToken.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.dataResourceModel = apache.airavata.model.data.resource.ttypes.DataResourceModel()
-          self.dataResourceModel.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('updateDataResource_args')
-    if self.authzToken is not None:
-      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
-      self.authzToken.write(oprot)
-      oprot.writeFieldEnd()
-    if self.dataResourceModel is not None:
-      oprot.writeFieldBegin('dataResourceModel', TType.STRUCT, 2)
-      self.dataResourceModel.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.authzToken is None:
-      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
-    if self.dataResourceModel is None:
-      raise TProtocol.TProtocolException(message='Required field dataResourceModel is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.authzToken)
-    value = (value * 31) ^ hash(self.dataResourceModel)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class updateDataResource_result:
-  """
-  Attributes:
-   - ire
-   - ace
-   - ase
-   - ae
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
-    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
-    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
-  )
-
-  def __init__(self, ire=None, ace=None, ase=None, ae=None,):
-    self.ire = ire
-    self.ace = ace
-    self.ase = ase
-    self.ae = ae
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRUCT:
-          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
-          self.ire.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
-          self.ace.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRUCT:
-          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
-          self.ase.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 4:
-        if ftype == TType.STRUCT:
-          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
-          self.ae.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('updateDataResource_result')
-    if self.ire is not None:
-      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-      self.ire.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ace is not None:
-      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
-      self.ace.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ase is not None:
-      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
-      self.ase.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ae is not None:
-      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
-      self.ae.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.ire)
-    value = (value * 31) ^ hash(self.ace)
-    value = (value * 31) ^ hash(self.ase)
-    value = (value * 31) ^ hash(self.ae)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class removeDataResource_args:
-  """
-  Attributes:
-   - authzToken
-   - resourceId
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRING, 'resourceId', None, None, ), # 2
-  )
-
-  def __init__(self, authzToken=None, resourceId=None,):
-    self.authzToken = authzToken
-    self.resourceId = resourceId
+    self.dataProductUri = dataProductUri
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -44866,7 +44578,7 @@ class removeDataResource_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.resourceId = iprot.readString()
+          self.dataProductUri = iprot.readString()
         else:
           iprot.skip(ftype)
       else:
@@ -44878,14 +44590,14 @@ class removeDataResource_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('removeDataResource_args')
+    oprot.writeStructBegin('getDataProduct_args')
     if self.authzToken is not None:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
       oprot.writeFieldEnd()
-    if self.resourceId is not None:
-      oprot.writeFieldBegin('resourceId', TType.STRING, 2)
-      oprot.writeString(self.resourceId)
+    if self.dataProductUri is not None:
+      oprot.writeFieldBegin('dataProductUri', TType.STRING, 2)
+      oprot.writeString(self.dataProductUri)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -44893,15 +44605,15 @@ class removeDataResource_args:
   def validate(self):
     if self.authzToken is None:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
-    if self.resourceId is None:
-      raise TProtocol.TProtocolException(message='Required field resourceId is unset!')
+    if self.dataProductUri is None:
+      raise TProtocol.TProtocolException(message='Required field dataProductUri is unset!')
     return
 
 
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
-    value = (value * 31) ^ hash(self.resourceId)
+    value = (value * 31) ^ hash(self.dataProductUri)
     return value
 
   def __repr__(self):
@@ -44915,198 +44627,7 @@ class removeDataResource_args:
   def __ne__(self, other):
     return not (self == other)
 
-class removeDataResource_result:
-  """
-  Attributes:
-   - ire
-   - ace
-   - ase
-   - ae
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
-    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
-    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
-  )
-
-  def __init__(self, ire=None, ace=None, ase=None, ae=None,):
-    self.ire = ire
-    self.ace = ace
-    self.ase = ase
-    self.ae = ae
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRUCT:
-          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
-          self.ire.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
-          self.ace.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRUCT:
-          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
-          self.ase.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 4:
-        if ftype == TType.STRUCT:
-          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
-          self.ae.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('removeDataResource_result')
-    if self.ire is not None:
-      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-      self.ire.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ace is not None:
-      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
-      self.ace.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ase is not None:
-      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
-      self.ase.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ae is not None:
-      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
-      self.ae.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.ire)
-    value = (value * 31) ^ hash(self.ace)
-    value = (value * 31) ^ hash(self.ase)
-    value = (value * 31) ^ hash(self.ae)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getDataResource_args:
-  """
-  Attributes:
-   - authzToken
-   - resourceId
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRING, 'resourceId', None, None, ), # 2
-  )
-
-  def __init__(self, authzToken=None, resourceId=None,):
-    self.authzToken = authzToken
-    self.resourceId = resourceId
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRUCT:
-          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
-          self.authzToken.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.resourceId = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getDataResource_args')
-    if self.authzToken is not None:
-      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
-      self.authzToken.write(oprot)
-      oprot.writeFieldEnd()
-    if self.resourceId is not None:
-      oprot.writeFieldBegin('resourceId', TType.STRING, 2)
-      oprot.writeString(self.resourceId)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.authzToken is None:
-      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
-    if self.resourceId is None:
-      raise TProtocol.TProtocolException(message='Required field resourceId is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.authzToken)
-    value = (value * 31) ^ hash(self.resourceId)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getDataResource_result:
+class getDataProduct_result:
   """
   Attributes:
    - success
@@ -45117,7 +44638,7 @@ class getDataResource_result:
   """
 
   thrift_spec = (
-    (0, TType.STRUCT, 'success', (apache.airavata.model.data.resource.ttypes.DataResourceModel, apache.airavata.model.data.resource.ttypes.DataResourceModel.thrift_spec), None, ), # 0
+    (0, TType.STRUCT, 'success', (apache.airavata.model.data.replica.ttypes.DataProductModel, apache.airavata.model.data.replica.ttypes.DataProductModel.thrift_spec), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -45142,7 +44663,7 @@ class getDataResource_result:
         break
       if fid == 0:
         if ftype == TType.STRUCT:
-          self.success = apache.airavata.model.data.resource.ttypes.DataResourceModel()
+          self.success = apache.airavata.model.data.replica.ttypes.DataProductModel()
           self.success.read(iprot)
         else:
           iprot.skip(ftype)
@@ -45179,7 +44700,7 @@ class getDataResource_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('getDataResource_result')
+    oprot.writeStructBegin('getDataProduct_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.STRUCT, 0)
       self.success.write(oprot)
@@ -45227,28 +44748,22 @@ class getDataResource_result:
   def __ne__(self, other):
     return not (self == other)
 
-class copyDataResource_args:
+class registerReplicaLocation_args:
   """
   Attributes:
    - authzToken
-   - resourceId
-   - destStorageResourceId
-   - destinationParentPath
+   - replicaLocationModel
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRING, 'resourceId', None, None, ), # 2
-    (3, TType.STRING, 'destStorageResourceId', None, None, ), # 3
-    (4, TType.STRING, 'destinationParentPath', None, None, ), # 4
+    (2, TType.STRUCT, 'replicaLocationModel', (apache.airavata.model.data.replica.ttypes.DataReplicaLocationModel, apache.airavata.model.data.replica.ttypes.DataReplicaLocationModel.thrift_spec), None, ), # 2
   )
 
-  def __init__(self, authzToken=None, resourceId=None, destStorageResourceId=None, destinationParentPath=None,):
+  def __init__(self, authzToken=None, replicaLocationModel=None,):
     self.authzToken = authzToken
-    self.resourceId = resourceId
-    self.destStorageResourceId = destStorageResourceId
-    self.destinationParentPath = destinationParentPath
+    self.replicaLocationModel = replicaLocationModel
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -45266,18 +44781,9 @@ class copyDataResource_args:
         else:
           iprot.skip(ftype)
       elif fid == 2:
-        if ftype == TType.STRING:
-          self.resourceId = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.destStorageResourceId = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 4:
-        if ftype == TType.STRING:
-          self.destinationParentPath = iprot.readString()
+        if ftype == TType.STRUCT:
+          self.replicaLocationModel = apache.airavata.model.data.replica.ttypes.DataReplicaLocationModel()
+          self.replicaLocationModel.read(iprot)
         else:
           iprot.skip(ftype)
       else:
@@ -45289,22 +44795,14 @@ class copyDataResource_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('copyDataResource_args')
+    oprot.writeStructBegin('registerReplicaLocation_args')
     if self.authzToken is not None:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
       oprot.writeFieldEnd()
-    if self.resourceId is not None:
-      oprot.writeFieldBegin('resourceId', TType.STRING, 2)
-      oprot.writeString(self.resourceId)
-      oprot.writeFieldEnd()
-    if self.destStorageResourceId is not None:
-      oprot.writeFieldBegin('destStorageResourceId', TType.STRING, 3)
-      oprot.writeString(self.destStorageResourceId)
-      oprot.writeFieldEnd()
-    if self.destinationParentPath is not None:
-      oprot.writeFieldBegin('destinationParentPath', TType.STRING, 4)
-      oprot.writeString(self.destinationParentPath)
+    if self.replicaLocationModel is not None:
+      oprot.writeFieldBegin('replicaLocationModel', TType.STRUCT, 2)
+      self.replicaLocationModel.write(oprot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -45312,21 +44810,15 @@ class copyDataResource_args:
   def validate(self):
     if self.authzToken is None:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
-    if self.resourceId is None:
-      raise TProtocol.TProtocolException(message='Required field resourceId is unset!')
-    if self.destStorageResourceId is None:
-      raise TProtocol.TProtocolException(message='Required field destStorageResourceId is unset!')
-    if self.destinationParentPath is None:
-      raise TProtocol.TProtocolException(message='Required field destinationParentPath is unset!')
+    if self.replicaLocationModel is None:
+      raise TProtocol.TProtocolException(message='Required field replicaLocationModel is unset!')
     return
 
 
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
-    value = (value * 31) ^ hash(self.resourceId)
-    value = (value * 31) ^ hash(self.destStorageResourceId)
-    value = (value * 31) ^ hash(self.destinationParentPath)
+    value = (value * 31) ^ hash(self.replicaLocationModel)
     return value
 
   def __repr__(self):
@@ -45340,7 +44832,7 @@ class copyDataResource_args:
   def __ne__(self, other):
     return not (self == other)
 
-class copyDataResource_result:
+class registerReplicaLocation_result:
   """
   Attributes:
    - success
@@ -45412,7 +44904,7 @@ class copyDataResource_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('copyDataResource_result')
+    oprot.writeStructBegin('registerReplicaLocation_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.STRING, 0)
       oprot.writeString(self.success)
@@ -45460,31 +44952,22 @@ class copyDataResource_result:
   def __ne__(self, other):
     return not (self == other)
 
-class copyDataReplica_args:
+class getParentDataProduct_args:
   """
   Attributes:
    - authzToken
-   - resourceId
-   - replicaId
-   - destStorageResourceId
-   - destinationParentPath
+   - productUri
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRING, 'resourceId', None, None, ), # 2
-    (3, TType.STRING, 'replicaId', None, None, ), # 3
-    (4, TType.STRING, 'destStorageResourceId', None, None, ), # 4
-    (5, TType.STRING, 'destinationParentPath', None, None, ), # 5
+    (2, TType.STRING, 'productUri', None, None, ), # 2
   )
 
-  def __init__(self, authzToken=None, resourceId=None, replicaId=None, destStorageResourceId=None, destinationParentPath=None,):
+  def __init__(self, authzToken=None, productUri=None,):
     self.authzToken = authzToken
-    self.resourceId = resourceId
-    self.replicaId = replicaId
-    self.destStorageResourceId = destStorageResourceId
-    self.destinationParentPath = destinationParentPath
+    self.productUri = productUri
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -45503,22 +44986,7 @@ class copyDataReplica_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.resourceId = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.replicaId = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 4:
-        if ftype == TType.STRING:
-          self.destStorageResourceId = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 5:
-        if ftype == TType.STRING:
-          self.destinationParentPath = iprot.readString()
+          self.productUri = iprot.readString()
         else:
           iprot.skip(ftype)
       else:
@@ -45530,26 +44998,14 @@ class copyDataReplica_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('copyDataReplica_args')
+    oprot.writeStructBegin('getParentDataProduct_args')
     if self.authzToken is not None:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
       oprot.writeFieldEnd()
-    if self.resourceId is not None:
-      oprot.writeFieldBegin('resourceId', TType.STRING, 2)
-      oprot.writeString(self.resourceId)
-      oprot.writeFieldEnd()
-    if self.replicaId is not None:
-      oprot.writeFieldBegin('replicaId', TType.STRING, 3)
-      oprot.writeString(self.replicaId)
-      oprot.writeFieldEnd()
-    if self.destStorageResourceId is not None:
-      oprot.writeFieldBegin('destStorageResourceId', TType.STRING, 4)
-      oprot.writeString(self.destStorageResourceId)
-      oprot.writeFieldEnd()
-    if self.destinationParentPath is not None:
-      oprot.writeFieldBegin('destinationParentPath', TType.STRING, 5)
-      oprot.writeString(self.destinationParentPath)
+    if self.productUri is not None:
+      oprot.writeFieldBegin('productUri', TType.STRING, 2)
+      oprot.writeString(self.productUri)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -45557,24 +45013,15 @@ class copyDataReplica_args:
   def validate(self):
     if self.authzToken is None:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
-    if self.resourceId is None:
-      raise TProtocol.TProtocolException(message='Required field resourceId is unset!')
-    if self.replicaId is None:
-      raise TProtocol.TProtocolException(message='Required field replicaId is unset!')
-    if self.destStorageResourceId is None:
-      raise TProtocol.TProtocolException(message='Required field destStorageResourceId is unset!')
-    if self.destinationParentPath is None:
-      raise TProtocol.TProtocolException(message='Required field destinationParentPath is unset!')
+    if self.productUri is None:
+      raise TProtocol.TProtocolException(message='Required field productUri is unset!')
     return
 
 
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
-    value = (value * 31) ^ hash(self.resourceId)
-    value = (value * 31) ^ hash(self.replicaId)
-    value = (value * 31) ^ hash(self.destStorageResourceId)
-    value = (value * 31) ^ hash(self.destinationParentPath)
+    value = (value * 31) ^ hash(self.productUri)
     return value
 
   def __repr__(self):
@@ -45588,7 +45035,7 @@ class copyDataReplica_args:
   def __ne__(self, other):
     return not (self == other)
 
-class copyDataReplica_result:
+class getParentDataProduct_result:
   """
   Attributes:
    - success
@@ -45599,7 +45046,7 @@ class copyDataReplica_result:
   """
 
   thrift_spec = (
-    (0, TType.STRING, 'success', None, None, ), # 0
+    (0, TType.STRUCT, 'success', (apache.airavata.model.data.replica.ttypes.DataProductModel, apache.airavata.model.data.replica.ttypes.DataProductModel.thrift_spec), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -45623,8 +45070,9 @@ class copyDataReplica_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.STRING:
-          self.success = iprot.readString()
+        if ftype == TType.STRUCT:
+          self.success = apache.airavata.model.data.replica.ttypes.DataProductModel()
+          self.success.read(iprot)
         else:
           iprot.skip(ftype)
       elif fid == 1:
@@ -45660,10 +45108,222 @@ class copyDataReplica_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('copyDataReplica_result')
+    oprot.writeStructBegin('getParentDataProduct_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.STRING, 0)
-      oprot.writeString(self.success)
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getChildDataProducts_args:
+  """
+  Attributes:
+   - authzToken
+   - productUri
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'productUri', None, None, ), # 2
+  )
+
+  def __init__(self, authzToken=None, productUri=None,):
+    self.authzToken = authzToken
+    self.productUri = productUri
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.productUri = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getChildDataProducts_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.productUri is not None:
+      oprot.writeFieldBegin('productUri', TType.STRING, 2)
+      oprot.writeString(self.productUri)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.productUri is None:
+      raise TProtocol.TProtocolException(message='Required field productUri is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.productUri)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getChildDataProducts_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.data.replica.ttypes.DataProductModel, apache.airavata.model.data.replica.ttypes.DataProductModel.thrift_spec)), None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.LIST:
+          self.success = []
+          (_etype268, _size265) = iprot.readListBegin()
+          for _i269 in xrange(_size265):
+            _elem270 = apache.airavata.model.data.replica.ttypes.DataProductModel()
+            _elem270.read(iprot)
+            self.success.append(_elem270)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getChildDataProducts_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.LIST, 0)
+      oprot.writeListBegin(TType.STRUCT, len(self.success))
+      for iter271 in self.success:
+        iter271.write(oprot)
+      oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
       oprot.writeFieldBegin('ire', TType.STRUCT, 1)
