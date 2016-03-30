@@ -35,7 +35,6 @@
     </formats>
 
     <fileSets>
-
         <!-- ********************** copy release notes files ********************** -->
         <fileSet>
             <directory>../../../</directory>
@@ -56,7 +55,6 @@
             </includes>
         </fileSet>
 
-<<<<<<< HEAD
 		<!-- ********************** copy database scripts ********************** -->
 		<fileSet>
 			<directory>../modules/registry/registry-core/src/main/resources/
@@ -111,7 +109,7 @@
 				<include>airavata-default-xacml-policy.xml</include>
 			</includes>
 		</fileSet>
-=======
+		
         <!-- ********************** copy database scripts ********************** -->
         <fileSet>
             <directory>../modules/registry/registry-core/src/main/resources/
@@ -165,7 +163,6 @@
                 <include>airavata-default-xacml-policy.xml</include>
             </includes>
         </fileSet>
->>>>>>> master
 
         <!-- Create logs directory -->
         <fileSet>
