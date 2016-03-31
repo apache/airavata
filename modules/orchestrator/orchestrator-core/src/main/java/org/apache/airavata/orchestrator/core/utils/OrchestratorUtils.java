@@ -121,6 +121,23 @@ public class OrchestratorUtils {
         }
     }
 
+    public static String getLoginUserName(OrchestratorContext context, ProcessModel processModel, String gatewayId) throws RegistryException {
+        try {
+            String loginUserName = null;
+            String overrideLoginUserName = processModel.getResourceSchedule().getOverrideLoginUserName();
+            if (overrideLoginUserName != null) {
+                loginUserName = overrideLoginUserName;
+            } else {
+                GwyResourceProfile gatewayProfile = context.getRegistry().getAppCatalog().getGatewayProfile();
+                loginUserName = gatewayProfile.getComputeResourcePreference(gatewayId, processModel.getComputeResourceId()).getLoginUserName();
+            }
+            return loginUserName;
+        } catch (AppCatalogException e) {
+            logger.error("Error occurred while initializing app catalog", e);
+            throw new RegistryException("Error occurred while initializing app catalog", e);
+        }
+    }
+
     public static JobSubmissionInterface getPreferredJobSubmissionInterface(OrchestratorContext context, ProcessModel processModel, String gatewayId) throws RegistryException {
         try {
             String resourceHostId = processModel.getComputeResourceId();

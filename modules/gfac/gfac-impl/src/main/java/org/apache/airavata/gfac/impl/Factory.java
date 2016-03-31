@@ -67,6 +67,7 @@ import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
+import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
@@ -236,7 +237,7 @@ public abstract class Factory {
             AuthenticationInfo authentication = remoteCluster.getAuthentication();
             if (authentication instanceof SSHKeyAuthentication){
                 SSHKeyAuthentication sshKeyAuthentication = (SSHKeyAuthentication)authentication;
-                if (!sshKeyAuthentication.getUserName().equals(processContext.getComputeResourcePreference().getLoginUserName())){
+                if (!sshKeyAuthentication.getUserName().equals(getLoginUserName(processContext))){
                     JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
                     if (jobSubmissionProtocol == JobSubmissionProtocol.SSH ||
                             jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK) {
@@ -271,7 +272,7 @@ public abstract class Factory {
             AuthenticationInfo authentication = remoteCluster.getAuthentication();
             if (authentication instanceof SSHKeyAuthentication){
                 SSHKeyAuthentication sshKeyAuthentication = (SSHKeyAuthentication)authentication;
-                if (!sshKeyAuthentication.getUserName().equals(processContext.getComputeResourcePreference().getLoginUserName())){
+                if (!sshKeyAuthentication.getUserName().equals(getLoginUserName(processContext))){
                     JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
                     dataMovementProtocol = processContext.getDataMovementProtocol();
                     if (dataMovementProtocol == DataMovementProtocol.SCP) {
@@ -288,7 +289,7 @@ public abstract class Factory {
 	public static SSHKeyAuthentication getComputerResourceSSHKeyAuthentication(ProcessContext pc) throws GFacException {
         try {
             ComputeResourcePreference computeResourcePreference = pc.getComputeResourcePreference();
-            String loginUserName = computeResourcePreference.getLoginUserName();
+            String loginUserName = getLoginUserName(pc);
             String credentialStoreToken = computeResourcePreference.getResourceSpecificCredentialStoreToken();
             if (credentialStoreToken == null || credentialStoreToken.isEmpty()) {
                 credentialStoreToken = pc.getGatewayResourceProfile().getCredentialStoreToken();
@@ -310,6 +311,23 @@ public abstract class Factory {
             return getSshKeyAuthentication(pc.getGatewayId(), loginUserName, credentialStoreToken);
         }  catch (ApplicationSettingsException | IllegalAccessException | InstantiationException | CredentialStoreException e) {
             throw new GFacException("Couldn't build ssh authentication object", e);
+        }
+    }
+
+    public static String  getLoginUserName(ProcessContext processContext) throws GFacException {
+        try {
+            ProcessModel processModel = processContext.getProcessModel();
+            String loginUserName = null;
+            String overrideLoginUserName = processModel.getResourceSchedule().getOverrideLoginUserName();
+            if (overrideLoginUserName != null) {
+                loginUserName = overrideLoginUserName;
+            } else {
+                loginUserName = processContext.getComputeResourcePreference().getLoginUserName();
+            }
+
+            return loginUserName;
+        }  catch (Exception e) {
+            throw new GFacException("Couldn't fetch loginUserName", e);
         }
     }
 
