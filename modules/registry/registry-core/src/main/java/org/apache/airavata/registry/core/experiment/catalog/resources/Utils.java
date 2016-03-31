@@ -513,6 +513,9 @@ public class Utils {
             configurationDataResource.setWallTimeLimit(o.getWallTimeLimit());
             configurationDataResource.setTotalPhysicalMemory(o.getTotalPhysicalMemory());
             configurationDataResource.setStaticWorkingDir(o.getStaticWorkingDir());
+            configurationDataResource.setOverrideLoginUserName(o.getOverrideLoginUserName());
+            configurationDataResource.setOverrideScratchLocation(o.getOverrideScratchLocation());
+            configurationDataResource.setOverrideAllocationProjectNumber(o.getOverrideAllocationProjectNumber());
             configurationDataResource.setStorageId(o.getStorageId());
             configurationDataResource.setExperimentDataDir(o.getExperimentDataDir());
         }
@@ -658,6 +661,9 @@ public class Utils {
             resourceScheduleResource.setWallTimeLimit(o.getWallTimeLimit());
             resourceScheduleResource.setTotalPhysicalMemory(o.getTotalPhysicalMemory());
             resourceScheduleResource.setStaticWorkingDir(o.getStaticWorkingDir());
+            resourceScheduleResource.setOverrideLoginUserName(o.getOverrideLoginUserName());
+            resourceScheduleResource.setOverrideScratchLocation(o.getOverrideScratchLocation());
+            resourceScheduleResource.setOverrideAllocationProjectNumber(o.getOverrideAllocationProjectNumber());
         }
         return resourceScheduleResource;
     }

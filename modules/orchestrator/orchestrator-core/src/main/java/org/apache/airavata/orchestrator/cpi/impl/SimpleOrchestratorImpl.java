@@ -548,8 +548,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         URI destination = null;
         try {
             DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(orchestratorContext, processModel, gatewayId);
+            String loginUserName = OrchestratorUtils.getLoginUserName(orchestratorContext, processModel, gatewayId);
             destination = new URI(dataMovementProtocol.name(),
-                    computeResourcePreference.getLoginUserName(),
+                    loginUserName,
                     computeResource.getHostName(),
                     OrchestratorUtils.getDataMovementPort(orchestratorContext, processModel, gatewayId),
                     remoteOutputDir , null, null);
@@ -585,11 +586,12 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(orchestratorContext, processModel, gatewayId);
             URI source = null;
             try {
+                String loginUserName = OrchestratorUtils.getLoginUserName(orchestratorContext, processModel, gatewayId);
                 if (processOutput != null) {
                     submodel.setType(DataStageType.OUPUT);
                     submodel.setProcessOutput(processOutput);
                     source = new URI(dataMovementProtocol.name(),
-                            computeResourcePreference.getLoginUserName(),
+                            loginUserName,
                             computeResource.getHostName(),
                             OrchestratorUtils.getDataMovementPort(orchestratorContext, processModel, gatewayId),
                             remoteOutputDir + processOutput.getValue(), null, null);
@@ -597,7 +599,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                     // archive
                     submodel.setType(DataStageType.ARCHIVE_OUTPUT);
                     source = new URI(dataMovementProtocol.name(),
-                            computeResourcePreference.getLoginUserName(),
+                            loginUserName,
                             computeResource.getHostName(),
                             OrchestratorUtils.getDataMovementPort(orchestratorContext, processModel, gatewayId),
                             remoteOutputDir, null, null);

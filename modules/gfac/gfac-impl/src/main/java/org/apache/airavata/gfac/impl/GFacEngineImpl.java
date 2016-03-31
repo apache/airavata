@@ -150,7 +150,7 @@ public class GFacEngineImpl implements GFacEngine {
             processContext.setApplicationInterfaceDescription(applicationInterface);
             String computeResourceId = processContext.getComputeResourceDescription().getComputeResourceId();
             String hostName = Factory.getDefaultAppCatalog().getComputeResource().getComputeResource(computeResourceId).getHostName();
-            ServerInfo serverInfo = new ServerInfo(processContext.getComputeResourcePreference().getLoginUserName(), hostName);
+            ServerInfo serverInfo = new ServerInfo(Factory.getLoginUserName(processContext), hostName);
             processContext.setServerInfo(serverInfo);
             List<OutputDataObjectType> applicationOutputs = applicationInterface.getApplicationOutputs();
             if (applicationOutputs != null && !applicationOutputs.isEmpty()) {
@@ -355,7 +355,7 @@ public class GFacEngineImpl implements GFacEngine {
                                         submodel.setType(DataStageType.OUPUT);
                                         submodel.setProcessOutput(output);
                                         URI source = new URI(processContext.getDataMovementProtocol().name(),
-                                                processContext.getComputeResourcePreference().getLoginUserName(),
+                                                Factory.getLoginUserName(processContext),
                                                 processContext.getComputeResourceDescription().getHostName(),
                                                 22,
                                                 processContext.getWorkingDir() + output.getValue(), null, null);
