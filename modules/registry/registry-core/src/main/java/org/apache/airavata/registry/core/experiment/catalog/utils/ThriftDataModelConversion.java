@@ -515,6 +515,9 @@ public class ThriftDataModelConversion {
             resourceSchedulingModel.setWallTimeLimit(resource.getWallTimeLimit());
             resourceSchedulingModel.setTotalPhysicalMemory(resource.getTotalPhysicalMemory());
             resourceSchedulingModel.setStaticWorkingDir(resource.getStaticWorkingDir());
+            resourceSchedulingModel.setOverrideLoginUserName(resource.getOverrideLoginUserName());
+            resourceSchedulingModel.setOverrideScratchLocation(resource.getOverrideScratchLocation());
+            resourceSchedulingModel.setOverrideAllocationProjectNumber(resource.getOverrideAllocationProjectNumber());
             data.setComputationalResourceScheduling(resourceSchedulingModel);
 
             return data;
@@ -533,6 +536,9 @@ public class ThriftDataModelConversion {
             resourceSchedulingModel.setWallTimeLimit(resource.getWallTimeLimit());
             resourceSchedulingModel.setTotalPhysicalMemory(resource.getTotalPhysicalMemory());
             resourceSchedulingModel.setStaticWorkingDir(resource.getStaticWorkingDir());
+            resourceSchedulingModel.setOverrideLoginUserName(resource.getOverrideLoginUserName());
+            resourceSchedulingModel.setOverrideScratchLocation(resource.getOverrideScratchLocation());
+            resourceSchedulingModel.setOverrideAllocationProjectNumber(resource.getOverrideAllocationProjectNumber());
             return resourceSchedulingModel;
         }
         return null;
@@ -549,6 +555,9 @@ public class ThriftDataModelConversion {
             resourceSchedulingModel.setWallTimeLimit(resource.getWallTimeLimit());
             resourceSchedulingModel.setTotalPhysicalMemory(resource.getTotalPhysicalMemory());
             resourceSchedulingModel.setStaticWorkingDir(resource.getStaticWorkingDir());
+            resourceSchedulingModel.setOverrideLoginUserName(resource.getOverrideLoginUserName());
+            resourceSchedulingModel.setOverrideScratchLocation(resource.getOverrideScratchLocation());
+            resourceSchedulingModel.setOverrideAllocationProjectNumber(resource.getOverrideAllocationProjectNumber());
             return resourceSchedulingModel;
         }
         return null;
