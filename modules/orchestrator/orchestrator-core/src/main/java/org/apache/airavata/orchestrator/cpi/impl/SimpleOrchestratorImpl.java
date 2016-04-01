@@ -352,7 +352,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         EnvironmentSetupTaskModel envSetupSubModel = new EnvironmentSetupTaskModel();
         envSetupSubModel.setProtocol(OrchestratorUtils.getSecurityProtocol(orchestratorContext, processModel, gatewayId));
         ComputeResourcePreference computeResourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
-        String scratchLocation = computeResourcePreference.getScratchLocation();
+        String scratchLocation = OrchestratorUtils.getScratchLocation(orchestratorContext,processModel, gatewayId);
         String workingDir = scratchLocation + File.separator + processModel.getProcessId();
         envSetupSubModel.setLocation(workingDir);
         byte[] envSetupSub = ThriftUtils.serializeThriftObject(envSetupSubModel);
@@ -543,7 +543,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         DataStagingTaskModel submodel = new DataStagingTaskModel();
         ComputeResourcePreference computeResourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
         ComputeResourceDescription computeResource = orchestratorContext.getRegistry().getAppCatalog().getComputeResource().getComputeResource(processModel.getComputeResourceId());
-        String remoteOutputDir = computeResourcePreference.getScratchLocation() + File.separator + processModel.getProcessId();
+        String remoteOutputDir = OrchestratorUtils.getScratchLocation(orchestratorContext,processModel, gatewayId) + File.separator + processModel.getProcessId();
         remoteOutputDir = remoteOutputDir.endsWith("/") ? remoteOutputDir : remoteOutputDir + "/";
         URI destination = null;
         try {
@@ -580,7 +580,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             ComputeResourcePreference computeResourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
             ComputeResourceDescription computeResource = orchestratorContext.getRegistry().getAppCatalog().getComputeResource().getComputeResource(processModel.getComputeResourceId());
 
-            String remoteOutputDir = computeResourcePreference.getScratchLocation() + File.separator + processModel.getProcessId();
+            String remoteOutputDir = OrchestratorUtils.getScratchLocation(orchestratorContext,processModel, gatewayId) + File.separator + processModel.getProcessId();
             remoteOutputDir = remoteOutputDir.endsWith("/") ? remoteOutputDir : remoteOutputDir + "/";
             DataStagingTaskModel submodel = new DataStagingTaskModel();
             DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(orchestratorContext, processModel, gatewayId);
