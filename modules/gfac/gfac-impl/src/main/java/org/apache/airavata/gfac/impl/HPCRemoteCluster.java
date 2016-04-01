@@ -94,10 +94,16 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 		if (jsoutput.getJobId() == null) {
 			if (outputParser.isJobSubmissionFailed(reader.getStdOutputString())) {
 				jsoutput.setJobSubmissionFailed(true);
-				jsoutput.setFailureReason(reader.getStdOutputString());
+				jsoutput.setFailureReason("stdout : " + reader.getStdOutputString() +
+						"\n stderr : " + reader.getStdErrorString());
 			}
 		}
 		jsoutput.setExitCode(reader.getExitCode());
+		if (jsoutput.getExitCode() != 0) {
+			jsoutput.setJobSubmissionFailed(true);
+			jsoutput.setFailureReason("stdout : " + reader.getStdOutputString() +
+					"\n stderr : " + reader.getStdErrorString());
+		}
 		jsoutput.setStdOut(reader.getStdOutputString());
 		jsoutput.setStdErr(reader.getStdErrorString());
 		return jsoutput;
