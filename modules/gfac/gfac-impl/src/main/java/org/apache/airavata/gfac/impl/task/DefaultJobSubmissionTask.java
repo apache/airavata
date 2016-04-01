@@ -94,6 +94,7 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 					if (jobSubmissionOutput.isJobSubmissionFailed()) {
 						jobModel.setJobStatus(new JobStatus(JobState.FAILED));
 						jobModel.getJobStatus().setReason(jobSubmissionOutput.getFailureReason());
+						GFacUtils.saveJobModel(processContext, jobModel);
 						log.error("expId: {}, processid: {}, taskId: {} :- Job submission failed for job name {}",
                                 experimentId, taskContext.getProcessId(), taskContext.getTaskId(), jobModel.getJobName());
 						ErrorModel errorModel = new ErrorModel();
