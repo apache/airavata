@@ -125,7 +125,7 @@ public class OrchestratorUtils {
         try {
             String loginUserName = null;
             String overrideLoginUserName = processModel.getResourceSchedule().getOverrideLoginUserName();
-            if (overrideLoginUserName != null || !overrideLoginUserName.equals("")) {
+            if (overrideLoginUserName != null && !overrideLoginUserName.equals("")) {
                 loginUserName = overrideLoginUserName;
             } else {
                 GwyResourceProfile gatewayProfile = context.getRegistry().getAppCatalog().getGatewayProfile();
@@ -142,7 +142,7 @@ public class OrchestratorUtils {
         try {
             String scratchLocation = null;
             String overrideScratchLocation = processModel.getResourceSchedule().getOverrideScratchLocation();
-            if (overrideScratchLocation != null || !overrideScratchLocation.equals("")) {
+            if (overrideScratchLocation != null && !overrideScratchLocation.equals("")) {
                 scratchLocation = overrideScratchLocation;
             } else {
                 GwyResourceProfile gatewayProfile = context.getRegistry().getAppCatalog().getGatewayProfile();
