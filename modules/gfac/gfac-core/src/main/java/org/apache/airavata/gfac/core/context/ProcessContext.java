@@ -167,7 +167,13 @@ public class ProcessContext {
             if (processModel.getResourceSchedule().getStaticWorkingDir() != null){
                 workingDir = processModel.getResourceSchedule().getStaticWorkingDir();
             }else {
-                String scratchLocation = computeResourcePreference.getScratchLocation();
+                String scratchLocation = null;
+				String overrideScratchLocation = processModel.getResourceSchedule().getOverrideScratchLocation();
+                if (overrideScratchLocation != null || !overrideScratchLocation.equals("")) {
+					scratchLocation = overrideScratchLocation;
+				} else {
+					scratchLocation = computeResourcePreference.getScratchLocation();
+				}
                 workingDir = (scratchLocation.endsWith("/") ? scratchLocation + processId : scratchLocation + "/" +
                         processId);
             }

@@ -125,7 +125,7 @@ public class OrchestratorUtils {
         try {
             String loginUserName = null;
             String overrideLoginUserName = processModel.getResourceSchedule().getOverrideLoginUserName();
-            if (overrideLoginUserName != null) {
+            if (overrideLoginUserName != null || !overrideLoginUserName.equals("")) {
                 loginUserName = overrideLoginUserName;
             } else {
                 GwyResourceProfile gatewayProfile = context.getRegistry().getAppCatalog().getGatewayProfile();
@@ -133,8 +133,25 @@ public class OrchestratorUtils {
             }
             return loginUserName;
         } catch (AppCatalogException e) {
-            logger.error("Error occurred while initializing app catalog", e);
-            throw new RegistryException("Error occurred while initializing app catalog", e);
+            logger.error("Error occurred while initializing app catalog to fetch login username", e);
+            throw new RegistryException("Error occurred while initializing app catalog to fetch login username", e);
+        }
+    }
+
+    public static String getScratchLocation(OrchestratorContext context, ProcessModel processModel, String gatewayId) throws RegistryException {
+        try {
+            String scratchLocation = null;
+            String overrideScratchLocation = processModel.getResourceSchedule().getOverrideScratchLocation();
+            if (overrideScratchLocation != null || !overrideScratchLocation.equals("")) {
+                scratchLocation = overrideScratchLocation;
+            } else {
+                GwyResourceProfile gatewayProfile = context.getRegistry().getAppCatalog().getGatewayProfile();
+                scratchLocation = gatewayProfile.getComputeResourcePreference(gatewayId, processModel.getComputeResourceId()).getScratchLocation();
+            }
+            return scratchLocation;
+        } catch (AppCatalogException e) {
+            logger.error("Error occurred while initializing app catalog to fetch scratch location", e);
+            throw new RegistryException("Error occurred while initializing app catalog to fetch scratch location", e);
         }
     }
 

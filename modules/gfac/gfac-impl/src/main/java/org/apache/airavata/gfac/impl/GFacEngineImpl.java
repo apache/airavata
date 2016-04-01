@@ -111,7 +111,7 @@ public class GFacEngineImpl implements GFacEngine {
             processContext.setGatewayResourceProfile(gatewayProfile);
             ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().getComputeResourcePreference
                     (gatewayId, processModel.getComputeResourceId());
-            String scratchLocation = computeResourcePreference.getScratchLocation();
+            String scratchLocation = Factory.getScratchLocation(processContext);
             scratchLocation = scratchLocation + File.separator + processId + File.separator;
             processContext.setComputeResourcePreference(computeResourcePreference);
             StoragePreference storagePreference = appCatalog.getGatewayProfile().getStoragePreference(gatewayId, processModel.getStorageResourceId());

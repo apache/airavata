@@ -319,7 +319,7 @@ public abstract class Factory {
             ProcessModel processModel = processContext.getProcessModel();
             String loginUserName = null;
             String overrideLoginUserName = processModel.getResourceSchedule().getOverrideLoginUserName();
-            if (overrideLoginUserName != null) {
+            if (overrideLoginUserName != null || !overrideLoginUserName.equals("")) {
                 loginUserName = overrideLoginUserName;
             } else {
                 loginUserName = processContext.getComputeResourcePreference().getLoginUserName();
@@ -328,6 +328,23 @@ public abstract class Factory {
             return loginUserName;
         }  catch (Exception e) {
             throw new GFacException("Couldn't fetch loginUserName", e);
+        }
+    }
+
+    public static String  getScratchLocation(ProcessContext processContext) throws GFacException {
+        try {
+            ProcessModel processModel = processContext.getProcessModel();
+            String scratchLocation = null;
+            String overrideScratchLocation = processModel.getResourceSchedule().getOverrideScratchLocation();
+            if (overrideScratchLocation != null || !overrideScratchLocation.equals("")) {
+                scratchLocation = overrideScratchLocation;
+            } else {
+                scratchLocation = processContext.getComputeResourcePreference().getScratchLocation();
+            }
+
+            return scratchLocation;
+        }  catch (Exception e) {
+            throw new GFacException("Couldn't fetch scratchLocation", e);
         }
     }
 
