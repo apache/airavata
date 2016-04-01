@@ -40,6 +40,9 @@ public class ProcessResourceSchedule {
     private Integer totalPhysicalMemory;
     private Process process;
     private String staticWorkingDir;
+    private String overrideLoginUserName;
+    private String overrideScratchLocation;
+    private String overrideAllocationProjectNumber;
 
     @Id
     @Column(name = "PROCESS_ID")
@@ -121,6 +124,33 @@ public class ProcessResourceSchedule {
 
     public void setStaticWorkingDir(String staticWorkingDir) {
         this.staticWorkingDir = staticWorkingDir;
+    }
+
+    @Column(name = "OVERRIDE_LOGIN_USER_NAME")
+    public String getOverrideLoginUserName() {
+        return overrideLoginUserName;
+    }
+
+    public void setOverrideLoginUserName(String overrideLoginUserName) {
+        this.overrideLoginUserName = overrideLoginUserName;
+    }
+
+    @Column(name = "OVERRIDE_SCRATCH_LOCATION")
+    public String getOverrideScratchLocation() {
+        return overrideScratchLocation;
+    }
+
+    public void setOverrideScratchLocation(String overrideScratchLocation) {
+        this.overrideScratchLocation = overrideScratchLocation;
+    }
+
+    @Column(name = "OVERRIDE_ALLOCATION_PROJECT_NUMBER")
+    public String getOverrideAllocationProjectNumber() {
+        return overrideAllocationProjectNumber;
+    }
+
+    public void setOverrideAllocationProjectNumber(String overrideAllocationProjectNumber) {
+        this.overrideAllocationProjectNumber = overrideAllocationProjectNumber;
     }
 
     //    @Override

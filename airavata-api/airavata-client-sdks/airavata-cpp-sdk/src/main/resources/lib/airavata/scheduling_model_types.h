@@ -39,7 +39,7 @@ namespace apache { namespace airavata { namespace model { namespace scheduling {
 class ComputationalResourceSchedulingModel;
 
 typedef struct _ComputationalResourceSchedulingModel__isset {
-  _ComputationalResourceSchedulingModel__isset() : resourceHostId(false), totalCPUCount(false), nodeCount(false), numberOfThreads(false), queueName(false), wallTimeLimit(false), totalPhysicalMemory(false), chessisNumber(false), staticWorkingDir(false) {}
+  _ComputationalResourceSchedulingModel__isset() : resourceHostId(false), totalCPUCount(false), nodeCount(false), numberOfThreads(false), queueName(false), wallTimeLimit(false), totalPhysicalMemory(false), chessisNumber(false), staticWorkingDir(false), overrideLoginUserName(false), overrideScratchLocation(false), overrideAllocationProjectNumber(false) {}
   bool resourceHostId :1;
   bool totalCPUCount :1;
   bool nodeCount :1;
@@ -49,6 +49,9 @@ typedef struct _ComputationalResourceSchedulingModel__isset {
   bool totalPhysicalMemory :1;
   bool chessisNumber :1;
   bool staticWorkingDir :1;
+  bool overrideLoginUserName :1;
+  bool overrideScratchLocation :1;
+  bool overrideAllocationProjectNumber :1;
 } _ComputationalResourceSchedulingModel__isset;
 
 class ComputationalResourceSchedulingModel {
@@ -56,7 +59,7 @@ class ComputationalResourceSchedulingModel {
 
   ComputationalResourceSchedulingModel(const ComputationalResourceSchedulingModel&);
   ComputationalResourceSchedulingModel& operator=(const ComputationalResourceSchedulingModel&);
-  ComputationalResourceSchedulingModel() : resourceHostId(), totalCPUCount(0), nodeCount(0), numberOfThreads(0), queueName(), wallTimeLimit(0), totalPhysicalMemory(0), chessisNumber(), staticWorkingDir() {
+  ComputationalResourceSchedulingModel() : resourceHostId(), totalCPUCount(0), nodeCount(0), numberOfThreads(0), queueName(), wallTimeLimit(0), totalPhysicalMemory(0), chessisNumber(), staticWorkingDir(), overrideLoginUserName(), overrideScratchLocation(), overrideAllocationProjectNumber() {
   }
 
   virtual ~ComputationalResourceSchedulingModel() throw();
@@ -69,6 +72,9 @@ class ComputationalResourceSchedulingModel {
   int32_t totalPhysicalMemory;
   std::string chessisNumber;
   std::string staticWorkingDir;
+  std::string overrideLoginUserName;
+  std::string overrideScratchLocation;
+  std::string overrideAllocationProjectNumber;
 
   _ComputationalResourceSchedulingModel__isset __isset;
 
@@ -89,6 +95,12 @@ class ComputationalResourceSchedulingModel {
   void __set_chessisNumber(const std::string& val);
 
   void __set_staticWorkingDir(const std::string& val);
+
+  void __set_overrideLoginUserName(const std::string& val);
+
+  void __set_overrideScratchLocation(const std::string& val);
+
+  void __set_overrideAllocationProjectNumber(const std::string& val);
 
   bool operator == (const ComputationalResourceSchedulingModel & rhs) const
   {
@@ -127,6 +139,18 @@ class ComputationalResourceSchedulingModel {
     if (__isset.staticWorkingDir != rhs.__isset.staticWorkingDir)
       return false;
     else if (__isset.staticWorkingDir && !(staticWorkingDir == rhs.staticWorkingDir))
+      return false;
+    if (__isset.overrideLoginUserName != rhs.__isset.overrideLoginUserName)
+      return false;
+    else if (__isset.overrideLoginUserName && !(overrideLoginUserName == rhs.overrideLoginUserName))
+      return false;
+    if (__isset.overrideScratchLocation != rhs.__isset.overrideScratchLocation)
+      return false;
+    else if (__isset.overrideScratchLocation && !(overrideScratchLocation == rhs.overrideScratchLocation))
+      return false;
+    if (__isset.overrideAllocationProjectNumber != rhs.__isset.overrideAllocationProjectNumber)
+      return false;
+    else if (__isset.overrideAllocationProjectNumber && !(overrideAllocationProjectNumber == rhs.overrideAllocationProjectNumber))
       return false;
     return true;
   }

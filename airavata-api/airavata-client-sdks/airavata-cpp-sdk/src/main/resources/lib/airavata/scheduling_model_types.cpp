@@ -80,6 +80,21 @@ void ComputationalResourceSchedulingModel::__set_staticWorkingDir(const std::str
 __isset.staticWorkingDir = true;
 }
 
+void ComputationalResourceSchedulingModel::__set_overrideLoginUserName(const std::string& val) {
+  this->overrideLoginUserName = val;
+__isset.overrideLoginUserName = true;
+}
+
+void ComputationalResourceSchedulingModel::__set_overrideScratchLocation(const std::string& val) {
+  this->overrideScratchLocation = val;
+__isset.overrideScratchLocation = true;
+}
+
+void ComputationalResourceSchedulingModel::__set_overrideAllocationProjectNumber(const std::string& val) {
+  this->overrideAllocationProjectNumber = val;
+__isset.overrideAllocationProjectNumber = true;
+}
+
 uint32_t ComputationalResourceSchedulingModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -173,6 +188,30 @@ uint32_t ComputationalResourceSchedulingModel::read(::apache::thrift::protocol::
           xfer += iprot->skip(ftype);
         }
         break;
+      case 10:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->overrideLoginUserName);
+          this->__isset.overrideLoginUserName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 11:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->overrideScratchLocation);
+          this->__isset.overrideScratchLocation = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 12:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->overrideAllocationProjectNumber);
+          this->__isset.overrideAllocationProjectNumber = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -235,6 +274,21 @@ uint32_t ComputationalResourceSchedulingModel::write(::apache::thrift::protocol:
     xfer += oprot->writeString(this->staticWorkingDir);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.overrideLoginUserName) {
+    xfer += oprot->writeFieldBegin("overrideLoginUserName", ::apache::thrift::protocol::T_STRING, 10);
+    xfer += oprot->writeString(this->overrideLoginUserName);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.overrideScratchLocation) {
+    xfer += oprot->writeFieldBegin("overrideScratchLocation", ::apache::thrift::protocol::T_STRING, 11);
+    xfer += oprot->writeString(this->overrideScratchLocation);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.overrideAllocationProjectNumber) {
+    xfer += oprot->writeFieldBegin("overrideAllocationProjectNumber", ::apache::thrift::protocol::T_STRING, 12);
+    xfer += oprot->writeString(this->overrideAllocationProjectNumber);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -251,6 +305,9 @@ void swap(ComputationalResourceSchedulingModel &a, ComputationalResourceScheduli
   swap(a.totalPhysicalMemory, b.totalPhysicalMemory);
   swap(a.chessisNumber, b.chessisNumber);
   swap(a.staticWorkingDir, b.staticWorkingDir);
+  swap(a.overrideLoginUserName, b.overrideLoginUserName);
+  swap(a.overrideScratchLocation, b.overrideScratchLocation);
+  swap(a.overrideAllocationProjectNumber, b.overrideAllocationProjectNumber);
   swap(a.__isset, b.__isset);
 }
 
@@ -264,6 +321,9 @@ ComputationalResourceSchedulingModel::ComputationalResourceSchedulingModel(const
   totalPhysicalMemory = other0.totalPhysicalMemory;
   chessisNumber = other0.chessisNumber;
   staticWorkingDir = other0.staticWorkingDir;
+  overrideLoginUserName = other0.overrideLoginUserName;
+  overrideScratchLocation = other0.overrideScratchLocation;
+  overrideAllocationProjectNumber = other0.overrideAllocationProjectNumber;
   __isset = other0.__isset;
 }
 ComputationalResourceSchedulingModel& ComputationalResourceSchedulingModel::operator=(const ComputationalResourceSchedulingModel& other1) {
@@ -276,6 +336,9 @@ ComputationalResourceSchedulingModel& ComputationalResourceSchedulingModel::oper
   totalPhysicalMemory = other1.totalPhysicalMemory;
   chessisNumber = other1.chessisNumber;
   staticWorkingDir = other1.staticWorkingDir;
+  overrideLoginUserName = other1.overrideLoginUserName;
+  overrideScratchLocation = other1.overrideScratchLocation;
+  overrideAllocationProjectNumber = other1.overrideAllocationProjectNumber;
   __isset = other1.__isset;
   return *this;
 }
@@ -291,6 +354,9 @@ void ComputationalResourceSchedulingModel::printTo(std::ostream& out) const {
   out << ", " << "totalPhysicalMemory="; (__isset.totalPhysicalMemory ? (out << to_string(totalPhysicalMemory)) : (out << "<null>"));
   out << ", " << "chessisNumber="; (__isset.chessisNumber ? (out << to_string(chessisNumber)) : (out << "<null>"));
   out << ", " << "staticWorkingDir="; (__isset.staticWorkingDir ? (out << to_string(staticWorkingDir)) : (out << "<null>"));
+  out << ", " << "overrideLoginUserName="; (__isset.overrideLoginUserName ? (out << to_string(overrideLoginUserName)) : (out << "<null>"));
+  out << ", " << "overrideScratchLocation="; (__isset.overrideScratchLocation ? (out << to_string(overrideScratchLocation)) : (out << "<null>"));
+  out << ", " << "overrideAllocationProjectNumber="; (__isset.overrideAllocationProjectNumber ? (out << to_string(overrideAllocationProjectNumber)) : (out << "<null>"));
   out << ")";
 }
 
