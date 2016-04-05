@@ -169,7 +169,7 @@ public class ProcessContext {
             }else {
                 String scratchLocation = null;
 				String overrideScratchLocation = processModel.getResourceSchedule().getOverrideScratchLocation();
-                if (overrideScratchLocation != null || !overrideScratchLocation.equals("")) {
+                if (overrideScratchLocation != null && !overrideScratchLocation.equals("")) {
 					scratchLocation = overrideScratchLocation;
 				} else {
 					scratchLocation = computeResourcePreference.getScratchLocation();
