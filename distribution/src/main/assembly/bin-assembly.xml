@@ -35,7 +35,6 @@
     </formats>
 
     <fileSets>
-
         <!-- ********************** copy release notes files ********************** -->
         <fileSet>
             <directory>../../../</directory>
@@ -56,6 +55,61 @@
             </includes>
         </fileSet>
 
+		<!-- ********************** copy database scripts ********************** -->
+		<fileSet>
+			<directory>../modules/registry/registry-core/src/main/resources/
+			</directory>
+			<outputDirectory>bin/database_scripts
+			</outputDirectory>
+			<includes>
+				<include>*sql*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/resources/bin</directory>
+			<outputDirectory>bin</outputDirectory>
+			<fileMode>777</fileMode>
+			<includes>
+				<include>*.sh</include>
+				<include>*.bat</include>
+				<include>logo.txt</include>
+				<include>startNetworkServer</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/resources/samples</directory>
+			<outputDirectory>samples</outputDirectory>
+			<fileMode>777</fileMode>
+			<includes>
+				<include>*.sh</include>
+				<include>**/*.sh</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>${project.build.directory}/conf</directory>
+			<outputDirectory>bin</outputDirectory>
+			<includes>
+				<include>airavata-server.properties</include>
+				<include>zoo.cfg</include>
+				<include>registry.properties</include>
+				<include>log4j.properties</include>
+				<include>host.xml</include>
+				<include>persistence.xml</include>
+				<include>provenance.sql</include>
+				<include>gfac-config.yaml</include>
+				<include>PBSTemplate.xslt</include>
+				<include>SLURMTemplate.xslt</include>
+				<include>LSFTemplate.xslt</include>
+				<include>UGETemplate.xslt</include>
+				<include>SGETemplate.xslt</include>
+				<include>ForkTemplate.xslt</include>
+				<include>gsissh.properties</include>
+				<include>airavata.jks</include>
+				<include>client_truststore.jks</include>
+				<include>airavata-default-xacml-policy.xml</include>
+			</includes>
+		</fileSet>
+		
         <!-- ********************** copy database scripts ********************** -->
         <fileSet>
             <directory>../modules/registry/registry-core/src/main/resources/

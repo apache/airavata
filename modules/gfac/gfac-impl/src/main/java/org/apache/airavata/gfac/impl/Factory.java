@@ -191,6 +191,9 @@ public abstract class Factory {
 			case UGE:
 				return new UGEJobConfiguration("UGETemplate.xslt", ".pbs", resourceJobManager.getJobManagerBinPath(),
 						resourceJobManager.getJobManagerCommands(), outputParser);
+			case SGE:
+				return new UGEJobConfiguration("SGETemplate.xslt", ".pbs", resourceJobManager.getJobManagerBinPath(),
+						resourceJobManager.getJobManagerCommands(), outputParser);
             case FORK:
                 return new ForkJobConfiguration("ForkTemplate.xslt", ".sh", resourceJobManager.getJobManagerBinPath(),
                         resourceJobManager.getJobManagerCommands(), outputParser);

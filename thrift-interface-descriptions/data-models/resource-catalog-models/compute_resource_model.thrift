@@ -52,7 +52,8 @@ enum ResourceJobManagerType {
     PBS,
     SLURM,
     LSF,
-    UGE
+    UGE,
+    SGE
 }
 
 /**

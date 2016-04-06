@@ -45,7 +45,8 @@ struct ResourceJobManagerType {
     PBS = 1,
     SLURM = 2,
     LSF = 3,
-    UGE = 4
+    UGE = 4,
+    SGE = 5
   };
 };
 
