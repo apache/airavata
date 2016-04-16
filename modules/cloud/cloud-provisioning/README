@@ -3,5 +3,5 @@ Currently supporting, Openstack on Jetstream using Openstack4j.
 
 To Test Run:-
 1) Replace the credentials in src/main/resources/jetstream_openrc.properties with the Jetstream credentials.
-2) Update the publicKeyFile, jetstream_imageId, jetstream_flavorId and jetstream_networkId to the local path in src/test/resources/test_data.properties. This are the parameters used by the unit tests.
+2) Update the publicKeyFile, jetstream_imageId, jetstream_flavorId to the local path in src/test/resources/test_data.properties. This are the parameters used by the unit tests.
 3) Run JUnit Test org.apache.airavata.cloud.test.CloudIntfTest.

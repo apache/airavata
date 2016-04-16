@@ -29,17 +29,29 @@ import java.util.Properties;
 
 import org.apache.airavata.cloud.intf.CloudInterface;
 import org.apache.airavata.cloud.openstack.OS4JClientProvider;
+import org.apache.airavata.cloud.util.Constants;
+import org.apache.airavata.cloud.util.IPType;
 import org.openstack4j.api.Builders;
 import org.openstack4j.api.OSClient;
+import org.openstack4j.model.compute.ActionResponse;
+import org.openstack4j.model.compute.Address;
+import org.openstack4j.model.compute.FloatingIP;
 import org.openstack4j.model.compute.Keypair;
 import org.openstack4j.model.compute.Server;
 import org.openstack4j.model.compute.ServerCreate;
+import org.openstack4j.model.network.Subnet;
+import org.openstack4j.openstack.compute.domain.NovaAddresses.NovaAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OpenstackIntfImpl implements CloudInterface {
 
 	/** The properties. */
 	private String propertiesFile;
 	private Properties properties;
+
+	// Initializing Logger
+	private Logger logger = LoggerFactory.getLogger(OpenstackIntfImpl.class);
 
 	OSClient os = null;
 
@@ -72,30 +84,51 @@ public class OpenstackIntfImpl implements CloudInterface {
 	}
 
 	@Override
-	public Server createServer(String serverName, String imageId, String flavorId, String networkId, String keyPairName) {
+	public Server createServer(String serverName, String imageId, String flavorId, String keyPairName) {
 		try {
 
+			Server newServer = null;
+			String networkId = null;
 
-			List<String> srvNet = new LinkedList<String>();
-			srvNet.add(networkId);
+			// Adhering to openstack format of subnet names 'subnet-<name>'.
+			String networkName = "subnet-" + properties.getProperty(Constants.OS_SUBNET_NAME);
 
-			ServerCreate sc = Builders.server()
-					.name(serverName)
-					.flavor(flavorId)
-					.image(imageId)
-					.networks(srvNet)
-					.keypairName(keyPairName)
-					.addPersonality("/etc/motd", "Welcome to the new VM! Restricted access only")
-					.build();
+			for( Subnet net : os.networking().subnet().list() ) {
+				if(net.getName().equals(networkName)) {
+					networkId = net.getNetworkId();
+					logger.info("Using network " + networkName + " with ID: " + networkId);
+					break;
+				}
+			}
 
-			//Boot the Server
-			Server newServer = os.compute().servers().boot(sc);
+			if(networkId != null) {
 
+				List<String> srvNet = new LinkedList<String>();
+				srvNet.add(networkId);
+
+				ServerCreate sc = Builders.server()
+						.name(serverName)
+						.flavor(flavorId)
+						.image(imageId)
+						.networks(srvNet)
+						.keypairName(keyPairName)
+						.build();
+
+				//Boot the Server
+				newServer = os.compute().servers().boot(sc);
+
+				logger.info("New server created with ID: " + newServer.getId());
+
+			}
+			else {
+				logger.error("Network with name " + networkName + " not found.");
+			}
 			return newServer;
 		}
 		catch( Exception ex ) {
 			ex.printStackTrace();
 			// TODO: Check with the team on how to handle exceptions.
+			logger.error("Failed to create server.");
 			return null;
 		}
 	}
@@ -106,11 +139,14 @@ public class OpenstackIntfImpl implements CloudInterface {
 
 			Server server = os.compute().servers().get(serverId);
 
+			logger.info("Server retrieved successfully for ID: " + serverId);
+
 			return server;
 		}
 		catch( Exception ex ) {
 			ex.printStackTrace();
 			// TODO: Check with the team on how to handle exceptions.
+			logger.error("Failed to retrieve server for ID: " + serverId);
 			return null;
 		}
 	}
@@ -119,11 +155,38 @@ public class OpenstackIntfImpl implements CloudInterface {
 	public void deleteServer(String serverId) {
 		try {
 
-			os.compute().servers().delete(serverId);
+			Server server = this.getServer(serverId);
+
+			// Get Floating IP if there is one associated.
+			String floatingIpAddr = null;
+			for(Address novaAddress : server.getAddresses().getAddresses().get(properties.getProperty(Constants.OS_SUBNET_NAME))) {
+				novaAddress = (NovaAddress) novaAddress;
+				if(novaAddress.getType().equals(IPType.FLOATING.toString())) {
+					floatingIpAddr = novaAddress.getAddr();
+					break;
+				}
+			}
+
+			if(server != null) {
+				os.compute().servers().delete(serverId);
+
+				// Deallocating Floating IP.
+				if(floatingIpAddr != null) {
+					for(FloatingIP floatIp : os.compute().floatingIps().list()) {
+						if(floatIp.getFloatingIpAddress().equals(floatingIpAddr)) {
+							os.compute().floatingIps().deallocateIP(floatIp.getId());
+						}
+					}
+				}
+
+				logger.info("Server deleted successfully for ID: " + serverId);
+			}
+
 		}
 		catch( Exception ex ) {
 			ex.printStackTrace();
 			// TODO: Check with the team on how to handle exceptions.
+			logger.error("Failed to delete server with ID: " + serverId);
 		}
 	}
 
@@ -133,11 +196,14 @@ public class OpenstackIntfImpl implements CloudInterface {
 
 			Keypair keyp = os.compute().keypairs().create(keyPairName, publicKey);
 
+			logger.info("Keypair created successfully: " + keyp.getName());
+
 			return keyp;
 		}
 		catch( Exception ex ) {
 			ex.printStackTrace();
 			// TODO: Check with the team on how to handle exceptions.
+			logger.error("Failed to create keypair: " + keyPairName);
 			return null;
 		}
 	}
@@ -148,11 +214,16 @@ public class OpenstackIntfImpl implements CloudInterface {
 
 			Keypair keyp = os.compute().keypairs().get(keyPairName);
 
+			if(keyp != null){
+				logger.info("Keypair retrieved successfully: " + keyp.getName());				
+			}
+
 			return keyp;
 		}
 		catch( Exception ex ) {
 			ex.printStackTrace();
 			// TODO: Check with the team on how to handle exceptions.
+			logger.error("Failed to retrieve keypair: " + keyPairName);
 			return null;
 		}
 	}
@@ -162,11 +233,44 @@ public class OpenstackIntfImpl implements CloudInterface {
 		try {
 
 			os.compute().keypairs().delete(keyPairName);
+
+			logger.info("Keypair deleted successfully: " + keyPairName);
 		}
 		catch( Exception ex ) {
 			ex.printStackTrace();
 			// TODO: Check with the team on how to handle exceptions.
+			logger.error("Failed to delete keypair: " + keyPairName);
 		}
 	}
 
+	@Override
+	public void addFloatingIP(String serverId) {
+
+		try {
+			Server server = this.getServer(serverId);
+
+			if(server != null) {
+				FloatingIP floatIp = os.compute().floatingIps().allocateIP(properties.getProperty(Constants.OS_FLOATING_IP_POOL));
+
+				if(floatIp != null) {
+					String ipAddr = floatIp.getFloatingIpAddress();
+
+					if(ipAddr != null) {
+						ActionResponse response = os.compute().floatingIps().addFloatingIP(server, ipAddr);
+						logger.info(response.isSuccess() + ":" + response.getCode() + ":" + response.getFault() + ":" + response.toString());
+
+						logger.info("Floating IP "+ ipAddr + " assigned successfully to server with ID: " + serverId);
+					}
+				}
+				else {
+					logger.error("Failed to associate Floating IP.");
+				}
+			}
+		}
+		catch( Exception ex ) {
+			ex.printStackTrace();
+			// TODO: Check with the team on how to handle exceptions.
+			logger.error("Failed to associate floating IP to server with ID: " + serverId);
+		}
+	}
 }

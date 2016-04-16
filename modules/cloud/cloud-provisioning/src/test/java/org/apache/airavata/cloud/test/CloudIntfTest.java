@@ -78,7 +78,9 @@ public class CloudIntfTest {
 			// Sample data. This can be determined by the inputs from Airavata.
 			String imageId = properties.getProperty("jetstream_imageId");
 			String flavorId = properties.getProperty("jetstream_flavorId");
-			String networkId = properties.getProperty("jetstream_networkId");
+
+			// Delay in milliseconds used for waiting for server create and delete.
+			Integer delay = 30000;
 
 			/* Create Keypair */
 			String publicKeyFile = properties.getProperty("publicKeyFile");
@@ -95,18 +97,29 @@ public class CloudIntfTest {
 			logger.info("Keypair created/ retrieved: " + kp.getFingerprint());
 
 			/* Create Server */
-			Server newServer = cloudIntf.createServer("AiravataTest", imageId, flavorId, networkId, kp.getName());
+			Server newServer = cloudIntf.createServer("AiravataTest", imageId, flavorId, kp.getName());
 			logger.info("Server Created: " + newServer.getId());
+
+			/* Wait 30 seconds until server is active */
+			logger.info("Waiting for instance to go ACTIVE...");
+			Thread.sleep(delay);
+
+			/* Associate floating ip */
+			cloudIntf.addFloatingIP(newServer.getId());
 
 			/* Delete Server */
 			cloudIntf.deleteServer(newServer.getId());
 			logger.info("Server deleted: " + newServer.getId());
 
-			Server deleted = cloudIntf.getServer(newServer.getId());
+			/* Wait 30 seconds until server is terminated */
+			logger.info("Waiting for instance to terminate...");
+			Thread.sleep(delay);
 
 			/* Delete Keypair */
 			cloudIntf.deleteKeyPair(kp.getName());
 			logger.info("Keypair deleted: " + kp.getName());
+
+			Server deleted = cloudIntf.getServer(newServer.getId());
 
 			assertTrue(newServer != null && deleted == null);
 		}
