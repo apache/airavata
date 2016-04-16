@@ -2,7 +2,7 @@
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
- * distributed with tproperties.getProperty("OS_PROJECT_DOMAIN_NAME")his work for additional information
+ * distributed with this work for additional information
  * regarding copyright ownership.  The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
@@ -21,16 +21,19 @@
 
 package org.apache.airavata.cloud.util;
 
-public class Constants {
+public enum IPType {
 
-	// OpenStack openrc string constants.
-	public static final String OS_AUTH_URL = "OS_AUTH_URL";
-	public static final String OS_IDENTITY_API_VERSION = "OS_IDENTITY_API_VERSION";
-	public static final String OS_USERNAME = "OS_USERNAME";
-	public static final String OS_PASSWORD = "OS_PASSWORD";
-	public static final String OS_USER_DOMAIN_NAME = "OS_USER_DOMAIN_NAME";
-	public static final String OS_PROJECT_DOMAIN_NAME = "OS_PROJECT_DOMAIN_NAME";
-	public static final String OS_FLOATING_IP_POOL = "OS_FLOATING_IP_POOL";
-	public static final String OS_SUBNET_NAME = "OS_SUBNET_NAME";
+	FLOATING("floating"),
+	STATIC("static");
 
+	String ipType;
+
+	private IPType(String type) {
+		this.ipType = type;
+	}
+
+	@Override
+	public String toString() {
+		return this.ipType;
+	}
 }

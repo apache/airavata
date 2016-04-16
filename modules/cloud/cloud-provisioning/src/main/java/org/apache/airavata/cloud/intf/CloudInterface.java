@@ -35,7 +35,7 @@ public interface CloudInterface {
 	 * @param keyPairName
 	 * @return Server object.
 	 */
-	public Server createServer(String serverName, String imageId, String flavorId, String networkId, String keyPairName);
+	public Server createServer(String serverName, String imageId, String flavorId, String keyPairName);
 
 	/**
 	 * Returns the Server object pertaining to the serverId.
@@ -69,4 +69,10 @@ public interface CloudInterface {
 	 * @param publicKey
 	 */
 	public void deleteKeyPair(String keyPairName);
+
+	/**
+	 * Associates a floating ip to the instance indicated by serverId.
+	 * @param serverId
+	 */
+	public void addFloatingIP(String serverId);
 }
