@@ -308,10 +308,10 @@ public class OpenstackIntfImpl implements CloudInterface {
 			}
 			if(publicNetId != null) {
 				router = os.networking().router().create(Builders.router()
-											                .name(routerName)
-											                .adminStateUp(true)
-											                .externalGateway(publicNetId)
-											                .build());
+						.name(routerName)
+						.adminStateUp(true)
+						.externalGateway(publicNetId)
+						.build());
 				logger.info("Created a new router " + router + " for external gateway : [" + externalGatewayName + "]");
 			} else {
 				logger.error("Failed to create router because external gateway [ " + externalGatewayName + "] is not found!");
@@ -335,15 +335,15 @@ public class OpenstackIntfImpl implements CloudInterface {
 					networkId = network.getId();
 				}
 			}
-			
+
 			if(networkId != null) {
 				subnet = os.networking().subnet().create(Builders.subnet()
-																	.enableDHCP(true)
-													                .name(subnetName)
-													                .networkId(networkId)
-													                .ipVersion(IPVersionType.valueOf(ipVersion))
-													                .cidr(subnetCIDR)
-													                .build());
+						.enableDHCP(true)
+						.name(subnetName)
+						.networkId(networkId)
+						.ipVersion(IPVersionType.valueOf(ipVersion))
+						.cidr(subnetCIDR)
+						.build());
 				logger.info("Created a subnet : " + subnetName + " for network [ " + networkName + "]");
 			} else {
 				logger.error("Failed to create subnet because network [ " + networkName + "] is not found!");
@@ -367,18 +367,18 @@ public class OpenstackIntfImpl implements CloudInterface {
 					subnetId = subnet.getId();
 				}
 			}
-			
+
 			// get routerid from name
 			for(Router router : os.networking().router().list()) {
 				if(router.getName().equals(routerName)) {
 					routerId = router.getId();
 				}
 			}
-			
+
 			if(routerId != null && subnetId != null) {
 				// attach external interface to gateway
 				iface = os.networking().router()
-				                          .attachInterface(routerId, AttachInterfaceType.SUBNET, subnetId);
+						.attachInterface(routerId, AttachInterfaceType.SUBNET, subnetId);
 				logger.info("Attached external interface to router : " + iface);
 			} else {
 				logger.error("Either router or network is not found. Kindly re-check and try again.");
@@ -434,7 +434,7 @@ public class OpenstackIntfImpl implements CloudInterface {
 			// TODO: Check with the team on how to handle exceptions.
 			logger.error("Failed to delete subnet: " + subnetName + ". Exception: " + ex.getMessage(), ex);
 		}
-		
+
 	}
 
 	@Override
@@ -451,7 +451,7 @@ public class OpenstackIntfImpl implements CloudInterface {
 			// TODO: Check with the team on how to handle exceptions.
 			logger.error("Failed to delete router: " + routerName + ". Exception: " + ex.getMessage(), ex);
 		}
-		
+
 	}
 
 	@Override
