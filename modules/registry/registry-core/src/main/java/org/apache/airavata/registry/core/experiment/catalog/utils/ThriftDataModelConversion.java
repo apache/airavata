@@ -36,6 +36,7 @@ import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.resources.*;
@@ -559,6 +560,22 @@ public class ThriftDataModelConversion {
             resourceSchedulingModel.setOverrideScratchLocation(resource.getOverrideScratchLocation());
             resourceSchedulingModel.setOverrideAllocationProjectNumber(resource.getOverrideAllocationProjectNumber());
             return resourceSchedulingModel;
+        }
+        return null;
+    }
+
+    public static Notification getNotification(NotificationResource resource){
+        if(resource != null){
+            Notification notification = new Notification();
+            notification.setNotificationId(resource.getNotificationId());
+            notification.setGatewayId(resource.getGatewayId());
+            notification.setTitle(resource.getTitle());
+            notification.setNotifcationMessage(resource.getNotificationMessage());
+            if(resource.getPublishedTime() != null)
+                notification.setPublishedtime(resource.getPublishedTime().getTime());
+            if(resource.getExpirationTime() != null)
+                notification.setExpirationTime(resource.getExpirationTime().getTime());
+            return notification;
         }
         return null;
     }

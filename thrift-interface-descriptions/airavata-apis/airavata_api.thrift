@@ -197,6 +197,39 @@ service Airavata {
                    3: airavata_errors.AiravataSystemException ase,
                    4: airavata_errors.AuthorizationException ae)
 
+  /**
+  * API methods to retrieve notifications
+**/
+   string createNotification(1: required security_model.AuthzToken authzToken, 2: required workspace_model.Notification notification)
+        throws (1: airavata_errors.InvalidRequestException ire,
+                   2: airavata_errors.AiravataClientException ace,
+                   3: airavata_errors.AiravataSystemException ase,
+                   4: airavata_errors.AuthorizationException ae)
+
+   void updateNotification(1: required security_model.AuthzToken authzToken, 2: required workspace_model.Notification notification)
+           throws (1: airavata_errors.InvalidRequestException ire,
+                      2: airavata_errors.AiravataClientException ace,
+                      3: airavata_errors.AiravataSystemException ase,
+                      4: airavata_errors.AuthorizationException ae)
+
+
+  void deleteNotification(1: required security_model.AuthzToken authzToken, 2: required string gatewayId, 3: required string notificationId)
+             throws (1: airavata_errors.InvalidRequestException ire,
+                        2: airavata_errors.AiravataClientException ace,
+                        3: airavata_errors.AiravataSystemException ase,
+                        4: airavata_errors.AuthorizationException ae)
+
+  workspace_model.Notification getNotification(1: required security_model.AuthzToken authzToken, 2: required string gatewayId, 3: required string notificationId)
+             throws (1: airavata_errors.InvalidRequestException ire,
+                        2: airavata_errors.AiravataClientException ace,
+                        3: airavata_errors.AiravataSystemException ase,
+                        4: airavata_errors.AuthorizationException ae)
+
+  list<workspace_model.Notification> getAllNotifications(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
+             throws (1: airavata_errors.InvalidRequestException ire,
+                        2: airavata_errors.AiravataClientException ace,
+                        3: airavata_errors.AiravataSystemException ase,
+                        4: airavata_errors.AuthorizationException ae)
 
     /**
     * Airavata Adminstrative Funcationality

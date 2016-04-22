@@ -455,7 +455,7 @@ public abstract class Factory {
 		return new CancelRequestWatcherImpl(experimentId, processId);
 	}
 
-	public static Session getSSHSession(AuthenticationInfo authenticationInfo, ServerInfo serverInfo) throws AiravataException {
+	public static synchronized Session getSSHSession(AuthenticationInfo authenticationInfo, ServerInfo serverInfo) throws AiravataException {
 		SSHKeyAuthentication authentication = null;
 		String key = serverInfo.getUserName() + "_" + serverInfo.getHost() + "_" + serverInfo.getPort();
 		Session session = sessionMap.get(key);

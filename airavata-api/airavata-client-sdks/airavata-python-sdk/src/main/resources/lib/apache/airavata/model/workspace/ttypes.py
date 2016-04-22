@@ -458,3 +458,139 @@ class Gateway:
 
   def __ne__(self, other):
     return not (self == other)
+
+class Notification:
+  """
+  Attributes:
+   - notificationId
+   - gatewayId
+   - title
+   - notifcationMessage
+   - publishedtime
+   - expirationTime
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'notificationId', None, None, ), # 1
+    (2, TType.STRING, 'gatewayId', None, None, ), # 2
+    (3, TType.STRING, 'title', None, None, ), # 3
+    (4, TType.STRING, 'notifcationMessage', None, None, ), # 4
+    (5, TType.I64, 'publishedtime', None, None, ), # 5
+    (6, TType.I64, 'expirationTime', None, None, ), # 6
+  )
+
+  def __init__(self, notificationId=None, gatewayId=None, title=None, notifcationMessage=None, publishedtime=None, expirationTime=None,):
+    self.notificationId = notificationId
+    self.gatewayId = gatewayId
+    self.title = title
+    self.notifcationMessage = notifcationMessage
+    self.publishedtime = publishedtime
+    self.expirationTime = expirationTime
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.notificationId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.gatewayId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.title = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRING:
+          self.notifcationMessage = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.I64:
+          self.publishedtime = iprot.readI64()
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.I64:
+          self.expirationTime = iprot.readI64()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('Notification')
+    if self.notificationId is not None:
+      oprot.writeFieldBegin('notificationId', TType.STRING, 1)
+      oprot.writeString(self.notificationId)
+      oprot.writeFieldEnd()
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
+    if self.title is not None:
+      oprot.writeFieldBegin('title', TType.STRING, 3)
+      oprot.writeString(self.title)
+      oprot.writeFieldEnd()
+    if self.notifcationMessage is not None:
+      oprot.writeFieldBegin('notifcationMessage', TType.STRING, 4)
+      oprot.writeString(self.notifcationMessage)
+      oprot.writeFieldEnd()
+    if self.publishedtime is not None:
+      oprot.writeFieldBegin('publishedtime', TType.I64, 5)
+      oprot.writeI64(self.publishedtime)
+      oprot.writeFieldEnd()
+    if self.expirationTime is not None:
+      oprot.writeFieldBegin('expirationTime', TType.I64, 6)
+      oprot.writeI64(self.expirationTime)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.gatewayId is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
+    if self.title is None:
+      raise TProtocol.TProtocolException(message='Required field title is unset!')
+    if self.notifcationMessage is None:
+      raise TProtocol.TProtocolException(message='Required field notifcationMessage is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.notificationId)
+    value = (value * 31) ^ hash(self.gatewayId)
+    value = (value * 31) ^ hash(self.title)
+    value = (value * 31) ^ hash(self.notifcationMessage)
+    value = (value * 31) ^ hash(self.publishedtime)
+    value = (value * 31) ^ hash(self.expirationTime)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
