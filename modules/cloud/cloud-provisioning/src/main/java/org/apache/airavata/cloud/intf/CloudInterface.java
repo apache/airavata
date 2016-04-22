@@ -82,7 +82,7 @@ public interface CloudInterface {
 	 * @param serverId the server id
 	 */
 	public void addFloatingIP(String serverId);
-	
+
 	/**
 	 * Creates the router.
 	 *
@@ -91,7 +91,7 @@ public interface CloudInterface {
 	 * @return the object
 	 */
 	public Object createRouter(String routerName, String externalGatewayName);
-	
+
 	/**
 	 * Creates the subnet.
 	 *
@@ -102,7 +102,7 @@ public interface CloudInterface {
 	 * @return the object
 	 */
 	public Object createSubnet(String subnetName, String networkName, String subnetCIDR, int ipVersion);
-	
+
 	/**
 	 * Creates the network.
 	 *
@@ -110,7 +110,7 @@ public interface CloudInterface {
 	 * @return the object
 	 */
 	public Object createNetwork(String networkName);
-	
+
 	/**
 	 * Creates the router subnet interface.
 	 *
@@ -119,7 +119,7 @@ public interface CloudInterface {
 	 * @return the object
 	 */
 	public Object createRouterSubnetInterface(String routerName, String subnetName);
-	
+
 	/**
 	 * Delete router subnet interface.
 	 *
@@ -127,21 +127,21 @@ public interface CloudInterface {
 	 * @param subnetName the subnet name
 	 */
 	public void deleteRouterSubnetInterface(String routerName, String subnetName);
-	
+
 	/**
 	 * Delete subnet.
 	 *
 	 * @param subnetName the subnet name
 	 */
 	public void deleteSubnet(String subnetName);
-	
+
 	/**
 	 * Delete router.
 	 *
 	 * @param routerName the router name
 	 */
 	public void deleteRouter(String routerName);
-	
+
 	/**
 	 * Delete network.
 	 *
