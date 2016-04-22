@@ -45,6 +45,8 @@ class User;
 
 class Gateway;
 
+class Notification;
+
 typedef struct _Group__isset {
   _Group__isset() : description(false) {}
   bool description :1;
@@ -302,6 +304,85 @@ class Gateway {
 void swap(Gateway &a, Gateway &b);
 
 inline std::ostream& operator<<(std::ostream& out, const Gateway& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+typedef struct _Notification__isset {
+  _Notification__isset() : notificationId(false), publishedtime(false), expirationTime(false) {}
+  bool notificationId :1;
+  bool publishedtime :1;
+  bool expirationTime :1;
+} _Notification__isset;
+
+class Notification {
+ public:
+
+  Notification(const Notification&);
+  Notification& operator=(const Notification&);
+  Notification() : notificationId(), gatewayId(), title(), notifcationMessage(), publishedtime(0), expirationTime(0) {
+  }
+
+  virtual ~Notification() throw();
+  std::string notificationId;
+  std::string gatewayId;
+  std::string title;
+  std::string notifcationMessage;
+  int64_t publishedtime;
+  int64_t expirationTime;
+
+  _Notification__isset __isset;
+
+  void __set_notificationId(const std::string& val);
+
+  void __set_gatewayId(const std::string& val);
+
+  void __set_title(const std::string& val);
+
+  void __set_notifcationMessage(const std::string& val);
+
+  void __set_publishedtime(const int64_t val);
+
+  void __set_expirationTime(const int64_t val);
+
+  bool operator == (const Notification & rhs) const
+  {
+    if (__isset.notificationId != rhs.__isset.notificationId)
+      return false;
+    else if (__isset.notificationId && !(notificationId == rhs.notificationId))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    if (!(title == rhs.title))
+      return false;
+    if (!(notifcationMessage == rhs.notifcationMessage))
+      return false;
+    if (__isset.publishedtime != rhs.__isset.publishedtime)
+      return false;
+    else if (__isset.publishedtime && !(publishedtime == rhs.publishedtime))
+      return false;
+    if (__isset.expirationTime != rhs.__isset.expirationTime)
+      return false;
+    else if (__isset.expirationTime && !(expirationTime == rhs.expirationTime))
+      return false;
+    return true;
+  }
+  bool operator != (const Notification &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Notification & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(Notification &a, Notification &b);
+
+inline std::ostream& operator<<(std::ostream& out, const Notification& obj)
 {
   obj.printTo(out);
   return out;

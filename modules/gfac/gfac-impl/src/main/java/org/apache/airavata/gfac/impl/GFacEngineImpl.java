@@ -559,7 +559,8 @@ public class GFacEngineImpl implements GFacEngine {
             errorModel.setUserFriendlyMessage("Error while executing " + task.getType() + " task" );
             errorModel.setActualErrorMessage(errorMsg);
             GFacUtils.saveTaskError(taskContext, errorModel);
-            throw new GFacException("Error while executing " + task.getType() + " task");
+            throw new GFacException("Error: userFriendly msg :" + errorModel.getUserFriendlyMessage() + ", actual msg :"
+                    + errorModel.getActualErrorMessage());
         }
     }
 

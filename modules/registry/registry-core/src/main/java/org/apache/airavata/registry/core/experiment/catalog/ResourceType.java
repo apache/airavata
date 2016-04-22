@@ -23,6 +23,7 @@ public enum ResourceType {
     GATEWAY,
     PROJECT,
     USER,
+    NOTIFICATION,
     PROJECT_USER,
     GATEWAY_WORKER,
     EXPERIMENT,
