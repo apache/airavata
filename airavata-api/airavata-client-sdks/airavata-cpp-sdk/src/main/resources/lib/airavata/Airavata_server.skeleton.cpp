@@ -183,6 +183,38 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   *   * API methods to retrieve notifications
+   * *
+   * 
+   * @param authzToken
+   * @param notification
+   */
+  void createNotification(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification) {
+    // Your implementation goes here
+    printf("createNotification\n");
+  }
+
+  void updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification) {
+    // Your implementation goes here
+    printf("updateNotification\n");
+  }
+
+  void deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId) {
+    // Your implementation goes here
+    printf("deleteNotification\n");
+  }
+
+  void getNotification( ::apache::airavata::model::workspace::Notification& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId) {
+    // Your implementation goes here
+    printf("getNotification\n");
+  }
+
+  void getAllNotifications(std::vector< ::apache::airavata::model::workspace::Notification> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("getAllNotifications\n");
+  }
+
+  /**
    * Generate and Register SSH Key Pair with Airavata Credential Store.
    * 
    * @param gatewayId
