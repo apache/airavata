@@ -32,9 +32,14 @@ import java.util.Scanner;
 
 import org.apache.airavata.cloud.intf.CloudInterface;
 import org.apache.airavata.cloud.intf.impl.OpenstackIntfImpl;
+import org.apache.airavata.cloud.util.Constants;
 import org.junit.Test;
 import org.openstack4j.model.compute.Keypair;
 import org.openstack4j.model.compute.Server;
+import org.openstack4j.model.network.Network;
+import org.openstack4j.model.network.Router;
+import org.openstack4j.model.network.RouterInterface;
+import org.openstack4j.model.network.Subnet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,15 +94,15 @@ public class CloudIntfTest {
 			Scanner fileScan = new Scanner(new FileInputStream(publicKeyFile));
 			String publicKey = fileScan.nextLine();
 
-			Keypair kp = cloudIntf.getKeyPair(keyPairName);
+			Keypair kp = (Keypair) cloudIntf.getKeyPair(keyPairName);
 			if(kp == null) {
-				kp = cloudIntf.createKeyPair(keyPairName, publicKey);
+				kp = (Keypair) cloudIntf.createKeyPair(keyPairName, publicKey);
 			}
 
 			logger.info("Keypair created/ retrieved: " + kp.getFingerprint());
 
 			/* Create Server */
-			Server newServer = cloudIntf.createServer("AiravataTest", imageId, flavorId, kp.getName());
+			Server newServer = (Server) cloudIntf.createServer("AiravataTest", imageId, flavorId, kp.getName());
 			logger.info("Server Created: " + newServer.getId());
 
 			/* Wait 30 seconds until server is active */
@@ -119,7 +124,7 @@ public class CloudIntfTest {
 			cloudIntf.deleteKeyPair(kp.getName());
 			logger.info("Keypair deleted: " + kp.getName());
 
-			Server deleted = cloudIntf.getServer(newServer.getId());
+			Server deleted = (Server) cloudIntf.getServer(newServer.getId());
 
 			assertTrue(newServer != null && deleted == null);
 		}
@@ -127,5 +132,69 @@ public class CloudIntfTest {
 			ex.printStackTrace();
 			fail();
 		}
+	}
+	
+	/**
+	 * Jetstream create delete network test.
+	 */
+	@Test
+	public void jetstreamCreateDeleteNetworkTest() {
+		try {
+			CloudInterface cloudIntf = new OpenstackIntfImpl("jetstream_openrc.properties");
+			
+			/* fetch sample data from properties file */
+			String networkName = properties.getProperty("jetstream_network_name");
+			String subnetCIDR = properties.getProperty("jetstream_subnet_cidr");
+			Integer ipVersion = Integer.valueOf(properties.getProperty("jetstream_ip_version", 
+																		Constants.OS_IP_VERSION_DEFAULT.toString()));
+			String externalGateway = properties.getProperty("jetstream_public_network_name");
+			
+			/* build router and subnet names */
+			String subnetName = "subnet-" + networkName;
+			String routerName = "router-" + networkName;
+			
+			/*  create network */
+			logger.info("Creating network with name = " + networkName);
+			Network network = (Network) cloudIntf.createNetwork(networkName);
+			assertTrue(network != null && network.getName().equals(networkName));
+
+			/* create subnet for network */
+			logger.info("Creating subnet with name = " + subnetName + ", and CIDR = " + subnetCIDR + ", and version = " + ipVersion);
+			Subnet subnet = (Subnet) cloudIntf.createSubnet(subnetName, networkName, subnetCIDR, ipVersion);
+			assertTrue(subnet != null 
+					&& subnet.getName().equals(subnetName) 
+					&& subnet.getCidr().equals(subnetCIDR) 
+					&& subnet.getIpVersion().getVersion() == ipVersion.intValue());
+			
+			/* create router for external gateway */
+			logger.info("Creating router with name = " + routerName + ", and external gateway = " + externalGateway);
+			Router router = (Router) cloudIntf.createRouter(routerName, externalGateway);
+			assertTrue(router != null && router.getName().equals(routerName));
+			
+			/* create router-subnet interface */
+			logger.info("Creating interface between router = " + routerName + ", and subnet = " + subnetName);
+			RouterInterface iface = (RouterInterface) cloudIntf.createRouterSubnetInterface(routerName, subnetName);
+			assertTrue(iface != null && iface.getSubnetId().equals(subnet.getId()));
+			
+			/* delete router-subnet interface */
+			logger.info("Deleting interface between router = " + routerName + ", and subnet = " + subnetName);
+			cloudIntf.deleteRouterSubnetInterface(routerName, subnetName);
+			
+			/* delete router for external gateway */
+			logger.info("Creating router with name = " + routerName);
+			cloudIntf.deleteRouter(routerName);
+			
+			/* delete subnet for network */
+			logger.info("Creating subnet with name = " + subnetName);
+			cloudIntf.deleteSubnet(subnetName);
+			
+			/* delete network */
+			logger.info("Deleting network with name = " + networkName);
+			cloudIntf.deleteNetwork(networkName);
+		} catch( Exception ex ) {
+			ex.printStackTrace();
+			fail();
+		}
+		
 	}
 }
