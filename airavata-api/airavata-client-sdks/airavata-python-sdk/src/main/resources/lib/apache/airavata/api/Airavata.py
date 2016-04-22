@@ -154,6 +154,51 @@ class Iface:
     """
     pass
 
+  def createNotification(self, authzToken, notification):
+    """
+      * API methods to retrieve notifications
+    *
+
+    Parameters:
+     - authzToken
+     - notification
+    """
+    pass
+
+  def updateNotification(self, authzToken, notification):
+    """
+    Parameters:
+     - authzToken
+     - notification
+    """
+    pass
+
+  def deleteNotification(self, authzToken, gatewayId, notificationId):
+    """
+    Parameters:
+     - authzToken
+     - gatewayId
+     - notificationId
+    """
+    pass
+
+  def getNotification(self, authzToken, gatewayId, notificationId):
+    """
+    Parameters:
+     - authzToken
+     - gatewayId
+     - notificationId
+    """
+    pass
+
+  def getAllNotifications(self, authzToken, gatewayId):
+    """
+    Parameters:
+     - authzToken
+     - gatewayId
+    """
+    pass
+
   def generateAndRegisterSSHKeys(self, authzToken, gatewayId, userName):
     """
     Generate and Register SSH Key Pair with Airavata Credential Store.
@@ -3364,6 +3409,214 @@ class Client(Iface):
     if result.ae is not None:
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "isGatewayExist failed: unknown result")
+
+  def createNotification(self, authzToken, notification):
+    """
+      * API methods to retrieve notifications
+    *
+
+    Parameters:
+     - authzToken
+     - notification
+    """
+    self.send_createNotification(authzToken, notification)
+    return self.recv_createNotification()
+
+  def send_createNotification(self, authzToken, notification):
+    self._oprot.writeMessageBegin('createNotification', TMessageType.CALL, self._seqid)
+    args = createNotification_args()
+    args.authzToken = authzToken
+    args.notification = notification
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_createNotification(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = createNotification_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "createNotification failed: unknown result")
+
+  def updateNotification(self, authzToken, notification):
+    """
+    Parameters:
+     - authzToken
+     - notification
+    """
+    self.send_updateNotification(authzToken, notification)
+    self.recv_updateNotification()
+
+  def send_updateNotification(self, authzToken, notification):
+    self._oprot.writeMessageBegin('updateNotification', TMessageType.CALL, self._seqid)
+    args = updateNotification_args()
+    args.authzToken = authzToken
+    args.notification = notification
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_updateNotification(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = updateNotification_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    return
+
+  def deleteNotification(self, authzToken, gatewayId, notificationId):
+    """
+    Parameters:
+     - authzToken
+     - gatewayId
+     - notificationId
+    """
+    self.send_deleteNotification(authzToken, gatewayId, notificationId)
+    self.recv_deleteNotification()
+
+  def send_deleteNotification(self, authzToken, gatewayId, notificationId):
+    self._oprot.writeMessageBegin('deleteNotification', TMessageType.CALL, self._seqid)
+    args = deleteNotification_args()
+    args.authzToken = authzToken
+    args.gatewayId = gatewayId
+    args.notificationId = notificationId
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_deleteNotification(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = deleteNotification_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    return
+
+  def getNotification(self, authzToken, gatewayId, notificationId):
+    """
+    Parameters:
+     - authzToken
+     - gatewayId
+     - notificationId
+    """
+    self.send_getNotification(authzToken, gatewayId, notificationId)
+    return self.recv_getNotification()
+
+  def send_getNotification(self, authzToken, gatewayId, notificationId):
+    self._oprot.writeMessageBegin('getNotification', TMessageType.CALL, self._seqid)
+    args = getNotification_args()
+    args.authzToken = authzToken
+    args.gatewayId = gatewayId
+    args.notificationId = notificationId
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_getNotification(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = getNotification_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getNotification failed: unknown result")
+
+  def getAllNotifications(self, authzToken, gatewayId):
+    """
+    Parameters:
+     - authzToken
+     - gatewayId
+    """
+    self.send_getAllNotifications(authzToken, gatewayId)
+    return self.recv_getAllNotifications()
+
+  def send_getAllNotifications(self, authzToken, gatewayId):
+    self._oprot.writeMessageBegin('getAllNotifications', TMessageType.CALL, self._seqid)
+    args = getAllNotifications_args()
+    args.authzToken = authzToken
+    args.gatewayId = gatewayId
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_getAllNotifications(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = getAllNotifications_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllNotifications failed: unknown result")
 
   def generateAndRegisterSSHKeys(self, authzToken, gatewayId, userName):
     """
@@ -10615,6 +10868,11 @@ class Processor(Iface, TProcessor):
     self._processMap["deleteGateway"] = Processor.process_deleteGateway
     self._processMap["getAllGateways"] = Processor.process_getAllGateways
     self._processMap["isGatewayExist"] = Processor.process_isGatewayExist
+    self._processMap["createNotification"] = Processor.process_createNotification
+    self._processMap["updateNotification"] = Processor.process_updateNotification
+    self._processMap["deleteNotification"] = Processor.process_deleteNotification
+    self._processMap["getNotification"] = Processor.process_getNotification
+    self._processMap["getAllNotifications"] = Processor.process_getAllNotifications
     self._processMap["generateAndRegisterSSHKeys"] = Processor.process_generateAndRegisterSSHKeys
     self._processMap["getSSHPubKey"] = Processor.process_getSSHPubKey
     self._processMap["getAllUserSSHPubKeys"] = Processor.process_getAllUserSSHPubKeys
@@ -11006,6 +11264,161 @@ class Processor(Iface, TProcessor):
       logging.exception(ex)
       result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
     oprot.writeMessageBegin("isGatewayExist", msg_type, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_createNotification(self, seqid, iprot, oprot):
+    args = createNotification_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = createNotification_result()
+    try:
+      result.success = self._handler.createNotification(args.authzToken, args.notification)
+      msg_type = TMessageType.REPLY
+    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+      raise
+    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
+      msg_type = TMessageType.REPLY
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
+      msg_type = TMessageType.REPLY
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
+      msg_type = TMessageType.REPLY
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException as ae:
+      msg_type = TMessageType.REPLY
+      result.ae = ae
+    except Exception as ex:
+      msg_type = TMessageType.EXCEPTION
+      logging.exception(ex)
+      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+    oprot.writeMessageBegin("createNotification", msg_type, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_updateNotification(self, seqid, iprot, oprot):
+    args = updateNotification_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = updateNotification_result()
+    try:
+      self._handler.updateNotification(args.authzToken, args.notification)
+      msg_type = TMessageType.REPLY
+    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+      raise
+    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
+      msg_type = TMessageType.REPLY
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
+      msg_type = TMessageType.REPLY
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
+      msg_type = TMessageType.REPLY
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException as ae:
+      msg_type = TMessageType.REPLY
+      result.ae = ae
+    except Exception as ex:
+      msg_type = TMessageType.EXCEPTION
+      logging.exception(ex)
+      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+    oprot.writeMessageBegin("updateNotification", msg_type, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_deleteNotification(self, seqid, iprot, oprot):
+    args = deleteNotification_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = deleteNotification_result()
+    try:
+      self._handler.deleteNotification(args.authzToken, args.gatewayId, args.notificationId)
+      msg_type = TMessageType.REPLY
+    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+      raise
+    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
+      msg_type = TMessageType.REPLY
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
+      msg_type = TMessageType.REPLY
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
+      msg_type = TMessageType.REPLY
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException as ae:
+      msg_type = TMessageType.REPLY
+      result.ae = ae
+    except Exception as ex:
+      msg_type = TMessageType.EXCEPTION
+      logging.exception(ex)
+      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+    oprot.writeMessageBegin("deleteNotification", msg_type, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_getNotification(self, seqid, iprot, oprot):
+    args = getNotification_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = getNotification_result()
+    try:
+      result.success = self._handler.getNotification(args.authzToken, args.gatewayId, args.notificationId)
+      msg_type = TMessageType.REPLY
+    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+      raise
+    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
+      msg_type = TMessageType.REPLY
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
+      msg_type = TMessageType.REPLY
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
+      msg_type = TMessageType.REPLY
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException as ae:
+      msg_type = TMessageType.REPLY
+      result.ae = ae
+    except Exception as ex:
+      msg_type = TMessageType.EXCEPTION
+      logging.exception(ex)
+      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+    oprot.writeMessageBegin("getNotification", msg_type, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_getAllNotifications(self, seqid, iprot, oprot):
+    args = getAllNotifications_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = getAllNotifications_result()
+    try:
+      result.success = self._handler.getAllNotifications(args.authzToken, args.gatewayId)
+      msg_type = TMessageType.REPLY
+    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+      raise
+    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
+      msg_type = TMessageType.REPLY
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
+      msg_type = TMessageType.REPLY
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
+      msg_type = TMessageType.REPLY
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException as ae:
+      msg_type = TMessageType.REPLY
+      result.ae = ae
+    except Exception as ex:
+      msg_type = TMessageType.EXCEPTION
+      logging.exception(ex)
+      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+    oprot.writeMessageBegin("getAllNotifications", msg_type, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -16713,6 +17126,1039 @@ class isGatewayExist_result:
   def __ne__(self, other):
     return not (self == other)
 
+class createNotification_args:
+  """
+  Attributes:
+   - authzToken
+   - notification
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'notification', (apache.airavata.model.workspace.ttypes.Notification, apache.airavata.model.workspace.ttypes.Notification.thrift_spec), None, ), # 2
+  )
+
+  def __init__(self, authzToken=None, notification=None,):
+    self.authzToken = authzToken
+    self.notification = notification
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.notification = apache.airavata.model.workspace.ttypes.Notification()
+          self.notification.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('createNotification_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.notification is not None:
+      oprot.writeFieldBegin('notification', TType.STRUCT, 2)
+      self.notification.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.notification is None:
+      raise TProtocol.TProtocolException(message='Required field notification is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.notification)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class createNotification_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.STRING, 'success', None, None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRING:
+          self.success = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('createNotification_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class updateNotification_args:
+  """
+  Attributes:
+   - authzToken
+   - notification
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'notification', (apache.airavata.model.workspace.ttypes.Notification, apache.airavata.model.workspace.ttypes.Notification.thrift_spec), None, ), # 2
+  )
+
+  def __init__(self, authzToken=None, notification=None,):
+    self.authzToken = authzToken
+    self.notification = notification
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.notification = apache.airavata.model.workspace.ttypes.Notification()
+          self.notification.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('updateNotification_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.notification is not None:
+      oprot.writeFieldBegin('notification', TType.STRUCT, 2)
+      self.notification.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.notification is None:
+      raise TProtocol.TProtocolException(message='Required field notification is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.notification)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class updateNotification_result:
+  """
+  Attributes:
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, ire=None, ace=None, ase=None, ae=None,):
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('updateNotification_result')
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class deleteNotification_args:
+  """
+  Attributes:
+   - authzToken
+   - gatewayId
+   - notificationId
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'gatewayId', None, None, ), # 2
+    (3, TType.STRING, 'notificationId', None, None, ), # 3
+  )
+
+  def __init__(self, authzToken=None, gatewayId=None, notificationId=None,):
+    self.authzToken = authzToken
+    self.gatewayId = gatewayId
+    self.notificationId = notificationId
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.gatewayId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.notificationId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('deleteNotification_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
+    if self.notificationId is not None:
+      oprot.writeFieldBegin('notificationId', TType.STRING, 3)
+      oprot.writeString(self.notificationId)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.gatewayId is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
+    if self.notificationId is None:
+      raise TProtocol.TProtocolException(message='Required field notificationId is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.gatewayId)
+    value = (value * 31) ^ hash(self.notificationId)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class deleteNotification_result:
+  """
+  Attributes:
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, ire=None, ace=None, ase=None, ae=None,):
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('deleteNotification_result')
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getNotification_args:
+  """
+  Attributes:
+   - authzToken
+   - gatewayId
+   - notificationId
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'gatewayId', None, None, ), # 2
+    (3, TType.STRING, 'notificationId', None, None, ), # 3
+  )
+
+  def __init__(self, authzToken=None, gatewayId=None, notificationId=None,):
+    self.authzToken = authzToken
+    self.gatewayId = gatewayId
+    self.notificationId = notificationId
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.gatewayId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.notificationId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getNotification_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
+    if self.notificationId is not None:
+      oprot.writeFieldBegin('notificationId', TType.STRING, 3)
+      oprot.writeString(self.notificationId)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.gatewayId is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
+    if self.notificationId is None:
+      raise TProtocol.TProtocolException(message='Required field notificationId is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.gatewayId)
+    value = (value * 31) ^ hash(self.notificationId)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getNotification_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.STRUCT, 'success', (apache.airavata.model.workspace.ttypes.Notification, apache.airavata.model.workspace.ttypes.Notification.thrift_spec), None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRUCT:
+          self.success = apache.airavata.model.workspace.ttypes.Notification()
+          self.success.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getNotification_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getAllNotifications_args:
+  """
+  Attributes:
+   - authzToken
+   - gatewayId
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'gatewayId', None, None, ), # 2
+  )
+
+  def __init__(self, authzToken=None, gatewayId=None,):
+    self.authzToken = authzToken
+    self.gatewayId = gatewayId
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.gatewayId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getAllNotifications_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.gatewayId is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.gatewayId)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getAllNotifications_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.ttypes.Notification, apache.airavata.model.workspace.ttypes.Notification.thrift_spec)), None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.LIST:
+          self.success = []
+          (_etype10, _size7) = iprot.readListBegin()
+          for _i11 in xrange(_size7):
+            _elem12 = apache.airavata.model.workspace.ttypes.Notification()
+            _elem12.read(iprot)
+            self.success.append(_elem12)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getAllNotifications_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.LIST, 0)
+      oprot.writeListBegin(TType.STRUCT, len(self.success))
+      for iter13 in self.success:
+        iter13.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
 class generateAndRegisterSSHKeys_args:
   """
   Attributes:
@@ -17238,11 +18684,11 @@ class getAllUserSSHPubKeys_result:
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype8, _vtype9, _size7 ) = iprot.readMapBegin()
-          for _i11 in xrange(_size7):
-            _key12 = iprot.readString()
-            _val13 = iprot.readString()
-            self.success[_key12] = _val13
+          (_ktype15, _vtype16, _size14 ) = iprot.readMapBegin()
+          for _i18 in xrange(_size14):
+            _key19 = iprot.readString()
+            _val20 = iprot.readString()
+            self.success[_key19] = _val20
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -17277,9 +18723,9 @@ class getAllUserSSHPubKeys_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-      for kiter14,viter15 in self.success.items():
-        oprot.writeString(kiter14)
-        oprot.writeString(viter15)
+      for kiter21,viter22 in self.success.items():
+        oprot.writeString(kiter21)
+        oprot.writeString(viter22)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -17437,11 +18883,11 @@ class getAllGatewaySSHPubKeys_result:
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype17, _vtype18, _size16 ) = iprot.readMapBegin()
-          for _i20 in xrange(_size16):
-            _key21 = iprot.readString()
-            _val22 = iprot.readString()
-            self.success[_key21] = _val22
+          (_ktype24, _vtype25, _size23 ) = iprot.readMapBegin()
+          for _i27 in xrange(_size23):
+            _key28 = iprot.readString()
+            _val29 = iprot.readString()
+            self.success[_key28] = _val29
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -17476,9 +18922,9 @@ class getAllGatewaySSHPubKeys_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-      for kiter23,viter24 in self.success.items():
-        oprot.writeString(kiter23)
-        oprot.writeString(viter24)
+      for kiter30,viter31 in self.success.items():
+        oprot.writeString(kiter30)
+        oprot.writeString(viter31)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -18763,11 +20209,11 @@ class getUserProjects_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype28, _size25) = iprot.readListBegin()
-          for _i29 in xrange(_size25):
-            _elem30 = apache.airavata.model.workspace.ttypes.Project()
-            _elem30.read(iprot)
-            self.success.append(_elem30)
+          (_etype35, _size32) = iprot.readListBegin()
+          for _i36 in xrange(_size32):
+            _elem37 = apache.airavata.model.workspace.ttypes.Project()
+            _elem37.read(iprot)
+            self.success.append(_elem37)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -18808,8 +20254,8 @@ class getUserProjects_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter31 in self.success:
-        iter31.write(oprot)
+      for iter38 in self.success:
+        iter38.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -19035,11 +20481,11 @@ class searchProjectsByProjectName_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype35, _size32) = iprot.readListBegin()
-          for _i36 in xrange(_size32):
-            _elem37 = apache.airavata.model.workspace.ttypes.Project()
-            _elem37.read(iprot)
-            self.success.append(_elem37)
+          (_etype42, _size39) = iprot.readListBegin()
+          for _i43 in xrange(_size39):
+            _elem44 = apache.airavata.model.workspace.ttypes.Project()
+            _elem44.read(iprot)
+            self.success.append(_elem44)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -19080,8 +20526,8 @@ class searchProjectsByProjectName_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter38 in self.success:
-        iter38.write(oprot)
+      for iter45 in self.success:
+        iter45.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -19307,11 +20753,11 @@ class searchProjectsByProjectDesc_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype42, _size39) = iprot.readListBegin()
-          for _i43 in xrange(_size39):
-            _elem44 = apache.airavata.model.workspace.ttypes.Project()
-            _elem44.read(iprot)
-            self.success.append(_elem44)
+          (_etype49, _size46) = iprot.readListBegin()
+          for _i50 in xrange(_size46):
+            _elem51 = apache.airavata.model.workspace.ttypes.Project()
+            _elem51.read(iprot)
+            self.success.append(_elem51)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -19352,8 +20798,8 @@ class searchProjectsByProjectDesc_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter45 in self.success:
-        iter45.write(oprot)
+      for iter52 in self.success:
+        iter52.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -19579,11 +21025,11 @@ class searchExperimentsByName_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype49, _size46) = iprot.readListBegin()
-          for _i50 in xrange(_size46):
-            _elem51 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
-            _elem51.read(iprot)
-            self.success.append(_elem51)
+          (_etype56, _size53) = iprot.readListBegin()
+          for _i57 in xrange(_size53):
+            _elem58 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
+            _elem58.read(iprot)
+            self.success.append(_elem58)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -19624,8 +21070,8 @@ class searchExperimentsByName_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter52 in self.success:
-        iter52.write(oprot)
+      for iter59 in self.success:
+        iter59.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -19851,11 +21297,11 @@ class searchExperimentsByDesc_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype56, _size53) = iprot.readListBegin()
-          for _i57 in xrange(_size53):
-            _elem58 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
-            _elem58.read(iprot)
-            self.success.append(_elem58)
+          (_etype63, _size60) = iprot.readListBegin()
+          for _i64 in xrange(_size60):
+            _elem65 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
+            _elem65.read(iprot)
+            self.success.append(_elem65)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -19896,8 +21342,8 @@ class searchExperimentsByDesc_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter59 in self.success:
-        iter59.write(oprot)
+      for iter66 in self.success:
+        iter66.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -20123,11 +21569,11 @@ class searchExperimentsByApplication_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype63, _size60) = iprot.readListBegin()
-          for _i64 in xrange(_size60):
-            _elem65 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
-            _elem65.read(iprot)
-            self.success.append(_elem65)
+          (_etype70, _size67) = iprot.readListBegin()
+          for _i71 in xrange(_size67):
+            _elem72 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
+            _elem72.read(iprot)
+            self.success.append(_elem72)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -20168,8 +21614,8 @@ class searchExperimentsByApplication_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter66 in self.success:
-        iter66.write(oprot)
+      for iter73 in self.success:
+        iter73.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -20395,11 +21841,11 @@ class searchExperimentsByStatus_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype70, _size67) = iprot.readListBegin()
-          for _i71 in xrange(_size67):
-            _elem72 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
-            _elem72.read(iprot)
-            self.success.append(_elem72)
+          (_etype77, _size74) = iprot.readListBegin()
+          for _i78 in xrange(_size74):
+            _elem79 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
+            _elem79.read(iprot)
+            self.success.append(_elem79)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -20440,8 +21886,8 @@ class searchExperimentsByStatus_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter73 in self.success:
-        iter73.write(oprot)
+      for iter80 in self.success:
+        iter80.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -20682,11 +22128,11 @@ class searchExperimentsByCreationTime_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype77, _size74) = iprot.readListBegin()
-          for _i78 in xrange(_size74):
-            _elem79 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
-            _elem79.read(iprot)
-            self.success.append(_elem79)
+          (_etype84, _size81) = iprot.readListBegin()
+          for _i85 in xrange(_size81):
+            _elem86 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
+            _elem86.read(iprot)
+            self.success.append(_elem86)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -20727,8 +22173,8 @@ class searchExperimentsByCreationTime_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter80 in self.success:
-        iter80.write(oprot)
+      for iter87 in self.success:
+        iter87.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -20831,11 +22277,11 @@ class searchExperiments_args:
       elif fid == 4:
         if ftype == TType.MAP:
           self.filters = {}
-          (_ktype82, _vtype83, _size81 ) = iprot.readMapBegin()
-          for _i85 in xrange(_size81):
-            _key86 = iprot.readI32()
-            _val87 = iprot.readString()
-            self.filters[_key86] = _val87
+          (_ktype89, _vtype90, _size88 ) = iprot.readMapBegin()
+          for _i92 in xrange(_size88):
+            _key93 = iprot.readI32()
+            _val94 = iprot.readString()
+            self.filters[_key93] = _val94
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -20874,9 +22320,9 @@ class searchExperiments_args:
     if self.filters is not None:
       oprot.writeFieldBegin('filters', TType.MAP, 4)
       oprot.writeMapBegin(TType.I32, TType.STRING, len(self.filters))
-      for kiter88,viter89 in self.filters.items():
-        oprot.writeI32(kiter88)
-        oprot.writeString(viter89)
+      for kiter95,viter96 in self.filters.items():
+        oprot.writeI32(kiter95)
+        oprot.writeString(viter96)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.limit is not None:
@@ -20962,11 +22408,11 @@ class searchExperiments_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype93, _size90) = iprot.readListBegin()
-          for _i94 in xrange(_size90):
-            _elem95 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
-            _elem95.read(iprot)
-            self.success.append(_elem95)
+          (_etype100, _size97) = iprot.readListBegin()
+          for _i101 in xrange(_size97):
+            _elem102 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
+            _elem102.read(iprot)
+            self.success.append(_elem102)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -21007,8 +22453,8 @@ class searchExperiments_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter96 in self.success:
-        iter96.write(oprot)
+      for iter103 in self.success:
+        iter103.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -21441,11 +22887,11 @@ class getExperimentsInProject_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype100, _size97) = iprot.readListBegin()
-          for _i101 in xrange(_size97):
-            _elem102 = apache.airavata.model.experiment.ttypes.ExperimentModel()
-            _elem102.read(iprot)
-            self.success.append(_elem102)
+          (_etype107, _size104) = iprot.readListBegin()
+          for _i108 in xrange(_size104):
+            _elem109 = apache.airavata.model.experiment.ttypes.ExperimentModel()
+            _elem109.read(iprot)
+            self.success.append(_elem109)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -21492,8 +22938,8 @@ class getExperimentsInProject_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter103 in self.success:
-        iter103.write(oprot)
+      for iter110 in self.success:
+        iter110.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -21709,11 +23155,11 @@ class getUserExperiments_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype107, _size104) = iprot.readListBegin()
-          for _i108 in xrange(_size104):
-            _elem109 = apache.airavata.model.experiment.ttypes.ExperimentModel()
-            _elem109.read(iprot)
-            self.success.append(_elem109)
+          (_etype114, _size111) = iprot.readListBegin()
+          for _i115 in xrange(_size111):
+            _elem116 = apache.airavata.model.experiment.ttypes.ExperimentModel()
+            _elem116.read(iprot)
+            self.success.append(_elem116)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -21754,8 +23200,8 @@ class getUserExperiments_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter110 in self.success:
-        iter110.write(oprot)
+      for iter117 in self.success:
+        iter117.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -23988,11 +25434,11 @@ class getExperimentOutputs_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype114, _size111) = iprot.readListBegin()
-          for _i115 in xrange(_size111):
-            _elem116 = apache.airavata.model.application.io.ttypes.OutputDataObjectType()
-            _elem116.read(iprot)
-            self.success.append(_elem116)
+          (_etype121, _size118) = iprot.readListBegin()
+          for _i122 in xrange(_size118):
+            _elem123 = apache.airavata.model.application.io.ttypes.OutputDataObjectType()
+            _elem123.read(iprot)
+            self.success.append(_elem123)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -24039,8 +25485,8 @@ class getExperimentOutputs_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter117 in self.success:
-        iter117.write(oprot)
+      for iter124 in self.success:
+        iter124.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -24214,11 +25660,11 @@ class getIntermediateOutputs_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype121, _size118) = iprot.readListBegin()
-          for _i122 in xrange(_size118):
-            _elem123 = apache.airavata.model.application.io.ttypes.OutputDataObjectType()
-            _elem123.read(iprot)
-            self.success.append(_elem123)
+          (_etype128, _size125) = iprot.readListBegin()
+          for _i129 in xrange(_size125):
+            _elem130 = apache.airavata.model.application.io.ttypes.OutputDataObjectType()
+            _elem130.read(iprot)
+            self.success.append(_elem130)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -24265,8 +25711,8 @@ class getIntermediateOutputs_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter124 in self.success:
-        iter124.write(oprot)
+      for iter131 in self.success:
+        iter131.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -24440,12 +25886,12 @@ class getJobStatuses_result:
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype126, _vtype127, _size125 ) = iprot.readMapBegin()
-          for _i129 in xrange(_size125):
-            _key130 = iprot.readString()
-            _val131 = apache.airavata.model.status.ttypes.JobStatus()
-            _val131.read(iprot)
-            self.success[_key130] = _val131
+          (_ktype133, _vtype134, _size132 ) = iprot.readMapBegin()
+          for _i136 in xrange(_size132):
+            _key137 = iprot.readString()
+            _val138 = apache.airavata.model.status.ttypes.JobStatus()
+            _val138.read(iprot)
+            self.success[_key137] = _val138
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -24492,9 +25938,9 @@ class getJobStatuses_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.success))
-      for kiter132,viter133 in self.success.items():
-        oprot.writeString(kiter132)
-        viter133.write(oprot)
+      for kiter139,viter140 in self.success.items():
+        oprot.writeString(kiter139)
+        viter140.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -24668,11 +26114,11 @@ class getJobDetails_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype137, _size134) = iprot.readListBegin()
-          for _i138 in xrange(_size134):
-            _elem139 = apache.airavata.model.job.ttypes.JobModel()
-            _elem139.read(iprot)
-            self.success.append(_elem139)
+          (_etype144, _size141) = iprot.readListBegin()
+          for _i145 in xrange(_size141):
+            _elem146 = apache.airavata.model.job.ttypes.JobModel()
+            _elem146.read(iprot)
+            self.success.append(_elem146)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -24719,8 +26165,8 @@ class getJobDetails_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter140 in self.success:
-        iter140.write(oprot)
+      for iter147 in self.success:
+        iter147.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -25977,11 +27423,11 @@ class getAllAppModules_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype144, _size141) = iprot.readListBegin()
-          for _i145 in xrange(_size141):
-            _elem146 = apache.airavata.model.appcatalog.appdeployment.ttypes.ApplicationModule()
-            _elem146.read(iprot)
-            self.success.append(_elem146)
+          (_etype151, _size148) = iprot.readListBegin()
+          for _i152 in xrange(_size148):
+            _elem153 = apache.airavata.model.appcatalog.appdeployment.ttypes.ApplicationModule()
+            _elem153.read(iprot)
+            self.success.append(_elem153)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -26022,8 +27468,8 @@ class getAllAppModules_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter147 in self.success:
-        iter147.write(oprot)
+      for iter154 in self.success:
+        iter154.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -27237,11 +28683,11 @@ class getAllApplicationDeployments_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype151, _size148) = iprot.readListBegin()
-          for _i152 in xrange(_size148):
-            _elem153 = apache.airavata.model.appcatalog.appdeployment.ttypes.ApplicationDeploymentDescription()
-            _elem153.read(iprot)
-            self.success.append(_elem153)
+          (_etype158, _size155) = iprot.readListBegin()
+          for _i159 in xrange(_size155):
+            _elem160 = apache.airavata.model.appcatalog.appdeployment.ttypes.ApplicationDeploymentDescription()
+            _elem160.read(iprot)
+            self.success.append(_elem160)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -27282,8 +28728,8 @@ class getAllApplicationDeployments_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter154 in self.success:
-        iter154.write(oprot)
+      for iter161 in self.success:
+        iter161.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -27449,10 +28895,10 @@ class getAppModuleDeployedResources_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype158, _size155) = iprot.readListBegin()
-          for _i159 in xrange(_size155):
-            _elem160 = iprot.readString()
-            self.success.append(_elem160)
+          (_etype165, _size162) = iprot.readListBegin()
+          for _i166 in xrange(_size162):
+            _elem167 = iprot.readString()
+            self.success.append(_elem167)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -27493,8 +28939,8 @@ class getAppModuleDeployedResources_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRING, len(self.success))
-      for iter161 in self.success:
-        oprot.writeString(iter161)
+      for iter168 in self.success:
+        oprot.writeString(iter168)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -28732,11 +30178,11 @@ class getAllApplicationInterfaceNames_result:
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype163, _vtype164, _size162 ) = iprot.readMapBegin()
-          for _i166 in xrange(_size162):
-            _key167 = iprot.readString()
-            _val168 = iprot.readString()
-            self.success[_key167] = _val168
+          (_ktype170, _vtype171, _size169 ) = iprot.readMapBegin()
+          for _i173 in xrange(_size169):
+            _key174 = iprot.readString()
+            _val175 = iprot.readString()
+            self.success[_key174] = _val175
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -28777,9 +30223,9 @@ class getAllApplicationInterfaceNames_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-      for kiter169,viter170 in self.success.items():
-        oprot.writeString(kiter169)
-        oprot.writeString(viter170)
+      for kiter176,viter177 in self.success.items():
+        oprot.writeString(kiter176)
+        oprot.writeString(viter177)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -28945,11 +30391,11 @@ class getAllApplicationInterfaces_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype174, _size171) = iprot.readListBegin()
-          for _i175 in xrange(_size171):
-            _elem176 = apache.airavata.model.appcatalog.appinterface.ttypes.ApplicationInterfaceDescription()
-            _elem176.read(iprot)
-            self.success.append(_elem176)
+          (_etype181, _size178) = iprot.readListBegin()
+          for _i182 in xrange(_size178):
+            _elem183 = apache.airavata.model.appcatalog.appinterface.ttypes.ApplicationInterfaceDescription()
+            _elem183.read(iprot)
+            self.success.append(_elem183)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -28990,8 +30436,8 @@ class getAllApplicationInterfaces_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter177 in self.success:
-        iter177.write(oprot)
+      for iter184 in self.success:
+        iter184.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -29157,11 +30603,11 @@ class getApplicationInputs_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype181, _size178) = iprot.readListBegin()
-          for _i182 in xrange(_size178):
-            _elem183 = apache.airavata.model.application.io.ttypes.InputDataObjectType()
-            _elem183.read(iprot)
-            self.success.append(_elem183)
+          (_etype188, _size185) = iprot.readListBegin()
+          for _i189 in xrange(_size185):
+            _elem190 = apache.airavata.model.application.io.ttypes.InputDataObjectType()
+            _elem190.read(iprot)
+            self.success.append(_elem190)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -29202,8 +30648,8 @@ class getApplicationInputs_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter184 in self.success:
-        iter184.write(oprot)
+      for iter191 in self.success:
+        iter191.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -29369,11 +30815,11 @@ class getApplicationOutputs_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype188, _size185) = iprot.readListBegin()
-          for _i189 in xrange(_size185):
-            _elem190 = apache.airavata.model.application.io.ttypes.OutputDataObjectType()
-            _elem190.read(iprot)
-            self.success.append(_elem190)
+          (_etype195, _size192) = iprot.readListBegin()
+          for _i196 in xrange(_size192):
+            _elem197 = apache.airavata.model.application.io.ttypes.OutputDataObjectType()
+            _elem197.read(iprot)
+            self.success.append(_elem197)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -29414,8 +30860,8 @@ class getApplicationOutputs_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter191 in self.success:
-        iter191.write(oprot)
+      for iter198 in self.success:
+        iter198.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -29581,11 +31027,11 @@ class getAvailableAppInterfaceComputeResources_result:
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype193, _vtype194, _size192 ) = iprot.readMapBegin()
-          for _i196 in xrange(_size192):
-            _key197 = iprot.readString()
-            _val198 = iprot.readString()
-            self.success[_key197] = _val198
+          (_ktype200, _vtype201, _size199 ) = iprot.readMapBegin()
+          for _i203 in xrange(_size199):
+            _key204 = iprot.readString()
+            _val205 = iprot.readString()
+            self.success[_key204] = _val205
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -29626,9 +31072,9 @@ class getAvailableAppInterfaceComputeResources_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-      for kiter199,viter200 in self.success.items():
-        oprot.writeString(kiter199)
-        oprot.writeString(viter200)
+      for kiter206,viter207 in self.success.items():
+        oprot.writeString(kiter206)
+        oprot.writeString(viter207)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -30187,11 +31633,11 @@ class getAllComputeResourceNames_result:
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype202, _vtype203, _size201 ) = iprot.readMapBegin()
-          for _i205 in xrange(_size201):
-            _key206 = iprot.readString()
-            _val207 = iprot.readString()
-            self.success[_key206] = _val207
+          (_ktype209, _vtype210, _size208 ) = iprot.readMapBegin()
+          for _i212 in xrange(_size208):
+            _key213 = iprot.readString()
+            _val214 = iprot.readString()
+            self.success[_key213] = _val214
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -30232,9 +31678,9 @@ class getAllComputeResourceNames_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-      for kiter208,viter209 in self.success.items():
-        oprot.writeString(kiter208)
-        oprot.writeString(viter209)
+      for kiter215,viter216 in self.success.items():
+        oprot.writeString(kiter215)
+        oprot.writeString(viter216)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -31215,11 +32661,11 @@ class getAllStorageResourceNames_result:
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype211, _vtype212, _size210 ) = iprot.readMapBegin()
-          for _i214 in xrange(_size210):
-            _key215 = iprot.readString()
-            _val216 = iprot.readString()
-            self.success[_key215] = _val216
+          (_ktype218, _vtype219, _size217 ) = iprot.readMapBegin()
+          for _i221 in xrange(_size217):
+            _key222 = iprot.readString()
+            _val223 = iprot.readString()
+            self.success[_key222] = _val223
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -31260,9 +32706,9 @@ class getAllStorageResourceNames_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-      for kiter217,viter218 in self.success.items():
-        oprot.writeString(kiter217)
-        oprot.writeString(viter218)
+      for kiter224,viter225 in self.success.items():
+        oprot.writeString(kiter224)
+        oprot.writeString(viter225)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -37751,11 +39197,11 @@ class changeJobSubmissionPriorities_args:
       elif fid == 2:
         if ftype == TType.MAP:
           self.jobSubmissionPriorityMap = {}
-          (_ktype220, _vtype221, _size219 ) = iprot.readMapBegin()
-          for _i223 in xrange(_size219):
-            _key224 = iprot.readString()
-            _val225 = iprot.readI32()
-            self.jobSubmissionPriorityMap[_key224] = _val225
+          (_ktype227, _vtype228, _size226 ) = iprot.readMapBegin()
+          for _i230 in xrange(_size226):
+            _key231 = iprot.readString()
+            _val232 = iprot.readI32()
+            self.jobSubmissionPriorityMap[_key231] = _val232
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -37776,9 +39222,9 @@ class changeJobSubmissionPriorities_args:
     if self.jobSubmissionPriorityMap is not None:
       oprot.writeFieldBegin('jobSubmissionPriorityMap', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.I32, len(self.jobSubmissionPriorityMap))
-      for kiter226,viter227 in self.jobSubmissionPriorityMap.items():
-        oprot.writeString(kiter226)
-        oprot.writeI32(viter227)
+      for kiter233,viter234 in self.jobSubmissionPriorityMap.items():
+        oprot.writeString(kiter233)
+        oprot.writeI32(viter234)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -37964,11 +39410,11 @@ class changeDataMovementPriorities_args:
       elif fid == 2:
         if ftype == TType.MAP:
           self.dataMovementPriorityMap = {}
-          (_ktype229, _vtype230, _size228 ) = iprot.readMapBegin()
-          for _i232 in xrange(_size228):
-            _key233 = iprot.readString()
-            _val234 = iprot.readI32()
-            self.dataMovementPriorityMap[_key233] = _val234
+          (_ktype236, _vtype237, _size235 ) = iprot.readMapBegin()
+          for _i239 in xrange(_size235):
+            _key240 = iprot.readString()
+            _val241 = iprot.readI32()
+            self.dataMovementPriorityMap[_key240] = _val241
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -37989,9 +39435,9 @@ class changeDataMovementPriorities_args:
     if self.dataMovementPriorityMap is not None:
       oprot.writeFieldBegin('dataMovementPriorityMap', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.I32, len(self.dataMovementPriorityMap))
-      for kiter235,viter236 in self.dataMovementPriorityMap.items():
-        oprot.writeString(kiter235)
-        oprot.writeI32(viter236)
+      for kiter242,viter243 in self.dataMovementPriorityMap.items():
+        oprot.writeString(kiter242)
+        oprot.writeI32(viter243)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -41497,11 +42943,11 @@ class getAllGatewayComputeResourcePreferences_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype240, _size237) = iprot.readListBegin()
-          for _i241 in xrange(_size237):
-            _elem242 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.ComputeResourcePreference()
-            _elem242.read(iprot)
-            self.success.append(_elem242)
+          (_etype247, _size244) = iprot.readListBegin()
+          for _i248 in xrange(_size244):
+            _elem249 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.ComputeResourcePreference()
+            _elem249.read(iprot)
+            self.success.append(_elem249)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -41542,8 +42988,8 @@ class getAllGatewayComputeResourcePreferences_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter243 in self.success:
-        iter243.write(oprot)
+      for iter250 in self.success:
+        iter250.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -41709,11 +43155,11 @@ class getAllGatewayStoragePreferences_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype247, _size244) = iprot.readListBegin()
-          for _i248 in xrange(_size244):
-            _elem249 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.StoragePreference()
-            _elem249.read(iprot)
-            self.success.append(_elem249)
+          (_etype254, _size251) = iprot.readListBegin()
+          for _i255 in xrange(_size251):
+            _elem256 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.StoragePreference()
+            _elem256.read(iprot)
+            self.success.append(_elem256)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -41754,8 +43200,8 @@ class getAllGatewayStoragePreferences_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter250 in self.success:
-        iter250.write(oprot)
+      for iter257 in self.success:
+        iter257.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -41906,11 +43352,11 @@ class getAllGatewayResourceProfiles_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype254, _size251) = iprot.readListBegin()
-          for _i255 in xrange(_size251):
-            _elem256 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.GatewayResourceProfile()
-            _elem256.read(iprot)
-            self.success.append(_elem256)
+          (_etype261, _size258) = iprot.readListBegin()
+          for _i262 in xrange(_size258):
+            _elem263 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.GatewayResourceProfile()
+            _elem263.read(iprot)
+            self.success.append(_elem263)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -41951,8 +43397,8 @@ class getAllGatewayResourceProfiles_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter257 in self.success:
-        iter257.write(oprot)
+      for iter264 in self.success:
+        iter264.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -43022,10 +44468,10 @@ class getAllWorkflows_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype261, _size258) = iprot.readListBegin()
-          for _i262 in xrange(_size258):
-            _elem263 = iprot.readString()
-            self.success.append(_elem263)
+          (_etype268, _size265) = iprot.readListBegin()
+          for _i269 in xrange(_size265):
+            _elem270 = iprot.readString()
+            self.success.append(_elem270)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -43066,8 +44512,8 @@ class getAllWorkflows_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRING, len(self.success))
-      for iter264 in self.success:
-        oprot.writeString(iter264)
+      for iter271 in self.success:
+        oprot.writeString(iter271)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -45276,11 +46722,11 @@ class getChildDataProducts_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype268, _size265) = iprot.readListBegin()
-          for _i269 in xrange(_size265):
-            _elem270 = apache.airavata.model.data.replica.ttypes.DataProductModel()
-            _elem270.read(iprot)
-            self.success.append(_elem270)
+          (_etype275, _size272) = iprot.readListBegin()
+          for _i276 in xrange(_size272):
+            _elem277 = apache.airavata.model.data.replica.ttypes.DataProductModel()
+            _elem277.read(iprot)
+            self.success.append(_elem277)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -45321,8 +46767,8 @@ class getChildDataProducts_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter271 in self.success:
-        iter271.write(oprot)
+      for iter278 in self.success:
+        iter278.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:

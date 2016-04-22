@@ -180,6 +180,13 @@ public class Utils {
                     logger.error("Object should be a Project.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Project.");
                 }
+            case NOTIFICATION:
+                if (o instanceof Notification){
+                    return createNotification((Notification) o);
+                } else {
+                    logger.error("Object should be a Project.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Project.");
+                }
             case PROJECT_USER:
                 if (o instanceof ProjectUser){
                     return createProjectUser((ProjectUser) o);
@@ -359,6 +366,20 @@ public class Utils {
         }
 
         return projectResource;
+    }
+
+    private static ExperimentCatResource createNotification(Notification o) {
+        NotificationResource notificationResource = new NotificationResource();
+        if (o != null){
+            notificationResource.setNotificationId(o.getNotificationId());
+            notificationResource.setGatewayId(o.getGatewayId());
+            notificationResource.setTitle(o.getTitle());
+            notificationResource.setNotificationMessage(o.setNotificationMessage());
+            notificationResource.setPublishedTime(o.getPublishedDate());
+            notificationResource.setExpirationTime(o.getExpirationDate());
+        }
+
+        return notificationResource;
     }
 
     private static ExperimentCatResource createProjectUser(ProjectUser o) {

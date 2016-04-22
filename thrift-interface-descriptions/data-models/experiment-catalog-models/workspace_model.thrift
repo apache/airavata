@@ -61,3 +61,12 @@ struct Gateway {
     3: optional string domain,
     4: optional string emailAddress
 }
+
+struct Notification {
+    1: optional string notificationId,
+    2: required string gatewayId,
+    3: required string title,
+    4: required string notifcationMessage,
+    5: optional i64 publishedtime,
+    6: optional i64 expirationTime
+}

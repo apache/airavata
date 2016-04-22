@@ -64,6 +64,7 @@ import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
@@ -275,6 +276,92 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while getting gateway. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * * API methods to retrieve notifications
+     * *
+     *
+     * @param authzToken
+     * @param notification
+     */
+    @Override
+    public String createNotification(AuthzToken authzToken, Notification notification) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(notification.getGatewayId());
+            return (String) experimentCatalog.add(ExpCatParentDataType.NOTIFICATION, notification, notification.getGatewayId());
+        } catch (RegistryException e) {
+            logger.error("Error while creating notification", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while creating notification. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public void updateNotification(AuthzToken authzToken, Notification notification) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(notification.getGatewayId());
+            experimentCatalog.update(ExperimentCatalogModelType.NOTIFICATION, notification, notification.getGatewayId());
+        } catch (RegistryException e) {
+            logger.error("Error while updating notification", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while getting gateway. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public void deleteNotification(AuthzToken authzToken, String gatewayId, String notificationId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
+            experimentCatalog.remove(ExperimentCatalogModelType.NOTIFICATION, notificationId);
+        } catch (RegistryException e) {
+            logger.error("Error while deleting notification", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while deleting notification. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public Notification getNotification(AuthzToken authzToken, String gatewayId, String notificationId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
+            return (Notification)experimentCatalog.get(ExperimentCatalogModelType.NOTIFICATION, notificationId);
+        } catch (RegistryException e) {
+            logger.error("Error while retrieving notification", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retreiving notification. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public List<Notification> getAllNotifications(AuthzToken authzToken, String gatewayId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
+            List<Object> objectList = experimentCatalog.get(ExperimentCatalogModelType.NOTIFICATION, null, gatewayId);
+            List<Notification> notifications = new ArrayList<>();
+            for(Object o : objectList)
+                notifications.add((Notification) o);
+            return notifications;
+        } catch (RegistryException e) {
+            logger.error("Error while getting all notifications", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while getting all notifications. More info : " + e.getMessage());
             throw exception;
         }
     }
