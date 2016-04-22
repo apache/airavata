@@ -177,6 +177,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
                     } else {
                         SSHUtils.scpThirdParty(sourceFile, session, destinationFile, clientSession, ignoreEmptyFile);
                     }
+					break; // exit while loop
 				} catch (JSchException e) {
 					if (retryCount == MAX_RETRY_COUNT) {
 						log.error("Retry count " + MAX_RETRY_COUNT + " exceeded for  transferring from:"
@@ -202,6 +203,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 				log.info("Creating directory: " + serverInfo.getHost() + ":" + directoryPath);
 				try {
 					SSHUtils.makeDirectory(directoryPath, session);
+					break;  // Exit while loop
 				} catch (JSchException e) {
 					if (retryCount == MAX_RETRY_COUNT) {
 						log.error("Retry count " + MAX_RETRY_COUNT + " exceeded for creating directory: "
