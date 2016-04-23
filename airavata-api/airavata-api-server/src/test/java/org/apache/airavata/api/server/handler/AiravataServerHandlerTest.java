@@ -35,7 +35,9 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
+import org.apache.thrift.TException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -304,6 +306,26 @@ public class AiravataServerHandlerTest {
             Assert.assertTrue(exp1.getCreationTime()-exp2.getCreationTime() > 0);
 
         } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void testNotifications(){
+        try {
+            AuthzToken authzToken = new AuthzToken();
+            authzToken.setAccessToken("");
+            Notification notification = new Notification();
+            notification.setTitle("3424234");
+            notification.setGatewayId("test");
+            notification.setNotifcationMessage("sdkjfbjks kjbsdf kjsdbfkjsdbf");
+            String notificationId = airavataServerHandler.createNotification(authzToken, notification);
+            Assert.assertNotNull(notificationId);
+            List<Notification> notifications = airavataServerHandler.getAllNotifications(authzToken, "test");
+            Assert.assertTrue(notifications.size() > 0);
+            Assert.assertNotNull(airavataServerHandler.getNotification(authzToken,"test",notificationId));
+        } catch (TException e) {
             e.printStackTrace();
             Assert.fail();
         }

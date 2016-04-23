@@ -27,7 +27,7 @@ import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.resources.WorkerResource;
 import org.apache.airavata.registry.cpi.RegistryException;
 
-public class UserReg {
+public class UserRegistry {
     public WorkerResource getSystemUser() throws ApplicationSettingsException, RegistryException {
         return (WorkerResource) ExpCatResourceUtils.getWorker(ServerSettings.getDefaultUserGateway(), ServerSettings.getDefaultUser());
     }

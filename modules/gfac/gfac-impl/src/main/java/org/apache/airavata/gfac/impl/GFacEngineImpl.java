@@ -111,6 +111,8 @@ public class GFacEngineImpl implements GFacEngine {
             processContext.setGatewayResourceProfile(gatewayProfile);
             ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().getComputeResourcePreference
                     (gatewayId, processModel.getComputeResourceId());
+            //FIXME: Temporary revert, this needs a proper fix.
+//            String scratchLocation = Factory.getScratchLocation(processContext);
             String scratchLocation = computeResourcePreference.getScratchLocation();
             scratchLocation = scratchLocation + File.separator + processId + File.separator;
             processContext.setComputeResourcePreference(computeResourcePreference);
@@ -150,7 +152,7 @@ public class GFacEngineImpl implements GFacEngine {
             processContext.setApplicationInterfaceDescription(applicationInterface);
             String computeResourceId = processContext.getComputeResourceDescription().getComputeResourceId();
             String hostName = Factory.getDefaultAppCatalog().getComputeResource().getComputeResource(computeResourceId).getHostName();
-            ServerInfo serverInfo = new ServerInfo(processContext.getComputeResourcePreference().getLoginUserName(), hostName);
+            ServerInfo serverInfo = new ServerInfo(Factory.getLoginUserName(processContext), hostName);
             processContext.setServerInfo(serverInfo);
             List<OutputDataObjectType> applicationOutputs = applicationInterface.getApplicationOutputs();
             if (applicationOutputs != null && !applicationOutputs.isEmpty()) {
@@ -355,7 +357,7 @@ public class GFacEngineImpl implements GFacEngine {
                                         submodel.setType(DataStageType.OUPUT);
                                         submodel.setProcessOutput(output);
                                         URI source = new URI(processContext.getDataMovementProtocol().name(),
-                                                processContext.getComputeResourcePreference().getLoginUserName(),
+                                                Factory.getLoginUserName(processContext),
                                                 processContext.getComputeResourceDescription().getHostName(),
                                                 22,
                                                 processContext.getWorkingDir() + output.getValue(), null, null);
@@ -557,7 +559,8 @@ public class GFacEngineImpl implements GFacEngine {
             errorModel.setUserFriendlyMessage("Error while executing " + task.getType() + " task" );
             errorModel.setActualErrorMessage(errorMsg);
             GFacUtils.saveTaskError(taskContext, errorModel);
-            throw new GFacException("Error while executing " + task.getType() + " task");
+            throw new GFacException("Error: userFriendly msg :" + errorModel.getUserFriendlyMessage() + ", actual msg :"
+                    + errorModel.getActualErrorMessage());
         }
     }
 

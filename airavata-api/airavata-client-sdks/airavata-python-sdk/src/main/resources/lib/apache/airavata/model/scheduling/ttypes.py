@@ -33,6 +33,9 @@ class ComputationalResourceSchedulingModel:
    - totalPhysicalMemory
    - chessisNumber
    - staticWorkingDir
+   - overrideLoginUserName
+   - overrideScratchLocation
+   - overrideAllocationProjectNumber
   """
 
   thrift_spec = (
@@ -46,9 +49,12 @@ class ComputationalResourceSchedulingModel:
     (7, TType.I32, 'totalPhysicalMemory', None, None, ), # 7
     (8, TType.STRING, 'chessisNumber', None, None, ), # 8
     (9, TType.STRING, 'staticWorkingDir', None, None, ), # 9
+    (10, TType.STRING, 'overrideLoginUserName', None, None, ), # 10
+    (11, TType.STRING, 'overrideScratchLocation', None, None, ), # 11
+    (12, TType.STRING, 'overrideAllocationProjectNumber', None, None, ), # 12
   )
 
-  def __init__(self, resourceHostId=None, totalCPUCount=None, nodeCount=None, numberOfThreads=None, queueName=None, wallTimeLimit=None, totalPhysicalMemory=None, chessisNumber=None, staticWorkingDir=None,):
+  def __init__(self, resourceHostId=None, totalCPUCount=None, nodeCount=None, numberOfThreads=None, queueName=None, wallTimeLimit=None, totalPhysicalMemory=None, chessisNumber=None, staticWorkingDir=None, overrideLoginUserName=None, overrideScratchLocation=None, overrideAllocationProjectNumber=None,):
     self.resourceHostId = resourceHostId
     self.totalCPUCount = totalCPUCount
     self.nodeCount = nodeCount
@@ -58,6 +64,9 @@ class ComputationalResourceSchedulingModel:
     self.totalPhysicalMemory = totalPhysicalMemory
     self.chessisNumber = chessisNumber
     self.staticWorkingDir = staticWorkingDir
+    self.overrideLoginUserName = overrideLoginUserName
+    self.overrideScratchLocation = overrideScratchLocation
+    self.overrideAllocationProjectNumber = overrideAllocationProjectNumber
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -113,6 +122,21 @@ class ComputationalResourceSchedulingModel:
           self.staticWorkingDir = iprot.readString()
         else:
           iprot.skip(ftype)
+      elif fid == 10:
+        if ftype == TType.STRING:
+          self.overrideLoginUserName = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 11:
+        if ftype == TType.STRING:
+          self.overrideScratchLocation = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 12:
+        if ftype == TType.STRING:
+          self.overrideAllocationProjectNumber = iprot.readString()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -159,6 +183,18 @@ class ComputationalResourceSchedulingModel:
       oprot.writeFieldBegin('staticWorkingDir', TType.STRING, 9)
       oprot.writeString(self.staticWorkingDir)
       oprot.writeFieldEnd()
+    if self.overrideLoginUserName is not None:
+      oprot.writeFieldBegin('overrideLoginUserName', TType.STRING, 10)
+      oprot.writeString(self.overrideLoginUserName)
+      oprot.writeFieldEnd()
+    if self.overrideScratchLocation is not None:
+      oprot.writeFieldBegin('overrideScratchLocation', TType.STRING, 11)
+      oprot.writeString(self.overrideScratchLocation)
+      oprot.writeFieldEnd()
+    if self.overrideAllocationProjectNumber is not None:
+      oprot.writeFieldBegin('overrideAllocationProjectNumber', TType.STRING, 12)
+      oprot.writeString(self.overrideAllocationProjectNumber)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -177,6 +213,9 @@ class ComputationalResourceSchedulingModel:
     value = (value * 31) ^ hash(self.totalPhysicalMemory)
     value = (value * 31) ^ hash(self.chessisNumber)
     value = (value * 31) ^ hash(self.staticWorkingDir)
+    value = (value * 31) ^ hash(self.overrideLoginUserName)
+    value = (value * 31) ^ hash(self.overrideScratchLocation)
+    value = (value * 31) ^ hash(self.overrideAllocationProjectNumber)
     return value
 
   def __repr__(self):

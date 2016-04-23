@@ -33,6 +33,7 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
 	public static final String USERS = "Users";
 	public static final String GATEWAY_WORKER = "GatewayWorker";
 	public static final String PROJECT = "Project";
+    public static final String NOTIFICATION = "Notification";
 	public static final String PROJECT_USER = "ProjectUser";
 	public static final String EXPERIMENT = "Experiment";
 	public static final String EXPERIMENT_INPUT = "ExperimentInput";
@@ -67,6 +68,12 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
 		public static final String PASSWORD = "password";
 		public static final String GATEWAY_ID = "gatewayId";
 	}
+
+    // Notifications table
+    public final class NotificationConstants {
+        public static final String NOTIFICATION_ID = "notificationId";
+        public static final String GATEWAY_ID = "gatewayId";
+    }
 
 	// Gateway_Worker table
 	public final class GatewayWorkerConstants {
