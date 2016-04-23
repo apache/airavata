@@ -38,6 +38,7 @@ import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.resources.GatewayResource;
@@ -57,6 +58,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
     private ExperimentRegistry experimentRegistry = null;
     private ProjectRegistry projectRegistry = null;
     private GatewayRegistry gatewayRegistry = null;
+    private NotificationRegistry notificationRegistry = null;
 
     public ExperimentCatalogImpl() throws RegistryException{
         try {
@@ -77,6 +79,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
             experimentRegistry = new ExperimentRegistry(gatewayResource, user);
             projectRegistry = new ProjectRegistry(gatewayResource, user);
             gatewayRegistry = new GatewayRegistry();
+            notificationRegistry = new NotificationRegistry();
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata server properties..", e);
             throw new RegistryException("Unable to read airavata server properties..", e);
@@ -100,6 +103,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
         experimentRegistry = new ExperimentRegistry(gatewayResource, user);
         projectRegistry = new ProjectRegistry(gatewayResource, user);
         gatewayRegistry = new GatewayRegistry();
+        notificationRegistry = new NotificationRegistry();
     }
 
     /**
@@ -122,6 +126,8 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     return experimentRegistry.addExperiment((ExperimentModel) newObjectToAdd);
                 case GATEWAY:
                     return gatewayRegistry.addGateway((Gateway)newObjectToAdd);
+                case NOTIFICATION:
+                    return notificationRegistry.createNotification((Notification)newObjectToAdd);
                 default:
                     logger.error("Unsupported top level type..", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -212,6 +218,8 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case GATEWAY:
                     gatewayRegistry.updateGateway((String)identifier, (Gateway)newObjectToUpdate);
                     break;
+                case NOTIFICATION:
+                    notificationRegistry.updateNotification((Notification)newObjectToUpdate);
                 case EXPERIMENT:
                     experimentRegistry.updateExperiment((ExperimentModel) newObjectToUpdate, (String) identifier);
                     break;
@@ -319,6 +327,8 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     return projectRegistry.getProject((String)identifier);
                 case GATEWAY:
                     return gatewayRegistry.getGateway((String)identifier);
+                case NOTIFICATION:
+                    return notificationRegistry.getNotification((String) identifier);
                 case EXPERIMENT:
                     return experimentRegistry.getExperiment((String) identifier, null);
                 case USER_CONFIGURATION_DATA:
@@ -389,6 +399,11 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     for (Gateway gateway : allGateways){
                         result.add(gateway);
                     }
+                    return result;
+                case NOTIFICATION:
+                    List<Notification> notifications = notificationRegistry.getAllGatewayNotifications((String) value);
+                    for(Notification n : notifications)
+                        result.add(n);
                     return result;
                 case EXPERIMENT:
                     List<ExperimentModel> experimentList = experimentRegistry.getExperimentList(fieldName, value);
@@ -615,6 +630,8 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case GATEWAY:
                     gatewayRegistry.removeGateway((String)identifier);
                     break;
+                case NOTIFICATION:
+                    notificationRegistry.deleteNotification((String)identifier);
                 case EXPERIMENT:
                     experimentRegistry.removeExperiment((String) identifier);
                     break;

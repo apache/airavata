@@ -650,4 +650,194 @@ class Gateway {
 
 }
 
+class Notification {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $notificationId = null;
+  /**
+   * @var string
+   */
+  public $gatewayId = null;
+  /**
+   * @var string
+   */
+  public $title = null;
+  /**
+   * @var string
+   */
+  public $notifcationMessage = null;
+  /**
+   * @var int
+   */
+  public $publishedtime = null;
+  /**
+   * @var int
+   */
+  public $expirationTime = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'notificationId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'gatewayId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'title',
+          'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'notifcationMessage',
+          'type' => TType::STRING,
+          ),
+        5 => array(
+          'var' => 'publishedtime',
+          'type' => TType::I64,
+          ),
+        6 => array(
+          'var' => 'expirationTime',
+          'type' => TType::I64,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['notificationId'])) {
+        $this->notificationId = $vals['notificationId'];
+      }
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
+      }
+      if (isset($vals['title'])) {
+        $this->title = $vals['title'];
+      }
+      if (isset($vals['notifcationMessage'])) {
+        $this->notifcationMessage = $vals['notifcationMessage'];
+      }
+      if (isset($vals['publishedtime'])) {
+        $this->publishedtime = $vals['publishedtime'];
+      }
+      if (isset($vals['expirationTime'])) {
+        $this->expirationTime = $vals['expirationTime'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Notification';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->notificationId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->title);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->notifcationMessage);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->publishedtime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 6:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->expirationTime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Notification');
+    if ($this->notificationId !== null) {
+      $xfer += $output->writeFieldBegin('notificationId', TType::STRING, 1);
+      $xfer += $output->writeString($this->notificationId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 2);
+      $xfer += $output->writeString($this->gatewayId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->title !== null) {
+      $xfer += $output->writeFieldBegin('title', TType::STRING, 3);
+      $xfer += $output->writeString($this->title);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->notifcationMessage !== null) {
+      $xfer += $output->writeFieldBegin('notifcationMessage', TType::STRING, 4);
+      $xfer += $output->writeString($this->notifcationMessage);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->publishedtime !== null) {
+      $xfer += $output->writeFieldBegin('publishedtime', TType::I64, 5);
+      $xfer += $output->writeI64($this->publishedtime);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->expirationTime !== null) {
+      $xfer += $output->writeFieldBegin('expirationTime', TType::I64, 6);
+      $xfer += $output->writeI64($this->expirationTime);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 
