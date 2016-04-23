@@ -443,11 +443,11 @@ public class SSHUtils {
 
 			channel.disconnect();
 //            session.disconnect();
-
-			throw new SSHApiException("Unable to retrieve command output. Command - " + command +
+			log.error("Unable to retrieve command output. Command - " + command +
 					" on server - " + session.getHost() + ":" + session.getPort() +
 					" connecting user name - "
-					+ session.getUserName(), e);
+					+ session.getUserName());
+			throw e;
 		}
 		stdOutReader.onOutput(channel);
 		if (stdOutReader.getStdErrorString().contains("mkdir:")) {

@@ -91,6 +91,7 @@
         <class>org.apache.airavata.registry.core.experiment.catalog.model.UserConfigurationData</class>
         <class>org.apache.airavata.registry.core.experiment.catalog.model.Job</class>
         <class>org.apache.airavata.registry.core.experiment.catalog.model.JobStatus</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.Notification</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
     <persistence-unit name="replicacatalog_data">

@@ -47,6 +47,7 @@ import java.util.UUID;
  */
 public class HPCRemoteCluster extends AbstractRemoteCluster{
     private static final Logger log = LoggerFactory.getLogger(HPCRemoteCluster.class);
+	private static final int MAX_RETRY_COUNT = 3;
 	private final SSHKeyAuthentication authentication;
 	private final JSch jSch;
 	private Session session;
@@ -164,15 +165,29 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 
 	@Override
 	public void scpThirdParty(String sourceFile, String destinationFile, Session clientSession, DIRECTION direction, boolean ignoreEmptyFile) throws SSHApiException {
+		int retryCount= 0;
 		try {
-			session = Factory.getSSHSession(authenticationInfo, serverInfo);
-			log.info("Transferring from:" + sourceFile + " To: " + destinationFile);
-            if (direction == DIRECTION.TO) {
-                SSHUtils.scpThirdParty(sourceFile, clientSession, destinationFile, session, ignoreEmptyFile);
-            } else {
-                SSHUtils.scpThirdParty(sourceFile, session, destinationFile, clientSession, ignoreEmptyFile);
-            }
-        } catch (IOException | AiravataException | JSchException e) {
+			while (retryCount < MAX_RETRY_COUNT) {
+				retryCount++;
+				session = Factory.getSSHSession(authenticationInfo, serverInfo);
+				log.info("Transferring from:" + sourceFile + " To: " + destinationFile);
+				try {
+					if (direction == DIRECTION.TO) {
+                        SSHUtils.scpThirdParty(sourceFile, clientSession, destinationFile, session, ignoreEmptyFile);
+                    } else {
+                        SSHUtils.scpThirdParty(sourceFile, session, destinationFile, clientSession, ignoreEmptyFile);
+                    }
+					break; // exit while loop
+				} catch (JSchException e) {
+					if (retryCount == MAX_RETRY_COUNT) {
+						log.error("Retry count " + MAX_RETRY_COUNT + " exceeded for  transferring from:"
+								+ sourceFile + " To: " + destinationFile, e);
+						throw e;
+					}
+					log.error("Issue with jsch, Retry transferring from:" + sourceFile + " To: " + destinationFile, e);
+				}
+			}
+        } catch (IOException | AiravataException| JSchException e) {
 			throw new SSHApiException("Failed scp file:" + sourceFile + " to remote file "
 					+destinationFile , e);
 		}
@@ -180,10 +195,25 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 
 	@Override
 	public void makeDirectory(String directoryPath) throws SSHApiException {
+		int retryCount = 0;
 		try {
-			session = Factory.getSSHSession(authenticationInfo, serverInfo);
-			log.info("Creating directory: " + serverInfo.getHost() + ":" + directoryPath);
-			SSHUtils.makeDirectory(directoryPath, session);
+			while (retryCount < MAX_RETRY_COUNT) {
+				retryCount++;
+				session = Factory.getSSHSession(authenticationInfo, serverInfo);
+				log.info("Creating directory: " + serverInfo.getHost() + ":" + directoryPath);
+				try {
+					SSHUtils.makeDirectory(directoryPath, session);
+					break;  // Exit while loop
+				} catch (JSchException e) {
+					if (retryCount == MAX_RETRY_COUNT) {
+						log.error("Retry count " + MAX_RETRY_COUNT + " exceeded for creating directory: "
+								+ serverInfo.getHost() + ":" + directoryPath, e);
+
+						throw e;
+					}
+					log.error("Issue with jsch, Retry creating directory: " + serverInfo.getHost() + ":" + directoryPath);
+				}
+			}
 		} catch (JSchException | AiravataException | IOException e) {
 			throw new SSHApiException("Failed to create directory " + serverInfo.getHost() + ":" + directoryPath, e);
 		}
@@ -280,18 +310,31 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 
 	private void executeCommand(CommandInfo commandInfo, CommandOutput commandOutput) throws SSHApiException {
 		String command = commandInfo.getCommand();
+		int retryCount = 0;
 		ChannelExec channelExec = null;
 		try {
-			session = Factory.getSSHSession(authenticationInfo, serverInfo);
-			channelExec = ((ChannelExec) session.openChannel("exec"));
-			channelExec.setCommand(command);
-		    channelExec.setInputStream(null);
-			channelExec.setErrStream(commandOutput.getStandardError());
-			log.info("Executing command {}", commandInfo.getCommand());
-			channelExec.connect();
-			commandOutput.onOutput(channelExec);
+			while (retryCount < MAX_RETRY_COUNT) {
+				retryCount++;
+				try {
+					session = Factory.getSSHSession(authenticationInfo, serverInfo);
+					channelExec = ((ChannelExec) session.openChannel("exec"));
+					channelExec.setCommand(command);
+					channelExec.setInputStream(null);
+					channelExec.setErrStream(commandOutput.getStandardError());
+					channelExec.connect();
+					log.info("Executing command {}", commandInfo.getCommand());
+					commandOutput.onOutput(channelExec);
+					break; // exit from while loop
+				} catch (JSchException e) {
+					if (retryCount == MAX_RETRY_COUNT) {
+						log.error("Retry count " + MAX_RETRY_COUNT + " exceeded for executing command : " + command, e);
+						throw e;
+					}
+					log.error("Issue with jsch, Retry executing command : " + command, e);
+				}
+			}
 		} catch (JSchException | AiravataException e) {
-			throw new SSHApiException("Unable to execute command - ", e);
+			throw new SSHApiException("Unable to execute command - " + command, e);
 		} finally {
 			//Only disconnecting the channel, session can be reused
 			if (channelExec != null) {

@@ -690,4 +690,205 @@ void Gateway::printTo(std::ostream& out) const {
   out << ")";
 }
 
+
+Notification::~Notification() throw() {
+}
+
+
+void Notification::__set_notificationId(const std::string& val) {
+  this->notificationId = val;
+__isset.notificationId = true;
+}
+
+void Notification::__set_gatewayId(const std::string& val) {
+  this->gatewayId = val;
+}
+
+void Notification::__set_title(const std::string& val) {
+  this->title = val;
+}
+
+void Notification::__set_notifcationMessage(const std::string& val) {
+  this->notifcationMessage = val;
+}
+
+void Notification::__set_publishedtime(const int64_t val) {
+  this->publishedtime = val;
+__isset.publishedtime = true;
+}
+
+void Notification::__set_expirationTime(const int64_t val) {
+  this->expirationTime = val;
+__isset.expirationTime = true;
+}
+
+uint32_t Notification::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_gatewayId = false;
+  bool isset_title = false;
+  bool isset_notifcationMessage = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->notificationId);
+          this->__isset.notificationId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->title);
+          isset_title = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->notifcationMessage);
+          isset_notifcationMessage = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->publishedtime);
+          this->__isset.publishedtime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 6:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->expirationTime);
+          this->__isset.expirationTime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_title)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_notifcationMessage)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Notification::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("Notification");
+
+  if (this->__isset.notificationId) {
+    xfer += oprot->writeFieldBegin("notificationId", ::apache::thrift::protocol::T_STRING, 1);
+    xfer += oprot->writeString(this->notificationId);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("title", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString(this->title);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("notifcationMessage", ::apache::thrift::protocol::T_STRING, 4);
+  xfer += oprot->writeString(this->notifcationMessage);
+  xfer += oprot->writeFieldEnd();
+
+  if (this->__isset.publishedtime) {
+    xfer += oprot->writeFieldBegin("publishedtime", ::apache::thrift::protocol::T_I64, 5);
+    xfer += oprot->writeI64(this->publishedtime);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.expirationTime) {
+    xfer += oprot->writeFieldBegin("expirationTime", ::apache::thrift::protocol::T_I64, 6);
+    xfer += oprot->writeI64(this->expirationTime);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(Notification &a, Notification &b) {
+  using ::std::swap;
+  swap(a.notificationId, b.notificationId);
+  swap(a.gatewayId, b.gatewayId);
+  swap(a.title, b.title);
+  swap(a.notifcationMessage, b.notifcationMessage);
+  swap(a.publishedtime, b.publishedtime);
+  swap(a.expirationTime, b.expirationTime);
+  swap(a.__isset, b.__isset);
+}
+
+Notification::Notification(const Notification& other26) {
+  notificationId = other26.notificationId;
+  gatewayId = other26.gatewayId;
+  title = other26.title;
+  notifcationMessage = other26.notifcationMessage;
+  publishedtime = other26.publishedtime;
+  expirationTime = other26.expirationTime;
+  __isset = other26.__isset;
+}
+Notification& Notification::operator=(const Notification& other27) {
+  notificationId = other27.notificationId;
+  gatewayId = other27.gatewayId;
+  title = other27.title;
+  notifcationMessage = other27.notifcationMessage;
+  publishedtime = other27.publishedtime;
+  expirationTime = other27.expirationTime;
+  __isset = other27.__isset;
+  return *this;
+}
+void Notification::printTo(std::ostream& out) const {
+  using ::apache::thrift::to_string;
+  out << "Notification(";
+  out << "notificationId="; (__isset.notificationId ? (out << to_string(notificationId)) : (out << "<null>"));
+  out << ", " << "gatewayId=" << to_string(gatewayId);
+  out << ", " << "title=" << to_string(title);
+  out << ", " << "notifcationMessage=" << to_string(notifcationMessage);
+  out << ", " << "publishedtime="; (__isset.publishedtime ? (out << to_string(publishedtime)) : (out << "<null>"));
+  out << ", " << "expirationTime="; (__isset.expirationTime ? (out << to_string(expirationTime)) : (out << "<null>"));
+  out << ")";
+}
+
 }}}} // namespace
