@@ -61,6 +61,18 @@ class ComputationalResourceSchedulingModel {
    * @var string
    */
   public $staticWorkingDir = null;
+  /**
+   * @var string
+   */
+  public $overrideLoginUserName = null;
+  /**
+   * @var string
+   */
+  public $overrideScratchLocation = null;
+  /**
+   * @var string
+   */
+  public $overrideAllocationProjectNumber = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -101,6 +113,18 @@ class ComputationalResourceSchedulingModel {
           'var' => 'staticWorkingDir',
           'type' => TType::STRING,
           ),
+        10 => array(
+          'var' => 'overrideLoginUserName',
+          'type' => TType::STRING,
+          ),
+        11 => array(
+          'var' => 'overrideScratchLocation',
+          'type' => TType::STRING,
+          ),
+        12 => array(
+          'var' => 'overrideAllocationProjectNumber',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -130,6 +154,15 @@ class ComputationalResourceSchedulingModel {
       }
       if (isset($vals['staticWorkingDir'])) {
         $this->staticWorkingDir = $vals['staticWorkingDir'];
+      }
+      if (isset($vals['overrideLoginUserName'])) {
+        $this->overrideLoginUserName = $vals['overrideLoginUserName'];
+      }
+      if (isset($vals['overrideScratchLocation'])) {
+        $this->overrideScratchLocation = $vals['overrideScratchLocation'];
+      }
+      if (isset($vals['overrideAllocationProjectNumber'])) {
+        $this->overrideAllocationProjectNumber = $vals['overrideAllocationProjectNumber'];
       }
     }
   }
@@ -216,6 +249,27 @@ class ComputationalResourceSchedulingModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 10:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->overrideLoginUserName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 11:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->overrideScratchLocation);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 12:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->overrideAllocationProjectNumber);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -272,6 +326,21 @@ class ComputationalResourceSchedulingModel {
     if ($this->staticWorkingDir !== null) {
       $xfer += $output->writeFieldBegin('staticWorkingDir', TType::STRING, 9);
       $xfer += $output->writeString($this->staticWorkingDir);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->overrideLoginUserName !== null) {
+      $xfer += $output->writeFieldBegin('overrideLoginUserName', TType::STRING, 10);
+      $xfer += $output->writeString($this->overrideLoginUserName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->overrideScratchLocation !== null) {
+      $xfer += $output->writeFieldBegin('overrideScratchLocation', TType::STRING, 11);
+      $xfer += $output->writeString($this->overrideScratchLocation);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->overrideAllocationProjectNumber !== null) {
+      $xfer += $output->writeFieldBegin('overrideAllocationProjectNumber', TType::STRING, 12);
+      $xfer += $output->writeString($this->overrideAllocationProjectNumber);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

@@ -352,7 +352,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         EnvironmentSetupTaskModel envSetupSubModel = new EnvironmentSetupTaskModel();
         envSetupSubModel.setProtocol(OrchestratorUtils.getSecurityProtocol(orchestratorContext, processModel, gatewayId));
         ComputeResourcePreference computeResourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
-        String scratchLocation = computeResourcePreference.getScratchLocation();
+        String scratchLocation = OrchestratorUtils.getScratchLocation(orchestratorContext,processModel, gatewayId);
         String workingDir = scratchLocation + File.separator + processModel.getProcessId();
         envSetupSubModel.setLocation(workingDir);
         byte[] envSetupSub = ThriftUtils.serializeThriftObject(envSetupSubModel);
@@ -543,13 +543,14 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         DataStagingTaskModel submodel = new DataStagingTaskModel();
         ComputeResourcePreference computeResourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
         ComputeResourceDescription computeResource = orchestratorContext.getRegistry().getAppCatalog().getComputeResource().getComputeResource(processModel.getComputeResourceId());
-        String remoteOutputDir = computeResourcePreference.getScratchLocation() + File.separator + processModel.getProcessId();
+        String remoteOutputDir = OrchestratorUtils.getScratchLocation(orchestratorContext,processModel, gatewayId) + File.separator + processModel.getProcessId();
         remoteOutputDir = remoteOutputDir.endsWith("/") ? remoteOutputDir : remoteOutputDir + "/";
         URI destination = null;
         try {
             DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(orchestratorContext, processModel, gatewayId);
+            String loginUserName = OrchestratorUtils.getLoginUserName(orchestratorContext, processModel, gatewayId);
             destination = new URI(dataMovementProtocol.name(),
-                    computeResourcePreference.getLoginUserName(),
+                    loginUserName,
                     computeResource.getHostName(),
                     OrchestratorUtils.getDataMovementPort(orchestratorContext, processModel, gatewayId),
                     remoteOutputDir , null, null);
@@ -579,17 +580,18 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             ComputeResourcePreference computeResourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
             ComputeResourceDescription computeResource = orchestratorContext.getRegistry().getAppCatalog().getComputeResource().getComputeResource(processModel.getComputeResourceId());
 
-            String remoteOutputDir = computeResourcePreference.getScratchLocation() + File.separator + processModel.getProcessId();
+            String remoteOutputDir = OrchestratorUtils.getScratchLocation(orchestratorContext,processModel, gatewayId) + File.separator + processModel.getProcessId();
             remoteOutputDir = remoteOutputDir.endsWith("/") ? remoteOutputDir : remoteOutputDir + "/";
             DataStagingTaskModel submodel = new DataStagingTaskModel();
             DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(orchestratorContext, processModel, gatewayId);
             URI source = null;
             try {
+                String loginUserName = OrchestratorUtils.getLoginUserName(orchestratorContext, processModel, gatewayId);
                 if (processOutput != null) {
                     submodel.setType(DataStageType.OUPUT);
                     submodel.setProcessOutput(processOutput);
                     source = new URI(dataMovementProtocol.name(),
-                            computeResourcePreference.getLoginUserName(),
+                            loginUserName,
                             computeResource.getHostName(),
                             OrchestratorUtils.getDataMovementPort(orchestratorContext, processModel, gatewayId),
                             remoteOutputDir + processOutput.getValue(), null, null);
@@ -597,7 +599,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                     // archive
                     submodel.setType(DataStageType.ARCHIVE_OUTPUT);
                     source = new URI(dataMovementProtocol.name(),
-                            computeResourcePreference.getLoginUserName(),
+                            loginUserName,
                             computeResource.getHostName(),
                             OrchestratorUtils.getDataMovementPort(orchestratorContext, processModel, gatewayId),
                             remoteOutputDir, null, null);

@@ -180,6 +180,13 @@ public class Utils {
                     logger.error("Object should be a Project.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Project.");
                 }
+            case NOTIFICATION:
+                if (o instanceof Notification){
+                    return createNotification((Notification) o);
+                } else {
+                    logger.error("Object should be a Project.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Project.");
+                }
             case PROJECT_USER:
                 if (o instanceof ProjectUser){
                     return createProjectUser((ProjectUser) o);
@@ -361,6 +368,20 @@ public class Utils {
         return projectResource;
     }
 
+    private static ExperimentCatResource createNotification(Notification o) {
+        NotificationResource notificationResource = new NotificationResource();
+        if (o != null){
+            notificationResource.setNotificationId(o.getNotificationId());
+            notificationResource.setGatewayId(o.getGatewayId());
+            notificationResource.setTitle(o.getTitle());
+            notificationResource.setNotificationMessage(o.setNotificationMessage());
+            notificationResource.setPublishedTime(o.getPublishedDate());
+            notificationResource.setExpirationTime(o.getExpirationDate());
+        }
+
+        return notificationResource;
+    }
+
     private static ExperimentCatResource createProjectUser(ProjectUser o) {
         ProjectUserResource projectUserResource = new ProjectUserResource();
         if (o != null){
@@ -513,6 +534,9 @@ public class Utils {
             configurationDataResource.setWallTimeLimit(o.getWallTimeLimit());
             configurationDataResource.setTotalPhysicalMemory(o.getTotalPhysicalMemory());
             configurationDataResource.setStaticWorkingDir(o.getStaticWorkingDir());
+            configurationDataResource.setOverrideLoginUserName(o.getOverrideLoginUserName());
+            configurationDataResource.setOverrideScratchLocation(o.getOverrideScratchLocation());
+            configurationDataResource.setOverrideAllocationProjectNumber(o.getOverrideAllocationProjectNumber());
             configurationDataResource.setStorageId(o.getStorageId());
             configurationDataResource.setExperimentDataDir(o.getExperimentDataDir());
         }
@@ -658,6 +682,9 @@ public class Utils {
             resourceScheduleResource.setWallTimeLimit(o.getWallTimeLimit());
             resourceScheduleResource.setTotalPhysicalMemory(o.getTotalPhysicalMemory());
             resourceScheduleResource.setStaticWorkingDir(o.getStaticWorkingDir());
+            resourceScheduleResource.setOverrideLoginUserName(o.getOverrideLoginUserName());
+            resourceScheduleResource.setOverrideScratchLocation(o.getOverrideScratchLocation());
+            resourceScheduleResource.setOverrideAllocationProjectNumber(o.getOverrideAllocationProjectNumber());
         }
         return resourceScheduleResource;
     }
