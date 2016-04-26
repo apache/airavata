@@ -69,7 +69,7 @@ public class Notification {
     }
 
     @Column(name = "NOTIFICATION_MESSAGE")
-    public String setNotificationMessage() {
+    public String getNotificationMessage() {
         return notificationMessage;
     }
 
