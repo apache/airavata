@@ -374,7 +374,7 @@ public class Utils {
             notificationResource.setNotificationId(o.getNotificationId());
             notificationResource.setGatewayId(o.getGatewayId());
             notificationResource.setTitle(o.getTitle());
-            notificationResource.setNotificationMessage(o.setNotificationMessage());
+            notificationResource.setNotificationMessage(o.getNotificationMessage());
             notificationResource.setPublishedTime(o.getPublishedDate());
             notificationResource.setExpirationTime(o.getExpirationDate());
         }
