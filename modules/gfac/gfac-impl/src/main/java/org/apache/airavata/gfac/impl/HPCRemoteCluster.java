@@ -310,18 +310,31 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 
 	private void executeCommand(CommandInfo commandInfo, CommandOutput commandOutput) throws SSHApiException {
 		String command = commandInfo.getCommand();
+		int retryCount = 0;
 		ChannelExec channelExec = null;
 		try {
-			session = Factory.getSSHSession(authenticationInfo, serverInfo);
-			channelExec = ((ChannelExec) session.openChannel("exec"));
-			channelExec.setCommand(command);
-		    channelExec.setInputStream(null);
-			channelExec.setErrStream(commandOutput.getStandardError());
-			log.info("Executing command {}", commandInfo.getCommand());
-			channelExec.connect();
-			commandOutput.onOutput(channelExec);
+			while (retryCount < MAX_RETRY_COUNT) {
+				retryCount++;
+				try {
+					session = Factory.getSSHSession(authenticationInfo, serverInfo);
+					channelExec = ((ChannelExec) session.openChannel("exec"));
+					channelExec.setCommand(command);
+					channelExec.setInputStream(null);
+					channelExec.setErrStream(commandOutput.getStandardError());
+					channelExec.connect();
+					log.info("Executing command {}", commandInfo.getCommand());
+					commandOutput.onOutput(channelExec);
+					break; // exit from while loop
+				} catch (JSchException e) {
+					if (retryCount == MAX_RETRY_COUNT) {
+						log.error("Retry count " + MAX_RETRY_COUNT + " exceeded for executing command : " + command, e);
+						throw e;
+					}
+					log.error("Issue with jsch, Retry executing command : " + command, e);
+				}
+			}
 		} catch (JSchException | AiravataException e) {
-			throw new SSHApiException("Unable to execute command - ", e);
+			throw new SSHApiException("Unable to execute command - " + command, e);
 		} finally {
 			//Only disconnecting the channel, session can be reused
 			if (channelExec != null) {
