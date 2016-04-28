@@ -91,6 +91,7 @@ resources:
     resourceEmailAddresses:
       - slurm@comet # comet
       - slurm@batch1.stampede.tacc.utexas.edu # stampede
+      - root@master.ls5.tacc.utexas.edu # Lonestar 5
 
   - jobManagerType: UGE
     commandOutputParser: org.apache.airavata.gfac.impl.job.UGEOutputParser
