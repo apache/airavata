@@ -18,6 +18,23 @@ except:
   fastbinary = None
 
 
+class NotificationPriority:
+  LOW = 0
+  NORMAL = 1
+  HIGH = 2
+
+  _VALUES_TO_NAMES = {
+    0: "LOW",
+    1: "NORMAL",
+    2: "HIGH",
+  }
+
+  _NAMES_TO_VALUES = {
+    "LOW": 0,
+    "NORMAL": 1,
+    "HIGH": 2,
+  }
+
 
 class Group:
   """
@@ -465,9 +482,11 @@ class Notification:
    - notificationId
    - gatewayId
    - title
-   - notifcationMessage
-   - publishedtime
+   - notificationMessage
+   - creationTime
+   - publishedTime
    - expirationTime
+   - priority
   """
 
   thrift_spec = (
@@ -475,18 +494,22 @@ class Notification:
     (1, TType.STRING, 'notificationId', None, None, ), # 1
     (2, TType.STRING, 'gatewayId', None, None, ), # 2
     (3, TType.STRING, 'title', None, None, ), # 3
-    (4, TType.STRING, 'notifcationMessage', None, None, ), # 4
-    (5, TType.I64, 'publishedtime', None, None, ), # 5
-    (6, TType.I64, 'expirationTime', None, None, ), # 6
+    (4, TType.STRING, 'notificationMessage', None, None, ), # 4
+    (5, TType.I64, 'creationTime', None, None, ), # 5
+    (6, TType.I64, 'publishedTime', None, None, ), # 6
+    (7, TType.I64, 'expirationTime', None, None, ), # 7
+    (8, TType.I32, 'priority', None, None, ), # 8
   )
 
-  def __init__(self, notificationId=None, gatewayId=None, title=None, notifcationMessage=None, publishedtime=None, expirationTime=None,):
+  def __init__(self, notificationId=None, gatewayId=None, title=None, notificationMessage=None, creationTime=None, publishedTime=None, expirationTime=None, priority=None,):
     self.notificationId = notificationId
     self.gatewayId = gatewayId
     self.title = title
-    self.notifcationMessage = notifcationMessage
-    self.publishedtime = publishedtime
+    self.notificationMessage = notificationMessage
+    self.creationTime = creationTime
+    self.publishedTime = publishedTime
     self.expirationTime = expirationTime
+    self.priority = priority
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -514,17 +537,27 @@ class Notification:
           iprot.skip(ftype)
       elif fid == 4:
         if ftype == TType.STRING:
-          self.notifcationMessage = iprot.readString()
+          self.notificationMessage = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 5:
         if ftype == TType.I64:
-          self.publishedtime = iprot.readI64()
+          self.creationTime = iprot.readI64()
         else:
           iprot.skip(ftype)
       elif fid == 6:
         if ftype == TType.I64:
+          self.publishedTime = iprot.readI64()
+        else:
+          iprot.skip(ftype)
+      elif fid == 7:
+        if ftype == TType.I64:
           self.expirationTime = iprot.readI64()
+        else:
+          iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.I32:
+          self.priority = iprot.readI32()
         else:
           iprot.skip(ftype)
       else:
@@ -549,17 +582,25 @@ class Notification:
       oprot.writeFieldBegin('title', TType.STRING, 3)
       oprot.writeString(self.title)
       oprot.writeFieldEnd()
-    if self.notifcationMessage is not None:
-      oprot.writeFieldBegin('notifcationMessage', TType.STRING, 4)
-      oprot.writeString(self.notifcationMessage)
+    if self.notificationMessage is not None:
+      oprot.writeFieldBegin('notificationMessage', TType.STRING, 4)
+      oprot.writeString(self.notificationMessage)
       oprot.writeFieldEnd()
-    if self.publishedtime is not None:
-      oprot.writeFieldBegin('publishedtime', TType.I64, 5)
-      oprot.writeI64(self.publishedtime)
+    if self.creationTime is not None:
+      oprot.writeFieldBegin('creationTime', TType.I64, 5)
+      oprot.writeI64(self.creationTime)
+      oprot.writeFieldEnd()
+    if self.publishedTime is not None:
+      oprot.writeFieldBegin('publishedTime', TType.I64, 6)
+      oprot.writeI64(self.publishedTime)
       oprot.writeFieldEnd()
     if self.expirationTime is not None:
-      oprot.writeFieldBegin('expirationTime', TType.I64, 6)
+      oprot.writeFieldBegin('expirationTime', TType.I64, 7)
       oprot.writeI64(self.expirationTime)
+      oprot.writeFieldEnd()
+    if self.priority is not None:
+      oprot.writeFieldBegin('priority', TType.I32, 8)
+      oprot.writeI32(self.priority)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -569,8 +610,8 @@ class Notification:
       raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     if self.title is None:
       raise TProtocol.TProtocolException(message='Required field title is unset!')
-    if self.notifcationMessage is None:
-      raise TProtocol.TProtocolException(message='Required field notifcationMessage is unset!')
+    if self.notificationMessage is None:
+      raise TProtocol.TProtocolException(message='Required field notificationMessage is unset!')
     return
 
 
@@ -579,9 +620,11 @@ class Notification:
     value = (value * 31) ^ hash(self.notificationId)
     value = (value * 31) ^ hash(self.gatewayId)
     value = (value * 31) ^ hash(self.title)
-    value = (value * 31) ^ hash(self.notifcationMessage)
-    value = (value * 31) ^ hash(self.publishedtime)
+    value = (value * 31) ^ hash(self.notificationMessage)
+    value = (value * 31) ^ hash(self.creationTime)
+    value = (value * 31) ^ hash(self.publishedTime)
     value = (value * 31) ^ hash(self.expirationTime)
+    value = (value * 31) ^ hash(self.priority)
     return value
 
   def __repr__(self):

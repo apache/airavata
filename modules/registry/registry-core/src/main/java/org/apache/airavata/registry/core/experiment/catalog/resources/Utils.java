@@ -377,6 +377,8 @@ public class Utils {
             notificationResource.setNotificationMessage(o.getNotificationMessage());
             notificationResource.setPublishedTime(o.getPublishedDate());
             notificationResource.setExpirationTime(o.getExpirationDate());
+            notificationResource.setCreationTime(o.getCreationDate());
+            notificationResource.setPriority(o.getPriority());
         }
 
         return notificationResource;

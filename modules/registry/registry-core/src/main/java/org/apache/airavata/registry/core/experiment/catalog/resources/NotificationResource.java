@@ -43,6 +43,8 @@ public class NotificationResource extends AbstractExpCatResource {
     private String gatewayId;
     private String title;
     private String notificationMessage;
+    private String priority;
+    private Timestamp creationTime;
     private Timestamp publishedTime;
     private Timestamp expirationTime;
 
@@ -92,6 +94,22 @@ public class NotificationResource extends AbstractExpCatResource {
 
     public void setExpirationTime(Timestamp expirationTime) {
         this.expirationTime = expirationTime;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
+    public Timestamp getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Timestamp creationTime) {
+        this.creationTime = creationTime;
     }
 
     /**

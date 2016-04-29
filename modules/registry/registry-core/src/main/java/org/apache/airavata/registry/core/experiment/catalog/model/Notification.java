@@ -37,6 +37,8 @@ public class Notification {
     private String gatewayId;
     private String title;
     private String notificationMessage;
+    private String priority;
+    private Timestamp creationDate;
     private Timestamp publishedDate;
     private Timestamp expirationDate;
 
@@ -75,6 +77,24 @@ public class Notification {
 
     public void setNotificationMessage(String notificationMessage) {
         this.notificationMessage = notificationMessage;
+    }
+
+    @Column(name = "PRIORITY")
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority (String priority) {
+        this.priority = priority;
+    }
+
+    @Column(name = "CREATION_DATE")
+    public Timestamp getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate (Timestamp creationDate) {
+        this.creationDate = creationDate;
     }
 
     @Column(name = "PUBLISHED_DATE")

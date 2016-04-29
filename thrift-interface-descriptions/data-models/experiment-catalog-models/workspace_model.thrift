@@ -62,11 +62,19 @@ struct Gateway {
     4: optional string emailAddress
 }
 
+enum NotificationPriority {
+    LOW,
+    NORMAL,
+    HIGH
+}
+
 struct Notification {
     1: optional string notificationId,
     2: required string gatewayId,
     3: required string title,
-    4: required string notifcationMessage,
-    5: optional i64 publishedtime,
-    6: optional i64 expirationTime
+    4: required string notificationMessage,
+    5: optional i64 creationTime,
+    6: optional i64 publishedTime,
+    7: optional i64 expirationTime,
+    8: optional NotificationPriority priority
 }
