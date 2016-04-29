@@ -213,7 +213,7 @@ service Airavata {
                       4: airavata_errors.AuthorizationException ae)
 
 
-  void deleteNotification(1: required security_model.AuthzToken authzToken, 2: required string gatewayId, 3: required string notificationId)
+  bool deleteNotification(1: required security_model.AuthzToken authzToken, 2: required string gatewayId, 3: required string notificationId)
              throws (1: airavata_errors.InvalidRequestException ire,
                         2: airavata_errors.AiravataClientException ace,
                         3: airavata_errors.AiravataSystemException ase,

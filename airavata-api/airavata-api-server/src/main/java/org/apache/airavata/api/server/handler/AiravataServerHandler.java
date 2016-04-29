@@ -319,7 +319,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public void deleteNotification(AuthzToken authzToken, String gatewayId, String notificationId) throws InvalidRequestException,
+    public boolean deleteNotification(AuthzToken authzToken, String gatewayId, String notificationId) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
