@@ -213,6 +213,8 @@ public class NotificationResource extends AbstractExpCatResource {
                 existingNotification.setNotificationMessage(notificationMessage);
                 existingNotification.setPublishedDate(publishedTime);
                 existingNotification.setExpirationDate(expirationTime);
+                existingNotification.setCreationDate(creationTime);
+                existingNotification.setPriority(priority);
                 em.merge(existingNotification);
             } else {
                 Notification notification = new Notification();
@@ -222,6 +224,8 @@ public class NotificationResource extends AbstractExpCatResource {
                 notification.setNotificationMessage(notificationMessage);
                 notification.setPublishedDate(publishedTime);
                 notification.setExpirationDate(expirationTime);
+                notification.setCreationDate(creationTime);
+                notification.setPriority(priority);
                 em.persist(notification);
             }
             em.getTransaction().commit();
