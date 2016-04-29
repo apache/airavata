@@ -199,7 +199,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("updateNotification\n");
   }
 
-  void deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId) {
+  bool deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId) {
     // Your implementation goes here
     printf("deleteNotification\n");
   }

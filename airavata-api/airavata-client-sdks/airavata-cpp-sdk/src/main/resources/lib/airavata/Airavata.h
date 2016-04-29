@@ -167,7 +167,7 @@ class AiravataIf {
    */
   virtual void createNotification(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification) = 0;
   virtual bool updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification) = 0;
-  virtual void deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId) = 0;
+  virtual bool deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId) = 0;
   virtual void getNotification( ::apache::airavata::model::workspace::Notification& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId) = 0;
   virtual void getAllNotifications(std::vector< ::apache::airavata::model::workspace::Notification> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
 
@@ -2697,8 +2697,9 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  void deleteNotification(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* notificationId */) {
-    return;
+  bool deleteNotification(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* notificationId */) {
+    bool _return = false;
+    return _return;
   }
   void getNotification( ::apache::airavata::model::workspace::Notification& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* notificationId */) {
     return;
@@ -4549,7 +4550,8 @@ class Airavata_deleteNotification_pargs {
 };
 
 typedef struct _Airavata_deleteNotification_result__isset {
-  _Airavata_deleteNotification_result__isset() : ire(false), ace(false), ase(false), ae(false) {}
+  _Airavata_deleteNotification_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
@@ -4561,16 +4563,19 @@ class Airavata_deleteNotification_result {
 
   Airavata_deleteNotification_result(const Airavata_deleteNotification_result&);
   Airavata_deleteNotification_result& operator=(const Airavata_deleteNotification_result&);
-  Airavata_deleteNotification_result() {
+  Airavata_deleteNotification_result() : success(0) {
   }
 
   virtual ~Airavata_deleteNotification_result() throw();
+  bool success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
    ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_deleteNotification_result__isset __isset;
+
+  void __set_success(const bool val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -4582,6 +4587,8 @@ class Airavata_deleteNotification_result {
 
   bool operator == (const Airavata_deleteNotification_result & rhs) const
   {
+    if (!(success == rhs.success))
+      return false;
     if (!(ire == rhs.ire))
       return false;
     if (!(ace == rhs.ace))
@@ -4604,7 +4611,8 @@ class Airavata_deleteNotification_result {
 };
 
 typedef struct _Airavata_deleteNotification_presult__isset {
-  _Airavata_deleteNotification_presult__isset() : ire(false), ace(false), ase(false), ae(false) {}
+  _Airavata_deleteNotification_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
@@ -4616,6 +4624,7 @@ class Airavata_deleteNotification_presult {
 
 
   virtual ~Airavata_deleteNotification_presult() throw();
+  bool* success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -23464,9 +23473,9 @@ class AiravataClient : virtual public AiravataIf {
   bool updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification);
   void send_updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification);
   bool recv_updateNotification();
-  void deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId);
+  bool deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId);
   void send_deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId);
-  void recv_deleteNotification();
+  bool recv_deleteNotification();
   void getNotification( ::apache::airavata::model::workspace::Notification& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId);
   void send_getNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId);
   void recv_getNotification( ::apache::airavata::model::workspace::Notification& _return);
@@ -24295,13 +24304,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->updateNotification(authzToken, notification);
   }
 
-  void deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId) {
+  bool deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
       ifaces_[i]->deleteNotification(authzToken, gatewayId, notificationId);
     }
-    ifaces_[i]->deleteNotification(authzToken, gatewayId, notificationId);
+    return ifaces_[i]->deleteNotification(authzToken, gatewayId, notificationId);
   }
 
   void getNotification( ::apache::airavata::model::workspace::Notification& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId) {
@@ -25646,9 +25655,9 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   bool updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification);
   int32_t send_updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification);
   bool recv_updateNotification(const int32_t seqid);
-  void deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId);
+  bool deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId);
   int32_t send_deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId);
-  void recv_deleteNotification(const int32_t seqid);
+  bool recv_deleteNotification(const int32_t seqid);
   void getNotification( ::apache::airavata::model::workspace::Notification& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId);
   int32_t send_getNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId);
   void recv_getNotification( ::apache::airavata::model::workspace::Notification& _return, const int32_t seqid);

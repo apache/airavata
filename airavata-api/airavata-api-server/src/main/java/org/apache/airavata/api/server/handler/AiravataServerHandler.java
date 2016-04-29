@@ -324,6 +324,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             experimentCatalog.remove(ExperimentCatalogModelType.NOTIFICATION, notificationId);
+            return true;
         } catch (RegistryException e) {
             logger.error("Error while deleting notification", e);
             AiravataSystemException exception = new AiravataSystemException();
