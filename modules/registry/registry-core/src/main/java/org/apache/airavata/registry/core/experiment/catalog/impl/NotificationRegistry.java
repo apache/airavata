@@ -29,9 +29,7 @@ import org.apache.airavata.registry.core.experiment.catalog.utils.ThriftDataMode
 import org.apache.airavata.registry.cpi.RegistryException;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class NotificationRegistry {
 
@@ -82,6 +80,7 @@ public class NotificationRegistry {
                 notifications.add(ThriftDataModelConversion.getNotification((NotificationResource) e));
             }
         }
+        Collections.sort(notifications, (o1, o2) -> (int) (o2.getCreationTime() - o1.getCreationTime()));
         return notifications;
     }
 
