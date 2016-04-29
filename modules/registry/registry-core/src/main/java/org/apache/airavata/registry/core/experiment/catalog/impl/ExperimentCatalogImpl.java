@@ -220,6 +220,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     break;
                 case NOTIFICATION:
                     notificationRegistry.updateNotification((Notification)newObjectToUpdate);
+                    break;
                 case EXPERIMENT:
                     experimentRegistry.updateExperiment((ExperimentModel) newObjectToUpdate, (String) identifier);
                     break;
@@ -632,6 +633,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     break;
                 case NOTIFICATION:
                     notificationRegistry.deleteNotification((String)identifier);
+                    break;
                 case EXPERIMENT:
                     experimentRegistry.removeExperiment((String) identifier);
                     break;
