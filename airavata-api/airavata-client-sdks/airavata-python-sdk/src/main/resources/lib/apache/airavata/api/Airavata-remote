@@ -34,7 +34,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  bool isGatewayExist(AuthzToken authzToken, string gatewayId)')
   print('  string createNotification(AuthzToken authzToken, Notification notification)')
   print('  bool updateNotification(AuthzToken authzToken, Notification notification)')
-  print('  void deleteNotification(AuthzToken authzToken, string gatewayId, string notificationId)')
+  print('  bool deleteNotification(AuthzToken authzToken, string gatewayId, string notificationId)')
   print('  Notification getNotification(AuthzToken authzToken, string gatewayId, string notificationId)')
   print('   getAllNotifications(AuthzToken authzToken, string gatewayId)')
   print('  string generateAndRegisterSSHKeys(AuthzToken authzToken, string gatewayId, string userName)')

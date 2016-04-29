@@ -3073,6 +3073,14 @@ uint32_t Airavata_deleteNotification_result::read(::apache::thrift::protocol::TP
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -3123,7 +3131,11 @@ uint32_t Airavata_deleteNotification_result::write(::apache::thrift::protocol::T
 
   xfer += oprot->writeStructBegin("Airavata_deleteNotification_result");
 
-  if (this->__isset.ire) {
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
+    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
     xfer += this->ire.write(oprot);
     xfer += oprot->writeFieldEnd();
@@ -3171,6 +3183,14 @@ uint32_t Airavata_deleteNotification_presult::read(::apache::thrift::protocol::T
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -45676,10 +45696,10 @@ bool AiravataClient::recv_updateNotification()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateNotification failed: unknown result");
 }
 
-void AiravataClient::deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId)
+bool AiravataClient::deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId)
 {
   send_deleteNotification(authzToken, gatewayId, notificationId);
-  recv_deleteNotification();
+  return recv_deleteNotification();
 }
 
 void AiravataClient::send_deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId)
@@ -45698,7 +45718,7 @@ void AiravataClient::send_deleteNotification(const  ::apache::airavata::model::s
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_deleteNotification()
+bool AiravataClient::recv_deleteNotification()
 {
 
   int32_t rseqid = 0;
@@ -45723,11 +45743,16 @@ void AiravataClient::recv_deleteNotification()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
+  bool _return;
   Airavata_deleteNotification_presult result;
+  result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
+  if (result.__isset.success) {
+    return _return;
+  }
   if (result.__isset.ire) {
     throw result.ire;
   }
@@ -45740,7 +45765,7 @@ void AiravataClient::recv_deleteNotification()
   if (result.__isset.ae) {
     throw result.ae;
   }
-  return;
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "deleteNotification failed: unknown result");
 }
 
 void AiravataClient::getNotification( ::apache::airavata::model::workspace::Notification& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId)
@@ -55977,7 +56002,8 @@ void AiravataProcessor::process_deleteNotification(int32_t seqid, ::apache::thri
 
   Airavata_deleteNotification_result result;
   try {
-    iface_->deleteNotification(args.authzToken, args.gatewayId, args.notificationId);
+    result.success = iface_->deleteNotification(args.authzToken, args.gatewayId, args.notificationId);
+    result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
@@ -65815,10 +65841,10 @@ bool AiravataConcurrentClient::recv_updateNotification(const int32_t seqid)
   } // end while(true)
 }
 
-void AiravataConcurrentClient::deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId)
+bool AiravataConcurrentClient::deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId)
 {
   int32_t seqid = send_deleteNotification(authzToken, gatewayId, notificationId);
-  recv_deleteNotification(seqid);
+  return recv_deleteNotification(seqid);
 }
 
 int32_t AiravataConcurrentClient::send_deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId)
@@ -65841,7 +65867,7 @@ int32_t AiravataConcurrentClient::send_deleteNotification(const  ::apache::airav
   return cseqid;
 }
 
-void AiravataConcurrentClient::recv_deleteNotification(const int32_t seqid)
+bool AiravataConcurrentClient::recv_deleteNotification(const int32_t seqid)
 {
 
   int32_t rseqid = 0;
@@ -65879,11 +65905,17 @@ void AiravataConcurrentClient::recv_deleteNotification(const int32_t seqid)
         using ::apache::thrift::protocol::TProtocolException;
         throw TProtocolException(TProtocolException::INVALID_DATA);
       }
+      bool _return;
       Airavata_deleteNotification_presult result;
+      result.success = &_return;
       result.read(iprot_);
       iprot_->readMessageEnd();
       iprot_->getTransport()->readEnd();
 
+      if (result.__isset.success) {
+        sentry.commit();
+        return _return;
+      }
       if (result.__isset.ire) {
         sentry.commit();
         throw result.ire;
@@ -65900,8 +65932,8 @@ void AiravataConcurrentClient::recv_deleteNotification(const int32_t seqid)
         sentry.commit();
         throw result.ae;
       }
-      sentry.commit();
-      return;
+      // in a bad state, don't commit
+      throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "deleteNotification failed: unknown result");
     }
     // seqid != rseqid
     this->sync_.updatePending(fname, mtype, rseqid);
