@@ -2765,6 +2765,14 @@ uint32_t Airavata_updateNotification_result::read(::apache::thrift::protocol::TP
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -2815,7 +2823,11 @@ uint32_t Airavata_updateNotification_result::write(::apache::thrift::protocol::T
 
   xfer += oprot->writeStructBegin("Airavata_updateNotification_result");
 
-  if (this->__isset.ire) {
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
+    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
     xfer += this->ire.write(oprot);
     xfer += oprot->writeFieldEnd();
@@ -2863,6 +2875,14 @@ uint32_t Airavata_updateNotification_presult::read(::apache::thrift::protocol::T
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -45585,10 +45605,10 @@ void AiravataClient::recv_createNotification(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "createNotification failed: unknown result");
 }
 
-void AiravataClient::updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification)
+bool AiravataClient::updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification)
 {
   send_updateNotification(authzToken, notification);
-  recv_updateNotification();
+  return recv_updateNotification();
 }
 
 void AiravataClient::send_updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification)
@@ -45606,7 +45626,7 @@ void AiravataClient::send_updateNotification(const  ::apache::airavata::model::s
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_updateNotification()
+bool AiravataClient::recv_updateNotification()
 {
 
   int32_t rseqid = 0;
@@ -45631,11 +45651,16 @@ void AiravataClient::recv_updateNotification()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
+  bool _return;
   Airavata_updateNotification_presult result;
+  result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
+  if (result.__isset.success) {
+    return _return;
+  }
   if (result.__isset.ire) {
     throw result.ire;
   }
@@ -45648,7 +45673,7 @@ void AiravataClient::recv_updateNotification()
   if (result.__isset.ae) {
     throw result.ae;
   }
-  return;
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateNotification failed: unknown result");
 }
 
 void AiravataClient::deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId)
@@ -55886,7 +55911,8 @@ void AiravataProcessor::process_updateNotification(int32_t seqid, ::apache::thri
 
   Airavata_updateNotification_result result;
   try {
-    iface_->updateNotification(args.authzToken, args.notification);
+    result.success = iface_->updateNotification(args.authzToken, args.notification);
+    result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
@@ -65688,10 +65714,10 @@ void AiravataConcurrentClient::recv_createNotification(std::string& _return, con
   } // end while(true)
 }
 
-void AiravataConcurrentClient::updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification)
+bool AiravataConcurrentClient::updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification)
 {
   int32_t seqid = send_updateNotification(authzToken, notification);
-  recv_updateNotification(seqid);
+  return recv_updateNotification(seqid);
 }
 
 int32_t AiravataConcurrentClient::send_updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification)
@@ -65713,7 +65739,7 @@ int32_t AiravataConcurrentClient::send_updateNotification(const  ::apache::airav
   return cseqid;
 }
 
-void AiravataConcurrentClient::recv_updateNotification(const int32_t seqid)
+bool AiravataConcurrentClient::recv_updateNotification(const int32_t seqid)
 {
 
   int32_t rseqid = 0;
@@ -65751,11 +65777,17 @@ void AiravataConcurrentClient::recv_updateNotification(const int32_t seqid)
         using ::apache::thrift::protocol::TProtocolException;
         throw TProtocolException(TProtocolException::INVALID_DATA);
       }
+      bool _return;
       Airavata_updateNotification_presult result;
+      result.success = &_return;
       result.read(iprot_);
       iprot_->readMessageEnd();
       iprot_->getTransport()->readEnd();
 
+      if (result.__isset.success) {
+        sentry.commit();
+        return _return;
+      }
       if (result.__isset.ire) {
         sentry.commit();
         throw result.ire;
@@ -65772,8 +65804,8 @@ void AiravataConcurrentClient::recv_updateNotification(const int32_t seqid)
         sentry.commit();
         throw result.ae;
       }
-      sentry.commit();
-      return;
+      // in a bad state, don't commit
+      throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateNotification failed: unknown result");
     }
     // seqid != rseqid
     this->sync_.updatePending(fname, mtype, rseqid);
