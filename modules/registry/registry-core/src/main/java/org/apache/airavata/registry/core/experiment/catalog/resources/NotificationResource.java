@@ -131,7 +131,7 @@ public class NotificationResource extends AbstractExpCatResource {
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
             QueryGenerator generator = new QueryGenerator(NOTIFICATION);
-            generator.setParameter(NotificationConstants.GATEWAY_ID, gatewayId);
+            generator.setParameter(NotificationConstants.NOTIFICATION_ID, name);
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
