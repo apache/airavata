@@ -194,7 +194,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("createNotification\n");
   }
 
-  void updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification) {
+  bool updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification) {
     // Your implementation goes here
     printf("updateNotification\n");
   }

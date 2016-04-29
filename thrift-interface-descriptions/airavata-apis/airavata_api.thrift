@@ -206,7 +206,7 @@ service Airavata {
                    3: airavata_errors.AiravataSystemException ase,
                    4: airavata_errors.AuthorizationException ae)
 
-   void updateNotification(1: required security_model.AuthzToken authzToken, 2: required workspace_model.Notification notification)
+   bool updateNotification(1: required security_model.AuthzToken authzToken, 2: required workspace_model.Notification notification)
            throws (1: airavata_errors.InvalidRequestException ire,
                       2: airavata_errors.AiravataClientException ace,
                       3: airavata_errors.AiravataSystemException ase,

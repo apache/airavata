@@ -303,11 +303,12 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public void updateNotification(AuthzToken authzToken, Notification notification) throws InvalidRequestException,
+    public boolean updateNotification(AuthzToken authzToken, Notification notification) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             experimentCatalog = RegistryFactory.getExperimentCatalog(notification.getGatewayId());
             experimentCatalog.update(ExperimentCatalogModelType.NOTIFICATION, notification, notification.getGatewayId());
+            return true;
         } catch (RegistryException e) {
             logger.error("Error while updating notification", e);
             AiravataSystemException exception = new AiravataSystemException();
