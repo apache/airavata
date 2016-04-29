@@ -46,11 +46,16 @@ public class NotificationRegistry {
         notificationResource.setNotificationId(notification.getNotificationId());
         notificationResource.setGatewayId(notification.getGatewayId());
         notificationResource.setTitle(notification.getTitle());
-        notificationResource.setNotificationMessage(notification.getNotifcationMessage());
-        if(notification.getPublishedtime() != 0)
-            notificationResource.setPublishedTime(new Timestamp(notification.getPublishedtime()));
+        notificationResource.setNotificationMessage(notification.getNotificationMessage());
+        notificationResource.setPriority(notification.getPriority().toString());
+        if(notification.getPublishedTime() != 0)
+            notificationResource.setPublishedTime(new Timestamp(notification.getPublishedTime()));
         if(notification.getExpirationTime() != 0)
             notificationResource.setExpirationTime(new Timestamp(notification.getExpirationTime()));
+        if(notification.getCreationTime() != 0)
+            notificationResource.setCreationTime(new Timestamp(notification.getCreationTime()));
+        else
+            notificationResource.setCreationTime(new Timestamp(System.currentTimeMillis()));
         notificationResource.save();
     }
 

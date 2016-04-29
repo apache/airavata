@@ -17,6 +17,17 @@ use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
 
+final class NotificationPriority {
+  const LOW = 0;
+  const NORMAL = 1;
+  const HIGH = 2;
+  static public $__names = array(
+    0 => 'LOW',
+    1 => 'NORMAL',
+    2 => 'HIGH',
+  );
+}
+
 class Group {
   static $_TSPEC;
 
@@ -668,15 +679,23 @@ class Notification {
   /**
    * @var string
    */
-  public $notifcationMessage = null;
+  public $notificationMessage = null;
   /**
    * @var int
    */
-  public $publishedtime = null;
+  public $creationTime = null;
+  /**
+   * @var int
+   */
+  public $publishedTime = null;
   /**
    * @var int
    */
   public $expirationTime = null;
+  /**
+   * @var int
+   */
+  public $priority = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -694,16 +713,24 @@ class Notification {
           'type' => TType::STRING,
           ),
         4 => array(
-          'var' => 'notifcationMessage',
+          'var' => 'notificationMessage',
           'type' => TType::STRING,
           ),
         5 => array(
-          'var' => 'publishedtime',
+          'var' => 'creationTime',
           'type' => TType::I64,
           ),
         6 => array(
+          'var' => 'publishedTime',
+          'type' => TType::I64,
+          ),
+        7 => array(
           'var' => 'expirationTime',
           'type' => TType::I64,
+          ),
+        8 => array(
+          'var' => 'priority',
+          'type' => TType::I32,
           ),
         );
     }
@@ -717,14 +744,20 @@ class Notification {
       if (isset($vals['title'])) {
         $this->title = $vals['title'];
       }
-      if (isset($vals['notifcationMessage'])) {
-        $this->notifcationMessage = $vals['notifcationMessage'];
+      if (isset($vals['notificationMessage'])) {
+        $this->notificationMessage = $vals['notificationMessage'];
       }
-      if (isset($vals['publishedtime'])) {
-        $this->publishedtime = $vals['publishedtime'];
+      if (isset($vals['creationTime'])) {
+        $this->creationTime = $vals['creationTime'];
+      }
+      if (isset($vals['publishedTime'])) {
+        $this->publishedTime = $vals['publishedTime'];
       }
       if (isset($vals['expirationTime'])) {
         $this->expirationTime = $vals['expirationTime'];
+      }
+      if (isset($vals['priority'])) {
+        $this->priority = $vals['priority'];
       }
     }
   }
@@ -771,21 +804,35 @@ class Notification {
           break;
         case 4:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->notifcationMessage);
+            $xfer += $input->readString($this->notificationMessage);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 5:
           if ($ftype == TType::I64) {
-            $xfer += $input->readI64($this->publishedtime);
+            $xfer += $input->readI64($this->creationTime);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 6:
           if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->publishedTime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 7:
+          if ($ftype == TType::I64) {
             $xfer += $input->readI64($this->expirationTime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 8:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->priority);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -818,19 +865,29 @@ class Notification {
       $xfer += $output->writeString($this->title);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->notifcationMessage !== null) {
-      $xfer += $output->writeFieldBegin('notifcationMessage', TType::STRING, 4);
-      $xfer += $output->writeString($this->notifcationMessage);
+    if ($this->notificationMessage !== null) {
+      $xfer += $output->writeFieldBegin('notificationMessage', TType::STRING, 4);
+      $xfer += $output->writeString($this->notificationMessage);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->publishedtime !== null) {
-      $xfer += $output->writeFieldBegin('publishedtime', TType::I64, 5);
-      $xfer += $output->writeI64($this->publishedtime);
+    if ($this->creationTime !== null) {
+      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 5);
+      $xfer += $output->writeI64($this->creationTime);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->publishedTime !== null) {
+      $xfer += $output->writeFieldBegin('publishedTime', TType::I64, 6);
+      $xfer += $output->writeI64($this->publishedTime);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->expirationTime !== null) {
-      $xfer += $output->writeFieldBegin('expirationTime', TType::I64, 6);
+      $xfer += $output->writeFieldBegin('expirationTime', TType::I64, 7);
       $xfer += $output->writeI64($this->expirationTime);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->priority !== null) {
+      $xfer += $output->writeFieldBegin('priority', TType::I32, 8);
+      $xfer += $output->writeI32($this->priority);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
