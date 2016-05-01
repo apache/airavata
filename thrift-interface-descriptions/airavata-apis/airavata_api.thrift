@@ -258,6 +258,32 @@ service Airavata {
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
 
+
+ /**
+   * Generate and Register Username PWD Pair with Airavata Credential Store.
+   *
+   * @param gatewayId
+   *    The identifier for the requested Gateway.
+   *
+   * @param userName
+   *    The User for which the credential should be registered. For community accounts, this user is the name of the
+   *    community user name. For computational resources, this user name need not be the same user name on resoruces.
+   *
+   * @param password
+   *
+   * @return airavataCredStoreToken
+   *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
+   *   belonging to a Gateway.
+   *
+   **/
+  string registerPwdCredential (1: required security_model.AuthzToken authzToken,
+                      2: required string gatewayId,
+                      3: required string userName,
+                      4: required string password)
+             throws (1: airavata_errors.InvalidRequestException ire,
+                     2: airavata_errors.AiravataClientException ace,
+                     3: airavata_errors.AiravataSystemException ase)
+
    /**
    * Get a Public Key by Providing the Token
    *
@@ -316,6 +342,13 @@ service Airavata {
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
 
+
+  map<string, string> getAllGatewayPWDCredentials (1: required security_model.AuthzToken authzToken,
+                                                 2: required string gatewayId)
+               throws (1: airavata_errors.InvalidRequestException ire,
+                       2: airavata_errors.AiravataClientException ace,
+                       3: airavata_errors.AiravataSystemException ase)
+
     /**
     *
     * Delete a Gateway
@@ -333,6 +366,14 @@ service Airavata {
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
+
+
+  bool deletePWDCredential (1: required security_model.AuthzToken authzToken,
+                            2: required string airavataCredStoreToken,
+                            3: required string gatewayId)
+               throws (1: airavata_errors.InvalidRequestException ire,
+                       2: airavata_errors.AiravataClientException ace,
+                       3: airavata_errors.AiravataSystemException ase)
 
    /**
    *

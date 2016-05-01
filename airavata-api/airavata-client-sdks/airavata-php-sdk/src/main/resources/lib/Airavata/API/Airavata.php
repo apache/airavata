@@ -248,6 +248,34 @@ interface AiravataIf {
    */
   public function generateAndRegisterSSHKeys(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $userName);
   /**
+   * Generate and Register Username PWD Pair with Airavata Credential Store.
+   * 
+   * @param gatewayId
+   *    The identifier for the requested Gateway.
+   * 
+   * @param userName
+   *    The User for which the credential should be registered. For community accounts, this user is the name of the
+   *    community user name. For computational resources, this user name need not be the same user name on resoruces.
+   * 
+   * @param password
+   * 
+   * @return airavataCredStoreToken
+   *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
+   *   belonging to a Gateway.
+   * 
+   * 
+   * 
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @param string $gatewayId
+   * @param string $userName
+   * @param string $password
+   * @return string
+   * @throws \Airavata\API\Error\InvalidRequestException
+   * @throws \Airavata\API\Error\AiravataClientException
+   * @throws \Airavata\API\Error\AiravataSystemException
+   */
+  public function registerPwdCredential(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $userName, $password);
+  /**
    * Get a Public Key by Providing the Token
    * 
    * @param CredStoreToken
@@ -314,6 +342,15 @@ interface AiravataIf {
    */
   public function getAllGatewaySSHPubKeys(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId);
   /**
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @param string $gatewayId
+   * @return array
+   * @throws \Airavata\API\Error\InvalidRequestException
+   * @throws \Airavata\API\Error\AiravataClientException
+   * @throws \Airavata\API\Error\AiravataSystemException
+   */
+  public function getAllGatewayPWDCredentials(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId);
+  /**
    * 
    * Delete a Gateway
    * 
@@ -334,6 +371,16 @@ interface AiravataIf {
    * @throws \Airavata\API\Error\AiravataSystemException
    */
   public function deleteSSHPubKey(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken, $gatewayId);
+  /**
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @param string $airavataCredStoreToken
+   * @param string $gatewayId
+   * @return bool
+   * @throws \Airavata\API\Error\InvalidRequestException
+   * @throws \Airavata\API\Error\AiravataClientException
+   * @throws \Airavata\API\Error\AiravataSystemException
+   */
+  public function deletePWDCredential(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken, $gatewayId);
   /**
    * 
    * Creates a Project with basic metadata.
@@ -4439,6 +4486,69 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("generateAndRegisterSSHKeys failed: unknown result");
   }
 
+  public function registerPwdCredential(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $userName, $password)
+  {
+    $this->send_registerPwdCredential($authzToken, $gatewayId, $userName, $password);
+    return $this->recv_registerPwdCredential();
+  }
+
+  public function send_registerPwdCredential(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $userName, $password)
+  {
+    $args = new \Airavata\API\Airavata_registerPwdCredential_args();
+    $args->authzToken = $authzToken;
+    $args->gatewayId = $gatewayId;
+    $args->userName = $userName;
+    $args->password = $password;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'registerPwdCredential', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('registerPwdCredential', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_registerPwdCredential()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_registerPwdCredential_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_registerPwdCredential_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    throw new \Exception("registerPwdCredential failed: unknown result");
+  }
+
   public function getSSHPubKey(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken, $gatewayId)
   {
     $this->send_getSSHPubKey($authzToken, $airavataCredStoreToken, $gatewayId);
@@ -4623,6 +4733,67 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getAllGatewaySSHPubKeys failed: unknown result");
   }
 
+  public function getAllGatewayPWDCredentials(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId)
+  {
+    $this->send_getAllGatewayPWDCredentials($authzToken, $gatewayId);
+    return $this->recv_getAllGatewayPWDCredentials();
+  }
+
+  public function send_getAllGatewayPWDCredentials(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId)
+  {
+    $args = new \Airavata\API\Airavata_getAllGatewayPWDCredentials_args();
+    $args->authzToken = $authzToken;
+    $args->gatewayId = $gatewayId;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'getAllGatewayPWDCredentials', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('getAllGatewayPWDCredentials', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_getAllGatewayPWDCredentials()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_getAllGatewayPWDCredentials_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_getAllGatewayPWDCredentials_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    throw new \Exception("getAllGatewayPWDCredentials failed: unknown result");
+  }
+
   public function deleteSSHPubKey(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken, $gatewayId)
   {
     $this->send_deleteSSHPubKey($authzToken, $airavataCredStoreToken, $gatewayId);
@@ -4683,6 +4854,68 @@ class AiravataClient implements \Airavata\API\AiravataIf {
       throw $result->ase;
     }
     throw new \Exception("deleteSSHPubKey failed: unknown result");
+  }
+
+  public function deletePWDCredential(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken, $gatewayId)
+  {
+    $this->send_deletePWDCredential($authzToken, $airavataCredStoreToken, $gatewayId);
+    return $this->recv_deletePWDCredential();
+  }
+
+  public function send_deletePWDCredential(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken, $gatewayId)
+  {
+    $args = new \Airavata\API\Airavata_deletePWDCredential_args();
+    $args->authzToken = $authzToken;
+    $args->airavataCredStoreToken = $airavataCredStoreToken;
+    $args->gatewayId = $gatewayId;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'deletePWDCredential', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('deletePWDCredential', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_deletePWDCredential()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_deletePWDCredential_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_deletePWDCredential_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    throw new \Exception("deletePWDCredential failed: unknown result");
   }
 
   public function createProject(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, \Airavata\Model\Workspace\Project $project)
@@ -16869,6 +17102,305 @@ class Airavata_generateAndRegisterSSHKeys_result {
 
 }
 
+class Airavata_registerPwdCredential_args {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+  /**
+   * @var string
+   */
+  public $gatewayId = null;
+  /**
+   * @var string
+   */
+  public $userName = null;
+  /**
+   * @var string
+   */
+  public $password = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        2 => array(
+          'var' => 'gatewayId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'userName',
+          'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'password',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
+      }
+      if (isset($vals['userName'])) {
+        $this->userName = $vals['userName'];
+      }
+      if (isset($vals['password'])) {
+        $this->password = $vals['password'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_registerPwdCredential_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->password);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_registerPwdCredential_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 2);
+      $xfer += $output->writeString($this->gatewayId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userName !== null) {
+      $xfer += $output->writeFieldBegin('userName', TType::STRING, 3);
+      $xfer += $output->writeString($this->userName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->password !== null) {
+      $xfer += $output->writeFieldBegin('password', TType::STRING, 4);
+      $xfer += $output->writeString($this->password);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_registerPwdCredential_result {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\API\Error\InvalidRequestException
+   */
+  public $ire = null;
+  /**
+   * @var \Airavata\API\Error\AiravataClientException
+   */
+  public $ace = null;
+  /**
+   * @var \Airavata\API\Error\AiravataSystemException
+   */
+  public $ase = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_registerPwdCredential_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_registerPwdCredential_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class Airavata_getSSHPubKey_args {
   static $_TSPEC;
 
@@ -17719,6 +18251,293 @@ class Airavata_getAllGatewaySSHPubKeys_result {
 
 }
 
+class Airavata_getAllGatewayPWDCredentials_args {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+  /**
+   * @var string
+   */
+  public $gatewayId = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        2 => array(
+          'var' => 'gatewayId',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_getAllGatewayPWDCredentials_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_getAllGatewayPWDCredentials_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 2);
+      $xfer += $output->writeString($this->gatewayId);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_getAllGatewayPWDCredentials_result {
+  static $_TSPEC;
+
+  /**
+   * @var array
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\API\Error\InvalidRequestException
+   */
+  public $ire = null;
+  /**
+   * @var \Airavata\API\Error\AiravataClientException
+   */
+  public $ace = null;
+  /**
+   * @var \Airavata\API\Error\AiravataSystemException
+   */
+  public $ase = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::MAP,
+          'ktype' => TType::STRING,
+          'vtype' => TType::STRING,
+          'key' => array(
+            'type' => TType::STRING,
+          ),
+          'val' => array(
+            'type' => TType::STRING,
+            ),
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_getAllGatewayPWDCredentials_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::MAP) {
+            $this->success = array();
+            $_size32 = 0;
+            $_ktype33 = 0;
+            $_vtype34 = 0;
+            $xfer += $input->readMapBegin($_ktype33, $_vtype34, $_size32);
+            for ($_i36 = 0; $_i36 < $_size32; ++$_i36)
+            {
+              $key37 = '';
+              $val38 = '';
+              $xfer += $input->readString($key37);
+              $xfer += $input->readString($val38);
+              $this->success[$key37] = $val38;
+            }
+            $xfer += $input->readMapEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_getAllGatewayPWDCredentials_result');
+    if ($this->success !== null) {
+      if (!is_array($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::MAP, 0);
+      {
+        $output->writeMapBegin(TType::STRING, TType::STRING, count($this->success));
+        {
+          foreach ($this->success as $kiter39 => $viter40)
+          {
+            $xfer += $output->writeString($kiter39);
+            $xfer += $output->writeString($viter40);
+          }
+        }
+        $output->writeMapEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class Airavata_deleteSSHPubKey_args {
   static $_TSPEC;
 
@@ -17968,6 +18787,282 @@ class Airavata_deleteSSHPubKey_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_deleteSSHPubKey_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
+      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_deletePWDCredential_args {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+  /**
+   * @var string
+   */
+  public $airavataCredStoreToken = null;
+  /**
+   * @var string
+   */
+  public $gatewayId = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        2 => array(
+          'var' => 'airavataCredStoreToken',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'gatewayId',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
+      if (isset($vals['airavataCredStoreToken'])) {
+        $this->airavataCredStoreToken = $vals['airavataCredStoreToken'];
+      }
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_deletePWDCredential_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->airavataCredStoreToken);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_deletePWDCredential_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->airavataCredStoreToken !== null) {
+      $xfer += $output->writeFieldBegin('airavataCredStoreToken', TType::STRING, 2);
+      $xfer += $output->writeString($this->airavataCredStoreToken);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayId);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_deletePWDCredential_result {
+  static $_TSPEC;
+
+  /**
+   * @var bool
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\API\Error\InvalidRequestException
+   */
+  public $ire = null;
+  /**
+   * @var \Airavata\API\Error\AiravataClientException
+   */
+  public $ace = null;
+  /**
+   * @var \Airavata\API\Error\AiravataSystemException
+   */
+  public $ase = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::BOOL,
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_deletePWDCredential_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_deletePWDCredential_result');
     if ($this->success !== null) {
       $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
       $xfer += $output->writeBool($this->success);
@@ -19491,15 +20586,15 @@ class Airavata_getUserProjects_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size32 = 0;
-            $_etype35 = 0;
-            $xfer += $input->readListBegin($_etype35, $_size32);
-            for ($_i36 = 0; $_i36 < $_size32; ++$_i36)
+            $_size41 = 0;
+            $_etype44 = 0;
+            $xfer += $input->readListBegin($_etype44, $_size41);
+            for ($_i45 = 0; $_i45 < $_size41; ++$_i45)
             {
-              $elem37 = null;
-              $elem37 = new \Airavata\Model\Workspace\Project();
-              $xfer += $elem37->read($input);
-              $this->success []= $elem37;
+              $elem46 = null;
+              $elem46 = new \Airavata\Model\Workspace\Project();
+              $xfer += $elem46->read($input);
+              $this->success []= $elem46;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -19559,9 +20654,9 @@ class Airavata_getUserProjects_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter38)
+          foreach ($this->success as $iter47)
           {
-            $xfer += $iter38->write($output);
+            $xfer += $iter47->write($output);
           }
         }
         $output->writeListEnd();
@@ -19889,15 +20984,15 @@ class Airavata_searchProjectsByProjectName_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size39 = 0;
-            $_etype42 = 0;
-            $xfer += $input->readListBegin($_etype42, $_size39);
-            for ($_i43 = 0; $_i43 < $_size39; ++$_i43)
+            $_size48 = 0;
+            $_etype51 = 0;
+            $xfer += $input->readListBegin($_etype51, $_size48);
+            for ($_i52 = 0; $_i52 < $_size48; ++$_i52)
             {
-              $elem44 = null;
-              $elem44 = new \Airavata\Model\Workspace\Project();
-              $xfer += $elem44->read($input);
-              $this->success []= $elem44;
+              $elem53 = null;
+              $elem53 = new \Airavata\Model\Workspace\Project();
+              $xfer += $elem53->read($input);
+              $this->success []= $elem53;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -19957,9 +21052,9 @@ class Airavata_searchProjectsByProjectName_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter45)
+          foreach ($this->success as $iter54)
           {
-            $xfer += $iter45->write($output);
+            $xfer += $iter54->write($output);
           }
         }
         $output->writeListEnd();
@@ -20287,15 +21382,15 @@ class Airavata_searchProjectsByProjectDesc_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size46 = 0;
-            $_etype49 = 0;
-            $xfer += $input->readListBegin($_etype49, $_size46);
-            for ($_i50 = 0; $_i50 < $_size46; ++$_i50)
+            $_size55 = 0;
+            $_etype58 = 0;
+            $xfer += $input->readListBegin($_etype58, $_size55);
+            for ($_i59 = 0; $_i59 < $_size55; ++$_i59)
             {
-              $elem51 = null;
-              $elem51 = new \Airavata\Model\Workspace\Project();
-              $xfer += $elem51->read($input);
-              $this->success []= $elem51;
+              $elem60 = null;
+              $elem60 = new \Airavata\Model\Workspace\Project();
+              $xfer += $elem60->read($input);
+              $this->success []= $elem60;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -20355,9 +21450,9 @@ class Airavata_searchProjectsByProjectDesc_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter52)
+          foreach ($this->success as $iter61)
           {
-            $xfer += $iter52->write($output);
+            $xfer += $iter61->write($output);
           }
         }
         $output->writeListEnd();
@@ -20685,15 +21780,15 @@ class Airavata_searchExperimentsByName_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size53 = 0;
-            $_etype56 = 0;
-            $xfer += $input->readListBegin($_etype56, $_size53);
-            for ($_i57 = 0; $_i57 < $_size53; ++$_i57)
+            $_size62 = 0;
+            $_etype65 = 0;
+            $xfer += $input->readListBegin($_etype65, $_size62);
+            for ($_i66 = 0; $_i66 < $_size62; ++$_i66)
             {
-              $elem58 = null;
-              $elem58 = new \Airavata\Model\Experiment\ExperimentSummaryModel();
-              $xfer += $elem58->read($input);
-              $this->success []= $elem58;
+              $elem67 = null;
+              $elem67 = new \Airavata\Model\Experiment\ExperimentSummaryModel();
+              $xfer += $elem67->read($input);
+              $this->success []= $elem67;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -20753,9 +21848,9 @@ class Airavata_searchExperimentsByName_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter59)
+          foreach ($this->success as $iter68)
           {
-            $xfer += $iter59->write($output);
+            $xfer += $iter68->write($output);
           }
         }
         $output->writeListEnd();
@@ -21083,15 +22178,15 @@ class Airavata_searchExperimentsByDesc_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size60 = 0;
-            $_etype63 = 0;
-            $xfer += $input->readListBegin($_etype63, $_size60);
-            for ($_i64 = 0; $_i64 < $_size60; ++$_i64)
+            $_size69 = 0;
+            $_etype72 = 0;
+            $xfer += $input->readListBegin($_etype72, $_size69);
+            for ($_i73 = 0; $_i73 < $_size69; ++$_i73)
             {
-              $elem65 = null;
-              $elem65 = new \Airavata\Model\Experiment\ExperimentSummaryModel();
-              $xfer += $elem65->read($input);
-              $this->success []= $elem65;
+              $elem74 = null;
+              $elem74 = new \Airavata\Model\Experiment\ExperimentSummaryModel();
+              $xfer += $elem74->read($input);
+              $this->success []= $elem74;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -21151,9 +22246,9 @@ class Airavata_searchExperimentsByDesc_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter66)
+          foreach ($this->success as $iter75)
           {
-            $xfer += $iter66->write($output);
+            $xfer += $iter75->write($output);
           }
         }
         $output->writeListEnd();
@@ -21481,15 +22576,15 @@ class Airavata_searchExperimentsByApplication_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size67 = 0;
-            $_etype70 = 0;
-            $xfer += $input->readListBegin($_etype70, $_size67);
-            for ($_i71 = 0; $_i71 < $_size67; ++$_i71)
+            $_size76 = 0;
+            $_etype79 = 0;
+            $xfer += $input->readListBegin($_etype79, $_size76);
+            for ($_i80 = 0; $_i80 < $_size76; ++$_i80)
             {
-              $elem72 = null;
-              $elem72 = new \Airavata\Model\Experiment\ExperimentSummaryModel();
-              $xfer += $elem72->read($input);
-              $this->success []= $elem72;
+              $elem81 = null;
+              $elem81 = new \Airavata\Model\Experiment\ExperimentSummaryModel();
+              $xfer += $elem81->read($input);
+              $this->success []= $elem81;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -21549,9 +22644,9 @@ class Airavata_searchExperimentsByApplication_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter73)
+          foreach ($this->success as $iter82)
           {
-            $xfer += $iter73->write($output);
+            $xfer += $iter82->write($output);
           }
         }
         $output->writeListEnd();
@@ -21879,15 +22974,15 @@ class Airavata_searchExperimentsByStatus_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size74 = 0;
-            $_etype77 = 0;
-            $xfer += $input->readListBegin($_etype77, $_size74);
-            for ($_i78 = 0; $_i78 < $_size74; ++$_i78)
+            $_size83 = 0;
+            $_etype86 = 0;
+            $xfer += $input->readListBegin($_etype86, $_size83);
+            for ($_i87 = 0; $_i87 < $_size83; ++$_i87)
             {
-              $elem79 = null;
-              $elem79 = new \Airavata\Model\Experiment\ExperimentSummaryModel();
-              $xfer += $elem79->read($input);
-              $this->success []= $elem79;
+              $elem88 = null;
+              $elem88 = new \Airavata\Model\Experiment\ExperimentSummaryModel();
+              $xfer += $elem88->read($input);
+              $this->success []= $elem88;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -21947,9 +23042,9 @@ class Airavata_searchExperimentsByStatus_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter80)
+          foreach ($this->success as $iter89)
           {
-            $xfer += $iter80->write($output);
+            $xfer += $iter89->write($output);
           }
         }
         $output->writeListEnd();
@@ -22300,15 +23395,15 @@ class Airavata_searchExperimentsByCreationTime_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size81 = 0;
-            $_etype84 = 0;
-            $xfer += $input->readListBegin($_etype84, $_size81);
-            for ($_i85 = 0; $_i85 < $_size81; ++$_i85)
+            $_size90 = 0;
+            $_etype93 = 0;
+            $xfer += $input->readListBegin($_etype93, $_size90);
+            for ($_i94 = 0; $_i94 < $_size90; ++$_i94)
             {
-              $elem86 = null;
-              $elem86 = new \Airavata\Model\Experiment\ExperimentSummaryModel();
-              $xfer += $elem86->read($input);
-              $this->success []= $elem86;
+              $elem95 = null;
+              $elem95 = new \Airavata\Model\Experiment\ExperimentSummaryModel();
+              $xfer += $elem95->read($input);
+              $this->success []= $elem95;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -22368,9 +23463,9 @@ class Airavata_searchExperimentsByCreationTime_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter87)
+          foreach ($this->success as $iter96)
           {
-            $xfer += $iter87->write($output);
+            $xfer += $iter96->write($output);
           }
         }
         $output->writeListEnd();
@@ -22536,17 +23631,17 @@ class Airavata_searchExperiments_args {
         case 4:
           if ($ftype == TType::MAP) {
             $this->filters = array();
-            $_size88 = 0;
-            $_ktype89 = 0;
-            $_vtype90 = 0;
-            $xfer += $input->readMapBegin($_ktype89, $_vtype90, $_size88);
-            for ($_i92 = 0; $_i92 < $_size88; ++$_i92)
+            $_size97 = 0;
+            $_ktype98 = 0;
+            $_vtype99 = 0;
+            $xfer += $input->readMapBegin($_ktype98, $_vtype99, $_size97);
+            for ($_i101 = 0; $_i101 < $_size97; ++$_i101)
             {
-              $key93 = 0;
-              $val94 = '';
-              $xfer += $input->readI32($key93);
-              $xfer += $input->readString($val94);
-              $this->filters[$key93] = $val94;
+              $key102 = 0;
+              $val103 = '';
+              $xfer += $input->readI32($key102);
+              $xfer += $input->readString($val103);
+              $this->filters[$key102] = $val103;
             }
             $xfer += $input->readMapEnd();
           } else {
@@ -22606,10 +23701,10 @@ class Airavata_searchExperiments_args {
       {
         $output->writeMapBegin(TType::I32, TType::STRING, count($this->filters));
         {
-          foreach ($this->filters as $kiter95 => $viter96)
+          foreach ($this->filters as $kiter104 => $viter105)
           {
-            $xfer += $output->writeI32($kiter95);
-            $xfer += $output->writeString($viter96);
+            $xfer += $output->writeI32($kiter104);
+            $xfer += $output->writeString($viter105);
           }
         }
         $output->writeMapEnd();
@@ -22732,15 +23827,15 @@ class Airavata_searchExperiments_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size97 = 0;
-            $_etype100 = 0;
-            $xfer += $input->readListBegin($_etype100, $_size97);
-            for ($_i101 = 0; $_i101 < $_size97; ++$_i101)
+            $_size106 = 0;
+            $_etype109 = 0;
+            $xfer += $input->readListBegin($_etype109, $_size106);
+            for ($_i110 = 0; $_i110 < $_size106; ++$_i110)
             {
-              $elem102 = null;
-              $elem102 = new \Airavata\Model\Experiment\ExperimentSummaryModel();
-              $xfer += $elem102->read($input);
-              $this->success []= $elem102;
+              $elem111 = null;
+              $elem111 = new \Airavata\Model\Experiment\ExperimentSummaryModel();
+              $xfer += $elem111->read($input);
+              $this->success []= $elem111;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -22800,9 +23895,9 @@ class Airavata_searchExperiments_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter103)
+          foreach ($this->success as $iter112)
           {
-            $xfer += $iter103->write($output);
+            $xfer += $iter112->write($output);
           }
         }
         $output->writeListEnd();
@@ -23425,15 +24520,15 @@ class Airavata_getExperimentsInProject_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size104 = 0;
-            $_etype107 = 0;
-            $xfer += $input->readListBegin($_etype107, $_size104);
-            for ($_i108 = 0; $_i108 < $_size104; ++$_i108)
+            $_size113 = 0;
+            $_etype116 = 0;
+            $xfer += $input->readListBegin($_etype116, $_size113);
+            for ($_i117 = 0; $_i117 < $_size113; ++$_i117)
             {
-              $elem109 = null;
-              $elem109 = new \Airavata\Model\Experiment\ExperimentModel();
-              $xfer += $elem109->read($input);
-              $this->success []= $elem109;
+              $elem118 = null;
+              $elem118 = new \Airavata\Model\Experiment\ExperimentModel();
+              $xfer += $elem118->read($input);
+              $this->success []= $elem118;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -23501,9 +24596,9 @@ class Airavata_getExperimentsInProject_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter110)
+          foreach ($this->success as $iter119)
           {
-            $xfer += $iter110->write($output);
+            $xfer += $iter119->write($output);
           }
         }
         $output->writeListEnd();
@@ -23813,15 +24908,15 @@ class Airavata_getUserExperiments_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size111 = 0;
-            $_etype114 = 0;
-            $xfer += $input->readListBegin($_etype114, $_size111);
-            for ($_i115 = 0; $_i115 < $_size111; ++$_i115)
+            $_size120 = 0;
+            $_etype123 = 0;
+            $xfer += $input->readListBegin($_etype123, $_size120);
+            for ($_i124 = 0; $_i124 < $_size120; ++$_i124)
             {
-              $elem116 = null;
-              $elem116 = new \Airavata\Model\Experiment\ExperimentModel();
-              $xfer += $elem116->read($input);
-              $this->success []= $elem116;
+              $elem125 = null;
+              $elem125 = new \Airavata\Model\Experiment\ExperimentModel();
+              $xfer += $elem125->read($input);
+              $this->success []= $elem125;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -23881,9 +24976,9 @@ class Airavata_getUserExperiments_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter117)
+          foreach ($this->success as $iter126)
           {
-            $xfer += $iter117->write($output);
+            $xfer += $iter126->write($output);
           }
         }
         $output->writeListEnd();
@@ -26969,15 +28064,15 @@ class Airavata_getExperimentOutputs_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size118 = 0;
-            $_etype121 = 0;
-            $xfer += $input->readListBegin($_etype121, $_size118);
-            for ($_i122 = 0; $_i122 < $_size118; ++$_i122)
+            $_size127 = 0;
+            $_etype130 = 0;
+            $xfer += $input->readListBegin($_etype130, $_size127);
+            for ($_i131 = 0; $_i131 < $_size127; ++$_i131)
             {
-              $elem123 = null;
-              $elem123 = new \Airavata\Model\Application\Io\OutputDataObjectType();
-              $xfer += $elem123->read($input);
-              $this->success []= $elem123;
+              $elem132 = null;
+              $elem132 = new \Airavata\Model\Application\Io\OutputDataObjectType();
+              $xfer += $elem132->read($input);
+              $this->success []= $elem132;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -27045,9 +28140,9 @@ class Airavata_getExperimentOutputs_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter124)
+          foreach ($this->success as $iter133)
           {
-            $xfer += $iter124->write($output);
+            $xfer += $iter133->write($output);
           }
         }
         $output->writeListEnd();
@@ -27300,15 +28395,15 @@ class Airavata_getIntermediateOutputs_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size125 = 0;
-            $_etype128 = 0;
-            $xfer += $input->readListBegin($_etype128, $_size125);
-            for ($_i129 = 0; $_i129 < $_size125; ++$_i129)
+            $_size134 = 0;
+            $_etype137 = 0;
+            $xfer += $input->readListBegin($_etype137, $_size134);
+            for ($_i138 = 0; $_i138 < $_size134; ++$_i138)
             {
-              $elem130 = null;
-              $elem130 = new \Airavata\Model\Application\Io\OutputDataObjectType();
-              $xfer += $elem130->read($input);
-              $this->success []= $elem130;
+              $elem139 = null;
+              $elem139 = new \Airavata\Model\Application\Io\OutputDataObjectType();
+              $xfer += $elem139->read($input);
+              $this->success []= $elem139;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -27376,9 +28471,9 @@ class Airavata_getIntermediateOutputs_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter131)
+          foreach ($this->success as $iter140)
           {
-            $xfer += $iter131->write($output);
+            $xfer += $iter140->write($output);
           }
         }
         $output->writeListEnd();
@@ -27635,18 +28730,18 @@ class Airavata_getJobStatuses_result {
         case 0:
           if ($ftype == TType::MAP) {
             $this->success = array();
-            $_size132 = 0;
-            $_ktype133 = 0;
-            $_vtype134 = 0;
-            $xfer += $input->readMapBegin($_ktype133, $_vtype134, $_size132);
-            for ($_i136 = 0; $_i136 < $_size132; ++$_i136)
+            $_size141 = 0;
+            $_ktype142 = 0;
+            $_vtype143 = 0;
+            $xfer += $input->readMapBegin($_ktype142, $_vtype143, $_size141);
+            for ($_i145 = 0; $_i145 < $_size141; ++$_i145)
             {
-              $key137 = '';
-              $val138 = new \Airavata\Model\Status\JobStatus();
-              $xfer += $input->readString($key137);
-              $val138 = new \Airavata\Model\Status\JobStatus();
-              $xfer += $val138->read($input);
-              $this->success[$key137] = $val138;
+              $key146 = '';
+              $val147 = new \Airavata\Model\Status\JobStatus();
+              $xfer += $input->readString($key146);
+              $val147 = new \Airavata\Model\Status\JobStatus();
+              $xfer += $val147->read($input);
+              $this->success[$key146] = $val147;
             }
             $xfer += $input->readMapEnd();
           } else {
@@ -27714,10 +28809,10 @@ class Airavata_getJobStatuses_result {
       {
         $output->writeMapBegin(TType::STRING, TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $kiter139 => $viter140)
+          foreach ($this->success as $kiter148 => $viter149)
           {
-            $xfer += $output->writeString($kiter139);
-            $xfer += $viter140->write($output);
+            $xfer += $output->writeString($kiter148);
+            $xfer += $viter149->write($output);
           }
         }
         $output->writeMapEnd();
@@ -27970,15 +29065,15 @@ class Airavata_getJobDetails_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size141 = 0;
-            $_etype144 = 0;
-            $xfer += $input->readListBegin($_etype144, $_size141);
-            for ($_i145 = 0; $_i145 < $_size141; ++$_i145)
+            $_size150 = 0;
+            $_etype153 = 0;
+            $xfer += $input->readListBegin($_etype153, $_size150);
+            for ($_i154 = 0; $_i154 < $_size150; ++$_i154)
             {
-              $elem146 = null;
-              $elem146 = new \Airavata\Model\Job\JobModel();
-              $xfer += $elem146->read($input);
-              $this->success []= $elem146;
+              $elem155 = null;
+              $elem155 = new \Airavata\Model\Job\JobModel();
+              $xfer += $elem155->read($input);
+              $this->success []= $elem155;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -28046,9 +29141,9 @@ class Airavata_getJobDetails_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter147)
+          foreach ($this->success as $iter156)
           {
-            $xfer += $iter147->write($output);
+            $xfer += $iter156->write($output);
           }
         }
         $output->writeListEnd();
@@ -29813,15 +30908,15 @@ class Airavata_getAllAppModules_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size148 = 0;
-            $_etype151 = 0;
-            $xfer += $input->readListBegin($_etype151, $_size148);
-            for ($_i152 = 0; $_i152 < $_size148; ++$_i152)
+            $_size157 = 0;
+            $_etype160 = 0;
+            $xfer += $input->readListBegin($_etype160, $_size157);
+            for ($_i161 = 0; $_i161 < $_size157; ++$_i161)
             {
-              $elem153 = null;
-              $elem153 = new \Airavata\Model\AppCatalog\AppDeployment\ApplicationModule();
-              $xfer += $elem153->read($input);
-              $this->success []= $elem153;
+              $elem162 = null;
+              $elem162 = new \Airavata\Model\AppCatalog\AppDeployment\ApplicationModule();
+              $xfer += $elem162->read($input);
+              $this->success []= $elem162;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -29881,9 +30976,9 @@ class Airavata_getAllAppModules_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter154)
+          foreach ($this->success as $iter163)
           {
-            $xfer += $iter154->write($output);
+            $xfer += $iter163->write($output);
           }
         }
         $output->writeListEnd();
@@ -31570,15 +32665,15 @@ class Airavata_getAllApplicationDeployments_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size155 = 0;
-            $_etype158 = 0;
-            $xfer += $input->readListBegin($_etype158, $_size155);
-            for ($_i159 = 0; $_i159 < $_size155; ++$_i159)
+            $_size164 = 0;
+            $_etype167 = 0;
+            $xfer += $input->readListBegin($_etype167, $_size164);
+            for ($_i168 = 0; $_i168 < $_size164; ++$_i168)
             {
-              $elem160 = null;
-              $elem160 = new \Airavata\Model\AppCatalog\AppDeployment\ApplicationDeploymentDescription();
-              $xfer += $elem160->read($input);
-              $this->success []= $elem160;
+              $elem169 = null;
+              $elem169 = new \Airavata\Model\AppCatalog\AppDeployment\ApplicationDeploymentDescription();
+              $xfer += $elem169->read($input);
+              $this->success []= $elem169;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -31638,9 +32733,9 @@ class Airavata_getAllApplicationDeployments_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter161)
+          foreach ($this->success as $iter170)
           {
-            $xfer += $iter161->write($output);
+            $xfer += $iter170->write($output);
           }
         }
         $output->writeListEnd();
@@ -31875,14 +32970,14 @@ class Airavata_getAppModuleDeployedResources_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size162 = 0;
-            $_etype165 = 0;
-            $xfer += $input->readListBegin($_etype165, $_size162);
-            for ($_i166 = 0; $_i166 < $_size162; ++$_i166)
+            $_size171 = 0;
+            $_etype174 = 0;
+            $xfer += $input->readListBegin($_etype174, $_size171);
+            for ($_i175 = 0; $_i175 < $_size171; ++$_i175)
             {
-              $elem167 = null;
-              $xfer += $input->readString($elem167);
-              $this->success []= $elem167;
+              $elem176 = null;
+              $xfer += $input->readString($elem176);
+              $this->success []= $elem176;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -31942,9 +33037,9 @@ class Airavata_getAppModuleDeployedResources_result {
       {
         $output->writeListBegin(TType::STRING, count($this->success));
         {
-          foreach ($this->success as $iter168)
+          foreach ($this->success as $iter177)
           {
-            $xfer += $output->writeString($iter168);
+            $xfer += $output->writeString($iter177);
           }
         }
         $output->writeListEnd();
@@ -33680,17 +34775,17 @@ class Airavata_getAllApplicationInterfaceNames_result {
         case 0:
           if ($ftype == TType::MAP) {
             $this->success = array();
-            $_size169 = 0;
-            $_ktype170 = 0;
-            $_vtype171 = 0;
-            $xfer += $input->readMapBegin($_ktype170, $_vtype171, $_size169);
-            for ($_i173 = 0; $_i173 < $_size169; ++$_i173)
+            $_size178 = 0;
+            $_ktype179 = 0;
+            $_vtype180 = 0;
+            $xfer += $input->readMapBegin($_ktype179, $_vtype180, $_size178);
+            for ($_i182 = 0; $_i182 < $_size178; ++$_i182)
             {
-              $key174 = '';
-              $val175 = '';
-              $xfer += $input->readString($key174);
-              $xfer += $input->readString($val175);
-              $this->success[$key174] = $val175;
+              $key183 = '';
+              $val184 = '';
+              $xfer += $input->readString($key183);
+              $xfer += $input->readString($val184);
+              $this->success[$key183] = $val184;
             }
             $xfer += $input->readMapEnd();
           } else {
@@ -33750,10 +34845,10 @@ class Airavata_getAllApplicationInterfaceNames_result {
       {
         $output->writeMapBegin(TType::STRING, TType::STRING, count($this->success));
         {
-          foreach ($this->success as $kiter176 => $viter177)
+          foreach ($this->success as $kiter185 => $viter186)
           {
-            $xfer += $output->writeString($kiter176);
-            $xfer += $output->writeString($viter177);
+            $xfer += $output->writeString($kiter185);
+            $xfer += $output->writeString($viter186);
           }
         }
         $output->writeMapEnd();
@@ -33989,15 +35084,15 @@ class Airavata_getAllApplicationInterfaces_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size178 = 0;
-            $_etype181 = 0;
-            $xfer += $input->readListBegin($_etype181, $_size178);
-            for ($_i182 = 0; $_i182 < $_size178; ++$_i182)
+            $_size187 = 0;
+            $_etype190 = 0;
+            $xfer += $input->readListBegin($_etype190, $_size187);
+            for ($_i191 = 0; $_i191 < $_size187; ++$_i191)
             {
-              $elem183 = null;
-              $elem183 = new \Airavata\Model\AppCatalog\AppInterface\ApplicationInterfaceDescription();
-              $xfer += $elem183->read($input);
-              $this->success []= $elem183;
+              $elem192 = null;
+              $elem192 = new \Airavata\Model\AppCatalog\AppInterface\ApplicationInterfaceDescription();
+              $xfer += $elem192->read($input);
+              $this->success []= $elem192;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -34057,9 +35152,9 @@ class Airavata_getAllApplicationInterfaces_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter184)
+          foreach ($this->success as $iter193)
           {
-            $xfer += $iter184->write($output);
+            $xfer += $iter193->write($output);
           }
         }
         $output->writeListEnd();
@@ -34295,15 +35390,15 @@ class Airavata_getApplicationInputs_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size185 = 0;
-            $_etype188 = 0;
-            $xfer += $input->readListBegin($_etype188, $_size185);
-            for ($_i189 = 0; $_i189 < $_size185; ++$_i189)
+            $_size194 = 0;
+            $_etype197 = 0;
+            $xfer += $input->readListBegin($_etype197, $_size194);
+            for ($_i198 = 0; $_i198 < $_size194; ++$_i198)
             {
-              $elem190 = null;
-              $elem190 = new \Airavata\Model\Application\Io\InputDataObjectType();
-              $xfer += $elem190->read($input);
-              $this->success []= $elem190;
+              $elem199 = null;
+              $elem199 = new \Airavata\Model\Application\Io\InputDataObjectType();
+              $xfer += $elem199->read($input);
+              $this->success []= $elem199;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -34363,9 +35458,9 @@ class Airavata_getApplicationInputs_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter191)
+          foreach ($this->success as $iter200)
           {
-            $xfer += $iter191->write($output);
+            $xfer += $iter200->write($output);
           }
         }
         $output->writeListEnd();
@@ -34601,15 +35696,15 @@ class Airavata_getApplicationOutputs_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size192 = 0;
-            $_etype195 = 0;
-            $xfer += $input->readListBegin($_etype195, $_size192);
-            for ($_i196 = 0; $_i196 < $_size192; ++$_i196)
+            $_size201 = 0;
+            $_etype204 = 0;
+            $xfer += $input->readListBegin($_etype204, $_size201);
+            for ($_i205 = 0; $_i205 < $_size201; ++$_i205)
             {
-              $elem197 = null;
-              $elem197 = new \Airavata\Model\Application\Io\OutputDataObjectType();
-              $xfer += $elem197->read($input);
-              $this->success []= $elem197;
+              $elem206 = null;
+              $elem206 = new \Airavata\Model\Application\Io\OutputDataObjectType();
+              $xfer += $elem206->read($input);
+              $this->success []= $elem206;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -34669,9 +35764,9 @@ class Airavata_getApplicationOutputs_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter198)
+          foreach ($this->success as $iter207)
           {
-            $xfer += $iter198->write($output);
+            $xfer += $iter207->write($output);
           }
         }
         $output->writeListEnd();
@@ -34910,17 +36005,17 @@ class Airavata_getAvailableAppInterfaceComputeResources_result {
         case 0:
           if ($ftype == TType::MAP) {
             $this->success = array();
-            $_size199 = 0;
-            $_ktype200 = 0;
-            $_vtype201 = 0;
-            $xfer += $input->readMapBegin($_ktype200, $_vtype201, $_size199);
-            for ($_i203 = 0; $_i203 < $_size199; ++$_i203)
+            $_size208 = 0;
+            $_ktype209 = 0;
+            $_vtype210 = 0;
+            $xfer += $input->readMapBegin($_ktype209, $_vtype210, $_size208);
+            for ($_i212 = 0; $_i212 < $_size208; ++$_i212)
             {
-              $key204 = '';
-              $val205 = '';
-              $xfer += $input->readString($key204);
-              $xfer += $input->readString($val205);
-              $this->success[$key204] = $val205;
+              $key213 = '';
+              $val214 = '';
+              $xfer += $input->readString($key213);
+              $xfer += $input->readString($val214);
+              $this->success[$key213] = $val214;
             }
             $xfer += $input->readMapEnd();
           } else {
@@ -34980,10 +36075,10 @@ class Airavata_getAvailableAppInterfaceComputeResources_result {
       {
         $output->writeMapBegin(TType::STRING, TType::STRING, count($this->success));
         {
-          foreach ($this->success as $kiter206 => $viter207)
+          foreach ($this->success as $kiter215 => $viter216)
           {
-            $xfer += $output->writeString($kiter206);
-            $xfer += $output->writeString($viter207);
+            $xfer += $output->writeString($kiter215);
+            $xfer += $output->writeString($viter216);
           }
         }
         $output->writeMapEnd();
@@ -35765,17 +36860,17 @@ class Airavata_getAllComputeResourceNames_result {
         case 0:
           if ($ftype == TType::MAP) {
             $this->success = array();
-            $_size208 = 0;
-            $_ktype209 = 0;
-            $_vtype210 = 0;
-            $xfer += $input->readMapBegin($_ktype209, $_vtype210, $_size208);
-            for ($_i212 = 0; $_i212 < $_size208; ++$_i212)
+            $_size217 = 0;
+            $_ktype218 = 0;
+            $_vtype219 = 0;
+            $xfer += $input->readMapBegin($_ktype218, $_vtype219, $_size217);
+            for ($_i221 = 0; $_i221 < $_size217; ++$_i221)
             {
-              $key213 = '';
-              $val214 = '';
-              $xfer += $input->readString($key213);
-              $xfer += $input->readString($val214);
-              $this->success[$key213] = $val214;
+              $key222 = '';
+              $val223 = '';
+              $xfer += $input->readString($key222);
+              $xfer += $input->readString($val223);
+              $this->success[$key222] = $val223;
             }
             $xfer += $input->readMapEnd();
           } else {
@@ -35835,10 +36930,10 @@ class Airavata_getAllComputeResourceNames_result {
       {
         $output->writeMapBegin(TType::STRING, TType::STRING, count($this->success));
         {
-          foreach ($this->success as $kiter215 => $viter216)
+          foreach ($this->success as $kiter224 => $viter225)
           {
-            $xfer += $output->writeString($kiter215);
-            $xfer += $output->writeString($viter216);
+            $xfer += $output->writeString($kiter224);
+            $xfer += $output->writeString($viter225);
           }
         }
         $output->writeMapEnd();
@@ -37204,17 +38299,17 @@ class Airavata_getAllStorageResourceNames_result {
         case 0:
           if ($ftype == TType::MAP) {
             $this->success = array();
-            $_size217 = 0;
-            $_ktype218 = 0;
-            $_vtype219 = 0;
-            $xfer += $input->readMapBegin($_ktype218, $_vtype219, $_size217);
-            for ($_i221 = 0; $_i221 < $_size217; ++$_i221)
+            $_size226 = 0;
+            $_ktype227 = 0;
+            $_vtype228 = 0;
+            $xfer += $input->readMapBegin($_ktype227, $_vtype228, $_size226);
+            for ($_i230 = 0; $_i230 < $_size226; ++$_i230)
             {
-              $key222 = '';
-              $val223 = '';
-              $xfer += $input->readString($key222);
-              $xfer += $input->readString($val223);
-              $this->success[$key222] = $val223;
+              $key231 = '';
+              $val232 = '';
+              $xfer += $input->readString($key231);
+              $xfer += $input->readString($val232);
+              $this->success[$key231] = $val232;
             }
             $xfer += $input->readMapEnd();
           } else {
@@ -37274,10 +38369,10 @@ class Airavata_getAllStorageResourceNames_result {
       {
         $output->writeMapBegin(TType::STRING, TType::STRING, count($this->success));
         {
-          foreach ($this->success as $kiter224 => $viter225)
+          foreach ($this->success as $kiter233 => $viter234)
           {
-            $xfer += $output->writeString($kiter224);
-            $xfer += $output->writeString($viter225);
+            $xfer += $output->writeString($kiter233);
+            $xfer += $output->writeString($viter234);
           }
         }
         $output->writeMapEnd();
@@ -46336,17 +47431,17 @@ class Airavata_changeJobSubmissionPriorities_args {
         case 2:
           if ($ftype == TType::MAP) {
             $this->jobSubmissionPriorityMap = array();
-            $_size226 = 0;
-            $_ktype227 = 0;
-            $_vtype228 = 0;
-            $xfer += $input->readMapBegin($_ktype227, $_vtype228, $_size226);
-            for ($_i230 = 0; $_i230 < $_size226; ++$_i230)
+            $_size235 = 0;
+            $_ktype236 = 0;
+            $_vtype237 = 0;
+            $xfer += $input->readMapBegin($_ktype236, $_vtype237, $_size235);
+            for ($_i239 = 0; $_i239 < $_size235; ++$_i239)
             {
-              $key231 = '';
-              $val232 = 0;
-              $xfer += $input->readString($key231);
-              $xfer += $input->readI32($val232);
-              $this->jobSubmissionPriorityMap[$key231] = $val232;
+              $key240 = '';
+              $val241 = 0;
+              $xfer += $input->readString($key240);
+              $xfer += $input->readI32($val241);
+              $this->jobSubmissionPriorityMap[$key240] = $val241;
             }
             $xfer += $input->readMapEnd();
           } else {
@@ -46382,10 +47477,10 @@ class Airavata_changeJobSubmissionPriorities_args {
       {
         $output->writeMapBegin(TType::STRING, TType::I32, count($this->jobSubmissionPriorityMap));
         {
-          foreach ($this->jobSubmissionPriorityMap as $kiter233 => $viter234)
+          foreach ($this->jobSubmissionPriorityMap as $kiter242 => $viter243)
           {
-            $xfer += $output->writeString($kiter233);
-            $xfer += $output->writeI32($viter234);
+            $xfer += $output->writeString($kiter242);
+            $xfer += $output->writeI32($viter243);
           }
         }
         $output->writeMapEnd();
@@ -46648,17 +47743,17 @@ class Airavata_changeDataMovementPriorities_args {
         case 2:
           if ($ftype == TType::MAP) {
             $this->dataMovementPriorityMap = array();
-            $_size235 = 0;
-            $_ktype236 = 0;
-            $_vtype237 = 0;
-            $xfer += $input->readMapBegin($_ktype236, $_vtype237, $_size235);
-            for ($_i239 = 0; $_i239 < $_size235; ++$_i239)
+            $_size244 = 0;
+            $_ktype245 = 0;
+            $_vtype246 = 0;
+            $xfer += $input->readMapBegin($_ktype245, $_vtype246, $_size244);
+            for ($_i248 = 0; $_i248 < $_size244; ++$_i248)
             {
-              $key240 = '';
-              $val241 = 0;
-              $xfer += $input->readString($key240);
-              $xfer += $input->readI32($val241);
-              $this->dataMovementPriorityMap[$key240] = $val241;
+              $key249 = '';
+              $val250 = 0;
+              $xfer += $input->readString($key249);
+              $xfer += $input->readI32($val250);
+              $this->dataMovementPriorityMap[$key249] = $val250;
             }
             $xfer += $input->readMapEnd();
           } else {
@@ -46694,10 +47789,10 @@ class Airavata_changeDataMovementPriorities_args {
       {
         $output->writeMapBegin(TType::STRING, TType::I32, count($this->dataMovementPriorityMap));
         {
-          foreach ($this->dataMovementPriorityMap as $kiter242 => $viter243)
+          foreach ($this->dataMovementPriorityMap as $kiter251 => $viter252)
           {
-            $xfer += $output->writeString($kiter242);
-            $xfer += $output->writeI32($viter243);
+            $xfer += $output->writeString($kiter251);
+            $xfer += $output->writeI32($viter252);
           }
         }
         $output->writeMapEnd();
@@ -51584,15 +52679,15 @@ class Airavata_getAllGatewayComputeResourcePreferences_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size244 = 0;
-            $_etype247 = 0;
-            $xfer += $input->readListBegin($_etype247, $_size244);
-            for ($_i248 = 0; $_i248 < $_size244; ++$_i248)
+            $_size253 = 0;
+            $_etype256 = 0;
+            $xfer += $input->readListBegin($_etype256, $_size253);
+            for ($_i257 = 0; $_i257 < $_size253; ++$_i257)
             {
-              $elem249 = null;
-              $elem249 = new \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference();
-              $xfer += $elem249->read($input);
-              $this->success []= $elem249;
+              $elem258 = null;
+              $elem258 = new \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference();
+              $xfer += $elem258->read($input);
+              $this->success []= $elem258;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -51652,9 +52747,9 @@ class Airavata_getAllGatewayComputeResourcePreferences_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter250)
+          foreach ($this->success as $iter259)
           {
-            $xfer += $iter250->write($output);
+            $xfer += $iter259->write($output);
           }
         }
         $output->writeListEnd();
@@ -51890,15 +52985,15 @@ class Airavata_getAllGatewayStoragePreferences_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size251 = 0;
-            $_etype254 = 0;
-            $xfer += $input->readListBegin($_etype254, $_size251);
-            for ($_i255 = 0; $_i255 < $_size251; ++$_i255)
+            $_size260 = 0;
+            $_etype263 = 0;
+            $xfer += $input->readListBegin($_etype263, $_size260);
+            for ($_i264 = 0; $_i264 < $_size260; ++$_i264)
             {
-              $elem256 = null;
-              $elem256 = new \Airavata\Model\AppCatalog\GatewayProfile\StoragePreference();
-              $xfer += $elem256->read($input);
-              $this->success []= $elem256;
+              $elem265 = null;
+              $elem265 = new \Airavata\Model\AppCatalog\GatewayProfile\StoragePreference();
+              $xfer += $elem265->read($input);
+              $this->success []= $elem265;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -51958,9 +53053,9 @@ class Airavata_getAllGatewayStoragePreferences_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter257)
+          foreach ($this->success as $iter266)
           {
-            $xfer += $iter257->write($output);
+            $xfer += $iter266->write($output);
           }
         }
         $output->writeListEnd();
@@ -52173,15 +53268,15 @@ class Airavata_getAllGatewayResourceProfiles_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size258 = 0;
-            $_etype261 = 0;
-            $xfer += $input->readListBegin($_etype261, $_size258);
-            for ($_i262 = 0; $_i262 < $_size258; ++$_i262)
+            $_size267 = 0;
+            $_etype270 = 0;
+            $xfer += $input->readListBegin($_etype270, $_size267);
+            for ($_i271 = 0; $_i271 < $_size267; ++$_i271)
             {
-              $elem263 = null;
-              $elem263 = new \Airavata\Model\AppCatalog\GatewayProfile\GatewayResourceProfile();
-              $xfer += $elem263->read($input);
-              $this->success []= $elem263;
+              $elem272 = null;
+              $elem272 = new \Airavata\Model\AppCatalog\GatewayProfile\GatewayResourceProfile();
+              $xfer += $elem272->read($input);
+              $this->success []= $elem272;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -52241,9 +53336,9 @@ class Airavata_getAllGatewayResourceProfiles_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter264)
+          foreach ($this->success as $iter273)
           {
-            $xfer += $iter264->write($output);
+            $xfer += $iter273->write($output);
           }
         }
         $output->writeListEnd();
@@ -53738,14 +54833,14 @@ class Airavata_getAllWorkflows_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size265 = 0;
-            $_etype268 = 0;
-            $xfer += $input->readListBegin($_etype268, $_size265);
-            for ($_i269 = 0; $_i269 < $_size265; ++$_i269)
+            $_size274 = 0;
+            $_etype277 = 0;
+            $xfer += $input->readListBegin($_etype277, $_size274);
+            for ($_i278 = 0; $_i278 < $_size274; ++$_i278)
             {
-              $elem270 = null;
-              $xfer += $input->readString($elem270);
-              $this->success []= $elem270;
+              $elem279 = null;
+              $xfer += $input->readString($elem279);
+              $this->success []= $elem279;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -53805,9 +54900,9 @@ class Airavata_getAllWorkflows_result {
       {
         $output->writeListBegin(TType::STRING, count($this->success));
         {
-          foreach ($this->success as $iter271)
+          foreach ($this->success as $iter280)
           {
-            $xfer += $output->writeString($iter271);
+            $xfer += $output->writeString($iter280);
           }
         }
         $output->writeListEnd();
@@ -56858,15 +57953,15 @@ class Airavata_getChildDataProducts_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size272 = 0;
-            $_etype275 = 0;
-            $xfer += $input->readListBegin($_etype275, $_size272);
-            for ($_i276 = 0; $_i276 < $_size272; ++$_i276)
+            $_size281 = 0;
+            $_etype284 = 0;
+            $xfer += $input->readListBegin($_etype284, $_size281);
+            for ($_i285 = 0; $_i285 < $_size281; ++$_i285)
             {
-              $elem277 = null;
-              $elem277 = new \Airavata\Model\Data\Replica\DataProductModel();
-              $xfer += $elem277->read($input);
-              $this->success []= $elem277;
+              $elem286 = null;
+              $elem286 = new \Airavata\Model\Data\Replica\DataProductModel();
+              $xfer += $elem286->read($input);
+              $this->success []= $elem286;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -56926,9 +58021,9 @@ class Airavata_getChildDataProducts_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter278)
+          foreach ($this->success as $iter287)
           {
-            $xfer += $iter278->write($output);
+            $xfer += $iter287->write($output);
           }
         }
         $output->writeListEnd();
