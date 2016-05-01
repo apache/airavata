@@ -240,6 +240,34 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * Generate and Register Username PWD Pair with Airavata Credential Store.
+   * 
+   * @param gatewayId
+   *    The identifier for the requested Gateway.
+   * 
+   * @param userName
+   *    The User for which the credential should be registered. For community accounts, this user is the name of the
+   *    community user name. For computational resources, this user name need not be the same user name on resoruces.
+   * 
+   * @param password
+   * 
+   * @return airavataCredStoreToken
+   *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
+   *   belonging to a Gateway.
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   * @param userName
+   * @param password
+   */
+  void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& password) {
+    // Your implementation goes here
+    printf("registerPwdCredential\n");
+  }
+
+  /**
    * Get a Public Key by Providing the Token
    * 
    * @param CredStoreToken
@@ -305,6 +333,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllGatewaySSHPubKeys\n");
   }
 
+  void getAllGatewayPWDCredentials(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("getAllGatewayPWDCredentials\n");
+  }
+
   /**
    * 
    * Delete a Gateway
@@ -324,6 +357,11 @@ class AiravataHandler : virtual public AiravataIf {
   bool deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("deleteSSHPubKey\n");
+  }
+
+  bool deletePWDCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("deletePWDCredential\n");
   }
 
   /**

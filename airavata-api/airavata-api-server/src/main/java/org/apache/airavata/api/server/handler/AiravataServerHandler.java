@@ -31,6 +31,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.datamodel.SSHCredential;
+import org.apache.airavata.credential.store.datamodel.PasswordCredential;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
@@ -405,6 +406,40 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    /**
+     * Generate and Register Username PWD Pair with Airavata Credential Store.
+     *
+     * @param authzToken
+     * @param gatewayId  The identifier for the requested Gateway.
+     * @param userName   The User for which the credential should be registered. For community accounts, this user is the name of the
+     *                   community user name. For computational resources, this user name need not be the same user name on resoruces.
+     * @param password
+     * @return airavataCredStoreToken
+     * An SSH Key pair is generated and stored in the credential store and associated with users or community account
+     * belonging to a Gateway.
+     */
+    @Override
+    public String registerPwdCredential(AuthzToken authzToken, String gatewayId, String userName, String password) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            if (csClient == null){
+                csClient = getCredentialStoreServiceClient();
+            }
+            PasswordCredential pwdCredential = new PasswordCredential();
+            pwdCredential.setUsername(userName);
+            pwdCredential.setPassword(password);
+            pwdCredential.setGatewayId(gatewayId);
+            String key = csClient.addPasswordCredential(pwdCredential);
+            logger.debug("Airavata generated PWD credential for gateway : " + gatewayId + " and for user : " + userName);
+            return key;
+        }catch (Exception e){
+            logger.error("Error occurred while registering PWD Credential", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while registering PWD Credential. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     @Override
     @SecurityCheck
     public String getSSHPubKey(AuthzToken authzToken, String airavataCredStoreToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
@@ -461,6 +496,24 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    public Map<String, String> getAllGatewayPWDCredentials(AuthzToken authzToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            if (csClient == null){
+                csClient = getCredentialStoreServiceClient();
+            }
+            Map<String, String> allPwdCredentials = csClient.getAllPWDCredentialsForGateway(gatewayId);
+            logger.debug("Airavata retrieved all PWD Credentials for gateway Id : " + gatewayId);
+            return allPwdCredentials;
+        }catch (Exception e){
+            logger.error("Error occurred while retrieving PWD Credentials for gateway : " + gatewayId , e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while retrieving PWD Credentials for gateway : " + gatewayId + ". More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
     public boolean deleteSSHPubKey(AuthzToken authzToken, String airavataCredStoreToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             if (csClient == null){
@@ -473,6 +526,23 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error occurred while deleting SSH credential. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public boolean deletePWDCredential(AuthzToken authzToken, String airavataCredStoreToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            if (csClient == null){
+                csClient = getCredentialStoreServiceClient();
+            }
+            logger.debug("Airavata deleted PWD credential for gateway Id : " + gatewayId + " and with token id : " + airavataCredStoreToken);
+            return csClient.deletePWDCredential(airavataCredStoreToken, gatewayId);
+        }catch (Exception e){
+            logger.error("Error occurred while deleting PWD credential", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while deleting PWD credential. More info : " + e.getMessage());
             throw exception;
         }
     }

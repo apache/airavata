@@ -52,15 +52,10 @@ struct CertificateCredential {
 }
 
 struct PasswordCredential {
-    1: required string username,
-    2: required string password,
-    3: optional i64 persistedTime,
-    4: optional string token
-}
-
-struct APICredential {
-    1: required string apiKey,
-    2: required string apiSecret,
-    3: optional i64 persistedTime,
-    4: optional string token
+    1: required string gatewayId,
+    2: required string username,
+    3: required string password,
+    4: optional string description,
+    5: optional i64 persistedTime,
+    6: optional string token
 }
