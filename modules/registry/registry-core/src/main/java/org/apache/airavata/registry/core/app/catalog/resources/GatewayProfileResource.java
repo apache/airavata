@@ -42,6 +42,8 @@ public class GatewayProfileResource extends AppCatAbstractResource {
     private Timestamp createdTime;
     private Timestamp updatedTime;
     private String credentialStoreToken;
+    private String identityServerTenant;
+    private String identityServerPwdCredToken;
 
     public Timestamp getCreatedTime() {
         return createdTime;
@@ -65,6 +67,22 @@ public class GatewayProfileResource extends AppCatAbstractResource {
 
     public void setCredentialStoreToken(String credentialStoreToken) {
         this.credentialStoreToken = credentialStoreToken;
+    }
+
+    public String getIdentityServerTenant() {
+        return identityServerTenant;
+    }
+
+    public void setIdentityServerTenant(String identityServerTenant) {
+        this.identityServerTenant = identityServerTenant;
+    }
+
+    public String getIdentityServerPwdCredToken() {
+        return identityServerPwdCredToken;
+    }
+
+    public void setIdentityServerPwdCredToken(String identityServerPwdCredToken) {
+        this.identityServerPwdCredToken = identityServerPwdCredToken;
     }
 
     public void remove(Object identifier) throws AppCatalogException {
@@ -139,18 +157,6 @@ public class GatewayProfileResource extends AppCatAbstractResource {
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GATEWAY_PROFILE);
             List results;
             if (fieldName.equals(GatewayProfileConstants.GATEWAY_ID)) {
-                generator.setParameter(GatewayProfileConstants.GATEWAY_ID, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        GatewayProfile gatewayProfile = (GatewayProfile) result;
-                        GatewayProfileResource gatewayProfileResource =
-                                (GatewayProfileResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.GATEWAY_PROFILE, gatewayProfile);
-                        gatewayProfileResources.add(gatewayProfileResource);
-                    }
-                }
-            } else if (fieldName.equals(GatewayProfileConstants.GATEWAY_ID)) {
                 generator.setParameter(GatewayProfileConstants.GATEWAY_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -257,16 +263,6 @@ public class GatewayProfileResource extends AppCatAbstractResource {
                         gatewayProfileResourceIDs.add(gatewayProfile.getGatewayID());
                     }
                 }
-            } else if (fieldName.equals(GatewayProfileConstants.GATEWAY_ID)) {
-                generator.setParameter(GatewayProfileConstants.GATEWAY_ID, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        GatewayProfile gatewayProfile = (GatewayProfile) result;
-                        gatewayProfileResourceIDs.add(gatewayProfile.getGatewayID());
-                    }
-                }
             } else {
                 em.getTransaction().commit();
                 if (em.isOpen()) {
@@ -318,6 +314,12 @@ public class GatewayProfileResource extends AppCatAbstractResource {
                 if (credentialStoreToken != null){
                     existingGatewayProfile.setCredentialStoreToken(credentialStoreToken);
                 }
+                if (identityServerTenant != null){
+                    existingGatewayProfile.setIdentityServerTenant(identityServerTenant);
+                }
+                if (identityServerPwdCredToken != null){
+                    existingGatewayProfile.setIdentityServerPwdCredToken(identityServerPwdCredToken);
+                }
                 em.merge(existingGatewayProfile);
             } else {
                 GatewayProfile gatewayProfile = new GatewayProfile();
@@ -325,6 +327,12 @@ public class GatewayProfileResource extends AppCatAbstractResource {
                 gatewayProfile.setCreationTime(AiravataUtils.getCurrentTimestamp());
                 if (credentialStoreToken != null){
                     gatewayProfile.setCredentialStoreToken(credentialStoreToken);
+                }
+                if (identityServerTenant != null){
+                    gatewayProfile.setIdentityServerTenant(identityServerTenant);
+                }
+                if (identityServerPwdCredToken != null){
+                    gatewayProfile.setIdentityServerPwdCredToken(identityServerPwdCredToken);
                 }
                 em.persist(gatewayProfile);
             }

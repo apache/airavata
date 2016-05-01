@@ -3049,6 +3049,10 @@ interface AiravataIf {
    * computeResourcePreferences:
    *  List of resource preferences for each of the registered compute resources.
    * 
+   *  identityServerTenant:
+   * 
+   *  identityServerPwdCredToken:
+   * 
    * 
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException

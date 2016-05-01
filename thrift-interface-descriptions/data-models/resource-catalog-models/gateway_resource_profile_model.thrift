@@ -92,10 +92,16 @@ struct StoragePreference {
  * computeResourcePreferences:
  *  List of resource preferences for each of the registered compute resources.
  *
+ *  identityServerTenant:
+ *
+ *  identityServerPwdCredToken:
+ *
 */
 struct GatewayResourceProfile {
     1: required string gatewayID,
     2: optional string credentialStoreToken,
     3: optional list<ComputeResourcePreference> computeResourcePreferences,
-    4: optional list<StoragePreference> storagePreferences
+    4: optional list<StoragePreference> storagePreferences,
+    5: optional string identityServerTenant,
+    6: optional string identityServerPwdCredToken
 }

@@ -864,6 +864,8 @@ public class AppCatalogJPAUtils {
             resource.setGatewayID(o.getGatewayID());
             resource.setCreatedTime(o.getCreationTime());
             resource.setCredentialStoreToken(o.getCredentialStoreToken());
+            resource.setIdentityServerTenant(o.getIdentityServerTenant());
+            resource.setIdentityServerPwdCredToken(o.getIdentityServerPwdCredToken());
             if (o.getUpdateTime() != null) {
                 resource.setUpdatedTime(o.getUpdateTime());
             }

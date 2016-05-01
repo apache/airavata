@@ -43,6 +43,12 @@ public class GatewayProfile implements Serializable {
     @Column(name = "CS_TOKEN")
     private String credentialStoreToken;
 
+    @Column(name = "IDENTITY_SERVER_TENANT")
+    private String identityServerTenant;
+
+    @Column(name = "IDENTITY_SERVER_PWD_CRED_TOKEN")
+    private String identityServerPwdCredToken;
+
     public Timestamp getCreationTime() {
         return creationTime;
     }
@@ -74,5 +80,21 @@ public class GatewayProfile implements Serializable {
 
     public void setCredentialStoreToken(String credentialStoreToken) {
         this.credentialStoreToken = credentialStoreToken;
+    }
+
+    public String getIdentityServerTenant() {
+        return identityServerTenant;
+    }
+
+    public void setIdentityServerTenant(String identityServerTenant) {
+        this.identityServerTenant = identityServerTenant;
+    }
+
+    public String getIdentityServerPwdCredToken() {
+        return identityServerPwdCredToken;
+    }
+
+    public void setIdentityServerPwdCredToken(String identityServerPwdCredToken) {
+        this.identityServerPwdCredToken = identityServerPwdCredToken;
     }
 }
