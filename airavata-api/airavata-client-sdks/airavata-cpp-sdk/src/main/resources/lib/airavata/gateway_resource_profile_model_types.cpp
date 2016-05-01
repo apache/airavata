@@ -501,6 +501,16 @@ void GatewayResourceProfile::__set_storagePreferences(const std::vector<StorageP
 __isset.storagePreferences = true;
 }
 
+void GatewayResourceProfile::__set_identityServerTenant(const std::string& val) {
+  this->identityServerTenant = val;
+__isset.identityServerTenant = true;
+}
+
+void GatewayResourceProfile::__set_identityServerPwdCredToken(const std::string& val) {
+  this->identityServerPwdCredToken = val;
+__isset.identityServerPwdCredToken = true;
+}
+
 uint32_t GatewayResourceProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -579,6 +589,22 @@ uint32_t GatewayResourceProfile::read(::apache::thrift::protocol::TProtocol* ipr
           xfer += iprot->skip(ftype);
         }
         break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->identityServerTenant);
+          this->__isset.identityServerTenant = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 6:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->identityServerPwdCredToken);
+          this->__isset.identityServerPwdCredToken = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -633,6 +659,16 @@ uint32_t GatewayResourceProfile::write(::apache::thrift::protocol::TProtocol* op
     }
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.identityServerTenant) {
+    xfer += oprot->writeFieldBegin("identityServerTenant", ::apache::thrift::protocol::T_STRING, 5);
+    xfer += oprot->writeString(this->identityServerTenant);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.identityServerPwdCredToken) {
+    xfer += oprot->writeFieldBegin("identityServerPwdCredToken", ::apache::thrift::protocol::T_STRING, 6);
+    xfer += oprot->writeString(this->identityServerPwdCredToken);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -644,6 +680,8 @@ void swap(GatewayResourceProfile &a, GatewayResourceProfile &b) {
   swap(a.credentialStoreToken, b.credentialStoreToken);
   swap(a.computeResourcePreferences, b.computeResourcePreferences);
   swap(a.storagePreferences, b.storagePreferences);
+  swap(a.identityServerTenant, b.identityServerTenant);
+  swap(a.identityServerPwdCredToken, b.identityServerPwdCredToken);
   swap(a.__isset, b.__isset);
 }
 
@@ -652,6 +690,8 @@ GatewayResourceProfile::GatewayResourceProfile(const GatewayResourceProfile& oth
   credentialStoreToken = other18.credentialStoreToken;
   computeResourcePreferences = other18.computeResourcePreferences;
   storagePreferences = other18.storagePreferences;
+  identityServerTenant = other18.identityServerTenant;
+  identityServerPwdCredToken = other18.identityServerPwdCredToken;
   __isset = other18.__isset;
 }
 GatewayResourceProfile& GatewayResourceProfile::operator=(const GatewayResourceProfile& other19) {
@@ -659,6 +699,8 @@ GatewayResourceProfile& GatewayResourceProfile::operator=(const GatewayResourceP
   credentialStoreToken = other19.credentialStoreToken;
   computeResourcePreferences = other19.computeResourcePreferences;
   storagePreferences = other19.storagePreferences;
+  identityServerTenant = other19.identityServerTenant;
+  identityServerPwdCredToken = other19.identityServerPwdCredToken;
   __isset = other19.__isset;
   return *this;
 }
@@ -669,6 +711,8 @@ void GatewayResourceProfile::printTo(std::ostream& out) const {
   out << ", " << "credentialStoreToken="; (__isset.credentialStoreToken ? (out << to_string(credentialStoreToken)) : (out << "<null>"));
   out << ", " << "computeResourcePreferences="; (__isset.computeResourcePreferences ? (out << to_string(computeResourcePreferences)) : (out << "<null>"));
   out << ", " << "storagePreferences="; (__isset.storagePreferences ? (out << to_string(storagePreferences)) : (out << "<null>"));
+  out << ", " << "identityServerTenant="; (__isset.identityServerTenant ? (out << to_string(identityServerTenant)) : (out << "<null>"));
+  out << ", " << "identityServerPwdCredToken="; (__isset.identityServerPwdCredToken ? (out << to_string(identityServerPwdCredToken)) : (out << "<null>"));
   out << ")";
 }
 
