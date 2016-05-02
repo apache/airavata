@@ -25,6 +25,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.server.handler.AiravataServerHandler;
+import org.apache.airavata.api.server.security.AiravataSecurityManager;
+import org.apache.airavata.api.server.security.SecurityManagerFactory;
 import org.apache.airavata.api.server.security.interceptor.SecurityModule;
 import org.apache.airavata.api.server.util.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -32,6 +34,7 @@ import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TSSLTransportFactory;
@@ -159,6 +162,12 @@ public class AiravataAPIServer implements IServer{
                 }.start();
                 logger.info("Airavata API server starter over TLS on Port: " + ServerSettings.getTLSServerPort());
             }
+
+            /*perform any security related initialization at the server startup, according to the underlying security
+             manager implementation being used.*/
+			AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
+			securityManager.initializeSecurityInfra();
+
         } catch (TTransportException e) {
             logger.error(e.getMessage());
             setStatus(ServerStatus.FAILED);
@@ -168,6 +177,9 @@ public class AiravataAPIServer implements IServer{
             logger.error(e.getMessage(), e);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         } catch (UnknownHostException e) {
+            logger.error(e.getMessage(), e);
+            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+        } catch (AiravataSecurityException e) {
             logger.error(e.getMessage(), e);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }

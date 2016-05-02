@@ -20,18 +20,20 @@
  */
 package org.apache.airavata.api.server.security.interceptor;
 
-import com.google.inject.matcher.Matchers;
 import com.google.inject.AbstractModule;
-import org.apache.airavata.api.server.security.interceptor.SecurityCheck;
-import org.apache.airavata.api.server.security.interceptor.SecurityInterceptor;
+import com.google.inject.matcher.Matchers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This does the plumbing work of integrating the interceptor with Guice framework for the methods to be
  * intercepted upon their invocation.
  */
 public class SecurityModule extends AbstractModule {
+    private final static Logger logger = LoggerFactory.getLogger(SecurityModule.class);
+
     public void configure(){
-        System.out.println("Security module reached...");
+        logger.info("Security module reached...");
         SecurityInterceptor interceptor = new SecurityInterceptor();
         //requestInjection(interceptor);
 
