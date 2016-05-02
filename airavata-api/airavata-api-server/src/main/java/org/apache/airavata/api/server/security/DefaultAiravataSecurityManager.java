@@ -56,12 +56,6 @@ import java.util.Map;
 public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
     private final static Logger logger = LoggerFactory.getLogger(DefaultAiravataSecurityManager.class);
 
-    private CredentialStoreService.Client csClient;
-
-    public DefaultAiravataSecurityManager() throws TException, ApplicationSettingsException {
-        csClient = getCredentialStoreServiceClient();
-    }
-
     @Override
     public void initializeSecurityInfra() throws AiravataSecurityException {
         /* in the default security manager, this method checks if the xacml authorization policy is published,
@@ -86,6 +80,8 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
                     stringBuilder.append(line);
                 }
                 String defaultXACMLPolicy = stringBuilder.toString();
+                CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
+
                 for(GatewayResourceProfile gwrp : gwProfiles){
                     if(gwrp.getIdentityServerPwdCredToken() != null && gwrp.getIdentityServerTenant() != null){
                         PasswordCredential credential = csClient.getPasswordCredential(gwrp.getCredentialStoreToken(), gwrp.getGatewayID());
@@ -137,14 +133,6 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
             String gatewayId = authzToken.getGatewayId();
             String action = metaData.get(Constants.API_METHOD_NAME);
 
-            AppCatalog appCatalog = RegistryFactory.getAppCatalog();
-            GatewayResourceProfile gwrp = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
-            PasswordCredential credential = csClient.getPasswordCredential(gwrp.getCredentialStoreToken(), gwrp.getGatewayID());
-            String username = credential.getLoginUserName();
-            if(gwrp.getIdentityServerTenant() != null && !gwrp.getIdentityServerTenant().isEmpty())
-                username = username + "@" + gwrp.getIdentityServerTenant();
-            String password = credential.getPassword();
-
             //if the authz cache is enabled, check in the cache if the authz decision is cached and if so, what the status is
             if (ServerSettings.isAuthzCacheEnabled()) {
                 //obtain an instance of AuthzCacheManager implementation.
@@ -163,6 +151,15 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
                 } else if (AuthzCachedStatus.NOT_CACHED.equals(authzCachedStatus)) {
                     logger.info("Authz decision for: (" + subject + ", " + accessToken + ", " + action + ") is not in the cache. " +
                             "Obtaining it from the authorization server.");
+
+                    CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
+                    AppCatalog appCatalog = RegistryFactory.getAppCatalog();
+                    GatewayResourceProfile gwrp = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
+                    PasswordCredential credential = csClient.getPasswordCredential(gwrp.getCredentialStoreToken(), gwrp.getGatewayID());
+                    String username = credential.getLoginUserName();
+                    if(gwrp.getIdentityServerTenant() != null && !gwrp.getIdentityServerTenant().isEmpty())
+                        username = username + "@" + gwrp.getIdentityServerTenant();
+                    String password = credential.getPassword();
 
                     //talk to Authorization Server, obtain the decision, cache it and return the result.
                     ConfigurationContext configContext =
@@ -197,6 +194,15 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
                     throw new AiravataSecurityException("Error in reading from the authorization cache.");
                 }
             } else {
+                CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
+                AppCatalog appCatalog = RegistryFactory.getAppCatalog();
+                GatewayResourceProfile gwrp = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
+                PasswordCredential credential = csClient.getPasswordCredential(gwrp.getCredentialStoreToken(), gwrp.getGatewayID());
+                String username = credential.getLoginUserName();
+                if(gwrp.getIdentityServerTenant() != null && !gwrp.getIdentityServerTenant().isEmpty())
+                    username = username + "@" + gwrp.getIdentityServerTenant();
+                String password = credential.getPassword();
+
                 //talk to Authorization Server, obtain the decision and return the result (authz cache is not enabled).
                 ConfigurationContext configContext =
                         ConfigurationContextFactory.createConfigurationContextFromFileSystem(null, null);
