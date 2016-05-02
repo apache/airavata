@@ -84,7 +84,7 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
 
                 for(GatewayResourceProfile gwrp : gwProfiles){
                     if(gwrp.getIdentityServerPwdCredToken() != null && gwrp.getIdentityServerTenant() != null){
-                        PasswordCredential credential = csClient.getPasswordCredential(gwrp.getCredentialStoreToken(), gwrp.getGatewayID());
+                        PasswordCredential credential = csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
                         String username = credential.getLoginUserName();
                         if(gwrp.getIdentityServerTenant() != null && !gwrp.getIdentityServerTenant().isEmpty())
                             username = username + "@" + gwrp.getIdentityServerTenant();
@@ -155,7 +155,7 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
                     CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
                     AppCatalog appCatalog = RegistryFactory.getAppCatalog();
                     GatewayResourceProfile gwrp = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
-                    PasswordCredential credential = csClient.getPasswordCredential(gwrp.getCredentialStoreToken(), gwrp.getGatewayID());
+                    PasswordCredential credential = csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
                     String username = credential.getLoginUserName();
                     if(gwrp.getIdentityServerTenant() != null && !gwrp.getIdentityServerTenant().isEmpty())
                         username = username + "@" + gwrp.getIdentityServerTenant();
@@ -197,7 +197,7 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
                 CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
                 AppCatalog appCatalog = RegistryFactory.getAppCatalog();
                 GatewayResourceProfile gwrp = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
-                PasswordCredential credential = csClient.getPasswordCredential(gwrp.getCredentialStoreToken(), gwrp.getGatewayID());
+                PasswordCredential credential = csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
                 String username = credential.getLoginUserName();
                 if(gwrp.getIdentityServerTenant() != null && !gwrp.getIdentityServerTenant().isEmpty())
                     username = username + "@" + gwrp.getIdentityServerTenant();
