@@ -377,13 +377,6 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a Module Load Cmd.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Module Load Cmd.");
                 }
-            case GATEWAY_CLIENT_CREDENTIAL:
-                if (o instanceof GatewayClientCredential) {
-                    return createGatewayClientCredential((GatewayClientCredential) o);
-                } else {
-                    logger.error("Object should be a Gateway Client Credential.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a Gateway Client Credential.");
-                }
             default:
                 logger.error("Illegal data type..", new IllegalArgumentException());
                 throw new IllegalArgumentException("Illegal data type..");
@@ -844,16 +837,6 @@ public class AppCatalogJPAUtils {
             resource.setAppArgument(o.getApplicationArgument());
             resource.setOutputStreaming(o.isOutputStreaming());
             resource.setAppInterfaceResource((AppInterfaceResource) createAppInterfaceResource(o.getApplicationInterface()));
-        }
-        return resource;
-    }
-
-    private static AppCatalogResource createGatewayClientCredential(GatewayClientCredential o) {
-        GatewayClientCredentialResource resource = new GatewayClientCredentialResource();
-        if (o != null) {
-            resource.setClientKey(o.getClientKey());
-            resource.setClientSecret(o.getClientSecret());
-            resource.setGatewayId(o.getGatewayId());
         }
         return resource;
     }
