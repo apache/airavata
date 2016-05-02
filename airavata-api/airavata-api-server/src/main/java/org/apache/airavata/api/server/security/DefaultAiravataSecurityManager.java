@@ -93,11 +93,11 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
                                 username, password, configContext);
                         boolean policyAdded = PAPClient.isPolicyAdded(ServerSettings.getAuthorizationPoliyName());
                         if (policyAdded) {
-                            logger.info("Authorization policy is already added in the authorization server.");
+                            logger.debug("Authorization policy is already added in the authorization server.");
                         } else {
                             //publish the policy and enable it in a separate thread
                             PAPClient.addPolicy(defaultXACMLPolicy);
-                            logger.info("Authorization policy is published in the authorization server.");
+                            logger.debug("Authorization policy is published in the authorization server.");
                         }
                     }else{
                         logger.warn("Identity Server configuration missing for gateway : " + gwrp.getGatewayID());
@@ -143,13 +143,13 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
                         new AuthzCacheIndex(subject, gatewayId, accessToken, action));
 
                 if (AuthzCachedStatus.AUTHORIZED.equals(authzCachedStatus)) {
-                    logger.info("Authz decision for: (" + subject + ", " + accessToken + ", " + action + ") is retrieved from cache.");
+                    logger.debug("Authz decision for: (" + subject + ", " + accessToken + ", " + action + ") is retrieved from cache.");
                     return true;
                 } else if (AuthzCachedStatus.NOT_AUTHORIZED.equals(authzCachedStatus)) {
-                    logger.info("Authz decision for: (" + subject + ", " + accessToken + ", " + action + ") is retrieved from cache.");
+                    logger.debug("Authz decision for: (" + subject + ", " + accessToken + ", " + action + ") is retrieved from cache.");
                     return false;
                 } else if (AuthzCachedStatus.NOT_CACHED.equals(authzCachedStatus)) {
-                    logger.info("Authz decision for: (" + subject + ", " + accessToken + ", " + action + ") is not in the cache. " +
+                    logger.debug("Authz decision for: (" + subject + ", " + accessToken + ", " + action + ") is not in the cache. " +
                             "Obtaining it from the authorization server.");
 
                     CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
