@@ -59,6 +59,7 @@ public final class Constants {
 
     //Names of the attributes that could be passed in the AuthzToken's claims map.
     public static final String USER_NAME = "userName";
+    public static final String GATEWAY_ID = "gatewayID";
     public static final String EMAIL = "email";
     public static final String ROLE = "role";
 
