@@ -419,17 +419,18 @@ public class AiravataServerHandler implements Airavata.Iface {
      * belonging to a Gateway.
      */
     @Override
-    public String registerPwdCredential(AuthzToken authzToken, String gatewayId, String userName, String password) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String registerPwdCredential(AuthzToken authzToken, String gatewayId, String portalUserName, String loginUserName, String password) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             if (csClient == null){
                 csClient = getCredentialStoreServiceClient();
             }
             PasswordCredential pwdCredential = new PasswordCredential();
-            pwdCredential.setUsername(userName);
+            pwdCredential.setPortalUserName(portalUserName);
+            pwdCredential.setLoginUserName(loginUserName);
             pwdCredential.setPassword(password);
             pwdCredential.setGatewayId(gatewayId);
             String key = csClient.addPasswordCredential(pwdCredential);
-            logger.debug("Airavata generated PWD credential for gateway : " + gatewayId + " and for user : " + userName);
+            logger.debug("Airavata generated PWD credential for gateway : " + gatewayId + " and for user : " + loginUserName);
             return key;
         }catch (Exception e){
             logger.error("Error occurred while registering PWD Credential", e);

@@ -245,9 +245,11 @@ class AiravataHandler : virtual public AiravataIf {
    * @param gatewayId
    *    The identifier for the requested Gateway.
    * 
-   * @param userName
+   * @param portalUserName
    *    The User for which the credential should be registered. For community accounts, this user is the name of the
    *    community user name. For computational resources, this user name need not be the same user name on resoruces.
+   * 
+   * @param loginUserName
    * 
    * @param password
    * 
@@ -259,10 +261,11 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * @param authzToken
    * @param gatewayId
-   * @param userName
+   * @param portalUserName
+   * @param loginUserName
    * @param password
    */
-  void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& password) {
+  void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password) {
     // Your implementation goes here
     printf("registerPwdCredential\n");
   }

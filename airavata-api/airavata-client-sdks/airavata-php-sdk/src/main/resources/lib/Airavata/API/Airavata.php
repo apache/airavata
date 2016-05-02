@@ -253,9 +253,11 @@ interface AiravataIf {
    * @param gatewayId
    *    The identifier for the requested Gateway.
    * 
-   * @param userName
+   * @param portalUserName
    *    The User for which the credential should be registered. For community accounts, this user is the name of the
    *    community user name. For computational resources, this user name need not be the same user name on resoruces.
+   * 
+   * @param loginUserName
    * 
    * @param password
    * 
@@ -267,14 +269,15 @@ interface AiravataIf {
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayId
-   * @param string $userName
+   * @param string $portalUserName
+   * @param string $loginUserName
    * @param string $password
    * @return string
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    */
-  public function registerPwdCredential(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $userName, $password);
+  public function registerPwdCredential(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $portalUserName, $loginUserName, $password);
   /**
    * Get a Public Key by Providing the Token
    * 
@@ -4486,18 +4489,19 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("generateAndRegisterSSHKeys failed: unknown result");
   }
 
-  public function registerPwdCredential(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $userName, $password)
+  public function registerPwdCredential(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $portalUserName, $loginUserName, $password)
   {
-    $this->send_registerPwdCredential($authzToken, $gatewayId, $userName, $password);
+    $this->send_registerPwdCredential($authzToken, $gatewayId, $portalUserName, $loginUserName, $password);
     return $this->recv_registerPwdCredential();
   }
 
-  public function send_registerPwdCredential(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $userName, $password)
+  public function send_registerPwdCredential(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $portalUserName, $loginUserName, $password)
   {
     $args = new \Airavata\API\Airavata_registerPwdCredential_args();
     $args->authzToken = $authzToken;
     $args->gatewayId = $gatewayId;
-    $args->userName = $userName;
+    $args->portalUserName = $portalUserName;
+    $args->loginUserName = $loginUserName;
     $args->password = $password;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -17116,7 +17120,11 @@ class Airavata_registerPwdCredential_args {
   /**
    * @var string
    */
-  public $userName = null;
+  public $portalUserName = null;
+  /**
+   * @var string
+   */
+  public $loginUserName = null;
   /**
    * @var string
    */
@@ -17135,10 +17143,14 @@ class Airavata_registerPwdCredential_args {
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'userName',
+          'var' => 'portalUserName',
           'type' => TType::STRING,
           ),
         4 => array(
+          'var' => 'loginUserName',
+          'type' => TType::STRING,
+          ),
+        5 => array(
           'var' => 'password',
           'type' => TType::STRING,
           ),
@@ -17151,8 +17163,11 @@ class Airavata_registerPwdCredential_args {
       if (isset($vals['gatewayId'])) {
         $this->gatewayId = $vals['gatewayId'];
       }
-      if (isset($vals['userName'])) {
-        $this->userName = $vals['userName'];
+      if (isset($vals['portalUserName'])) {
+        $this->portalUserName = $vals['portalUserName'];
+      }
+      if (isset($vals['loginUserName'])) {
+        $this->loginUserName = $vals['loginUserName'];
       }
       if (isset($vals['password'])) {
         $this->password = $vals['password'];
@@ -17196,12 +17211,19 @@ class Airavata_registerPwdCredential_args {
           break;
         case 3:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->userName);
+            $xfer += $input->readString($this->portalUserName);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->loginUserName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->password);
           } else {
@@ -17234,13 +17256,18 @@ class Airavata_registerPwdCredential_args {
       $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->userName !== null) {
-      $xfer += $output->writeFieldBegin('userName', TType::STRING, 3);
-      $xfer += $output->writeString($this->userName);
+    if ($this->portalUserName !== null) {
+      $xfer += $output->writeFieldBegin('portalUserName', TType::STRING, 3);
+      $xfer += $output->writeString($this->portalUserName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->loginUserName !== null) {
+      $xfer += $output->writeFieldBegin('loginUserName', TType::STRING, 4);
+      $xfer += $output->writeString($this->loginUserName);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->password !== null) {
-      $xfer += $output->writeFieldBegin('password', TType::STRING, 4);
+      $xfer += $output->writeFieldBegin('password', TType::STRING, 5);
       $xfer += $output->writeString($this->password);
       $xfer += $output->writeFieldEnd();
     }

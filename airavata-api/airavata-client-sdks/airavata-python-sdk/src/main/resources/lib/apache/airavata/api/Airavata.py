@@ -223,16 +223,18 @@ class Iface:
     """
     pass
 
-  def registerPwdCredential(self, authzToken, gatewayId, userName, password):
+  def registerPwdCredential(self, authzToken, gatewayId, portalUserName, loginUserName, password):
     """
     Generate and Register Username PWD Pair with Airavata Credential Store.
 
     @param gatewayId
        The identifier for the requested Gateway.
 
-    @param userName
+    @param portalUserName
        The User for which the credential should be registered. For community accounts, this user is the name of the
        community user name. For computational resources, this user name need not be the same user name on resoruces.
+
+    @param loginUserName
 
     @param password
 
@@ -245,7 +247,8 @@ class Iface:
     Parameters:
      - authzToken
      - gatewayId
-     - userName
+     - portalUserName
+     - loginUserName
      - password
     """
     pass
@@ -3722,16 +3725,18 @@ class Client(Iface):
       raise result.ase
     raise TApplicationException(TApplicationException.MISSING_RESULT, "generateAndRegisterSSHKeys failed: unknown result")
 
-  def registerPwdCredential(self, authzToken, gatewayId, userName, password):
+  def registerPwdCredential(self, authzToken, gatewayId, portalUserName, loginUserName, password):
     """
     Generate and Register Username PWD Pair with Airavata Credential Store.
 
     @param gatewayId
        The identifier for the requested Gateway.
 
-    @param userName
+    @param portalUserName
        The User for which the credential should be registered. For community accounts, this user is the name of the
        community user name. For computational resources, this user name need not be the same user name on resoruces.
+
+    @param loginUserName
 
     @param password
 
@@ -3744,18 +3749,20 @@ class Client(Iface):
     Parameters:
      - authzToken
      - gatewayId
-     - userName
+     - portalUserName
+     - loginUserName
      - password
     """
-    self.send_registerPwdCredential(authzToken, gatewayId, userName, password)
+    self.send_registerPwdCredential(authzToken, gatewayId, portalUserName, loginUserName, password)
     return self.recv_registerPwdCredential()
 
-  def send_registerPwdCredential(self, authzToken, gatewayId, userName, password):
+  def send_registerPwdCredential(self, authzToken, gatewayId, portalUserName, loginUserName, password):
     self._oprot.writeMessageBegin('registerPwdCredential', TMessageType.CALL, self._seqid)
     args = registerPwdCredential_args()
     args.authzToken = authzToken
     args.gatewayId = gatewayId
-    args.userName = userName
+    args.portalUserName = portalUserName
+    args.loginUserName = loginUserName
     args.password = password
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
@@ -11648,7 +11655,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = registerPwdCredential_result()
     try:
-      result.success = self._handler.registerPwdCredential(args.authzToken, args.gatewayId, args.userName, args.password)
+      result.success = self._handler.registerPwdCredential(args.authzToken, args.gatewayId, args.portalUserName, args.loginUserName, args.password)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -18667,7 +18674,8 @@ class registerPwdCredential_args:
   Attributes:
    - authzToken
    - gatewayId
-   - userName
+   - portalUserName
+   - loginUserName
    - password
   """
 
@@ -18675,14 +18683,16 @@ class registerPwdCredential_args:
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
     (2, TType.STRING, 'gatewayId', None, None, ), # 2
-    (3, TType.STRING, 'userName', None, None, ), # 3
-    (4, TType.STRING, 'password', None, None, ), # 4
+    (3, TType.STRING, 'portalUserName', None, None, ), # 3
+    (4, TType.STRING, 'loginUserName', None, None, ), # 4
+    (5, TType.STRING, 'password', None, None, ), # 5
   )
 
-  def __init__(self, authzToken=None, gatewayId=None, userName=None, password=None,):
+  def __init__(self, authzToken=None, gatewayId=None, portalUserName=None, loginUserName=None, password=None,):
     self.authzToken = authzToken
     self.gatewayId = gatewayId
-    self.userName = userName
+    self.portalUserName = portalUserName
+    self.loginUserName = loginUserName
     self.password = password
 
   def read(self, iprot):
@@ -18707,10 +18717,15 @@ class registerPwdCredential_args:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
-          self.userName = iprot.readString()
+          self.portalUserName = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 4:
+        if ftype == TType.STRING:
+          self.loginUserName = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
         if ftype == TType.STRING:
           self.password = iprot.readString()
         else:
@@ -18733,12 +18748,16 @@ class registerPwdCredential_args:
       oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
       oprot.writeString(self.gatewayId)
       oprot.writeFieldEnd()
-    if self.userName is not None:
-      oprot.writeFieldBegin('userName', TType.STRING, 3)
-      oprot.writeString(self.userName)
+    if self.portalUserName is not None:
+      oprot.writeFieldBegin('portalUserName', TType.STRING, 3)
+      oprot.writeString(self.portalUserName)
+      oprot.writeFieldEnd()
+    if self.loginUserName is not None:
+      oprot.writeFieldBegin('loginUserName', TType.STRING, 4)
+      oprot.writeString(self.loginUserName)
       oprot.writeFieldEnd()
     if self.password is not None:
-      oprot.writeFieldBegin('password', TType.STRING, 4)
+      oprot.writeFieldBegin('password', TType.STRING, 5)
       oprot.writeString(self.password)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -18749,8 +18768,10 @@ class registerPwdCredential_args:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
     if self.gatewayId is None:
       raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
-    if self.userName is None:
-      raise TProtocol.TProtocolException(message='Required field userName is unset!')
+    if self.portalUserName is None:
+      raise TProtocol.TProtocolException(message='Required field portalUserName is unset!')
+    if self.loginUserName is None:
+      raise TProtocol.TProtocolException(message='Required field loginUserName is unset!')
     if self.password is None:
       raise TProtocol.TProtocolException(message='Required field password is unset!')
     return
@@ -18760,7 +18781,8 @@ class registerPwdCredential_args:
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
     value = (value * 31) ^ hash(self.gatewayId)
-    value = (value * 31) ^ hash(self.userName)
+    value = (value * 31) ^ hash(self.portalUserName)
+    value = (value * 31) ^ hash(self.loginUserName)
     value = (value * 31) ^ hash(self.password)
     return value
 

@@ -137,7 +137,8 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
         try {
             org.apache.airavata.credential.store.credential.impl.password.PasswordCredential credential = new org.apache.airavata.credential.store.credential.impl.password.PasswordCredential();
             credential.setGateway(passwordCredential.getGatewayId());
-            credential.setUserName(passwordCredential.getUsername());
+            credential.setPortalUserName(passwordCredential.getPortalUserName());
+            credential.setUserName(passwordCredential.getLoginUserName());
             credential.setPassword(passwordCredential.getPassword());
             credential.setDescription(passwordCredential.getDescription());
             String token = TokenGenerator.generateToken(passwordCredential.getGatewayId(), null);
@@ -221,7 +222,8 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                         .store.credential.impl.password.PasswordCredential) credential;
                 PasswordCredential pwdCredential = new PasswordCredential();
                 pwdCredential.setGatewayId(credential1.getGateway());
-                pwdCredential.setUsername(credential1.getUserName());
+                pwdCredential.setPortalUserName(credential1.getPortalUserName());
+                pwdCredential.setLoginUserName(credential1.getUserName());
                 pwdCredential.setPassword(credential1.getPassword());
                 pwdCredential.setDescription(credential1.getDescription());
                 pwdCredential.setToken(credential1.getToken());

@@ -4171,7 +4171,8 @@ uint32_t Airavata_registerPwdCredential_args::read(::apache::thrift::protocol::T
 
   bool isset_authzToken = false;
   bool isset_gatewayId = false;
-  bool isset_userName = false;
+  bool isset_portalUserName = false;
+  bool isset_loginUserName = false;
   bool isset_password = false;
 
   while (true)
@@ -4200,13 +4201,21 @@ uint32_t Airavata_registerPwdCredential_args::read(::apache::thrift::protocol::T
         break;
       case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->userName);
-          isset_userName = true;
+          xfer += iprot->readString(this->portalUserName);
+          isset_portalUserName = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->loginUserName);
+          isset_loginUserName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->password);
           isset_password = true;
@@ -4227,7 +4236,9 @@ uint32_t Airavata_registerPwdCredential_args::read(::apache::thrift::protocol::T
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_gatewayId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_userName)
+  if (!isset_portalUserName)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_loginUserName)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_password)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -4247,11 +4258,15 @@ uint32_t Airavata_registerPwdCredential_args::write(::apache::thrift::protocol::
   xfer += oprot->writeString(this->gatewayId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 3);
-  xfer += oprot->writeString(this->userName);
+  xfer += oprot->writeFieldBegin("portalUserName", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString(this->portalUserName);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("password", ::apache::thrift::protocol::T_STRING, 4);
+  xfer += oprot->writeFieldBegin("loginUserName", ::apache::thrift::protocol::T_STRING, 4);
+  xfer += oprot->writeString(this->loginUserName);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("password", ::apache::thrift::protocol::T_STRING, 5);
   xfer += oprot->writeString(this->password);
   xfer += oprot->writeFieldEnd();
 
@@ -4278,11 +4293,15 @@ uint32_t Airavata_registerPwdCredential_pargs::write(::apache::thrift::protocol:
   xfer += oprot->writeString((*(this->gatewayId)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 3);
-  xfer += oprot->writeString((*(this->userName)));
+  xfer += oprot->writeFieldBegin("portalUserName", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString((*(this->portalUserName)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("password", ::apache::thrift::protocol::T_STRING, 4);
+  xfer += oprot->writeFieldBegin("loginUserName", ::apache::thrift::protocol::T_STRING, 4);
+  xfer += oprot->writeString((*(this->loginUserName)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("password", ::apache::thrift::protocol::T_STRING, 5);
   xfer += oprot->writeString((*(this->password)));
   xfer += oprot->writeFieldEnd();
 
@@ -46883,13 +46902,13 @@ void AiravataClient::recv_generateAndRegisterSSHKeys(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "generateAndRegisterSSHKeys failed: unknown result");
 }
 
-void AiravataClient::registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& password)
+void AiravataClient::registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password)
 {
-  send_registerPwdCredential(authzToken, gatewayId, userName, password);
+  send_registerPwdCredential(authzToken, gatewayId, portalUserName, loginUserName, password);
   recv_registerPwdCredential(_return);
 }
 
-void AiravataClient::send_registerPwdCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& password)
+void AiravataClient::send_registerPwdCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("registerPwdCredential", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -46897,7 +46916,8 @@ void AiravataClient::send_registerPwdCredential(const  ::apache::airavata::model
   Airavata_registerPwdCredential_pargs args;
   args.authzToken = &authzToken;
   args.gatewayId = &gatewayId;
-  args.userName = &userName;
+  args.portalUserName = &portalUserName;
+  args.loginUserName = &loginUserName;
   args.password = &password;
   args.write(oprot_);
 
@@ -57373,7 +57393,7 @@ void AiravataProcessor::process_registerPwdCredential(int32_t seqid, ::apache::t
 
   Airavata_registerPwdCredential_result result;
   try {
-    iface_->registerPwdCredential(result.success, args.authzToken, args.gatewayId, args.userName, args.password);
+    iface_->registerPwdCredential(result.success, args.authzToken, args.gatewayId, args.portalUserName, args.loginUserName, args.password);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -67543,13 +67563,13 @@ void AiravataConcurrentClient::recv_generateAndRegisterSSHKeys(std::string& _ret
   } // end while(true)
 }
 
-void AiravataConcurrentClient::registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& password)
+void AiravataConcurrentClient::registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password)
 {
-  int32_t seqid = send_registerPwdCredential(authzToken, gatewayId, userName, password);
+  int32_t seqid = send_registerPwdCredential(authzToken, gatewayId, portalUserName, loginUserName, password);
   recv_registerPwdCredential(_return, seqid);
 }
 
-int32_t AiravataConcurrentClient::send_registerPwdCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& password)
+int32_t AiravataConcurrentClient::send_registerPwdCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password)
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
@@ -67558,7 +67578,8 @@ int32_t AiravataConcurrentClient::send_registerPwdCredential(const  ::apache::ai
   Airavata_registerPwdCredential_pargs args;
   args.authzToken = &authzToken;
   args.gatewayId = &gatewayId;
-  args.userName = &userName;
+  args.portalUserName = &portalUserName;
+  args.loginUserName = &loginUserName;
   args.password = &password;
   args.write(oprot_);
 
