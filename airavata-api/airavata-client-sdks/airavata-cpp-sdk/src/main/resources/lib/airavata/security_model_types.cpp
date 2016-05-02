@@ -39,11 +39,6 @@ void AuthzToken::__set_accessToken(const std::string& val) {
   this->accessToken = val;
 }
 
-void AuthzToken::__set_gatewayId(const std::string& val) {
-  this->gatewayId = val;
-__isset.gatewayId = true;
-}
-
 void AuthzToken::__set_claimsMap(const std::map<std::string, std::string> & val) {
   this->claimsMap = val;
 __isset.claimsMap = true;
@@ -80,14 +75,6 @@ uint32_t AuthzToken::read(::apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 2:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->gatewayId);
-          this->__isset.gatewayId = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 3:
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->claimsMap.clear();
@@ -133,13 +120,8 @@ uint32_t AuthzToken::write(::apache::thrift::protocol::TProtocol* oprot) const {
   xfer += oprot->writeString(this->accessToken);
   xfer += oprot->writeFieldEnd();
 
-  if (this->__isset.gatewayId) {
-    xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 2);
-    xfer += oprot->writeString(this->gatewayId);
-    xfer += oprot->writeFieldEnd();
-  }
   if (this->__isset.claimsMap) {
-    xfer += oprot->writeFieldBegin("claimsMap", ::apache::thrift::protocol::T_MAP, 3);
+    xfer += oprot->writeFieldBegin("claimsMap", ::apache::thrift::protocol::T_MAP, 2);
     {
       xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->claimsMap.size()));
       std::map<std::string, std::string> ::const_iterator _iter7;
@@ -160,20 +142,17 @@ uint32_t AuthzToken::write(::apache::thrift::protocol::TProtocol* oprot) const {
 void swap(AuthzToken &a, AuthzToken &b) {
   using ::std::swap;
   swap(a.accessToken, b.accessToken);
-  swap(a.gatewayId, b.gatewayId);
   swap(a.claimsMap, b.claimsMap);
   swap(a.__isset, b.__isset);
 }
 
 AuthzToken::AuthzToken(const AuthzToken& other8) {
   accessToken = other8.accessToken;
-  gatewayId = other8.gatewayId;
   claimsMap = other8.claimsMap;
   __isset = other8.__isset;
 }
 AuthzToken& AuthzToken::operator=(const AuthzToken& other9) {
   accessToken = other9.accessToken;
-  gatewayId = other9.gatewayId;
   claimsMap = other9.claimsMap;
   __isset = other9.__isset;
   return *this;
@@ -182,7 +161,6 @@ void AuthzToken::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
   out << "AuthzToken(";
   out << "accessToken=" << to_string(accessToken);
-  out << ", " << "gatewayId="; (__isset.gatewayId ? (out << to_string(gatewayId)) : (out << "<null>"));
   out << ", " << "claimsMap="; (__isset.claimsMap ? (out << to_string(claimsMap)) : (out << "<null>"));
   out << ")";
 }

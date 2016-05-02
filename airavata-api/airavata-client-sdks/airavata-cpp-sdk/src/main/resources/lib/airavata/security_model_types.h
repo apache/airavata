@@ -39,8 +39,7 @@ namespace apache { namespace airavata { namespace model { namespace security {
 class AuthzToken;
 
 typedef struct _AuthzToken__isset {
-  _AuthzToken__isset() : gatewayId(false), claimsMap(false) {}
-  bool gatewayId :1;
+  _AuthzToken__isset() : claimsMap(false) {}
   bool claimsMap :1;
 } _AuthzToken__isset;
 
@@ -49,29 +48,22 @@ class AuthzToken {
 
   AuthzToken(const AuthzToken&);
   AuthzToken& operator=(const AuthzToken&);
-  AuthzToken() : accessToken(), gatewayId() {
+  AuthzToken() : accessToken() {
   }
 
   virtual ~AuthzToken() throw();
   std::string accessToken;
-  std::string gatewayId;
   std::map<std::string, std::string>  claimsMap;
 
   _AuthzToken__isset __isset;
 
   void __set_accessToken(const std::string& val);
 
-  void __set_gatewayId(const std::string& val);
-
   void __set_claimsMap(const std::map<std::string, std::string> & val);
 
   bool operator == (const AuthzToken & rhs) const
   {
     if (!(accessToken == rhs.accessToken))
-      return false;
-    if (__isset.gatewayId != rhs.__isset.gatewayId)
-      return false;
-    else if (__isset.gatewayId && !(gatewayId == rhs.gatewayId))
       return false;
     if (__isset.claimsMap != rhs.__isset.claimsMap)
       return false;

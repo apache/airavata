@@ -175,8 +175,12 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
                     OAuth2TokenValidationResponseDTO validationResponse = oauthClient.validateAccessToken(
                             authzToken.getAccessToken());
                     if(validationResponse.getValid()){
+                        String authorizedUserName = validationResponse.getAuthorizedUser();
+                        if(authorizedUserName.contains("@")){
+                            authorizedUserName = authorizedUserName.split("@")[0];
+                        }
                         //cannot impersonate users
-                        if(!validationResponse.getAuthorizedUser().equals(subject))
+                        if(!authorizedUserName.equals(subject))
                             return false;
 
                         long expiryTimestamp = validationResponse.getExpiryTime();

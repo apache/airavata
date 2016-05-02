@@ -25,10 +25,6 @@ class AuthzToken {
    */
   public $accessToken = null;
   /**
-   * @var string
-   */
-  public $gatewayId = null;
-  /**
    * @var array
    */
   public $claimsMap = null;
@@ -41,10 +37,6 @@ class AuthzToken {
           'type' => TType::STRING,
           ),
         2 => array(
-          'var' => 'gatewayId',
-          'type' => TType::STRING,
-          ),
-        3 => array(
           'var' => 'claimsMap',
           'type' => TType::MAP,
           'ktype' => TType::STRING,
@@ -61,9 +53,6 @@ class AuthzToken {
     if (is_array($vals)) {
       if (isset($vals['accessToken'])) {
         $this->accessToken = $vals['accessToken'];
-      }
-      if (isset($vals['gatewayId'])) {
-        $this->gatewayId = $vals['gatewayId'];
       }
       if (isset($vals['claimsMap'])) {
         $this->claimsMap = $vals['claimsMap'];
@@ -98,13 +87,6 @@ class AuthzToken {
           }
           break;
         case 2:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->gatewayId);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 3:
           if ($ftype == TType::MAP) {
             $this->claimsMap = array();
             $_size0 = 0;
@@ -142,16 +124,11 @@ class AuthzToken {
       $xfer += $output->writeString($this->accessToken);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->gatewayId !== null) {
-      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 2);
-      $xfer += $output->writeString($this->gatewayId);
-      $xfer += $output->writeFieldEnd();
-    }
     if ($this->claimsMap !== null) {
       if (!is_array($this->claimsMap)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('claimsMap', TType::MAP, 3);
+      $xfer += $output->writeFieldBegin('claimsMap', TType::MAP, 2);
       {
         $output->writeMapBegin(TType::STRING, TType::STRING, count($this->claimsMap));
         {
