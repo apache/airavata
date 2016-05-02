@@ -20,14 +20,13 @@
  */
 package org.apache.airavata.api.server.security.authzcache;
 
-import javax.management.MXBean;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class AuthzCache extends LinkedHashMap<AuthzCacheIndex, AuthzCacheEntry> {
 
@@ -54,7 +53,6 @@ public class AuthzCache extends LinkedHashMap<AuthzCacheIndex, AuthzCacheEntry> 
 
     @Override
     protected boolean removeEldestEntry(Map.Entry<AuthzCacheIndex, AuthzCacheEntry> eldest) {
-        //TODO: following info log is for demonstration purposes. Remove it.
         if (size() > MAX_SIZE) {
             logger.info("Authz cache max size exceeded. Removing the old entries.");
         }
