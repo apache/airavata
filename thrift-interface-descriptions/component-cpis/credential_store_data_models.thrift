@@ -53,9 +53,10 @@ struct CertificateCredential {
 
 struct PasswordCredential {
     1: required string gatewayId,
-    2: required string username,
-    3: required string password,
-    4: optional string description,
-    5: optional i64 persistedTime,
-    6: optional string token
+    2: required string portalUserName,
+    3: required string loginUserName,
+    4: required string password,
+    5: optional string description,
+    6: optional i64 persistedTime,
+    7: optional string token
 }

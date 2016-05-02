@@ -265,9 +265,11 @@ service Airavata {
    * @param gatewayId
    *    The identifier for the requested Gateway.
    *
-   * @param userName
+   * @param portalUserName
    *    The User for which the credential should be registered. For community accounts, this user is the name of the
    *    community user name. For computational resources, this user name need not be the same user name on resoruces.
+   *
+   * @param loginUserName
    *
    * @param password
    *
@@ -278,8 +280,9 @@ service Airavata {
    **/
   string registerPwdCredential (1: required security_model.AuthzToken authzToken,
                       2: required string gatewayId,
-                      3: required string userName,
-                      4: required string password)
+                      3: required string portalUserName,
+                      4: required string loginUserName,
+                      5: required string password)
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
