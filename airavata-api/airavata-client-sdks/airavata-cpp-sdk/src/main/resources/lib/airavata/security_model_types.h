@@ -39,9 +39,8 @@ namespace apache { namespace airavata { namespace model { namespace security {
 class AuthzToken;
 
 typedef struct _AuthzToken__isset {
-  _AuthzToken__isset() : gatewayId(false), userName(false), claimsMap(false) {}
+  _AuthzToken__isset() : gatewayId(false), claimsMap(false) {}
   bool gatewayId :1;
-  bool userName :1;
   bool claimsMap :1;
 } _AuthzToken__isset;
 
@@ -50,13 +49,12 @@ class AuthzToken {
 
   AuthzToken(const AuthzToken&);
   AuthzToken& operator=(const AuthzToken&);
-  AuthzToken() : accessToken(), gatewayId(), userName() {
+  AuthzToken() : accessToken(), gatewayId() {
   }
 
   virtual ~AuthzToken() throw();
   std::string accessToken;
   std::string gatewayId;
-  std::string userName;
   std::map<std::string, std::string>  claimsMap;
 
   _AuthzToken__isset __isset;
@@ -64,8 +62,6 @@ class AuthzToken {
   void __set_accessToken(const std::string& val);
 
   void __set_gatewayId(const std::string& val);
-
-  void __set_userName(const std::string& val);
 
   void __set_claimsMap(const std::map<std::string, std::string> & val);
 
@@ -76,10 +72,6 @@ class AuthzToken {
     if (__isset.gatewayId != rhs.__isset.gatewayId)
       return false;
     else if (__isset.gatewayId && !(gatewayId == rhs.gatewayId))
-      return false;
-    if (__isset.userName != rhs.__isset.userName)
-      return false;
-    else if (__isset.userName && !(userName == rhs.userName))
       return false;
     if (__isset.claimsMap != rhs.__isset.claimsMap)
       return false;
