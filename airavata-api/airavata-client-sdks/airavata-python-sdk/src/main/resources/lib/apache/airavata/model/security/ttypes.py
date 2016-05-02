@@ -21,20 +21,17 @@ class AuthzToken:
   """
   Attributes:
    - accessToken
-   - gatewayId
    - claimsMap
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'accessToken', None, None, ), # 1
-    (2, TType.STRING, 'gatewayId', None, None, ), # 2
-    (3, TType.MAP, 'claimsMap', (TType.STRING,None,TType.STRING,None), None, ), # 3
+    (2, TType.MAP, 'claimsMap', (TType.STRING,None,TType.STRING,None), None, ), # 2
   )
 
-  def __init__(self, accessToken=None, gatewayId=None, claimsMap=None,):
+  def __init__(self, accessToken=None, claimsMap=None,):
     self.accessToken = accessToken
-    self.gatewayId = gatewayId
     self.claimsMap = claimsMap
 
   def read(self, iprot):
@@ -52,11 +49,6 @@ class AuthzToken:
         else:
           iprot.skip(ftype)
       elif fid == 2:
-        if ftype == TType.STRING:
-          self.gatewayId = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
         if ftype == TType.MAP:
           self.claimsMap = {}
           (_ktype1, _vtype2, _size0 ) = iprot.readMapBegin()
@@ -81,12 +73,8 @@ class AuthzToken:
       oprot.writeFieldBegin('accessToken', TType.STRING, 1)
       oprot.writeString(self.accessToken)
       oprot.writeFieldEnd()
-    if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
-      oprot.writeString(self.gatewayId)
-      oprot.writeFieldEnd()
     if self.claimsMap is not None:
-      oprot.writeFieldBegin('claimsMap', TType.MAP, 3)
+      oprot.writeFieldBegin('claimsMap', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.claimsMap))
       for kiter7,viter8 in self.claimsMap.items():
         oprot.writeString(kiter7)
@@ -105,7 +93,6 @@ class AuthzToken:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.accessToken)
-    value = (value * 31) ^ hash(self.gatewayId)
     value = (value * 31) ^ hash(self.claimsMap)
     return value
 
