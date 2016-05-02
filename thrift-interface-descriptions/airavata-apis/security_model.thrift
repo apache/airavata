@@ -31,6 +31,5 @@ namespace py apache.airavata.model.security
 
 struct AuthzToken {
     1: required string accessToken,
-    2: optional string gatewayId,
-    3: optional map<string, string> claimsMap
+    2: optional map<string, string> claimsMap
 }

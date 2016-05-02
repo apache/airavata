@@ -56,8 +56,7 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("AuthzToken");
 
   private static final org.apache.thrift.protocol.TField ACCESS_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("accessToken", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField CLAIMS_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("claimsMap", org.apache.thrift.protocol.TType.MAP, (short)3);
+  private static final org.apache.thrift.protocol.TField CLAIMS_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("claimsMap", org.apache.thrift.protocol.TType.MAP, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -66,14 +65,12 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
   }
 
   private String accessToken; // required
-  private String gatewayId; // optional
   private Map<String,String> claimsMap; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ACCESS_TOKEN((short)1, "accessToken"),
-    GATEWAY_ID((short)2, "gatewayId"),
-    CLAIMS_MAP((short)3, "claimsMap");
+    CLAIMS_MAP((short)2, "claimsMap");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -90,9 +87,7 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
       switch(fieldId) {
         case 1: // ACCESS_TOKEN
           return ACCESS_TOKEN;
-        case 2: // GATEWAY_ID
-          return GATEWAY_ID;
-        case 3: // CLAIMS_MAP
+        case 2: // CLAIMS_MAP
           return CLAIMS_MAP;
         default:
           return null;
@@ -134,13 +129,11 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
   }
 
   // isset id assignments
-  private static final _Fields optionals[] = {_Fields.GATEWAY_ID,_Fields.CLAIMS_MAP};
+  private static final _Fields optionals[] = {_Fields.CLAIMS_MAP};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.ACCESS_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("accessToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.CLAIMS_MAP, new org.apache.thrift.meta_data.FieldMetaData("claimsMap", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
@@ -167,9 +160,6 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
     if (other.isSetAccessToken()) {
       this.accessToken = other.accessToken;
     }
-    if (other.isSetGatewayId()) {
-      this.gatewayId = other.gatewayId;
-    }
     if (other.isSetClaimsMap()) {
       Map<String,String> __this__claimsMap = new HashMap<String,String>(other.claimsMap);
       this.claimsMap = __this__claimsMap;
@@ -183,7 +173,6 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
   @Override
   public void clear() {
     this.accessToken = null;
-    this.gatewayId = null;
     this.claimsMap = null;
   }
 
@@ -207,29 +196,6 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
   public void setAccessTokenIsSet(boolean value) {
     if (!value) {
       this.accessToken = null;
-    }
-  }
-
-  public String getGatewayId() {
-    return this.gatewayId;
-  }
-
-  public void setGatewayId(String gatewayId) {
-    this.gatewayId = gatewayId;
-  }
-
-  public void unsetGatewayId() {
-    this.gatewayId = null;
-  }
-
-  /** Returns true if field gatewayId is set (has been assigned a value) and false otherwise */
-  public boolean isSetGatewayId() {
-    return this.gatewayId != null;
-  }
-
-  public void setGatewayIdIsSet(boolean value) {
-    if (!value) {
-      this.gatewayId = null;
     }
   }
 
@@ -277,14 +243,6 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
       }
       break;
 
-    case GATEWAY_ID:
-      if (value == null) {
-        unsetGatewayId();
-      } else {
-        setGatewayId((String)value);
-      }
-      break;
-
     case CLAIMS_MAP:
       if (value == null) {
         unsetClaimsMap();
@@ -300,9 +258,6 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
     switch (field) {
     case ACCESS_TOKEN:
       return getAccessToken();
-
-    case GATEWAY_ID:
-      return getGatewayId();
 
     case CLAIMS_MAP:
       return getClaimsMap();
@@ -320,8 +275,6 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
     switch (field) {
     case ACCESS_TOKEN:
       return isSetAccessToken();
-    case GATEWAY_ID:
-      return isSetGatewayId();
     case CLAIMS_MAP:
       return isSetClaimsMap();
     }
@@ -350,15 +303,6 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
         return false;
     }
 
-    boolean this_present_gatewayId = true && this.isSetGatewayId();
-    boolean that_present_gatewayId = true && that.isSetGatewayId();
-    if (this_present_gatewayId || that_present_gatewayId) {
-      if (!(this_present_gatewayId && that_present_gatewayId))
-        return false;
-      if (!this.gatewayId.equals(that.gatewayId))
-        return false;
-    }
-
     boolean this_present_claimsMap = true && this.isSetClaimsMap();
     boolean that_present_claimsMap = true && that.isSetClaimsMap();
     if (this_present_claimsMap || that_present_claimsMap) {
@@ -379,11 +323,6 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
     list.add(present_accessToken);
     if (present_accessToken)
       list.add(accessToken);
-
-    boolean present_gatewayId = true && (isSetGatewayId());
-    list.add(present_gatewayId);
-    if (present_gatewayId)
-      list.add(gatewayId);
 
     boolean present_claimsMap = true && (isSetClaimsMap());
     list.add(present_claimsMap);
@@ -407,16 +346,6 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
     }
     if (isSetAccessToken()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.accessToken, other.accessToken);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetGatewayId()).compareTo(other.isSetGatewayId());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetGatewayId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -458,16 +387,6 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
       sb.append(this.accessToken);
     }
     first = false;
-    if (isSetGatewayId()) {
-      if (!first) sb.append(", ");
-      sb.append("gatewayId:");
-      if (this.gatewayId == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.gatewayId);
-      }
-      first = false;
-    }
     if (isSetClaimsMap()) {
       if (!first) sb.append(", ");
       sb.append("claimsMap:");
@@ -533,15 +452,7 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // GATEWAY_ID
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.gatewayId = iprot.readString();
-              struct.setGatewayIdIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 3: // CLAIMS_MAP
+          case 2: // CLAIMS_MAP
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
                 org.apache.thrift.protocol.TMap _map0 = iprot.readMapBegin();
@@ -579,13 +490,6 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
         oprot.writeString(struct.accessToken);
         oprot.writeFieldEnd();
       }
-      if (struct.gatewayId != null) {
-        if (struct.isSetGatewayId()) {
-          oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
-          oprot.writeString(struct.gatewayId);
-          oprot.writeFieldEnd();
-        }
-      }
       if (struct.claimsMap != null) {
         if (struct.isSetClaimsMap()) {
           oprot.writeFieldBegin(CLAIMS_MAP_FIELD_DESC);
@@ -620,16 +524,10 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.accessToken);
       BitSet optionals = new BitSet();
-      if (struct.isSetGatewayId()) {
+      if (struct.isSetClaimsMap()) {
         optionals.set(0);
       }
-      if (struct.isSetClaimsMap()) {
-        optionals.set(1);
-      }
-      oprot.writeBitSet(optionals, 2);
-      if (struct.isSetGatewayId()) {
-        oprot.writeString(struct.gatewayId);
-      }
+      oprot.writeBitSet(optionals, 1);
       if (struct.isSetClaimsMap()) {
         {
           oprot.writeI32(struct.claimsMap.size());
@@ -647,12 +545,8 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.accessToken = iprot.readString();
       struct.setAccessTokenIsSet(true);
-      BitSet incoming = iprot.readBitSet(2);
+      BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
-        struct.gatewayId = iprot.readString();
-        struct.setGatewayIdIsSet(true);
-      }
-      if (incoming.get(1)) {
         {
           org.apache.thrift.protocol.TMap _map6 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
           struct.claimsMap = new HashMap<String,String>(2*_map6.size);
