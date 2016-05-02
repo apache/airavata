@@ -27,17 +27,27 @@ import org.apache.airavata.api.server.security.xacml.DefaultXACMLPEP;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
+import org.apache.airavata.credential.store.cpi.CredentialStoreService;
+import org.apache.airavata.credential.store.datamodel.PasswordCredential;
+import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
+import org.apache.airavata.registry.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.util.TrustStoreManager;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationResponseDTO;
 
 import java.io.*;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,6 +55,12 @@ import java.util.Map;
  */
 public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
     private final static Logger logger = LoggerFactory.getLogger(DefaultAiravataSecurityManager.class);
+
+    private CredentialStoreService.Client csClient;
+
+    public DefaultAiravataSecurityManager() throws TException, ApplicationSettingsException {
+        csClient = getCredentialStoreServiceClient();
+    }
 
     @Override
     public void initializeSecurityInfra() throws AiravataSecurityException {
@@ -60,27 +76,39 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
                 TrustStoreManager trustStoreManager = new TrustStoreManager();
                 trustStoreManager.initializeTrustStoreManager(ServerSettings.getTrustStorePath(),
                         ServerSettings.getTrustStorePassword());
-
-                DefaultPAPClient PAPClient = new DefaultPAPClient(ServerSettings.getRemoteAuthzServerUrl(),
-                        ServerSettings.getAdminUsername(), ServerSettings.getAdminPassword(), configContext);
-                boolean policyAdded = PAPClient.isPolicyAdded(ServerSettings.getAuthorizationPoliyName());
-                if (policyAdded) {
-                    logger.info("Authorization policy is already added in the authorization server.");
-                } else {
-                    //read the policy as a string
-                    BufferedReader bufferedReader = new BufferedReader(new FileReader(new File(
-                            ServerSettings.getAuthorizationPoliyName() + ".xml")));
-                    String line;
-                    StringBuilder stringBuilder = new StringBuilder();
-                    while ((line = bufferedReader.readLine()) != null) {
-                        stringBuilder.append(line);
+                AppCatalog appCatalog = RegistryFactory.getAppCatalog();
+                List<GatewayResourceProfile> gwProfiles = appCatalog.getGatewayProfile().getAllGatewayProfiles();
+                //read the policy as a string
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(new File(
+                        ServerSettings.getAuthorizationPoliyName() + ".xml")));
+                String line;
+                StringBuilder stringBuilder = new StringBuilder();
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(line);
+                }
+                String defaultXACMLPolicy = stringBuilder.toString();
+                for(GatewayResourceProfile gwrp : gwProfiles){
+                    if(gwrp.getIdentityServerPwdCredToken() != null && gwrp.getIdentityServerTenant() != null){
+                        PasswordCredential credential = csClient.getPasswordCredential(gwrp.getCredentialStoreToken(), gwrp.getGatewayID());
+                        String username = credential.getLoginUserName();
+                        if(gwrp.getIdentityServerTenant() != null && !gwrp.getIdentityServerTenant().isEmpty())
+                            username = username + "@" + gwrp.getIdentityServerTenant();
+                        String password = credential.getPassword();
+                        DefaultPAPClient PAPClient = new DefaultPAPClient(ServerSettings.getRemoteAuthzServerUrl(),
+                                username, password, configContext);
+                        boolean policyAdded = PAPClient.isPolicyAdded(ServerSettings.getAuthorizationPoliyName());
+                        if (policyAdded) {
+                            logger.info("Authorization policy is already added in the authorization server.");
+                        } else {
+                            //publish the policy and enable it in a separate thread
+                            PAPClient.addPolicy(defaultXACMLPolicy);
+                            logger.info("Authorization policy is published in the authorization server.");
+                        }
+                    }else{
+                        logger.warn("Identity Server configuration missing for gateway : " + gwrp.getGatewayID());
                     }
-                    //publish the policy and enable it in a separate thread
-                    PAPClient.addPolicy(stringBuilder.toString());
-                    logger.info("Authorization policy is published in the authorization server.");
                 }
             }
-
         } catch (AxisFault axisFault) {
             logger.error(axisFault.getMessage(), axisFault);
             throw new AiravataSecurityException("Error in initializing the configuration context for creating the " +
@@ -94,36 +122,49 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
             throw new AiravataSecurityException("Error in reading the authorization policy.");
+        } catch (AppCatalogException e) {
+            logger.error(e.getMessage(), e);
+            throw new AiravataSecurityException("Error in reading the Gateway Profiles from App Catalog.");
+        } catch (TException e) {
+            logger.error(e.getMessage(), e);
+            throw new AiravataSecurityException("Error in connecting to Credential Store Service.");
         }
-
     }
 
     public boolean isUserAuthorized(AuthzToken authzToken, Map<String, String> metaData) throws AiravataSecurityException {
         try {
+            String subject = authzToken.getUserName();
+            String accessToken = authzToken.getAccessToken();
+            String gatewayId = authzToken.getGatewayId();
+            String action = metaData.get(Constants.API_METHOD_NAME);
+
+            AppCatalog appCatalog = RegistryFactory.getAppCatalog();
+            GatewayResourceProfile gwrp = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
+            PasswordCredential credential = csClient.getPasswordCredential(gwrp.getCredentialStoreToken(), gwrp.getGatewayID());
+            String username = credential.getLoginUserName();
+            if(gwrp.getIdentityServerTenant() != null && !gwrp.getIdentityServerTenant().isEmpty())
+                username = username + "@" + gwrp.getIdentityServerTenant();
+            String password = credential.getPassword();
+
             //if the authz cache is enabled, check in the cache if the authz decision is cached and if so, what the status is
             if (ServerSettings.isAuthzCacheEnabled()) {
                 //obtain an instance of AuthzCacheManager implementation.
                 AuthzCacheManager authzCacheManager = AuthzCacheManagerFactory.getAuthzCacheManager();
-                //collect the necessary info for contructing the authz cache index
-                String subject = authzToken.getClaimsMap().get(Constants.USER_NAME);
-                String accessToken = authzToken.getAccessToken();
-                String action = metaData.get(Constants.API_METHOD_NAME);
+
                 //check in the cache
                 AuthzCachedStatus authzCachedStatus = authzCacheManager.getAuthzCachedStatus(
-                        new AuthzCacheIndex(subject, accessToken, action));
+                        new AuthzCacheIndex(subject, gatewayId, accessToken, action));
 
                 if (AuthzCachedStatus.AUTHORIZED.equals(authzCachedStatus)) {
-                    //TODO: following info log is for demonstration purpose. change it to debug log.
                     logger.info("Authz decision for: (" + subject + ", " + accessToken + ", " + action + ") is retrieved from cache.");
                     return true;
                 } else if (AuthzCachedStatus.NOT_AUTHORIZED.equals(authzCachedStatus)) {
-                    //TODO: following info log is for demonstration purpose. change it to debug log.
                     logger.info("Authz decision for: (" + subject + ", " + accessToken + ", " + action + ") is retrieved from cache.");
                     return false;
                 } else if (AuthzCachedStatus.NOT_CACHED.equals(authzCachedStatus)) {
-                    //TODO: following info log is for demonstration purpose. change it to debug log.
                     logger.info("Authz decision for: (" + subject + ", " + accessToken + ", " + action + ") is not in the cache. " +
                             "Obtaining it from the authorization server.");
+
                     //talk to Authorization Server, obtain the decision, cache it and return the result.
                     ConfigurationContext configContext =
                             ConfigurationContextFactory.createConfigurationContextFromFileSystem(null, null);
@@ -134,7 +175,7 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
                             ServerSettings.getTrustStorePassword());
 
                     DefaultOAuthClient oauthClient = new DefaultOAuthClient(ServerSettings.getRemoteAuthzServerUrl(),
-                            ServerSettings.getAdminUsername(), ServerSettings.getAdminPassword(), configContext);
+                            username, password, configContext);
                     OAuth2TokenValidationResponseDTO validationResponse = oauthClient.validateAccessToken(
                             authzToken.getAccessToken());
                     boolean isOAuthTokenValid = validationResponse.getValid();
@@ -142,13 +183,13 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
 
                     //check for fine grained authorization for the API invocation, based on XACML.
                     DefaultXACMLPEP entitlementClient = new DefaultXACMLPEP(ServerSettings.getRemoteAuthzServerUrl(),
-                            ServerSettings.getAdminUsername(), ServerSettings.getAdminPassword(), configContext);
+                            username, password, configContext);
                     boolean authorizationDecision = entitlementClient.getAuthorizationDecision(authzToken, metaData);
 
                     boolean decision = isOAuthTokenValid && authorizationDecision;
 
                     //cache the authorization decision
-                    authzCacheManager.addToAuthzCache(new AuthzCacheIndex(subject, accessToken, action),
+                    authzCacheManager.addToAuthzCache(new AuthzCacheIndex(subject, gatewayId, accessToken, action),
                             new AuthzCacheEntry(decision, expiryTimestamp, System.currentTimeMillis()));
 
                     return decision;
@@ -167,13 +208,13 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
                         ServerSettings.getTrustStorePassword());
 
                 DefaultOAuthClient oauthClient = new DefaultOAuthClient(ServerSettings.getRemoteAuthzServerUrl(),
-                        ServerSettings.getAdminUsername(), ServerSettings.getAdminPassword(), configContext);
+                        username, password, configContext);
                 OAuth2TokenValidationResponseDTO validationResponse = oauthClient.validateAccessToken(
                         authzToken.getAccessToken());
                 boolean isOAuthTokenValid = validationResponse.getValid();
                 //if XACML based authorization is enabled, check for role based authorization for the API invocation
                 DefaultXACMLPEP entitlementClient = new DefaultXACMLPEP(ServerSettings.getRemoteAuthzServerUrl(),
-                        ServerSettings.getAdminUsername(), ServerSettings.getAdminPassword(), configContext);
+                        username, password, configContext);
                 boolean authorizationDecision = entitlementClient.getAuthorizationDecision(authzToken, metaData);
 
                 return (isOAuthTokenValid && authorizationDecision);
@@ -185,6 +226,22 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AiravataSecurityException("Error in reading OAuth server configuration.");
+        } catch (AppCatalogException e) {
+            logger.error(e.getMessage(), e);
+            throw new AiravataSecurityException("Error in accessing AppCatalog.");
+        } catch (TException e) {
+            logger.error(e.getMessage(), e);
+            throw new AiravataSecurityException("Error in connecting to Credential Store Service.");
+        }
+    }
+
+    private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
+        final String serverHost = ServerSettings.getCredentialStoreServerHost();
+        try {
+            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
+        } catch (CredentialStoreException e) {
+            throw new TException("Unable to create credential store client...", e);
         }
     }
 }

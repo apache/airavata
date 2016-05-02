@@ -57,7 +57,8 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
 
   private static final org.apache.thrift.protocol.TField ACCESS_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("accessToken", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField CLAIMS_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("claimsMap", org.apache.thrift.protocol.TType.MAP, (short)3);
+  private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField CLAIMS_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("claimsMap", org.apache.thrift.protocol.TType.MAP, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -67,13 +68,15 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
 
   private String accessToken; // required
   private String gatewayId; // optional
+  private String userName; // optional
   private Map<String,String> claimsMap; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ACCESS_TOKEN((short)1, "accessToken"),
     GATEWAY_ID((short)2, "gatewayId"),
-    CLAIMS_MAP((short)3, "claimsMap");
+    USER_NAME((short)3, "userName"),
+    CLAIMS_MAP((short)4, "claimsMap");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -92,7 +95,9 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
           return ACCESS_TOKEN;
         case 2: // GATEWAY_ID
           return GATEWAY_ID;
-        case 3: // CLAIMS_MAP
+        case 3: // USER_NAME
+          return USER_NAME;
+        case 4: // CLAIMS_MAP
           return CLAIMS_MAP;
         default:
           return null;
@@ -134,13 +139,15 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
   }
 
   // isset id assignments
-  private static final _Fields optionals[] = {_Fields.GATEWAY_ID,_Fields.CLAIMS_MAP};
+  private static final _Fields optionals[] = {_Fields.GATEWAY_ID,_Fields.USER_NAME,_Fields.CLAIMS_MAP};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.ACCESS_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("accessToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.USER_NAME, new org.apache.thrift.meta_data.FieldMetaData("userName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.CLAIMS_MAP, new org.apache.thrift.meta_data.FieldMetaData("claimsMap", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
@@ -170,6 +177,9 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
     if (other.isSetGatewayId()) {
       this.gatewayId = other.gatewayId;
     }
+    if (other.isSetUserName()) {
+      this.userName = other.userName;
+    }
     if (other.isSetClaimsMap()) {
       Map<String,String> __this__claimsMap = new HashMap<String,String>(other.claimsMap);
       this.claimsMap = __this__claimsMap;
@@ -184,6 +194,7 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
   public void clear() {
     this.accessToken = null;
     this.gatewayId = null;
+    this.userName = null;
     this.claimsMap = null;
   }
 
@@ -230,6 +241,29 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
   public void setGatewayIdIsSet(boolean value) {
     if (!value) {
       this.gatewayId = null;
+    }
+  }
+
+  public String getUserName() {
+    return this.userName;
+  }
+
+  public void setUserName(String userName) {
+    this.userName = userName;
+  }
+
+  public void unsetUserName() {
+    this.userName = null;
+  }
+
+  /** Returns true if field userName is set (has been assigned a value) and false otherwise */
+  public boolean isSetUserName() {
+    return this.userName != null;
+  }
+
+  public void setUserNameIsSet(boolean value) {
+    if (!value) {
+      this.userName = null;
     }
   }
 
@@ -285,6 +319,14 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
       }
       break;
 
+    case USER_NAME:
+      if (value == null) {
+        unsetUserName();
+      } else {
+        setUserName((String)value);
+      }
+      break;
+
     case CLAIMS_MAP:
       if (value == null) {
         unsetClaimsMap();
@@ -304,6 +346,9 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
     case GATEWAY_ID:
       return getGatewayId();
 
+    case USER_NAME:
+      return getUserName();
+
     case CLAIMS_MAP:
       return getClaimsMap();
 
@@ -322,6 +367,8 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
       return isSetAccessToken();
     case GATEWAY_ID:
       return isSetGatewayId();
+    case USER_NAME:
+      return isSetUserName();
     case CLAIMS_MAP:
       return isSetClaimsMap();
     }
@@ -359,6 +406,15 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
         return false;
     }
 
+    boolean this_present_userName = true && this.isSetUserName();
+    boolean that_present_userName = true && that.isSetUserName();
+    if (this_present_userName || that_present_userName) {
+      if (!(this_present_userName && that_present_userName))
+        return false;
+      if (!this.userName.equals(that.userName))
+        return false;
+    }
+
     boolean this_present_claimsMap = true && this.isSetClaimsMap();
     boolean that_present_claimsMap = true && that.isSetClaimsMap();
     if (this_present_claimsMap || that_present_claimsMap) {
@@ -384,6 +440,11 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
     list.add(present_gatewayId);
     if (present_gatewayId)
       list.add(gatewayId);
+
+    boolean present_userName = true && (isSetUserName());
+    list.add(present_userName);
+    if (present_userName)
+      list.add(userName);
 
     boolean present_claimsMap = true && (isSetClaimsMap());
     list.add(present_claimsMap);
@@ -417,6 +478,16 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
     }
     if (isSetGatewayId()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetUserName()).compareTo(other.isSetUserName());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetUserName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userName, other.userName);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -465,6 +536,16 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
         sb.append("null");
       } else {
         sb.append(this.gatewayId);
+      }
+      first = false;
+    }
+    if (isSetUserName()) {
+      if (!first) sb.append(", ");
+      sb.append("userName:");
+      if (this.userName == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.userName);
       }
       first = false;
     }
@@ -541,7 +622,15 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // CLAIMS_MAP
+          case 3: // USER_NAME
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.userName = iprot.readString();
+              struct.setUserNameIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // CLAIMS_MAP
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
                 org.apache.thrift.protocol.TMap _map0 = iprot.readMapBegin();
@@ -586,6 +675,13 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
           oprot.writeFieldEnd();
         }
       }
+      if (struct.userName != null) {
+        if (struct.isSetUserName()) {
+          oprot.writeFieldBegin(USER_NAME_FIELD_DESC);
+          oprot.writeString(struct.userName);
+          oprot.writeFieldEnd();
+        }
+      }
       if (struct.claimsMap != null) {
         if (struct.isSetClaimsMap()) {
           oprot.writeFieldBegin(CLAIMS_MAP_FIELD_DESC);
@@ -623,12 +719,18 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
       if (struct.isSetGatewayId()) {
         optionals.set(0);
       }
-      if (struct.isSetClaimsMap()) {
+      if (struct.isSetUserName()) {
         optionals.set(1);
       }
-      oprot.writeBitSet(optionals, 2);
+      if (struct.isSetClaimsMap()) {
+        optionals.set(2);
+      }
+      oprot.writeBitSet(optionals, 3);
       if (struct.isSetGatewayId()) {
         oprot.writeString(struct.gatewayId);
+      }
+      if (struct.isSetUserName()) {
+        oprot.writeString(struct.userName);
       }
       if (struct.isSetClaimsMap()) {
         {
@@ -647,12 +749,16 @@ public class AuthzToken implements org.apache.thrift.TBase<AuthzToken, AuthzToke
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.accessToken = iprot.readString();
       struct.setAccessTokenIsSet(true);
-      BitSet incoming = iprot.readBitSet(2);
+      BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
         struct.gatewayId = iprot.readString();
         struct.setGatewayIdIsSet(true);
       }
       if (incoming.get(1)) {
+        struct.userName = iprot.readString();
+        struct.setUserNameIsSet(true);
+      }
+      if (incoming.get(2)) {
         {
           org.apache.thrift.protocol.TMap _map6 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
           struct.claimsMap = new HashMap<String,String>(2*_map6.size);
