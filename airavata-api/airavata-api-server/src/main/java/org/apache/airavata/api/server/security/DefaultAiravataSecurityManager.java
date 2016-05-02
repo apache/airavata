@@ -128,101 +128,91 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
 
     public boolean isUserAuthorized(AuthzToken authzToken, Map<String, String> metaData) throws AiravataSecurityException {
         try {
-            String subject = authzToken.getUserName();
             String accessToken = authzToken.getAccessToken();
             String gatewayId = authzToken.getGatewayId();
             String action = metaData.get(Constants.API_METHOD_NAME);
 
-            //if the authz cache is enabled, check in the cache if the authz decision is cached and if so, what the status is
-            if (ServerSettings.isAuthzCacheEnabled()) {
-                //obtain an instance of AuthzCacheManager implementation.
-                AuthzCacheManager authzCacheManager = AuthzCacheManagerFactory.getAuthzCacheManager();
+            CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
+            AppCatalog appCatalog = RegistryFactory.getAppCatalog();
+            GatewayResourceProfile gwrp = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
+            PasswordCredential credential = csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
+            String username = credential.getLoginUserName();
+            if(gwrp.getIdentityServerTenant() != null && !gwrp.getIdentityServerTenant().isEmpty())
+                username = username + "@" + gwrp.getIdentityServerTenant();
+            String password = credential.getPassword();
 
-                //check in the cache
-                AuthzCachedStatus authzCachedStatus = authzCacheManager.getAuthzCachedStatus(
-                        new AuthzCacheIndex(subject, gatewayId, accessToken, action));
+            ConfigurationContext configContext =
+                    ConfigurationContextFactory.createConfigurationContextFromFileSystem(null, null);
 
-                if (AuthzCachedStatus.AUTHORIZED.equals(authzCachedStatus)) {
-                    logger.info("Authz decision for: (" + subject + ", " + accessToken + ", " + action + ") is retrieved from cache.");
-                    return true;
-                } else if (AuthzCachedStatus.NOT_AUTHORIZED.equals(authzCachedStatus)) {
-                    logger.info("Authz decision for: (" + subject + ", " + accessToken + ", " + action + ") is retrieved from cache.");
-                    return false;
-                } else if (AuthzCachedStatus.NOT_CACHED.equals(authzCachedStatus)) {
-                    logger.info("Authz decision for: (" + subject + ", " + accessToken + ", " + action + ") is not in the cache. " +
-                            "Obtaining it from the authorization server.");
+            //OAuth token validation
+            DefaultOAuthClient oauthClient = new DefaultOAuthClient(ServerSettings.getRemoteAuthzServerUrl(),
+                    username, password, configContext);
+            OAuth2TokenValidationResponseDTO validationResponse = oauthClient.validateAccessToken(
+                    authzToken.getAccessToken());
 
-                    CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
-                    AppCatalog appCatalog = RegistryFactory.getAppCatalog();
-                    GatewayResourceProfile gwrp = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
-                    PasswordCredential credential = csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
-                    String username = credential.getLoginUserName();
-                    if(gwrp.getIdentityServerTenant() != null && !gwrp.getIdentityServerTenant().isEmpty())
-                        username = username + "@" + gwrp.getIdentityServerTenant();
-                    String password = credential.getPassword();
 
-                    //talk to Authorization Server, obtain the decision, cache it and return the result.
-                    ConfigurationContext configContext =
-                            ConfigurationContextFactory.createConfigurationContextFromFileSystem(null, null);
+            //XACML policy validation
+            if(validationResponse.getValid()){
+                long expiryTimestamp = validationResponse.getExpiryTime();
+                String subject = validationResponse.getAuthorizedUser();
+                if(subject.contains("@"))
+                    subject = subject.split("@")[0];
+
+                authzToken.getClaimsMap().put(Constants.USER_NAME, subject);
+
+                //if the authz cache is enabled, check in the cache if the authz decision is cached and if so, what the status is
+                if (ServerSettings.isAuthzCacheEnabled()) {
+                    //obtain an instance of AuthzCacheManager implementation.
+                    AuthzCacheManager authzCacheManager = AuthzCacheManagerFactory.getAuthzCacheManager();
+
+                    //check in the cache
+                    AuthzCachedStatus authzCachedStatus = authzCacheManager.getAuthzCachedStatus(
+                            new AuthzCacheIndex(subject, gatewayId, accessToken, action));
+
+                    if (AuthzCachedStatus.AUTHORIZED.equals(authzCachedStatus)) {
+                        logger.info("Authz decision for: (" + subject + ", " + accessToken + ", " + action + ") is retrieved from cache.");
+                        return true;
+                    } else if (AuthzCachedStatus.NOT_AUTHORIZED.equals(authzCachedStatus)) {
+                        logger.info("Authz decision for: (" + subject + ", " + accessToken + ", " + action + ") is retrieved from cache.");
+                        return false;
+                    } else if (AuthzCachedStatus.NOT_CACHED.equals(authzCachedStatus)) {
+                        logger.info("Authz decision for: (" + subject + ", " + accessToken + ", " + action + ") is not in the cache. " +
+                                "Obtaining it from the authorization server.");
+
+                        //initialize SSL context with the trust store that contains the public cert of WSO2 Identity Server.
+                        TrustStoreManager trustStoreManager = new TrustStoreManager();
+                        trustStoreManager.initializeTrustStoreManager(ServerSettings.getTrustStorePath(),
+                                ServerSettings.getTrustStorePassword());
+
+
+                        //check for fine grained authorization for the API invocation, based on XACML.
+                        DefaultXACMLPEP entitlementClient = new DefaultXACMLPEP(ServerSettings.getRemoteAuthzServerUrl(),
+                                username, password, configContext);
+                        boolean authorizationDecision = entitlementClient.getAuthorizationDecision(authzToken, metaData);
+
+                        //cache the authorization decision
+                        authzCacheManager.addToAuthzCache(new AuthzCacheIndex(subject, gatewayId, accessToken, action),
+                                new AuthzCacheEntry(authorizationDecision, expiryTimestamp, System.currentTimeMillis()));
+
+                        return authorizationDecision;
+                    } else {
+                        //undefined status returned from the authz cache manager
+                        throw new AiravataSecurityException("Error in reading from the authorization cache.");
+                    }
+                } else {
 
                     //initialize SSL context with the trust store that contains the public cert of WSO2 Identity Server.
                     TrustStoreManager trustStoreManager = new TrustStoreManager();
                     trustStoreManager.initializeTrustStoreManager(ServerSettings.getTrustStorePath(),
                             ServerSettings.getTrustStorePassword());
 
-                    DefaultOAuthClient oauthClient = new DefaultOAuthClient(ServerSettings.getRemoteAuthzServerUrl(),
-                            username, password, configContext);
-                    OAuth2TokenValidationResponseDTO validationResponse = oauthClient.validateAccessToken(
-                            authzToken.getAccessToken());
-                    boolean isOAuthTokenValid = validationResponse.getValid();
-                    long expiryTimestamp = validationResponse.getExpiryTime();
-
-                    //check for fine grained authorization for the API invocation, based on XACML.
+                    //if XACML based authorization is enabled, check for role based authorization for the API invocation
                     DefaultXACMLPEP entitlementClient = new DefaultXACMLPEP(ServerSettings.getRemoteAuthzServerUrl(),
                             username, password, configContext);
-                    boolean authorizationDecision = entitlementClient.getAuthorizationDecision(authzToken, metaData);
-
-                    boolean decision = isOAuthTokenValid && authorizationDecision;
-
-                    //cache the authorization decision
-                    authzCacheManager.addToAuthzCache(new AuthzCacheIndex(subject, gatewayId, accessToken, action),
-                            new AuthzCacheEntry(decision, expiryTimestamp, System.currentTimeMillis()));
-
-                    return decision;
-                } else {
-                    //undefined status returned from the authz cache manager
-                    throw new AiravataSecurityException("Error in reading from the authorization cache.");
+                    return entitlementClient.getAuthorizationDecision(authzToken, metaData);
                 }
-            } else {
-                CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
-                AppCatalog appCatalog = RegistryFactory.getAppCatalog();
-                GatewayResourceProfile gwrp = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
-                PasswordCredential credential = csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
-                String username = credential.getLoginUserName();
-                if(gwrp.getIdentityServerTenant() != null && !gwrp.getIdentityServerTenant().isEmpty())
-                    username = username + "@" + gwrp.getIdentityServerTenant();
-                String password = credential.getPassword();
-
-                //talk to Authorization Server, obtain the decision and return the result (authz cache is not enabled).
-                ConfigurationContext configContext =
-                        ConfigurationContextFactory.createConfigurationContextFromFileSystem(null, null);
-
-                //initialize SSL context with the trust store that contains the public cert of WSO2 Identity Server.
-                TrustStoreManager trustStoreManager = new TrustStoreManager();
-                trustStoreManager.initializeTrustStoreManager(ServerSettings.getTrustStorePath(),
-                        ServerSettings.getTrustStorePassword());
-
-                DefaultOAuthClient oauthClient = new DefaultOAuthClient(ServerSettings.getRemoteAuthzServerUrl(),
-                        username, password, configContext);
-                OAuth2TokenValidationResponseDTO validationResponse = oauthClient.validateAccessToken(
-                        authzToken.getAccessToken());
-                boolean isOAuthTokenValid = validationResponse.getValid();
-                //if XACML based authorization is enabled, check for role based authorization for the API invocation
-                DefaultXACMLPEP entitlementClient = new DefaultXACMLPEP(ServerSettings.getRemoteAuthzServerUrl(),
-                        username, password, configContext);
-                boolean authorizationDecision = entitlementClient.getAuthorizationDecision(authzToken, metaData);
-
-                return (isOAuthTokenValid && authorizationDecision);
+            }else{
+                return false;
             }
 
         } catch (AxisFault axisFault) {

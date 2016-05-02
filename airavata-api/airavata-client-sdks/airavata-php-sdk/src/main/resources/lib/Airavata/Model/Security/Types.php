@@ -29,10 +29,6 @@ class AuthzToken {
    */
   public $gatewayId = null;
   /**
-   * @var string
-   */
-  public $userName = null;
-  /**
    * @var array
    */
   public $claimsMap = null;
@@ -49,10 +45,6 @@ class AuthzToken {
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'userName',
-          'type' => TType::STRING,
-          ),
-        4 => array(
           'var' => 'claimsMap',
           'type' => TType::MAP,
           'ktype' => TType::STRING,
@@ -72,9 +64,6 @@ class AuthzToken {
       }
       if (isset($vals['gatewayId'])) {
         $this->gatewayId = $vals['gatewayId'];
-      }
-      if (isset($vals['userName'])) {
-        $this->userName = $vals['userName'];
       }
       if (isset($vals['claimsMap'])) {
         $this->claimsMap = $vals['claimsMap'];
@@ -116,13 +105,6 @@ class AuthzToken {
           }
           break;
         case 3:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->userName);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 4:
           if ($ftype == TType::MAP) {
             $this->claimsMap = array();
             $_size0 = 0;
@@ -165,16 +147,11 @@ class AuthzToken {
       $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->userName !== null) {
-      $xfer += $output->writeFieldBegin('userName', TType::STRING, 3);
-      $xfer += $output->writeString($this->userName);
-      $xfer += $output->writeFieldEnd();
-    }
     if ($this->claimsMap !== null) {
       if (!is_array($this->claimsMap)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('claimsMap', TType::MAP, 4);
+      $xfer += $output->writeFieldBegin('claimsMap', TType::MAP, 3);
       {
         $output->writeMapBegin(TType::STRING, TType::STRING, count($this->claimsMap));
         {

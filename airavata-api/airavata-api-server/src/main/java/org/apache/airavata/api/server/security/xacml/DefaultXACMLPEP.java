@@ -76,7 +76,7 @@ public class DefaultXACMLPEP {
     public boolean getAuthorizationDecision(AuthzToken authzToken, Map<String, String> metaData) throws AiravataSecurityException {
         String decision;
         try {
-            String subject = authzToken.getUserName();
+            String subject = authzToken.getClaimsMap().get(Constants.USER_NAME);
             String action = "/airavata/" + metaData.get(Constants.API_METHOD_NAME);
             String decisionString = entitlementServiceStub.getDecisionByAttributes(subject, null, action, null);
             //parse the XML decision string and obtain the decision
