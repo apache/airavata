@@ -70,6 +70,19 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
         try {
             if (ServerSettings.isAPISecured()) {
 
+                //Waiting for the CS to start.
+                int retryAttempts = 4;
+                while(retryAttempts > 0){
+                    try {
+                        csClient.getCSServiceVersion();
+                    }catch (TException ex){}
+                    try{
+                        Thread.sleep(2500);
+                    } catch (InterruptedException e) {}
+                    retryAttempts--;
+                }
+
+
                 ConfigurationContext configContext =
                         ConfigurationContextFactory.createConfigurationContextFromFileSystem(null, null);
                 //initialize SSL context with the trust store that contains the public cert of WSO2 Identity Server.
