@@ -294,28 +294,6 @@ class AiravataHandler : virtual public AiravataIf {
 
   /**
    * 
-   * Get a Public Key by Providing the Token
-   * 
-   * @param CredStoreToken
-   *    Credential Store Token which you want to find the Public Key for.
-   * 
-   * @param gatewayId
-   *    This is the unique identifier of your gateway where the token and public key was generated from.
-   * 
-   * @return SSHpubKey
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param userName
-   */
-  void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName) {
-    // Your implementation goes here
-    printf("getAllUserSSHPubKeys\n");
-  }
-
-  /**
-   * 
    * Get all Public Keys of the Gateway
    * 
    * @param CredStoreToken

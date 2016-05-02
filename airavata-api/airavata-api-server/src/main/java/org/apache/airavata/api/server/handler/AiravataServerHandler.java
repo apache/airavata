@@ -289,6 +289,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * @param notification
      */
     @Override
+    @SecurityCheck
     public String createNotification(AuthzToken authzToken, Notification notification) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
@@ -304,6 +305,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public boolean updateNotification(AuthzToken authzToken, Notification notification) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
@@ -320,6 +322,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public boolean deleteNotification(AuthzToken authzToken, String gatewayId, String notificationId) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
@@ -336,6 +339,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public Notification getNotification(AuthzToken authzToken, String gatewayId, String notificationId) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
@@ -351,6 +355,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public List<Notification> getAllNotifications(AuthzToken authzToken, String gatewayId) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
@@ -419,6 +424,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * belonging to a Gateway.
      */
     @Override
+    @SecurityCheck
     public String registerPwdCredential(AuthzToken authzToken, String gatewayId, String portalUserName, String loginUserName, String password) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             if (csClient == null){
@@ -460,25 +466,9 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    @Override
-    @SecurityCheck
-    public Map<String, String> getAllUserSSHPubKeys(AuthzToken authzToken, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        try {
-            if (csClient == null){
-                csClient = getCredentialStoreServiceClient();
-            }
-            logger.debug("Airavata retrieved all SSH pub keys for user name : " + userName);
-            return csClient.getAllSSHKeysForUser(userName);
-        }catch (Exception e){
-            logger.error("Error occurred while retrieving SSH public keys for user : " + userName , e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while retrieving SSH public keys for user : " + userName + ". More info : " + e.getMessage());
-            throw exception;
-        }
-    }
 
     @Override
+    @SecurityCheck
     public Map<String, String> getAllGatewaySSHPubKeys(AuthzToken authzToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             if (csClient == null){
@@ -497,6 +487,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public Map<String, String> getAllGatewayPWDCredentials(AuthzToken authzToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             if (csClient == null){
@@ -515,6 +506,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public boolean deleteSSHPubKey(AuthzToken authzToken, String airavataCredStoreToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             if (csClient == null){
@@ -532,6 +524,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public boolean deletePWDCredential(AuthzToken authzToken, String airavataCredStoreToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             if (csClient == null){
@@ -584,6 +577,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    @Override
     @SecurityCheck
     public void updateProject(AuthzToken authzToken, String projectId, Project updatedProject) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, ProjectNotFoundException, AuthorizationException, TException {
@@ -1483,6 +1477,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * @throws TException
      */
     @Override
+    @SecurityCheck
     public boolean deleteExperiment(AuthzToken authzToken, String experimentId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
@@ -2523,6 +2518,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public String cloneApplicationInterface(AuthzToken authzToken, String existingAppInterfaceID, String newApplicationName, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -2922,6 +2918,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a server-side generated airavata storage resource globally unique identifier.
      */
     @Override
+    @SecurityCheck
     public String registerStorageResource(AuthzToken authzToken, StorageResourceDescription storageResourceDescription) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
@@ -2946,6 +2943,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Storage Resource Object created from the datamodel..
      */
     @Override
+    @SecurityCheck
     public StorageResourceDescription getStorageResource(AuthzToken authzToken, String storageResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
@@ -2969,6 +2967,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Compute Resource Object created from the datamodel..
      */
     @Override
+    @SecurityCheck
     public Map<String, String> getAllStorageResourceNames(AuthzToken authzToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
@@ -2994,6 +2993,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the update.
      */
     @Override
+    @SecurityCheck
     public boolean updateStorageResource(AuthzToken authzToken, String storageResourceId, StorageResourceDescription storageResourceDescription) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
@@ -3018,6 +3018,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
+    @SecurityCheck
     public boolean deleteStorageResource(AuthzToken authzToken, String storageResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
@@ -4035,6 +4036,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public boolean addGatewayStoragePreference(AuthzToken authzToken, String gatewayID, String storageResourceId, StoragePreference dataStoragePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!isGatewayExistInternal(gatewayID)){
@@ -4109,6 +4111,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public StoragePreference getGatewayStoragePreference(AuthzToken authzToken, String gatewayID, String storageId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!isGatewayExistInternal(gatewayID)){
@@ -4166,6 +4169,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public List<StoragePreference> getAllGatewayStoragePreferences(AuthzToken authzToken, String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!isGatewayExistInternal(gatewayID)){
@@ -4248,6 +4252,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public boolean updateGatewayStoragePreference(AuthzToken authzToken, String gatewayID, String storageId, StoragePreference dataStoragePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!isGatewayExistInternal(gatewayID)){
@@ -4312,6 +4317,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public boolean deleteGatewayStoragePreference(AuthzToken authzToken, String gatewayID, String storageId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!isGatewayExistInternal(gatewayID)){
@@ -4513,6 +4519,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public DataProductModel getParentDataProduct(AuthzToken authzToken, String productUri) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
@@ -4529,6 +4536,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public List<DataProductModel> getChildDataProducts(AuthzToken authzToken, String productUri) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {

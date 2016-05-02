@@ -242,25 +242,6 @@ class AiravataIf {
 
   /**
    * 
-   * Get a Public Key by Providing the Token
-   * 
-   * @param CredStoreToken
-   *    Credential Store Token which you want to find the Public Key for.
-   * 
-   * @param gatewayId
-   *    This is the unique identifier of your gateway where the token and public key was generated from.
-   * 
-   * @return SSHpubKey
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param userName
-   */
-  virtual void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName) = 0;
-
-  /**
-   * 
    * Get all Public Keys of the Gateway
    * 
    * @param CredStoreToken
@@ -2744,9 +2725,6 @@ class AiravataNull : virtual public AiravataIf {
     return;
   }
   void getSSHPubKey(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataCredStoreToken */, const std::string& /* gatewayId */) {
-    return;
-  }
-  void getAllUserSSHPubKeys(std::map<std::string, std::string> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* userName */) {
     return;
   }
   void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */) {
@@ -5363,134 +5341,6 @@ class Airavata_getSSHPubKey_presult {
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getSSHPubKey_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
-class Airavata_getAllUserSSHPubKeys_args {
- public:
-
-  Airavata_getAllUserSSHPubKeys_args(const Airavata_getAllUserSSHPubKeys_args&);
-  Airavata_getAllUserSSHPubKeys_args& operator=(const Airavata_getAllUserSSHPubKeys_args&);
-  Airavata_getAllUserSSHPubKeys_args() : userName() {
-  }
-
-  virtual ~Airavata_getAllUserSSHPubKeys_args() throw();
-   ::apache::airavata::model::security::AuthzToken authzToken;
-  std::string userName;
-
-  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
-
-  void __set_userName(const std::string& val);
-
-  bool operator == (const Airavata_getAllUserSSHPubKeys_args & rhs) const
-  {
-    if (!(authzToken == rhs.authzToken))
-      return false;
-    if (!(userName == rhs.userName))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_getAllUserSSHPubKeys_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_getAllUserSSHPubKeys_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class Airavata_getAllUserSSHPubKeys_pargs {
- public:
-
-
-  virtual ~Airavata_getAllUserSSHPubKeys_pargs() throw();
-  const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* userName;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_getAllUserSSHPubKeys_result__isset {
-  _Airavata_getAllUserSSHPubKeys_result__isset() : success(false), ire(false), ace(false), ase(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_getAllUserSSHPubKeys_result__isset;
-
-class Airavata_getAllUserSSHPubKeys_result {
- public:
-
-  Airavata_getAllUserSSHPubKeys_result(const Airavata_getAllUserSSHPubKeys_result&);
-  Airavata_getAllUserSSHPubKeys_result& operator=(const Airavata_getAllUserSSHPubKeys_result&);
-  Airavata_getAllUserSSHPubKeys_result() {
-  }
-
-  virtual ~Airavata_getAllUserSSHPubKeys_result() throw();
-  std::map<std::string, std::string>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_getAllUserSSHPubKeys_result__isset __isset;
-
-  void __set_success(const std::map<std::string, std::string> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  bool operator == (const Airavata_getAllUserSSHPubKeys_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_getAllUserSSHPubKeys_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_getAllUserSSHPubKeys_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_getAllUserSSHPubKeys_presult__isset {
-  _Airavata_getAllUserSSHPubKeys_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_getAllUserSSHPubKeys_presult__isset;
-
-class Airavata_getAllUserSSHPubKeys_presult {
- public:
-
-
-  virtual ~Airavata_getAllUserSSHPubKeys_presult() throw();
-  std::map<std::string, std::string> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_getAllUserSSHPubKeys_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -23939,9 +23789,6 @@ class AiravataClient : virtual public AiravataIf {
   void getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
   void send_getSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
   void recv_getSSHPubKey(std::string& _return);
-  void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName);
-  void send_getAllUserSSHPubKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName);
-  void recv_getAllUserSSHPubKeys(std::map<std::string, std::string> & _return);
   void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void send_getAllGatewaySSHPubKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return);
@@ -24363,7 +24210,6 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_generateAndRegisterSSHKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_registerPwdCredential(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getSSHPubKey(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_getAllUserSSHPubKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllGatewaySSHPubKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllGatewayPWDCredentials(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteSSHPubKey(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -24513,7 +24359,6 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["generateAndRegisterSSHKeys"] = &AiravataProcessor::process_generateAndRegisterSSHKeys;
     processMap_["registerPwdCredential"] = &AiravataProcessor::process_registerPwdCredential;
     processMap_["getSSHPubKey"] = &AiravataProcessor::process_getSSHPubKey;
-    processMap_["getAllUserSSHPubKeys"] = &AiravataProcessor::process_getAllUserSSHPubKeys;
     processMap_["getAllGatewaySSHPubKeys"] = &AiravataProcessor::process_getAllGatewaySSHPubKeys;
     processMap_["getAllGatewayPWDCredentials"] = &AiravataProcessor::process_getAllGatewayPWDCredentials;
     processMap_["deleteSSHPubKey"] = &AiravataProcessor::process_deleteSSHPubKey;
@@ -24823,16 +24668,6 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->getSSHPubKey(_return, authzToken, airavataCredStoreToken, gatewayId);
     }
     ifaces_[i]->getSSHPubKey(_return, authzToken, airavataCredStoreToken, gatewayId);
-    return;
-  }
-
-  void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllUserSSHPubKeys(_return, authzToken, userName);
-    }
-    ifaces_[i]->getAllUserSSHPubKeys(_return, authzToken, userName);
     return;
   }
 
@@ -26165,9 +26000,6 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
   int32_t send_getSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
   void recv_getSSHPubKey(std::string& _return, const int32_t seqid);
-  void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName);
-  int32_t send_getAllUserSSHPubKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName);
-  void recv_getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const int32_t seqid);
   void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   int32_t send_getAllGatewaySSHPubKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const int32_t seqid);
