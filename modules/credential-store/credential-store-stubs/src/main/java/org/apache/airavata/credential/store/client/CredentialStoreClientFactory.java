@@ -35,14 +35,6 @@ public class CredentialStoreClientFactory {
         try {
             TTransport transport = new TSocket(serverHost, serverPort);
             transport.open();
-            int maxWaitTime = 4;
-            while(!transport.isOpen() && maxWaitTime > 0){
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {}
-                maxWaitTime--;
-                transport.open();
-            }
             TProtocol protocol = new TBinaryProtocol(transport);
             return new CredentialStoreService.Client(protocol);
         } catch (TTransportException e) {
