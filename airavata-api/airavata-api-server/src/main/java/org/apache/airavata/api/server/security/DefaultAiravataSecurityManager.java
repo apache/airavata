@@ -60,6 +60,7 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
                 TrustStoreManager trustStoreManager = new TrustStoreManager();
                 trustStoreManager.initializeTrustStoreManager(ServerSettings.getTrustStorePath(),
                         ServerSettings.getTrustStorePassword());
+
                 DefaultPAPClient PAPClient = new DefaultPAPClient(ServerSettings.getRemoteAuthzServerUrl(),
                         ServerSettings.getAdminUsername(), ServerSettings.getAdminPassword(), configContext);
                 boolean policyAdded = PAPClient.isPolicyAdded(ServerSettings.getAuthorizationPoliyName());
