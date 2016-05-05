@@ -92,6 +92,7 @@ resources:
       - slurm@comet # comet
       - slurm@batch1.stampede.tacc.utexas.edu # stampede
       - root@master.ls5.tacc.utexas.edu # Lonestar 5
+      - slurm@jurecab01.zam.kfa-juelich.de # Jureca
 
   - jobManagerType: UGE
     commandOutputParser: org.apache.airavata.gfac.impl.job.UGEOutputParser
