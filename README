@@ -62,7 +62,6 @@ Airavata Source Distribution Directory Structure
 		│   │   ├── orchestrator-server
 		│   │   ├── server
 		│   │   └── release
-		│   │   └── xbaya-gui
 		│   ├── gfac
 		│   │   ├── airavata-gfac-service
 		│   │   ├── gfac-bes
