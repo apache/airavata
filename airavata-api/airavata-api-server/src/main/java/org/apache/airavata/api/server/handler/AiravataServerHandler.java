@@ -1416,6 +1416,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
+            appCatalog = RegistryFactory.getAppCatalog();
             if (!validateString(experiment.getExperimentName())){
                 logger.error("Cannot create experiments with empty experiment name");
                 AiravataSystemException exception = new AiravataSystemException();
