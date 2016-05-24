@@ -319,7 +319,7 @@ public class AiravataServerHandlerTest {
             Notification notification = new Notification();
             notification.setTitle("3424234");
             notification.setGatewayId("test");
-            notification.setNotifcationMessage("sdkjfbjks kjbsdf kjsdbfkjsdbf");
+            notification.setNotificationMessage("sdkjfbjks kjbsdf kjsdbfkjsdbf");
             String notificationId = airavataServerHandler.createNotification(authzToken, notification);
             Assert.assertNotNull(notificationId);
             List<Notification> notifications = airavataServerHandler.getAllNotifications(authzToken, "test");

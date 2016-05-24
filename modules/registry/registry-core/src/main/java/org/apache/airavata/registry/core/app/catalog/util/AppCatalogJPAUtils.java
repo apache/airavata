@@ -60,6 +60,7 @@ public class AppCatalogJPAUtils {
             properties.put("openjpa.ConnectionProperties", connectionProperties);
             properties.put("openjpa.DynamicEnhancementAgent", "true");
             properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
+            properties.put("openjpa.Multithreaded", "true");
             // For app catalog, we don't need caching
 //            properties.put("openjpa.DataCache","" + readServerProperties(JPA_CACHE_ENABLED) + "(CacheSize=" + Integer.valueOf(readServerProperties(JPA_CACHE_SIZE)) + ", SoftReferenceSize=0)");
 //            properties.put("openjpa.QueryCache","" + readServerProperties(JPA_CACHE_ENABLED) + "(CacheSize=" + Integer.valueOf(readServerProperties(JPA_CACHE_SIZE)) + ", SoftReferenceSize=0)");
@@ -376,13 +377,6 @@ public class AppCatalogJPAUtils {
                 } else {
                     logger.error("Object should be a Module Load Cmd.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Module Load Cmd.");
-                }
-            case GATEWAY_CLIENT_CREDENTIAL:
-                if (o instanceof GatewayClientCredential) {
-                    return createGatewayClientCredential((GatewayClientCredential) o);
-                } else {
-                    logger.error("Object should be a Gateway Client Credential.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a Gateway Client Credential.");
                 }
             default:
                 logger.error("Illegal data type..", new IllegalArgumentException());
@@ -848,22 +842,14 @@ public class AppCatalogJPAUtils {
         return resource;
     }
 
-    private static AppCatalogResource createGatewayClientCredential(GatewayClientCredential o) {
-        GatewayClientCredentialResource resource = new GatewayClientCredentialResource();
-        if (o != null) {
-            resource.setClientKey(o.getClientKey());
-            resource.setClientSecret(o.getClientSecret());
-            resource.setGatewayId(o.getGatewayId());
-        }
-        return resource;
-    }
-
     private static AppCatalogResource createGatewayProfile(GatewayProfile o) {
         GatewayProfileResource resource = new GatewayProfileResource();
         if (o != null) {
             resource.setGatewayID(o.getGatewayID());
             resource.setCreatedTime(o.getCreationTime());
             resource.setCredentialStoreToken(o.getCredentialStoreToken());
+            resource.setIdentityServerTenant(o.getIdentityServerTenant());
+            resource.setIdentityServerPwdCredToken(o.getIdentityServerPwdCredToken());
             if (o.getUpdateTime() != null) {
                 resource.setUpdatedTime(o.getUpdateTime());
             }

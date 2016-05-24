@@ -51,12 +51,7 @@ public class AppCatalogImpl implements AppCatalog {
 	public GwyResourceProfile getGatewayProfile() throws AppCatalogException {
 		return new GwyResourceProfileImpl();
 	}
-
-    @Override
-    public GwyClientCredential getGatewayClientCredential() throws AppCatalogException {
-        return new GwyClientCredentialImpl();
-    }
-
+    
     @Override
     public WorkflowCatalog getWorkflowCatalog() throws AppCatalogException {
         return new WorkflowCatalogImpl();

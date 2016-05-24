@@ -60,7 +60,10 @@ service CredentialStoreService {
 
   map<string,string> getAllSSHKeysForGateway (1: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
 
+  map<string,string> getAllPWDCredentialsForGateway (1: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
+
   bool deleteSSHCredential(1: required string tokenId, 2: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
 
+  bool deletePWDCredential(1: required string tokenId, 2: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
 
 }

@@ -30,6 +30,18 @@
 
 namespace apache { namespace airavata { namespace model { namespace workspace {
 
+int _kNotificationPriorityValues[] = {
+  NotificationPriority::LOW,
+  NotificationPriority::NORMAL,
+  NotificationPriority::HIGH
+};
+const char* _kNotificationPriorityNames[] = {
+  "LOW",
+  "NORMAL",
+  "HIGH"
+};
+const std::map<int, const char*> _NotificationPriority_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(3, _kNotificationPriorityValues, _kNotificationPriorityNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
 
 Group::~Group() throw() {
 }
@@ -708,18 +720,28 @@ void Notification::__set_title(const std::string& val) {
   this->title = val;
 }
 
-void Notification::__set_notifcationMessage(const std::string& val) {
-  this->notifcationMessage = val;
+void Notification::__set_notificationMessage(const std::string& val) {
+  this->notificationMessage = val;
 }
 
-void Notification::__set_publishedtime(const int64_t val) {
-  this->publishedtime = val;
-__isset.publishedtime = true;
+void Notification::__set_creationTime(const int64_t val) {
+  this->creationTime = val;
+__isset.creationTime = true;
+}
+
+void Notification::__set_publishedTime(const int64_t val) {
+  this->publishedTime = val;
+__isset.publishedTime = true;
 }
 
 void Notification::__set_expirationTime(const int64_t val) {
   this->expirationTime = val;
 __isset.expirationTime = true;
+}
+
+void Notification::__set_priority(const NotificationPriority::type val) {
+  this->priority = val;
+__isset.priority = true;
 }
 
 uint32_t Notification::read(::apache::thrift::protocol::TProtocol* iprot) {
@@ -736,7 +758,7 @@ uint32_t Notification::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   bool isset_gatewayId = false;
   bool isset_title = false;
-  bool isset_notifcationMessage = false;
+  bool isset_notificationMessage = false;
 
   while (true)
   {
@@ -772,24 +794,42 @@ uint32_t Notification::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 4:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->notifcationMessage);
-          isset_notifcationMessage = true;
+          xfer += iprot->readString(this->notificationMessage);
+          isset_notificationMessage = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 5:
         if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64(this->publishedtime);
-          this->__isset.publishedtime = true;
+          xfer += iprot->readI64(this->creationTime);
+          this->__isset.creationTime = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 6:
         if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->publishedTime);
+          this->__isset.publishedTime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 7:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->expirationTime);
           this->__isset.expirationTime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 8:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast26;
+          xfer += iprot->readI32(ecast26);
+          this->priority = (NotificationPriority::type)ecast26;
+          this->__isset.priority = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -807,7 +847,7 @@ uint32_t Notification::read(::apache::thrift::protocol::TProtocol* iprot) {
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_title)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_notifcationMessage)
+  if (!isset_notificationMessage)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -830,18 +870,28 @@ uint32_t Notification::write(::apache::thrift::protocol::TProtocol* oprot) const
   xfer += oprot->writeString(this->title);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("notifcationMessage", ::apache::thrift::protocol::T_STRING, 4);
-  xfer += oprot->writeString(this->notifcationMessage);
+  xfer += oprot->writeFieldBegin("notificationMessage", ::apache::thrift::protocol::T_STRING, 4);
+  xfer += oprot->writeString(this->notificationMessage);
   xfer += oprot->writeFieldEnd();
 
-  if (this->__isset.publishedtime) {
-    xfer += oprot->writeFieldBegin("publishedtime", ::apache::thrift::protocol::T_I64, 5);
-    xfer += oprot->writeI64(this->publishedtime);
+  if (this->__isset.creationTime) {
+    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 5);
+    xfer += oprot->writeI64(this->creationTime);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.publishedTime) {
+    xfer += oprot->writeFieldBegin("publishedTime", ::apache::thrift::protocol::T_I64, 6);
+    xfer += oprot->writeI64(this->publishedTime);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.expirationTime) {
-    xfer += oprot->writeFieldBegin("expirationTime", ::apache::thrift::protocol::T_I64, 6);
+    xfer += oprot->writeFieldBegin("expirationTime", ::apache::thrift::protocol::T_I64, 7);
     xfer += oprot->writeI64(this->expirationTime);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.priority) {
+    xfer += oprot->writeFieldBegin("priority", ::apache::thrift::protocol::T_I32, 8);
+    xfer += oprot->writeI32((int32_t)this->priority);
     xfer += oprot->writeFieldEnd();
   }
   xfer += oprot->writeFieldStop();
@@ -854,29 +904,35 @@ void swap(Notification &a, Notification &b) {
   swap(a.notificationId, b.notificationId);
   swap(a.gatewayId, b.gatewayId);
   swap(a.title, b.title);
-  swap(a.notifcationMessage, b.notifcationMessage);
-  swap(a.publishedtime, b.publishedtime);
+  swap(a.notificationMessage, b.notificationMessage);
+  swap(a.creationTime, b.creationTime);
+  swap(a.publishedTime, b.publishedTime);
   swap(a.expirationTime, b.expirationTime);
+  swap(a.priority, b.priority);
   swap(a.__isset, b.__isset);
 }
 
-Notification::Notification(const Notification& other26) {
-  notificationId = other26.notificationId;
-  gatewayId = other26.gatewayId;
-  title = other26.title;
-  notifcationMessage = other26.notifcationMessage;
-  publishedtime = other26.publishedtime;
-  expirationTime = other26.expirationTime;
-  __isset = other26.__isset;
-}
-Notification& Notification::operator=(const Notification& other27) {
+Notification::Notification(const Notification& other27) {
   notificationId = other27.notificationId;
   gatewayId = other27.gatewayId;
   title = other27.title;
-  notifcationMessage = other27.notifcationMessage;
-  publishedtime = other27.publishedtime;
+  notificationMessage = other27.notificationMessage;
+  creationTime = other27.creationTime;
+  publishedTime = other27.publishedTime;
   expirationTime = other27.expirationTime;
+  priority = other27.priority;
   __isset = other27.__isset;
+}
+Notification& Notification::operator=(const Notification& other28) {
+  notificationId = other28.notificationId;
+  gatewayId = other28.gatewayId;
+  title = other28.title;
+  notificationMessage = other28.notificationMessage;
+  creationTime = other28.creationTime;
+  publishedTime = other28.publishedTime;
+  expirationTime = other28.expirationTime;
+  priority = other28.priority;
+  __isset = other28.__isset;
   return *this;
 }
 void Notification::printTo(std::ostream& out) const {
@@ -885,9 +941,11 @@ void Notification::printTo(std::ostream& out) const {
   out << "notificationId="; (__isset.notificationId ? (out << to_string(notificationId)) : (out << "<null>"));
   out << ", " << "gatewayId=" << to_string(gatewayId);
   out << ", " << "title=" << to_string(title);
-  out << ", " << "notifcationMessage=" << to_string(notifcationMessage);
-  out << ", " << "publishedtime="; (__isset.publishedtime ? (out << to_string(publishedtime)) : (out << "<null>"));
+  out << ", " << "notificationMessage=" << to_string(notificationMessage);
+  out << ", " << "creationTime="; (__isset.creationTime ? (out << to_string(creationTime)) : (out << "<null>"));
+  out << ", " << "publishedTime="; (__isset.publishedTime ? (out << to_string(publishedTime)) : (out << "<null>"));
   out << ", " << "expirationTime="; (__isset.expirationTime ? (out << to_string(expirationTime)) : (out << "<null>"));
+  out << ", " << "priority="; (__isset.priority ? (out << to_string(priority)) : (out << "<null>"));
   out << ")";
 }
 

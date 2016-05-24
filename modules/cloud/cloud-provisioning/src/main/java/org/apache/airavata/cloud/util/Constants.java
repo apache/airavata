@@ -21,16 +21,36 @@
 
 package org.apache.airavata.cloud.util;
 
+/**
+ * The Class Constants.
+ */
 public class Constants {
 
+	/** The Constant OS_AUTH_URL. */
 	// OpenStack openrc string constants.
 	public static final String OS_AUTH_URL = "OS_AUTH_URL";
-	public static final String OS_IDENTITY_API_VERSION = "OS_IDENTITY_API_VERSION";
-	public static final String OS_USERNAME = "OS_USERNAME";
-	public static final String OS_PASSWORD = "OS_PASSWORD";
-	public static final String OS_USER_DOMAIN_NAME = "OS_USER_DOMAIN_NAME";
-	public static final String OS_PROJECT_DOMAIN_NAME = "OS_PROJECT_DOMAIN_NAME";
-	public static final String OS_FLOATING_IP_POOL = "OS_FLOATING_IP_POOL";
-	public static final String OS_SUBNET_NAME = "OS_SUBNET_NAME";
 
+	/** The Constant OS_IDENTITY_API_VERSION. */
+	public static final String OS_IDENTITY_API_VERSION = "OS_IDENTITY_API_VERSION";
+
+	/** The Constant OS_USERNAME. */
+	public static final String OS_USERNAME = "OS_USERNAME";
+
+	/** The Constant OS_PASSWORD. */
+	public static final String OS_PASSWORD = "OS_PASSWORD";
+
+	/** The Constant OS_USER_DOMAIN_NAME. */
+	public static final String OS_USER_DOMAIN_NAME = "OS_USER_DOMAIN_NAME";
+
+	/** The Constant OS_PROJECT_DOMAIN_NAME. */
+	public static final String OS_PROJECT_DOMAIN_NAME = "OS_PROJECT_DOMAIN_NAME";
+
+	/** The Constant OS_FLOATING_IP_POOL. */
+	public static final String OS_FLOATING_IP_POOL = "OS_FLOATING_IP_POOL";
+
+	/** The Constant OS_NETWORK_NAME. */
+	public static final String OS_NETWORK_NAME = "OS_NETWORK_NAME";
+
+	/** The Constant OS_IP_VERSION_DEFAULT. */
+	public static final Integer OS_IP_VERSION_DEFAULT = 4;
 }

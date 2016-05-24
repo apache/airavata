@@ -37,6 +37,7 @@ import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
+import org.apache.airavata.model.workspace.NotificationPriority;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.resources.*;
@@ -570,11 +571,14 @@ public class ThriftDataModelConversion {
             notification.setNotificationId(resource.getNotificationId());
             notification.setGatewayId(resource.getGatewayId());
             notification.setTitle(resource.getTitle());
-            notification.setNotifcationMessage(resource.getNotificationMessage());
+            notification.setNotificationMessage(resource.getNotificationMessage());
+            notification.setPriority(NotificationPriority.valueOf(resource.getPriority()));
             if(resource.getPublishedTime() != null)
-                notification.setPublishedtime(resource.getPublishedTime().getTime());
+                notification.setPublishedTime(resource.getPublishedTime().getTime());
             if(resource.getExpirationTime() != null)
                 notification.setExpirationTime(resource.getExpirationTime().getTime());
+            if(resource.getCreationTime() != null)
+                notification.setCreationTime(resource.getCreationTime().getTime());
             return notification;
         }
         return null;
