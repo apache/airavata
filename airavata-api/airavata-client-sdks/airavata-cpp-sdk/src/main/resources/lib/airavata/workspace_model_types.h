@@ -37,6 +37,16 @@
 
 namespace apache { namespace airavata { namespace model { namespace workspace {
 
+struct NotificationPriority {
+  enum type {
+    LOW = 0,
+    NORMAL = 1,
+    HIGH = 2
+  };
+};
+
+extern const std::map<int, const char*> _NotificationPriority_VALUES_TO_NAMES;
+
 class Group;
 
 class Project;
@@ -310,10 +320,12 @@ inline std::ostream& operator<<(std::ostream& out, const Gateway& obj)
 }
 
 typedef struct _Notification__isset {
-  _Notification__isset() : notificationId(false), publishedtime(false), expirationTime(false) {}
+  _Notification__isset() : notificationId(false), creationTime(false), publishedTime(false), expirationTime(false), priority(false) {}
   bool notificationId :1;
-  bool publishedtime :1;
+  bool creationTime :1;
+  bool publishedTime :1;
   bool expirationTime :1;
+  bool priority :1;
 } _Notification__isset;
 
 class Notification {
@@ -321,16 +333,18 @@ class Notification {
 
   Notification(const Notification&);
   Notification& operator=(const Notification&);
-  Notification() : notificationId(), gatewayId(), title(), notifcationMessage(), publishedtime(0), expirationTime(0) {
+  Notification() : notificationId(), gatewayId(), title(), notificationMessage(), creationTime(0), publishedTime(0), expirationTime(0), priority((NotificationPriority::type)0) {
   }
 
   virtual ~Notification() throw();
   std::string notificationId;
   std::string gatewayId;
   std::string title;
-  std::string notifcationMessage;
-  int64_t publishedtime;
+  std::string notificationMessage;
+  int64_t creationTime;
+  int64_t publishedTime;
   int64_t expirationTime;
+  NotificationPriority::type priority;
 
   _Notification__isset __isset;
 
@@ -340,11 +354,15 @@ class Notification {
 
   void __set_title(const std::string& val);
 
-  void __set_notifcationMessage(const std::string& val);
+  void __set_notificationMessage(const std::string& val);
 
-  void __set_publishedtime(const int64_t val);
+  void __set_creationTime(const int64_t val);
+
+  void __set_publishedTime(const int64_t val);
 
   void __set_expirationTime(const int64_t val);
+
+  void __set_priority(const NotificationPriority::type val);
 
   bool operator == (const Notification & rhs) const
   {
@@ -356,15 +374,23 @@ class Notification {
       return false;
     if (!(title == rhs.title))
       return false;
-    if (!(notifcationMessage == rhs.notifcationMessage))
+    if (!(notificationMessage == rhs.notificationMessage))
       return false;
-    if (__isset.publishedtime != rhs.__isset.publishedtime)
+    if (__isset.creationTime != rhs.__isset.creationTime)
       return false;
-    else if (__isset.publishedtime && !(publishedtime == rhs.publishedtime))
+    else if (__isset.creationTime && !(creationTime == rhs.creationTime))
+      return false;
+    if (__isset.publishedTime != rhs.__isset.publishedTime)
+      return false;
+    else if (__isset.publishedTime && !(publishedTime == rhs.publishedTime))
       return false;
     if (__isset.expirationTime != rhs.__isset.expirationTime)
       return false;
     else if (__isset.expirationTime && !(expirationTime == rhs.expirationTime))
+      return false;
+    if (__isset.priority != rhs.__isset.priority)
+      return false;
+    else if (__isset.priority && !(priority == rhs.priority))
       return false;
     return true;
   }

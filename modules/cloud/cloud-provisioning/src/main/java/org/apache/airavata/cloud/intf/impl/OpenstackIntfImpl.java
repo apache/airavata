@@ -39,6 +39,11 @@ import org.openstack4j.model.compute.FloatingIP;
 import org.openstack4j.model.compute.Keypair;
 import org.openstack4j.model.compute.Server;
 import org.openstack4j.model.compute.ServerCreate;
+import org.openstack4j.model.network.AttachInterfaceType;
+import org.openstack4j.model.network.IPVersionType;
+import org.openstack4j.model.network.Network;
+import org.openstack4j.model.network.Router;
+import org.openstack4j.model.network.RouterInterface;
 import org.openstack4j.model.network.Subnet;
 import org.openstack4j.openstack.compute.domain.NovaAddresses.NovaAddress;
 import org.slf4j.Logger;
@@ -91,7 +96,7 @@ public class OpenstackIntfImpl implements CloudInterface {
 			String networkId = null;
 
 			// Adhering to openstack format of subnet names 'subnet-<name>'.
-			String networkName = "subnet-" + properties.getProperty(Constants.OS_SUBNET_NAME);
+			String networkName = "subnet-" + properties.getProperty(Constants.OS_NETWORK_NAME);
 
 			for( Subnet net : os.networking().subnet().list() ) {
 				if(net.getName().equals(networkName)) {
@@ -159,7 +164,7 @@ public class OpenstackIntfImpl implements CloudInterface {
 
 			// Get Floating IP if there is one associated.
 			String floatingIpAddr = null;
-			for(Address novaAddress : server.getAddresses().getAddresses().get(properties.getProperty(Constants.OS_SUBNET_NAME))) {
+			for(Address novaAddress : server.getAddresses().getAddresses().get(properties.getProperty(Constants.OS_NETWORK_NAME))) {
 				novaAddress = (NovaAddress) novaAddress;
 				if(novaAddress.getType().equals(IPType.FLOATING.toString())) {
 					floatingIpAddr = novaAddress.getAddr();
@@ -271,6 +276,197 @@ public class OpenstackIntfImpl implements CloudInterface {
 			ex.printStackTrace();
 			// TODO: Check with the team on how to handle exceptions.
 			logger.error("Failed to associate floating IP to server with ID: " + serverId);
+		}
+	}
+
+	@Override
+	public Object createNetwork(String networkName) {
+		Network network = null;
+		try {
+			network = os.networking().network().create(Builders.network()
+					.name(networkName)
+					.adminStateUp(true)
+					.build());
+			logger.info("Created a new network : " + network);
+		} catch( Exception ex ) {
+			ex.printStackTrace();
+			// TODO: Check with the team on how to handle exceptions.
+			logger.error("Failed to create network: " + networkName + ". Exception: " + ex.getMessage(), ex);
+		}
+		return network;
+	}
+
+	@Override
+	public Object createRouter(String routerName, String externalGatewayName) {
+		String publicNetId = null;
+		Router router = null;
+		try {
+			for(Network net : os.networking().network().list()) {
+				if(net.getName().equals(externalGatewayName)) {
+					publicNetId = net.getId();
+				}
+			}
+			if(publicNetId != null) {
+				router = os.networking().router().create(Builders.router()
+						.name(routerName)
+						.adminStateUp(true)
+						.externalGateway(publicNetId)
+						.build());
+				logger.info("Created a new router " + router + " for external gateway : [" + externalGatewayName + "]");
+			} else {
+				logger.error("Failed to create router because external gateway [ " + externalGatewayName + "] is not found!");
+			}	
+		} catch( Exception ex ) {
+			ex.printStackTrace();
+			// TODO: Check with the team on how to handle exceptions.
+			logger.error("Failed to create network: " + routerName + ". Exception: " + ex.getMessage(), ex);
+		}
+		return router;
+	}
+
+	@Override
+	public Object createSubnet(String subnetName, String networkName, String subnetCIDR, int ipVersion) {
+		String networkId = null;
+		Subnet subnet = null;
+		try {
+			// get network id
+			for(Network network : os.networking().network().list()) {
+				if(network.getName().equals(networkName)) {
+					networkId = network.getId();
+				}
+			}
+
+			if(networkId != null) {
+				subnet = os.networking().subnet().create(Builders.subnet()
+						.enableDHCP(true)
+						.name(subnetName)
+						.networkId(networkId)
+						.ipVersion(IPVersionType.valueOf(ipVersion))
+						.cidr(subnetCIDR)
+						.build());
+				logger.info("Created a subnet : " + subnetName + " for network [ " + networkName + "]");
+			} else {
+				logger.error("Failed to create subnet because network [ " + networkName + "] is not found!");
+			}
+		} catch( Exception ex ) {
+			ex.printStackTrace();
+			// TODO: Check with the team on how to handle exceptions.
+			logger.error("Failed to create subnet: " + subnetName + ". Exception: " + ex.getMessage(), ex);
+		}
+		return subnet;
+	}
+
+	@Override
+	public Object createRouterSubnetInterface(String routerName, String subnetName) {
+		String subnetId = null, routerId = null;
+		RouterInterface iface = null;
+		try {
+			// get subnetid from name
+			for(Subnet subnet : os.networking().subnet().list()) {
+				if(subnet.getName().equals(subnetName)) {
+					subnetId = subnet.getId();
+				}
+			}
+
+			// get routerid from name
+			for(Router router : os.networking().router().list()) {
+				if(router.getName().equals(routerName)) {
+					routerId = router.getId();
+				}
+			}
+
+			if(routerId != null && subnetId != null) {
+				// attach external interface to gateway
+				iface = os.networking().router()
+						.attachInterface(routerId, AttachInterfaceType.SUBNET, subnetId);
+				logger.info("Attached external interface to router : " + iface);
+			} else {
+				logger.error("Either router or network is not found. Kindly re-check and try again.");
+			}
+		} catch( Exception ex ) {
+			ex.printStackTrace();
+			// TODO: Check with the team on how to handle exceptions.
+			logger.error("Failed to create subnet-router interface. Exception: " + ex.getMessage(), ex);
+		}
+		return iface;
+	}
+
+	@Override
+	public void deleteRouterSubnetInterface(String routerName, String subnetName) {
+		String routerId = null, subnetId = null;
+		try {
+			// get subnet id
+			for(Subnet subnet : os.networking().subnet().list()) {
+				if(subnet.getName().equals(subnetName)) {
+					subnetId = subnet.getId();
+				}
+			}
+			// get router id
+			for(Router router : os.networking().router().list()) {
+				if(router.getName().equals(routerName)) {
+					routerId = router.getId();
+				}
+			}
+			// detach the interface
+			if(routerId != null && subnetId != null) {
+				os.networking().router().detachInterface(routerId, subnetId, null);
+			} else {
+				logger.error("Failed to delete router subnet interface. Either router/subnet not found.");
+			}
+		} catch( Exception ex ) {
+			ex.printStackTrace();
+			// TODO: Check with the team on how to handle exceptions.
+			logger.error("Failed to delete subnet: " + subnetName + ". Exception: " + ex.getMessage(), ex);
+		}
+	}
+
+	@Override
+	public void deleteSubnet(String subnetName) {
+		try {
+			for(Subnet subnet : os.networking().subnet().list()) {
+				if(subnet.getName().equals(subnetName)) {
+					os.networking().subnet().delete(subnet.getId());
+					logger.info("Deleted Subnet [" + subnet.getName() + "] Successfully.");
+				}
+			}
+		} catch( Exception ex ) {
+			ex.printStackTrace();
+			// TODO: Check with the team on how to handle exceptions.
+			logger.error("Failed to delete subnet: " + subnetName + ". Exception: " + ex.getMessage(), ex);
+		}
+
+	}
+
+	@Override
+	public void deleteRouter(String routerName) {
+		try {
+			for(Router router : os.networking().router().list()) {
+				if(router.getName().equals(routerName)) {
+					os.networking().router().delete(router.getId());
+					logger.info("Deleted Router [" + router.getName() + "] Successfully.");
+				}
+			}
+		} catch( Exception ex ) {
+			ex.printStackTrace();
+			// TODO: Check with the team on how to handle exceptions.
+			logger.error("Failed to delete router: " + routerName + ". Exception: " + ex.getMessage(), ex);
+		}
+
+	}
+
+	@Override
+	public void deleteNetwork(String networkName) {
+		try {
+			for(Network network : os.networking().network().list()) {
+				if(network.getName().equals(networkName)) {
+					os.networking().network().delete(network.getId());
+					logger.info("Deleted Network [" + network.getName() + "] Successfully.");
+				}
+			}
+		} catch( Exception ex ) {
+			ex.printStackTrace();
+			// TODO: Check with the team on how to handle exceptions.
+			logger.error("Failed to delete network: " + networkName + ". Exception: " + ex.getMessage(), ex);
 		}
 	}
 }

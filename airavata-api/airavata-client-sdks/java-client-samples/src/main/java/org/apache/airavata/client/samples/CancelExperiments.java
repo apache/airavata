@@ -46,9 +46,9 @@ public class CancelExperiments {
     public static void main(String[] args) {
         try {
             client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-
-            String expeId = "echoExperiment_31c132fd-87ea-4781-803c-ae5f04a79baf";
-            terminateExperiment(client,expeId);
+            System.out.println(client.registerPwdCredential(new AuthzToken("sdfnsdf"), "default", "scnakandala@default", "tdaadmin", "SciDeploy"));
+//            String expeId = "echoExperiment_31c132fd-87ea-4781-803c-ae5f04a79baf";
+//            terminateExperiment(client,expeId);
 
 //            System.out.println("retrieved exp id : " + experiment.getExperimentID());
         } catch (Exception e) {

@@ -35,8 +35,6 @@ public final class Constants {
     public static final String IS_API_SECURED = "api.secured";
     public static final String SECURITY_MANAGER_CLASS = "security.manager.class";
     public static final String REMOTE_OAUTH_SERVER_URL = "remote.oauth.authorization.server";
-    public static final String ADMIN_USERNAME = "admin.user.name";
-    public static final String ADMIN_PASSWORD = "admin.password";
     public static final String IS_TLS_ENABLED = "TLS.enabled";
     public static final String TLS_SERVER_PORT = "TLS.api.server.port";
     public static final String KEYSTORE_PATH = "keystore.path";
@@ -61,6 +59,7 @@ public final class Constants {
 
     //Names of the attributes that could be passed in the AuthzToken's claims map.
     public static final String USER_NAME = "userName";
+    public static final String GATEWAY_ID = "gatewayID";
     public static final String EMAIL = "email";
     public static final String ROLE = "role";
 

@@ -21,12 +21,12 @@
 
 package org.apache.airavata.common.utils;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class ServerSettings extends ApplicationSettings {
 
@@ -276,14 +276,6 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String getRemoteAuthzServerUrl() throws ApplicationSettingsException {
         return getSetting(Constants.REMOTE_OAUTH_SERVER_URL);
-    }
-
-    public static String getAdminUsername() throws ApplicationSettingsException {
-        return getSetting(Constants.ADMIN_USERNAME);
-    }
-
-    public static String getAdminPassword() throws ApplicationSettingsException {
-        return getSetting(Constants.ADMIN_PASSWORD);
     }
 
     public static String getAuthorizationPoliyName() throws ApplicationSettingsException {

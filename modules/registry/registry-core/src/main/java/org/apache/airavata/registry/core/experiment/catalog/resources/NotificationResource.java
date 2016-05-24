@@ -43,6 +43,8 @@ public class NotificationResource extends AbstractExpCatResource {
     private String gatewayId;
     private String title;
     private String notificationMessage;
+    private String priority;
+    private Timestamp creationTime;
     private Timestamp publishedTime;
     private Timestamp expirationTime;
 
@@ -94,6 +96,22 @@ public class NotificationResource extends AbstractExpCatResource {
         this.expirationTime = expirationTime;
     }
 
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
+    public Timestamp getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Timestamp creationTime) {
+        this.creationTime = creationTime;
+    }
+
     /**
      * @param type child resource type
      * @return child resource
@@ -113,7 +131,7 @@ public class NotificationResource extends AbstractExpCatResource {
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
             QueryGenerator generator = new QueryGenerator(NOTIFICATION);
-            generator.setParameter(NotificationConstants.GATEWAY_ID, gatewayId);
+            generator.setParameter(NotificationConstants.NOTIFICATION_ID, name);
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
@@ -195,6 +213,8 @@ public class NotificationResource extends AbstractExpCatResource {
                 existingNotification.setNotificationMessage(notificationMessage);
                 existingNotification.setPublishedDate(publishedTime);
                 existingNotification.setExpirationDate(expirationTime);
+                existingNotification.setCreationDate(creationTime);
+                existingNotification.setPriority(priority);
                 em.merge(existingNotification);
             } else {
                 Notification notification = new Notification();
@@ -204,6 +224,8 @@ public class NotificationResource extends AbstractExpCatResource {
                 notification.setNotificationMessage(notificationMessage);
                 notification.setPublishedDate(publishedTime);
                 notification.setExpirationDate(expirationTime);
+                notification.setCreationDate(creationTime);
+                notification.setPriority(priority);
                 em.persist(notification);
             }
             em.getTransaction().commit();

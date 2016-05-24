@@ -52,13 +52,6 @@ public interface AppCatalog {
     GwyResourceProfile getGatewayProfile() throws AppCatalogException;
 
     /**
-     * Get Gateway Client Credential Interface
-     * @return Gateway client credential interface
-     * @throws AppCatalogException
-     */
-    GwyClientCredential getGatewayClientCredential() throws AppCatalogException;
-
-    /**
      * Get workflow catalog interface
      * @return workflow catalog interface
      * @throws AppCatalogException

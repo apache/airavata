@@ -29,9 +29,7 @@ import org.apache.airavata.registry.core.experiment.catalog.utils.ThriftDataMode
 import org.apache.airavata.registry.cpi.RegistryException;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class NotificationRegistry {
 
@@ -46,11 +44,16 @@ public class NotificationRegistry {
         notificationResource.setNotificationId(notification.getNotificationId());
         notificationResource.setGatewayId(notification.getGatewayId());
         notificationResource.setTitle(notification.getTitle());
-        notificationResource.setNotificationMessage(notification.getNotifcationMessage());
-        if(notification.getPublishedtime() != 0)
-            notificationResource.setPublishedTime(new Timestamp(notification.getPublishedtime()));
+        notificationResource.setNotificationMessage(notification.getNotificationMessage());
+        notificationResource.setPriority(notification.getPriority().toString());
+        if(notification.getPublishedTime() != 0)
+            notificationResource.setPublishedTime(new Timestamp(notification.getPublishedTime()));
         if(notification.getExpirationTime() != 0)
             notificationResource.setExpirationTime(new Timestamp(notification.getExpirationTime()));
+        if(notification.getCreationTime() != 0)
+            notificationResource.setCreationTime(new Timestamp(notification.getCreationTime()));
+        else
+            notificationResource.setCreationTime(new Timestamp(System.currentTimeMillis()));
         notificationResource.save();
     }
 
@@ -77,6 +80,7 @@ public class NotificationRegistry {
                 notifications.add(ThriftDataModelConversion.getNotification((NotificationResource) e));
             }
         }
+        Collections.sort(notifications, (o1, o2) -> (int) (o2.getCreationTime() - o1.getCreationTime()));
         return notifications;
     }
 

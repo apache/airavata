@@ -134,7 +134,24 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
 
     @Override
     public String addPasswordCredential(PasswordCredential passwordCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
-        return null;
+        try {
+            org.apache.airavata.credential.store.credential.impl.password.PasswordCredential credential = new org.apache.airavata.credential.store.credential.impl.password.PasswordCredential();
+            credential.setGateway(passwordCredential.getGatewayId());
+            credential.setPortalUserName(passwordCredential.getPortalUserName());
+            credential.setUserName(passwordCredential.getLoginUserName());
+            credential.setPassword(passwordCredential.getPassword());
+            credential.setDescription(passwordCredential.getDescription());
+            String token = TokenGenerator.generateToken(passwordCredential.getGatewayId(), null);
+            credential.setToken(token);
+            sshCredentialWriter.writeCredentials(credential);
+            return token;
+        } catch (CredentialStoreException e) {
+            log.error("Error occurred while saving PWD Credentials.", e);
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while saving PWD Credentials.");
+        } catch (Exception e) {
+            log.error("Error occurred while registering PWD Credentials.", e);
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while registering PWD Credentials..");
+        }
     }
 
     @Override
@@ -198,7 +215,29 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
 
     @Override
     public PasswordCredential getPasswordCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
-        return null;
+        try {
+            Credential credential = credentialReader.getCredential(gatewayId, tokenId);
+            if (credential instanceof org.apache.airavata.credential.store.credential.impl.password.PasswordCredential) {
+                org.apache.airavata.credential.store.credential.impl.password.PasswordCredential credential1 = (org.apache.airavata.credential
+                        .store.credential.impl.password.PasswordCredential) credential;
+                PasswordCredential pwdCredential = new PasswordCredential();
+                pwdCredential.setGatewayId(credential1.getGateway());
+                pwdCredential.setPortalUserName(credential1.getPortalUserName());
+                pwdCredential.setLoginUserName(credential1.getUserName());
+                pwdCredential.setPassword(credential1.getPassword());
+                pwdCredential.setDescription(credential1.getDescription());
+                pwdCredential.setToken(credential1.getToken());
+                pwdCredential.setPersistedTime(credential1.getCertificateRequestedTime().getTime());
+                return pwdCredential;
+            } else {
+                log.info("Could not find PWD credentials for token - " + tokenId + " and "
+                        + "gateway id - " + gatewayId);
+                return null;
+            }
+        } catch (CredentialStoreException e) {
+            log.error("Error occurred while retrieving PWD credentialfor token - " +  tokenId + " and gateway id - " + gatewayId, e);
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while retrieving PWD credential for token - " +  tokenId + " and gateway id - " + gatewayId);
+        }
     }
 
     @Override
@@ -254,6 +293,26 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
     }
 
     @Override
+    public Map<String, String> getAllPWDCredentialsForGateway(String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
+        Map<String, String> pwdCredMap = new HashMap<>();
+        try {
+            List<Credential> allCredentials = credentialReader.getAllCredentialsPerGateway(gatewayId);
+            if (allCredentials != null && !allCredentials.isEmpty()){
+                for (Credential credential : allCredentials) {
+                    if (credential instanceof org.apache.airavata.credential.store.credential.impl.password.PasswordCredential) {
+                        org.apache.airavata.credential.store.credential.impl.password.PasswordCredential pwdCredential = (org.apache.airavata.credential.store.credential.impl.password.PasswordCredential) credential;
+                        pwdCredMap.put(pwdCredential.getToken(),pwdCredential.getDescription());
+                    }
+                }
+            }
+        } catch (CredentialStoreException e) {
+            log.error("Error occurred while retrieving credentials", e);
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while retrieving credentials");
+        }
+        return pwdCredMap;
+    }
+
+    @Override
     public boolean deleteSSHCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
         try {
             credentialReader.removeCredentials(gatewayId, tokenId);
@@ -261,6 +320,17 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
         } catch (CredentialStoreException e) {
             log.error("Error occurred while deleting SSH credential for token - " +  tokenId + " and gateway id - " + gatewayId, e);
             throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while deleting SSH credential for token - " +  tokenId + " and gateway id - " + gatewayId);
+        }
+    }
+
+    @Override
+    public boolean deletePWDCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
+        try {
+            credentialReader.removeCredentials(gatewayId, tokenId);
+            return true;
+        } catch (CredentialStoreException e) {
+            log.error("Error occurred while deleting PWD credential for token - " +  tokenId + " and gateway id - " + gatewayId, e);
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while deleting PWD credential for token - " +  tokenId + " and gateway id - " + gatewayId);
         }
     }
 

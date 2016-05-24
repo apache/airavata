@@ -21,58 +21,131 @@
 
 package org.apache.airavata.cloud.intf;
 
-import org.openstack4j.model.compute.Keypair;
-import org.openstack4j.model.compute.Server;
-
+/**
+ * The Interface CloudInterface.
+ */
 public interface CloudInterface {
 
 	/**
 	 * Method to create Server.
-	 * @param serverName
-	 * @param imageId
-	 * @param flavorId
-	 * @param networkId
-	 * @param keyPairName
+	 *
+	 * @param serverName the server name
+	 * @param imageId the image id
+	 * @param flavorId the flavor id
+	 * @param keyPairName the key pair name
 	 * @return Server object.
 	 */
-	public Server createServer(String serverName, String imageId, String flavorId, String keyPairName);
+	public Object createServer(String serverName, String imageId, String flavorId, String keyPairName);
 
 	/**
 	 * Returns the Server object pertaining to the serverId.
-	 * @param serverId
-	 * @return
+	 *
+	 * @param serverId the server id
+	 * @return the server
 	 */
-	public Server getServer(String serverId);
+	public Object getServer(String serverId);
 
 	/**
 	 * Method to delete Server.
-	 * @param serverId
-	 * @return
+	 *
+	 * @param serverId the server id
 	 */
 	public void deleteServer(String serverId);
 
 	/**
-	 * Creates a public key pair on the cloud
-	 * @param publicKey
+	 * Creates a public key pair on the cloud.
+	 *
+	 * @param keyPairName the key pair name
+	 * @param publicKey the public key
+	 * @return the keypair
 	 */
-	public Keypair createKeyPair(String keyPairName, String publicKey);
+	public Object createKeyPair(String keyPairName, String publicKey);
 
 	/**
 	 * Returns the keypair object associated to the keyPairName.
-	 * @param keyPairName
-	 * @return
+	 *
+	 * @param keyPairName the key pair name
+	 * @return the key pair
 	 */
-	public Keypair getKeyPair(String keyPairName);
+	public Object getKeyPair(String keyPairName);
 
 	/**
-	 * Deletes a public key pair on the cloud
-	 * @param publicKey
+	 * Deletes a public key pair on the cloud.
+	 *
+	 * @param keyPairName the key pair name
 	 */
 	public void deleteKeyPair(String keyPairName);
 
 	/**
 	 * Associates a floating ip to the instance indicated by serverId.
-	 * @param serverId
+	 *
+	 * @param serverId the server id
 	 */
 	public void addFloatingIP(String serverId);
+
+	/**
+	 * Creates the router.
+	 *
+	 * @param routerName the router name
+	 * @param externalGatewayName the external gateway name
+	 * @return the object
+	 */
+	public Object createRouter(String routerName, String externalGatewayName);
+
+	/**
+	 * Creates the subnet.
+	 *
+	 * @param subnetName the subnet name
+	 * @param networkName the network name
+	 * @param subnetCIDR the subnet cidr
+	 * @param ipVersion the ip version
+	 * @return the object
+	 */
+	public Object createSubnet(String subnetName, String networkName, String subnetCIDR, int ipVersion);
+
+	/**
+	 * Creates the network.
+	 *
+	 * @param networkName the network name
+	 * @return the object
+	 */
+	public Object createNetwork(String networkName);
+
+	/**
+	 * Creates the router subnet interface.
+	 *
+	 * @param routerName the router name
+	 * @param subnetName the subnet name
+	 * @return the object
+	 */
+	public Object createRouterSubnetInterface(String routerName, String subnetName);
+
+	/**
+	 * Delete router subnet interface.
+	 *
+	 * @param routerName the router name
+	 * @param subnetName the subnet name
+	 */
+	public void deleteRouterSubnetInterface(String routerName, String subnetName);
+
+	/**
+	 * Delete subnet.
+	 *
+	 * @param subnetName the subnet name
+	 */
+	public void deleteSubnet(String subnetName);
+
+	/**
+	 * Delete router.
+	 *
+	 * @param routerName the router name
+	 */
+	public void deleteRouter(String routerName);
+
+	/**
+	 * Delete network.
+	 *
+	 * @param networkName the network name
+	 */
+	public void deleteNetwork(String networkName);
 }

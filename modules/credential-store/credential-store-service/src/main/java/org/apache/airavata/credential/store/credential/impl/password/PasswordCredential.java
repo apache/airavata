@@ -21,10 +21,7 @@
 
 package org.apache.airavata.credential.store.credential.impl.password;
 
-import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
-
-import java.util.Date;
 
 /**
  * User name password credentials.
@@ -33,6 +30,7 @@ public class PasswordCredential extends SSHCredential {
 
     private String userName;
     private String password;
+    private String description;
 
     public String getUserName() {
         return userName;
@@ -50,4 +48,11 @@ public class PasswordCredential extends SSHCredential {
         this.password = password;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

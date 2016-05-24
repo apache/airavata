@@ -58,6 +58,7 @@ public class ExpCatResourceUtils {
 //            properties.put("openjpa.QueryCache","" + Utils.isCachingEnabled() + "(CacheSize=" + Utils.getJPACacheSize() + ", SoftReferenceSize=0)");
 //            properties.put("javax.persistence.sharedCache.mode","ALL");
             properties.put("openjpa.RemoteCommitProvider","sjvm");
+            properties.put("openjpa.Multithreaded", "true");
             properties.put("openjpa.Log","DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
             properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
             properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
