@@ -31,6 +31,7 @@ import org.apache.airavata.cloud.intf.CloudInterface;
 import org.apache.airavata.cloud.openstack.OS4JClientProvider;
 import org.apache.airavata.cloud.util.Constants;
 import org.apache.airavata.cloud.util.IPType;
+import org.apache.airavata.cloud.util.OpenstackIntfUtil;
 import org.openstack4j.api.Builders;
 import org.openstack4j.api.OSClient;
 import org.openstack4j.model.compute.ActionResponse;
@@ -254,8 +255,29 @@ public class OpenstackIntfImpl implements CloudInterface {
 		try {
 			Server server = this.getServer(serverId);
 
+			// Floating IP to allocate.
+			FloatingIP floatIp = null;
+
 			if(server != null) {
-				FloatingIP floatIp = os.compute().floatingIps().allocateIP(properties.getProperty(Constants.OS_FLOATING_IP_POOL));
+				List<? extends FloatingIP> floatIPList = os.compute().floatingIps().list();
+
+				// Iterate through the floating ips from the pool present if any.
+				if(floatIPList.size() > 0) {
+					for(FloatingIP ip : floatIPList) {
+						logger.info("Checking if floating ip : " + ip.getFloatingIpAddress() + " is free to use.");
+						Boolean isFloatingIpUsed = OpenstackIntfUtil.isFloatingIPUsed(ip);
+						if( isFloatingIpUsed != null && !isFloatingIpUsed ) {
+							floatIp = ip;
+							logger.info("Floating ip " + ip.getFloatingIpAddress() + " found to be free.");
+							break;
+						}
+					}
+				}
+				// If all floating IPs are used, or there are no free floating ips, create new one.
+				if(floatIp == null){
+					floatIp = os.compute().floatingIps().allocateIP(properties.getProperty(Constants.OS_FLOATING_IP_POOL));
+					logger.info("Created new floating ip " + floatIp.getFloatingIpAddress());
+				}
 
 				if(floatIp != null) {
 					String ipAddr = floatIp.getFloatingIpAddress();
@@ -264,12 +286,15 @@ public class OpenstackIntfImpl implements CloudInterface {
 						ActionResponse response = os.compute().floatingIps().addFloatingIP(server, ipAddr);
 						logger.info(response.isSuccess() + ":" + response.getCode() + ":" + response.getFault() + ":" + response.toString());
 
-						logger.info("Floating IP "+ ipAddr + " assigned successfully to server with ID: " + serverId);
+						if(response.isSuccess()) {
+							logger.info("Floating IP "+ ipAddr + " assigned successfully to server with ID: " + serverId);
+						}
+						else {
+							logger.error("Failed to associate Floating IP.");
+						}
 					}
 				}
-				else {
-					logger.error("Failed to associate Floating IP.");
-				}
+
 			}
 		}
 		catch( Exception ex ) {
