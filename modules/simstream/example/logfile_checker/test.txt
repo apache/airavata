@@ -1,0 +1,657 @@
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
+[STATUS] Starting logfile generator
+[STATUS] Doing stuff
+Stuff that doesn't need to be reported
+Stuff that also doesn't need to be reported
+[DATA] 7.267
+[STATUS] Doing more stuff
+Yet more stuff that doesn't need to be reported
+[ERROR] Some non-fatal error that the user should know about
+[STATUS] Finished generating logs
