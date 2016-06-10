@@ -1,0 +1,3 @@
+[submodule "modules/simstream"]
+	path = modules/simstream
+	url = https://github.com/jeffkinnison/simstream.git
