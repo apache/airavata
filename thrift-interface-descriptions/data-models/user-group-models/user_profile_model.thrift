@@ -81,6 +81,7 @@ struct Award {
 struct UserProfile {
     1: optional string userModelVersion = USER_PROFILE_VERSION,
     2: optional string airavataInternalUserId = "DO_NOT_ADD_AT_CLIENT",
+    3: optional string
     3: optional string email,
     4: optional string name,
     5: optional i64 tier,
