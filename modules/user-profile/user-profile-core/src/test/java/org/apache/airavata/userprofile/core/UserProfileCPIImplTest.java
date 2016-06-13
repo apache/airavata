@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class UserProfileCPIImplementationTest {
-    private final static Logger logger = LoggerFactory.getLogger(UserProfileCPIImplementationTest.class);
+public class UserProfileCPIImplTest {
+    private final static Logger logger = LoggerFactory.getLogger(UserProfileCPIImplTest.class);
 
     @Test
     public void testUserProfileCPIImplementation(){
@@ -43,23 +43,23 @@ public class UserProfileCPIImplementationTest {
         userProfile.setState(Status.ACTIVE);
 
         try {
-            UserProfileCPIImplementation userProfileCPIImplementation = new UserProfileCPIImplementation();
-            String userId = userProfileCPIImplementation.createUserProfile(userProfile);
+            UserProfileCPIImpl userProfileCPIImpl = new UserProfileCPIImpl();
+            String userId = userProfileCPIImpl.createUserProfile(userProfile);
             Assert.assertNotNull(userId);
-            userProfile = userProfileCPIImplementation.getUserProfileFromUserId(userId);
+            userProfile = userProfileCPIImpl.getUserProfileFromUserId(userId);
             Assert.assertNotNull(userProfile);
             Assert.assertTrue(userProfile.getCountry().equals("USA"));
             userProfile.setCountry("Sri Lanka");
-            userProfileCPIImplementation.updateUserProfile(userProfile);
-            userProfile = userProfileCPIImplementation.getUserProfileFromUserId(userId);
+            userProfileCPIImpl.updateUserProfile(userProfile);
+            userProfile = userProfileCPIImpl.getUserProfileFromUserId(userId);
             Assert.assertTrue(userProfile.getCountry().equals("Sri Lanka"));
-            userProfile = userProfileCPIImplementation.getUserProfileFromUserName(userProfile.getUserName(),
+            userProfile = userProfileCPIImpl.getUserProfileFromUserName(userProfile.getUserName(),
                     userProfile.getGatewayId());
             Assert.assertNotNull(userProfile);
-            List<UserProfile> userProfileList = userProfileCPIImplementation.getAllUserProfilesInGateway("seagrid");
+            List<UserProfile> userProfileList = userProfileCPIImpl.getAllUserProfilesInGateway("seagrid");
             Assert.assertNotNull(userProfileList);
-            userProfileCPIImplementation.deleteUserProfile(userProfile.getUserId());
-            Assert.assertNull(userProfileCPIImplementation.getUserProfileFromUserId(userProfile.getUserId()));
+            userProfileCPIImpl.deleteUserProfile(userProfile.getUserId());
+            Assert.assertNull(userProfileCPIImpl.getUserProfileFromUserId(userProfile.getUserId()));
         } catch (UserProfileException e) {
             e.printStackTrace();
             Assert.fail();
