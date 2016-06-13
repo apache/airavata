@@ -46,6 +46,8 @@ public class UserProfileCPIImplementation implements UserProfileCPI {
     @Override
     public String createUserProfile(UserProfile userProfile) throws UserProfileException {
         userProfile.setUserId(UUID.randomUUID().toString());
+        // Setting user id to airavataInternalUserId. We don't distinguish these two at the moment.
+        userProfile.setAiravataInternalUserId(userProfile.getUserId());
         userProfileDao.createUserProfile(userProfile);
         return userProfile.getUserId();
     }
