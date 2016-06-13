@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <top>
+      <VBox prefWidth="100.0" BorderPane.alignment="CENTER">
+         <children>
+            <MenuBar minHeight="-Infinity" prefHeight="22.0">
+               <menus>
+                  <Menu mnemonicParsing="false" text="XBaya">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="New Workflow">
+                           <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/menu/new2.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" text="Import Workflow..." />
+                        <MenuItem disable="true" mnemonicParsing="false" text="Register Workflow..." />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" text="Open Workflow...">
+                           <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/menu/open1.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </MenuItem>
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" text="Clear Workflow" />
+                        <MenuItem mnemonicParsing="false" text="Close Tab" />
+                        <MenuItem mnemonicParsing="false" text="Close All Tabs" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem disable="true" mnemonicParsing="false" text="Save">
+                           <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/menu/save1.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </MenuItem>
+                        <MenuItem disable="true" mnemonicParsing="false" text="Save as..." />
+                        <MenuItem disable="true" mnemonicParsing="false" text="Save all" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" text="Exit" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Edit">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="Workflow Properties..." />
+                        <MenuItem mnemonicParsing="false" text="Parameter Properties..." />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="View">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="Components" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem disable="true" mnemonicParsing="false" text="Monitoring " />
+                        <MenuItem disable="true" mnemonicParsing="false" text="Parameters" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Run">
+                     <items>
+                        <MenuItem disable="true" mnemonicParsing="false" text="Run on Interpreter Server...">
+                           <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/menu/play3.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </MenuItem>
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" text="Stop running workflow">
+                           <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/menu/stop.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </MenuItem>
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" text="Pause Monitoring">
+                           <graphic>
+                              <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true">
+                                 <image>
+                                    <Image url="/images/menu/pause1.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" text="Reset Monitoring" />
+                        <MenuItem mnemonicParsing="false" text="Configure Monitoring..." />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Registry">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="Setup Airavata Registry...">
+                           <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/jcr-repo.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </MenuItem>
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Amazon">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="Security Credentials" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" text="EC2 Instances Management" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Run Applications">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="Execute Application" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu disable="true" mnemonicParsing="false">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Help">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+               </menus>
+               <padding>
+                  <Insets top="-5.0" />
+               </padding>
+            </MenuBar>
+            <HBox>
+               <children>
+                  <ToolBar prefHeight="20.0" prefWidth="1500.0">
+                     <items>
+                        <ImageView fitHeight="15.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="/images/menu/new2.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fitHeight="15.0" fitWidth="20.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" translateX="5.0">
+                           <image>
+                              <Image url="/images/menu/open1.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fitHeight="15.0" fitWidth="20.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" translateX="10.0">
+                           <image>
+                              <Image url="/images/menu/save1.png" />
+                           </image>
+                        </ImageView>
+                        <Separator orientation="VERTICAL" prefHeight="15.0" translateX="12.0" />
+                        <ImageView fitHeight="15.0" fitWidth="20.0" layoutX="48.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true" translateX="13.0">
+                           <image>
+                              <Image url="/images/menu/play3.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fitHeight="15.0" fitWidth="20.0" layoutX="77.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true" translateX="18.0">
+                           <image>
+                              <Image url="/images/menu/stop.png" />
+                           </image>
+                        </ImageView>
+                        <Separator layoutX="67.0" layoutY="10.0" orientation="VERTICAL" prefHeight="15.0" translateX="22.0" />
+                        <ImageView fitHeight="15.0" fitWidth="20.0" layoutX="96.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true" translateX="23.0">
+                           <image>
+                              <Image url="/images/menu/pause_monitor1.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fitHeight="15.0" fitWidth="20.0" layoutX="77.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true" translateX="28.0">
+                           <image>
+                              <Image url="/images/menu/resume_monitoring1.png" />
+                           </image>
+                        </ImageView>
+                        <Separator layoutX="115.0" layoutY="10.0" orientation="VERTICAL" prefHeight="15.0" translateX="30.0" />
+                        <ImageView fitHeight="15.0" fitWidth="20.0" layoutX="144.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true" translateX="28.0">
+                           <image>
+                              <Image url="/images/jcr-repo.png" />
+                           </image>
+                        </ImageView>
+                        <Separator layoutX="163.0" layoutY="10.0" orientation="VERTICAL" prefHeight="15.0" translateX="30.0" />
+                     </items>
+                     <padding>
+                        <Insets left="8.0" right="5.0" />
+                     </padding>
+                  </ToolBar>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </top>
+   <left>
+      <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <items>
+            <VBox prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <TitledPane collapsible="false" text="Component List">
+                     <content>
+                        <TreeView prefHeight="300.0" prefWidth="200.0">
+                         <root>
+                    <TreeItem expanded="true" value="Components">
+                     <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/opened.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                         <children>
+                              <TreeItem value="System Components"> <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/closed.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                                   <children>
+                                        <TreeItem value="Input">
+                                         <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           </TreeItem>
+                                        <TreeItem value="DifferedInput">
+                                          <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic> 
+                           </TreeItem>
+                                        <TreeItem value="S3Input">
+                                          <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           </TreeItem>
+                                        <TreeItem value="Output">
+                                        <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           </TreeItem> 
+                                        <TreeItem value="Const">
+                                        <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           </TreeItem>
+                                        <TreeItem value="Memo">
+                                        <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           </TreeItem>
+                                        <TreeItem value="If">
+                                        <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           </TreeItem>
+                                        <TreeItem value="EndIf">
+                                        <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           </TreeItem> 
+                                        <TreeItem value="Recieve">
+                                        <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           </TreeItem> 
+                                        <TreeItem value="ForEach">
+                                        <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           </TreeItem>
+                                        <TreeItem value="EndForEach">
+                                        <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           </TreeItem>
+                                        <TreeItem value="DoWhile">
+                                        <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           </TreeItem> 
+                                        <TreeItem value="EndDoWhile">
+                                        <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           </TreeItem> 
+                                        <TreeItem value="Block">
+                                        <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           </TreeItem> 
+                                        <TreeItem value="EndBlock">
+                                        <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           </TreeItem> 
+                                        <TreeItem value="Dynamic Node">
+                                        <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           </TreeItem> 
+                                        <TreeItem value="Stream Source">
+                                        <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           </TreeItem> 
+                                        <TreeItem value="Exit">
+                                        <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           </TreeItem>                                         
+                                   </children>
+                              </TreeItem>
+                              <TreeItem value="Amazon Components">
+                               <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/closed.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                                   <children>
+                                        <TreeItem value="Instance">
+                                        <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           </TreeItem> 
+                                        <TreeItem value="TerminateInstance">
+                                        <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           </TreeItem>                                    
+                                   </children>                              
+                              </TreeItem>
+                              <TreeItem value="Applications">
+                                   <graphic>
+                              <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="/images/leaf.gif" />
+                                 </image>
+                              </ImageView>
+                           </graphic>                              
+                              </TreeItem>                                                            
+                         </children>
+                    </TreeItem>
+               </root>
+               </TreeView>
+                     </content>
+                  </TitledPane>
+               </children>
+            </VBox>
+            <VBox prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <TitledPane animated="false" collapsible="false" text="Component Iinformation" />
+                  <TextArea prefHeight="520.0" prefWidth="100.0" />
+               </children></VBox>
+         </items>
+      </SplitPane>
+   </left>
+</BorderPane>
