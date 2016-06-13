@@ -67,6 +67,9 @@ public class ServerSettings extends ApplicationSettings {
     private static final String CREDENTIAL_STORE_DB_PASSWORD = "credential.store.jdbc.password";
     private static final String CREDENTIAL_STORE_DB_DRIVER = "credential.store.jdbc.driver";
 
+    private static String USER_PROFILE_MONGODB_HOST = "userprofile.mongodb.host";
+    private static String USER_PROFILE_MONGODB_PORT = "userprofile.mongodb.port";
+
     private static final String REGISTRY_DB_URL = "registry.jdbc.url";
     private static final String REGISTRY_DB_USER = "registry.jdbc.user";
     private static final String REGISTRY_DB_PASSWORD = "registry.jdbc.password";
@@ -364,6 +367,14 @@ public class ServerSettings extends ApplicationSettings {
 
     public static int getCacheSize() throws ApplicationSettingsException {
         return Integer.valueOf(getSetting(Constants.IN_MEMORY_CACHE_SIZE));
+    }
+
+    public static String getUserProfileMongodbHost() throws ApplicationSettingsException{
+        return getSetting(USER_PROFILE_MONGODB_HOST);
+    }
+
+    public static int getUserProfileMongodbPort() throws ApplicationSettingsException{
+        return Integer.parseInt(getSetting(USER_PROFILE_MONGODB_PORT));
     }
 
     public static String getLocalDataLocation() {
