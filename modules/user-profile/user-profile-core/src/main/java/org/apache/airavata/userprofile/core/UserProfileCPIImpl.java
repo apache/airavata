@@ -29,12 +29,12 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.UUID;
 
-public class UserProfileCPIImplementation implements UserProfileCPI {
-    private final static Logger logger = LoggerFactory.getLogger(UserProfileCPIImplementation.class);
+public class UserProfileCPIImpl implements UserProfileCPI {
+    private final static Logger logger = LoggerFactory.getLogger(UserProfileCPIImpl.class);
 
     private UserProfileDao userProfileDao;
 
-    public UserProfileCPIImplementation() throws UserProfileException {
+    public UserProfileCPIImpl() throws UserProfileException {
         userProfileDao = new UserProfileDao();
     }
 
