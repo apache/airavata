@@ -3,6 +3,7 @@ import java.util.*;
 
 public class auroraCreate {
 	public static void main(String[] args) {
+		auroraCreate auroraJob = new auroraCreate();
 		final Map<String, List<String>> params = new HashMap<>();
 		List<String> options = null;
 		for (int i = 0; i < args.length; i++) {
@@ -23,16 +24,19 @@ public class auroraCreate {
         			return;
     			}
 		}
-		String ram,name,cpu,disk,kill,option;
+		String ram,name,cpu,disk,kill,option,image;
 		option = params.get("o").get(0);
 		if (option.equals("kill")){
-			jobKill(params.get("n").get(0));
+			auroraJob.jobKill(params.get("n").get(0));
 		}
                 else if (option.equals("restart")){
-			jobRestart(params.get("n").get(0));
+			auroraJob.jobRestart(params.get("n").get(0));
 		}
 		else if (option.equals("update")){
-			jobRestart(params.get("n").get(0));
+			auroraJob.jobUpdate(params.get("n").get(0));
+		}
+		else if (option.equals("update-info")){
+			auroraJob.jobUpdateInfo(params.get("n").get(0));
 		}
 		else if (option.equals("create")){
 			name = params.get("n").get(0);
@@ -40,11 +44,24 @@ public class auroraCreate {
 			cpu = params.get("c").get(0);
 			disk = params.get("d").get(0);
 			image = params.get("i").get(0);
-			configCreate(name,ram,cpu,disk,image);
-	 		jobLaunch(name);
+			auroraJob.configCreate(name,ram,cpu,disk,image);
+	 		auroraJob.jobLaunch(name);
 		}
 	}
-	public static void jobUpdate(String update){
+	public void jobUpdateInfo(String info){
+		try{
+			String line;
+			Process auroraJob = Runtime.getRuntime().exec("aurora update info example/benchmarks/devel/"+info);
+			auroraJob.waitFor();
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(auroraJob.getInputStream()));
+			while ((line = stdout.readLine()) != null) {
+				System.out.println(line); 
+			}
+		}catch (Exception ex) {
+   			ex.printStackTrace();
+   		}
+	}
+	public void jobUpdate(String update){
 		try{
 			String line;
 			Process auroraJob = Runtime.getRuntime().exec("aurora update start example/benchmarks/devel/"+update+" "+update+".aurora");
@@ -56,26 +73,23 @@ public class auroraCreate {
 		}catch (Exception ex) {
    			ex.printStackTrace();
    		}
-		System.out.println("Updated");
 	}
-	public static void jobRestart(String restart){
+	public void jobRestart(String restart){
 		try{
 			Process auroraJob = Runtime.getRuntime().exec("aurora job restart example/benchmarks/devel/"+restart);
 		}catch (Exception ex) {
    			ex.printStackTrace();
    		}
-		System.out.println("Restart");
 	}
 
-	public static void jobKill(String kill){
+	public void jobKill(String kill){
 		try{
 			Process auroraJob = Runtime.getRuntime().exec("aurora job killall example/benchmarks/devel/"+kill);
 		}catch (Exception ex) {
    			ex.printStackTrace();
    		}
-		System.out.println("Killed");
 	}
-	public static void jobLaunch(String name){
+	public void jobLaunch(String name){
 		try{
 			String line;
 			Process auroraJob = Runtime.getRuntime().exec("aurora job create example/benchmarks/devel/"+name+" "+name+".aurora");
@@ -88,7 +102,7 @@ public class auroraCreate {
    			ex.printStackTrace();
    		}
 	}
-	public static void configCreate(String name, String ram, String cpu, String disk, String image){
+	public void configCreate(String name, String ram, String cpu, String disk, String image){
 	try {
 		String line1 = "import hashlib\n";
                 String line2 = name+"= Process(name = '"+name+"', cmdline = 'java -jar /dacapo-9.12-bach.jar "+name+" -s small')\n";
@@ -110,7 +124,7 @@ public class auroraCreate {
 		bw.close();
 
 		} catch (IOException e) {
-		e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 }			
