@@ -15,5 +15,18 @@
     <packaging>jar</packaging>
     <name>Airavata Monitoring</name>
     <url>http://airavata.apache.org/</url>
+    <dependencies>
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.5.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>3.6.1</version>
+        </dependency>
+    </dependencies>
     
 </project>
