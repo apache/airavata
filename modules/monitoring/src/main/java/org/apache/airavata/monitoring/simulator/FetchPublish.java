@@ -1,5 +1,6 @@
 package org.apache.airavata.monitoring.simulator;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.monitoring.Util;
 import org.apache.airavata.monitoring.mailbox.GmailSMTPMailBox;
 import org.apache.airavata.monitoring.mailbox.MailBox;
@@ -17,9 +18,10 @@ import java.util.concurrent.TimeoutException;
 public class FetchPublish {
     private static final String EXCHANGE_NAME = "monitor";
 
-    public static void fetchEmailAndPublish() throws MessagingException, KeyManagementException, NoSuchAlgorithmException, IOException, TimeoutException, URISyntaxException {
+    public static void fetchEmailAndPublish() throws MessagingException, KeyManagementException, NoSuchAlgorithmException,
+            IOException, TimeoutException, URISyntaxException, ApplicationSettingsException {
         RabbitMQEmailPublisher publisher = getRabbitMQEmailPublisher();
-        MailBox gmailSmtpMailBox = new GmailSMTPMailBox(Util.getSMTPProperties());
+        MailBox gmailSmtpMailBox = new GmailSMTPMailBox(Util.getMailConfig());
         Message[] messages = gmailSmtpMailBox.getUnreadMessages();
         publisher.publishMessages(messages);
         publisher.shutdown();

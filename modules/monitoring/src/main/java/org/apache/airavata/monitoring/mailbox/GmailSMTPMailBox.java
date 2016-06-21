@@ -24,9 +24,9 @@ public class GmailSMTPMailBox implements MailBox {
     private Folder inbox;
     private Map<SearchCriterion, FlagTerm> searchCriterion;
 
-    public GmailSMTPMailBox(Properties props) throws MessagingException {
+    public GmailSMTPMailBox(MailConfig mailConfig) throws MessagingException {
         // initialize message store
-        store = getMessageStore(props);
+        store = getMessageStore(mailConfig);
         // intialize inbox
         inbox = store.getFolder(INBOX_FOLDER_NAME);
         inbox.open(MAIL_BOX_MODE);
@@ -39,12 +39,12 @@ public class GmailSMTPMailBox implements MailBox {
      * @return Message Store
      * @throws MessagingException
      */
-    private Store getMessageStore(Properties props) throws MessagingException {
+    private Store getMessageStore(MailConfig mailConfig) throws MessagingException {
+        Properties props = new Properties();
+        props.setProperty("mail.store.protocol", mailConfig.getStoreProtocol());
         Session session = Session.getDefaultInstance(props, null);
-        Store store = session.getStore(props.getProperty("mail.store.protocol"));
-        store.connect(props.getProperty("mail.smtp.host"),
-                props.getProperty("mail.userID"),
-                props.getProperty("mail.password"));
+        Store store = session.getStore(mailConfig.getStoreProtocol());
+        store.connect(mailConfig.getHost(), mailConfig.getUser(), mailConfig.getPassword());
         return store;
     }
 
