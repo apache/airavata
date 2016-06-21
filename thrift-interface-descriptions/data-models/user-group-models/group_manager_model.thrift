@@ -31,14 +31,13 @@ const string GROUP_MANAGER_VERSION = "1.0"
 enum ResourceType {
     PROJECT,
     EXPERIMENT,
-    FILE,
+    DATA,
     OTHER
 }
 
 enum ResourcePermissionType {
     READ_WRITE,
-    READ_ONLY,
-    WRITE_WRITE_ONLY
+    READ_ONLY
 }
 
 struct Resource {
@@ -48,7 +47,6 @@ struct Resource {
     4: required string ownerId,
     5: optional string resourceDescription,
     6: optional i64 createdTime,
-    7: optional i64 lastModifiedTime,
     8: optional string parentResourceId,
     9: optional list<Resource> childResources,
     10: optional map<string,string> metadata
@@ -56,21 +54,18 @@ struct Resource {
 
 struct Group{
     1: required string groupId = airavata_commons.DEFAULT_ID,
-    2: required string groupName,
-    3: optional string description,
-    4: optional list<User> directGroupMemberUsers,
-    5: optional list<Group> directGroupMemeberGroups,
-    6: optional list<User> indirectGroupMemeberUsers,
-    7: optional list<Group> indirectGroupMemeberGroups
-    8: optional map<string,string> metadata
+    2: required string groupId,
+    3: required string groupName,
+    4: optional string description,
+    5: optional list<User> users,
+    6: optional list<Group> subGroups,
+    7: optional map<string,string> metadata
 }
 
 struct User {
-    1: required string grouperUserId = airavata_commons.DEFAULT_ID,
-    2: required string airavataUserId,
-    3: required string userName,
-    4: required string gatewayId
-    5: optional map<string,string> metadata
+    1: required string airavataInternalUserId,
+    2: required string userId,
+    3: optional map<string,string> metadata
 }
 
 enum SubjectType {
@@ -84,8 +79,8 @@ enum GroupMembershipType {
 }
 
 struct GroupMembership{
-    1: required string parentSubjectId,
-    2: required string childSubjectId,
+    1: required string groupId,
+    2: required string childId,
     3: required SubjectType childSubjectType,
     4: required string parentSubjectName,
     5: required string childSubjectName,
