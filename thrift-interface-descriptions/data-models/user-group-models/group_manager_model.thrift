@@ -36,7 +36,7 @@ enum ResourceType {
 }
 
 enum ResourcePermissionType {
-    READ_WRITE
+    READ_WRITE,
     READ_ONLY,
     WRITE_WRITE_ONLY
 }
