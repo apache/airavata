@@ -11,7 +11,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeoutException;
 
-public class EmailReceiver extends Thread {
+public class StatusReceiver extends Thread {
     private static volatile Connection connection;
     private static volatile Channel channel;
     private static final String EXCHANGE_TYPE = "fanout";
@@ -21,7 +21,7 @@ public class EmailReceiver extends Thread {
     private String brokerURI;
     private Thread recieverThread;
 
-    public EmailReceiver(String exchangeName, String queueName, String brokerURI) {
+    public StatusReceiver(String exchangeName, String queueName, String brokerURI) {
         this.exchangeName = exchangeName;
         this.queueName = queueName;
         this.brokerURI = brokerURI;
@@ -50,7 +50,7 @@ public class EmailReceiver extends Thread {
             channel.queueDeclare(queueName, true, false, false, null).getQueue();
             channel.queueBind(queueName, exchangeName, "");
             System.out.println(" [*] Waiting for messages.");
-            Consumer consumer = new EmailConsumer(channel);
+            Consumer consumer = new StatusConsumer(channel);
             channel.basicConsume(queueName, true, consumer);
         } catch (Exception e) {
             e.printStackTrace();

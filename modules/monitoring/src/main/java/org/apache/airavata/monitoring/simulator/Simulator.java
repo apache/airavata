@@ -20,7 +20,7 @@
  */
 package org.apache.airavata.monitoring.simulator;
 
-import org.apache.airavata.monitoring.consumer.EmailReceiver;
+import org.apache.airavata.monitoring.consumer.StatusReceiver;
 
 public class Simulator {
     private static final String EXCHANGE_NAME = "monitor";
@@ -31,17 +31,17 @@ public class Simulator {
     public static void main(String args[]) {
         try {
             //Consumer 1
-            EmailReceiver emailReciever1 = new EmailReceiver(EXCHANGE_NAME, QUEUE_NAME1, BROKER_URI);
+            StatusReceiver statusReceiver1 = new StatusReceiver(EXCHANGE_NAME, QUEUE_NAME1, BROKER_URI);
             //Consumer 2
-            EmailReceiver emailReciever2 = new EmailReceiver(EXCHANGE_NAME, QUEUE_NAME2, BROKER_URI);
-            emailReciever1.startThread();
-            emailReciever2.startThread();
+            StatusReceiver statusReceiver2 = new StatusReceiver(EXCHANGE_NAME, QUEUE_NAME2, BROKER_URI);
+            statusReceiver1.startThread();
+            statusReceiver2.startThread();
             //publisher
             FetchPublish.fetchEmailAndPublish();
             Thread.sleep(60000);
             //shutdown after a minute, for demo purposes
-            emailReciever1.shutdown();
-            emailReciever2.shutdown();
+            statusReceiver1.shutdown();
+            statusReceiver2.shutdown();
 
         } catch (Exception e) {
             e.printStackTrace();
