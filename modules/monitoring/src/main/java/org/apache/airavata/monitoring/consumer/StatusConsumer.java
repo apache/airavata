@@ -15,9 +15,9 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 
-public class EmailConsumer extends DefaultConsumer {
+public class StatusConsumer extends DefaultConsumer {
 
-    public EmailConsumer(Channel channel) {
+    public StatusConsumer(Channel channel) {
         super(channel);
     }
 
