@@ -24,6 +24,7 @@ LOGO_FILE="logo.txt"
 JAVA_OPTS=""
 AIRAVATA_COMMAND=""
 EXTRA_ARGS=""
+SERVERS=""
 IS_DAEMON_MODE=false
 LOGO=true
 
@@ -41,7 +42,11 @@ do
             shift
         ;;
 	    api | gfac | orchestrator)
-		    AIRAVATA_COMMAND="${AIRAVATA_COMMAND} ${var}"
+	        if [ -z ${SERVERS} ] ; then
+	            SERVERS="${var}"
+	        else
+	            SERVERS="${SERVERS},${var}"
+	        fi
             shift
         ;;
         -d)
@@ -77,7 +82,7 @@ do
 done
 
 #add extra argument to the
-AIRAVATA_COMMAND="${AIRAVATA_COMMAND} ${EXTRA_ARGS}"
+AIRAVATA_COMMAND="--servers=${SERVERS} ${AIRAVATA_COMMAND} ${EXTRA_ARGS}"
 
 #print logo file
 if ${LOGO} ; then
