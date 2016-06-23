@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -42,11 +43,17 @@ public class ServerMain {
 	private static final String SERVERS_KEY="servers";
     private final static Logger logger = LoggerFactory.getLogger(ServerMain.class);
     private static boolean serversLoaded=false;
-	private static final String stopFileNamePrefix = "airavata-server-stop";
+	private static final String stopFileNamePrefix = "server-stop";
 	private static int serverPID=-1;
 	private static final String serverStartedFileNamePrefix = "server-start";
 	private static boolean systemShutDown=false;
 	private static String STOP_COMMAND_STR = "stop";
+
+	// server names
+	private static String API_SERVER = "apiserver";
+	private static String CREDENTIAL_STORE = "credentialstore";
+	private static String GFAC_SERVER = "gfac";
+	private static String ORCHESTRATOR = "orcestrator";
 
     private static ServerCnxnFactory cnxnFactory;
 //	private static boolean shutdownHookCalledBefore=false;
@@ -57,7 +64,7 @@ public class ServerMain {
 	private static void loadServers(String serverNames) {
 		try {
 			if (serverNames !=null){
-				String[] serversList = serverNames.split(",");
+				List<String> serversList = handleServerDependencies(serverNames);
 				for (String serverString : serversList) {
 					serverString=serverString.trim();
 					String serverClassName = ServerSettings.getSetting(serverString);
@@ -90,6 +97,18 @@ public class ServerMain {
 		});
 	}
 
+	private static List<String> handleServerDependencies(String serverNames) {
+		List<String> serverList = new ArrayList<>(Arrays.asList(serverNames.split(",")));
+		// credential store should start before api server
+		int credPos = serverList.indexOf(CREDENTIAL_STORE);
+		if (credPos > 0) { // neither absent nor credentialstore is first element
+			String temp = serverList.get(0);
+			serverList.set(0, serverList.get(credPos));
+			serverList.set(credPos, temp);
+		}
+		return serverList;
+	}
+
 //	private static void addSecondaryShutdownHook(){
 //		Runtime.getRuntime().addShutdownHook(new Thread(){
 //			@Override
@@ -104,18 +123,6 @@ public class ServerMain {
 //	}
 	
 	public static void main(String args[]) throws ParseException, IOException {
-//		Properties properties = System.getProperties();
-//		for (Object key : properties.keySet()) {
-//			System.out.println(key.toString()+"     =       "+properties.get(key));
-//		}
-//		Map<String, String> env = System.getenv();
-//
-//		for (Object key : env.keySet()) {
-//			System.out.println(key.toString()+"     =       "+env.get(key));
-//		}
-//		if (true){
-//			return;
-//		}
         CommandLineParameters commandLineParameters = StringUtil.getCommandLineParser(args);
         if (commandLineParameters.getArguments().contains(STOP_COMMAND_STR)){
             performServerStopRequest(commandLineParameters);

@@ -60,16 +60,17 @@ do
         -h)
             echo "Usage: airavata-server-start.sh [server-name/s] [command-options]"
             echo "Server names:"
-            echo "  api                 Start api server"
-            echo "  gfac                Start api server"
-            echo "  orchestrator        Start api server"
+            echo "  apiserver           Start apiserver"
+            echo "  gfac                Start gfac server"
+            echo "  orchestrator        Start orchestrator server"
+            echo "  credentialstore        Start credentialstore server"
 
             echo "command options:"
 	        echo "  -d                  Start server in daemon mode"
-	        echo "  --<key>[=<value>]   Server setting(s) to override or introduce (overrides values in airavata-server.properties)"
-            echo "  -nologo             Do not show airavata logo"
             echo "  -xdebug             Start Airavata Server under JPDA debugger"
+            echo "  -nologo             Do not show airavata logo"
             echo "  -security           Enable Java 2 security"
+	        echo "  --<key>[=<value>]   Server setting(s) to override or introduce (overrides values in airavata-server.properties)"
             echo "  -h                  Display this help and exit"
             shift
             exit 0
