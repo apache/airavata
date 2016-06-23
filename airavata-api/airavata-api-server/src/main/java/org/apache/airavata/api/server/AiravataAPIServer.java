@@ -124,10 +124,8 @@ public class AiravataAPIServer implements IServer{
 						}
 					}
 				}.start();
-			}
-//            storeServerConfig();
-            /**********start thrift server over TLS******************/
-            if (ServerSettings.isTLSEnabled()) {
+				logger.info("Started API Server ....");
+			} else { /**********start thrift server over TLS******************/
                 TSSLTransportFactory.TSSLTransportParameters TLSParams =
                         new TSSLTransportFactory.TSSLTransportParameters();
                 TLSParams.setKeyStore(ServerSettings.getKeyStorePath(), ServerSettings.getKeyStorePassword());
@@ -160,7 +158,7 @@ public class AiravataAPIServer implements IServer{
                         }
                     }
                 }.start();
-                logger.info("Airavata API server starter over TLS on Port: " + ServerSettings.getTLSServerPort());
+                logger.info("API server started over TLS on Port: " + ServerSettings.getTLSServerPort() + " ...");
             }
 
             /*perform any security related initialization at the server startup, according to the underlying security
@@ -172,7 +170,8 @@ public class AiravataAPIServer implements IServer{
             logger.error(e.getMessage());
             setStatus(ServerStatus.FAILED);
             ExperimentCatalogInitUtil.stopDerbyInServerMode();
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+			logger.error("Failed to start Gfac server ...");
+			throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
