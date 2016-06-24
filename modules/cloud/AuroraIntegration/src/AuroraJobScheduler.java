@@ -1,6 +1,21 @@
-import java.io.*;
 
-public class auroraJobScheduler {
+// TODO: add documentation on the purpose of this class
+
+//TODO: rename this class to AuroraJobSchedulerImpl
+
+// TODO: need javadoc style documentation for each method
+
+//TODO: import each type individually instead of "*"
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import exception.AuroraException;
+
+public class AuroraJobScheduler implements AuroraJobSchedulerI {
 	public void jobUpdatePause(String info) throws AuroraException{
 		try{
 			String line;
@@ -14,10 +29,13 @@ public class auroraJobScheduler {
 			}
 		}
 		catch (IOException ex) {
-			throw new AuroraException("IO Exception occured. Please try again.");
+		    // should get the IOException in a string, add your own meaningful message, and then throw it again
+			
+			throw new AuroraException("IO Exception occured while pausing the update.\n"+ex.toString());
 		}
 		catch (Exception ex) {
-			throw new AuroraException("Exception occured. Please try again.");
+		    // should get the Exception in a string, add your own meaningful message, and then throw it again
+			throw new AuroraException("Exception occured while pausing the update.\n"+ex.toString());
 		}
 	}
 	public void jobUpdateInfo(String info) throws AuroraException{
@@ -33,12 +51,15 @@ public class auroraJobScheduler {
 			}
 		}
 		catch (IOException ex) {
-			throw new AuroraException("IO Exception occured. Please try again.");
+		    // should get the IOException in a string, add your own meaningful message, and then throw it again
+			throw new AuroraException("IO Exception occured while retrieving the update info.\n"+ex.toString());
 		}
 		catch (Exception ex) {
-			throw new AuroraException("Exception occured. Please try again.");
+		    // should get the Exception in a string, add your own meaningful message, and then throw it again
+			throw new AuroraException("Exception occured while retrieving the update info."+ex.toString());
 		}
 	}
+
 	public void jobUpdate(String update) throws AuroraException{
 		try{
 			String line;
@@ -51,9 +72,11 @@ public class auroraJobScheduler {
 				line = stdout.readLine();
 			}
 		}catch (IOException ex) {
-			throw new AuroraException("IO Exception occured. Please try again.");
+		    // should get the IOException in a string, add your own meaningful message, and then throw it again
+			throw new AuroraException("IO Exception occured while updating the job.\n"+ex.toString());
 		}catch (Exception ex) {
-			throw new AuroraException("Something went wrong. Please try again.");
+		    // TODO: should get the Exception in a string, add your own meaningful message, and then throw it again
+			throw new AuroraException("Exception occured while updating the job.\n"+ex.toString());
    		}
 	}
 	public void jobRestart(String restart) throws AuroraException{
@@ -68,9 +91,9 @@ public class auroraJobScheduler {
 				line = stdout.readLine();
 			}
 		}catch (IOException ex) {
-			throw new AuroraException("IO Exception occured. Please try again.");
+			throw new AuroraException("IO Exception occured while restarting the job.\n"+ex.toString());
 		}catch (Exception ex) {
-			throw new AuroraException("Something went wrong. Please try again.");
+			throw new AuroraException("Exception occured while restarting the job.\n"+ex.toString());
    		}
 	}
 
@@ -86,9 +109,9 @@ public class auroraJobScheduler {
 				line = stdout.readLine();
 			}
 		}catch (IOException ex) {
-			throw new AuroraException("IO Exception occured. Please try again.");
+			throw new AuroraException("IO Exception occured while killing the job.\n"+ex.toString());
 		}catch (Exception ex) {
-			throw new AuroraException("Something went wrong. Please try again.");
+			throw new AuroraException("Exception occured while killing the job.\n"+ex.toString());
 		}
 	}
 	public void jobLaunch(String name) throws AuroraException{
@@ -103,9 +126,9 @@ public class auroraJobScheduler {
 			}
 			auroraJob.waitFor();
 		}catch (IOException ex) {
-			throw new AuroraException("IO Exception occured. Please try again.");
+			throw new AuroraException("IO Exception occured while launching the job.\n"+ex.toString());
 		}catch (Exception ex) {
-			throw new AuroraException("Something went wrong. Please try again.");
+			throw new AuroraException("Exception occured while launching the job.\n"+ex.toString());
 		}
 	}
 	public void configCreate(String name, String ram, String cpu, String disk, String image) throws AuroraException{
@@ -130,9 +153,9 @@ public class auroraJobScheduler {
 		bw.close();
 
 		}catch (IOException ex) {
-			throw new AuroraException("IO Exception occured. Please try again.");
+			throw new AuroraException("IO Exception occured while creating the configuration file.\n"+ex.toString());
 		}catch (Exception ex) {
-			throw new AuroraException("Something went wrong. Please try again.");
+			throw new AuroraException("Exception occured while creating the configuration file.\n"+ex.toString());
 		}
 	}
 }			
