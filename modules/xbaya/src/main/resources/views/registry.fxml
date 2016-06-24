@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="300.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <SplitPane dividerPositions="0.8288590604026845" orientation="VERTICAL" prefHeight="300.0" prefWidth="500.0">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="500.0">
+               <children>
+                  <VBox prefHeight="200.0" prefWidth="499.0">
+                     <children>
+                        <HBox translateX="10.0" translateY="12.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Airavata Service" translateY="4.0" wrappingWidth="100.39939880371094" />
+                              <ComboBox prefHeight="26.0" prefWidth="370.0" promptText="API_SERVICE" translateX="4.0" />
+                           </children>
+                        </HBox>
+                        <HBox translateX="10.0" translateY="30.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Server Address:" translateY="4.0" wrappingWidth="100.39939880371094" />
+                              <TextField prefHeight="26.0" prefWidth="370.0" text="localhost" translateX="5.0" />
+                           </children>
+                        </HBox>
+                        <HBox translateX="10.0" translateY="50.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Server Port:" translateX="25.0" translateY="4.0" wrappingWidth="100.39939880371094" />
+                              <TextField prefHeight="26.0" prefWidth="370.0" text="8930" translateX="5.0" />
+                           </children>
+                        </HBox>
+                        <HBox translateX="10.0" translateY="70.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Gateway Name:" translateY="4.0" wrappingWidth="100.39939880371094" />
+                              <TextField prefHeight="26.0" prefWidth="370.0" text="airavata" translateX="5.0" />
+                           </children>
+                        </HBox>
+                        <HBox translateX="10.0" translateY="90.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Gateway User:" translateX="8.0" translateY="4.0" wrappingWidth="100.39939880371094" />
+                              <TextField prefHeight="26.0" prefWidth="370.0" text="airavata" translateX="5.0" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="49.0" prefWidth="498.0">
+               <children>
+                  <HBox prefHeight="100.0" prefWidth="500.0">
+                     <children>
+                        <Button mnemonicParsing="false" prefHeight="18.0" prefWidth="60.0" text="OK" translateX="170.0" translateY="10.0" />
+                        <Button mnemonicParsing="false" prefHeight="18.0" prefWidth="60.0" text="Cancel" translateX="200.0" translateY="10.0" />
+                     </children>
+                  </HBox>
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</StackPane>

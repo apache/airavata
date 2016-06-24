@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.StackPane?>
+
+
+<StackPane prefHeight="350.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+   <children>
+      <VBox prefHeight="300.0" prefWidth="500.0">
+         <children>
+            <HBox prefHeight="30.0" prefWidth="500.0" translateX="30.0" translateY="20.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Name:" translateX="15.0" translateY="5.0" />
+                  <TextField prefHeight="26.0" prefWidth="384.0" translateX="30.0" />
+               </children>
+            </HBox>
+            <HBox layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="500.0" translateX="15.0" translateY="30.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Description:" translateY="95.0" />
+                  <TextArea prefHeight="58.0" prefWidth="382.0" translateX="15.0" />
+               </children>
+            </HBox>
+            <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="55.0" text="OK" translateX="170.0" translateY="70.0" />
+            <Button layoutX="10.0" layoutY="240.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="66.0" text="Cancel" translateX="270.0" translateY="44.0" />
+         </children>
+      </VBox>
+      <Separator prefHeight="0.0" prefWidth="500.0" translateY="100.0" />
+   </children>
+</StackPane>
