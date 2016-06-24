@@ -301,7 +301,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                 for (Credential credential : allCredentials) {
                     if (credential instanceof org.apache.airavata.credential.store.credential.impl.password.PasswordCredential) {
                         org.apache.airavata.credential.store.credential.impl.password.PasswordCredential pwdCredential = (org.apache.airavata.credential.store.credential.impl.password.PasswordCredential) credential;
-                        pwdCredMap.put(pwdCredential.getToken(),pwdCredential.getDescription());
+                        pwdCredMap.put(pwdCredential.getToken(),pwdCredential.getDescription() == null ? "" : pwdCredential.getDescription());
                     }
                 }
             }
