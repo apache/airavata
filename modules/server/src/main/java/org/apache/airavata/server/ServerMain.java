@@ -49,6 +49,7 @@ public class ServerMain {
 	private static boolean systemShutDown=false;
 	private static String STOP_COMMAND_STR = "stop";
 
+	private static String ALL_IN_ONE = "all";
 	// server names
 	private static String API_SERVER = "apiserver";
 	private static String CREDENTIAL_STORE = "credentialstore";
@@ -63,27 +64,29 @@ public class ServerMain {
     
 	private static void loadServers(String serverNames) {
 		try {
-			if (serverNames !=null){
+			if (serverNames != null) {
 				List<String> serversList = handleServerDependencies(serverNames);
 				for (String serverString : serversList) {
-					serverString=serverString.trim();
+					serverString = serverString.trim();
 					String serverClassName = ServerSettings.getSetting(serverString);
 					Class<?> classInstance;
 					try {
 						classInstance = ServerMain.class
-						        .getClassLoader().loadClass(
-						        		serverClassName);
-						servers.add((IServer)classInstance.newInstance());
+								.getClassLoader().loadClass(
+										serverClassName);
+						servers.add((IServer) classInstance.newInstance());
 					} catch (ClassNotFoundException e) {
-						logger.error("Error while locating server implementation \""+serverString+"\"!!!",e);
+						logger.error("Error while locating server implementation \"" + serverString + "\"!!!", e);
 					} catch (InstantiationException e) {
-						logger.error("Error while initiating server instance \""+serverString+"\"!!!",e);
+						logger.error("Error while initiating server instance \"" + serverString + "\"!!!", e);
 					} catch (IllegalAccessException e) {
-						logger.error("Error while initiating server instance \""+serverString+"\"!!!",e);
-					} catch (ClassCastException e){
-						logger.error("Invalid server \""+serverString+"\"!!!",e);
+						logger.error("Error while initiating server instance \"" + serverString + "\"!!!", e);
+					} catch (ClassCastException e) {
+						logger.error("Invalid server \"" + serverString + "\"!!!", e);
 					}
 				}
+			} else {
+				logger.warn("No server name specify to start, use -h command line option to view help menu ...");
 			}
 		} catch (ApplicationSettingsException e) {
 			logger.error("Error while retrieving server list!!!",e);
@@ -99,6 +102,14 @@ public class ServerMain {
 
 	private static List<String> handleServerDependencies(String serverNames) {
 		List<String> serverList = new ArrayList<>(Arrays.asList(serverNames.split(",")));
+		if (serverList.indexOf(ALL_IN_ONE) > -1) {
+			serverList.clear();
+			serverList.add(CREDENTIAL_STORE); // credential store should start before api server
+			serverList.add(API_SERVER);
+			serverList.add(ORCHESTRATOR);
+			serverList.add(GFAC_SERVER);
+			return serverList;
+		}
 		// credential store should start before api server
 		int credPos = serverList.indexOf(CREDENTIAL_STORE);
 		if (credPos > 0) { // neither absent nor credentialstore is first element
