@@ -27,6 +27,7 @@ EXTRA_ARGS=""
 SERVERS=""
 IS_DAEMON_MODE=false
 LOGO=true
+ALL_IN_ONE=false
 
 # parse command arguments
 for var in "$@"
@@ -41,7 +42,7 @@ do
             JAVA_OPTS="${JAVA_OPTS} -Djava.security.manager -Djava.security.policy=${AIRAVATA_HOME}/conf/axis2.policy -Daxis2.home=${AIRAVATA_HOME}"
             shift
         ;;
-	    api | gfac | orchestrator)
+	    apiserver | gfac | orchestrator)
 	        if [ -z ${SERVERS} ] ; then
 	            SERVERS="${var}"
 	        else
@@ -49,6 +50,10 @@ do
 	        fi
             shift
         ;;
+        all)
+            ALL_IN_ONE=true
+            shift
+            ;;
         -d)
 	        IS_DAEMON_MODE=true
 	        shift
@@ -63,7 +68,8 @@ do
             echo "  apiserver           Start apiserver"
             echo "  gfac                Start gfac server"
             echo "  orchestrator        Start orchestrator server"
-            echo "  credentialstore        Start credentialstore server"
+            echo "  credentialstore     Start credentialstore server"
+            echo "  all                 Start all servers in one JVM"
 
             echo "command options:"
 	        echo "  -d                  Start server in daemon mode"
@@ -82,8 +88,12 @@ do
     esac
 done
 
-#add extra argument to the
-AIRAVATA_COMMAND="--servers=${SERVERS} ${AIRAVATA_COMMAND} ${EXTRA_ARGS}"
+#Construct Airavata command arguments in proper order.
+if ${ALL_IN_ONE} ; then
+    AIRAVATA_COMMAND="--servers=all ${AIRAVATA_COMMAND} ${EXTRA_ARGS}"
+else
+    AIRAVATA_COMMAND="--servers=${SERVERS} ${AIRAVATA_COMMAND} ${EXTRA_ARGS}"
+fi
 
 #print logo file
 if ${LOGO} ; then
