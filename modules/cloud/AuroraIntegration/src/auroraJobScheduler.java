@@ -1,7 +1,25 @@
 import java.io.*;
-import java.util.*;
 
 public class auroraJobScheduler {
+	public void jobUpdatePause(String info) throws AuroraException{
+		try{
+			String line;
+			Process auroraJob = Runtime.getRuntime().exec("aurora update pause example/benchmarks/devel/"+info);
+			auroraJob.waitFor();
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(auroraJob.getInputStream()));
+			line = stdout.readLine();
+			while (line != null) {
+				System.out.println(line); 
+				line = stdout.readLine();
+			}
+		}
+		catch (IOException ex) {
+			throw new AuroraException("IO Exception occured. Please try again.");
+		}
+		catch (Exception ex) {
+			throw new AuroraException("Exception occured. Please try again.");
+		}
+	}
 	public void jobUpdateInfo(String info) throws AuroraException{
 		try{
 			String line;
