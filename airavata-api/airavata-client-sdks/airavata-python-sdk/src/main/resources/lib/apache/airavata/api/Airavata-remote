@@ -38,7 +38,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  Notification getNotification(AuthzToken authzToken, string gatewayId, string notificationId)')
   print('   getAllNotifications(AuthzToken authzToken, string gatewayId)')
   print('  string generateAndRegisterSSHKeys(AuthzToken authzToken, string gatewayId, string userName)')
-  print('  string registerPwdCredential(AuthzToken authzToken, string gatewayId, string portalUserName, string loginUserName, string password)')
+  print('  string registerPwdCredential(AuthzToken authzToken, string gatewayId, string portalUserName, string loginUserName, string password, string description)')
   print('  string getSSHPubKey(AuthzToken authzToken, string airavataCredStoreToken, string gatewayId)')
   print('   getAllGatewaySSHPubKeys(AuthzToken authzToken, string gatewayId)')
   print('   getAllGatewayPWDCredentials(AuthzToken authzToken, string gatewayId)')
@@ -311,10 +311,10 @@ elif cmd == 'generateAndRegisterSSHKeys':
   pp.pprint(client.generateAndRegisterSSHKeys(eval(args[0]),args[1],args[2],))
 
 elif cmd == 'registerPwdCredential':
-  if len(args) != 5:
-    print('registerPwdCredential requires 5 args')
+  if len(args) != 6:
+    print('registerPwdCredential requires 6 args')
     sys.exit(1)
-  pp.pprint(client.registerPwdCredential(eval(args[0]),args[1],args[2],args[3],args[4],))
+  pp.pprint(client.registerPwdCredential(eval(args[0]),args[1],args[2],args[3],args[4],args[5],))
 
 elif cmd == 'getSSHPubKey':
   if len(args) != 3:

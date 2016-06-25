@@ -272,12 +272,13 @@ interface AiravataIf {
    * @param string $portalUserName
    * @param string $loginUserName
    * @param string $password
+   * @param string $description
    * @return string
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    */
-  public function registerPwdCredential(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $portalUserName, $loginUserName, $password);
+  public function registerPwdCredential(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $portalUserName, $loginUserName, $password, $description);
   /**
    * Get a Public Key by Providing the Token
    * 
@@ -4467,13 +4468,13 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("generateAndRegisterSSHKeys failed: unknown result");
   }
 
-  public function registerPwdCredential(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $portalUserName, $loginUserName, $password)
+  public function registerPwdCredential(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $portalUserName, $loginUserName, $password, $description)
   {
-    $this->send_registerPwdCredential($authzToken, $gatewayId, $portalUserName, $loginUserName, $password);
+    $this->send_registerPwdCredential($authzToken, $gatewayId, $portalUserName, $loginUserName, $password, $description);
     return $this->recv_registerPwdCredential();
   }
 
-  public function send_registerPwdCredential(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $portalUserName, $loginUserName, $password)
+  public function send_registerPwdCredential(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $portalUserName, $loginUserName, $password, $description)
   {
     $args = new \Airavata\API\Airavata_registerPwdCredential_args();
     $args->authzToken = $authzToken;
@@ -4481,6 +4482,7 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     $args->portalUserName = $portalUserName;
     $args->loginUserName = $loginUserName;
     $args->password = $password;
+    $args->description = $description;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -17046,6 +17048,10 @@ class Airavata_registerPwdCredential_args {
    * @var string
    */
   public $password = null;
+  /**
+   * @var string
+   */
+  public $description = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -17071,6 +17077,10 @@ class Airavata_registerPwdCredential_args {
           'var' => 'password',
           'type' => TType::STRING,
           ),
+        6 => array(
+          'var' => 'description',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -17088,6 +17098,9 @@ class Airavata_registerPwdCredential_args {
       }
       if (isset($vals['password'])) {
         $this->password = $vals['password'];
+      }
+      if (isset($vals['description'])) {
+        $this->description = $vals['description'];
       }
     }
   }
@@ -17147,6 +17160,13 @@ class Airavata_registerPwdCredential_args {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 6:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->description);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -17186,6 +17206,11 @@ class Airavata_registerPwdCredential_args {
     if ($this->password !== null) {
       $xfer += $output->writeFieldBegin('password', TType::STRING, 5);
       $xfer += $output->writeString($this->password);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->description !== null) {
+      $xfer += $output->writeFieldBegin('description', TType::STRING, 6);
+      $xfer += $output->writeString($this->description);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

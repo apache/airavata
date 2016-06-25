@@ -218,8 +218,9 @@ class AiravataIf {
    * @param portalUserName
    * @param loginUserName
    * @param password
+   * @param description
    */
-  virtual void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password) = 0;
+  virtual void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password, const std::string& description) = 0;
 
   /**
    * Get a Public Key by Providing the Token
@@ -2721,7 +2722,7 @@ class AiravataNull : virtual public AiravataIf {
   void generateAndRegisterSSHKeys(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */) {
     return;
   }
-  void registerPwdCredential(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* portalUserName */, const std::string& /* loginUserName */, const std::string& /* password */) {
+  void registerPwdCredential(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* portalUserName */, const std::string& /* loginUserName */, const std::string& /* password */, const std::string& /* description */) {
     return;
   }
   void getSSHPubKey(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataCredStoreToken */, const std::string& /* gatewayId */) {
@@ -5072,7 +5073,7 @@ class Airavata_registerPwdCredential_args {
 
   Airavata_registerPwdCredential_args(const Airavata_registerPwdCredential_args&);
   Airavata_registerPwdCredential_args& operator=(const Airavata_registerPwdCredential_args&);
-  Airavata_registerPwdCredential_args() : gatewayId(), portalUserName(), loginUserName(), password() {
+  Airavata_registerPwdCredential_args() : gatewayId(), portalUserName(), loginUserName(), password(), description() {
   }
 
   virtual ~Airavata_registerPwdCredential_args() throw();
@@ -5081,6 +5082,7 @@ class Airavata_registerPwdCredential_args {
   std::string portalUserName;
   std::string loginUserName;
   std::string password;
+  std::string description;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
@@ -5091,6 +5093,8 @@ class Airavata_registerPwdCredential_args {
   void __set_loginUserName(const std::string& val);
 
   void __set_password(const std::string& val);
+
+  void __set_description(const std::string& val);
 
   bool operator == (const Airavata_registerPwdCredential_args & rhs) const
   {
@@ -5103,6 +5107,8 @@ class Airavata_registerPwdCredential_args {
     if (!(loginUserName == rhs.loginUserName))
       return false;
     if (!(password == rhs.password))
+      return false;
+    if (!(description == rhs.description))
       return false;
     return true;
   }
@@ -5128,6 +5134,7 @@ class Airavata_registerPwdCredential_pargs {
   const std::string* portalUserName;
   const std::string* loginUserName;
   const std::string* password;
+  const std::string* description;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -23783,8 +23790,8 @@ class AiravataClient : virtual public AiravataIf {
   void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
   void send_generateAndRegisterSSHKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
   void recv_generateAndRegisterSSHKeys(std::string& _return);
-  void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password);
-  void send_registerPwdCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password);
+  void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password, const std::string& description);
+  void send_registerPwdCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password, const std::string& description);
   void recv_registerPwdCredential(std::string& _return);
   void getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
   void send_getSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
@@ -24651,13 +24658,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password) {
+  void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password, const std::string& description) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->registerPwdCredential(_return, authzToken, gatewayId, portalUserName, loginUserName, password);
+      ifaces_[i]->registerPwdCredential(_return, authzToken, gatewayId, portalUserName, loginUserName, password, description);
     }
-    ifaces_[i]->registerPwdCredential(_return, authzToken, gatewayId, portalUserName, loginUserName, password);
+    ifaces_[i]->registerPwdCredential(_return, authzToken, gatewayId, portalUserName, loginUserName, password, description);
     return;
   }
 
@@ -25994,8 +26001,8 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
   int32_t send_generateAndRegisterSSHKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
   void recv_generateAndRegisterSSHKeys(std::string& _return, const int32_t seqid);
-  void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password);
-  int32_t send_registerPwdCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password);
+  void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password, const std::string& description);
+  int32_t send_registerPwdCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password, const std::string& description);
   void recv_registerPwdCredential(std::string& _return, const int32_t seqid);
   void getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
   int32_t send_getSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);

@@ -223,7 +223,7 @@ class Iface:
     """
     pass
 
-  def registerPwdCredential(self, authzToken, gatewayId, portalUserName, loginUserName, password):
+  def registerPwdCredential(self, authzToken, gatewayId, portalUserName, loginUserName, password, description):
     """
     Generate and Register Username PWD Pair with Airavata Credential Store.
 
@@ -250,6 +250,7 @@ class Iface:
      - portalUserName
      - loginUserName
      - password
+     - description
     """
     pass
 
@@ -3704,7 +3705,7 @@ class Client(Iface):
       raise result.ase
     raise TApplicationException(TApplicationException.MISSING_RESULT, "generateAndRegisterSSHKeys failed: unknown result")
 
-  def registerPwdCredential(self, authzToken, gatewayId, portalUserName, loginUserName, password):
+  def registerPwdCredential(self, authzToken, gatewayId, portalUserName, loginUserName, password, description):
     """
     Generate and Register Username PWD Pair with Airavata Credential Store.
 
@@ -3731,11 +3732,12 @@ class Client(Iface):
      - portalUserName
      - loginUserName
      - password
+     - description
     """
-    self.send_registerPwdCredential(authzToken, gatewayId, portalUserName, loginUserName, password)
+    self.send_registerPwdCredential(authzToken, gatewayId, portalUserName, loginUserName, password, description)
     return self.recv_registerPwdCredential()
 
-  def send_registerPwdCredential(self, authzToken, gatewayId, portalUserName, loginUserName, password):
+  def send_registerPwdCredential(self, authzToken, gatewayId, portalUserName, loginUserName, password, description):
     self._oprot.writeMessageBegin('registerPwdCredential', TMessageType.CALL, self._seqid)
     args = registerPwdCredential_args()
     args.authzToken = authzToken
@@ -3743,6 +3745,7 @@ class Client(Iface):
     args.portalUserName = portalUserName
     args.loginUserName = loginUserName
     args.password = password
+    args.description = description
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -11581,7 +11584,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = registerPwdCredential_result()
     try:
-      result.success = self._handler.registerPwdCredential(args.authzToken, args.gatewayId, args.portalUserName, args.loginUserName, args.password)
+      result.success = self._handler.registerPwdCredential(args.authzToken, args.gatewayId, args.portalUserName, args.loginUserName, args.password, args.description)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -18575,6 +18578,7 @@ class registerPwdCredential_args:
    - portalUserName
    - loginUserName
    - password
+   - description
   """
 
   thrift_spec = (
@@ -18584,14 +18588,16 @@ class registerPwdCredential_args:
     (3, TType.STRING, 'portalUserName', None, None, ), # 3
     (4, TType.STRING, 'loginUserName', None, None, ), # 4
     (5, TType.STRING, 'password', None, None, ), # 5
+    (6, TType.STRING, 'description', None, None, ), # 6
   )
 
-  def __init__(self, authzToken=None, gatewayId=None, portalUserName=None, loginUserName=None, password=None,):
+  def __init__(self, authzToken=None, gatewayId=None, portalUserName=None, loginUserName=None, password=None, description=None,):
     self.authzToken = authzToken
     self.gatewayId = gatewayId
     self.portalUserName = portalUserName
     self.loginUserName = loginUserName
     self.password = password
+    self.description = description
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -18628,6 +18634,11 @@ class registerPwdCredential_args:
           self.password = iprot.readString()
         else:
           iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.STRING:
+          self.description = iprot.readString()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -18658,6 +18669,10 @@ class registerPwdCredential_args:
       oprot.writeFieldBegin('password', TType.STRING, 5)
       oprot.writeString(self.password)
       oprot.writeFieldEnd()
+    if self.description is not None:
+      oprot.writeFieldBegin('description', TType.STRING, 6)
+      oprot.writeString(self.description)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -18672,6 +18687,8 @@ class registerPwdCredential_args:
       raise TProtocol.TProtocolException(message='Required field loginUserName is unset!')
     if self.password is None:
       raise TProtocol.TProtocolException(message='Required field password is unset!')
+    if self.description is None:
+      raise TProtocol.TProtocolException(message='Required field description is unset!')
     return
 
 
@@ -18682,6 +18699,7 @@ class registerPwdCredential_args:
     value = (value * 31) ^ hash(self.portalUserName)
     value = (value * 31) ^ hash(self.loginUserName)
     value = (value * 31) ^ hash(self.password)
+    value = (value * 31) ^ hash(self.description)
     return value
 
   def __repr__(self):
