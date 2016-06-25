@@ -264,8 +264,9 @@ class AiravataHandler : virtual public AiravataIf {
    * @param portalUserName
    * @param loginUserName
    * @param password
+   * @param description
    */
-  void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password) {
+  void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password, const std::string& description) {
     // Your implementation goes here
     printf("registerPwdCredential\n");
   }

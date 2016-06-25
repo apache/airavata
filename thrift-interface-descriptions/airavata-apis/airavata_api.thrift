@@ -282,7 +282,8 @@ service Airavata {
                       2: required string gatewayId,
                       3: required string portalUserName,
                       4: required string loginUserName,
-                      5: required string password)
+                      5: required string password,
+                      6: required string description)
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
