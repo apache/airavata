@@ -1,4 +1,4 @@
-package exception;
+package org.apache.airavata.cloud.aurora.exception;
 
 public class AuroraException extends Exception {
     private String exceptionMsg;
@@ -8,7 +8,7 @@ public class AuroraException extends Exception {
     public AuroraException(String exceptionMsgIn){
     	exceptionMsg=exceptionMsgIn;;
     }
-    
+
     public String toString(){
     	return 	this.exceptionMsg;
     }

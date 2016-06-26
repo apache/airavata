@@ -1,23 +1,17 @@
+package org.apache.airavata.cloud.aurora.driver;
+// TODO: need javadoc documentation at the top of each method
 
-// rename class to AuroraAdminDriver
-// TOOD: need javadoc documentation at the top of each method
-
+// TODO: individually import the types
 import java.util.*;
 
-import exception.AuroraException;
+import org.apache.airavata.cloud.aurora.exception.AuroraException;
+import org.apache.airavata.cloud.aurora.auroraClient.AuroraJobSchedulerI;
+import org.apache.airavata.cloud.aurora.auroraClient.AuroraJobSchedulerImpl;
 
 public class AuroraAdminDriver{
 	public static void main(String[] args) {
 
-	    // TODO: add code to call a method to validate the args
-
-	    // TODO: program to an interface. So, the code should be
-	    // AuroraJobSchedulerI auroraJS = new AuroraJobSchedulerImpl();
-
 		AuroraJobSchedulerI auroraJS = new AuroraJobSchedulerImpl();
-		// why is htis Map final? : Does not have to be final, all the implementations of argument readers i saw had final for Map
-
-		// documentation: what is the purpose of the for-loop : to read all the arguments for example to create a job following are the arguments: -o create -r 1024 -n batik -c 2.0 -d 1000 -i gouravr/dacapo:tag9
 
 		Map<String, List<String>> params = new HashMap<>();
 		List<String> options = null;
