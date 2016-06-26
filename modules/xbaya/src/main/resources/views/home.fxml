@@ -7,7 +7,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.airavata.xbaya.ui.home.controller.HomeController">
    <top>
       <VBox prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
@@ -15,7 +15,7 @@
                <menus>
                   <Menu mnemonicParsing="false" text="XBaya">
                      <items>
-                        <MenuItem mnemonicParsing="false" text="New Workflow">
+                        <MenuItem mnemonicParsing="false" onAction="#newWorkflow" text="New Workflow">
                            <graphic>
                               <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                                  <image>

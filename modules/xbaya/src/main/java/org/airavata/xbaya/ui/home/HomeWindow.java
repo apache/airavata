@@ -12,6 +12,7 @@ public class HomeWindow extends Application {
     public void start(Stage primaryStage) throws Exception{
     	Parent root = FXMLLoader.load(getClass().getResource("/views/home.fxml"));    
     	primaryStage.setTitle("XBaya GUI");
+    	
         primaryStage.setScene(new Scene(root, 1060, 600));
         primaryStage.show();
     }
