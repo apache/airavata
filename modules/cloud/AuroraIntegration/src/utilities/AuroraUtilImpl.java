@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import exception.AuroraException;
 import java.io.IOException;
 
-public class Utility implements UtilityI{
+public class AuroraUtilImpl implements AuroraUtilI{
   public void printLog(BufferedReader stdout) throws AuroraException
   {
     try{
