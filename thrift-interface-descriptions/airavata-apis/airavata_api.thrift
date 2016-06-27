@@ -114,6 +114,23 @@ service Airavata {
                  3: airavata_errors.AiravataSystemException ase,
                  4: airavata_errors.AuthorizationException ae)
 
+
+  /**
+     * Get all users in the gateway
+     *
+     * @param gatewayId
+     *    The gateway data model.
+     *
+     * @return users
+     *   list of usernames of the users in the gateway
+     *
+     **/
+  list<string> getAllUsersInGateway(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
+        throws (1: airavata_errors.InvalidRequestException ire,
+                         2: airavata_errors.AiravataClientException ace,
+                         3: airavata_errors.AiravataSystemException ase,
+                         4: airavata_errors.AuthorizationException ae)
+
    /**
    * Update previously registered Gateway metadata.
    *

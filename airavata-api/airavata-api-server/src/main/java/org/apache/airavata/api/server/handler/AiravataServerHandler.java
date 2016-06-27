@@ -169,6 +169,28 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    /**
+     * Get all users in the gateway
+     *
+     * @param authzToken
+     * @param gatewayId  The gateway data model.
+     * @return users
+     * list of usernames of the users in the gateway
+     */
+    @Override
+    public List<String> getAllUsersInGateway(AuthzToken authzToken, String gatewayId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return ExpCatResourceUtils.getAllUsersInGateway(gatewayId);
+        } catch (RegistryException e) {
+            logger.error("Error while retrieving users", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving users. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     @Override
     @SecurityCheck
     public void updateGateway(AuthzToken authzToken, String gatewayId, Gateway updatedGateway)

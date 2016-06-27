@@ -90,6 +90,25 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * Get all users in the gateway
+   * 
+   * @param gatewayId
+   *    The gateway data model.
+   * 
+   * @return users
+   *   list of usernames of the users in the gateway
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   */
+  void getAllUsersInGateway(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("getAllUsersInGateway\n");
+  }
+
+  /**
    * Update previously registered Gateway metadata.
    * 
    * @param gatewayId

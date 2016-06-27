@@ -170,6 +170,7 @@
 /airavata/getWorkflow|
 /airavata/getWorkflowTemplateId|
 /airavata/isWorkflowExistWithName|
+/airavata/getAllUsersInGateway|
 /airavata/registerDataProduct|
 /airavata/getDataProduct|
 /airavata/registerReplicaLocation|
