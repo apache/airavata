@@ -247,7 +247,7 @@ public class ProjectRegistry {
                     }
                 }
                 List<ProjectResource> projectResources = workerResource
-                        .searchProjects(fil, limit, offset, orderByIdentifier, resultOrderType);
+                        .searchProjects(fil, null, limit, offset, orderByIdentifier, resultOrderType);
                 if (projectResources != null && !projectResources.isEmpty()){
                     for (ProjectResource pr : projectResources){
                         projects.add(ThriftDataModelConversion.getProject(pr));
@@ -294,7 +294,7 @@ public class ProjectRegistry {
                     }
                 }
                 List<ProjectResource> projectResources = workerResource
-                        .searchProjects(fil, limit, offset, orderByIdentifier, resultOrderType);
+                        .searchProjects(fil, accessibleIds, limit, offset, orderByIdentifier, resultOrderType);
                 if (projectResources != null && !projectResources.isEmpty()){
                     for (ProjectResource pr : projectResources){
                         projects.add(ThriftDataModelConversion.getProject(pr));
