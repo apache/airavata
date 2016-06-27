@@ -6,4 +6,5 @@ import org.apache.airavata.cloud.aurora.exception.AuroraException;
 
 public interface AuroraUtilI{
   public void printLog(BufferedReader stdout) throws AuroraException;
+  public BufferedReader executeProcess(String commandToRunProcess) throws AuroraException;
 }
