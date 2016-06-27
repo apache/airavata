@@ -4,6 +4,7 @@ package org.apache.airavata.cloud.aurora.utilities;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import org.apache.airavata.cloud.aurora.exception.AuroraException;
 
@@ -22,4 +23,21 @@ public class AuroraUtilImpl implements AuroraUtilI{
   			throw new AuroraException("IO Exception occured while passing the command.\n"+ex.toString());
   		}
   }
+
+  public BufferedReader executeProcess(String commandToRunProcess) throws AuroraException
+  {
+	BufferedReader stdout = null;
+	try{
+		Process auroraJob = Runtime.getRuntime().exec(commandToRunProcess);
+		auroraJob.waitFor();
+		stdout = new BufferedReader(new InputStreamReader(auroraJob.getInputStream()));
+	}
+	catch(Exception ex)
+	{
+		throw new AuroraException("Exception occured while passing the command.\n"+ex.toString());
+
+	}
+	return stdout;
+  }
+  
 }

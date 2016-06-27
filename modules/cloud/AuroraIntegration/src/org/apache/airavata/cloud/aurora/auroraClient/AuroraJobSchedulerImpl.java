@@ -13,13 +13,12 @@ import org.apache.airavata.cloud.aurora.utilities.AuroraUtilI;
 
 public class AuroraJobSchedulerImpl implements AuroraJobSchedulerI {
 	AuroraUtilI util = new AuroraUtilImpl();
+
+	
 	public void auroraJobCommand(String info, String command) throws AuroraException{
 		try{
-			String line;
-			Process auroraJob = Runtime.getRuntime().exec("aurora task run example/benchmarks/devel/"+info+" "+command);
-			auroraJob.waitFor();
-			BufferedReader stdout = new BufferedReader(new InputStreamReader(auroraJob.getInputStream()));
-
+			String completeCommandToRunProcess = "aurora task run example/benchmarks/devel/"+info+" "+command;
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
 			util.printLog(stdout);
 		}
 
@@ -29,11 +28,8 @@ public class AuroraJobSchedulerImpl implements AuroraJobSchedulerI {
 	}
 	public void jobUpdateList(String info) throws AuroraException{
 		try{
-			String line;
-			Process auroraJob = Runtime.getRuntime().exec("aurora update list example/benchmarks/devel/"+info);
-			auroraJob.waitFor();
-			BufferedReader stdout = new BufferedReader(new InputStreamReader(auroraJob.getInputStream()));
-
+			String completeCommandToRunProcess = "aurora update list example/benchmarks/devel/"+info;
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
 			util.printLog(stdout);
 		}
 
@@ -44,11 +40,8 @@ public class AuroraJobSchedulerImpl implements AuroraJobSchedulerI {
 	}
 	public void jobUpdateAbort(String info) throws AuroraException{
 		try{
-			String line;
-			Process auroraJob = Runtime.getRuntime().exec("aurora abort pause example/benchmarks/devel/"+info);
-			auroraJob.waitFor();
-			BufferedReader stdout = new BufferedReader(new InputStreamReader(auroraJob.getInputStream()));
-
+			String completeCommandToRunProcess = "aurora abort pause example/benchmarks/devel/"+info;
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
 			util.printLog(stdout);
 		}
 
@@ -59,11 +52,8 @@ public class AuroraJobSchedulerImpl implements AuroraJobSchedulerI {
 	}
 	public void jobUpdateResume(String info) throws AuroraException{
 		try{
-			String line;
-			Process auroraJob = Runtime.getRuntime().exec("aurora update resume example/benchmarks/devel/"+info);
-			auroraJob.waitFor();
-			BufferedReader stdout = new BufferedReader(new InputStreamReader(auroraJob.getInputStream()));
-
+			String completeCommandToRunProcess ="aurora update resume example/benchmarks/devel/"+info;
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
 			util.printLog(stdout);
 		}
 
@@ -74,11 +64,8 @@ public class AuroraJobSchedulerImpl implements AuroraJobSchedulerI {
 	}
 	public void jobUpdatePause(String info) throws AuroraException{
 		try{
-			String line;
-			Process auroraJob = Runtime.getRuntime().exec("aurora update pause example/benchmarks/devel/"+info);
-			auroraJob.waitFor();
-			BufferedReader stdout = new BufferedReader(new InputStreamReader(auroraJob.getInputStream()));
-
+			String completeCommandToRunProcess = "aurora update pause example/benchmarks/devel/"+info;
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
 			util.printLog(stdout);
 		}
 
@@ -89,12 +76,8 @@ public class AuroraJobSchedulerImpl implements AuroraJobSchedulerI {
 	}
 	public void jobUpdateInfo(String info) throws AuroraException{
 		try{
-			String line;
-			Process auroraJob = Runtime.getRuntime().exec("aurora update info example/benchmarks/devel/"+info);
-			auroraJob.waitFor();
-			BufferedReader stdout = new BufferedReader(new InputStreamReader(auroraJob.getInputStream()));
-
-
+			String completeCommandToRunProcess = "aurora update info example/benchmarks/devel/"+info;
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
 			util.printLog(stdout);
 		}
 
@@ -106,12 +89,8 @@ public class AuroraJobSchedulerImpl implements AuroraJobSchedulerI {
 
 	public void jobUpdate(String update) throws AuroraException{
 		try{
-			String line;
-			Process auroraJob = Runtime.getRuntime().exec("aurora update start example/benchmarks/devel/"+update+" "+update+".aurora");
-			auroraJob.waitFor();
-			BufferedReader stdout = new BufferedReader(new InputStreamReader(auroraJob.getInputStream()));
-
-
+			String completeCommandToRunProcess = "aurora update start example/benchmarks/devel/"+update+" "+update+".aurora";
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
 			util.printLog(stdout);
 		}
 
@@ -122,11 +101,8 @@ public class AuroraJobSchedulerImpl implements AuroraJobSchedulerI {
 	}
 	public void jobRestart(String restart) throws AuroraException{
 		try{
-			String line;
-			Process auroraJob = Runtime.getRuntime().exec("aurora job restart example/benchmarks/devel/"+restart);
-			auroraJob.waitFor();
-			BufferedReader stdout = new BufferedReader(new InputStreamReader(auroraJob.getInputStream()));
-
+			String completeCommandToRunProcess = "aurora job restart example/benchmarks/devel/"+restart;
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
 			util.printLog(stdout);
 		}
 
@@ -137,12 +113,8 @@ public class AuroraJobSchedulerImpl implements AuroraJobSchedulerI {
 
 	public void jobKill(String kill) throws AuroraException{
 		try{
-			String line;
-			Process auroraJob = Runtime.getRuntime().exec("aurora job killall example/benchmarks/devel/"+kill);
-			auroraJob.waitFor();
-			BufferedReader stdout = new BufferedReader(new InputStreamReader(auroraJob.getInputStream()));
-
-
+			String completeCommandToRunProcess = "aurora job killall example/benchmarks/devel/"+kill;
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
 			util.printLog(stdout);
 		}
 
@@ -152,12 +124,9 @@ public class AuroraJobSchedulerImpl implements AuroraJobSchedulerI {
 	}
 	public void jobLaunch(String name) throws AuroraException{
 		try{
-			String line;
-			Process auroraJob = Runtime.getRuntime().exec("aurora job create example/benchmarks/devel/"+name+" "+name+".aurora");
-			BufferedReader stdout = new BufferedReader(new InputStreamReader(auroraJob.getInputStream()));
-
+			String completeCommandToRunProcess = "aurora job create example/benchmarks/devel/"+name+" "+name+".aurora";
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
 			util.printLog(stdout);
-			auroraJob.waitFor();
 		}
 
 		catch (Exception ex) {
