@@ -29,11 +29,9 @@ import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
@@ -145,18 +143,9 @@ public class AiravataServerHandlerTest {
             String projectId5 = airavataServerHandler.createProject(token, gatewayId, project);
             Assert.assertNotNull(projectId5);
 
-            //search project by project name
-            List<Project> list = airavataServerHandler.searchProjectsByProjectName(token, gatewayId,
-                    "TestUser"+TAG, "Terrible"+TAG, 2, 0);
-            Assert.assertTrue(list.size()==1);
-
-            //search project by project description
-            list = airavataServerHandler.searchProjectsByProjectDesc(token, gatewayId,
-                    "TestUser" + TAG, "test", 2, 1);
-            Assert.assertTrue(list.size()==2);
 
             //get all projects of user
-            list = airavataServerHandler.getUserProjects(token, gatewayId, "TestUser"+TAG, 2,2);
+            List<Project> list = airavataServerHandler.getUserProjects(token, gatewayId, "TestUser"+TAG, 2,2);
             Assert.assertTrue(list.size()==2);
             Project project1 = list.get(0);
             Project project2 = list.get(1);
@@ -261,36 +250,6 @@ public class AiravataServerHandlerTest {
 
             String experimentId3 = airavataServerHandler.createExperiment(token, gatewayId, experiment);
             Assert.assertNotNull(experimentId3);
-
-            //searching experiments by name
-            List<ExperimentSummaryModel> results = airavataServerHandler.searchExperimentsByName(token, gatewayId,
-                    "TestUser" + TAG, "Experiment2", 2, 0);
-            Assert.assertTrue(results.size()==1);
-
-            //searching experiments by creation time
-            long time = System.currentTimeMillis();
-            results = airavataServerHandler.searchExperimentsByCreationTime(token,
-                    gatewayId, "TestUser" + TAG, time-10000, time+1000, 2,0);
-
-            Assert.assertTrue(results.size()==2);
-
-            //searching based on experiment state
-            ExperimentState experimentState = ExperimentState.findByValue(0);
-            //with pagination
-            results = airavataServerHandler.searchExperimentsByStatus(token,
-                    gatewayId, "TestUser" + TAG, experimentState, 2, 0);
-            Assert.assertTrue(results.size()==2);
-
-            //searching based on application
-            results = airavataServerHandler.searchExperimentsByApplication(new AuthzToken(""),
-                    gatewayId, "TestUser" + TAG, "Ech", 2, 0);
-            Assert.assertTrue(results.size()==2);
-
-            //searching experiments by description
-            results = airavataServerHandler.searchExperimentsByDesc(new AuthzToken(""),
-                    gatewayId, "TestUser" + TAG, "exp", 2, 0);
-            Assert.assertTrue(results.size()==2);
-
 
             //retrieving all experiments in project
             List<ExperimentModel> list = airavataServerHandler.getExperimentsInProject(token, projectId1, 2, 1);
