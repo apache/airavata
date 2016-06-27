@@ -65,6 +65,20 @@ class ExperimentSearchFields:
     "PROJECT_ID": 6,
   }
 
+class ProjectSearchFields:
+  PROJECT_NAME = 0
+  PROJECT_DESCRIPTION = 1
+
+  _VALUES_TO_NAMES = {
+    0: "PROJECT_NAME",
+    1: "PROJECT_DESCRIPTION",
+  }
+
+  _NAMES_TO_VALUES = {
+    "PROJECT_NAME": 0,
+    "PROJECT_DESCRIPTION": 1,
+  }
+
 
 class UserConfigurationDataModel:
   """

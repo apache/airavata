@@ -124,7 +124,8 @@ public class AiravataServerHandler implements Airavata.Iface {
      * @return true/false
      */
     @Override
-    public boolean isUserExists(AuthzToken authzToken, String gatewayId, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean isUserExists(AuthzToken authzToken, String gatewayId, String userName) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             return ExpCatResourceUtils.isUserExist(userName, gatewayId);
         } catch (RegistryException e) {
@@ -754,25 +755,30 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
-     * Get all Project for user by project name with pagination. Results will be ordered based
-     * on creation time DESC
      *
-     * @param gatewayId
-     *    The identifier for the requested gateway.
-     * @param userName
-     *    The identifier of the user
-     * @param projectName
-     *    The name of the project on which the results to be fetched
-     * @param limit
-     *    The amount results to be fetched
-     * @param offset
-     *    The starting point of the results to be fetched
+     *  Search User Projects
+     *  Search and get all Projects for user by project description or/and project name  with pagination.
+     *  Results will be ordered based on creation time DESC.
+     *
+     *  @param gatewayId
+     *     The unique identifier of the gateway making the request.
+     *
+     *  @param userName
+     *     The identifier of the user.
+     *
+     *  @param filters
+     *     Map of multiple filter criteria. Currenlt search filters includes Project Name and Project Description
+     *
+     *  @param limit
+     *     The amount results to be fetched.
+     *
+     *  @param offset
+     *     The starting point of the results to be fetched.
+     *
      */
     @Override
-    @SecurityCheck
-    public List<Project> searchProjectsByProjectName(AuthzToken authzToken, String gatewayId, String userName,
-                                                                   String projectName, int limit, int offset)
-            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public List<Project> searchProjects(AuthzToken authzToken, String gatewayId, String userName, Map<ProjectSearchFields,
+            String> filters, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -794,16 +800,23 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             List<Project> projects = new ArrayList<Project>();
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
-            Map<String, String> filters = new HashMap<String, String>();
-            filters.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
-            filters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
-            filters.put(Constants.FieldConstants.ProjectConstants.PROJECT_NAME, projectName);
-            List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.PROJECT, filters, limit, offset,
+            Map<String, String> regFilters = new HashMap<String, String>();
+            regFilters.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
+            regFilters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
+            for(Map.Entry<ProjectSearchFields, String> entry : filters.entrySet())
+            {
+                if(entry.getKey().equals(ProjectSearchFields.PROJECT_NAME)){
+                    regFilters.put(Constants.FieldConstants.ProjectConstants.PROJECT_NAME, entry.getValue());
+                }else if(entry.getKey().equals(ProjectSearchFields.PROJECT_DESCRIPTION)){
+                    regFilters.put(Constants.FieldConstants.ProjectConstants.DESCRIPTION, entry.getValue());
+                }
+            }
+            List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.PROJECT, regFilters, limit, offset,
                     Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
                 projects.add((Project)object);
             }
-            logger.debug("Airavata retrieved projects for user : " + userName + " and gateway id : " + gatewayId  + " with project name : " + projectName);
+            logger.debug("Airavata retrieved projects for user : " + userName + " and gateway id : " + gatewayId);
             return projects;
         }catch (Exception e) {
             logger.error("Error while retrieving projects", e);
@@ -814,66 +827,6 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    /**
-     * Search and get all Projects for user by project description with pagination. Results
-     * will be ordered based on creation time DESC
-     *
-     * @param gatewayId
-     *    The identifier for the requested gateway.
-     * @param userName
-     *    The identifier of the user
-     * @param description
-     *    The description to be matched
-     * @param limit
-     *    The amount results to be fetched
-     * @param offset
-     *    The starting point of the results to be fetched
-     */
-    @Override
-    @SecurityCheck
-    public List<Project> searchProjectsByProjectDesc(AuthzToken authzToken, String gatewayId, String userName,
-                                                                   String description, int limit, int offset) throws InvalidRequestException,
-            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        if (!validateString(userName)){
-            logger.error("Username cannot be empty. Please provide a valid user..");
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Username cannot be empty. Please provide a valid user..");
-            throw exception;
-        }
-        if (!isGatewayExistInternal(gatewayId)){
-            logger.error("Gateway does not exist.Please provide a valid gateway id...");
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-        }
-        try {
-            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
-                logger.error("User does not exist in the system. Please provide a valid user..");
-                AiravataSystemException exception = new AiravataSystemException();
-                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-                exception.setMessage("User does not exist in the system. Please provide a valid user..");
-                throw exception;
-            }
-            List<Project> projects = new ArrayList<Project>();
-            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
-            Map<String, String> filters = new HashMap<String, String>();
-            filters.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
-            filters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
-            filters.put(Constants.FieldConstants.ProjectConstants.DESCRIPTION, description);
-            List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.PROJECT, filters, limit, offset,
-                    Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
-            for (Object object : results) {
-                projects.add((Project)object);
-            }
-            logger.debug("Airavata retrieved projects for user : " + userName + " and gateway id : " + gatewayId + " with project description : " + description);
-            return projects;
-        }catch (Exception e) {
-            logger.error("Error while retrieving projects", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving projects. More info : " + e.getMessage());
-            throw exception;
-        }
-    }
 
     /**
      * Search Experiments by using multiple filter criteria with pagination. Results will be sorted

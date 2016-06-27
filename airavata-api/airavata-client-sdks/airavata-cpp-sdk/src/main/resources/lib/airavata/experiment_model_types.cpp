@@ -60,6 +60,16 @@ const char* _kExperimentSearchFieldsNames[] = {
 };
 const std::map<int, const char*> _ExperimentSearchFields_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(7, _kExperimentSearchFieldsValues, _kExperimentSearchFieldsNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
+int _kProjectSearchFieldsValues[] = {
+  ProjectSearchFields::PROJECT_NAME,
+  ProjectSearchFields::PROJECT_DESCRIPTION
+};
+const char* _kProjectSearchFieldsNames[] = {
+  "PROJECT_NAME",
+  "PROJECT_DESCRIPTION"
+};
+const std::map<int, const char*> _ProjectSearchFields_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kProjectSearchFieldsValues, _kProjectSearchFieldsNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
 
 UserConfigurationDataModel::~UserConfigurationDataModel() throw() {
 }

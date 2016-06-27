@@ -484,42 +484,12 @@ service Airavata {
                 3: airavata_errors.AiravataSystemException ase,
                 4: airavata_errors.AuthorizationException ae)
 
-   /**
-   *
-   * Search User Projects by Project Name
-   * Get all Project for user by project name with pagination.Results will be ordered based on creation time DESC.
-   *
-   * @param gatewayId
-   *    The unique identifier for the requested gateway.
-   *
-   * @param userName
-   *    The identifier of the user.
-   *
-   * @param projectName
-   *    The name of the project on which the results to be fetched.
-   *
-   * @param limit
-   *    The amount results to be fetched.
-   *
-   * @param offset
-   *    The starting point of the results to be fetched.
-   *
-   **/
-  list<workspace_model.Project> searchProjectsByProjectName (1: required security_model.AuthzToken authzToken,
-                        2: required string gatewayId,
-                        3: required string userName,
-                        4: required string projectName,
-                        5: required i32 limit,
-                        6: required i32 offset)
-          throws (1: airavata_errors.InvalidRequestException ire,
-                  2: airavata_errors.AiravataClientException ace,
-                  3: airavata_errors.AiravataSystemException ase,
-                  4: airavata_errors.AuthorizationException ae)
 
     /**
     *
-    * Search User Projects by Project Description
-    * Search and get all Projects for user by project description with pagination. Results will be ordered based on creation time DESC.
+    * Search User Projects
+    * Search and get all Projects for user by project description or/and project name  with pagination.
+    * Results will be ordered based on creation time DESC.
     *
     * @param gatewayId
     *    The unique identifier of the gateway making the request.
@@ -527,8 +497,8 @@ service Airavata {
     * @param userName
     *    The identifier of the user.
     *
-    * @param description
-    *    The description to be matched.
+    * @param filters
+    *    Map of multiple filter criteria. Currenlt search filters includes Project Name and Project Description
     *
     * @param limit
     *    The amount results to be fetched.
@@ -537,16 +507,16 @@ service Airavata {
     *    The starting point of the results to be fetched.
     *
     **/
-  list<workspace_model.Project> searchProjectsByProjectDesc(1: required security_model.AuthzToken authzToken,
-                        2: required string gatewayId,
-                        3: required string userName,
-                        4: required string description,
-                        5: required i32 limit,
-                        6: required i32 offset)
-            throws (1: airavata_errors.InvalidRequestException ire,
-                    2: airavata_errors.AiravataClientException ace,
-                    3: airavata_errors.AiravataSystemException ase,
-                    4: airavata_errors.AuthorizationException ae)
+  list<workspace_model.Project> searchProjects(1: required security_model.AuthzToken authzToken,
+                              2: required string gatewayId,
+                              3: required string userName,
+                              4: map<experiment_model.ProjectSearchFields, string> filters,
+                              5: required i32 limit,
+                              6: required i32 offset)
+                  throws (1: airavata_errors.InvalidRequestException ire,
+                          2: airavata_errors.AiravataClientException ace,
+                          3: airavata_errors.AiravataSystemException ase,
+                          4: airavata_errors.AuthorizationException ae)
 
    /**
    * Search Experiments.
