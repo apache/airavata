@@ -52,11 +52,6 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('   getUserProjects(AuthzToken authzToken, string gatewayId, string userName, i32 limit, i32 offset)')
   print('   searchProjectsByProjectName(AuthzToken authzToken, string gatewayId, string userName, string projectName, i32 limit, i32 offset)')
   print('   searchProjectsByProjectDesc(AuthzToken authzToken, string gatewayId, string userName, string description, i32 limit, i32 offset)')
-  print('   searchExperimentsByName(AuthzToken authzToken, string gatewayId, string userName, string expName, i32 limit, i32 offset)')
-  print('   searchExperimentsByDesc(AuthzToken authzToken, string gatewayId, string userName, string description, i32 limit, i32 offset)')
-  print('   searchExperimentsByApplication(AuthzToken authzToken, string gatewayId, string userName, string applicationId, i32 limit, i32 offset)')
-  print('   searchExperimentsByStatus(AuthzToken authzToken, string gatewayId, string userName, ExperimentState experimentState, i32 limit, i32 offset)')
-  print('   searchExperimentsByCreationTime(AuthzToken authzToken, string gatewayId, string userName, i64 fromTime, i64 toTime, i32 limit, i32 offset)')
   print('   searchExperiments(AuthzToken authzToken, string gatewayId, string userName,  filters, i32 limit, i32 offset)')
   print('  ExperimentStatistics getExperimentStatistics(AuthzToken authzToken, string gatewayId, i64 fromTime, i64 toTime)')
   print('   getExperimentsInProject(AuthzToken authzToken, string projectId, i32 limit, i32 offset)')
@@ -394,36 +389,6 @@ elif cmd == 'searchProjectsByProjectDesc':
     print('searchProjectsByProjectDesc requires 6 args')
     sys.exit(1)
   pp.pprint(client.searchProjectsByProjectDesc(eval(args[0]),args[1],args[2],args[3],eval(args[4]),eval(args[5]),))
-
-elif cmd == 'searchExperimentsByName':
-  if len(args) != 6:
-    print('searchExperimentsByName requires 6 args')
-    sys.exit(1)
-  pp.pprint(client.searchExperimentsByName(eval(args[0]),args[1],args[2],args[3],eval(args[4]),eval(args[5]),))
-
-elif cmd == 'searchExperimentsByDesc':
-  if len(args) != 6:
-    print('searchExperimentsByDesc requires 6 args')
-    sys.exit(1)
-  pp.pprint(client.searchExperimentsByDesc(eval(args[0]),args[1],args[2],args[3],eval(args[4]),eval(args[5]),))
-
-elif cmd == 'searchExperimentsByApplication':
-  if len(args) != 6:
-    print('searchExperimentsByApplication requires 6 args')
-    sys.exit(1)
-  pp.pprint(client.searchExperimentsByApplication(eval(args[0]),args[1],args[2],args[3],eval(args[4]),eval(args[5]),))
-
-elif cmd == 'searchExperimentsByStatus':
-  if len(args) != 6:
-    print('searchExperimentsByStatus requires 6 args')
-    sys.exit(1)
-  pp.pprint(client.searchExperimentsByStatus(eval(args[0]),args[1],args[2],eval(args[3]),eval(args[4]),eval(args[5]),))
-
-elif cmd == 'searchExperimentsByCreationTime':
-  if len(args) != 7:
-    print('searchExperimentsByCreationTime requires 7 args')
-    sys.exit(1)
-  pp.pprint(client.searchExperimentsByCreationTime(eval(args[0]),args[1],args[2],eval(args[3]),eval(args[4]),eval(args[5]),eval(args[6]),))
 
 elif cmd == 'searchExperiments':
   if len(args) != 6:
