@@ -30,6 +30,7 @@ import javax.persistence.*;
 @IdClass(UserPK.class)
 public class Users {
     private final static Logger logger = LoggerFactory.getLogger(Users.class);
+    private String airavataInternalUserId;
     private String userName;
     private String password;
     private String gatewayId;
@@ -57,6 +58,15 @@ public class Users {
 
     public void setGatewayId(String gatewayId) {
         this.gatewayId = gatewayId;
+    }
+
+    @Column(name = "AIRAVATA_INTERNAL_USER_ID")
+    public String getAiravataInternalUserId() {
+        return airavataInternalUserId;
+    }
+
+    public void setAiravataInternalUserId(String airavataInternalUserId) {
+        this.airavataInternalUserId = airavataInternalUserId;
     }
 
     @Column(name = "PASSWORD")
