@@ -74,7 +74,6 @@ import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.core.experiment.catalog.model.ExperimentSummary;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
@@ -802,7 +801,6 @@ public class AiravataServerHandler implements Airavata.Iface {
             List<Project> projects = new ArrayList<Project>();
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             Map<String, String> regFilters = new HashMap<String, String>();
-            regFilters.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
             regFilters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
             for(Map.Entry<ProjectSearchFields, String> entry : filters.entrySet())
             {
@@ -812,8 +810,18 @@ public class AiravataServerHandler implements Airavata.Iface {
                     regFilters.put(Constants.FieldConstants.ProjectConstants.DESCRIPTION, entry.getValue());
                 }
             }
-            List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.PROJECT, regFilters, limit, offset,
-                    Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
+
+            //FIXME - These accessible IDs should come from grouper
+            Map<String, String> temp = new HashMap();
+            temp.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
+            temp.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
+            List<Object> allUserProjects = experimentCatalog.search(ExperimentCatalogModelType.PROJECT, temp, -1,
+                    0, Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
+            List<String> accessibleProjIds = new ArrayList<>();
+            allUserProjects.stream().forEach(e->accessibleProjIds.add(((Project) e).getProjectID()));
+
+            List<Object> results = experimentCatalog.searchAllAccessible(ExperimentCatalogModelType.PROJECT, accessibleProjIds,
+                    regFilters, limit, offset, Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
                 projects.add((Project)object);
             }
@@ -871,8 +879,6 @@ public class AiravataServerHandler implements Airavata.Iface {
             List<ExperimentSummaryModel> summaries = new ArrayList<ExperimentSummaryModel>();
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             Map<String, String> regFilters = new HashMap();
-            //FIXME
-            //regFilters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
             regFilters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
             for(Map.Entry<ExperimentSearchFields, String> entry : filters.entrySet())
             {
@@ -893,7 +899,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 }
             }
 
-            //FIXME
+            //FIXME - These accessible IDs should come from grouper
             Map<String, String> temp = new HashMap();
             temp.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
             temp.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
