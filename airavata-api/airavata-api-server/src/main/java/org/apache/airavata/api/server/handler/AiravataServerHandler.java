@@ -900,7 +900,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             List<Object> allUserExperiments = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, temp, -1,
                     0, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             List<String> accessibleExpIds = new ArrayList<>();
-            allUserExperiments.stream().forEach(e->accessibleExpIds.add(((ExperimentSummary)e).getExperimentId()));
+            allUserExperiments.stream().forEach(e->accessibleExpIds.add(((ExperimentSummaryModel) e).getExperimentId()));
 
             List<Object> results = experimentCatalog.searchAllAccessible(ExperimentCatalogModelType.EXPERIMENT,
                     accessibleExpIds, regFilters, limit,
