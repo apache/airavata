@@ -262,6 +262,53 @@ public class ProjectRegistry {
         return null;
     }
 
+    /**
+     * To search the projects where the user have access(owner or shared with) with the given filter criteria and retrieve the results with
+     * pagination support. Results can be ordered based on an identifier (i.e column) either ASC or
+     * DESC.
+     *
+     * @param accessibleIds
+     * @param filters
+     * @param limit
+     * @param offset
+     * @param orderByIdentifier
+     * @param resultOrderType
+     * @return
+     * @throws RegistryException
+     */
+    public List<Project> searchAllAccessibleProjects(List<String> accessibleIds, Map<String, String> filters, int limit,
+                                        int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+        Map<String, String> fil = new HashMap<String, String>();
+        if (filters != null && filters.size() != 0){
+            List<Project> projects = new ArrayList<Project>();
+            try {
+                for (String field : filters.keySet()){
+                    if (field.equals(Constants.FieldConstants.ProjectConstants.PROJECT_NAME)){
+                        fil.put(AbstractExpCatResource.ProjectConstants.PROJECT_NAME, filters.get(field));
+                    }else if (field.equals(Constants.FieldConstants.ProjectConstants.OWNER)){
+                        fil.put(AbstractExpCatResource.ProjectConstants.USERNAME, filters.get(field));
+                    }else if (field.equals(Constants.FieldConstants.ProjectConstants.DESCRIPTION)){
+                        fil.put(AbstractExpCatResource.ProjectConstants.DESCRIPTION, filters.get(field));
+                    }else if (field.equals(Constants.FieldConstants.ProjectConstants.GATEWAY_ID)){
+                        fil.put(AbstractExpCatResource.ProjectConstants.GATEWAY_ID, filters.get(field));
+                    }
+                }
+                List<ProjectResource> projectResources = workerResource
+                        .searchProjects(fil, limit, offset, orderByIdentifier, resultOrderType);
+                if (projectResources != null && !projectResources.isEmpty()){
+                    for (ProjectResource pr : projectResources){
+                        projects.add(ThriftDataModelConversion.getProject(pr));
+                    }
+                }
+                return projects;
+            }catch (Exception e){
+                logger.error("Error while retrieving project from registry", e);
+                throw new RegistryException(e);
+            }
+        }
+        return null;
+    }
+
     public List<String> getProjectIDs (String fieldName, Object value) throws RegistryException{
         List<String> projectIds = new ArrayList<String>();
         try {
