@@ -601,7 +601,7 @@ public class WorkerResource extends AbstractExpCatResource {
                 query += " e.experimentId IN (";
                 for(String id : accessibleIds)
                     query += (id + ",");
-                query = query.substring(0, query.length()-1) + ") ";
+                query = query.substring(0, query.length()-1) + ") AND ";
             }
 
             if (filters.get(ExperimentStatusConstants.STATE) != null) {
