@@ -74,6 +74,7 @@ import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
+import org.apache.airavata.registry.core.experiment.catalog.model.ExperimentSummary;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
@@ -893,9 +894,13 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
 
             //FIXME
-            List<ExperimentModel> allUserExperiments = getUserExperiments(authzToken, gatewayId, userName, -1, 0);
+            Map<String, String> temp = new HashMap();
+            temp.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
+            temp.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
+            List<Object> allUserExperiments = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, temp, -1,
+                    0, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             List<String> accessibleExpIds = new ArrayList<>();
-            allUserExperiments.stream().forEach(e->accessibleExpIds.add(e.getExperimentId()));
+            allUserExperiments.stream().forEach(e->accessibleExpIds.add(((ExperimentSummary)e).getExperimentId()));
 
             List<Object> results = experimentCatalog.searchAllAccessible(ExperimentCatalogModelType.EXPERIMENT,
                     accessibleExpIds, regFilters, limit,
