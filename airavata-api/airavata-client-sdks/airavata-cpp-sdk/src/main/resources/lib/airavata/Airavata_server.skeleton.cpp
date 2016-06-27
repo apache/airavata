@@ -483,71 +483,38 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * 
-   * Search User Projects by Project Name
-   * Get all Project for user by project name with pagination.Results will be ordered based on creation time DESC.
-   * 
-   * @param gatewayId
-   *    The unique identifier for the requested gateway.
-   * 
-   * @param userName
-   *    The identifier of the user.
-   * 
-   * @param projectName
-   *    The name of the project on which the results to be fetched.
-   * 
-   * @param limit
-   *    The amount results to be fetched.
-   * 
-   * @param offset
-   *    The starting point of the results to be fetched.
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param gatewayId
-   * @param userName
-   * @param projectName
-   * @param limit
-   * @param offset
-   */
-  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset) {
-    // Your implementation goes here
-    printf("searchProjectsByProjectName\n");
-  }
-
-  /**
-   * 
-   * Search User Projects by Project Description
-   * Search and get all Projects for user by project description with pagination. Results will be ordered based on creation time DESC.
-   * 
-   * @param gatewayId
-   *    The unique identifier of the gateway making the request.
-   * 
-   * @param userName
-   *    The identifier of the user.
-   * 
-   * @param description
-   *    The description to be matched.
-   * 
-   * @param limit
-   *    The amount results to be fetched.
-   * 
-   * @param offset
-   *    The starting point of the results to be fetched.
-   * 
-   * 
+   * *
+   * * Search User Projects
+   * * Search and get all Projects for user by project description or/and project name  with pagination.
+   *  * Results will be ordered based on creation time DESC.
+   * *
+   * * @param gatewayId
+   * *    The unique identifier of the gateway making the request.
+   * *
+   * * @param userName
+   * *    The identifier of the user.
+   * *
+   * * @param filters
+   * *    Map of multiple filter criteria. Currenlt search filters includes Project Name and Project Description
+   * *
+   * * @param limit
+   * *    The amount results to be fetched.
+   * *
+   * * @param offset
+   * *    The starting point of the results to be fetched.
+   * *
+   * *
    * 
    * @param authzToken
    * @param gatewayId
    * @param userName
-   * @param description
+   * @param filters
    * @param limit
    * @param offset
    */
-  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
+  void searchProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
-    printf("searchProjectsByProjectDesc\n");
+    printf("searchProjects\n");
   }
 
   /**

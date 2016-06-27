@@ -399,66 +399,36 @@ class AiravataIf {
   virtual void getUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) = 0;
 
   /**
-   * 
-   * Search User Projects by Project Name
-   * Get all Project for user by project name with pagination.Results will be ordered based on creation time DESC.
-   * 
-   * @param gatewayId
-   *    The unique identifier for the requested gateway.
-   * 
-   * @param userName
-   *    The identifier of the user.
-   * 
-   * @param projectName
-   *    The name of the project on which the results to be fetched.
-   * 
-   * @param limit
-   *    The amount results to be fetched.
-   * 
-   * @param offset
-   *    The starting point of the results to be fetched.
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param gatewayId
-   * @param userName
-   * @param projectName
-   * @param limit
-   * @param offset
-   */
-  virtual void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset) = 0;
-
-  /**
-   * 
-   * Search User Projects by Project Description
-   * Search and get all Projects for user by project description with pagination. Results will be ordered based on creation time DESC.
-   * 
-   * @param gatewayId
-   *    The unique identifier of the gateway making the request.
-   * 
-   * @param userName
-   *    The identifier of the user.
-   * 
-   * @param description
-   *    The description to be matched.
-   * 
-   * @param limit
-   *    The amount results to be fetched.
-   * 
-   * @param offset
-   *    The starting point of the results to be fetched.
-   * 
-   * 
+   * *
+   * * Search User Projects
+   * * Search and get all Projects for user by project description or/and project name  with pagination.
+   *  * Results will be ordered based on creation time DESC.
+   * *
+   * * @param gatewayId
+   * *    The unique identifier of the gateway making the request.
+   * *
+   * * @param userName
+   * *    The identifier of the user.
+   * *
+   * * @param filters
+   * *    Map of multiple filter criteria. Currenlt search filters includes Project Name and Project Description
+   * *
+   * * @param limit
+   * *    The amount results to be fetched.
+   * *
+   * * @param offset
+   * *    The starting point of the results to be fetched.
+   * *
+   * *
    * 
    * @param authzToken
    * @param gatewayId
    * @param userName
-   * @param description
+   * @param filters
    * @param limit
    * @param offset
    */
-  virtual void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) = 0;
+  virtual void searchProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * Search Experiments.
@@ -2615,10 +2585,7 @@ class AiravataNull : virtual public AiravataIf {
   void getUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* projectName */, const int32_t /* limit */, const int32_t /* offset */) {
-    return;
-  }
-  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* description */, const int32_t /* limit */, const int32_t /* offset */) {
+  void searchProjects(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> & /* filters */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
   void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & /* filters */, const int32_t /* limit */, const int32_t /* offset */) {
@@ -6581,22 +6548,28 @@ class Airavata_getUserProjects_presult {
 
 };
 
+typedef struct _Airavata_searchProjects_args__isset {
+  _Airavata_searchProjects_args__isset() : filters(false) {}
+  bool filters :1;
+} _Airavata_searchProjects_args__isset;
 
-class Airavata_searchProjectsByProjectName_args {
+class Airavata_searchProjects_args {
  public:
 
-  Airavata_searchProjectsByProjectName_args(const Airavata_searchProjectsByProjectName_args&);
-  Airavata_searchProjectsByProjectName_args& operator=(const Airavata_searchProjectsByProjectName_args&);
-  Airavata_searchProjectsByProjectName_args() : gatewayId(), userName(), projectName(), limit(0), offset(0) {
+  Airavata_searchProjects_args(const Airavata_searchProjects_args&);
+  Airavata_searchProjects_args& operator=(const Airavata_searchProjects_args&);
+  Airavata_searchProjects_args() : gatewayId(), userName(), limit(0), offset(0) {
   }
 
-  virtual ~Airavata_searchProjectsByProjectName_args() throw();
+  virtual ~Airavata_searchProjects_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string gatewayId;
   std::string userName;
-  std::string projectName;
+  std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string>  filters;
   int32_t limit;
   int32_t offset;
+
+  _Airavata_searchProjects_args__isset __isset;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
@@ -6604,13 +6577,13 @@ class Airavata_searchProjectsByProjectName_args {
 
   void __set_userName(const std::string& val);
 
-  void __set_projectName(const std::string& val);
+  void __set_filters(const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> & val);
 
   void __set_limit(const int32_t val);
 
   void __set_offset(const int32_t val);
 
-  bool operator == (const Airavata_searchProjectsByProjectName_args & rhs) const
+  bool operator == (const Airavata_searchProjects_args & rhs) const
   {
     if (!(authzToken == rhs.authzToken))
       return false;
@@ -6618,7 +6591,7 @@ class Airavata_searchProjectsByProjectName_args {
       return false;
     if (!(userName == rhs.userName))
       return false;
-    if (!(projectName == rhs.projectName))
+    if (!(filters == rhs.filters))
       return false;
     if (!(limit == rhs.limit))
       return false;
@@ -6626,11 +6599,11 @@ class Airavata_searchProjectsByProjectName_args {
       return false;
     return true;
   }
-  bool operator != (const Airavata_searchProjectsByProjectName_args &rhs) const {
+  bool operator != (const Airavata_searchProjects_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Airavata_searchProjectsByProjectName_args & ) const;
+  bool operator < (const Airavata_searchProjects_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -6638,15 +6611,15 @@ class Airavata_searchProjectsByProjectName_args {
 };
 
 
-class Airavata_searchProjectsByProjectName_pargs {
+class Airavata_searchProjects_pargs {
  public:
 
 
-  virtual ~Airavata_searchProjectsByProjectName_pargs() throw();
+  virtual ~Airavata_searchProjects_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* gatewayId;
   const std::string* userName;
-  const std::string* projectName;
+  const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> * filters;
   const int32_t* limit;
   const int32_t* offset;
 
@@ -6654,31 +6627,31 @@ class Airavata_searchProjectsByProjectName_pargs {
 
 };
 
-typedef struct _Airavata_searchProjectsByProjectName_result__isset {
-  _Airavata_searchProjectsByProjectName_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+typedef struct _Airavata_searchProjects_result__isset {
+  _Airavata_searchProjects_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
   bool ae :1;
-} _Airavata_searchProjectsByProjectName_result__isset;
+} _Airavata_searchProjects_result__isset;
 
-class Airavata_searchProjectsByProjectName_result {
+class Airavata_searchProjects_result {
  public:
 
-  Airavata_searchProjectsByProjectName_result(const Airavata_searchProjectsByProjectName_result&);
-  Airavata_searchProjectsByProjectName_result& operator=(const Airavata_searchProjectsByProjectName_result&);
-  Airavata_searchProjectsByProjectName_result() {
+  Airavata_searchProjects_result(const Airavata_searchProjects_result&);
+  Airavata_searchProjects_result& operator=(const Airavata_searchProjects_result&);
+  Airavata_searchProjects_result() {
   }
 
-  virtual ~Airavata_searchProjectsByProjectName_result() throw();
+  virtual ~Airavata_searchProjects_result() throw();
   std::vector< ::apache::airavata::model::workspace::Project>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
    ::apache::airavata::api::error::AuthorizationException ae;
 
-  _Airavata_searchProjectsByProjectName_result__isset __isset;
+  _Airavata_searchProjects_result__isset __isset;
 
   void __set_success(const std::vector< ::apache::airavata::model::workspace::Project> & val);
 
@@ -6690,7 +6663,7 @@ class Airavata_searchProjectsByProjectName_result {
 
   void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
 
-  bool operator == (const Airavata_searchProjectsByProjectName_result & rhs) const
+  bool operator == (const Airavata_searchProjects_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
@@ -6704,198 +6677,38 @@ class Airavata_searchProjectsByProjectName_result {
       return false;
     return true;
   }
-  bool operator != (const Airavata_searchProjectsByProjectName_result &rhs) const {
+  bool operator != (const Airavata_searchProjects_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Airavata_searchProjectsByProjectName_result & ) const;
+  bool operator < (const Airavata_searchProjects_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _Airavata_searchProjectsByProjectName_presult__isset {
-  _Airavata_searchProjectsByProjectName_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+typedef struct _Airavata_searchProjects_presult__isset {
+  _Airavata_searchProjects_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
   bool ae :1;
-} _Airavata_searchProjectsByProjectName_presult__isset;
+} _Airavata_searchProjects_presult__isset;
 
-class Airavata_searchProjectsByProjectName_presult {
+class Airavata_searchProjects_presult {
  public:
 
 
-  virtual ~Airavata_searchProjectsByProjectName_presult() throw();
+  virtual ~Airavata_searchProjects_presult() throw();
   std::vector< ::apache::airavata::model::workspace::Project> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
    ::apache::airavata::api::error::AuthorizationException ae;
 
-  _Airavata_searchProjectsByProjectName_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
-class Airavata_searchProjectsByProjectDesc_args {
- public:
-
-  Airavata_searchProjectsByProjectDesc_args(const Airavata_searchProjectsByProjectDesc_args&);
-  Airavata_searchProjectsByProjectDesc_args& operator=(const Airavata_searchProjectsByProjectDesc_args&);
-  Airavata_searchProjectsByProjectDesc_args() : gatewayId(), userName(), description(), limit(0), offset(0) {
-  }
-
-  virtual ~Airavata_searchProjectsByProjectDesc_args() throw();
-   ::apache::airavata::model::security::AuthzToken authzToken;
-  std::string gatewayId;
-  std::string userName;
-  std::string description;
-  int32_t limit;
-  int32_t offset;
-
-  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
-
-  void __set_gatewayId(const std::string& val);
-
-  void __set_userName(const std::string& val);
-
-  void __set_description(const std::string& val);
-
-  void __set_limit(const int32_t val);
-
-  void __set_offset(const int32_t val);
-
-  bool operator == (const Airavata_searchProjectsByProjectDesc_args & rhs) const
-  {
-    if (!(authzToken == rhs.authzToken))
-      return false;
-    if (!(gatewayId == rhs.gatewayId))
-      return false;
-    if (!(userName == rhs.userName))
-      return false;
-    if (!(description == rhs.description))
-      return false;
-    if (!(limit == rhs.limit))
-      return false;
-    if (!(offset == rhs.offset))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchProjectsByProjectDesc_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchProjectsByProjectDesc_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class Airavata_searchProjectsByProjectDesc_pargs {
- public:
-
-
-  virtual ~Airavata_searchProjectsByProjectDesc_pargs() throw();
-  const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* gatewayId;
-  const std::string* userName;
-  const std::string* description;
-  const int32_t* limit;
-  const int32_t* offset;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_searchProjectsByProjectDesc_result__isset {
-  _Airavata_searchProjectsByProjectDesc_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchProjectsByProjectDesc_result__isset;
-
-class Airavata_searchProjectsByProjectDesc_result {
- public:
-
-  Airavata_searchProjectsByProjectDesc_result(const Airavata_searchProjectsByProjectDesc_result&);
-  Airavata_searchProjectsByProjectDesc_result& operator=(const Airavata_searchProjectsByProjectDesc_result&);
-  Airavata_searchProjectsByProjectDesc_result() {
-  }
-
-  virtual ~Airavata_searchProjectsByProjectDesc_result() throw();
-  std::vector< ::apache::airavata::model::workspace::Project>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchProjectsByProjectDesc_result__isset __isset;
-
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::Project> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
-
-  bool operator == (const Airavata_searchProjectsByProjectDesc_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    if (!(ae == rhs.ae))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchProjectsByProjectDesc_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchProjectsByProjectDesc_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_searchProjectsByProjectDesc_presult__isset {
-  _Airavata_searchProjectsByProjectDesc_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchProjectsByProjectDesc_presult__isset;
-
-class Airavata_searchProjectsByProjectDesc_presult {
- public:
-
-
-  virtual ~Airavata_searchProjectsByProjectDesc_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::Project> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchProjectsByProjectDesc_presult__isset __isset;
+  _Airavata_searchProjects_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -22998,12 +22811,9 @@ class AiravataClient : virtual public AiravataIf {
   void getUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset);
   void send_getUserProjects(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset);
   void recv_getUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return);
-  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset);
-  void send_searchProjectsByProjectName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset);
-  void recv_searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return);
-  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
-  void send_searchProjectsByProjectDesc(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
-  void recv_searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return);
+  void searchProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
+  void send_searchProjects(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
+  void recv_searchProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return);
   void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
   void send_searchExperiments(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
   void recv_searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
@@ -23387,8 +23197,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_getProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getUserProjects(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_searchProjectsByProjectName(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_searchProjectsByProjectDesc(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_searchProjects(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_searchExperiments(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getExperimentStatistics(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getExperimentsInProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -23532,8 +23341,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["getProject"] = &AiravataProcessor::process_getProject;
     processMap_["deleteProject"] = &AiravataProcessor::process_deleteProject;
     processMap_["getUserProjects"] = &AiravataProcessor::process_getUserProjects;
-    processMap_["searchProjectsByProjectName"] = &AiravataProcessor::process_searchProjectsByProjectName;
-    processMap_["searchProjectsByProjectDesc"] = &AiravataProcessor::process_searchProjectsByProjectDesc;
+    processMap_["searchProjects"] = &AiravataProcessor::process_searchProjects;
     processMap_["searchExperiments"] = &AiravataProcessor::process_searchExperiments;
     processMap_["getExperimentStatistics"] = &AiravataProcessor::process_getExperimentStatistics;
     processMap_["getExperimentsInProject"] = &AiravataProcessor::process_getExperimentsInProject;
@@ -23926,23 +23734,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset) {
+  void searchProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchProjectsByProjectName(_return, authzToken, gatewayId, userName, projectName, limit, offset);
+      ifaces_[i]->searchProjects(_return, authzToken, gatewayId, userName, filters, limit, offset);
     }
-    ifaces_[i]->searchProjectsByProjectName(_return, authzToken, gatewayId, userName, projectName, limit, offset);
-    return;
-  }
-
-  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchProjectsByProjectDesc(_return, authzToken, gatewayId, userName, description, limit, offset);
-    }
-    ifaces_[i]->searchProjectsByProjectDesc(_return, authzToken, gatewayId, userName, description, limit, offset);
+    ifaces_[i]->searchProjects(_return, authzToken, gatewayId, userName, filters, limit, offset);
     return;
   }
 
@@ -25149,12 +24947,9 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void getUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset);
   int32_t send_getUserProjects(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset);
   void recv_getUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const int32_t seqid);
-  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset);
-  int32_t send_searchProjectsByProjectName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset);
-  void recv_searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const int32_t seqid);
-  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
-  int32_t send_searchProjectsByProjectDesc(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
-  void recv_searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const int32_t seqid);
+  void searchProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
+  int32_t send_searchProjects(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
+  void recv_searchProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const int32_t seqid);
   void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
   int32_t send_searchExperiments(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
   void recv_searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const int32_t seqid);
