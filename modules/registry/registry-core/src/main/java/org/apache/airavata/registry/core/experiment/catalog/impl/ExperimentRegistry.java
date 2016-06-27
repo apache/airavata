@@ -1346,11 +1346,11 @@ public class ExperimentRegistry {
                 }
                 List<ExperimentSummaryResource> experimentSummaryResources;
                 if (fromTime != 0 && toTime != 0) {
-                    experimentSummaryResources = workerResource.searchExperiments(new Timestamp(fromTime), new Timestamp(toTime), fil
+                    experimentSummaryResources = workerResource.searchExperiments(null, new Timestamp(fromTime), new Timestamp(toTime), fil
                             ,limit , offset, orderByIdentifier, resultOrderType);
                 } else {
                     experimentSummaryResources = workerResource
-                            .searchExperiments(null, null, fil, limit, offset, orderByIdentifier, resultOrderType);
+                            .searchExperiments(null, null, null, fil, limit, offset, orderByIdentifier, resultOrderType);
                 }
                 if (experimentSummaryResources != null && !experimentSummaryResources.isEmpty()) {
                     for (ExperimentSummaryResource ex : experimentSummaryResources) {
@@ -1398,11 +1398,11 @@ public class ExperimentRegistry {
                 }
                 List<ExperimentSummaryResource> experimentSummaryResources;
                 if (fromTime != 0 && toTime != 0) {
-                    experimentSummaryResources = workerResource.searchExperiments(new Timestamp(fromTime), new Timestamp(toTime), fil
+                    experimentSummaryResources = workerResource.searchExperiments(accessibleIds, new Timestamp(fromTime), new Timestamp(toTime), fil
                             ,limit , offset, orderByIdentifier, resultOrderType);
                 } else {
                     experimentSummaryResources = workerResource
-                            .searchExperiments(null, null, fil, limit, offset, orderByIdentifier, resultOrderType);
+                            .searchExperiments(accessibleIds, null, null, fil, limit, offset, orderByIdentifier, resultOrderType);
                 }
                 if (experimentSummaryResources != null && !experimentSummaryResources.isEmpty()) {
                     for (ExperimentSummaryResource ex : experimentSummaryResources) {
