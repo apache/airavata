@@ -30,8 +30,8 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.datamodel.SSHCredential;
 import org.apache.airavata.credential.store.datamodel.PasswordCredential;
+import org.apache.airavata.credential.store.datamodel.SSHCredential;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
@@ -870,7 +870,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             List<ExperimentSummaryModel> summaries = new ArrayList<ExperimentSummaryModel>();
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             Map<String, String> regFilters = new HashMap();
-            regFilters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
+            //FIXME
+            //regFilters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
             regFilters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
             for(Map.Entry<ExperimentSearchFields, String> entry : filters.entrySet())
             {
@@ -890,7 +891,14 @@ public class AiravataServerHandler implements Airavata.Iface {
                     regFilters.put(Constants.FieldConstants.ExperimentConstants.PROJECT_ID, entry.getValue());
                 }
             }
-            List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, regFilters, limit,
+
+            //FIXME
+            List<ExperimentModel> allUserExperiments = getUserExperiments(authzToken, gatewayId, userName, -1, 0);
+            List<String> accessibleExpIds = new ArrayList<>();
+            allUserExperiments.stream().forEach(e->accessibleExpIds.add(e.getExperimentId()));
+
+            List<Object> results = experimentCatalog.searchAllAccessible(ExperimentCatalogModelType.EXPERIMENT,
+                    accessibleExpIds, regFilters, limit,
                     offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
                 summaries.add((ExperimentSummaryModel) object);
