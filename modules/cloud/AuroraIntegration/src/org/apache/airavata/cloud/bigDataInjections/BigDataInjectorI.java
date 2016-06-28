@@ -1,5 +1,5 @@
 
-package org.apache.airavata.cloud.aurora.bigDataInjections;
+package org.apache.airavata.cloud.bigDataInjections;
 
 import java.util.Map;
 import java.util.List;

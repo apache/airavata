@@ -1,6 +1,6 @@
-package org.apache.airavata.cloud.aurora.auroraClient;
+package org.apache.airavata.cloud.bigDataClientSideServices.aurora.auroraClient;
 
-import org.apache.airavata.cloud.aurora.exception.AuroraException;
+import org.apache.airavata.cloud.exceptions.auroraExceptions.AuroraException;
 
 public interface AuroraJobSchedulerI {
 

@@ -1,15 +1,15 @@
-package org.apache.airavata.cloud.aurora.driver;
+package org.apache.airavata.cloud.drivers.auroraDriver;
 
 // TODO: need javadoc documentation at the top of each method
 
 // TODO: individually import the types
 import java.util.*;
 
-import org.apache.airavata.cloud.aurora.exception.AuroraException;
-import org.apache.airavata.cloud.aurora.auroraClient.AuroraJobSchedulerI;
-import org.apache.airavata.cloud.aurora.auroraClient.AuroraJobSchedulerImpl;
-import org.apache.airavata.cloud.aurora.bigDataInjections.AuroraInjectorImpl;
-import org.apache.airavata.cloud.aurora.bigDataInjections.BigDataInjectorI;
+import org.apache.airavata.cloud.exceptions.auroraExceptions.AuroraException;
+import org.apache.airavata.cloud.bigDataClientSideServices.aurora.auroraClient.AuroraJobSchedulerI;
+import org.apache.airavata.cloud.bigDataClientSideServices.aurora.auroraClient.AuroraJobSchedulerImpl;
+import org.apache.airavata.cloud.bigDataInjections.AuroraInjectorImpl;
+import org.apache.airavata.cloud.bigDataInjections.BigDataInjectorI;
 
 public class AuroraAdminDriver{
 	public static void main(String[] args) {
@@ -24,7 +24,7 @@ public class AuroraAdminDriver{
 
 	    // TODO: explain why this Map data structure is needed
 		Map<String, List<String>> params = new HashMap<>();
-		
+
 		// TODO: explain what is the purpose of this List
 		List<String> options = null;
 		for (int i = 0; i < args.length; i++) {
@@ -49,13 +49,13 @@ public class AuroraAdminDriver{
         			return;
     			}
 
-			
+
 		}// end of for (int i=0; ...
-		
-		// use the code below to decide between injecting Aurora, Marathon, etc. as injections 
+
+		// use the code below to decide between injecting Aurora, Marathon, etc. as injections
 		AuroraJobSchedulerI auroraJS = new AuroraJobSchedulerImpl();
 		BigDataInjectorI auroraInjector = new AuroraInjectorImpl(auroraJS);
-		auroraInjector.executeTheBigDataClientSideCommand(params); 
+		auroraInjector.executeTheBigDataClientSideCommand(params);
 
 
 	} // end of public static void main

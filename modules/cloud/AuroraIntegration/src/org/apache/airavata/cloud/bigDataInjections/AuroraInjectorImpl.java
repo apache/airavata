@@ -1,18 +1,18 @@
 
-package org.apache.airavata.cloud.aurora.bigDataInjections;
+package org.apache.airavata.cloud.bigDataInjections;
 
 import java.util.Map;
 import java.util.List;
 
 
-import org.apache.airavata.cloud.aurora.auroraClient.AuroraJobSchedulerI;
-import org.apache.airavata.cloud.aurora.auroraClient.AuroraJobSchedulerImpl;
-import org.apache.airavata.cloud.aurora.exception.AuroraException;
+import org.apache.airavata.cloud.bigDataClientSideServices.aurora.auroraClient.AuroraJobSchedulerI;
+import org.apache.airavata.cloud.bigDataClientSideServices.aurora.auroraClient.AuroraJobSchedulerImpl;
+import org.apache.airavata.cloud.exceptions.auroraExceptions.AuroraException;
 
 
 public class AuroraInjectorImpl implements BigDataInjectorI {
     private AuroraJobSchedulerI auroraJS = null;
-    
+
     public AuroraInjectorImpl(AuroraJobSchedulerI auroraJSIn) {
 	auroraJS = auroraJSIn;
     }
@@ -20,7 +20,7 @@ public class AuroraInjectorImpl implements BigDataInjectorI {
 
     public void executeTheBigDataClientSideCommand(Map<String, List<String>> commandLineOptions) {
 
-	
+
 	String commandName = commandLineOptions.get("o").get(0);
 	String RamSize, JobName, CpuCount, DiskSize, Image;
 
