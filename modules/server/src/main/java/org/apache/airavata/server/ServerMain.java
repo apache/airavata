@@ -56,7 +56,7 @@ public class ServerMain {
 	private static final String API_SERVER = "apiserver";
 	private static final String CREDENTIAL_STORE = "credentialstore";
 	private static final String GFAC_SERVER = "gfac";
-	private static final String ORCHESTRATOR = "orcestrator";
+	private static final String ORCHESTRATOR = "orchestrator";
 
     private static ServerCnxnFactory cnxnFactory;
 //	private static boolean shutdownHookCalledBefore=false;
