@@ -25,5 +25,5 @@ auroraCreate -o create -r 1024 -n batik -c 2.0 -d 1000 -i gouravr/dacapo:tag9
 ```
 To kill:
 ```
-auroraCreate -o kill -k batik```
+auroraCreate -o kill -k batik
 ```
