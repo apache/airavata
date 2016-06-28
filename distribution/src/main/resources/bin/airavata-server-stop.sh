@@ -46,11 +46,12 @@ do
 done
 
 if ${FORCE} ; then
-	for f in `find . -name "server-start_*"`; do
+	for f in `find . -name "server_start_*"`; do
+	    # split file name using "_" underscore
 		f_split=(${f//_/ });
 		echo "Found process file : $f"
-		echo -n "    Sending kill signals to process ${f_split[1]}..."
-		out=`kill -9 ${f_split[1]} 2>&1`
+		echo -n "    Sending kill signals to process ${f_split[2]}..."
+		out=`kill -9 ${f_split[2]} 2>&1`
 		if [ -z "$out" ]; then
 		    echo "done"
 		else

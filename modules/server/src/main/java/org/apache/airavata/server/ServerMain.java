@@ -43,18 +43,20 @@ public class ServerMain {
 	private static final String SERVERS_KEY="servers";
     private final static Logger logger = LoggerFactory.getLogger(ServerMain.class);
     private static boolean serversLoaded=false;
-	private static final String stopFileNamePrefix = "server-stop";
+	private static final String stopFileNamePrefix = "server_stop";
 	private static int serverPID=-1;
-	private static final String serverStartedFileNamePrefix = "server-start";
+	private static final String serverStartedFileNamePrefix = "server_start";
 	private static boolean systemShutDown=false;
 	private static String STOP_COMMAND_STR = "stop";
 
-	private static String ALL_IN_ONE = "all";
+	private static final String ALL_IN_ONE = "all";
+	private static final String API_ORCH = "api-orch";
+	private static final String EXECUTION = "execution";
 	// server names
-	private static String API_SERVER = "apiserver";
-	private static String CREDENTIAL_STORE = "credentialstore";
-	private static String GFAC_SERVER = "gfac";
-	private static String ORCHESTRATOR = "orcestrator";
+	private static final String API_SERVER = "apiserver";
+	private static final String CREDENTIAL_STORE = "credentialstore";
+	private static final String GFAC_SERVER = "gfac";
+	private static final String ORCHESTRATOR = "orcestrator";
 
     private static ServerCnxnFactory cnxnFactory;
 //	private static boolean shutdownHookCalledBefore=false;
@@ -108,14 +110,22 @@ public class ServerMain {
 			serverList.add(API_SERVER);
 			serverList.add(ORCHESTRATOR);
 			serverList.add(GFAC_SERVER);
-			return serverList;
-		}
-		// credential store should start before api server
-		int credPos = serverList.indexOf(CREDENTIAL_STORE);
-		if (credPos > 0) { // neither absent nor credentialstore is first element
-			String temp = serverList.get(0);
-			serverList.set(0, serverList.get(credPos));
-			serverList.set(credPos, temp);
+		} else if (serverList.indexOf(API_ORCH) > -1) {
+			serverList.clear();
+			serverList.add(CREDENTIAL_STORE);
+			serverList.add(API_SERVER);
+			serverList.add(ORCHESTRATOR);
+		} else if (serverList.indexOf(EXECUTION) > -1) {
+			serverList.clear();
+			serverList.add(GFAC_SERVER);
+		} else {
+			// credential store should start before api server
+			int credPos = serverList.indexOf(CREDENTIAL_STORE);
+			if (credPos > 0) { // neither absent nor credentialstore is first element
+				String temp = serverList.get(0);
+				serverList.set(0, serverList.get(credPos));
+				serverList.set(credPos, temp);
+			}
 		}
 		return serverList;
 	}
