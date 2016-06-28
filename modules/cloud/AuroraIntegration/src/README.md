@@ -1,4 +1,4 @@
-#Design changes to the Aurora Integration code
+#Design changes to the Aurora/Marathon Integration code
 
 ##Compilation Instructions
 
@@ -19,5 +19,5 @@ ant all
 ```
 **TODO:** Add the command to run and test the code.
 
-**TODO:** Will be adding sample output that shows the Aurora code working.
+**TODO:** Will be adding sample output that shows the Aurora/Marathon code working.
 ```
