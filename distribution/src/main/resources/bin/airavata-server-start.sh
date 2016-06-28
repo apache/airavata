@@ -27,7 +27,8 @@ EXTRA_ARGS=""
 SERVERS=""
 IS_DAEMON_MODE=false
 LOGO=true
-ALL_IN_ONE=false
+IS_SUBSET=false
+SUBSET=""
 
 # parse command arguments
 for var in "$@"
@@ -50,8 +51,9 @@ do
 	        fi
             shift
         ;;
-        all)
-            ALL_IN_ONE=true
+        all | api-orch | execution )
+            IS_SUBSET=true
+            SUBSET="${var}"
             shift
             ;;
         -d)
@@ -89,8 +91,8 @@ do
 done
 
 #Construct Airavata command arguments in proper order.
-if ${ALL_IN_ONE} ; then
-    AIRAVATA_COMMAND="--servers=all ${AIRAVATA_COMMAND} ${EXTRA_ARGS}"
+if ${IS_SUBSET} ; then
+    AIRAVATA_COMMAND="--servers=${SUBSET} ${AIRAVATA_COMMAND} ${EXTRA_ARGS}"
 else
     AIRAVATA_COMMAND="--servers=${SERVERS} ${AIRAVATA_COMMAND} ${EXTRA_ARGS}"
 fi
