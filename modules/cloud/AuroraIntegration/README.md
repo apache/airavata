@@ -21,9 +21,44 @@
 #Example:
 To create and launch:
 ```
-auroraCreate -o create -r 1024 -n batik -c 2.0 -d 1000 -i gouravr/dacapo:tag9
+java -jar AuroraAdminDriver -o create -r 1024 -n batik -c 2.0 -d 1000 -i gouravr/dacapo:tag9
 ```
 To kill:
 ```
-auroraCreate -o kill -k batik
+java -jar AuroraAdminDriver -o kill -k batik
+```
+
+To update:
+```
+java -jar AuroraAdminDriver -o update -n batik
+```
+
+To retrieve update information:
+```
+java -jar AuroraAdminDriver -o update-info -n batik
+```
+
+To pause an update:
+```
+java -jar AuroraAdminDriver -o update-pause -n batik
+```
+
+To list the update progress:
+```
+java -jar AuroraAdminDriver -o update-list -n batik
+```
+
+To abort an update:
+```
+java -jar AuroraAdminDriver -o update-abort -n batik
+```
+
+To resume an update:
+```
+java -jar AuroraAdminDriver -o update-resume -n batik
+```
+
+To restart a job:
+```
+java -jar AuroraAdminDriver -o restart -n batik
 ```
