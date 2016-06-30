@@ -153,4 +153,17 @@ public class AuroraJobSchedulerImpl implements AuroraJobSchedulerI {
 			throw new AuroraException("Exception occured while creating the configuration file.\n"+ex.toString());
 		}
 	}
+
+
+	public void jobDiff(String key, String config) throws AuroraException{
+		try{
+			String completeCommandToRunProcess = "aurora job diff "+key+" "+config;
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new AuroraException("Exception occured while retrieving the job difference.\n"+ex.toString());
+		}
+	}
 }

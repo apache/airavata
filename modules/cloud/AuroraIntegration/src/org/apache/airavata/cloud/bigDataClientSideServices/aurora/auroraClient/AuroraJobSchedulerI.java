@@ -16,4 +16,5 @@ public interface AuroraJobSchedulerI {
 	public void jobKill(String kill) throws AuroraException;
 	public void jobLaunch(String name) throws AuroraException;
 	public void configCreate(String name, String ram, String cpu, String disk, String image) throws AuroraException;
+  public void jobDiff(String key, String config) throws AuroraException;
 }
