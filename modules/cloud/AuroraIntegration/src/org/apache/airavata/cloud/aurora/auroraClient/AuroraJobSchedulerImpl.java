@@ -13,6 +13,34 @@ import org.apache.airavata.cloud.aurora.utilities.AuroraUtilI;
 
 public class AuroraJobSchedulerImpl implements AuroraJobSchedulerI {
 	AuroraUtilI util = new AuroraUtilImpl();
+	public void jobDiff(String config) throws AuroraException{
+		try{
+			String line;
+			Process auroraJob = Runtime.getRuntime().exec("aurora config list "+config);
+			auroraJob.waitFor();
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(auroraJob.getInputStream()));
+
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new AuroraException("Exception occured while retrieving the list of jobs.\n"+ex.toString());
+		}
+	}
+	public void jobDiff(String key, String config) throws AuroraException{
+		try{
+			String line;
+			Process auroraJob = Runtime.getRuntime().exec("aurora job diff "+key+" "+config);
+			auroraJob.waitFor();
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(auroraJob.getInputStream()));
+
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new AuroraException("Exception occured while retrieving the job difference.\n"+ex.toString());
+		}
+	}
 	public void auroraJobCommand(String info, String command) throws AuroraException{
 		try{
 			String line;

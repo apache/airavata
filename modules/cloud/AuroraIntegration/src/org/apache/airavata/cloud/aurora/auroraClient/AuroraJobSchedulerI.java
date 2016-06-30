@@ -1,4 +1,4 @@
-
+package org.apache.airavata.cloud.aurora.auroraClient;
 
 import org.apache.airavata.cloud.aurora.exception.AuroraException;
 
@@ -14,5 +14,6 @@ public interface AuroraJobSchedulerI {
 	public void jobRestart(String restart) throws AuroraException;
 	public void jobKill(String kill) throws AuroraException;
 	public void jobLaunch(String name) throws AuroraException;
+	public void jobDiff(String key, String config) throws AuroraException;
 	public void configCreate(String name, String ram, String cpu, String disk, String image) throws AuroraException;
 }
