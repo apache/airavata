@@ -17,13 +17,13 @@ Options:
 -d = disk space
 -i = executable/image
 
-Example:
+Examples:
 
 To create and launch: AuroraAdminDriver -o create -r 1024 -n batik -c 2.0 -d 1000 -i gouravr/dacapo:tag9
 Sample Output: 
 	Job create succeeded: job url=http://127.0.1.1:8081/scheduler/benchmarks/devel/batik
 
-To kill: AuroraAdminDriver -o kill -k batik
+To kill: AuroraAdminDriver -o kill -n batik
 Sample Output: 
 	Successfully killed instances [0]
 	Job killall succeeded

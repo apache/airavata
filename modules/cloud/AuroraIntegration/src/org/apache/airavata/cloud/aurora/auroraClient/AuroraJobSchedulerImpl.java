@@ -13,7 +13,7 @@ import org.apache.airavata.cloud.aurora.utilities.AuroraUtilI;
 
 public class AuroraJobSchedulerImpl implements AuroraJobSchedulerI {
 	AuroraUtilI util = new AuroraUtilImpl();
-	public void jobDiff(String config) throws AuroraException{
+	public void configList(String config) throws AuroraException{
 		try{
 			String line;
 			Process auroraJob = Runtime.getRuntime().exec("aurora config list "+config);
