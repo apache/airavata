@@ -377,6 +377,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                     case STDOUT:
                         break;
                     case URI:
+                    case URI_COLLECTION:
                         try {
                             TaskModel inputDataStagingTask = getInputDataStagingTask(processModel, processInput, gatewayId);
                             String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, inputDataStagingTask,
