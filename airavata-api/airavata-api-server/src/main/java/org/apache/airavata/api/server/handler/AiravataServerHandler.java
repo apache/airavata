@@ -80,10 +80,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AiravataServerHandler implements Airavata.Iface {
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
@@ -1259,6 +1256,12 @@ public class AiravataServerHandler implements Airavata.Iface {
                             List<JobModel> jobList  = new ArrayList<JobModel>();
                             if(jobObjects != null){
                                 jobObjects.stream().forEach(j -> jobList.add((JobModel)j));
+                                Collections.sort(jobList, new Comparator<JobModel>() {
+                                    @Override
+                                    public int compare(JobModel o1, JobModel o2) {
+                                        return (int) (o1.getCreationTime() - o2.getCreationTime());
+                                    }
+                                });
                                 t.setJobs(jobList);
                             }
                         } catch (RegistryException e) {
