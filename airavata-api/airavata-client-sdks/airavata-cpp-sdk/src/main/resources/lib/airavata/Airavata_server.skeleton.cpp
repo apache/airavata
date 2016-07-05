@@ -483,27 +483,27 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * *
-   * * Search User Projects
-   * * Search and get all Projects for user by project description or/and project name  with pagination.
-   *  * Results will be ordered based on creation time DESC.
-   * *
-   * * @param gatewayId
-   * *    The unique identifier of the gateway making the request.
-   * *
-   * * @param userName
-   * *    The identifier of the user.
-   * *
-   * * @param filters
-   * *    Map of multiple filter criteria. Currenlt search filters includes Project Name and Project Description
-   * *
-   * * @param limit
-   * *    The amount results to be fetched.
-   * *
-   * * @param offset
-   * *    The starting point of the results to be fetched.
-   * *
-   * *
+   * 
+   * Search User Projects
+   * Search and get all Projects for user by project description or/and project name  with pagination.
+   * Results will be ordered based on creation time DESC.
+   * 
+   * @param gatewayId
+   *    The unique identifier of the gateway making the request.
+   * 
+   * @param userName
+   *    The identifier of the user.
+   * 
+   * @param filters
+   *    Map of multiple filter criteria. Currenlt search filters includes Project Name and Project Description
+   * 
+   * @param limit
+   *    The amount results to be fetched.
+   * 
+   * @param offset
+   *    The starting point of the results to be fetched.
+   * 
+   * 
    * 
    * @param authzToken
    * @param gatewayId
