@@ -18,4 +18,5 @@ public interface AuroraJobSchedulerI {
 	public void configCreate(String name, String ram, String cpu, String disk, String image) throws AuroraException;
   public void jobDiff(String key, String config) throws AuroraException;
   public void configList(String config) throws AuroraException;
+  public void jobInspect(String key, String config) throws AuroraException;
 }
