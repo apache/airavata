@@ -529,7 +529,7 @@ public class GFacEngineImpl implements GFacEngine {
         return false;
     }
 
-    private boolean inputDataStaging(TaskContext taskContext, boolean recover) throws GFacException {
+    private boolean inputDataStaging(TaskContext taskContext, boolean recover) throws GFacException, TException {
         TaskStatus taskStatus = new TaskStatus(TaskState.EXECUTING);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         taskContext.setTaskStatus(taskStatus);
@@ -541,8 +541,10 @@ public class GFacEngineImpl implements GFacEngine {
         if (taskContext.getProcessInput().getType() == DataType.URI_COLLECTION) {
             String values = taskContext.getProcessInput().getValue();
             String[] multiple_inputs = values.split(GFacConstants.MULTIPLE_INPUTS_SPLITTER);
+            DataStagingTaskModel subTaskModel = (DataStagingTaskModel) taskContext.getSubTaskModel();
             for (String input : multiple_inputs) {
                 taskContext.getProcessInput().setValue(input);
+                subTaskModel.setSource(input);
                 taskStatus = executeTask(taskContext, dMoveTask, false);
             }
             taskContext.getProcessInput().setValue(values);
