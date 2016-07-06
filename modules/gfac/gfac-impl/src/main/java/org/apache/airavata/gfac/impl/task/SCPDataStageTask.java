@@ -83,8 +83,7 @@ public class SCPDataStageTask implements Task {
         String localDataDir = null;
         ProcessState processState = taskContext.getParentProcessContext().getProcessState();
         try {
-            subTaskModel = (DataStagingTaskModel) ThriftUtils.getSubTaskModel
-                    (taskContext.getTaskModel());
+            subTaskModel = ((DataStagingTaskModel) taskContext.getSubTaskModel());
             if (processState == ProcessState.OUTPUT_DATA_STAGING) {
                 OutputDataObjectType processOutput = taskContext.getProcessOutput();
                 if (processOutput != null && processOutput.getValue() == null) {
