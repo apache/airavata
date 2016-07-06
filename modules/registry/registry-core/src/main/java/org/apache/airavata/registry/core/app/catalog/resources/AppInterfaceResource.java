@@ -389,7 +389,7 @@ public class AppInterfaceResource extends AppCatAbstractResource {
                 applicationInterface.setCreationTime(AiravataUtils.getCurrentTimestamp());
                 applicationInterface.setGatewayId(gatewayId);
                 applicationInterface.setArchiveWorkingDirectory(archiveWorkingDirectory);
-                existigAppInterface.setHasOptionalFileInputs(hasOptionalFileInputs);
+                applicationInterface.setHasOptionalFileInputs(hasOptionalFileInputs);
                 em.persist(applicationInterface);
             }
             em.getTransaction().commit();
