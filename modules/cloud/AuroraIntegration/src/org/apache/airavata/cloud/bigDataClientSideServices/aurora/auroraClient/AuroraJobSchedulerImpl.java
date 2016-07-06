@@ -178,4 +178,16 @@ public class AuroraJobSchedulerImpl implements AuroraJobSchedulerI {
 			throw new AuroraException("Exception occured while retrieving the list of jobs.\n"+ex.toString());
 		}
 	}
+
+	public void jobInspect(String key, String config) throws AuroraException{
+		try{
+			String completeCommandToRunProcess = "aurora job inspect "+key+" "+config;
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new AuroraException("Exception occured while inspecting the job.\n"+ex.toString());
+		}
+	}
 }
