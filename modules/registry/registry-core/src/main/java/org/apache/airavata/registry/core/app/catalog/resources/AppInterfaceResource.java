@@ -46,6 +46,7 @@ public class AppInterfaceResource extends AppCatAbstractResource {
     private Timestamp updatedTime;
     private String gatewayId;
     private boolean archiveWorkingDirectory;
+    private boolean hasOptionalFileInputs;
 
     public String getGatewayId() {
         return gatewayId;
@@ -101,6 +102,14 @@ public class AppInterfaceResource extends AppCatAbstractResource {
 
     public void setAppDescription(String appDescription) {
         this.appDescription = appDescription;
+    }
+
+    public boolean isHasOptionalFileInputs() {
+        return hasOptionalFileInputs;
+    }
+
+    public void setHasOptionalFileInputs(boolean hasOptionalFileInputs) {
+        this.hasOptionalFileInputs = hasOptionalFileInputs;
     }
 
     @Override
@@ -370,6 +379,7 @@ public class AppInterfaceResource extends AppCatAbstractResource {
                 existigAppInterface.setUpdateTime(AiravataUtils.getCurrentTimestamp());
                 existigAppInterface.setGatewayId(gatewayId);
                 existigAppInterface.setArchiveWorkingDirectory(archiveWorkingDirectory);
+                existigAppInterface.setHasOptionalFileInputs(hasOptionalFileInputs);
                 em.merge(existigAppInterface);
             }else {
                 ApplicationInterface applicationInterface = new ApplicationInterface();
@@ -379,6 +389,7 @@ public class AppInterfaceResource extends AppCatAbstractResource {
                 applicationInterface.setCreationTime(AiravataUtils.getCurrentTimestamp());
                 applicationInterface.setGatewayId(gatewayId);
                 applicationInterface.setArchiveWorkingDirectory(archiveWorkingDirectory);
+                existigAppInterface.setHasOptionalFileInputs(hasOptionalFileInputs);
                 em.persist(applicationInterface);
             }
             em.getTransaction().commit();

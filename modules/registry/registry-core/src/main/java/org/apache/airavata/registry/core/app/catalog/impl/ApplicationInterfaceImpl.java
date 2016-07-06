@@ -77,6 +77,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             resource.setAppDescription(applicationInterfaceDescription.getApplicationDescription());
             resource.setGatewayId(gatewayId);
             resource.setArchiveWorkingDirectory(applicationInterfaceDescription.isArchiveWorkingDirectory());
+            resource.setHasOptionalFileInputs(applicationInterfaceDescription.isHasOptionalFileInputs());
             resource.save();
             applicationInterfaceDescription.setApplicationInterfaceId(resource.getInterfaceId());
 
@@ -178,6 +179,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             AppInterfaceResource existingInterface = (AppInterfaceResource) resource.get(interfaceId);
             existingInterface.setAppName(updatedInterface.getApplicationName());
             existingInterface.setAppDescription(updatedInterface.getApplicationDescription());
+            existingInterface.setHasOptionalFileInputs(updatedInterface.isHasOptionalFileInputs());
             existingInterface.setArchiveWorkingDirectory(updatedInterface.isArchiveWorkingDirectory());
             existingInterface.save();
 
