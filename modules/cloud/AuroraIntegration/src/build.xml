@@ -10,7 +10,8 @@
   <target name="all" depends="compile_all"/>
 
   <target name="compile_all"
-          depends="org"/>
+          depends="main
+          "/>
 
   <target name="clean">
        <delete dir="${BUILD}"/>
@@ -27,7 +28,7 @@
         <mkdir dir="${BUILD}/jar"/>
         <jar destfile="${BUILD}/jar/auroraDriverl.jar" basedir="${BUILD}/classes">
             <manifest>
-                <attribute name="Main-Class" value="org.apache.airavata.cloud.aurora.driver.AuroraAdminDriver"/>
+                <attribute name="Main-Class" value="main.java.org.apache.airavata.cloud.aurora.driver.AuroraAdminDriver"/>
             </manifest>
         </jar>
     </target>
@@ -38,9 +39,9 @@
   <!-- * means all files in the current directory -->
   <!-- for just java files use *.java -->
 
-  <target name="org" depends="prepare">
+  <target name="main" depends="prepare">
     <javac srcdir="${src}"
-           includes="org/**"
+           includes="main/**"
            excludes="**/package.html"
            destdir="${classes}"
            classpath="${classes}"

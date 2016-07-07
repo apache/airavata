@@ -1,0 +1,12 @@
+
+package main.java.org.apache.airavata.cloud.bigDataInjections;
+
+import java.util.Map;
+import java.util.List;
+
+
+public interface BigDataInjectorI {
+
+    // TODO: this interface should throw an exception
+    public void executeTheBigDataClientSideCommand(Map<String, List<String>> commandLineOptions);
+}
