@@ -206,7 +206,7 @@ public class ResourceServiceImpl {
       Set<Resource> resources = new HashSet<Resource>();
       for (PermissionEntry entry: permissions) {
         Resource resource = new Resource(entry.getAttributeDefNameDispName(), resourceType);
-        resource.setName(entry.getAttributeDefName().getDisplayExtension());
+        resource.setName(entry.getAttributeDefName().getExtension());
         
         //TODO: Discuss it with Suresh and Supun. It might cause some performance issues. We probably should not populate the parent id since caller will already have it.
 //        Set<AttributeDefName> parentAttributeDefNames = entry.getAttributeDefName().getAttributeDefNameSetDelegate().getAttributeDefNamesThatImplyThisImmediate();
