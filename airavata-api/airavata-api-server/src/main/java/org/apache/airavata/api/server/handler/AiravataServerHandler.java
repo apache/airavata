@@ -871,10 +871,14 @@ public class AiravataServerHandler implements Airavata.Iface {
                 accessibleProjIds.addAll(getAllAccessibleResourcesForUser(userName+"@"+gatewayId, ResourceType.PROJECT, ResourcePermissionType.READ));
             }catch (Exception ex){
                 logger.error(ex.getMessage(), ex);
-                List<Object> allUserProjects = experimentCatalog.search(ExperimentCatalogModelType.PROJECT, temp, -1,
-                        0, Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
-                allUserProjects.stream().forEach(e->accessibleProjIds.add(((Project) e).getProjectID()));
             }
+            List<Object> allUserProjects = experimentCatalog.search(ExperimentCatalogModelType.PROJECT, temp, -1,
+                    0, Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
+            allUserProjects.stream().forEach(e->accessibleProjIds.add(((Project) e).getProjectID()));
+            Set<String> hs = new HashSet<>();
+            hs.addAll(accessibleProjIds);
+            accessibleProjIds.clear();
+            accessibleProjIds.addAll(hs);
 
             List<Object> results = experimentCatalog.searchAllAccessible(ExperimentCatalogModelType.PROJECT, accessibleProjIds,
                     regFilters, limit, offset, Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
@@ -964,10 +968,14 @@ public class AiravataServerHandler implements Airavata.Iface {
                 accessibleExpIds.addAll(getAllAccessibleResourcesForUser(userName + "@" + gatewayId, ResourceType.EXPERIMENT, ResourcePermissionType.READ));
             }catch (Exception ex){
                 logger.error(ex.getMessage(), ex);
-                List<Object> allUserExperiments = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, temp, -1,
-                        0, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
-                allUserExperiments.stream().forEach(e->accessibleExpIds.add(((ExperimentSummaryModel) e).getExperimentId()));
             }
+            List<Object> allUserExperiments = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, temp, -1,
+                    0, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
+            allUserExperiments.stream().forEach(e->accessibleExpIds.add(((ExperimentSummaryModel) e).getExperimentId()));
+            Set<String> hs = new HashSet<>();
+            hs.addAll(accessibleExpIds);
+            accessibleExpIds.clear();
+            accessibleExpIds.addAll(hs);
 
             List<Object> results = experimentCatalog.searchAllAccessible(ExperimentCatalogModelType.EXPERIMENT,
                     accessibleExpIds, regFilters, limit,
