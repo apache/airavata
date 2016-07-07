@@ -8,7 +8,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>AuroraIntergration</artifactId>
+	<artifactId>AuroraIntegration</artifactId>
   <groupId>org.apache.airavata.cloud.drivers.auroraDriver</groupId>
 	<packaging>jar</packaging>
 	<name>Airavata Aurora Integration</name>
