@@ -121,6 +121,7 @@ class Project:
   Attributes:
    - projectID
    - owner
+   - gatewayId
    - name
    - description
    - creationTime
@@ -132,16 +133,18 @@ class Project:
     None, # 0
     (1, TType.STRING, 'projectID', None, "DO_NOT_SET_AT_CLIENTS", ), # 1
     (2, TType.STRING, 'owner', None, None, ), # 2
-    (3, TType.STRING, 'name', None, None, ), # 3
-    (4, TType.STRING, 'description', None, None, ), # 4
-    (5, TType.I64, 'creationTime', None, None, ), # 5
-    (6, TType.LIST, 'sharedUsers', (TType.STRING,None), None, ), # 6
-    (7, TType.LIST, 'sharedGroups', (TType.STRING,None), None, ), # 7
+    (3, TType.STRING, 'gatewayId', None, None, ), # 3
+    (4, TType.STRING, 'name', None, None, ), # 4
+    (5, TType.STRING, 'description', None, None, ), # 5
+    (6, TType.I64, 'creationTime', None, None, ), # 6
+    (7, TType.LIST, 'sharedUsers', (TType.STRING,None), None, ), # 7
+    (8, TType.LIST, 'sharedGroups', (TType.STRING,None), None, ), # 8
   )
 
-  def __init__(self, projectID=thrift_spec[1][4], owner=None, name=None, description=None, creationTime=None, sharedUsers=None, sharedGroups=None,):
+  def __init__(self, projectID=thrift_spec[1][4], owner=None, gatewayId=None, name=None, description=None, creationTime=None, sharedUsers=None, sharedGroups=None,):
     self.projectID = projectID
     self.owner = owner
+    self.gatewayId = gatewayId
     self.name = name
     self.description = description
     self.creationTime = creationTime
@@ -169,20 +172,25 @@ class Project:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
-          self.name = iprot.readString()
+          self.gatewayId = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 4:
         if ftype == TType.STRING:
-          self.description = iprot.readString()
+          self.name = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 5:
+        if ftype == TType.STRING:
+          self.description = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
         if ftype == TType.I64:
           self.creationTime = iprot.readI64()
         else:
           iprot.skip(ftype)
-      elif fid == 6:
+      elif fid == 7:
         if ftype == TType.LIST:
           self.sharedUsers = []
           (_etype3, _size0) = iprot.readListBegin()
@@ -192,7 +200,7 @@ class Project:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 7:
+      elif fid == 8:
         if ftype == TType.LIST:
           self.sharedGroups = []
           (_etype9, _size6) = iprot.readListBegin()
@@ -220,27 +228,31 @@ class Project:
       oprot.writeFieldBegin('owner', TType.STRING, 2)
       oprot.writeString(self.owner)
       oprot.writeFieldEnd()
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
     if self.name is not None:
-      oprot.writeFieldBegin('name', TType.STRING, 3)
+      oprot.writeFieldBegin('name', TType.STRING, 4)
       oprot.writeString(self.name)
       oprot.writeFieldEnd()
     if self.description is not None:
-      oprot.writeFieldBegin('description', TType.STRING, 4)
+      oprot.writeFieldBegin('description', TType.STRING, 5)
       oprot.writeString(self.description)
       oprot.writeFieldEnd()
     if self.creationTime is not None:
-      oprot.writeFieldBegin('creationTime', TType.I64, 5)
+      oprot.writeFieldBegin('creationTime', TType.I64, 6)
       oprot.writeI64(self.creationTime)
       oprot.writeFieldEnd()
     if self.sharedUsers is not None:
-      oprot.writeFieldBegin('sharedUsers', TType.LIST, 6)
+      oprot.writeFieldBegin('sharedUsers', TType.LIST, 7)
       oprot.writeListBegin(TType.STRING, len(self.sharedUsers))
       for iter12 in self.sharedUsers:
         oprot.writeString(iter12)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.sharedGroups is not None:
-      oprot.writeFieldBegin('sharedGroups', TType.LIST, 7)
+      oprot.writeFieldBegin('sharedGroups', TType.LIST, 8)
       oprot.writeListBegin(TType.STRING, len(self.sharedGroups))
       for iter13 in self.sharedGroups:
         oprot.writeString(iter13)
@@ -254,6 +266,8 @@ class Project:
       raise TProtocol.TProtocolException(message='Required field projectID is unset!')
     if self.owner is None:
       raise TProtocol.TProtocolException(message='Required field owner is unset!')
+    if self.gatewayId is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     if self.name is None:
       raise TProtocol.TProtocolException(message='Required field name is unset!')
     return
@@ -263,6 +277,7 @@ class Project:
     value = 17
     value = (value * 31) ^ hash(self.projectID)
     value = (value * 31) ^ hash(self.owner)
+    value = (value * 31) ^ hash(self.gatewayId)
     value = (value * 31) ^ hash(self.name)
     value = (value * 31) ^ hash(self.description)
     value = (value * 31) ^ hash(self.creationTime)
@@ -284,19 +299,31 @@ class Project:
 class User:
   """
   Attributes:
+   - airavataInternalUserId
    - userName
-   - groupList
+   - gatewayId
+   - firstName
+   - lastName
+   - email
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'userName', None, None, ), # 1
-    (2, TType.LIST, 'groupList', (TType.STRUCT,(Group, Group.thrift_spec)), None, ), # 2
+    (1, TType.STRING, 'airavataInternalUserId', None, "DO_NOT_SET_AT_CLIENTS", ), # 1
+    (2, TType.STRING, 'userName', None, None, ), # 2
+    (3, TType.STRING, 'gatewayId', None, None, ), # 3
+    (4, TType.STRING, 'firstName', None, None, ), # 4
+    (5, TType.STRING, 'lastName', None, None, ), # 5
+    (6, TType.STRING, 'email', None, None, ), # 6
   )
 
-  def __init__(self, userName=None, groupList=None,):
+  def __init__(self, airavataInternalUserId=thrift_spec[1][4], userName=None, gatewayId=None, firstName=None, lastName=None, email=None,):
+    self.airavataInternalUserId = airavataInternalUserId
     self.userName = userName
-    self.groupList = groupList
+    self.gatewayId = gatewayId
+    self.firstName = firstName
+    self.lastName = lastName
+    self.email = email
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -309,18 +336,32 @@ class User:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.userName = iprot.readString()
+          self.airavataInternalUserId = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 2:
-        if ftype == TType.LIST:
-          self.groupList = []
-          (_etype17, _size14) = iprot.readListBegin()
-          for _i18 in xrange(_size14):
-            _elem19 = Group()
-            _elem19.read(iprot)
-            self.groupList.append(_elem19)
-          iprot.readListEnd()
+        if ftype == TType.STRING:
+          self.userName = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.gatewayId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRING:
+          self.firstName = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.STRING:
+          self.lastName = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.STRING:
+          self.email = iprot.readString()
         else:
           iprot.skip(ftype)
       else:
@@ -333,30 +374,49 @@ class User:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('User')
+    if self.airavataInternalUserId is not None:
+      oprot.writeFieldBegin('airavataInternalUserId', TType.STRING, 1)
+      oprot.writeString(self.airavataInternalUserId)
+      oprot.writeFieldEnd()
     if self.userName is not None:
-      oprot.writeFieldBegin('userName', TType.STRING, 1)
+      oprot.writeFieldBegin('userName', TType.STRING, 2)
       oprot.writeString(self.userName)
       oprot.writeFieldEnd()
-    if self.groupList is not None:
-      oprot.writeFieldBegin('groupList', TType.LIST, 2)
-      oprot.writeListBegin(TType.STRUCT, len(self.groupList))
-      for iter20 in self.groupList:
-        iter20.write(oprot)
-      oprot.writeListEnd()
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
+    if self.firstName is not None:
+      oprot.writeFieldBegin('firstName', TType.STRING, 4)
+      oprot.writeString(self.firstName)
+      oprot.writeFieldEnd()
+    if self.lastName is not None:
+      oprot.writeFieldBegin('lastName', TType.STRING, 5)
+      oprot.writeString(self.lastName)
+      oprot.writeFieldEnd()
+    if self.email is not None:
+      oprot.writeFieldBegin('email', TType.STRING, 6)
+      oprot.writeString(self.email)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.userName is None:
-      raise TProtocol.TProtocolException(message='Required field userName is unset!')
+    if self.airavataInternalUserId is None:
+      raise TProtocol.TProtocolException(message='Required field airavataInternalUserId is unset!')
+    if self.gatewayId is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     return
 
 
   def __hash__(self):
     value = 17
+    value = (value * 31) ^ hash(self.airavataInternalUserId)
     value = (value * 31) ^ hash(self.userName)
-    value = (value * 31) ^ hash(self.groupList)
+    value = (value * 31) ^ hash(self.gatewayId)
+    value = (value * 31) ^ hash(self.firstName)
+    value = (value * 31) ^ hash(self.lastName)
+    value = (value * 31) ^ hash(self.email)
     return value
 
   def __repr__(self):

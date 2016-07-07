@@ -2915,6 +2915,30 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getChildDataProducts\n");
   }
 
+  /**
+   * Group Manager and Data Sharing Related API methods
+   * 
+   * 
+   * @param authzToken
+   * @param resourceId
+   * @param resourceType
+   * @param userPermissionList
+   */
+  bool shareResourceWithUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList) {
+    // Your implementation goes here
+    printf("shareResourceWithUsers\n");
+  }
+
+  bool revokeSharingOfResourceFromUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList) {
+    // Your implementation goes here
+    printf("revokeSharingOfResourceFromUsers\n");
+  }
+
+  void getAllAccessibleUsers(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType) {
+    // Your implementation goes here
+    printf("getAllAccessibleUsers\n");
+  }
+
 };
 
 int main(int argc, char **argv) {

@@ -41,6 +41,7 @@ include "../data-models/resource-catalog-models/gateway_resource_profile_model.t
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
 include "../data-models/workflow-models/workflow_data_model.thrift"
 include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
+include "../data-models/user-group-models/group_manager_model.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API
@@ -2871,6 +2872,31 @@ service Airavata {
                                  2: airavata_errors.AiravataClientException ace,
                                  3: airavata_errors.AiravataSystemException ase,
                                  4: airavata_errors.AuthorizationException ae)
+
+ /**
+  * Group Manager and Data Sharing Related API methods
+  **/
+  bool shareResourceWithUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+                                4: map<string, group_manager_model.ResourcePermissionType> userPermissionList)
+               throws (1: airavata_errors.InvalidRequestException ire,
+                                                2: airavata_errors.AiravataClientException ace,
+                                                3: airavata_errors.AiravataSystemException ase,
+                                                4: airavata_errors.AuthorizationException ae)
+
+ bool revokeSharingOfResourceFromUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+                                 4: map<string, group_manager_model.ResourcePermissionType> userPermissionList)
+                throws (1: airavata_errors.InvalidRequestException ire,
+                                                 2: airavata_errors.AiravataClientException ace,
+                                                 3: airavata_errors.AiravataSystemException ase,
+                                                 4: airavata_errors.AuthorizationException ae)
+
+ list<string> getAllAccessibleUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+                                  4: required group_manager_model.ResourcePermissionType permissionType)
+                throws (1: airavata_errors.InvalidRequestException ire,
+                                                 2: airavata_errors.AiravataClientException ace,
+                                                 3: airavata_errors.AiravataSystemException ase,
+                                                 4: airavata_errors.AuthorizationException ae)
+
  //End of API
  }
 

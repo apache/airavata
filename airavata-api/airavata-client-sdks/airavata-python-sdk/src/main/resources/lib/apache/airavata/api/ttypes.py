@@ -24,6 +24,7 @@ import apache.airavata.model.appcatalog.gatewayprofile.ttypes
 import apache.airavata.model.data.movement.ttypes
 import apache.airavata.model.workflow.ttypes
 import apache.airavata.model.data.replica.ttypes
+import apache.airavata.model.group.ttypes
 
 
 from thrift.transport import TTransport

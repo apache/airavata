@@ -123,12 +123,13 @@ class Project {
 
   Project(const Project&);
   Project& operator=(const Project&);
-  Project() : projectID("DO_NOT_SET_AT_CLIENTS"), owner(), name(), description(), creationTime(0) {
+  Project() : projectID("DO_NOT_SET_AT_CLIENTS"), owner(), gatewayId(), name(), description(), creationTime(0) {
   }
 
   virtual ~Project() throw();
   std::string projectID;
   std::string owner;
+  std::string gatewayId;
   std::string name;
   std::string description;
   int64_t creationTime;
@@ -140,6 +141,8 @@ class Project {
   void __set_projectID(const std::string& val);
 
   void __set_owner(const std::string& val);
+
+  void __set_gatewayId(const std::string& val);
 
   void __set_name(const std::string& val);
 
@@ -156,6 +159,8 @@ class Project {
     if (!(projectID == rhs.projectID))
       return false;
     if (!(owner == rhs.owner))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
       return false;
     if (!(name == rhs.name))
       return false;
@@ -198,8 +203,11 @@ inline std::ostream& operator<<(std::ostream& out, const Project& obj)
 }
 
 typedef struct _User__isset {
-  _User__isset() : groupList(false) {}
-  bool groupList :1;
+  _User__isset() : userName(false), firstName(false), lastName(false), email(false) {}
+  bool userName :1;
+  bool firstName :1;
+  bool lastName :1;
+  bool email :1;
 } _User__isset;
 
 class User {
@@ -207,26 +215,52 @@ class User {
 
   User(const User&);
   User& operator=(const User&);
-  User() : userName() {
+  User() : airavataInternalUserId("DO_NOT_SET_AT_CLIENTS"), userName(), gatewayId(), firstName(), lastName(), email() {
   }
 
   virtual ~User() throw();
+  std::string airavataInternalUserId;
   std::string userName;
-  std::vector<Group>  groupList;
+  std::string gatewayId;
+  std::string firstName;
+  std::string lastName;
+  std::string email;
 
   _User__isset __isset;
 
+  void __set_airavataInternalUserId(const std::string& val);
+
   void __set_userName(const std::string& val);
 
-  void __set_groupList(const std::vector<Group> & val);
+  void __set_gatewayId(const std::string& val);
+
+  void __set_firstName(const std::string& val);
+
+  void __set_lastName(const std::string& val);
+
+  void __set_email(const std::string& val);
 
   bool operator == (const User & rhs) const
   {
-    if (!(userName == rhs.userName))
+    if (!(airavataInternalUserId == rhs.airavataInternalUserId))
       return false;
-    if (__isset.groupList != rhs.__isset.groupList)
+    if (__isset.userName != rhs.__isset.userName)
       return false;
-    else if (__isset.groupList && !(groupList == rhs.groupList))
+    else if (__isset.userName && !(userName == rhs.userName))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    if (__isset.firstName != rhs.__isset.firstName)
+      return false;
+    else if (__isset.firstName && !(firstName == rhs.firstName))
+      return false;
+    if (__isset.lastName != rhs.__isset.lastName)
+      return false;
+    else if (__isset.lastName && !(lastName == rhs.lastName))
+      return false;
+    if (__isset.email != rhs.__isset.email)
+      return false;
+    else if (__isset.email && !(email == rhs.email))
       return false;
     return true;
   }
