@@ -23,6 +23,7 @@ package org.apache.airavata.grouper;
 import org.apache.airavata.grouper.permission.PermissionAction;
 import org.apache.airavata.grouper.permission.PermissionServiceImpl;
 import org.apache.airavata.grouper.resource.Resource;
+import org.apache.airavata.grouper.resource.ResourceNotFoundException;
 import org.apache.airavata.grouper.resource.ResourceServiceImpl;
 import org.apache.airavata.grouper.resource.ResourceType;
 import org.slf4j.Logger;
@@ -50,7 +51,11 @@ public class GroupManagerImpl implements GroupManagerCPI {
 
     @Override
     public boolean isResourceRegistered(String resourceId, ResourceType resourceType) {
-        return resourceService.getResource(resourceId, resourceType) != null;
+        try{
+            return resourceService.getResource(resourceId, resourceType) != null;
+        }catch (ResourceNotFoundException ex){
+            return false;
+        }
     }
 
     @Override
