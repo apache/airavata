@@ -90,6 +90,10 @@
 /airavata/getWorkflow|
 /airavata/getWorkflowTemplateId|
 /airavata/isWorkflowExistWithName|
+/airavata/getAllUsersInGateway|
+/airavata/shareResourceWithUsers|
+/airavata/revokeSharingOfResourceFromUsers|
+/airavata/getAllAccessibleUsers|
 /airavata/registerDataProduct|
 /airavata/getDataProduct|
 /airavata/registerReplicaLocation|
@@ -128,13 +132,11 @@
 /airavata/getUserProjects|
 /airavata/searchsearchProjects|
 /airavata/searchExperiments|
-/airavata/getExperimentStatistics|
 /airavata/getExperimentsInProject|
 /airavata/getUserExperiments|
 /airavata/createExperiment|
 /airavata/deleteExperiment|
 /airavata/getExperiment|
-/airavata/getDetailedExperimentTree|
 /airavata/updateExperiment|
 /airavata/updateExperimentConfiguration|
 /airavata/updateResourceScheduleing|
@@ -159,6 +161,9 @@
 /airavata/getWorkflowTemplateId|
 /airavata/isWorkflowExistWithName|
 /airavata/getAllUsersInGateway|
+/airavata/shareResourceWithUsers|
+/airavata/revokeSharingOfResourceFromUsers|
+/airavata/getAllAccessibleUsers|
 /airavata/registerDataProduct|
 /airavata/getDataProduct|
 /airavata/registerReplicaLocation|

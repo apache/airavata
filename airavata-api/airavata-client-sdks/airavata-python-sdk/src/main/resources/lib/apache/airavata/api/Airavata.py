@@ -2846,6 +2846,39 @@ class Iface:
     """
     pass
 
+  def shareResourceWithUsers(self, authzToken, resourceId, resourceType, userPermissionList):
+    """
+    Group Manager and Data Sharing Related API methods
+
+
+    Parameters:
+     - authzToken
+     - resourceId
+     - resourceType
+     - userPermissionList
+    """
+    pass
+
+  def revokeSharingOfResourceFromUsers(self, authzToken, resourceId, resourceType, userPermissionList):
+    """
+    Parameters:
+     - authzToken
+     - resourceId
+     - resourceType
+     - userPermissionList
+    """
+    pass
+
+  def getAllAccessibleUsers(self, authzToken, resourceId, resourceType, permissionType):
+    """
+    Parameters:
+     - authzToken
+     - resourceId
+     - resourceType
+     - permissionType
+    """
+    pass
+
 
 class Client(Iface):
   def __init__(self, iprot, oprot=None):
@@ -10418,6 +10451,144 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getChildDataProducts failed: unknown result")
 
+  def shareResourceWithUsers(self, authzToken, resourceId, resourceType, userPermissionList):
+    """
+    Group Manager and Data Sharing Related API methods
+
+
+    Parameters:
+     - authzToken
+     - resourceId
+     - resourceType
+     - userPermissionList
+    """
+    self.send_shareResourceWithUsers(authzToken, resourceId, resourceType, userPermissionList)
+    return self.recv_shareResourceWithUsers()
+
+  def send_shareResourceWithUsers(self, authzToken, resourceId, resourceType, userPermissionList):
+    self._oprot.writeMessageBegin('shareResourceWithUsers', TMessageType.CALL, self._seqid)
+    args = shareResourceWithUsers_args()
+    args.authzToken = authzToken
+    args.resourceId = resourceId
+    args.resourceType = resourceType
+    args.userPermissionList = userPermissionList
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_shareResourceWithUsers(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = shareResourceWithUsers_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "shareResourceWithUsers failed: unknown result")
+
+  def revokeSharingOfResourceFromUsers(self, authzToken, resourceId, resourceType, userPermissionList):
+    """
+    Parameters:
+     - authzToken
+     - resourceId
+     - resourceType
+     - userPermissionList
+    """
+    self.send_revokeSharingOfResourceFromUsers(authzToken, resourceId, resourceType, userPermissionList)
+    return self.recv_revokeSharingOfResourceFromUsers()
+
+  def send_revokeSharingOfResourceFromUsers(self, authzToken, resourceId, resourceType, userPermissionList):
+    self._oprot.writeMessageBegin('revokeSharingOfResourceFromUsers', TMessageType.CALL, self._seqid)
+    args = revokeSharingOfResourceFromUsers_args()
+    args.authzToken = authzToken
+    args.resourceId = resourceId
+    args.resourceType = resourceType
+    args.userPermissionList = userPermissionList
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_revokeSharingOfResourceFromUsers(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = revokeSharingOfResourceFromUsers_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "revokeSharingOfResourceFromUsers failed: unknown result")
+
+  def getAllAccessibleUsers(self, authzToken, resourceId, resourceType, permissionType):
+    """
+    Parameters:
+     - authzToken
+     - resourceId
+     - resourceType
+     - permissionType
+    """
+    self.send_getAllAccessibleUsers(authzToken, resourceId, resourceType, permissionType)
+    return self.recv_getAllAccessibleUsers()
+
+  def send_getAllAccessibleUsers(self, authzToken, resourceId, resourceType, permissionType):
+    self._oprot.writeMessageBegin('getAllAccessibleUsers', TMessageType.CALL, self._seqid)
+    args = getAllAccessibleUsers_args()
+    args.authzToken = authzToken
+    args.resourceId = resourceId
+    args.resourceType = resourceType
+    args.permissionType = permissionType
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_getAllAccessibleUsers(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = getAllAccessibleUsers_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllAccessibleUsers failed: unknown result")
+
 
 class Processor(Iface, TProcessor):
   def __init__(self, handler):
@@ -10564,6 +10735,9 @@ class Processor(Iface, TProcessor):
     self._processMap["registerReplicaLocation"] = Processor.process_registerReplicaLocation
     self._processMap["getParentDataProduct"] = Processor.process_getParentDataProduct
     self._processMap["getChildDataProducts"] = Processor.process_getChildDataProducts
+    self._processMap["shareResourceWithUsers"] = Processor.process_shareResourceWithUsers
+    self._processMap["revokeSharingOfResourceFromUsers"] = Processor.process_revokeSharingOfResourceFromUsers
+    self._processMap["getAllAccessibleUsers"] = Processor.process_getAllAccessibleUsers
 
   def process(self, iprot, oprot):
     (name, type, seqid) = iprot.readMessageBegin()
@@ -14956,6 +15130,99 @@ class Processor(Iface, TProcessor):
       logging.exception(ex)
       result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
     oprot.writeMessageBegin("getChildDataProducts", msg_type, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_shareResourceWithUsers(self, seqid, iprot, oprot):
+    args = shareResourceWithUsers_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = shareResourceWithUsers_result()
+    try:
+      result.success = self._handler.shareResourceWithUsers(args.authzToken, args.resourceId, args.resourceType, args.userPermissionList)
+      msg_type = TMessageType.REPLY
+    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+      raise
+    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
+      msg_type = TMessageType.REPLY
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
+      msg_type = TMessageType.REPLY
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
+      msg_type = TMessageType.REPLY
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException as ae:
+      msg_type = TMessageType.REPLY
+      result.ae = ae
+    except Exception as ex:
+      msg_type = TMessageType.EXCEPTION
+      logging.exception(ex)
+      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+    oprot.writeMessageBegin("shareResourceWithUsers", msg_type, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_revokeSharingOfResourceFromUsers(self, seqid, iprot, oprot):
+    args = revokeSharingOfResourceFromUsers_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = revokeSharingOfResourceFromUsers_result()
+    try:
+      result.success = self._handler.revokeSharingOfResourceFromUsers(args.authzToken, args.resourceId, args.resourceType, args.userPermissionList)
+      msg_type = TMessageType.REPLY
+    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+      raise
+    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
+      msg_type = TMessageType.REPLY
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
+      msg_type = TMessageType.REPLY
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
+      msg_type = TMessageType.REPLY
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException as ae:
+      msg_type = TMessageType.REPLY
+      result.ae = ae
+    except Exception as ex:
+      msg_type = TMessageType.EXCEPTION
+      logging.exception(ex)
+      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+    oprot.writeMessageBegin("revokeSharingOfResourceFromUsers", msg_type, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_getAllAccessibleUsers(self, seqid, iprot, oprot):
+    args = getAllAccessibleUsers_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = getAllAccessibleUsers_result()
+    try:
+      result.success = self._handler.getAllAccessibleUsers(args.authzToken, args.resourceId, args.resourceType, args.permissionType)
+      msg_type = TMessageType.REPLY
+    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+      raise
+    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
+      msg_type = TMessageType.REPLY
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
+      msg_type = TMessageType.REPLY
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
+      msg_type = TMessageType.REPLY
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException as ae:
+      msg_type = TMessageType.REPLY
+      result.ae = ae
+    except Exception as ex:
+      msg_type = TMessageType.EXCEPTION
+      logging.exception(ex)
+      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+    oprot.writeMessageBegin("getAllAccessibleUsers", msg_type, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -45279,6 +45546,729 @@ class getChildDataProducts_result:
       oprot.writeListBegin(TType.STRUCT, len(self.success))
       for iter252 in self.success:
         iter252.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class shareResourceWithUsers_args:
+  """
+  Attributes:
+   - authzToken
+   - resourceId
+   - resourceType
+   - userPermissionList
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'resourceId', None, None, ), # 2
+    (3, TType.I32, 'resourceType', None, None, ), # 3
+    (4, TType.MAP, 'userPermissionList', (TType.STRING,None,TType.I32,None), None, ), # 4
+  )
+
+  def __init__(self, authzToken=None, resourceId=None, resourceType=None, userPermissionList=None,):
+    self.authzToken = authzToken
+    self.resourceId = resourceId
+    self.resourceType = resourceType
+    self.userPermissionList = userPermissionList
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.resourceId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I32:
+          self.resourceType = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.MAP:
+          self.userPermissionList = {}
+          (_ktype254, _vtype255, _size253 ) = iprot.readMapBegin()
+          for _i257 in xrange(_size253):
+            _key258 = iprot.readString()
+            _val259 = iprot.readI32()
+            self.userPermissionList[_key258] = _val259
+          iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('shareResourceWithUsers_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.resourceId is not None:
+      oprot.writeFieldBegin('resourceId', TType.STRING, 2)
+      oprot.writeString(self.resourceId)
+      oprot.writeFieldEnd()
+    if self.resourceType is not None:
+      oprot.writeFieldBegin('resourceType', TType.I32, 3)
+      oprot.writeI32(self.resourceType)
+      oprot.writeFieldEnd()
+    if self.userPermissionList is not None:
+      oprot.writeFieldBegin('userPermissionList', TType.MAP, 4)
+      oprot.writeMapBegin(TType.STRING, TType.I32, len(self.userPermissionList))
+      for kiter260,viter261 in self.userPermissionList.items():
+        oprot.writeString(kiter260)
+        oprot.writeI32(viter261)
+      oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.resourceId is None:
+      raise TProtocol.TProtocolException(message='Required field resourceId is unset!')
+    if self.resourceType is None:
+      raise TProtocol.TProtocolException(message='Required field resourceType is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.resourceId)
+    value = (value * 31) ^ hash(self.resourceType)
+    value = (value * 31) ^ hash(self.userPermissionList)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class shareResourceWithUsers_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.BOOL, 'success', None, None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.BOOL:
+          self.success = iprot.readBool()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('shareResourceWithUsers_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.BOOL, 0)
+      oprot.writeBool(self.success)
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class revokeSharingOfResourceFromUsers_args:
+  """
+  Attributes:
+   - authzToken
+   - resourceId
+   - resourceType
+   - userPermissionList
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'resourceId', None, None, ), # 2
+    (3, TType.I32, 'resourceType', None, None, ), # 3
+    (4, TType.MAP, 'userPermissionList', (TType.STRING,None,TType.I32,None), None, ), # 4
+  )
+
+  def __init__(self, authzToken=None, resourceId=None, resourceType=None, userPermissionList=None,):
+    self.authzToken = authzToken
+    self.resourceId = resourceId
+    self.resourceType = resourceType
+    self.userPermissionList = userPermissionList
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.resourceId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I32:
+          self.resourceType = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.MAP:
+          self.userPermissionList = {}
+          (_ktype263, _vtype264, _size262 ) = iprot.readMapBegin()
+          for _i266 in xrange(_size262):
+            _key267 = iprot.readString()
+            _val268 = iprot.readI32()
+            self.userPermissionList[_key267] = _val268
+          iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('revokeSharingOfResourceFromUsers_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.resourceId is not None:
+      oprot.writeFieldBegin('resourceId', TType.STRING, 2)
+      oprot.writeString(self.resourceId)
+      oprot.writeFieldEnd()
+    if self.resourceType is not None:
+      oprot.writeFieldBegin('resourceType', TType.I32, 3)
+      oprot.writeI32(self.resourceType)
+      oprot.writeFieldEnd()
+    if self.userPermissionList is not None:
+      oprot.writeFieldBegin('userPermissionList', TType.MAP, 4)
+      oprot.writeMapBegin(TType.STRING, TType.I32, len(self.userPermissionList))
+      for kiter269,viter270 in self.userPermissionList.items():
+        oprot.writeString(kiter269)
+        oprot.writeI32(viter270)
+      oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.resourceId is None:
+      raise TProtocol.TProtocolException(message='Required field resourceId is unset!')
+    if self.resourceType is None:
+      raise TProtocol.TProtocolException(message='Required field resourceType is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.resourceId)
+    value = (value * 31) ^ hash(self.resourceType)
+    value = (value * 31) ^ hash(self.userPermissionList)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class revokeSharingOfResourceFromUsers_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.BOOL, 'success', None, None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.BOOL:
+          self.success = iprot.readBool()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('revokeSharingOfResourceFromUsers_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.BOOL, 0)
+      oprot.writeBool(self.success)
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getAllAccessibleUsers_args:
+  """
+  Attributes:
+   - authzToken
+   - resourceId
+   - resourceType
+   - permissionType
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'resourceId', None, None, ), # 2
+    (3, TType.I32, 'resourceType', None, None, ), # 3
+    (4, TType.I32, 'permissionType', None, None, ), # 4
+  )
+
+  def __init__(self, authzToken=None, resourceId=None, resourceType=None, permissionType=None,):
+    self.authzToken = authzToken
+    self.resourceId = resourceId
+    self.resourceType = resourceType
+    self.permissionType = permissionType
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.resourceId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I32:
+          self.resourceType = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.I32:
+          self.permissionType = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getAllAccessibleUsers_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.resourceId is not None:
+      oprot.writeFieldBegin('resourceId', TType.STRING, 2)
+      oprot.writeString(self.resourceId)
+      oprot.writeFieldEnd()
+    if self.resourceType is not None:
+      oprot.writeFieldBegin('resourceType', TType.I32, 3)
+      oprot.writeI32(self.resourceType)
+      oprot.writeFieldEnd()
+    if self.permissionType is not None:
+      oprot.writeFieldBegin('permissionType', TType.I32, 4)
+      oprot.writeI32(self.permissionType)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.resourceId is None:
+      raise TProtocol.TProtocolException(message='Required field resourceId is unset!')
+    if self.resourceType is None:
+      raise TProtocol.TProtocolException(message='Required field resourceType is unset!')
+    if self.permissionType is None:
+      raise TProtocol.TProtocolException(message='Required field permissionType is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.resourceId)
+    value = (value * 31) ^ hash(self.resourceType)
+    value = (value * 31) ^ hash(self.permissionType)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getAllAccessibleUsers_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.LIST, 'success', (TType.STRING,None), None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.LIST:
+          self.success = []
+          (_etype274, _size271) = iprot.readListBegin()
+          for _i275 in xrange(_size271):
+            _elem276 = iprot.readString()
+            self.success.append(_elem276)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getAllAccessibleUsers_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.LIST, 0)
+      oprot.writeListBegin(TType.STRING, len(self.success))
+      for iter277 in self.success:
+        oprot.writeString(iter277)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:

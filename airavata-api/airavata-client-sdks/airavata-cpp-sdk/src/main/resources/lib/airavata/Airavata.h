@@ -2470,6 +2470,19 @@ class AiravataIf {
   virtual void registerReplicaLocation(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::data::replica::DataReplicaLocationModel& replicaLocationModel) = 0;
   virtual void getParentDataProduct( ::apache::airavata::model::data::replica::DataProductModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri) = 0;
   virtual void getChildDataProducts(std::vector< ::apache::airavata::model::data::replica::DataProductModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri) = 0;
+
+  /**
+   * Group Manager and Data Sharing Related API methods
+   * 
+   * 
+   * @param authzToken
+   * @param resourceId
+   * @param resourceType
+   * @param userPermissionList
+   */
+  virtual bool shareResourceWithUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList) = 0;
+  virtual bool revokeSharingOfResourceFromUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList) = 0;
+  virtual void getAllAccessibleUsers(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType) = 0;
 };
 
 class AiravataIfFactory {
@@ -2966,6 +2979,17 @@ class AiravataNull : virtual public AiravataIf {
     return;
   }
   void getChildDataProducts(std::vector< ::apache::airavata::model::data::replica::DataProductModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* productUri */) {
+    return;
+  }
+  bool shareResourceWithUsers(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* resourceId */, const  ::apache::airavata::model::group::ResourceType::type /* resourceType */, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & /* userPermissionList */) {
+    bool _return = false;
+    return _return;
+  }
+  bool revokeSharingOfResourceFromUsers(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* resourceId */, const  ::apache::airavata::model::group::ResourceType::type /* resourceType */, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & /* userPermissionList */) {
+    bool _return = false;
+    return _return;
+  }
+  void getAllAccessibleUsers(std::vector<std::string> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* resourceId */, const  ::apache::airavata::model::group::ResourceType::type /* resourceType */, const  ::apache::airavata::model::group::ResourcePermissionType::type /* permissionType */) {
     return;
   }
 };
@@ -22708,6 +22732,462 @@ class Airavata_getChildDataProducts_presult {
 
 };
 
+typedef struct _Airavata_shareResourceWithUsers_args__isset {
+  _Airavata_shareResourceWithUsers_args__isset() : userPermissionList(false) {}
+  bool userPermissionList :1;
+} _Airavata_shareResourceWithUsers_args__isset;
+
+class Airavata_shareResourceWithUsers_args {
+ public:
+
+  Airavata_shareResourceWithUsers_args(const Airavata_shareResourceWithUsers_args&);
+  Airavata_shareResourceWithUsers_args& operator=(const Airavata_shareResourceWithUsers_args&);
+  Airavata_shareResourceWithUsers_args() : resourceId(), resourceType(( ::apache::airavata::model::group::ResourceType::type)0) {
+  }
+
+  virtual ~Airavata_shareResourceWithUsers_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string resourceId;
+   ::apache::airavata::model::group::ResourceType::type resourceType;
+  std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type>  userPermissionList;
+
+  _Airavata_shareResourceWithUsers_args__isset __isset;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_resourceId(const std::string& val);
+
+  void __set_resourceType(const  ::apache::airavata::model::group::ResourceType::type val);
+
+  void __set_userPermissionList(const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & val);
+
+  bool operator == (const Airavata_shareResourceWithUsers_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(resourceId == rhs.resourceId))
+      return false;
+    if (!(resourceType == rhs.resourceType))
+      return false;
+    if (!(userPermissionList == rhs.userPermissionList))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_shareResourceWithUsers_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_shareResourceWithUsers_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_shareResourceWithUsers_pargs {
+ public:
+
+
+  virtual ~Airavata_shareResourceWithUsers_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* resourceId;
+  const  ::apache::airavata::model::group::ResourceType::type* resourceType;
+  const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> * userPermissionList;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_shareResourceWithUsers_result__isset {
+  _Airavata_shareResourceWithUsers_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_shareResourceWithUsers_result__isset;
+
+class Airavata_shareResourceWithUsers_result {
+ public:
+
+  Airavata_shareResourceWithUsers_result(const Airavata_shareResourceWithUsers_result&);
+  Airavata_shareResourceWithUsers_result& operator=(const Airavata_shareResourceWithUsers_result&);
+  Airavata_shareResourceWithUsers_result() : success(0) {
+  }
+
+  virtual ~Airavata_shareResourceWithUsers_result() throw();
+  bool success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_shareResourceWithUsers_result__isset __isset;
+
+  void __set_success(const bool val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_shareResourceWithUsers_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_shareResourceWithUsers_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_shareResourceWithUsers_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_shareResourceWithUsers_presult__isset {
+  _Airavata_shareResourceWithUsers_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_shareResourceWithUsers_presult__isset;
+
+class Airavata_shareResourceWithUsers_presult {
+ public:
+
+
+  virtual ~Airavata_shareResourceWithUsers_presult() throw();
+  bool* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_shareResourceWithUsers_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _Airavata_revokeSharingOfResourceFromUsers_args__isset {
+  _Airavata_revokeSharingOfResourceFromUsers_args__isset() : userPermissionList(false) {}
+  bool userPermissionList :1;
+} _Airavata_revokeSharingOfResourceFromUsers_args__isset;
+
+class Airavata_revokeSharingOfResourceFromUsers_args {
+ public:
+
+  Airavata_revokeSharingOfResourceFromUsers_args(const Airavata_revokeSharingOfResourceFromUsers_args&);
+  Airavata_revokeSharingOfResourceFromUsers_args& operator=(const Airavata_revokeSharingOfResourceFromUsers_args&);
+  Airavata_revokeSharingOfResourceFromUsers_args() : resourceId(), resourceType(( ::apache::airavata::model::group::ResourceType::type)0) {
+  }
+
+  virtual ~Airavata_revokeSharingOfResourceFromUsers_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string resourceId;
+   ::apache::airavata::model::group::ResourceType::type resourceType;
+  std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type>  userPermissionList;
+
+  _Airavata_revokeSharingOfResourceFromUsers_args__isset __isset;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_resourceId(const std::string& val);
+
+  void __set_resourceType(const  ::apache::airavata::model::group::ResourceType::type val);
+
+  void __set_userPermissionList(const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & val);
+
+  bool operator == (const Airavata_revokeSharingOfResourceFromUsers_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(resourceId == rhs.resourceId))
+      return false;
+    if (!(resourceType == rhs.resourceType))
+      return false;
+    if (!(userPermissionList == rhs.userPermissionList))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_revokeSharingOfResourceFromUsers_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_revokeSharingOfResourceFromUsers_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_revokeSharingOfResourceFromUsers_pargs {
+ public:
+
+
+  virtual ~Airavata_revokeSharingOfResourceFromUsers_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* resourceId;
+  const  ::apache::airavata::model::group::ResourceType::type* resourceType;
+  const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> * userPermissionList;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_revokeSharingOfResourceFromUsers_result__isset {
+  _Airavata_revokeSharingOfResourceFromUsers_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_revokeSharingOfResourceFromUsers_result__isset;
+
+class Airavata_revokeSharingOfResourceFromUsers_result {
+ public:
+
+  Airavata_revokeSharingOfResourceFromUsers_result(const Airavata_revokeSharingOfResourceFromUsers_result&);
+  Airavata_revokeSharingOfResourceFromUsers_result& operator=(const Airavata_revokeSharingOfResourceFromUsers_result&);
+  Airavata_revokeSharingOfResourceFromUsers_result() : success(0) {
+  }
+
+  virtual ~Airavata_revokeSharingOfResourceFromUsers_result() throw();
+  bool success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_revokeSharingOfResourceFromUsers_result__isset __isset;
+
+  void __set_success(const bool val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_revokeSharingOfResourceFromUsers_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_revokeSharingOfResourceFromUsers_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_revokeSharingOfResourceFromUsers_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_revokeSharingOfResourceFromUsers_presult__isset {
+  _Airavata_revokeSharingOfResourceFromUsers_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_revokeSharingOfResourceFromUsers_presult__isset;
+
+class Airavata_revokeSharingOfResourceFromUsers_presult {
+ public:
+
+
+  virtual ~Airavata_revokeSharingOfResourceFromUsers_presult() throw();
+  bool* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_revokeSharingOfResourceFromUsers_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getAllAccessibleUsers_args {
+ public:
+
+  Airavata_getAllAccessibleUsers_args(const Airavata_getAllAccessibleUsers_args&);
+  Airavata_getAllAccessibleUsers_args& operator=(const Airavata_getAllAccessibleUsers_args&);
+  Airavata_getAllAccessibleUsers_args() : resourceId(), resourceType(( ::apache::airavata::model::group::ResourceType::type)0), permissionType(( ::apache::airavata::model::group::ResourcePermissionType::type)0) {
+  }
+
+  virtual ~Airavata_getAllAccessibleUsers_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string resourceId;
+   ::apache::airavata::model::group::ResourceType::type resourceType;
+   ::apache::airavata::model::group::ResourcePermissionType::type permissionType;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_resourceId(const std::string& val);
+
+  void __set_resourceType(const  ::apache::airavata::model::group::ResourceType::type val);
+
+  void __set_permissionType(const  ::apache::airavata::model::group::ResourcePermissionType::type val);
+
+  bool operator == (const Airavata_getAllAccessibleUsers_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(resourceId == rhs.resourceId))
+      return false;
+    if (!(resourceType == rhs.resourceType))
+      return false;
+    if (!(permissionType == rhs.permissionType))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllAccessibleUsers_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllAccessibleUsers_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getAllAccessibleUsers_pargs {
+ public:
+
+
+  virtual ~Airavata_getAllAccessibleUsers_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* resourceId;
+  const  ::apache::airavata::model::group::ResourceType::type* resourceType;
+  const  ::apache::airavata::model::group::ResourcePermissionType::type* permissionType;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllAccessibleUsers_result__isset {
+  _Airavata_getAllAccessibleUsers_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getAllAccessibleUsers_result__isset;
+
+class Airavata_getAllAccessibleUsers_result {
+ public:
+
+  Airavata_getAllAccessibleUsers_result(const Airavata_getAllAccessibleUsers_result&);
+  Airavata_getAllAccessibleUsers_result& operator=(const Airavata_getAllAccessibleUsers_result&);
+  Airavata_getAllAccessibleUsers_result() {
+  }
+
+  virtual ~Airavata_getAllAccessibleUsers_result() throw();
+  std::vector<std::string>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getAllAccessibleUsers_result__isset __isset;
+
+  void __set_success(const std::vector<std::string> & val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_getAllAccessibleUsers_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllAccessibleUsers_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllAccessibleUsers_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllAccessibleUsers_presult__isset {
+  _Airavata_getAllAccessibleUsers_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getAllAccessibleUsers_presult__isset;
+
+class Airavata_getAllAccessibleUsers_presult {
+ public:
+
+
+  virtual ~Airavata_getAllAccessibleUsers_presult() throw();
+  std::vector<std::string> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getAllAccessibleUsers_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class AiravataClient : virtual public AiravataIf {
  public:
   AiravataClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) {
@@ -23156,6 +23636,15 @@ class AiravataClient : virtual public AiravataIf {
   void getChildDataProducts(std::vector< ::apache::airavata::model::data::replica::DataProductModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri);
   void send_getChildDataProducts(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri);
   void recv_getChildDataProducts(std::vector< ::apache::airavata::model::data::replica::DataProductModel> & _return);
+  bool shareResourceWithUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList);
+  void send_shareResourceWithUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList);
+  bool recv_shareResourceWithUsers();
+  bool revokeSharingOfResourceFromUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList);
+  void send_revokeSharingOfResourceFromUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList);
+  bool recv_revokeSharingOfResourceFromUsers();
+  void getAllAccessibleUsers(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType);
+  void send_getAllAccessibleUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType);
+  void recv_getAllAccessibleUsers(std::vector<std::string> & _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -23312,6 +23801,9 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_registerReplicaLocation(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getParentDataProduct(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getChildDataProducts(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_shareResourceWithUsers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_revokeSharingOfResourceFromUsers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAllAccessibleUsers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   AiravataProcessor(boost::shared_ptr<AiravataIf> iface) :
     iface_(iface) {
@@ -23456,6 +23948,9 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["registerReplicaLocation"] = &AiravataProcessor::process_registerReplicaLocation;
     processMap_["getParentDataProduct"] = &AiravataProcessor::process_getParentDataProduct;
     processMap_["getChildDataProducts"] = &AiravataProcessor::process_getChildDataProducts;
+    processMap_["shareResourceWithUsers"] = &AiravataProcessor::process_shareResourceWithUsers;
+    processMap_["revokeSharingOfResourceFromUsers"] = &AiravataProcessor::process_revokeSharingOfResourceFromUsers;
+    processMap_["getAllAccessibleUsers"] = &AiravataProcessor::process_getAllAccessibleUsers;
   }
 
   virtual ~AiravataProcessor() {}
@@ -24839,6 +25334,34 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
+  bool shareResourceWithUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->shareResourceWithUsers(authzToken, resourceId, resourceType, userPermissionList);
+    }
+    return ifaces_[i]->shareResourceWithUsers(authzToken, resourceId, resourceType, userPermissionList);
+  }
+
+  bool revokeSharingOfResourceFromUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->revokeSharingOfResourceFromUsers(authzToken, resourceId, resourceType, userPermissionList);
+    }
+    return ifaces_[i]->revokeSharingOfResourceFromUsers(authzToken, resourceId, resourceType, userPermissionList);
+  }
+
+  void getAllAccessibleUsers(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getAllAccessibleUsers(_return, authzToken, resourceId, resourceType, permissionType);
+    }
+    ifaces_[i]->getAllAccessibleUsers(_return, authzToken, resourceId, resourceType, permissionType);
+    return;
+  }
+
 };
 
 // The 'concurrent' client is a thread safe client that correctly handles
@@ -25292,6 +25815,15 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void getChildDataProducts(std::vector< ::apache::airavata::model::data::replica::DataProductModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri);
   int32_t send_getChildDataProducts(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& productUri);
   void recv_getChildDataProducts(std::vector< ::apache::airavata::model::data::replica::DataProductModel> & _return, const int32_t seqid);
+  bool shareResourceWithUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList);
+  int32_t send_shareResourceWithUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList);
+  bool recv_shareResourceWithUsers(const int32_t seqid);
+  bool revokeSharingOfResourceFromUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList);
+  int32_t send_revokeSharingOfResourceFromUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList);
+  bool recv_revokeSharingOfResourceFromUsers(const int32_t seqid);
+  void getAllAccessibleUsers(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType);
+  int32_t send_getAllAccessibleUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType);
+  void recv_getAllAccessibleUsers(std::vector<std::string> & _return, const int32_t seqid);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;

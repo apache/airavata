@@ -33,6 +33,12 @@ import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.datamodel.PasswordCredential;
 import org.apache.airavata.credential.store.datamodel.SSHCredential;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.grouper.GroupManagerCPI;
+import org.apache.airavata.grouper.GroupManagerException;
+import org.apache.airavata.grouper.GroupManagerFactory;
+import org.apache.airavata.grouper.SubjectType;
+import org.apache.airavata.grouper.permission.PermissionAction;
+import org.apache.airavata.grouper.resource.Resource;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
@@ -54,6 +60,8 @@ import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.experiment.*;
+import org.apache.airavata.model.group.ResourcePermissionType;
+import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
@@ -619,6 +627,21 @@ public class AiravataServerHandler implements Airavata.Iface {
                 exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
                 throw exception;
             }
+
+            Project existingProject = (Project) experimentCatalog.get(ExperimentCatalogModelType.PROJECT, projectId);
+            if(!authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(existingProject.getOwner())
+                    || !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID).equals(existingProject.getGatewayId())){
+                try {
+                    if(!hasPermission(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME)
+                                    +"@"+authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID),
+                            existingProject.getProjectID(), ResourceType.PROJECT, ResourcePermissionType.WRITE)){
+                        throw new AuthorizationException("User does not have permission to access this resource");
+                    }
+                } catch (Exception e) {
+                    throw new AuthorizationException("User does not have permission to access this resource");
+                }
+            }
+
             experimentCatalog.update(ExperimentCatalogModelType.PROJECT, updatedProject, projectId);
             logger.debug("Airavata updated project with project Id : " + projectId );
         } catch (RegistryException e) {
@@ -644,6 +667,21 @@ public class AiravataServerHandler implements Airavata.Iface {
                 exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
                 throw exception;
             }
+
+            Project existingProject = (Project) experimentCatalog.get(ExperimentCatalogModelType.PROJECT, projectId);
+            if(!authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(existingProject.getOwner())
+                    || !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID).equals(existingProject.getGatewayId())){
+                try {
+                    if(!hasPermission(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME)
+                                    +"@"+authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID),
+                            existingProject.getProjectID(), ResourceType.PROJECT, ResourcePermissionType.WRITE)){
+                        throw new AuthorizationException("User does not have permission to access this resource");
+                    }
+                } catch (Exception e) {
+                    throw new AuthorizationException("User does not have permission to access this resource");
+                }
+            }
+
             experimentCatalog.remove(ExperimentCatalogModelType.PROJECT, projectId);
             logger.debug("Airavata deleted project with project Id : " + projectId );
             return true;
@@ -681,7 +719,24 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw exception;
             }
             logger.debug("Airavata retrieved project with project Id : " + projectId );
-            return (Project) experimentCatalog.get(ExperimentCatalogModelType.PROJECT, projectId);
+
+            Project project = (Project) experimentCatalog.get(ExperimentCatalogModelType.PROJECT, projectId);
+            if(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(project.getOwner())
+                    && authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID).equals(project.getGatewayId())){
+                return project;
+            }else{
+                try {
+                    if(hasPermission(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME)
+                                    +"@"+authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID),
+                            project.getProjectID(), ResourceType.PROJECT, ResourcePermissionType.READ)){
+                        return project;
+                    }else {
+                        throw new AuthorizationException("User does not have permission to access this resource");
+                    }
+                } catch (Exception e) {
+                    throw new AuthorizationException("User does not have permission to access this resource");
+                }
+            }
         } catch (RegistryException e) {
             logger.error("Error while retrieving the project", e);
             ProjectNotFoundException exception = new ProjectNotFoundException();
@@ -808,14 +863,18 @@ public class AiravataServerHandler implements Airavata.Iface {
                 }
             }
 
-            //FIXME - These accessible IDs should come from grouper
             Map<String, String> temp = new HashMap();
             temp.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
             temp.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
-            List<Object> allUserProjects = experimentCatalog.search(ExperimentCatalogModelType.PROJECT, temp, -1,
-                    0, Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
-            List<String> accessibleProjIds = new ArrayList<>();
-            allUserProjects.stream().forEach(e->accessibleProjIds.add(((Project) e).getProjectID()));
+            final List<String> accessibleProjIds  = new ArrayList<>();
+            try{
+                accessibleProjIds.addAll(getAllAccessibleResourcesForUser(userName+"@"+gatewayId, ResourceType.PROJECT, ResourcePermissionType.READ));
+            }catch (Exception ex){
+                logger.error(ex.getMessage(), ex);
+                List<Object> allUserProjects = experimentCatalog.search(ExperimentCatalogModelType.PROJECT, temp, -1,
+                        0, Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
+                allUserProjects.stream().forEach(e->accessibleProjIds.add(((Project) e).getProjectID()));
+            }
 
             List<Object> results = experimentCatalog.searchAllAccessible(ExperimentCatalogModelType.PROJECT, accessibleProjIds,
                     regFilters, limit, offset, Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
@@ -896,14 +955,19 @@ public class AiravataServerHandler implements Airavata.Iface {
                 }
             }
 
-            //FIXME - These accessible IDs should come from grouper
             Map<String, String> temp = new HashMap();
             temp.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
             temp.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
-            List<Object> allUserExperiments = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, temp, -1,
-                    0, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
-            List<String> accessibleExpIds = new ArrayList<>();
-            allUserExperiments.stream().forEach(e->accessibleExpIds.add(((ExperimentSummaryModel) e).getExperimentId()));
+
+            final List<String> accessibleExpIds = new ArrayList<>();
+            try{
+                accessibleExpIds.addAll(getAllAccessibleResourcesForUser(userName + "@" + gatewayId, ResourceType.EXPERIMENT, ResourcePermissionType.READ));
+            }catch (Exception ex){
+                logger.error(ex.getMessage(), ex);
+                List<Object> allUserExperiments = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, temp, -1,
+                        0, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
+                allUserExperiments.stream().forEach(e->accessibleExpIds.add(((ExperimentSummaryModel) e).getExperimentId()));
+            }
 
             List<Object> results = experimentCatalog.searchAllAccessible(ExperimentCatalogModelType.EXPERIMENT,
                     accessibleExpIds, regFilters, limit,
@@ -992,6 +1056,21 @@ public class AiravataServerHandler implements Airavata.Iface {
                 exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
                 throw exception;
             }
+
+            Project project = (Project) experimentCatalog.get(ExperimentCatalogModelType.PROJECT, projectId);
+            if(!authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(project.getOwner())
+                    || !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID).equals(project.getGatewayId())){
+                try {
+                    if(!hasPermission(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME)
+                                    +"@"+authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID),
+                            project.getProjectID(), ResourceType.PROJECT, ResourcePermissionType.READ)){
+                        throw new AuthorizationException("User does not have permission to access this resource");
+                    }
+                } catch (Exception e) {
+                    throw new AuthorizationException("User does not have permission to access this resource");
+                }
+            }
+
             List<ExperimentModel> experiments = new ArrayList<ExperimentModel>();
             List<Object> list = experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT,
                     Constants.FieldConstants.ExperimentConstants.PROJECT_ID, projectId, limit, offset,
@@ -1168,6 +1247,20 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw new ExperimentNotFoundException("Requested experiment id " + experimentId + " does not exist in the system..");
             }
             ExperimentModel experimentModel = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+
+            if(!authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(experimentModel.getUserName())
+                    || !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID).equals(experimentModel.getGatewayId())){
+                try {
+                    if(! hasPermission(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME)
+                                    +"@"+authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID),
+                            experimentModel.getExperimentId(), ResourceType.EXPERIMENT, ResourcePermissionType.WRITE)){
+                        throw new AuthorizationException("User does not have permission to access this resource");
+                    }
+                } catch (Exception e) {
+                    throw new AuthorizationException("User does not have permission to access this resource");
+                }
+            }
+
             if(!(experimentModel.getExperimentStatus().getState() == ExperimentState.CREATED)){
                 logger.error("Error while deleting the experiment");
                 throw new ExperimentCatalogException("Experiment is not in CREATED state. Hence cannot deleted. ID:"+ experimentId);
@@ -1210,7 +1303,23 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public ExperimentModel getExperiment(AuthzToken authzToken, String airavataExperimentId) throws InvalidRequestException,
             ExperimentNotFoundException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        return getExperimentInternal(airavataExperimentId);
+        ExperimentModel experimentModel = getExperimentInternal(airavataExperimentId);
+        if(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(experimentModel.getUserName())
+                && authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID).equals(experimentModel.getGatewayId())){
+            return experimentModel;
+        }else{
+            try {
+                if(hasPermission(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME)
+                                +"@"+authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID),
+                        experimentModel.getExperimentId(), ResourceType.EXPERIMENT, ResourcePermissionType.READ)){
+                    return experimentModel;
+                }else {
+                    throw new AuthorizationException("User does not have permission to access this resource");
+                }
+            } catch (Exception e) {
+                throw new AuthorizationException("User does not have permission to access this resource");
+            }
+        }
     }
 
     /**
@@ -1336,6 +1445,21 @@ public class AiravataServerHandler implements Airavata.Iface {
                 logger.error(airavataExperimentId, "Update request failed, Experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
+
+            ExperimentModel experimentModel = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId);
+            if(!authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(experimentModel.getUserName())
+                || !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID).equals(experimentModel.getGatewayId())){
+                try {
+                    if(! hasPermission(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME)
+                                    +"@"+authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID),
+                            experimentModel.getExperimentId(), ResourceType.EXPERIMENT, ResourcePermissionType.WRITE)){
+                        throw new AuthorizationException("User does not have permission to access this resource");
+                    }
+                } catch (Exception e) {
+                    throw new AuthorizationException("User does not have permission to access this resource");
+                }
+            }
+
             ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
             if (experimentStatus != null){
                 ExperimentState experimentState = experimentStatus.getState();
@@ -1370,7 +1494,13 @@ public class AiravataServerHandler implements Airavata.Iface {
                         throw exception;
                 }
             }
-        } catch (Exception e) {
+        } catch (RegistryException e) {
+            logger.error(airavataExperimentId, "Error while updating experiment", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating experiment. More info : " + e.getMessage());
+            throw exception;
+        } catch (AppCatalogException e) {
             logger.error(airavataExperimentId, "Error while updating experiment", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -4239,6 +4369,208 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage(msg+" More info : " + e.getMessage());
             throw exception;
         }
+    }
+
+    /**
+     * Group Manager and Data Sharing Related API methods
+     *
+     * @param authzToken
+     * @param resourceId
+     * @param resourceType
+     * @param userPermissionList
+     */
+    @Override
+    @SecurityCheck
+    public boolean shareResourceWithUsers(AuthzToken authzToken, String resourceId, ResourceType resourceType,
+                                          Map<String, ResourcePermissionType> userPermissionList) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            if(!isResourceExistsInGrouper(resourceId, resourceType)){
+                initializeResourceWithGrouper(resourceId, resourceType);
+            }
+            GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
+            for(Map.Entry<String, ResourcePermissionType> entry : userPermissionList.entrySet()){
+                org.apache.airavata.grouper.resource.ResourceType gResouceType;
+                if(resourceType.equals(ResourceType.EXPERIMENT)){
+                    gResouceType = org.apache.airavata.grouper.resource.ResourceType.EXPERIMENT;
+                }else if(resourceType.equals(ResourceType.PROJECT)){
+                    gResouceType = org.apache.airavata.grouper.resource.ResourceType.PROJECT;
+                }else{
+                    //Unsupported data type
+                    continue;
+                }
+
+                if(entry.getValue().equals(ResourcePermissionType.READ)){
+                    groupManager.grantPermission(entry.getKey(), SubjectType.PERSON, resourceId, gResouceType, PermissionAction.READ);
+                }else if(entry.getValue().equals(ResourcePermissionType.WRITE)){
+                    groupManager.grantPermission(entry.getKey(), SubjectType.PERSON, resourceId, gResouceType, PermissionAction.WRITE);
+                }else{
+                    //Unsupported permission type
+                    continue;
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            String msg = "Error in sharing resource with users. Resource ID : " + resourceId + " Resource Type : " + resourceType.toString() ;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public boolean revokeSharingOfResourceFromUsers(AuthzToken authzToken, String resourceId, ResourceType resourceType,
+                                                    Map<String, ResourcePermissionType> userPermissionList) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            if(!isResourceExistsInGrouper(resourceId, resourceType)){
+                initializeResourceWithGrouper(resourceId, resourceType);
+            }
+            GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
+            for(Map.Entry<String, ResourcePermissionType> entry : userPermissionList.entrySet()){
+                org.apache.airavata.grouper.resource.ResourceType gResouceType;
+                if(resourceType.equals(ResourceType.EXPERIMENT)){
+                    gResouceType = org.apache.airavata.grouper.resource.ResourceType.EXPERIMENT;
+                }else if(resourceType.equals(ResourceType.PROJECT)){
+                    gResouceType = org.apache.airavata.grouper.resource.ResourceType.PROJECT;
+                }else{
+                    //Unsupported data type
+                    continue;
+                }
+
+                if(entry.getValue().equals(ResourcePermissionType.READ)){
+                    groupManager.revokePermission(entry.getKey(), SubjectType.PERSON, resourceId, gResouceType, PermissionAction.READ);
+                }else if(entry.getValue().equals(ResourcePermissionType.WRITE)){
+                    groupManager.revokePermission(entry.getKey(), SubjectType.PERSON, resourceId, gResouceType, PermissionAction.WRITE);
+                }else{
+                    //Unsupported permission type
+                    continue;
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            String msg = "Error in revoking access to resouce from users. Resource ID : " + resourceId + " Resource Type : " + resourceType.toString() ;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public List<String> getAllAccessibleUsers(AuthzToken authzToken, String resourceId, ResourceType resourceType, ResourcePermissionType permissionType) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
+            org.apache.airavata.grouper.resource.ResourceType gResourceType;
+            if(resourceType.equals(ResourceType.PROJECT)){
+                gResourceType = org.apache.airavata.grouper.resource.ResourceType.PROJECT;
+            }else if(resourceType.equals(ResourceType.EXPERIMENT)){
+                gResourceType = org.apache.airavata.grouper.resource.ResourceType.EXPERIMENT;
+            }else{
+                throw new GroupManagerException("Unsupported Resource Type");
+            }
+
+            org.apache.airavata.grouper.permission.PermissionAction gPermissionType;
+            if(permissionType.equals(ResourcePermissionType.READ)){
+                gPermissionType = PermissionAction.READ;
+            } else if (permissionType.equals(ResourcePermissionType.WRITE)){
+                gPermissionType = PermissionAction.WRITE;
+            }else{
+                throw new GroupManagerException("Unsupported Permission Type");
+            }
+            List<String> accessibleUsers = new ArrayList<>();
+            accessibleUsers.addAll(groupManager.getAllAccessibleUsers(resourceId, gResourceType, gPermissionType));
+            return accessibleUsers;
+        } catch (Exception e) {
+            String msg = "Error in getting all accessible users for resource. Resource ID : " + resourceId + " Resource Type : " + resourceType.toString() ;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    private void initializeResourceWithGrouper(String resourceId, ResourceType resourceType) throws RegistryException, GroupManagerException {
+        ExperimentCatalog experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+        GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
+        if(resourceType.equals(ResourceType.PROJECT)){
+            Project project = (Project) experimentCatalog.get(ExperimentCatalogModelType.PROJECT, resourceId);
+
+            Resource projectResource = new Resource(project.getProjectID(), org.apache.airavata.grouper.resource.ResourceType.PROJECT);
+            projectResource.setName(project.getName());
+            projectResource.setDescription(project.getDescription());
+            projectResource.setOwnerId(project.getOwner()+"@"+project.getGatewayId());
+            groupManager.createResource(projectResource);
+
+        }else if(resourceType.equals(ResourceType.EXPERIMENT)){
+            ExperimentModel experiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, resourceId);
+            Resource experimentResource = new Resource(experiment.getExperimentId(), org.apache.airavata.grouper.resource.ResourceType.EXPERIMENT);
+            experimentResource.setName(experiment.getExperimentName());
+            experimentResource.setDescription(experiment.getDescription());
+            experimentResource.setParentResourceId(experiment.getProjectId());
+            experimentResource.setOwnerId(experiment.getUserName()+"@"+experiment.getGatewayId());
+            groupManager.createResource(experimentResource);
+        }
+        throw new GroupManagerException("Unsupported Resource Type");
+    }
+
+    private boolean isResourceExistsInGrouper(String resourceId, ResourceType resourceType) throws GroupManagerException {
+        GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
+        if(resourceType.equals(ResourceType.PROJECT)){
+            return groupManager.isResourceRegistered(resourceId, org.apache.airavata.grouper.resource.ResourceType.PROJECT);
+        }else if(resourceType.equals(ResourceType.EXPERIMENT)){
+            return groupManager.isResourceRegistered(resourceId, org.apache.airavata.grouper.resource.ResourceType.EXPERIMENT);
+        }
+        throw new GroupManagerException("Unsupported Resource Type");
+    }
+
+    private boolean hasPermission(String userId, String resourceId, ResourceType resourceType, ResourcePermissionType permissionType) throws GroupManagerException {
+        GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
+        org.apache.airavata.grouper.resource.ResourceType gResourceType;
+        if(resourceType.equals(ResourceType.PROJECT)){
+            gResourceType = org.apache.airavata.grouper.resource.ResourceType.PROJECT;
+        }else if(resourceType.equals(ResourceType.EXPERIMENT)){
+            gResourceType = org.apache.airavata.grouper.resource.ResourceType.EXPERIMENT;
+        }else{
+            throw new GroupManagerException("Unsupported Resource Type");
+        }
+
+        org.apache.airavata.grouper.permission.PermissionAction gPermissionType;
+        if(permissionType.equals(ResourcePermissionType.READ)){
+            gPermissionType = PermissionAction.READ;
+        } else if (permissionType.equals(ResourcePermissionType.WRITE)){
+            gPermissionType = PermissionAction.WRITE;
+        }else{
+            throw new GroupManagerException("Unsupported Permission Type");
+        }
+        Set<String> accessibleUsers = groupManager.getAllAccessibleUsers(resourceId, gResourceType, gPermissionType);
+        return accessibleUsers.contains(userId);
+    }
+
+    private List<String> getAllAccessibleResourcesForUser(String userId, ResourceType resourceType, ResourcePermissionType permissionType) throws GroupManagerException {
+        GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
+        org.apache.airavata.grouper.resource.ResourceType gResourceType;
+        if(resourceType.equals(ResourceType.PROJECT)){
+            gResourceType = org.apache.airavata.grouper.resource.ResourceType.PROJECT;
+        }else if(resourceType.equals(ResourceType.EXPERIMENT)){
+            gResourceType = org.apache.airavata.grouper.resource.ResourceType.EXPERIMENT;
+        }else{
+            throw new GroupManagerException("Unsupported Resource Type");
+        }
+
+        org.apache.airavata.grouper.permission.PermissionAction gPermissionType;
+        if(permissionType.equals(ResourcePermissionType.READ)){
+            gPermissionType = PermissionAction.READ;
+        } else if (permissionType.equals(ResourcePermissionType.WRITE)){
+            gPermissionType = PermissionAction.WRITE;
+        }else{
+            throw new GroupManagerException("Unsupported Permission Type");
+        }
+
+        List<String> allAccessibleResources = groupManager.getAccessibleResourcesForUser(userId, gResourceType, gPermissionType);
+        return allAccessibleResources;
     }
 
     private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
