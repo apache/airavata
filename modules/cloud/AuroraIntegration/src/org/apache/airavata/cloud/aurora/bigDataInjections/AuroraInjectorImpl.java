@@ -56,6 +56,11 @@ public class AuroraInjectorImpl implements BigDataInjectorI {
 					auroraJS.jobInspect(commandLineOptions.get("n").get(0), commandLineOptions.get("k").get(0));
 				} catch(AuroraException ex){
 				} break;
+			case "quota" :
+				try {
+					auroraJS.clusterQuota(commandLineOptions.get("k").get(0));
+				} catch(AuroraException ex){
+				} break;
 			case "create" :
 				JobName = commandLineOptions.get("n").get(0);
 				RamSize = commandLineOptions.get("r").get(0);
