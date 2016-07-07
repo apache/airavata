@@ -1,4 +1,4 @@
-package main.java.org.apache.airavata.cloud.exceptions.marathonExceptions;
+package org.apache.airavata.cloud.exceptions.marathonExceptions;
 
 public class MarathonException extends Exception {
     private String exceptionMsg;

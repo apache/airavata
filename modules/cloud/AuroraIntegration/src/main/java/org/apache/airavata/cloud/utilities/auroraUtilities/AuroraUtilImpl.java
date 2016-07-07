@@ -1,12 +1,12 @@
 
-package main.java.org.apache.airavata.cloud.utilities.auroraUtilities;
+package org.apache.airavata.cloud.utilities.auroraUtilities;
 
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import main.java.org.apache.airavata.cloud.exceptions.auroraExceptions.AuroraException;
+import org.apache.airavata.cloud.exceptions.auroraExceptions.AuroraException;
 
 public class AuroraUtilImpl implements AuroraUtilI{
   public void printLog(BufferedReader stdout) throws AuroraException

@@ -1,12 +1,12 @@
-package main.java.org.apache.airavata.cloud.bigDataInjections;
+package org.apache.airavata.cloud.bigDataInjections;
 
 import java.util.Map;
 import java.util.List;
 
 
-import main.java.org.apache.airavata.cloud.bigDataClientSideServices.aurora.auroraClient.AuroraJobSchedulerI;
-import main.java.org.apache.airavata.cloud.bigDataClientSideServices.aurora.auroraClient.AuroraJobSchedulerImpl;
-import main.java.org.apache.airavata.cloud.exceptions.auroraExceptions.AuroraException;
+import org.apache.airavata.cloud.bigDataClientSideServices.aurora.auroraClient.AuroraJobSchedulerI;
+import org.apache.airavata.cloud.bigDataClientSideServices.aurora.auroraClient.AuroraJobSchedulerImpl;
+import org.apache.airavata.cloud.exceptions.auroraExceptions.AuroraException;
 
 
 public class AuroraInjectorImpl implements BigDataInjectorI {

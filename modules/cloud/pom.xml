@@ -28,6 +28,7 @@
 
     <modules>
         <module>cloud-provisioning</module>
+	<module>AuroraIntegration</module>
     </modules>
 
 </project>
