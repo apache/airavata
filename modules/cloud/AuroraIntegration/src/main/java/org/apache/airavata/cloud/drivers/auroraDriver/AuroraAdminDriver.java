@@ -1,15 +1,15 @@
-package main.java.org.apache.airavata.cloud.drivers.auroraDriver;
+package org.apache.airavata.cloud.drivers.auroraDriver;
 
 // TODO: need javadoc documentation at the top of each method
 
 // TODO: individually import the types
 import java.util.*;
 
-import main.java.org.apache.airavata.cloud.exceptions.auroraExceptions.AuroraException;
-import main.java.org.apache.airavata.cloud.bigDataClientSideServices.aurora.auroraClient.AuroraJobSchedulerI;
-import main.java.org.apache.airavata.cloud.bigDataClientSideServices.aurora.auroraClient.AuroraJobSchedulerImpl;
-import main.java.org.apache.airavata.cloud.bigDataInjections.AuroraInjectorImpl;
-import main.java.org.apache.airavata.cloud.bigDataInjections.BigDataInjectorI;
+import org.apache.airavata.cloud.exceptions.auroraExceptions.AuroraException;
+import org.apache.airavata.cloud.bigDataClientSideServices.aurora.auroraClient.AuroraJobSchedulerI;
+import org.apache.airavata.cloud.bigDataClientSideServices.aurora.auroraClient.AuroraJobSchedulerImpl;
+import org.apache.airavata.cloud.bigDataInjections.AuroraInjectorImpl;
+import org.apache.airavata.cloud.bigDataInjections.BigDataInjectorI;
 
 public class AuroraAdminDriver{
 	public static void main(String[] args) {

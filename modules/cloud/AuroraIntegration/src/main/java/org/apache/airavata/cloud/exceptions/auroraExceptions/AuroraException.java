@@ -1,4 +1,4 @@
-package main.java.org.apache.airavata.cloud.exceptions.auroraExceptions;
+package org.apache.airavata.cloud.exceptions.auroraExceptions;
 
 public class AuroraException extends Exception {
     private String exceptionMsg;

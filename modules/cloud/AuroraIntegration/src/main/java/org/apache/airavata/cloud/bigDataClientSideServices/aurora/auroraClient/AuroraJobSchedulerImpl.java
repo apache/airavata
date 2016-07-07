@@ -1,4 +1,4 @@
-package main.java.org.apache.airavata.cloud.bigDataClientSideServices.aurora.auroraClient;
+package org.apache.airavata.cloud.bigDataClientSideServices.aurora.auroraClient;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -7,9 +7,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import main.java.org.apache.airavata.cloud.exceptions.auroraExceptions.AuroraException;
-import main.java.org.apache.airavata.cloud.utilities.auroraUtilities.AuroraUtilImpl;
-import main.java.org.apache.airavata.cloud.utilities.auroraUtilities.AuroraUtilI;
+import org.apache.airavata.cloud.exceptions.auroraExceptions.AuroraException;
+import org.apache.airavata.cloud.utilities.auroraUtilities.AuroraUtilImpl;
+import org.apache.airavata.cloud.utilities.auroraUtilities.AuroraUtilI;
 
 public class AuroraJobSchedulerImpl implements AuroraJobSchedulerI {
 	AuroraUtilI util = new AuroraUtilImpl();

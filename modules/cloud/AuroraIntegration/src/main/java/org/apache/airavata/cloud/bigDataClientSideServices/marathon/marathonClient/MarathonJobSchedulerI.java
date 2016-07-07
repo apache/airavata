@@ -1,6 +1,6 @@
-package main.java.org.apache.airavata.cloud.bigDataClientSideServices.marathon.marathonClient;
+package org.apache.airavata.cloud.bigDataClientSideServices.marathon.marathonClient;
 
-import main.java.org.apache.airavata.cloud.exceptions.marathonExceptions.MarathonException;
+import org.apache.airavata.cloud.exceptions.marathonExceptions.MarathonException;
 
 public interface MarathonJobSchedulerI {
 

@@ -1,4 +1,4 @@
-package main.java.org.apache.airavata.cloud.bigDataClientSideServices.marathon.marathonClient;
+package org.apache.airavata.cloud.bigDataClientSideServices.marathon.marathonClient;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -7,9 +7,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import main.java.org.apache.airavata.cloud.exceptions.marathonExceptions.MarathonException;
-import main.java.org.apache.airavata.cloud.utilities.marathonUtilities.MarathonUtilImpl;
-import main.java.org.apache.airavata.cloud.utilities.marathonUtilities.MarathonUtilI;
+import org.apache.airavata.cloud.exceptions.marathonExceptions.MarathonException;
+import org.apache.airavata.cloud.utilities.marathonUtilities.MarathonUtilImpl;
+import org.apache.airavata.cloud.utilities.marathonUtilities.MarathonUtilI;
 
 public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 	MarathonUtilI util = new MarathonUtilImpl();
