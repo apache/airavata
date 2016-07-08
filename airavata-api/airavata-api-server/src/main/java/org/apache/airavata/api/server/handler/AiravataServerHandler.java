@@ -798,6 +798,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             List<Project> projects = new ArrayList<Project>();
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             Map<String, String> regFilters = new HashMap<String, String>();
+            regFilters.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
             regFilters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
             for(Map.Entry<ProjectSearchFields, String> entry : filters.entrySet())
             {
@@ -807,18 +808,8 @@ public class AiravataServerHandler implements Airavata.Iface {
                     regFilters.put(Constants.FieldConstants.ProjectConstants.DESCRIPTION, entry.getValue());
                 }
             }
-
-            //FIXME - These accessible IDs should come from grouper
-            Map<String, String> temp = new HashMap();
-            temp.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
-            temp.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
-            List<Object> allUserProjects = experimentCatalog.search(ExperimentCatalogModelType.PROJECT, temp, -1,
-                    0, Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
-            List<String> accessibleProjIds = new ArrayList<>();
-            allUserProjects.stream().forEach(e->accessibleProjIds.add(((Project) e).getProjectID()));
-
-            List<Object> results = experimentCatalog.searchAllAccessible(ExperimentCatalogModelType.PROJECT, accessibleProjIds,
-                    regFilters, limit, offset, Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
+            List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.PROJECT, regFilters, limit, offset,
+                    Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
                 projects.add((Project)object);
             }
@@ -876,6 +867,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             List<ExperimentSummaryModel> summaries = new ArrayList<ExperimentSummaryModel>();
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             Map<String, String> regFilters = new HashMap();
+            regFilters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
             regFilters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
             for(Map.Entry<ExperimentSearchFields, String> entry : filters.entrySet())
             {
@@ -895,18 +887,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                     regFilters.put(Constants.FieldConstants.ExperimentConstants.PROJECT_ID, entry.getValue());
                 }
             }
-
-            //FIXME - These accessible IDs should come from grouper
-            Map<String, String> temp = new HashMap();
-            temp.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
-            temp.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
-            List<Object> allUserExperiments = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, temp, -1,
-                    0, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
-            List<String> accessibleExpIds = new ArrayList<>();
-            allUserExperiments.stream().forEach(e->accessibleExpIds.add(((ExperimentSummaryModel) e).getExperimentId()));
-
-            List<Object> results = experimentCatalog.searchAllAccessible(ExperimentCatalogModelType.EXPERIMENT,
-                    accessibleExpIds, regFilters, limit,
+            List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, regFilters, limit,
                     offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
                 summaries.add((ExperimentSummaryModel) object);

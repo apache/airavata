@@ -599,21 +599,13 @@ public class WorkerResource extends AbstractExpCatResource {
      * @return
      * @throws org.apache.airavata.registry.cpi.RegistryException
      */
-    public List<ExperimentSummaryResource> searchExperiments(List<String> accessibleIds, Timestamp fromTime, Timestamp toTime, Map<String, String> filters, int limit,
+    public List<ExperimentSummaryResource> searchExperiments(Timestamp fromTime, Timestamp toTime, Map<String, String> filters, int limit,
                                                              int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
         List<ExperimentSummaryResource> result = new ArrayList();
         EntityManager em = null;
         try {
             String query = "SELECT e FROM ExperimentSummary e " +
                     "WHERE ";
-
-            // FIXME There is a performance bottleneck for using IN clause. Try using temporary tables ?
-            if(accessibleIds != null){
-                query += " e.experimentId IN (";
-                for(String id : accessibleIds)
-                    query += ("'" + id + "'" + ",");
-                query = query.substring(0, query.length()-1) + ") AND ";
-            }
 
             if (filters.get(ExperimentStatusConstants.STATE) != null) {
                 String experimentState = ExperimentState.valueOf(filters.get(ExperimentStatusConstants.STATE)).toString();
