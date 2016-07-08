@@ -145,22 +145,6 @@ public interface ExperimentCatalog {
                                              ResultOrderType resultOrderType) throws RegistryException;
 
     /**
-     * This method search all the accessible resources given the set of ids of all accessible resource IDs.
-     * @param dataType Data type is a predefined type which the programmer should choose according to the object he
-     *                 is going to save in to registry
-     * @param accessibleIds      list of string IDs of all accessible resources
-     * @param filters            filters is a map of field name and value that you need to use for search filtration
-     * @param limit              amount of the results to be returned
-     * @param offset             offset of the results from the sorted list to be fetched from
-     * @param orderByIdentifier  identifier (i.e the column) which will be used as the basis to sort the results
-     * @param resultOrderType    The type of ordering (i.e ASC or DESC) that has to be used when retrieving the results
-     * @return List of objects according to the given criteria
-     */
-    public List<Object> searchAllAccessible(ExperimentCatalogModelType dataType,List<String> accessibleIds, Map<String, String> filters,
-                               int limit, int offset, Object orderByIdentifier,
-                               ResultOrderType resultOrderType) throws RegistryException;
-
-    /**
      * This method is to retrieve a specific value for a given field.
      * @param dataType Data type is a predefined type which the programmer should choose according to the object he
      *                 is going to save in to registry
