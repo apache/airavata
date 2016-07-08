@@ -190,4 +190,16 @@ public class AuroraJobSchedulerImpl implements AuroraJobSchedulerI {
 			throw new AuroraException("Exception occured while inspecting the job.\n"+ex.toString());
 		}
 	}
+
+	public void clusterQuota(String key) throws AuroraException{
+		try{
+			String completeCommandToRunProcess = "aurora quota get "+key;
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new AuroraException("Exception occured while retrieving the production quota of the cluster.\n"+ex.toString());
+		}
+	}
 }
