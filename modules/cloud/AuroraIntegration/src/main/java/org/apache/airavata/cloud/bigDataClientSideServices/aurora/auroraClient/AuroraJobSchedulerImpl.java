@@ -202,4 +202,16 @@ public class AuroraJobSchedulerImpl implements AuroraJobSchedulerI {
 			throw new AuroraException("Exception occured while retrieving the production quota of the cluster.\n"+ex.toString());
 		}
 	}
+
+	public void openWebUI(String key) throws AuroraException{
+		try{
+	 		String completeCommandToRunProcess = "aurora job open "+key;
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new AuroraException("Exception occured while opening the browser.\n"+ex.toString());
+		}
+	}
 }

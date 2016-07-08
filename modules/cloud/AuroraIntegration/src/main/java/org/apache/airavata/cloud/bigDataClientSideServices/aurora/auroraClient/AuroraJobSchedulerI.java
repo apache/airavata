@@ -20,4 +20,5 @@ public interface AuroraJobSchedulerI {
   public void configList(String config) throws AuroraException;
   public void jobInspect(String key, String config) throws AuroraException;
   public void clusterQuota(String key) throws AuroraException;
+  public void openWebUI(String key) throws AuroraException;
 }
