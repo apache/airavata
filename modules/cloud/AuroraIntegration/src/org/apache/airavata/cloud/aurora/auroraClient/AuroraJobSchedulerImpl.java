@@ -13,6 +13,19 @@ import org.apache.airavata.cloud.aurora.utilities.AuroraUtilI;
 
 public class AuroraJobSchedulerImpl implements AuroraJobSchedulerI {
 	AuroraUtilI util = new AuroraUtilImpl();
+	public void openWebUI(String key) throws AuroraException{
+		try{
+			String line;
+			Process auroraJob = Runtime.getRuntime().exec("aurora job open "+key);
+			auroraJob.waitFor();
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(auroraJob.getInputStream()));
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new AuroraException("Exception occured while opening the browser.\n"+ex.toString());
+		}
+	}
 	public void clusterQuota(String key) throws AuroraException{
 		try{
 			String line;
