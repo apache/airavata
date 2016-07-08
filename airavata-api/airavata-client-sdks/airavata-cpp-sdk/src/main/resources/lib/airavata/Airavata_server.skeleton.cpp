@@ -90,6 +90,25 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * Get all users in the gateway
+   * 
+   * @param gatewayId
+   *    The gateway data model.
+   * 
+   * @return users
+   *   list of usernames of the users in the gateway
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   */
+  void getAllUsersInGateway(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("getAllUsersInGateway\n");
+  }
+
+  /**
    * Update previously registered Gateway metadata.
    * 
    * @param gatewayId
@@ -183,6 +202,38 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   *   * API methods to retrieve notifications
+   * *
+   * 
+   * @param authzToken
+   * @param notification
+   */
+  void createNotification(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification) {
+    // Your implementation goes here
+    printf("createNotification\n");
+  }
+
+  bool updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification) {
+    // Your implementation goes here
+    printf("updateNotification\n");
+  }
+
+  bool deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId) {
+    // Your implementation goes here
+    printf("deleteNotification\n");
+  }
+
+  void getNotification( ::apache::airavata::model::workspace::Notification& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId) {
+    // Your implementation goes here
+    printf("getNotification\n");
+  }
+
+  void getAllNotifications(std::vector< ::apache::airavata::model::workspace::Notification> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("getAllNotifications\n");
+  }
+
+  /**
    * Generate and Register SSH Key Pair with Airavata Credential Store.
    * 
    * @param gatewayId
@@ -205,6 +256,38 @@ class AiravataHandler : virtual public AiravataIf {
   void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName) {
     // Your implementation goes here
     printf("generateAndRegisterSSHKeys\n");
+  }
+
+  /**
+   * Generate and Register Username PWD Pair with Airavata Credential Store.
+   * 
+   * @param gatewayId
+   *    The identifier for the requested Gateway.
+   * 
+   * @param portalUserName
+   *    The User for which the credential should be registered. For community accounts, this user is the name of the
+   *    community user name. For computational resources, this user name need not be the same user name on resoruces.
+   * 
+   * @param loginUserName
+   * 
+   * @param password
+   * 
+   * @return airavataCredStoreToken
+   *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
+   *   belonging to a Gateway.
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   * @param portalUserName
+   * @param loginUserName
+   * @param password
+   * @param description
+   */
+  void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password, const std::string& description) {
+    // Your implementation goes here
+    printf("registerPwdCredential\n");
   }
 
   /**
@@ -231,28 +314,6 @@ class AiravataHandler : virtual public AiravataIf {
 
   /**
    * 
-   * Get a Public Key by Providing the Token
-   * 
-   * @param CredStoreToken
-   *    Credential Store Token which you want to find the Public Key for.
-   * 
-   * @param gatewayId
-   *    This is the unique identifier of your gateway where the token and public key was generated from.
-   * 
-   * @return SSHpubKey
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param userName
-   */
-  void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName) {
-    // Your implementation goes here
-    printf("getAllUserSSHPubKeys\n");
-  }
-
-  /**
-   * 
    * Get all Public Keys of the Gateway
    * 
    * @param CredStoreToken
@@ -271,6 +332,11 @@ class AiravataHandler : virtual public AiravataIf {
   void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllGatewaySSHPubKeys\n");
+  }
+
+  void getAllGatewayPWDCredentials(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("getAllGatewayPWDCredentials\n");
   }
 
   /**
@@ -292,6 +358,11 @@ class AiravataHandler : virtual public AiravataIf {
   bool deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("deleteSSHPubKey\n");
+  }
+
+  bool deletePWDCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("deletePWDCredential\n");
   }
 
   /**
@@ -413,42 +484,9 @@ class AiravataHandler : virtual public AiravataIf {
 
   /**
    * 
-   * Search User Projects by Project Name
-   * Get all Project for user by project name with pagination.Results will be ordered based on creation time DESC.
-   * 
-   * @param gatewayId
-   *    The unique identifier for the requested gateway.
-   * 
-   * @param userName
-   *    The identifier of the user.
-   * 
-   * @param projectName
-   *    The name of the project on which the results to be fetched.
-   * 
-   * @param limit
-   *    The amount results to be fetched.
-   * 
-   * @param offset
-   *    The starting point of the results to be fetched.
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param gatewayId
-   * @param userName
-   * @param projectName
-   * @param limit
-   * @param offset
-   */
-  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset) {
-    // Your implementation goes here
-    printf("searchProjectsByProjectName\n");
-  }
-
-  /**
-   * 
-   * Search User Projects by Project Description
-   * Search and get all Projects for user by project description with pagination. Results will be ordered based on creation time DESC.
+   * Search User Projects
+   * Search and get all Projects for user by project description or/and project name  with pagination.
+   * Results will be ordered based on creation time DESC.
    * 
    * @param gatewayId
    *    The unique identifier of the gateway making the request.
@@ -456,8 +494,8 @@ class AiravataHandler : virtual public AiravataIf {
    * @param userName
    *    The identifier of the user.
    * 
-   * @param description
-   *    The description to be matched.
+   * @param filters
+   *    Map of multiple filter criteria. Currenlt search filters includes Project Name and Project Description
    * 
    * @param limit
    *    The amount results to be fetched.
@@ -470,190 +508,13 @@ class AiravataHandler : virtual public AiravataIf {
    * @param authzToken
    * @param gatewayId
    * @param userName
-   * @param description
+   * @param filters
    * @param limit
    * @param offset
    */
-  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
+  void searchProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
-    printf("searchProjectsByProjectDesc\n");
-  }
-
-  /**
-   * 
-   * Search User Experiments by Name
-   * Search user Experiments using experiment name with pagination. Results will be sorted based on creation time DESC.
-   * 
-   * @param gatewayId
-   *       Unique identifier of the requested gateway.
-   * 
-   * @param userName
-   *       Username of the user who created the experiments.
-   * 
-   * @param expName
-   *       Experiment name to be matched.
-   * 
-   * @param limit
-   *       Amount of results to be fetched.
-   * 
-   * @param offset
-   *       The starting point of the results to be fetched.
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param gatewayId
-   * @param userName
-   * @param expName
-   * @param limit
-   * @param offset
-   */
-  void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset) {
-    // Your implementation goes here
-    printf("searchExperimentsByName\n");
-  }
-
-  /**
-   * 
-   * Search By Experiment Description
-   * Search Experiments by experiment description with pagination. Results will be sorted based on creation time DESC.
-   * 
-   * @param gatewayId
-   *       Unique identifier of the requested gateway.
-   * 
-   * @param userName
-   *       Username of the requested user.
-   * 
-   * @param description
-   *       Experiment description to be matched.
-   * 
-   * @param limit
-   *       Amount of results to be fetched.
-   * 
-   * @param offset
-   *       The starting point of the results to be fetched.
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param gatewayId
-   * @param userName
-   * @param description
-   * @param limit
-   * @param offset
-   */
-  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
-    // Your implementation goes here
-    printf("searchExperimentsByDesc\n");
-  }
-
-  /**
-   * 
-   * Search Experiment By the Application
-   * Search Experiments of a particular application id with pagination. Results will be sorted based on creation time DESC
-   * 
-   * @param gatewayId
-   *       Unique identifier of the requested gateway.
-   * 
-   * @param userName
-   *       Username of the requested user.
-   * 
-   * @param applicationId
-   *       Application id to be matched.
-   * 
-   * @param limit
-   *       Amount of results to be fetched.
-   * 
-   * @param offset
-   *       The starting point of the results to be fetched.
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param gatewayId
-   * @param userName
-   * @param applicationId
-   * @param limit
-   * @param offset
-   */
-  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset) {
-    // Your implementation goes here
-    printf("searchExperimentsByApplication\n");
-  }
-
-  /**
-   * 
-   * Search User Experiments by Status
-   * Search all the Experiments of the given user  by experiment status with pagination. Results will be sorted based on creation time DESC
-   * 
-   * @param gatewayId
-   *       Unique identifier of the requested gateway.
-   * 
-   * @param userName
-   *       Username of the user making the request.
-   * 
-   * @param experimentState
-   *       Experiement state to be matched.
-   * 
-   * @param limit
-   *       Amount of results to be fetched.
-   * 
-   * @param offset
-   *       The starting point of the results to be fetched.
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param gatewayId
-   * @param userName
-   * @param experimentState
-   * @param limit
-   * @param offset
-   */
-  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset) {
-    // Your implementation goes here
-    printf("searchExperimentsByStatus\n");
-  }
-
-  /**
-   * 
-   * Search User Experiments by the Creation Time
-   * This will search all the experiments of the given user by experiment creation time with pagination. Results will be sorted based on creation time DESC.
-   * 
-   * @param gatewayId
-   *       Unique identifier of the requested gateway.
-   * 
-   * @param userName
-   *       Username of the requested user.
-   * 
-   * @param fromTime
-   *       Start time of the experiments creation time.
-   * 
-   * @param toTime
-   *       End time of the  experiement creation time.
-   * 
-   * @param limit
-   *       Amount of results to be fetched.
-   * 
-   * @param offset
-   *       The starting point of the results to be fetched.
-   * 
-   * @return ExperimentSummaryModel
-   *    List of experiments for the given search filter. Here only the Experiment summary will be returned.
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param gatewayId
-   * @param userName
-   * @param fromTime
-   * @param toTime
-   * @param limit
-   * @param offset
-   */
-  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset) {
-    // Your implementation goes here
-    printf("searchExperimentsByCreationTime\n");
+    printf("searchProjects\n");
   }
 
   /**

@@ -45,6 +45,15 @@ final class ExperimentSearchFields {
   );
 }
 
+final class ProjectSearchFields {
+  const PROJECT_NAME = 0;
+  const PROJECT_DESCRIPTION = 1;
+  static public $__names = array(
+    0 => 'PROJECT_NAME',
+    1 => 'PROJECT_DESCRIPTION',
+  );
+}
+
 /**
  * A structure holding the experiment configuration.
  * 

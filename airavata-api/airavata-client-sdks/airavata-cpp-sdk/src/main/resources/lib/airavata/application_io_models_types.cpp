@@ -35,6 +35,7 @@ int _kDataTypeValues[] = {
   DataType::INTEGER,
   DataType::FLOAT,
   DataType::URI,
+  DataType::URI_COLLECTION,
   DataType::STDOUT,
   DataType::STDERR
 };
@@ -43,10 +44,11 @@ const char* _kDataTypeNames[] = {
   "INTEGER",
   "FLOAT",
   "URI",
+  "URI_COLLECTION",
   "STDOUT",
   "STDERR"
 };
-const std::map<int, const char*> _DataType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kDataTypeValues, _kDataTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _DataType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(7, _kDataTypeValues, _kDataTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 
 InputDataObjectType::~InputDataObjectType() throw() {

@@ -26,6 +26,7 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.ZkConstants;
+import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -111,6 +112,8 @@ public class GFacEngineImpl implements GFacEngine {
             processContext.setGatewayResourceProfile(gatewayProfile);
             ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().getComputeResourcePreference
                     (gatewayId, processModel.getComputeResourceId());
+            //FIXME: Temporary revert, this needs a proper fix.
+//            String scratchLocation = Factory.getScratchLocation(processContext);
             String scratchLocation = computeResourcePreference.getScratchLocation();
             scratchLocation = scratchLocation + File.separator + processId + File.separator;
             processContext.setComputeResourcePreference(computeResourcePreference);
@@ -150,7 +153,7 @@ public class GFacEngineImpl implements GFacEngine {
             processContext.setApplicationInterfaceDescription(applicationInterface);
             String computeResourceId = processContext.getComputeResourceDescription().getComputeResourceId();
             String hostName = Factory.getDefaultAppCatalog().getComputeResource().getComputeResource(computeResourceId).getHostName();
-            ServerInfo serverInfo = new ServerInfo(processContext.getComputeResourcePreference().getLoginUserName(), hostName);
+            ServerInfo serverInfo = new ServerInfo(Factory.getLoginUserName(processContext), hostName);
             processContext.setServerInfo(serverInfo);
             List<OutputDataObjectType> applicationOutputs = applicationInterface.getApplicationOutputs();
             if (applicationOutputs != null && !applicationOutputs.isEmpty()) {
@@ -355,7 +358,7 @@ public class GFacEngineImpl implements GFacEngine {
                                         submodel.setType(DataStageType.OUPUT);
                                         submodel.setProcessOutput(output);
                                         URI source = new URI(processContext.getDataMovementProtocol().name(),
-                                                processContext.getComputeResourcePreference().getLoginUserName(),
+                                                Factory.getLoginUserName(processContext),
                                                 processContext.getComputeResourceDescription().getHostName(),
                                                 22,
                                                 processContext.getWorkingDir() + output.getValue(), null, null);
@@ -526,19 +529,31 @@ public class GFacEngineImpl implements GFacEngine {
         return false;
     }
 
-    private boolean inputDataStaging(TaskContext taskContext, boolean recover) throws GFacException {
+    private boolean inputDataStaging(TaskContext taskContext, boolean recover) throws GFacException, TException {
         TaskStatus taskStatus = new TaskStatus(TaskState.EXECUTING);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         taskContext.setTaskStatus(taskStatus);
         GFacUtils.saveAndPublishTaskStatus(taskContext);
 
         ProcessContext processContext = taskContext.getParentProcessContext();
+        // handle URI_COLLECTION input data type
         Task dMoveTask = Factory.getDataMovementTask(processContext.getDataMovementProtocol());
-        taskStatus = executeTask(taskContext, dMoveTask, false);
+        if (taskContext.getProcessInput().getType() == DataType.URI_COLLECTION) {
+            String values = taskContext.getProcessInput().getValue();
+            String[] multiple_inputs = values.split(GFacConstants.MULTIPLE_INPUTS_SPLITTER);
+            DataStagingTaskModel subTaskModel = (DataStagingTaskModel) taskContext.getSubTaskModel();
+            for (String input : multiple_inputs) {
+                taskContext.getProcessInput().setValue(input);
+                subTaskModel.setSource(input);
+                taskStatus = executeTask(taskContext, dMoveTask, false);
+            }
+            taskContext.getProcessInput().setValue(values);
+        } else {
+            taskStatus = executeTask(taskContext, dMoveTask, false);
+        }
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         taskContext.setTaskStatus(taskStatus);
         GFacUtils.saveAndPublishTaskStatus(taskContext);
-
         checkFailures(taskContext, taskStatus, dMoveTask);
         return false;
     }
@@ -557,7 +572,8 @@ public class GFacEngineImpl implements GFacEngine {
             errorModel.setUserFriendlyMessage("Error while executing " + task.getType() + " task" );
             errorModel.setActualErrorMessage(errorMsg);
             GFacUtils.saveTaskError(taskContext, errorModel);
-            throw new GFacException("Error while executing " + task.getType() + " task");
+            throw new GFacException("Error: userFriendly msg :" + errorModel.getUserFriendlyMessage() + ", actual msg :"
+                    + errorModel.getActualErrorMessage());
         }
     }
 

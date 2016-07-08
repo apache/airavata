@@ -50,8 +50,8 @@ public class GfacServer implements IServer{
 
     public void StartGfacServer(GfacService.Processor<GfacServerHandler> gfacServerHandlerProcessor)
             throws Exception {
-        try {
-            final int serverPort = Integer.parseInt(ServerSettings.getGFacServerPort());
+		final int serverPort = Integer.parseInt(ServerSettings.getGFacServerPort());
+		try {
             final String serverHost = ServerSettings.getGfacServerHost();
 
             InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
@@ -63,8 +63,8 @@ public class GfacServer implements IServer{
             new Thread() {
 				public void run() {
 					server.serve();
-					setStatus(IServer.ServerStatus.STOPPED);
-					logger.info("Gfac Server Stopped.");
+					setStatus(ServerStatus.STARTING);
+					logger.info("Starting Gfac Server ...");
 				}
 			}.start();
 			new Thread() {
@@ -78,14 +78,14 @@ public class GfacServer implements IServer{
 					}
 					if (server.isServing()){
 						setStatus(IServer.ServerStatus.STARTED);
-			            logger.info("Starting Gfac Server on Port " + serverPort);
-			            logger.info("Listening to Gfac Clients ....");
+			            logger.info("Started Gfac Server on Port " + serverPort + " ...");
 					}
 				}
 			}.start();
         } catch (TTransportException e) {
             logger.error(e.getMessage());
             setStatus(IServer.ServerStatus.FAILED);
+			logger.error("Failed to start Gfac server on port " + serverPort + " ...");
         }
     }
 

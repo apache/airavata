@@ -114,6 +114,23 @@ service Airavata {
                  3: airavata_errors.AiravataSystemException ase,
                  4: airavata_errors.AuthorizationException ae)
 
+
+  /**
+     * Get all users in the gateway
+     *
+     * @param gatewayId
+     *    The gateway data model.
+     *
+     * @return users
+     *   list of usernames of the users in the gateway
+     *
+     **/
+  list<string> getAllUsersInGateway(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
+        throws (1: airavata_errors.InvalidRequestException ire,
+                         2: airavata_errors.AiravataClientException ace,
+                         3: airavata_errors.AiravataSystemException ase,
+                         4: airavata_errors.AuthorizationException ae)
+
    /**
    * Update previously registered Gateway metadata.
    *
@@ -197,6 +214,39 @@ service Airavata {
                    3: airavata_errors.AiravataSystemException ase,
                    4: airavata_errors.AuthorizationException ae)
 
+  /**
+  * API methods to retrieve notifications
+**/
+   string createNotification(1: required security_model.AuthzToken authzToken, 2: required workspace_model.Notification notification)
+        throws (1: airavata_errors.InvalidRequestException ire,
+                   2: airavata_errors.AiravataClientException ace,
+                   3: airavata_errors.AiravataSystemException ase,
+                   4: airavata_errors.AuthorizationException ae)
+
+   bool updateNotification(1: required security_model.AuthzToken authzToken, 2: required workspace_model.Notification notification)
+           throws (1: airavata_errors.InvalidRequestException ire,
+                      2: airavata_errors.AiravataClientException ace,
+                      3: airavata_errors.AiravataSystemException ase,
+                      4: airavata_errors.AuthorizationException ae)
+
+
+  bool deleteNotification(1: required security_model.AuthzToken authzToken, 2: required string gatewayId, 3: required string notificationId)
+             throws (1: airavata_errors.InvalidRequestException ire,
+                        2: airavata_errors.AiravataClientException ace,
+                        3: airavata_errors.AiravataSystemException ase,
+                        4: airavata_errors.AuthorizationException ae)
+
+  workspace_model.Notification getNotification(1: required security_model.AuthzToken authzToken, 2: required string gatewayId, 3: required string notificationId)
+             throws (1: airavata_errors.InvalidRequestException ire,
+                        2: airavata_errors.AiravataClientException ace,
+                        3: airavata_errors.AiravataSystemException ase,
+                        4: airavata_errors.AuthorizationException ae)
+
+  list<workspace_model.Notification> getAllNotifications(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
+             throws (1: airavata_errors.InvalidRequestException ire,
+                        2: airavata_errors.AiravataClientException ace,
+                        3: airavata_errors.AiravataSystemException ase,
+                        4: airavata_errors.AuthorizationException ae)
 
     /**
     * Airavata Adminstrative Funcationality
@@ -225,6 +275,36 @@ service Airavata {
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
 
+
+ /**
+   * Generate and Register Username PWD Pair with Airavata Credential Store.
+   *
+   * @param gatewayId
+   *    The identifier for the requested Gateway.
+   *
+   * @param portalUserName
+   *    The User for which the credential should be registered. For community accounts, this user is the name of the
+   *    community user name. For computational resources, this user name need not be the same user name on resoruces.
+   *
+   * @param loginUserName
+   *
+   * @param password
+   *
+   * @return airavataCredStoreToken
+   *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
+   *   belonging to a Gateway.
+   *
+   **/
+  string registerPwdCredential (1: required security_model.AuthzToken authzToken,
+                      2: required string gatewayId,
+                      3: required string portalUserName,
+                      4: required string loginUserName,
+                      5: required string password,
+                      6: required string description)
+             throws (1: airavata_errors.InvalidRequestException ire,
+                     2: airavata_errors.AiravataClientException ace,
+                     3: airavata_errors.AiravataSystemException ase)
+
    /**
    * Get a Public Key by Providing the Token
    *
@@ -240,26 +320,6 @@ service Airavata {
    string getSSHPubKey (1: required security_model.AuthzToken authzToken,
                         2: required string airavataCredStoreToken,
                         3: required string gatewayId)
-           throws (1: airavata_errors.InvalidRequestException ire,
-                   2: airavata_errors.AiravataClientException ace,
-                   3: airavata_errors.AiravataSystemException ase)
-
-   /**
-   *
-   * Get a Public Key by Providing the Token
-   *
-   * @param CredStoreToken
-   *    Credential Store Token which you want to find the Public Key for.
-   *
-   * @param gatewayId
-   *    This is the unique identifier of your gateway where the token and public key was generated from.
-   *
-   * @return SSHpubKey
-   *
-   **/
-
-   map<string, string> getAllUserSSHPubKeys (1: required security_model.AuthzToken authzToken,
-                                             2: required string userName)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
@@ -283,6 +343,13 @@ service Airavata {
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
 
+
+  map<string, string> getAllGatewayPWDCredentials (1: required security_model.AuthzToken authzToken,
+                                                 2: required string gatewayId)
+               throws (1: airavata_errors.InvalidRequestException ire,
+                       2: airavata_errors.AiravataClientException ace,
+                       3: airavata_errors.AiravataSystemException ase)
+
     /**
     *
     * Delete a Gateway
@@ -300,6 +367,14 @@ service Airavata {
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
+
+
+  bool deletePWDCredential (1: required security_model.AuthzToken authzToken,
+                            2: required string airavataCredStoreToken,
+                            3: required string gatewayId)
+               throws (1: airavata_errors.InvalidRequestException ire,
+                       2: airavata_errors.AiravataClientException ace,
+                       3: airavata_errors.AiravataSystemException ase)
 
    /**
    *
@@ -409,42 +484,12 @@ service Airavata {
                 3: airavata_errors.AiravataSystemException ase,
                 4: airavata_errors.AuthorizationException ae)
 
-   /**
-   *
-   * Search User Projects by Project Name
-   * Get all Project for user by project name with pagination.Results will be ordered based on creation time DESC.
-   *
-   * @param gatewayId
-   *    The unique identifier for the requested gateway.
-   *
-   * @param userName
-   *    The identifier of the user.
-   *
-   * @param projectName
-   *    The name of the project on which the results to be fetched.
-   *
-   * @param limit
-   *    The amount results to be fetched.
-   *
-   * @param offset
-   *    The starting point of the results to be fetched.
-   *
-   **/
-  list<workspace_model.Project> searchProjectsByProjectName (1: required security_model.AuthzToken authzToken,
-                        2: required string gatewayId,
-                        3: required string userName,
-                        4: required string projectName,
-                        5: required i32 limit,
-                        6: required i32 offset)
-          throws (1: airavata_errors.InvalidRequestException ire,
-                  2: airavata_errors.AiravataClientException ace,
-                  3: airavata_errors.AiravataSystemException ase,
-                  4: airavata_errors.AuthorizationException ae)
 
     /**
     *
-    * Search User Projects by Project Description
-    * Search and get all Projects for user by project description with pagination. Results will be ordered based on creation time DESC.
+    * Search User Projects
+    * Search and get all Projects for user by project description or/and project name  with pagination.
+    * Results will be ordered based on creation time DESC.
     *
     * @param gatewayId
     *    The unique identifier of the gateway making the request.
@@ -452,8 +497,8 @@ service Airavata {
     * @param userName
     *    The identifier of the user.
     *
-    * @param description
-    *    The description to be matched.
+    * @param filters
+    *    Map of multiple filter criteria. Currenlt search filters includes Project Name and Project Description
     *
     * @param limit
     *    The amount results to be fetched.
@@ -462,183 +507,16 @@ service Airavata {
     *    The starting point of the results to be fetched.
     *
     **/
-  list<workspace_model.Project> searchProjectsByProjectDesc(1: required security_model.AuthzToken authzToken,
-                        2: required string gatewayId,
-                        3: required string userName,
-                        4: required string description,
-                        5: required i32 limit,
-                        6: required i32 offset)
-            throws (1: airavata_errors.InvalidRequestException ire,
-                    2: airavata_errors.AiravataClientException ace,
-                    3: airavata_errors.AiravataSystemException ase,
-                    4: airavata_errors.AuthorizationException ae)
-
-    /**
-    *
-    * Search User Experiments by Name
-    * Search user Experiments using experiment name with pagination. Results will be sorted based on creation time DESC.
-    *
-    * @param gatewayId
-    *       Unique identifier of the requested gateway.
-    *
-    * @param userName
-    *       Username of the user who created the experiments.
-    *
-    * @param expName
-    *       Experiment name to be matched.
-    *
-    * @param limit
-    *       Amount of results to be fetched.
-    *
-    * @param offset
-    *       The starting point of the results to be fetched.
-    *
-    **/
-  list<experiment_model.ExperimentSummaryModel> searchExperimentsByName(1: required security_model.AuthzToken authzToken,
-                          2: required string gatewayId,
-                          3: required string userName,
-                          4: required string expName,
-                          5: required i32 limit,
-                          6: required i32 offset)
-            throws (1: airavata_errors.InvalidRequestException ire,
-                    2: airavata_errors.AiravataClientException ace,
-                    3: airavata_errors.AiravataSystemException ase,
-                    4: airavata_errors.AuthorizationException ae)
-
-    /**
-    *
-    * Search By Experiment Description
-    * Search Experiments by experiment description with pagination. Results will be sorted based on creation time DESC.
-    *
-    * @param gatewayId
-    *       Unique identifier of the requested gateway.
-    *
-    * @param userName
-    *       Username of the requested user.
-    *
-    * @param description
-    *       Experiment description to be matched.
-    *
-    * @param limit
-    *       Amount of results to be fetched.
-    *
-    * @param offset
-    *       The starting point of the results to be fetched.
-    *
-    **/
-  list<experiment_model.ExperimentSummaryModel> searchExperimentsByDesc(1: required security_model.AuthzToken authzToken,
-                            2: required string gatewayId,
-                            3: required string userName,
-                            4: required string description,
-                            5: required i32 limit,
-                            6: required i32 offset)
-              throws (1: airavata_errors.InvalidRequestException ire,
-                      2: airavata_errors.AiravataClientException ace,
-                      3: airavata_errors.AiravataSystemException ase,
-                      4: airavata_errors.AuthorizationException ae)
-
-   /**
-   *
-   * Search Experiment By the Application
-   * Search Experiments of a particular application id with pagination. Results will be sorted based on creation time DESC
-   *
-   * @param gatewayId
-   *       Unique identifier of the requested gateway.
-   *
-   * @param userName
-   *       Username of the requested user.
-   *
-   * @param applicationId
-   *       Application id to be matched.
-   *
-   * @param limit
-   *       Amount of results to be fetched.
-   *
-   * @param offset
-   *       The starting point of the results to be fetched.
-   *
-   **/
-  list<experiment_model.ExperimentSummaryModel> searchExperimentsByApplication(1: required security_model.AuthzToken authzToken,
-                             2: required string gatewayId,
-                             3: required string userName,
-                             4: required string applicationId,
-                             5: required i32 limit,
-                             6: required i32 offset)
-              throws (1: airavata_errors.InvalidRequestException ire,
-                      2: airavata_errors.AiravataClientException ace,
-                      3: airavata_errors.AiravataSystemException ase,
-                      4: airavata_errors.AuthorizationException ae)
-
-   /**
-   *
-   * Search User Experiments by Status
-   * Search all the Experiments of the given user  by experiment status with pagination. Results will be sorted based on creation time DESC
-   *
-   * @param gatewayId
-   *       Unique identifier of the requested gateway.
-   *
-   * @param userName
-   *       Username of the user making the request.
-   *
-   * @param experimentState
-   *       Experiement state to be matched.
-   *
-   * @param limit
-   *       Amount of results to be fetched.
-   *
-   * @param offset
-   *       The starting point of the results to be fetched.
-   *
-   **/
-    list<experiment_model.ExperimentSummaryModel> searchExperimentsByStatus(1: required security_model.AuthzToken authzToken,
-                            2: required string gatewayId,
-                            3: required string userName,
-                            4: required status_models.ExperimentState experimentState,
-                            5: required i32 limit,
-                            6: required i32 offset)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                        2: airavata_errors.AiravataClientException ace,
-                        3: airavata_errors.AiravataSystemException ase,
-                        4: airavata_errors.AuthorizationException ae)
-
-   /**
-   *
-   * Search User Experiments by the Creation Time
-   * This will search all the experiments of the given user by experiment creation time with pagination. Results will be sorted based on creation time DESC.
-   *
-   * @param gatewayId
-   *       Unique identifier of the requested gateway.
-   *
-   * @param userName
-   *       Username of the requested user.
-   *
-   * @param fromTime
-   *       Start time of the experiments creation time.
-   *
-   * @param toTime
-   *       End time of the  experiement creation time.
-   *
-   * @param limit
-   *       Amount of results to be fetched.
-   *
-   * @param offset
-   *       The starting point of the results to be fetched.
-   *
-   * @return ExperimentSummaryModel
-   *    List of experiments for the given search filter. Here only the Experiment summary will be returned.
-   *
-   **/
-    list<experiment_model.ExperimentSummaryModel> searchExperimentsByCreationTime(1: required security_model.AuthzToken authzToken,
-                            2: required string gatewayId,
-                            3: required string userName,
-                            4: required i64 fromTime,
-                            5: required i64 toTime,
-                            6: required i32 limit,
-                            7: required i32 offset)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                        2: airavata_errors.AiravataClientException ace,
-                        3: airavata_errors.AiravataSystemException ase,
-                        4: airavata_errors.AuthorizationException ae)
+  list<workspace_model.Project> searchProjects(1: required security_model.AuthzToken authzToken,
+                              2: required string gatewayId,
+                              3: required string userName,
+                              4: map<experiment_model.ProjectSearchFields, string> filters,
+                              5: required i32 limit,
+                              6: required i32 offset)
+                  throws (1: airavata_errors.InvalidRequestException ire,
+                          2: airavata_errors.AiravataClientException ace,
+                          3: airavata_errors.AiravataSystemException ase,
+                          4: airavata_errors.AuthorizationException ae)
 
    /**
    * Search Experiments.

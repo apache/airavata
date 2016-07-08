@@ -38,6 +38,7 @@ import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.resources.GatewayResource;
@@ -57,6 +58,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
     private ExperimentRegistry experimentRegistry = null;
     private ProjectRegistry projectRegistry = null;
     private GatewayRegistry gatewayRegistry = null;
+    private NotificationRegistry notificationRegistry = null;
 
     public ExperimentCatalogImpl() throws RegistryException{
         try {
@@ -77,6 +79,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
             experimentRegistry = new ExperimentRegistry(gatewayResource, user);
             projectRegistry = new ProjectRegistry(gatewayResource, user);
             gatewayRegistry = new GatewayRegistry();
+            notificationRegistry = new NotificationRegistry();
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata server properties..", e);
             throw new RegistryException("Unable to read airavata server properties..", e);
@@ -100,6 +103,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
         experimentRegistry = new ExperimentRegistry(gatewayResource, user);
         projectRegistry = new ProjectRegistry(gatewayResource, user);
         gatewayRegistry = new GatewayRegistry();
+        notificationRegistry = new NotificationRegistry();
     }
 
     /**
@@ -122,6 +126,8 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     return experimentRegistry.addExperiment((ExperimentModel) newObjectToAdd);
                 case GATEWAY:
                     return gatewayRegistry.addGateway((Gateway)newObjectToAdd);
+                case NOTIFICATION:
+                    return notificationRegistry.createNotification((Notification)newObjectToAdd);
                 default:
                     logger.error("Unsupported top level type..", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -211,6 +217,9 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     break;
                 case GATEWAY:
                     gatewayRegistry.updateGateway((String)identifier, (Gateway)newObjectToUpdate);
+                    break;
+                case NOTIFICATION:
+                    notificationRegistry.updateNotification((Notification)newObjectToUpdate);
                     break;
                 case EXPERIMENT:
                     experimentRegistry.updateExperiment((ExperimentModel) newObjectToUpdate, (String) identifier);
@@ -319,6 +328,8 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     return projectRegistry.getProject((String)identifier);
                 case GATEWAY:
                     return gatewayRegistry.getGateway((String)identifier);
+                case NOTIFICATION:
+                    return notificationRegistry.getNotification((String) identifier);
                 case EXPERIMENT:
                     return experimentRegistry.getExperiment((String) identifier, null);
                 case USER_CONFIGURATION_DATA:
@@ -389,6 +400,11 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     for (Gateway gateway : allGateways){
                         result.add(gateway);
                     }
+                    return result;
+                case NOTIFICATION:
+                    List<Notification> notifications = notificationRegistry.getAllGatewayNotifications((String) value);
+                    for(Notification n : notifications)
+                        result.add(n);
                     return result;
                 case EXPERIMENT:
                     List<ExperimentModel> experimentList = experimentRegistry.getExperimentList(fieldName, value);
@@ -530,6 +546,51 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
     }
 
     /**
+     * This method search all the accessible resources given the set of ids of all accessible resource IDs.
+     *
+     * @param dataType          Data type is a predefined type which the programmer should choose according to the object he
+     *                          is going to save in to registry
+     * @param accessibleIds     list of string IDs of all accessible resources
+     * @param filters           filters is a map of field name and value that you need to use for search filtration
+     * @param limit             amount of the results to be returned
+     * @param offset            offset of the results from the sorted list to be fetched from
+     * @param orderByIdentifier identifier (i.e the column) which will be used as the basis to sort the results
+     * @param resultOrderType   The type of ordering (i.e ASC or DESC) that has to be used when retrieving the results
+     * @return List of objects according to the given criteria
+     */
+    @Override
+    public List<Object> searchAllAccessible(ExperimentCatalogModelType dataType, List<String> accessibleIds, Map<String,
+            String> filters, int limit, int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+        try {
+            List<Object> result = new ArrayList<Object>();
+            switch (dataType) {
+                case PROJECT:
+                    List<Project> projectList
+                            = projectRegistry.searchAllAccessibleProjects(accessibleIds, filters, limit, offset,
+                            orderByIdentifier, resultOrderType);
+                    for (Project project : projectList ){
+                        result.add(project);
+                    }
+                    return result;
+                case EXPERIMENT:
+                    List<ExperimentSummaryModel> experimentSummaries = experimentRegistry
+                            .searchAllAccessibleExperiments(accessibleIds, filters, limit, offset, orderByIdentifier,
+                                    resultOrderType);
+                    for (ExperimentSummaryModel ex : experimentSummaries){
+                        result.add(ex);
+                    }
+                    return result;
+                default:
+                    logger.error("Unsupported data type...", new UnsupportedOperationException());
+                    throw new UnsupportedOperationException();
+            }
+        } catch (Exception e) {
+            logger.error("Error while retrieving the resource " + dataType.toString(), new RegistryException(e));
+            throw new RegistryException("Error while retrieving the resource " + dataType.toString(), e);
+        }
+    }
+
+    /**
      * This method is to retrieve a specific value for a given field.
      *
      * @param dataType   Data type is a predefined type which the programmer should choose according to the object he
@@ -614,6 +675,9 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     break;
                 case GATEWAY:
                     gatewayRegistry.removeGateway((String)identifier);
+                    break;
+                case NOTIFICATION:
+                    notificationRegistry.deleteNotification((String)identifier);
                     break;
                 case EXPERIMENT:
                     experimentRegistry.removeExperiment((String) identifier);

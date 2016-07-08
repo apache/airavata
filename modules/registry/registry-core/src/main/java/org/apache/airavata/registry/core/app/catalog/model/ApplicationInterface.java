@@ -44,6 +44,8 @@ public class ApplicationInterface implements Serializable {
     private String gatewayId;
     @Column(name = "ARCHIVE_WORKING_DIRECTORY")
     private boolean archiveWorkingDirectory;
+    @Column(name = "HAS_OPTIONAL_FILE_INPUTS")
+    private boolean hasOptionalFileInputs;
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
@@ -102,5 +104,13 @@ public class ApplicationInterface implements Serializable {
 
     public void setAppDescription(String appDescription) {
         this.appDescription = appDescription;
+    }
+
+    public boolean isHasOptionalFileInputs() {
+        return hasOptionalFileInputs;
+    }
+
+    public void setHasOptionalFileInputs(boolean hasOptionalFileInputs) {
+        this.hasOptionalFileInputs = hasOptionalFileInputs;
     }
 }

@@ -31,6 +31,7 @@ include "experiment-catalog-models/scheduling_model.thrift"
 include "experiment-catalog-models/status_models.thrift"
 include "resource-catalog-models/data_movement_models.thrift"
 include "replica-catalog-models/replica_catalog_models.thrift"
+include "user-group-models/user_profile_model.thrift"
 
 namespace java org.apache.airavata.model
 namespace php Airavata.Model

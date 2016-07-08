@@ -30,6 +30,18 @@
 
 namespace apache { namespace airavata { namespace model { namespace workspace {
 
+int _kNotificationPriorityValues[] = {
+  NotificationPriority::LOW,
+  NotificationPriority::NORMAL,
+  NotificationPriority::HIGH
+};
+const char* _kNotificationPriorityNames[] = {
+  "LOW",
+  "NORMAL",
+  "HIGH"
+};
+const std::map<int, const char*> _NotificationPriority_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(3, _kNotificationPriorityValues, _kNotificationPriorityNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
 
 Group::~Group() throw() {
 }
@@ -687,6 +699,253 @@ void Gateway::printTo(std::ostream& out) const {
   out << ", " << "gatewayName="; (__isset.gatewayName ? (out << to_string(gatewayName)) : (out << "<null>"));
   out << ", " << "domain="; (__isset.domain ? (out << to_string(domain)) : (out << "<null>"));
   out << ", " << "emailAddress="; (__isset.emailAddress ? (out << to_string(emailAddress)) : (out << "<null>"));
+  out << ")";
+}
+
+
+Notification::~Notification() throw() {
+}
+
+
+void Notification::__set_notificationId(const std::string& val) {
+  this->notificationId = val;
+__isset.notificationId = true;
+}
+
+void Notification::__set_gatewayId(const std::string& val) {
+  this->gatewayId = val;
+}
+
+void Notification::__set_title(const std::string& val) {
+  this->title = val;
+}
+
+void Notification::__set_notificationMessage(const std::string& val) {
+  this->notificationMessage = val;
+}
+
+void Notification::__set_creationTime(const int64_t val) {
+  this->creationTime = val;
+__isset.creationTime = true;
+}
+
+void Notification::__set_publishedTime(const int64_t val) {
+  this->publishedTime = val;
+__isset.publishedTime = true;
+}
+
+void Notification::__set_expirationTime(const int64_t val) {
+  this->expirationTime = val;
+__isset.expirationTime = true;
+}
+
+void Notification::__set_priority(const NotificationPriority::type val) {
+  this->priority = val;
+__isset.priority = true;
+}
+
+uint32_t Notification::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_gatewayId = false;
+  bool isset_title = false;
+  bool isset_notificationMessage = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->notificationId);
+          this->__isset.notificationId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->title);
+          isset_title = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->notificationMessage);
+          isset_notificationMessage = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->creationTime);
+          this->__isset.creationTime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 6:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->publishedTime);
+          this->__isset.publishedTime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 7:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->expirationTime);
+          this->__isset.expirationTime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 8:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast26;
+          xfer += iprot->readI32(ecast26);
+          this->priority = (NotificationPriority::type)ecast26;
+          this->__isset.priority = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_title)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_notificationMessage)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Notification::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("Notification");
+
+  if (this->__isset.notificationId) {
+    xfer += oprot->writeFieldBegin("notificationId", ::apache::thrift::protocol::T_STRING, 1);
+    xfer += oprot->writeString(this->notificationId);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("title", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString(this->title);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("notificationMessage", ::apache::thrift::protocol::T_STRING, 4);
+  xfer += oprot->writeString(this->notificationMessage);
+  xfer += oprot->writeFieldEnd();
+
+  if (this->__isset.creationTime) {
+    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 5);
+    xfer += oprot->writeI64(this->creationTime);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.publishedTime) {
+    xfer += oprot->writeFieldBegin("publishedTime", ::apache::thrift::protocol::T_I64, 6);
+    xfer += oprot->writeI64(this->publishedTime);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.expirationTime) {
+    xfer += oprot->writeFieldBegin("expirationTime", ::apache::thrift::protocol::T_I64, 7);
+    xfer += oprot->writeI64(this->expirationTime);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.priority) {
+    xfer += oprot->writeFieldBegin("priority", ::apache::thrift::protocol::T_I32, 8);
+    xfer += oprot->writeI32((int32_t)this->priority);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(Notification &a, Notification &b) {
+  using ::std::swap;
+  swap(a.notificationId, b.notificationId);
+  swap(a.gatewayId, b.gatewayId);
+  swap(a.title, b.title);
+  swap(a.notificationMessage, b.notificationMessage);
+  swap(a.creationTime, b.creationTime);
+  swap(a.publishedTime, b.publishedTime);
+  swap(a.expirationTime, b.expirationTime);
+  swap(a.priority, b.priority);
+  swap(a.__isset, b.__isset);
+}
+
+Notification::Notification(const Notification& other27) {
+  notificationId = other27.notificationId;
+  gatewayId = other27.gatewayId;
+  title = other27.title;
+  notificationMessage = other27.notificationMessage;
+  creationTime = other27.creationTime;
+  publishedTime = other27.publishedTime;
+  expirationTime = other27.expirationTime;
+  priority = other27.priority;
+  __isset = other27.__isset;
+}
+Notification& Notification::operator=(const Notification& other28) {
+  notificationId = other28.notificationId;
+  gatewayId = other28.gatewayId;
+  title = other28.title;
+  notificationMessage = other28.notificationMessage;
+  creationTime = other28.creationTime;
+  publishedTime = other28.publishedTime;
+  expirationTime = other28.expirationTime;
+  priority = other28.priority;
+  __isset = other28.__isset;
+  return *this;
+}
+void Notification::printTo(std::ostream& out) const {
+  using ::apache::thrift::to_string;
+  out << "Notification(";
+  out << "notificationId="; (__isset.notificationId ? (out << to_string(notificationId)) : (out << "<null>"));
+  out << ", " << "gatewayId=" << to_string(gatewayId);
+  out << ", " << "title=" << to_string(title);
+  out << ", " << "notificationMessage=" << to_string(notificationMessage);
+  out << ", " << "creationTime="; (__isset.creationTime ? (out << to_string(creationTime)) : (out << "<null>"));
+  out << ", " << "publishedTime="; (__isset.publishedTime ? (out << to_string(publishedTime)) : (out << "<null>"));
+  out << ", " << "expirationTime="; (__isset.expirationTime ? (out << to_string(expirationTime)) : (out << "<null>"));
+  out << ", " << "priority="; (__isset.priority ? (out << to_string(priority)) : (out << "<null>"));
   out << ")";
 }
 

@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -42,11 +43,20 @@ public class ServerMain {
 	private static final String SERVERS_KEY="servers";
     private final static Logger logger = LoggerFactory.getLogger(ServerMain.class);
     private static boolean serversLoaded=false;
-	private static final String stopFileNamePrefix = "airavata-server-stop";
+	private static final String stopFileNamePrefix = "server_stop";
 	private static int serverPID=-1;
-	private static final String serverStartedFileNamePrefix = "server-start";
+	private static final String serverStartedFileNamePrefix = "server_start";
 	private static boolean systemShutDown=false;
 	private static String STOP_COMMAND_STR = "stop";
+
+	private static final String ALL_IN_ONE = "all";
+	private static final String API_ORCH = "api-orch";
+	private static final String EXECUTION = "execution";
+	// server names
+	private static final String API_SERVER = "apiserver";
+	private static final String CREDENTIAL_STORE = "credentialstore";
+	private static final String GFAC_SERVER = "gfac";
+	private static final String ORCHESTRATOR = "orchestrator";
 
     private static ServerCnxnFactory cnxnFactory;
 //	private static boolean shutdownHookCalledBefore=false;
@@ -56,27 +66,29 @@ public class ServerMain {
     
 	private static void loadServers(String serverNames) {
 		try {
-			if (serverNames !=null){
-				String[] serversList = serverNames.split(",");
+			if (serverNames != null) {
+				List<String> serversList = handleServerDependencies(serverNames);
 				for (String serverString : serversList) {
-					serverString=serverString.trim();
+					serverString = serverString.trim();
 					String serverClassName = ServerSettings.getSetting(serverString);
 					Class<?> classInstance;
 					try {
 						classInstance = ServerMain.class
-						        .getClassLoader().loadClass(
-						        		serverClassName);
-						servers.add((IServer)classInstance.newInstance());
+								.getClassLoader().loadClass(
+										serverClassName);
+						servers.add((IServer) classInstance.newInstance());
 					} catch (ClassNotFoundException e) {
-						logger.error("Error while locating server implementation \""+serverString+"\"!!!",e);
+						logger.error("Error while locating server implementation \"" + serverString + "\"!!!", e);
 					} catch (InstantiationException e) {
-						logger.error("Error while initiating server instance \""+serverString+"\"!!!",e);
+						logger.error("Error while initiating server instance \"" + serverString + "\"!!!", e);
 					} catch (IllegalAccessException e) {
-						logger.error("Error while initiating server instance \""+serverString+"\"!!!",e);
-					} catch (ClassCastException e){
-						logger.error("Invalid server \""+serverString+"\"!!!",e);
+						logger.error("Error while initiating server instance \"" + serverString + "\"!!!", e);
+					} catch (ClassCastException e) {
+						logger.error("Invalid server \"" + serverString + "\"!!!", e);
 					}
 				}
+			} else {
+				logger.warn("No server name specify to start, use -h command line option to view help menu ...");
 			}
 		} catch (ApplicationSettingsException e) {
 			logger.error("Error while retrieving server list!!!",e);
@@ -88,6 +100,34 @@ public class ServerMain {
 				stopAllServers();
 			}
 		});
+	}
+
+	private static List<String> handleServerDependencies(String serverNames) {
+		List<String> serverList = new ArrayList<>(Arrays.asList(serverNames.split(",")));
+		if (serverList.indexOf(ALL_IN_ONE) > -1) {
+			serverList.clear();
+			serverList.add(CREDENTIAL_STORE); // credential store should start before api server
+			serverList.add(API_SERVER);
+			serverList.add(ORCHESTRATOR);
+			serverList.add(GFAC_SERVER);
+		} else if (serverList.indexOf(API_ORCH) > -1) {
+			serverList.clear();
+			serverList.add(CREDENTIAL_STORE);
+			serverList.add(API_SERVER);
+			serverList.add(ORCHESTRATOR);
+		} else if (serverList.indexOf(EXECUTION) > -1) {
+			serverList.clear();
+			serverList.add(GFAC_SERVER);
+		} else {
+			// credential store should start before api server
+			int credPos = serverList.indexOf(CREDENTIAL_STORE);
+			if (credPos > 0) { // neither absent nor credentialstore is first element
+				String temp = serverList.get(0);
+				serverList.set(0, serverList.get(credPos));
+				serverList.set(credPos, temp);
+			}
+		}
+		return serverList;
 	}
 
 //	private static void addSecondaryShutdownHook(){
@@ -104,18 +144,6 @@ public class ServerMain {
 //	}
 	
 	public static void main(String args[]) throws ParseException, IOException {
-//		Properties properties = System.getProperties();
-//		for (Object key : properties.keySet()) {
-//			System.out.println(key.toString()+"     =       "+properties.get(key));
-//		}
-//		Map<String, String> env = System.getenv();
-//
-//		for (Object key : env.keySet()) {
-//			System.out.println(key.toString()+"     =       "+env.get(key));
-//		}
-//		if (true){
-//			return;
-//		}
         CommandLineParameters commandLineParameters = StringUtil.getCommandLineParser(args);
         if (commandLineParameters.getArguments().contains(STOP_COMMAND_STR)){
             performServerStopRequest(commandLineParameters);

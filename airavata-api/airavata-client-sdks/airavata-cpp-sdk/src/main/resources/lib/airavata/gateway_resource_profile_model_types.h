@@ -228,10 +228,12 @@ inline std::ostream& operator<<(std::ostream& out, const StoragePreference& obj)
 }
 
 typedef struct _GatewayResourceProfile__isset {
-  _GatewayResourceProfile__isset() : credentialStoreToken(false), computeResourcePreferences(false), storagePreferences(false) {}
+  _GatewayResourceProfile__isset() : credentialStoreToken(false), computeResourcePreferences(false), storagePreferences(false), identityServerTenant(false), identityServerPwdCredToken(false) {}
   bool credentialStoreToken :1;
   bool computeResourcePreferences :1;
   bool storagePreferences :1;
+  bool identityServerTenant :1;
+  bool identityServerPwdCredToken :1;
 } _GatewayResourceProfile__isset;
 
 class GatewayResourceProfile {
@@ -239,7 +241,7 @@ class GatewayResourceProfile {
 
   GatewayResourceProfile(const GatewayResourceProfile&);
   GatewayResourceProfile& operator=(const GatewayResourceProfile&);
-  GatewayResourceProfile() : gatewayID(), credentialStoreToken() {
+  GatewayResourceProfile() : gatewayID(), credentialStoreToken(), identityServerTenant(), identityServerPwdCredToken() {
   }
 
   virtual ~GatewayResourceProfile() throw();
@@ -247,6 +249,8 @@ class GatewayResourceProfile {
   std::string credentialStoreToken;
   std::vector<ComputeResourcePreference>  computeResourcePreferences;
   std::vector<StoragePreference>  storagePreferences;
+  std::string identityServerTenant;
+  std::string identityServerPwdCredToken;
 
   _GatewayResourceProfile__isset __isset;
 
@@ -257,6 +261,10 @@ class GatewayResourceProfile {
   void __set_computeResourcePreferences(const std::vector<ComputeResourcePreference> & val);
 
   void __set_storagePreferences(const std::vector<StoragePreference> & val);
+
+  void __set_identityServerTenant(const std::string& val);
+
+  void __set_identityServerPwdCredToken(const std::string& val);
 
   bool operator == (const GatewayResourceProfile & rhs) const
   {
@@ -273,6 +281,14 @@ class GatewayResourceProfile {
     if (__isset.storagePreferences != rhs.__isset.storagePreferences)
       return false;
     else if (__isset.storagePreferences && !(storagePreferences == rhs.storagePreferences))
+      return false;
+    if (__isset.identityServerTenant != rhs.__isset.identityServerTenant)
+      return false;
+    else if (__isset.identityServerTenant && !(identityServerTenant == rhs.identityServerTenant))
+      return false;
+    if (__isset.identityServerPwdCredToken != rhs.__isset.identityServerPwdCredToken)
+      return false;
+    else if (__isset.identityServerPwdCredToken && !(identityServerPwdCredToken == rhs.identityServerPwdCredToken))
       return false;
     return true;
   }

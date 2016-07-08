@@ -64,6 +64,15 @@ struct ExperimentSearchFields {
 
 extern const std::map<int, const char*> _ExperimentSearchFields_VALUES_TO_NAMES;
 
+struct ProjectSearchFields {
+  enum type {
+    PROJECT_NAME = 0,
+    PROJECT_DESCRIPTION = 1
+  };
+};
+
+extern const std::map<int, const char*> _ProjectSearchFields_VALUES_TO_NAMES;
+
 class UserConfigurationDataModel;
 
 class ExperimentModel;

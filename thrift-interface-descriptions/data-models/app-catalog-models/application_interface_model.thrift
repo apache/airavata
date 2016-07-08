@@ -53,5 +53,6 @@ struct ApplicationInterfaceDescription {
     4: optional list<string> applicationModules,
     5: optional list<application_io_models.InputDataObjectType> applicationInputs,
     6: optional list<application_io_models.OutputDataObjectType> applicationOutputs,
-    7: optional bool archiveWorkingDirectory = 0
+    7: optional bool archiveWorkingDirectory = 0,
+    8: optional bool hasOptionalFileInputs
 }

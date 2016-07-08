@@ -41,12 +41,13 @@ namespace apache { namespace airavata { namespace model { namespace appcatalog {
 class ApplicationInterfaceDescription;
 
 typedef struct _ApplicationInterfaceDescription__isset {
-  _ApplicationInterfaceDescription__isset() : applicationDescription(false), applicationModules(false), applicationInputs(false), applicationOutputs(false), archiveWorkingDirectory(true) {}
+  _ApplicationInterfaceDescription__isset() : applicationDescription(false), applicationModules(false), applicationInputs(false), applicationOutputs(false), archiveWorkingDirectory(true), hasOptionalFileInputs(false) {}
   bool applicationDescription :1;
   bool applicationModules :1;
   bool applicationInputs :1;
   bool applicationOutputs :1;
   bool archiveWorkingDirectory :1;
+  bool hasOptionalFileInputs :1;
 } _ApplicationInterfaceDescription__isset;
 
 class ApplicationInterfaceDescription {
@@ -54,7 +55,7 @@ class ApplicationInterfaceDescription {
 
   ApplicationInterfaceDescription(const ApplicationInterfaceDescription&);
   ApplicationInterfaceDescription& operator=(const ApplicationInterfaceDescription&);
-  ApplicationInterfaceDescription() : applicationInterfaceId("DO_NOT_SET_AT_CLIENTS"), applicationName(), applicationDescription(), archiveWorkingDirectory(false) {
+  ApplicationInterfaceDescription() : applicationInterfaceId("DO_NOT_SET_AT_CLIENTS"), applicationName(), applicationDescription(), archiveWorkingDirectory(false), hasOptionalFileInputs(0) {
   }
 
   virtual ~ApplicationInterfaceDescription() throw();
@@ -65,6 +66,7 @@ class ApplicationInterfaceDescription {
   std::vector< ::apache::airavata::model::application::io::InputDataObjectType>  applicationInputs;
   std::vector< ::apache::airavata::model::application::io::OutputDataObjectType>  applicationOutputs;
   bool archiveWorkingDirectory;
+  bool hasOptionalFileInputs;
 
   _ApplicationInterfaceDescription__isset __isset;
 
@@ -81,6 +83,8 @@ class ApplicationInterfaceDescription {
   void __set_applicationOutputs(const std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & val);
 
   void __set_archiveWorkingDirectory(const bool val);
+
+  void __set_hasOptionalFileInputs(const bool val);
 
   bool operator == (const ApplicationInterfaceDescription & rhs) const
   {
@@ -107,6 +111,10 @@ class ApplicationInterfaceDescription {
     if (__isset.archiveWorkingDirectory != rhs.__isset.archiveWorkingDirectory)
       return false;
     else if (__isset.archiveWorkingDirectory && !(archiveWorkingDirectory == rhs.archiveWorkingDirectory))
+      return false;
+    if (__isset.hasOptionalFileInputs != rhs.__isset.hasOptionalFileInputs)
+      return false;
+    else if (__isset.hasOptionalFileInputs && !(hasOptionalFileInputs == rhs.hasOptionalFileInputs))
       return false;
     return true;
   }

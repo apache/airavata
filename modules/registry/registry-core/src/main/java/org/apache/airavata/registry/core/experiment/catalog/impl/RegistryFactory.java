@@ -112,11 +112,4 @@ public class RegistryFactory {
         return replicaCatalog;
     }
 
-
-    public static ExperimentCatalog getLoggingRegistry() {
-        if(experimentCatalog == null) {
-            experimentCatalog = new LoggingExperimentCatalogImpl();
-        }
-        return experimentCatalog;
-    }
 }
