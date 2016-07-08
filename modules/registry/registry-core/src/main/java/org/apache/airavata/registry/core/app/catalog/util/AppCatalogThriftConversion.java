@@ -21,15 +21,12 @@
 
 package org.apache.airavata.registry.core.app.catalog.util;
 
-import org.apache.airavata.model.appcatalog.appdeployment.*;
-import org.apache.airavata.model.appcatalog.appinterface.*;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
+import org.apache.airavata.model.appcatalog.appdeployment.CommandObject;
+import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
+import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
-import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
@@ -39,11 +36,12 @@ import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
-import org.apache.airavata.registry.core.app.catalog.model.ParallelismPrefixCommand;
 import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class AppCatalogThriftConversion {
     public static ComputeResourceResource getComputeHostResource (ComputeResourceDescription description){
@@ -610,6 +608,7 @@ public class AppCatalogThriftConversion {
         description.setApplicationName(resource.getAppName());
         description.setApplicationDescription(resource.getAppDescription());
         description.setArchiveWorkingDirectory(resource.isArchiveWorkingDirectory());
+        description.setHasOptionalFileInputs(resource.isHasOptionalFileInputs());
 
         AppModuleMappingAppCatalogResourceAppCat appModuleMappingResource = new AppModuleMappingAppCatalogResourceAppCat();
         List<AppCatalogResource> appModules = appModuleMappingResource.get(AppCatAbstractResource.AppModuleMappingConstants.INTERFACE_ID, resource.getInterfaceId());
@@ -869,6 +868,8 @@ public class AppCatalogThriftConversion {
         GatewayResourceProfile gatewayProfile = new GatewayResourceProfile();
         gatewayProfile.setGatewayID(gw.getGatewayID());
         gatewayProfile.setCredentialStoreToken(gw.getCredentialStoreToken());
+        gatewayProfile.setIdentityServerTenant(gw.getIdentityServerTenant());
+        gatewayProfile.setIdentityServerPwdCredToken(gw.getIdentityServerPwdCredToken());
         gatewayProfile.setComputeResourcePreferences(preferences);
         gatewayProfile.setStoragePreferences(storagePreferences);
         return gatewayProfile;

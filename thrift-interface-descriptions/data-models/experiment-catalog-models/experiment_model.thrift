@@ -43,6 +43,12 @@ enum ExperimentSearchFields {
     STATUS,
     PROJECT_ID
 }
+
+enum ProjectSearchFields {
+    PROJECT_NAME,
+    PROJECT_DESCRIPTION
+}
+
 /**
  * A structure holding the experiment configuration.
  *

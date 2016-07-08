@@ -26,15 +26,17 @@ final class DataType {
   const INTEGER = 1;
   const FLOAT = 2;
   const URI = 3;
-  const STDOUT = 4;
-  const STDERR = 5;
+  const URI_COLLECTION = 4;
+  const STDOUT = 5;
+  const STDERR = 6;
   static public $__names = array(
     0 => 'STRING',
     1 => 'INTEGER',
     2 => 'FLOAT',
     3 => 'URI',
-    4 => 'STDOUT',
-    5 => 'STDERR',
+    4 => 'URI_COLLECTION',
+    5 => 'STDOUT',
+    6 => 'STDERR',
   );
 }
 

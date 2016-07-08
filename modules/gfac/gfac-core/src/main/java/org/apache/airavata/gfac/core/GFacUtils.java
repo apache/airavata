@@ -491,6 +491,20 @@ public class GFacUtils {
                         String filePath = inputDataObjectType.getValue();
                         filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
                         inputValues.add(filePath);
+                    } else if (inputDataObjectType.getType() == DataType.URI_COLLECTION) {
+                        String filePaths = inputDataObjectType.getValue();
+                        String[] paths = filePaths.split(GFacConstants.MULTIPLE_INPUTS_SPLITTER);
+                        String filePath;
+                        String inputs = "";
+                        int i = 0;
+                        for (; i < paths.length - 1; i++) {
+                            filePath = paths[i];
+                            filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
+                            // File names separate by a space
+                            inputs += filePath + " ";
+                        }
+                        inputs += paths[i];
+                        inputValues.add(inputs);
                     } else {
                         inputValues.add(inputDataObjectType.getValue());
                     }

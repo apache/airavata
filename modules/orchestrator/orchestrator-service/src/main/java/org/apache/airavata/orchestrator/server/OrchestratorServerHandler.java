@@ -38,6 +38,7 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePrefer
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.data.replica.DataProductModel;
+import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.experiment.ExperimentModel;
@@ -59,6 +60,7 @@ import org.apache.airavata.registry.core.app.catalog.resources.AppCatAbstractRes
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
 import org.apache.airavata.registry.cpi.*;
+import org.apache.commons.lang.StringUtils;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -168,11 +170,39 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 						if (pi.getType().equals(DataType.URI) && pi.getValue().startsWith("airavata-dp://")) {
 							try {
 								DataProductModel dataProductModel = replicaCatalog.getDataProduct(pi.getValue());
-								dataProductModel.getReplicaLocations().stream().filter(rpModel -> rpModel.getReplicaLocationCategory()
-										.equals(ReplicaLocationCategory.GATEWAY_DATA_STORE)).forEach(rpModel -> {
-									pi.setValue(rpModel.getFilePath());
-									pi.setStorageResourceId(rpModel.getStorageResourceId());
-								});
+								Optional<DataReplicaLocationModel> rpLocation = dataProductModel.getReplicaLocations()
+										.stream().filter(rpModel -> rpModel.getReplicaLocationCategory().
+												equals(ReplicaLocationCategory.GATEWAY_DATA_STORE)).findFirst();
+								if (rpLocation.isPresent()) {
+									pi.setValue(rpLocation.get().getFilePath());
+									pi.setStorageResourceId(rpLocation.get().getStorageResourceId());
+								} else {
+									log.error("Could not find a replica for the URI " + pi.getValue());
+								}
+							} catch (ReplicaCatalogException e) {
+								log.error(e.getMessage(), e);
+							}
+						} else if (pi.getType().equals(DataType.URI_COLLECTION) && pi.getValue().contains("airavata-dp://")) {
+							try {
+								String[] uriList = pi.getValue().split(",");
+								final ArrayList<String> filePathList = new ArrayList<>();
+								for (String uri : uriList) {
+									if (uri.startsWith("airavata-dp://")) {
+										DataProductModel dataProductModel = replicaCatalog.getDataProduct(uri);
+										Optional<DataReplicaLocationModel> rpLocation = dataProductModel.getReplicaLocations()
+												.stream().filter(rpModel -> rpModel.getReplicaLocationCategory().
+														equals(ReplicaLocationCategory.GATEWAY_DATA_STORE)).findFirst();
+										if (rpLocation.isPresent()) {
+											filePathList.add(rpLocation.get().getFilePath());
+										} else {
+											log.error("Could not find a replica for the URI " + pi.getValue());
+										}
+									} else {
+										// uri is in file path format
+										filePathList.add(uri);
+									}
+								}
+								pi.setValue(StringUtils.join(filePathList, ','));
 							} catch (ReplicaCatalogException e) {
 								log.error(e.getMessage(), e);
 							}

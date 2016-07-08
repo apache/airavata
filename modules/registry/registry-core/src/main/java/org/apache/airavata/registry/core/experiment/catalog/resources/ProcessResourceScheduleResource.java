@@ -43,6 +43,9 @@ public class ProcessResourceScheduleResource extends AbstractExpCatResource {
     private Integer wallTimeLimit;
     private Integer totalPhysicalMemory;
     private String staticWorkingDir;
+    private String overrideLoginUserName;
+    private String overrideScratchLocation;
+    private String overrideAllocationProjectNumber;
 
     public String getProcessId() {
         return processId;
@@ -116,6 +119,30 @@ public class ProcessResourceScheduleResource extends AbstractExpCatResource {
         this.staticWorkingDir = staticWorkingDir;
     }
 
+    public String getOverrideLoginUserName() {
+        return overrideLoginUserName;
+    }
+
+    public void setOverrideLoginUserName(String overrideLoginUserName) {
+        this.overrideLoginUserName = overrideLoginUserName;
+    }
+
+    public String getOverrideScratchLocation() {
+        return overrideScratchLocation;
+    }
+
+    public void setOverrideScratchLocation(String overrideScratchLocation) {
+        this.overrideScratchLocation = overrideScratchLocation;
+    }
+
+    public String getOverrideAllocationProjectNumber() {
+        return overrideAllocationProjectNumber;
+    }
+
+    public void setOverrideAllocationProjectNumber(String overrideAllocationProjectNumber) {
+        this.overrideAllocationProjectNumber = overrideAllocationProjectNumber;
+    }
+
     public ExperimentCatResource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for process resource scheduling data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
@@ -172,6 +199,9 @@ public class ProcessResourceScheduleResource extends AbstractExpCatResource {
             processResourceSchedule.setWallTimeLimit(wallTimeLimit);
             processResourceSchedule.setTotalPhysicalMemory(totalPhysicalMemory);
             processResourceSchedule.setStaticWorkingDir(staticWorkingDir);
+            processResourceSchedule.setOverrideLoginUserName(overrideLoginUserName);
+            processResourceSchedule.setOverrideScratchLocation(overrideScratchLocation);
+            processResourceSchedule.setOverrideAllocationProjectNumber(overrideAllocationProjectNumber);
             if (existingSchedule == null){
                 em.persist(processResourceSchedule);
             }else {

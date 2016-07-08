@@ -105,9 +105,9 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
         // FIXME - use original output dir
         setInputOutputLocations(processContext);
         try {
-            if (secProperties == null) {
-                secProperties = getSecurityConfig(processContext);
-            }  // try secProperties = secProperties.clone() if we can't use already initialized ClientConfigurations.
+            // con't reuse if UserDN has been changed.
+            secProperties = getSecurityConfig(processContext);
+            // try secProperties = secProperties.clone() if we can't use already initialized ClientConfigurations.
         } catch (GFacException e) {
             String msg = "Unicorn security context initialization error";
             log.error(msg, e);
@@ -266,6 +266,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
                         fileName = localFilePath.substring(localFilePath.lastIndexOf("/") + 1);
                         URI destinationURI = TaskUtils.getDestinationURI(taskContext, hostName, inputPath, fileName);
                         remoteFilePath = destinationURI.getPath();
+                        log.info("SCP local file :{} -> from remote :{}", localFilePath, remoteFilePath);
                         SSHUtils.scpTo(localFilePath, remoteFilePath, sshSession);
                         output.setValue(destinationURI.toString());
                         break;
@@ -312,6 +313,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
                     remoteFilePath = remoteFileURI.getPath();
                     fileName = remoteFilePath.substring(remoteFilePath.lastIndexOf("/") + 1);
                     localFilePath = pc.getInputDir() + File.separator + fileName;
+                    log.info("SCP remote file :{} -> to local :{}", remoteFilePath, localFilePath);
                     SSHUtils.scpFrom(remoteFilePath, localFilePath, sshSession);
                     input.setValue("file:/" + localFilePath);
                 }
@@ -338,7 +340,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
                     get(ExperimentCatalogModelType.USER_CONFIGURATION_DATA, pc.getExperimentId());
             // FIXME - remove following setter lines, and use original value comes with user configuration data model.
             userConfigDataModel.setGenerateCert(true);
-            userConfigDataModel.setUserDN("CN=swus3, O=Ultrascan Gateway, C=DE");
+//            userConfigDataModel.setUserDN("CN=swus3, O=Ultrascan Gateway, C=DE");
             if (userConfigDataModel.isGenerateCert()) {
                 clientConfig = unicoreSecurityContext.getDefaultConfiguration(false, userConfigDataModel);
             } else {

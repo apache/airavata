@@ -34,6 +34,7 @@ enum DataType{
 	INTEGER,
 	FLOAT,
 	URI,
+	URI_COLLECTION,
 	STDOUT,
 	STDERR
 }

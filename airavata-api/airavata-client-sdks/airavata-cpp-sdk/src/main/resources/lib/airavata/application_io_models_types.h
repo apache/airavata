@@ -43,8 +43,9 @@ struct DataType {
     INTEGER = 1,
     FLOAT = 2,
     URI = 3,
-    STDOUT = 4,
-    STDERR = 5
+    URI_COLLECTION = 4,
+    STDOUT = 5,
+    STDERR = 6
   };
 };
 

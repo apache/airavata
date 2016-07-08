@@ -1,0 +1,13 @@
+This is the initial project created as an interface to various clouds.
+Currently supporting, Openstack on Jetstream using Openstack4j.
+
+To Test Run:-
+1) Replace the credentials in src/main/resources/jetstream_openrc.properties with the Jetstream credentials.
+2) Update the publicKeyFile, jetstream_imageId, jetstream_flavorId to the local path in src/test/resources/test_data.properties. This are the parameters used by the unit tests.
+3) Run JUnit Test org.apache.airavata.cloud.test.CloudIntfTest.
+
+## NETWORK CREATION STEPS
+1. Create a network.
+2. Create a subnet for the network.
+3. Create a router attached to public network. 
+4. Create an interface between router and the subnet.

@@ -371,4 +371,35 @@ public class ExpCatResourceUtils {
         }
 
     }
+
+    public static List<String> getAllUsersInGateway(String gatewayId) throws RegistryException {
+        EntityManager em = null;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            QueryGenerator generator = new QueryGenerator(AbstractExpCatResource.USERS);
+            generator.setParameter(AbstractExpCatResource.UserConstants.GATEWAY_ID, gatewayId);
+            Query q = generator.selectQuery(em);
+            List<Users> users = q.getResultList();
+            em.getTransaction().commit();
+            em.close();
+            ArrayList<String> usernameList = new ArrayList<>();
+            if(usernameList != null) {
+                for (int i = 0; i<usernameList.size(); i++){
+                    usernameList.add(users.get(i).getUserName());
+                }
+            }
+            return usernameList;
+        } catch (Exception e){
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        }finally {
+            if (em != null && em.isOpen()){
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+    }
 }

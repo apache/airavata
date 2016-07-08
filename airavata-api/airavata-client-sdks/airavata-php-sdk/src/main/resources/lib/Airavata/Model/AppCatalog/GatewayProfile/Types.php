@@ -489,6 +489,10 @@ class StoragePreference {
  * computeResourcePreferences:
  *  List of resource preferences for each of the registered compute resources.
  * 
+ *  identityServerTenant:
+ * 
+ *  identityServerPwdCredToken:
+ * 
  */
 class GatewayResourceProfile {
   static $_TSPEC;
@@ -509,6 +513,14 @@ class GatewayResourceProfile {
    * @var \Airavata\Model\AppCatalog\GatewayProfile\StoragePreference[]
    */
   public $storagePreferences = null;
+  /**
+   * @var string
+   */
+  public $identityServerTenant = null;
+  /**
+   * @var string
+   */
+  public $identityServerPwdCredToken = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -539,6 +551,14 @@ class GatewayResourceProfile {
             'class' => '\Airavata\Model\AppCatalog\GatewayProfile\StoragePreference',
             ),
           ),
+        5 => array(
+          'var' => 'identityServerTenant',
+          'type' => TType::STRING,
+          ),
+        6 => array(
+          'var' => 'identityServerPwdCredToken',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -553,6 +573,12 @@ class GatewayResourceProfile {
       }
       if (isset($vals['storagePreferences'])) {
         $this->storagePreferences = $vals['storagePreferences'];
+      }
+      if (isset($vals['identityServerTenant'])) {
+        $this->identityServerTenant = $vals['identityServerTenant'];
+      }
+      if (isset($vals['identityServerPwdCredToken'])) {
+        $this->identityServerPwdCredToken = $vals['identityServerPwdCredToken'];
       }
     }
   }
@@ -626,6 +652,20 @@ class GatewayResourceProfile {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 5:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->identityServerTenant);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 6:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->identityServerPwdCredToken);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -681,6 +721,16 @@ class GatewayResourceProfile {
         }
         $output->writeListEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->identityServerTenant !== null) {
+      $xfer += $output->writeFieldBegin('identityServerTenant', TType::STRING, 5);
+      $xfer += $output->writeString($this->identityServerTenant);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->identityServerPwdCredToken !== null) {
+      $xfer += $output->writeFieldBegin('identityServerPwdCredToken', TType::STRING, 6);
+      $xfer += $output->writeString($this->identityServerPwdCredToken);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

@@ -50,7 +50,7 @@ public class GFacConstants {
 	public static final String _127_0_0_1 = "127.0.0.1";
 	public static final String LOCALHOST = "localhost";
 
-
+	public static final String MULTIPLE_INPUTS_SPLITTER = ",";
 
 	public static final String PROP_WORKFLOW_INSTANCE_ID = "workflow.instance.id";
 	public static final String PROP_WORKFLOW_NODE_ID = "workflow.node.id";

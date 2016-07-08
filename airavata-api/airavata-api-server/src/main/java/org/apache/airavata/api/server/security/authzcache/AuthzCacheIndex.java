@@ -28,11 +28,13 @@ public class AuthzCacheIndex {
     private String subject;
     private String oauthAccessToken;
     private String action;
+    private String gatewayId;
 
-    public AuthzCacheIndex(String userName, String accessToken, String actionString) {
+    public AuthzCacheIndex(String userName, String gatewayId, String accessToken, String actionString) {
         this.subject = userName;
         this.oauthAccessToken = accessToken;
         this.action = actionString;
+        this.gatewayId = gatewayId;
     }
 
     public String getSubject() {
@@ -59,20 +61,30 @@ public class AuthzCacheIndex {
         this.oauthAccessToken = oauthAccessToken;
     }
 
-    /*Equals and hash code methods are overriden since this is being used as an index of a map and that containsKey method
-    * should return true if the values of two index objects are equal.*/
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
+    /*Equals and hash code methods are overridden since this is being used as an index of a map and that containsKey method
+        * should return true if the values of two index objects are equal.*/
     @Override
     public boolean equals(Object other) {
         if (other == null || other.getClass() != getClass()) {
             return false;
         }
         return ((this.getSubject().equals(((AuthzCacheIndex) other).getSubject()))
+                && (this.getGatewayId().equals(((AuthzCacheIndex) other).getGatewayId()))
                 && (this.getOauthAccessToken().equals(((AuthzCacheIndex) other).getOauthAccessToken()))
                 && (this.getAction().equals(((AuthzCacheIndex) other).getAction())));
     }
 
     @Override
     public int hashCode() {
-        return this.getSubject().hashCode() + this.getOauthAccessToken().hashCode() + this.getAction().hashCode();
+        return this.getSubject().hashCode() + this.getOauthAccessToken().hashCode() + this.getGatewayId().hashCode()
+                + this.getAction().hashCode();
     }
 }

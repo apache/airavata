@@ -21,10 +21,8 @@
 
 package org.apache.airavata.api.server;
 
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
-import java.net.InetAddress;
-
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.server.handler.AiravataServerHandler;
 import org.apache.airavata.api.server.security.AiravataSecurityManager;
@@ -39,14 +37,16 @@ import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
+import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.apache.thrift.transport.TSSLTransportFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 
 public class AiravataAPIServer implements IServer{
 
@@ -124,10 +124,8 @@ public class AiravataAPIServer implements IServer{
 						}
 					}
 				}.start();
-			}
-//            storeServerConfig();
-            /**********start thrift server over TLS******************/
-            if (ServerSettings.isTLSEnabled()) {
+				logger.info("Started API Server ....");
+			} else { /**********start thrift server over TLS******************/
                 TSSLTransportFactory.TSSLTransportParameters TLSParams =
                         new TSSLTransportFactory.TSSLTransportParameters();
                 TLSParams.setKeyStore(ServerSettings.getKeyStorePath(), ServerSettings.getKeyStorePassword());
@@ -160,18 +158,20 @@ public class AiravataAPIServer implements IServer{
                         }
                     }
                 }.start();
-                logger.info("Airavata API server starter over TLS on Port: " + ServerSettings.getTLSServerPort());
+                logger.info("API server started over TLS on Port: " + ServerSettings.getTLSServerPort() + " ...");
             }
+
             /*perform any security related initialization at the server startup, according to the underlying security
              manager implementation being used.*/
-            AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
-            securityManager.initializeSecurityInfra();
+			AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
+			securityManager.initializeSecurityInfra();
 
         } catch (TTransportException e) {
             logger.error(e.getMessage());
             setStatus(ServerStatus.FAILED);
             ExperimentCatalogInitUtil.stopDerbyInServerMode();
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+			logger.error("Failed to start Gfac server ...");
+			throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);

@@ -1,0 +1,6 @@
+{
+    "url": "amqp://guest:guest@localhost:5672",
+    "exchange": "simstream",
+    "queue": "test",
+    "exchange_type": "topic"
+}

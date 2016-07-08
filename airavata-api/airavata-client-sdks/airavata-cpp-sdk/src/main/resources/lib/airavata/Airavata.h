@@ -81,6 +81,22 @@ class AiravataIf {
   virtual void addGateway(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Gateway& gateway) = 0;
 
   /**
+   * Get all users in the gateway
+   * 
+   * @param gatewayId
+   *    The gateway data model.
+   * 
+   * @return users
+   *   list of usernames of the users in the gateway
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   */
+  virtual void getAllUsersInGateway(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
+
+  /**
    * Update previously registered Gateway metadata.
    * 
    * @param gatewayId
@@ -159,6 +175,19 @@ class AiravataIf {
   virtual bool isGatewayExist(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
 
   /**
+   *   * API methods to retrieve notifications
+   * *
+   * 
+   * @param authzToken
+   * @param notification
+   */
+  virtual void createNotification(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification) = 0;
+  virtual bool updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification) = 0;
+  virtual bool deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId) = 0;
+  virtual void getNotification( ::apache::airavata::model::workspace::Notification& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId) = 0;
+  virtual void getAllNotifications(std::vector< ::apache::airavata::model::workspace::Notification> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
+
+  /**
    * Generate and Register SSH Key Pair with Airavata Credential Store.
    * 
    * @param gatewayId
@@ -181,6 +210,35 @@ class AiravataIf {
   virtual void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName) = 0;
 
   /**
+   * Generate and Register Username PWD Pair with Airavata Credential Store.
+   * 
+   * @param gatewayId
+   *    The identifier for the requested Gateway.
+   * 
+   * @param portalUserName
+   *    The User for which the credential should be registered. For community accounts, this user is the name of the
+   *    community user name. For computational resources, this user name need not be the same user name on resoruces.
+   * 
+   * @param loginUserName
+   * 
+   * @param password
+   * 
+   * @return airavataCredStoreToken
+   *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
+   *   belonging to a Gateway.
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   * @param portalUserName
+   * @param loginUserName
+   * @param password
+   * @param description
+   */
+  virtual void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password, const std::string& description) = 0;
+
+  /**
    * Get a Public Key by Providing the Token
    * 
    * @param CredStoreToken
@@ -201,25 +259,6 @@ class AiravataIf {
 
   /**
    * 
-   * Get a Public Key by Providing the Token
-   * 
-   * @param CredStoreToken
-   *    Credential Store Token which you want to find the Public Key for.
-   * 
-   * @param gatewayId
-   *    This is the unique identifier of your gateway where the token and public key was generated from.
-   * 
-   * @return SSHpubKey
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param userName
-   */
-  virtual void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName) = 0;
-
-  /**
-   * 
    * Get all Public Keys of the Gateway
    * 
    * @param CredStoreToken
@@ -236,6 +275,7 @@ class AiravataIf {
    * @param gatewayId
    */
   virtual void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
+  virtual void getAllGatewayPWDCredentials(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
 
   /**
    * 
@@ -254,6 +294,7 @@ class AiravataIf {
    * @param gatewayId
    */
   virtual bool deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) = 0;
+  virtual bool deletePWDCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) = 0;
 
   /**
    * 
@@ -359,39 +400,9 @@ class AiravataIf {
 
   /**
    * 
-   * Search User Projects by Project Name
-   * Get all Project for user by project name with pagination.Results will be ordered based on creation time DESC.
-   * 
-   * @param gatewayId
-   *    The unique identifier for the requested gateway.
-   * 
-   * @param userName
-   *    The identifier of the user.
-   * 
-   * @param projectName
-   *    The name of the project on which the results to be fetched.
-   * 
-   * @param limit
-   *    The amount results to be fetched.
-   * 
-   * @param offset
-   *    The starting point of the results to be fetched.
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param gatewayId
-   * @param userName
-   * @param projectName
-   * @param limit
-   * @param offset
-   */
-  virtual void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset) = 0;
-
-  /**
-   * 
-   * Search User Projects by Project Description
-   * Search and get all Projects for user by project description with pagination. Results will be ordered based on creation time DESC.
+   * Search User Projects
+   * Search and get all Projects for user by project description or/and project name  with pagination.
+   * Results will be ordered based on creation time DESC.
    * 
    * @param gatewayId
    *    The unique identifier of the gateway making the request.
@@ -399,8 +410,8 @@ class AiravataIf {
    * @param userName
    *    The identifier of the user.
    * 
-   * @param description
-   *    The description to be matched.
+   * @param filters
+   *    Map of multiple filter criteria. Currenlt search filters includes Project Name and Project Description
    * 
    * @param limit
    *    The amount results to be fetched.
@@ -413,173 +424,11 @@ class AiravataIf {
    * @param authzToken
    * @param gatewayId
    * @param userName
-   * @param description
+   * @param filters
    * @param limit
    * @param offset
    */
-  virtual void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) = 0;
-
-  /**
-   * 
-   * Search User Experiments by Name
-   * Search user Experiments using experiment name with pagination. Results will be sorted based on creation time DESC.
-   * 
-   * @param gatewayId
-   *       Unique identifier of the requested gateway.
-   * 
-   * @param userName
-   *       Username of the user who created the experiments.
-   * 
-   * @param expName
-   *       Experiment name to be matched.
-   * 
-   * @param limit
-   *       Amount of results to be fetched.
-   * 
-   * @param offset
-   *       The starting point of the results to be fetched.
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param gatewayId
-   * @param userName
-   * @param expName
-   * @param limit
-   * @param offset
-   */
-  virtual void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset) = 0;
-
-  /**
-   * 
-   * Search By Experiment Description
-   * Search Experiments by experiment description with pagination. Results will be sorted based on creation time DESC.
-   * 
-   * @param gatewayId
-   *       Unique identifier of the requested gateway.
-   * 
-   * @param userName
-   *       Username of the requested user.
-   * 
-   * @param description
-   *       Experiment description to be matched.
-   * 
-   * @param limit
-   *       Amount of results to be fetched.
-   * 
-   * @param offset
-   *       The starting point of the results to be fetched.
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param gatewayId
-   * @param userName
-   * @param description
-   * @param limit
-   * @param offset
-   */
-  virtual void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) = 0;
-
-  /**
-   * 
-   * Search Experiment By the Application
-   * Search Experiments of a particular application id with pagination. Results will be sorted based on creation time DESC
-   * 
-   * @param gatewayId
-   *       Unique identifier of the requested gateway.
-   * 
-   * @param userName
-   *       Username of the requested user.
-   * 
-   * @param applicationId
-   *       Application id to be matched.
-   * 
-   * @param limit
-   *       Amount of results to be fetched.
-   * 
-   * @param offset
-   *       The starting point of the results to be fetched.
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param gatewayId
-   * @param userName
-   * @param applicationId
-   * @param limit
-   * @param offset
-   */
-  virtual void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset) = 0;
-
-  /**
-   * 
-   * Search User Experiments by Status
-   * Search all the Experiments of the given user  by experiment status with pagination. Results will be sorted based on creation time DESC
-   * 
-   * @param gatewayId
-   *       Unique identifier of the requested gateway.
-   * 
-   * @param userName
-   *       Username of the user making the request.
-   * 
-   * @param experimentState
-   *       Experiement state to be matched.
-   * 
-   * @param limit
-   *       Amount of results to be fetched.
-   * 
-   * @param offset
-   *       The starting point of the results to be fetched.
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param gatewayId
-   * @param userName
-   * @param experimentState
-   * @param limit
-   * @param offset
-   */
-  virtual void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset) = 0;
-
-  /**
-   * 
-   * Search User Experiments by the Creation Time
-   * This will search all the experiments of the given user by experiment creation time with pagination. Results will be sorted based on creation time DESC.
-   * 
-   * @param gatewayId
-   *       Unique identifier of the requested gateway.
-   * 
-   * @param userName
-   *       Username of the requested user.
-   * 
-   * @param fromTime
-   *       Start time of the experiments creation time.
-   * 
-   * @param toTime
-   *       End time of the  experiement creation time.
-   * 
-   * @param limit
-   *       Amount of results to be fetched.
-   * 
-   * @param offset
-   *       The starting point of the results to be fetched.
-   * 
-   * @return ExperimentSummaryModel
-   *    List of experiments for the given search filter. Here only the Experiment summary will be returned.
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param gatewayId
-   * @param userName
-   * @param fromTime
-   * @param toTime
-   * @param limit
-   * @param offset
-   */
-  virtual void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset) = 0;
+  virtual void searchProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * Search Experiments.
@@ -2660,6 +2509,9 @@ class AiravataNull : virtual public AiravataIf {
   void addGateway(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::apache::airavata::model::workspace::Gateway& /* gateway */) {
     return;
   }
+  void getAllUsersInGateway(std::vector<std::string> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */) {
+    return;
+  }
   void updateGateway(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const  ::apache::airavata::model::workspace::Gateway& /* updatedGateway */) {
     return;
   }
@@ -2677,19 +2529,43 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
+  void createNotification(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::apache::airavata::model::workspace::Notification& /* notification */) {
+    return;
+  }
+  bool updateNotification(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::apache::airavata::model::workspace::Notification& /* notification */) {
+    bool _return = false;
+    return _return;
+  }
+  bool deleteNotification(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* notificationId */) {
+    bool _return = false;
+    return _return;
+  }
+  void getNotification( ::apache::airavata::model::workspace::Notification& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* notificationId */) {
+    return;
+  }
+  void getAllNotifications(std::vector< ::apache::airavata::model::workspace::Notification> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */) {
+    return;
+  }
   void generateAndRegisterSSHKeys(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */) {
+    return;
+  }
+  void registerPwdCredential(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* portalUserName */, const std::string& /* loginUserName */, const std::string& /* password */, const std::string& /* description */) {
     return;
   }
   void getSSHPubKey(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataCredStoreToken */, const std::string& /* gatewayId */) {
     return;
   }
-  void getAllUserSSHPubKeys(std::map<std::string, std::string> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* userName */) {
-    return;
-  }
   void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */) {
     return;
   }
+  void getAllGatewayPWDCredentials(std::map<std::string, std::string> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */) {
+    return;
+  }
   bool deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataCredStoreToken */, const std::string& /* gatewayId */) {
+    bool _return = false;
+    return _return;
+  }
+  bool deletePWDCredential(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataCredStoreToken */, const std::string& /* gatewayId */) {
     bool _return = false;
     return _return;
   }
@@ -2709,25 +2585,7 @@ class AiravataNull : virtual public AiravataIf {
   void getUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* projectName */, const int32_t /* limit */, const int32_t /* offset */) {
-    return;
-  }
-  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* description */, const int32_t /* limit */, const int32_t /* offset */) {
-    return;
-  }
-  void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* expName */, const int32_t /* limit */, const int32_t /* offset */) {
-    return;
-  }
-  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* description */, const int32_t /* limit */, const int32_t /* offset */) {
-    return;
-  }
-  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* applicationId */, const int32_t /* limit */, const int32_t /* offset */) {
-    return;
-  }
-  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const  ::apache::airavata::model::status::ExperimentState::type /* experimentState */, const int32_t /* limit */, const int32_t /* offset */) {
-    return;
-  }
-  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const int64_t /* fromTime */, const int64_t /* toTime */, const int32_t /* limit */, const int32_t /* offset */) {
+  void searchProjects(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> & /* filters */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
   void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & /* filters */, const int32_t /* limit */, const int32_t /* offset */) {
@@ -3521,6 +3379,142 @@ class Airavata_addGateway_presult {
 };
 
 
+class Airavata_getAllUsersInGateway_args {
+ public:
+
+  Airavata_getAllUsersInGateway_args(const Airavata_getAllUsersInGateway_args&);
+  Airavata_getAllUsersInGateway_args& operator=(const Airavata_getAllUsersInGateway_args&);
+  Airavata_getAllUsersInGateway_args() : gatewayId() {
+  }
+
+  virtual ~Airavata_getAllUsersInGateway_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string gatewayId;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_gatewayId(const std::string& val);
+
+  bool operator == (const Airavata_getAllUsersInGateway_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllUsersInGateway_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllUsersInGateway_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getAllUsersInGateway_pargs {
+ public:
+
+
+  virtual ~Airavata_getAllUsersInGateway_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* gatewayId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllUsersInGateway_result__isset {
+  _Airavata_getAllUsersInGateway_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getAllUsersInGateway_result__isset;
+
+class Airavata_getAllUsersInGateway_result {
+ public:
+
+  Airavata_getAllUsersInGateway_result(const Airavata_getAllUsersInGateway_result&);
+  Airavata_getAllUsersInGateway_result& operator=(const Airavata_getAllUsersInGateway_result&);
+  Airavata_getAllUsersInGateway_result() {
+  }
+
+  virtual ~Airavata_getAllUsersInGateway_result() throw();
+  std::vector<std::string>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getAllUsersInGateway_result__isset __isset;
+
+  void __set_success(const std::vector<std::string> & val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_getAllUsersInGateway_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllUsersInGateway_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllUsersInGateway_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllUsersInGateway_presult__isset {
+  _Airavata_getAllUsersInGateway_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getAllUsersInGateway_presult__isset;
+
+class Airavata_getAllUsersInGateway_presult {
+ public:
+
+
+  virtual ~Airavata_getAllUsersInGateway_presult() throw();
+  std::vector<std::string> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getAllUsersInGateway_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
 class Airavata_updateGateway_args {
  public:
 
@@ -4193,6 +4187,698 @@ class Airavata_isGatewayExist_presult {
 };
 
 
+class Airavata_createNotification_args {
+ public:
+
+  Airavata_createNotification_args(const Airavata_createNotification_args&);
+  Airavata_createNotification_args& operator=(const Airavata_createNotification_args&);
+  Airavata_createNotification_args() {
+  }
+
+  virtual ~Airavata_createNotification_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+   ::apache::airavata::model::workspace::Notification notification;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_notification(const  ::apache::airavata::model::workspace::Notification& val);
+
+  bool operator == (const Airavata_createNotification_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(notification == rhs.notification))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_createNotification_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_createNotification_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_createNotification_pargs {
+ public:
+
+
+  virtual ~Airavata_createNotification_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const  ::apache::airavata::model::workspace::Notification* notification;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_createNotification_result__isset {
+  _Airavata_createNotification_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_createNotification_result__isset;
+
+class Airavata_createNotification_result {
+ public:
+
+  Airavata_createNotification_result(const Airavata_createNotification_result&);
+  Airavata_createNotification_result& operator=(const Airavata_createNotification_result&);
+  Airavata_createNotification_result() : success() {
+  }
+
+  virtual ~Airavata_createNotification_result() throw();
+  std::string success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_createNotification_result__isset __isset;
+
+  void __set_success(const std::string& val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_createNotification_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_createNotification_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_createNotification_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_createNotification_presult__isset {
+  _Airavata_createNotification_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_createNotification_presult__isset;
+
+class Airavata_createNotification_presult {
+ public:
+
+
+  virtual ~Airavata_createNotification_presult() throw();
+  std::string* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_createNotification_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_updateNotification_args {
+ public:
+
+  Airavata_updateNotification_args(const Airavata_updateNotification_args&);
+  Airavata_updateNotification_args& operator=(const Airavata_updateNotification_args&);
+  Airavata_updateNotification_args() {
+  }
+
+  virtual ~Airavata_updateNotification_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+   ::apache::airavata::model::workspace::Notification notification;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_notification(const  ::apache::airavata::model::workspace::Notification& val);
+
+  bool operator == (const Airavata_updateNotification_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(notification == rhs.notification))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateNotification_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateNotification_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_updateNotification_pargs {
+ public:
+
+
+  virtual ~Airavata_updateNotification_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const  ::apache::airavata::model::workspace::Notification* notification;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_updateNotification_result__isset {
+  _Airavata_updateNotification_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_updateNotification_result__isset;
+
+class Airavata_updateNotification_result {
+ public:
+
+  Airavata_updateNotification_result(const Airavata_updateNotification_result&);
+  Airavata_updateNotification_result& operator=(const Airavata_updateNotification_result&);
+  Airavata_updateNotification_result() : success(0) {
+  }
+
+  virtual ~Airavata_updateNotification_result() throw();
+  bool success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_updateNotification_result__isset __isset;
+
+  void __set_success(const bool val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_updateNotification_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateNotification_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateNotification_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_updateNotification_presult__isset {
+  _Airavata_updateNotification_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_updateNotification_presult__isset;
+
+class Airavata_updateNotification_presult {
+ public:
+
+
+  virtual ~Airavata_updateNotification_presult() throw();
+  bool* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_updateNotification_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_deleteNotification_args {
+ public:
+
+  Airavata_deleteNotification_args(const Airavata_deleteNotification_args&);
+  Airavata_deleteNotification_args& operator=(const Airavata_deleteNotification_args&);
+  Airavata_deleteNotification_args() : gatewayId(), notificationId() {
+  }
+
+  virtual ~Airavata_deleteNotification_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string gatewayId;
+  std::string notificationId;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_gatewayId(const std::string& val);
+
+  void __set_notificationId(const std::string& val);
+
+  bool operator == (const Airavata_deleteNotification_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    if (!(notificationId == rhs.notificationId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteNotification_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteNotification_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_deleteNotification_pargs {
+ public:
+
+
+  virtual ~Airavata_deleteNotification_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* gatewayId;
+  const std::string* notificationId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deleteNotification_result__isset {
+  _Airavata_deleteNotification_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_deleteNotification_result__isset;
+
+class Airavata_deleteNotification_result {
+ public:
+
+  Airavata_deleteNotification_result(const Airavata_deleteNotification_result&);
+  Airavata_deleteNotification_result& operator=(const Airavata_deleteNotification_result&);
+  Airavata_deleteNotification_result() : success(0) {
+  }
+
+  virtual ~Airavata_deleteNotification_result() throw();
+  bool success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_deleteNotification_result__isset __isset;
+
+  void __set_success(const bool val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_deleteNotification_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteNotification_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteNotification_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deleteNotification_presult__isset {
+  _Airavata_deleteNotification_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_deleteNotification_presult__isset;
+
+class Airavata_deleteNotification_presult {
+ public:
+
+
+  virtual ~Airavata_deleteNotification_presult() throw();
+  bool* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_deleteNotification_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getNotification_args {
+ public:
+
+  Airavata_getNotification_args(const Airavata_getNotification_args&);
+  Airavata_getNotification_args& operator=(const Airavata_getNotification_args&);
+  Airavata_getNotification_args() : gatewayId(), notificationId() {
+  }
+
+  virtual ~Airavata_getNotification_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string gatewayId;
+  std::string notificationId;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_gatewayId(const std::string& val);
+
+  void __set_notificationId(const std::string& val);
+
+  bool operator == (const Airavata_getNotification_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    if (!(notificationId == rhs.notificationId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getNotification_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getNotification_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getNotification_pargs {
+ public:
+
+
+  virtual ~Airavata_getNotification_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* gatewayId;
+  const std::string* notificationId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getNotification_result__isset {
+  _Airavata_getNotification_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getNotification_result__isset;
+
+class Airavata_getNotification_result {
+ public:
+
+  Airavata_getNotification_result(const Airavata_getNotification_result&);
+  Airavata_getNotification_result& operator=(const Airavata_getNotification_result&);
+  Airavata_getNotification_result() {
+  }
+
+  virtual ~Airavata_getNotification_result() throw();
+   ::apache::airavata::model::workspace::Notification success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getNotification_result__isset __isset;
+
+  void __set_success(const  ::apache::airavata::model::workspace::Notification& val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_getNotification_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getNotification_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getNotification_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getNotification_presult__isset {
+  _Airavata_getNotification_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getNotification_presult__isset;
+
+class Airavata_getNotification_presult {
+ public:
+
+
+  virtual ~Airavata_getNotification_presult() throw();
+   ::apache::airavata::model::workspace::Notification* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getNotification_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getAllNotifications_args {
+ public:
+
+  Airavata_getAllNotifications_args(const Airavata_getAllNotifications_args&);
+  Airavata_getAllNotifications_args& operator=(const Airavata_getAllNotifications_args&);
+  Airavata_getAllNotifications_args() : gatewayId() {
+  }
+
+  virtual ~Airavata_getAllNotifications_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string gatewayId;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_gatewayId(const std::string& val);
+
+  bool operator == (const Airavata_getAllNotifications_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllNotifications_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllNotifications_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getAllNotifications_pargs {
+ public:
+
+
+  virtual ~Airavata_getAllNotifications_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* gatewayId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllNotifications_result__isset {
+  _Airavata_getAllNotifications_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getAllNotifications_result__isset;
+
+class Airavata_getAllNotifications_result {
+ public:
+
+  Airavata_getAllNotifications_result(const Airavata_getAllNotifications_result&);
+  Airavata_getAllNotifications_result& operator=(const Airavata_getAllNotifications_result&);
+  Airavata_getAllNotifications_result() {
+  }
+
+  virtual ~Airavata_getAllNotifications_result() throw();
+  std::vector< ::apache::airavata::model::workspace::Notification>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getAllNotifications_result__isset __isset;
+
+  void __set_success(const std::vector< ::apache::airavata::model::workspace::Notification> & val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_getAllNotifications_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllNotifications_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllNotifications_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllNotifications_presult__isset {
+  _Airavata_getAllNotifications_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getAllNotifications_presult__isset;
+
+class Airavata_getAllNotifications_presult {
+ public:
+
+
+  virtual ~Airavata_getAllNotifications_presult() throw();
+  std::vector< ::apache::airavata::model::workspace::Notification> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getAllNotifications_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
 class Airavata_generateAndRegisterSSHKeys_args {
  public:
 
@@ -4321,6 +5007,158 @@ class Airavata_generateAndRegisterSSHKeys_presult {
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_generateAndRegisterSSHKeys_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_registerPwdCredential_args {
+ public:
+
+  Airavata_registerPwdCredential_args(const Airavata_registerPwdCredential_args&);
+  Airavata_registerPwdCredential_args& operator=(const Airavata_registerPwdCredential_args&);
+  Airavata_registerPwdCredential_args() : gatewayId(), portalUserName(), loginUserName(), password(), description() {
+  }
+
+  virtual ~Airavata_registerPwdCredential_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string gatewayId;
+  std::string portalUserName;
+  std::string loginUserName;
+  std::string password;
+  std::string description;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_gatewayId(const std::string& val);
+
+  void __set_portalUserName(const std::string& val);
+
+  void __set_loginUserName(const std::string& val);
+
+  void __set_password(const std::string& val);
+
+  void __set_description(const std::string& val);
+
+  bool operator == (const Airavata_registerPwdCredential_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    if (!(portalUserName == rhs.portalUserName))
+      return false;
+    if (!(loginUserName == rhs.loginUserName))
+      return false;
+    if (!(password == rhs.password))
+      return false;
+    if (!(description == rhs.description))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_registerPwdCredential_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_registerPwdCredential_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_registerPwdCredential_pargs {
+ public:
+
+
+  virtual ~Airavata_registerPwdCredential_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* gatewayId;
+  const std::string* portalUserName;
+  const std::string* loginUserName;
+  const std::string* password;
+  const std::string* description;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_registerPwdCredential_result__isset {
+  _Airavata_registerPwdCredential_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+} _Airavata_registerPwdCredential_result__isset;
+
+class Airavata_registerPwdCredential_result {
+ public:
+
+  Airavata_registerPwdCredential_result(const Airavata_registerPwdCredential_result&);
+  Airavata_registerPwdCredential_result& operator=(const Airavata_registerPwdCredential_result&);
+  Airavata_registerPwdCredential_result() : success() {
+  }
+
+  virtual ~Airavata_registerPwdCredential_result() throw();
+  std::string success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_registerPwdCredential_result__isset __isset;
+
+  void __set_success(const std::string& val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  bool operator == (const Airavata_registerPwdCredential_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_registerPwdCredential_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_registerPwdCredential_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_registerPwdCredential_presult__isset {
+  _Airavata_registerPwdCredential_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+} _Airavata_registerPwdCredential_presult__isset;
+
+class Airavata_registerPwdCredential_presult {
+ public:
+
+
+  virtual ~Airavata_registerPwdCredential_presult() throw();
+  std::string* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_registerPwdCredential_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -4461,134 +5299,6 @@ class Airavata_getSSHPubKey_presult {
 };
 
 
-class Airavata_getAllUserSSHPubKeys_args {
- public:
-
-  Airavata_getAllUserSSHPubKeys_args(const Airavata_getAllUserSSHPubKeys_args&);
-  Airavata_getAllUserSSHPubKeys_args& operator=(const Airavata_getAllUserSSHPubKeys_args&);
-  Airavata_getAllUserSSHPubKeys_args() : userName() {
-  }
-
-  virtual ~Airavata_getAllUserSSHPubKeys_args() throw();
-   ::apache::airavata::model::security::AuthzToken authzToken;
-  std::string userName;
-
-  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
-
-  void __set_userName(const std::string& val);
-
-  bool operator == (const Airavata_getAllUserSSHPubKeys_args & rhs) const
-  {
-    if (!(authzToken == rhs.authzToken))
-      return false;
-    if (!(userName == rhs.userName))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_getAllUserSSHPubKeys_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_getAllUserSSHPubKeys_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class Airavata_getAllUserSSHPubKeys_pargs {
- public:
-
-
-  virtual ~Airavata_getAllUserSSHPubKeys_pargs() throw();
-  const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* userName;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_getAllUserSSHPubKeys_result__isset {
-  _Airavata_getAllUserSSHPubKeys_result__isset() : success(false), ire(false), ace(false), ase(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_getAllUserSSHPubKeys_result__isset;
-
-class Airavata_getAllUserSSHPubKeys_result {
- public:
-
-  Airavata_getAllUserSSHPubKeys_result(const Airavata_getAllUserSSHPubKeys_result&);
-  Airavata_getAllUserSSHPubKeys_result& operator=(const Airavata_getAllUserSSHPubKeys_result&);
-  Airavata_getAllUserSSHPubKeys_result() {
-  }
-
-  virtual ~Airavata_getAllUserSSHPubKeys_result() throw();
-  std::map<std::string, std::string>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_getAllUserSSHPubKeys_result__isset __isset;
-
-  void __set_success(const std::map<std::string, std::string> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  bool operator == (const Airavata_getAllUserSSHPubKeys_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_getAllUserSSHPubKeys_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_getAllUserSSHPubKeys_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_getAllUserSSHPubKeys_presult__isset {
-  _Airavata_getAllUserSSHPubKeys_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_getAllUserSSHPubKeys_presult__isset;
-
-class Airavata_getAllUserSSHPubKeys_presult {
- public:
-
-
-  virtual ~Airavata_getAllUserSSHPubKeys_presult() throw();
-  std::map<std::string, std::string> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_getAllUserSSHPubKeys_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
 class Airavata_getAllGatewaySSHPubKeys_args {
  public:
 
@@ -4711,6 +5421,134 @@ class Airavata_getAllGatewaySSHPubKeys_presult {
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAllGatewaySSHPubKeys_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getAllGatewayPWDCredentials_args {
+ public:
+
+  Airavata_getAllGatewayPWDCredentials_args(const Airavata_getAllGatewayPWDCredentials_args&);
+  Airavata_getAllGatewayPWDCredentials_args& operator=(const Airavata_getAllGatewayPWDCredentials_args&);
+  Airavata_getAllGatewayPWDCredentials_args() : gatewayId() {
+  }
+
+  virtual ~Airavata_getAllGatewayPWDCredentials_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string gatewayId;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_gatewayId(const std::string& val);
+
+  bool operator == (const Airavata_getAllGatewayPWDCredentials_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllGatewayPWDCredentials_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllGatewayPWDCredentials_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getAllGatewayPWDCredentials_pargs {
+ public:
+
+
+  virtual ~Airavata_getAllGatewayPWDCredentials_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* gatewayId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllGatewayPWDCredentials_result__isset {
+  _Airavata_getAllGatewayPWDCredentials_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+} _Airavata_getAllGatewayPWDCredentials_result__isset;
+
+class Airavata_getAllGatewayPWDCredentials_result {
+ public:
+
+  Airavata_getAllGatewayPWDCredentials_result(const Airavata_getAllGatewayPWDCredentials_result&);
+  Airavata_getAllGatewayPWDCredentials_result& operator=(const Airavata_getAllGatewayPWDCredentials_result&);
+  Airavata_getAllGatewayPWDCredentials_result() {
+  }
+
+  virtual ~Airavata_getAllGatewayPWDCredentials_result() throw();
+  std::map<std::string, std::string>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAllGatewayPWDCredentials_result__isset __isset;
+
+  void __set_success(const std::map<std::string, std::string> & val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  bool operator == (const Airavata_getAllGatewayPWDCredentials_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllGatewayPWDCredentials_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllGatewayPWDCredentials_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllGatewayPWDCredentials_presult__isset {
+  _Airavata_getAllGatewayPWDCredentials_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+} _Airavata_getAllGatewayPWDCredentials_presult__isset;
+
+class Airavata_getAllGatewayPWDCredentials_presult {
+ public:
+
+
+  virtual ~Airavata_getAllGatewayPWDCredentials_presult() throw();
+  std::map<std::string, std::string> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAllGatewayPWDCredentials_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -4845,6 +5683,140 @@ class Airavata_deleteSSHPubKey_presult {
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_deleteSSHPubKey_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_deletePWDCredential_args {
+ public:
+
+  Airavata_deletePWDCredential_args(const Airavata_deletePWDCredential_args&);
+  Airavata_deletePWDCredential_args& operator=(const Airavata_deletePWDCredential_args&);
+  Airavata_deletePWDCredential_args() : airavataCredStoreToken(), gatewayId() {
+  }
+
+  virtual ~Airavata_deletePWDCredential_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string airavataCredStoreToken;
+  std::string gatewayId;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_airavataCredStoreToken(const std::string& val);
+
+  void __set_gatewayId(const std::string& val);
+
+  bool operator == (const Airavata_deletePWDCredential_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(airavataCredStoreToken == rhs.airavataCredStoreToken))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deletePWDCredential_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deletePWDCredential_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_deletePWDCredential_pargs {
+ public:
+
+
+  virtual ~Airavata_deletePWDCredential_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* airavataCredStoreToken;
+  const std::string* gatewayId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deletePWDCredential_result__isset {
+  _Airavata_deletePWDCredential_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+} _Airavata_deletePWDCredential_result__isset;
+
+class Airavata_deletePWDCredential_result {
+ public:
+
+  Airavata_deletePWDCredential_result(const Airavata_deletePWDCredential_result&);
+  Airavata_deletePWDCredential_result& operator=(const Airavata_deletePWDCredential_result&);
+  Airavata_deletePWDCredential_result() : success(0) {
+  }
+
+  virtual ~Airavata_deletePWDCredential_result() throw();
+  bool success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deletePWDCredential_result__isset __isset;
+
+  void __set_success(const bool val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  bool operator == (const Airavata_deletePWDCredential_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deletePWDCredential_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deletePWDCredential_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deletePWDCredential_presult__isset {
+  _Airavata_deletePWDCredential_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+} _Airavata_deletePWDCredential_presult__isset;
+
+class Airavata_deletePWDCredential_presult {
+ public:
+
+
+  virtual ~Airavata_deletePWDCredential_presult() throw();
+  bool* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deletePWDCredential_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -5576,22 +6548,28 @@ class Airavata_getUserProjects_presult {
 
 };
 
+typedef struct _Airavata_searchProjects_args__isset {
+  _Airavata_searchProjects_args__isset() : filters(false) {}
+  bool filters :1;
+} _Airavata_searchProjects_args__isset;
 
-class Airavata_searchProjectsByProjectName_args {
+class Airavata_searchProjects_args {
  public:
 
-  Airavata_searchProjectsByProjectName_args(const Airavata_searchProjectsByProjectName_args&);
-  Airavata_searchProjectsByProjectName_args& operator=(const Airavata_searchProjectsByProjectName_args&);
-  Airavata_searchProjectsByProjectName_args() : gatewayId(), userName(), projectName(), limit(0), offset(0) {
+  Airavata_searchProjects_args(const Airavata_searchProjects_args&);
+  Airavata_searchProjects_args& operator=(const Airavata_searchProjects_args&);
+  Airavata_searchProjects_args() : gatewayId(), userName(), limit(0), offset(0) {
   }
 
-  virtual ~Airavata_searchProjectsByProjectName_args() throw();
+  virtual ~Airavata_searchProjects_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string gatewayId;
   std::string userName;
-  std::string projectName;
+  std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string>  filters;
   int32_t limit;
   int32_t offset;
+
+  _Airavata_searchProjects_args__isset __isset;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
@@ -5599,13 +6577,13 @@ class Airavata_searchProjectsByProjectName_args {
 
   void __set_userName(const std::string& val);
 
-  void __set_projectName(const std::string& val);
+  void __set_filters(const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> & val);
 
   void __set_limit(const int32_t val);
 
   void __set_offset(const int32_t val);
 
-  bool operator == (const Airavata_searchProjectsByProjectName_args & rhs) const
+  bool operator == (const Airavata_searchProjects_args & rhs) const
   {
     if (!(authzToken == rhs.authzToken))
       return false;
@@ -5613,7 +6591,7 @@ class Airavata_searchProjectsByProjectName_args {
       return false;
     if (!(userName == rhs.userName))
       return false;
-    if (!(projectName == rhs.projectName))
+    if (!(filters == rhs.filters))
       return false;
     if (!(limit == rhs.limit))
       return false;
@@ -5621,11 +6599,11 @@ class Airavata_searchProjectsByProjectName_args {
       return false;
     return true;
   }
-  bool operator != (const Airavata_searchProjectsByProjectName_args &rhs) const {
+  bool operator != (const Airavata_searchProjects_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Airavata_searchProjectsByProjectName_args & ) const;
+  bool operator < (const Airavata_searchProjects_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -5633,15 +6611,15 @@ class Airavata_searchProjectsByProjectName_args {
 };
 
 
-class Airavata_searchProjectsByProjectName_pargs {
+class Airavata_searchProjects_pargs {
  public:
 
 
-  virtual ~Airavata_searchProjectsByProjectName_pargs() throw();
+  virtual ~Airavata_searchProjects_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* gatewayId;
   const std::string* userName;
-  const std::string* projectName;
+  const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> * filters;
   const int32_t* limit;
   const int32_t* offset;
 
@@ -5649,31 +6627,31 @@ class Airavata_searchProjectsByProjectName_pargs {
 
 };
 
-typedef struct _Airavata_searchProjectsByProjectName_result__isset {
-  _Airavata_searchProjectsByProjectName_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+typedef struct _Airavata_searchProjects_result__isset {
+  _Airavata_searchProjects_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
   bool ae :1;
-} _Airavata_searchProjectsByProjectName_result__isset;
+} _Airavata_searchProjects_result__isset;
 
-class Airavata_searchProjectsByProjectName_result {
+class Airavata_searchProjects_result {
  public:
 
-  Airavata_searchProjectsByProjectName_result(const Airavata_searchProjectsByProjectName_result&);
-  Airavata_searchProjectsByProjectName_result& operator=(const Airavata_searchProjectsByProjectName_result&);
-  Airavata_searchProjectsByProjectName_result() {
+  Airavata_searchProjects_result(const Airavata_searchProjects_result&);
+  Airavata_searchProjects_result& operator=(const Airavata_searchProjects_result&);
+  Airavata_searchProjects_result() {
   }
 
-  virtual ~Airavata_searchProjectsByProjectName_result() throw();
+  virtual ~Airavata_searchProjects_result() throw();
   std::vector< ::apache::airavata::model::workspace::Project>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
    ::apache::airavata::api::error::AuthorizationException ae;
 
-  _Airavata_searchProjectsByProjectName_result__isset __isset;
+  _Airavata_searchProjects_result__isset __isset;
 
   void __set_success(const std::vector< ::apache::airavata::model::workspace::Project> & val);
 
@@ -5685,7 +6663,7 @@ class Airavata_searchProjectsByProjectName_result {
 
   void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
 
-  bool operator == (const Airavata_searchProjectsByProjectName_result & rhs) const
+  bool operator == (const Airavata_searchProjects_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
@@ -5699,1004 +6677,38 @@ class Airavata_searchProjectsByProjectName_result {
       return false;
     return true;
   }
-  bool operator != (const Airavata_searchProjectsByProjectName_result &rhs) const {
+  bool operator != (const Airavata_searchProjects_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Airavata_searchProjectsByProjectName_result & ) const;
+  bool operator < (const Airavata_searchProjects_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _Airavata_searchProjectsByProjectName_presult__isset {
-  _Airavata_searchProjectsByProjectName_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+typedef struct _Airavata_searchProjects_presult__isset {
+  _Airavata_searchProjects_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
   bool ae :1;
-} _Airavata_searchProjectsByProjectName_presult__isset;
+} _Airavata_searchProjects_presult__isset;
 
-class Airavata_searchProjectsByProjectName_presult {
+class Airavata_searchProjects_presult {
  public:
 
 
-  virtual ~Airavata_searchProjectsByProjectName_presult() throw();
+  virtual ~Airavata_searchProjects_presult() throw();
   std::vector< ::apache::airavata::model::workspace::Project> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
    ::apache::airavata::api::error::AuthorizationException ae;
 
-  _Airavata_searchProjectsByProjectName_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
-class Airavata_searchProjectsByProjectDesc_args {
- public:
-
-  Airavata_searchProjectsByProjectDesc_args(const Airavata_searchProjectsByProjectDesc_args&);
-  Airavata_searchProjectsByProjectDesc_args& operator=(const Airavata_searchProjectsByProjectDesc_args&);
-  Airavata_searchProjectsByProjectDesc_args() : gatewayId(), userName(), description(), limit(0), offset(0) {
-  }
-
-  virtual ~Airavata_searchProjectsByProjectDesc_args() throw();
-   ::apache::airavata::model::security::AuthzToken authzToken;
-  std::string gatewayId;
-  std::string userName;
-  std::string description;
-  int32_t limit;
-  int32_t offset;
-
-  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
-
-  void __set_gatewayId(const std::string& val);
-
-  void __set_userName(const std::string& val);
-
-  void __set_description(const std::string& val);
-
-  void __set_limit(const int32_t val);
-
-  void __set_offset(const int32_t val);
-
-  bool operator == (const Airavata_searchProjectsByProjectDesc_args & rhs) const
-  {
-    if (!(authzToken == rhs.authzToken))
-      return false;
-    if (!(gatewayId == rhs.gatewayId))
-      return false;
-    if (!(userName == rhs.userName))
-      return false;
-    if (!(description == rhs.description))
-      return false;
-    if (!(limit == rhs.limit))
-      return false;
-    if (!(offset == rhs.offset))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchProjectsByProjectDesc_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchProjectsByProjectDesc_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class Airavata_searchProjectsByProjectDesc_pargs {
- public:
-
-
-  virtual ~Airavata_searchProjectsByProjectDesc_pargs() throw();
-  const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* gatewayId;
-  const std::string* userName;
-  const std::string* description;
-  const int32_t* limit;
-  const int32_t* offset;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_searchProjectsByProjectDesc_result__isset {
-  _Airavata_searchProjectsByProjectDesc_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchProjectsByProjectDesc_result__isset;
-
-class Airavata_searchProjectsByProjectDesc_result {
- public:
-
-  Airavata_searchProjectsByProjectDesc_result(const Airavata_searchProjectsByProjectDesc_result&);
-  Airavata_searchProjectsByProjectDesc_result& operator=(const Airavata_searchProjectsByProjectDesc_result&);
-  Airavata_searchProjectsByProjectDesc_result() {
-  }
-
-  virtual ~Airavata_searchProjectsByProjectDesc_result() throw();
-  std::vector< ::apache::airavata::model::workspace::Project>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchProjectsByProjectDesc_result__isset __isset;
-
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::Project> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
-
-  bool operator == (const Airavata_searchProjectsByProjectDesc_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    if (!(ae == rhs.ae))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchProjectsByProjectDesc_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchProjectsByProjectDesc_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_searchProjectsByProjectDesc_presult__isset {
-  _Airavata_searchProjectsByProjectDesc_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchProjectsByProjectDesc_presult__isset;
-
-class Airavata_searchProjectsByProjectDesc_presult {
- public:
-
-
-  virtual ~Airavata_searchProjectsByProjectDesc_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::Project> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchProjectsByProjectDesc_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
-class Airavata_searchExperimentsByName_args {
- public:
-
-  Airavata_searchExperimentsByName_args(const Airavata_searchExperimentsByName_args&);
-  Airavata_searchExperimentsByName_args& operator=(const Airavata_searchExperimentsByName_args&);
-  Airavata_searchExperimentsByName_args() : gatewayId(), userName(), expName(), limit(0), offset(0) {
-  }
-
-  virtual ~Airavata_searchExperimentsByName_args() throw();
-   ::apache::airavata::model::security::AuthzToken authzToken;
-  std::string gatewayId;
-  std::string userName;
-  std::string expName;
-  int32_t limit;
-  int32_t offset;
-
-  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
-
-  void __set_gatewayId(const std::string& val);
-
-  void __set_userName(const std::string& val);
-
-  void __set_expName(const std::string& val);
-
-  void __set_limit(const int32_t val);
-
-  void __set_offset(const int32_t val);
-
-  bool operator == (const Airavata_searchExperimentsByName_args & rhs) const
-  {
-    if (!(authzToken == rhs.authzToken))
-      return false;
-    if (!(gatewayId == rhs.gatewayId))
-      return false;
-    if (!(userName == rhs.userName))
-      return false;
-    if (!(expName == rhs.expName))
-      return false;
-    if (!(limit == rhs.limit))
-      return false;
-    if (!(offset == rhs.offset))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByName_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByName_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class Airavata_searchExperimentsByName_pargs {
- public:
-
-
-  virtual ~Airavata_searchExperimentsByName_pargs() throw();
-  const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* gatewayId;
-  const std::string* userName;
-  const std::string* expName;
-  const int32_t* limit;
-  const int32_t* offset;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_searchExperimentsByName_result__isset {
-  _Airavata_searchExperimentsByName_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByName_result__isset;
-
-class Airavata_searchExperimentsByName_result {
- public:
-
-  Airavata_searchExperimentsByName_result(const Airavata_searchExperimentsByName_result&);
-  Airavata_searchExperimentsByName_result& operator=(const Airavata_searchExperimentsByName_result&);
-  Airavata_searchExperimentsByName_result() {
-  }
-
-  virtual ~Airavata_searchExperimentsByName_result() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByName_result__isset __isset;
-
-  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
-
-  bool operator == (const Airavata_searchExperimentsByName_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    if (!(ae == rhs.ae))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByName_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByName_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_searchExperimentsByName_presult__isset {
-  _Airavata_searchExperimentsByName_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByName_presult__isset;
-
-class Airavata_searchExperimentsByName_presult {
- public:
-
-
-  virtual ~Airavata_searchExperimentsByName_presult() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByName_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
-class Airavata_searchExperimentsByDesc_args {
- public:
-
-  Airavata_searchExperimentsByDesc_args(const Airavata_searchExperimentsByDesc_args&);
-  Airavata_searchExperimentsByDesc_args& operator=(const Airavata_searchExperimentsByDesc_args&);
-  Airavata_searchExperimentsByDesc_args() : gatewayId(), userName(), description(), limit(0), offset(0) {
-  }
-
-  virtual ~Airavata_searchExperimentsByDesc_args() throw();
-   ::apache::airavata::model::security::AuthzToken authzToken;
-  std::string gatewayId;
-  std::string userName;
-  std::string description;
-  int32_t limit;
-  int32_t offset;
-
-  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
-
-  void __set_gatewayId(const std::string& val);
-
-  void __set_userName(const std::string& val);
-
-  void __set_description(const std::string& val);
-
-  void __set_limit(const int32_t val);
-
-  void __set_offset(const int32_t val);
-
-  bool operator == (const Airavata_searchExperimentsByDesc_args & rhs) const
-  {
-    if (!(authzToken == rhs.authzToken))
-      return false;
-    if (!(gatewayId == rhs.gatewayId))
-      return false;
-    if (!(userName == rhs.userName))
-      return false;
-    if (!(description == rhs.description))
-      return false;
-    if (!(limit == rhs.limit))
-      return false;
-    if (!(offset == rhs.offset))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByDesc_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByDesc_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class Airavata_searchExperimentsByDesc_pargs {
- public:
-
-
-  virtual ~Airavata_searchExperimentsByDesc_pargs() throw();
-  const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* gatewayId;
-  const std::string* userName;
-  const std::string* description;
-  const int32_t* limit;
-  const int32_t* offset;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_searchExperimentsByDesc_result__isset {
-  _Airavata_searchExperimentsByDesc_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByDesc_result__isset;
-
-class Airavata_searchExperimentsByDesc_result {
- public:
-
-  Airavata_searchExperimentsByDesc_result(const Airavata_searchExperimentsByDesc_result&);
-  Airavata_searchExperimentsByDesc_result& operator=(const Airavata_searchExperimentsByDesc_result&);
-  Airavata_searchExperimentsByDesc_result() {
-  }
-
-  virtual ~Airavata_searchExperimentsByDesc_result() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByDesc_result__isset __isset;
-
-  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
-
-  bool operator == (const Airavata_searchExperimentsByDesc_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    if (!(ae == rhs.ae))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByDesc_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByDesc_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_searchExperimentsByDesc_presult__isset {
-  _Airavata_searchExperimentsByDesc_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByDesc_presult__isset;
-
-class Airavata_searchExperimentsByDesc_presult {
- public:
-
-
-  virtual ~Airavata_searchExperimentsByDesc_presult() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByDesc_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
-class Airavata_searchExperimentsByApplication_args {
- public:
-
-  Airavata_searchExperimentsByApplication_args(const Airavata_searchExperimentsByApplication_args&);
-  Airavata_searchExperimentsByApplication_args& operator=(const Airavata_searchExperimentsByApplication_args&);
-  Airavata_searchExperimentsByApplication_args() : gatewayId(), userName(), applicationId(), limit(0), offset(0) {
-  }
-
-  virtual ~Airavata_searchExperimentsByApplication_args() throw();
-   ::apache::airavata::model::security::AuthzToken authzToken;
-  std::string gatewayId;
-  std::string userName;
-  std::string applicationId;
-  int32_t limit;
-  int32_t offset;
-
-  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
-
-  void __set_gatewayId(const std::string& val);
-
-  void __set_userName(const std::string& val);
-
-  void __set_applicationId(const std::string& val);
-
-  void __set_limit(const int32_t val);
-
-  void __set_offset(const int32_t val);
-
-  bool operator == (const Airavata_searchExperimentsByApplication_args & rhs) const
-  {
-    if (!(authzToken == rhs.authzToken))
-      return false;
-    if (!(gatewayId == rhs.gatewayId))
-      return false;
-    if (!(userName == rhs.userName))
-      return false;
-    if (!(applicationId == rhs.applicationId))
-      return false;
-    if (!(limit == rhs.limit))
-      return false;
-    if (!(offset == rhs.offset))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByApplication_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByApplication_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class Airavata_searchExperimentsByApplication_pargs {
- public:
-
-
-  virtual ~Airavata_searchExperimentsByApplication_pargs() throw();
-  const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* gatewayId;
-  const std::string* userName;
-  const std::string* applicationId;
-  const int32_t* limit;
-  const int32_t* offset;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_searchExperimentsByApplication_result__isset {
-  _Airavata_searchExperimentsByApplication_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByApplication_result__isset;
-
-class Airavata_searchExperimentsByApplication_result {
- public:
-
-  Airavata_searchExperimentsByApplication_result(const Airavata_searchExperimentsByApplication_result&);
-  Airavata_searchExperimentsByApplication_result& operator=(const Airavata_searchExperimentsByApplication_result&);
-  Airavata_searchExperimentsByApplication_result() {
-  }
-
-  virtual ~Airavata_searchExperimentsByApplication_result() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByApplication_result__isset __isset;
-
-  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
-
-  bool operator == (const Airavata_searchExperimentsByApplication_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    if (!(ae == rhs.ae))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByApplication_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByApplication_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_searchExperimentsByApplication_presult__isset {
-  _Airavata_searchExperimentsByApplication_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByApplication_presult__isset;
-
-class Airavata_searchExperimentsByApplication_presult {
- public:
-
-
-  virtual ~Airavata_searchExperimentsByApplication_presult() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByApplication_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
-class Airavata_searchExperimentsByStatus_args {
- public:
-
-  Airavata_searchExperimentsByStatus_args(const Airavata_searchExperimentsByStatus_args&);
-  Airavata_searchExperimentsByStatus_args& operator=(const Airavata_searchExperimentsByStatus_args&);
-  Airavata_searchExperimentsByStatus_args() : gatewayId(), userName(), experimentState(( ::apache::airavata::model::status::ExperimentState::type)0), limit(0), offset(0) {
-  }
-
-  virtual ~Airavata_searchExperimentsByStatus_args() throw();
-   ::apache::airavata::model::security::AuthzToken authzToken;
-  std::string gatewayId;
-  std::string userName;
-   ::apache::airavata::model::status::ExperimentState::type experimentState;
-  int32_t limit;
-  int32_t offset;
-
-  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
-
-  void __set_gatewayId(const std::string& val);
-
-  void __set_userName(const std::string& val);
-
-  void __set_experimentState(const  ::apache::airavata::model::status::ExperimentState::type val);
-
-  void __set_limit(const int32_t val);
-
-  void __set_offset(const int32_t val);
-
-  bool operator == (const Airavata_searchExperimentsByStatus_args & rhs) const
-  {
-    if (!(authzToken == rhs.authzToken))
-      return false;
-    if (!(gatewayId == rhs.gatewayId))
-      return false;
-    if (!(userName == rhs.userName))
-      return false;
-    if (!(experimentState == rhs.experimentState))
-      return false;
-    if (!(limit == rhs.limit))
-      return false;
-    if (!(offset == rhs.offset))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByStatus_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByStatus_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class Airavata_searchExperimentsByStatus_pargs {
- public:
-
-
-  virtual ~Airavata_searchExperimentsByStatus_pargs() throw();
-  const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* gatewayId;
-  const std::string* userName;
-  const  ::apache::airavata::model::status::ExperimentState::type* experimentState;
-  const int32_t* limit;
-  const int32_t* offset;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_searchExperimentsByStatus_result__isset {
-  _Airavata_searchExperimentsByStatus_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByStatus_result__isset;
-
-class Airavata_searchExperimentsByStatus_result {
- public:
-
-  Airavata_searchExperimentsByStatus_result(const Airavata_searchExperimentsByStatus_result&);
-  Airavata_searchExperimentsByStatus_result& operator=(const Airavata_searchExperimentsByStatus_result&);
-  Airavata_searchExperimentsByStatus_result() {
-  }
-
-  virtual ~Airavata_searchExperimentsByStatus_result() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByStatus_result__isset __isset;
-
-  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
-
-  bool operator == (const Airavata_searchExperimentsByStatus_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    if (!(ae == rhs.ae))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByStatus_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByStatus_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_searchExperimentsByStatus_presult__isset {
-  _Airavata_searchExperimentsByStatus_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByStatus_presult__isset;
-
-class Airavata_searchExperimentsByStatus_presult {
- public:
-
-
-  virtual ~Airavata_searchExperimentsByStatus_presult() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByStatus_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
-class Airavata_searchExperimentsByCreationTime_args {
- public:
-
-  Airavata_searchExperimentsByCreationTime_args(const Airavata_searchExperimentsByCreationTime_args&);
-  Airavata_searchExperimentsByCreationTime_args& operator=(const Airavata_searchExperimentsByCreationTime_args&);
-  Airavata_searchExperimentsByCreationTime_args() : gatewayId(), userName(), fromTime(0), toTime(0), limit(0), offset(0) {
-  }
-
-  virtual ~Airavata_searchExperimentsByCreationTime_args() throw();
-   ::apache::airavata::model::security::AuthzToken authzToken;
-  std::string gatewayId;
-  std::string userName;
-  int64_t fromTime;
-  int64_t toTime;
-  int32_t limit;
-  int32_t offset;
-
-  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
-
-  void __set_gatewayId(const std::string& val);
-
-  void __set_userName(const std::string& val);
-
-  void __set_fromTime(const int64_t val);
-
-  void __set_toTime(const int64_t val);
-
-  void __set_limit(const int32_t val);
-
-  void __set_offset(const int32_t val);
-
-  bool operator == (const Airavata_searchExperimentsByCreationTime_args & rhs) const
-  {
-    if (!(authzToken == rhs.authzToken))
-      return false;
-    if (!(gatewayId == rhs.gatewayId))
-      return false;
-    if (!(userName == rhs.userName))
-      return false;
-    if (!(fromTime == rhs.fromTime))
-      return false;
-    if (!(toTime == rhs.toTime))
-      return false;
-    if (!(limit == rhs.limit))
-      return false;
-    if (!(offset == rhs.offset))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByCreationTime_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByCreationTime_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class Airavata_searchExperimentsByCreationTime_pargs {
- public:
-
-
-  virtual ~Airavata_searchExperimentsByCreationTime_pargs() throw();
-  const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* gatewayId;
-  const std::string* userName;
-  const int64_t* fromTime;
-  const int64_t* toTime;
-  const int32_t* limit;
-  const int32_t* offset;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_searchExperimentsByCreationTime_result__isset {
-  _Airavata_searchExperimentsByCreationTime_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByCreationTime_result__isset;
-
-class Airavata_searchExperimentsByCreationTime_result {
- public:
-
-  Airavata_searchExperimentsByCreationTime_result(const Airavata_searchExperimentsByCreationTime_result&);
-  Airavata_searchExperimentsByCreationTime_result& operator=(const Airavata_searchExperimentsByCreationTime_result&);
-  Airavata_searchExperimentsByCreationTime_result() {
-  }
-
-  virtual ~Airavata_searchExperimentsByCreationTime_result() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByCreationTime_result__isset __isset;
-
-  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
-
-  bool operator == (const Airavata_searchExperimentsByCreationTime_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    if (!(ae == rhs.ae))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_searchExperimentsByCreationTime_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_searchExperimentsByCreationTime_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_searchExperimentsByCreationTime_presult__isset {
-  _Airavata_searchExperimentsByCreationTime_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-  bool ae :1;
-} _Airavata_searchExperimentsByCreationTime_presult__isset;
-
-class Airavata_searchExperimentsByCreationTime_presult {
- public:
-
-
-  virtual ~Airavata_searchExperimentsByCreationTime_presult() throw();
-  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::AuthorizationException ae;
-
-  _Airavata_searchExperimentsByCreationTime_presult__isset __isset;
+  _Airavata_searchProjects_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -22730,6 +22742,9 @@ class AiravataClient : virtual public AiravataIf {
   void addGateway(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Gateway& gateway);
   void send_addGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Gateway& gateway);
   void recv_addGateway(std::string& _return);
+  void getAllUsersInGateway(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
+  void send_getAllUsersInGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
+  void recv_getAllUsersInGateway(std::vector<std::string> & _return);
   void updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway);
   void send_updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway);
   void recv_updateGateway();
@@ -22745,21 +22760,42 @@ class AiravataClient : virtual public AiravataIf {
   bool isGatewayExist(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void send_isGatewayExist(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   bool recv_isGatewayExist();
+  void createNotification(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification);
+  void send_createNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification);
+  void recv_createNotification(std::string& _return);
+  bool updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification);
+  void send_updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification);
+  bool recv_updateNotification();
+  bool deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId);
+  void send_deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId);
+  bool recv_deleteNotification();
+  void getNotification( ::apache::airavata::model::workspace::Notification& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId);
+  void send_getNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId);
+  void recv_getNotification( ::apache::airavata::model::workspace::Notification& _return);
+  void getAllNotifications(std::vector< ::apache::airavata::model::workspace::Notification> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
+  void send_getAllNotifications(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
+  void recv_getAllNotifications(std::vector< ::apache::airavata::model::workspace::Notification> & _return);
   void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
   void send_generateAndRegisterSSHKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
   void recv_generateAndRegisterSSHKeys(std::string& _return);
+  void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password, const std::string& description);
+  void send_registerPwdCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password, const std::string& description);
+  void recv_registerPwdCredential(std::string& _return);
   void getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
   void send_getSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
   void recv_getSSHPubKey(std::string& _return);
-  void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName);
-  void send_getAllUserSSHPubKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName);
-  void recv_getAllUserSSHPubKeys(std::map<std::string, std::string> & _return);
   void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void send_getAllGatewaySSHPubKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return);
+  void getAllGatewayPWDCredentials(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
+  void send_getAllGatewayPWDCredentials(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
+  void recv_getAllGatewayPWDCredentials(std::map<std::string, std::string> & _return);
   bool deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
   void send_deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
   bool recv_deleteSSHPubKey();
+  bool deletePWDCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
+  void send_deletePWDCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
+  bool recv_deletePWDCredential();
   void createProject(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project);
   void send_createProject(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project);
   void recv_createProject(std::string& _return);
@@ -22775,27 +22811,9 @@ class AiravataClient : virtual public AiravataIf {
   void getUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset);
   void send_getUserProjects(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset);
   void recv_getUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return);
-  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset);
-  void send_searchProjectsByProjectName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset);
-  void recv_searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return);
-  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
-  void send_searchProjectsByProjectDesc(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
-  void recv_searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return);
-  void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset);
-  void send_searchExperimentsByName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
-  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
-  void send_searchExperimentsByDesc(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
-  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset);
-  void send_searchExperimentsByApplication(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
-  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset);
-  void send_searchExperimentsByStatus(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
-  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset);
-  void send_searchExperimentsByCreationTime(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
+  void searchProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
+  void send_searchProjects(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
+  void recv_searchProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return);
   void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
   void send_searchExperiments(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
   void recv_searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
@@ -23156,28 +23174,30 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_getAPIVersion(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_isUserExists(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_addGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAllUsersInGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllGateways(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_isGatewayExist(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_createNotification(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_updateNotification(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_deleteNotification(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getNotification(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAllNotifications(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_generateAndRegisterSSHKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_registerPwdCredential(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getSSHPubKey(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_getAllUserSSHPubKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllGatewaySSHPubKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAllGatewayPWDCredentials(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteSSHPubKey(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_deletePWDCredential(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_createProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getUserProjects(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_searchProjectsByProjectName(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_searchProjectsByProjectDesc(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_searchExperimentsByName(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_searchExperimentsByDesc(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_searchExperimentsByApplication(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_searchExperimentsByStatus(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_searchExperimentsByCreationTime(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_searchProjects(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_searchExperiments(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getExperimentStatistics(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getExperimentsInProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -23298,28 +23318,30 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["getAPIVersion"] = &AiravataProcessor::process_getAPIVersion;
     processMap_["isUserExists"] = &AiravataProcessor::process_isUserExists;
     processMap_["addGateway"] = &AiravataProcessor::process_addGateway;
+    processMap_["getAllUsersInGateway"] = &AiravataProcessor::process_getAllUsersInGateway;
     processMap_["updateGateway"] = &AiravataProcessor::process_updateGateway;
     processMap_["getGateway"] = &AiravataProcessor::process_getGateway;
     processMap_["deleteGateway"] = &AiravataProcessor::process_deleteGateway;
     processMap_["getAllGateways"] = &AiravataProcessor::process_getAllGateways;
     processMap_["isGatewayExist"] = &AiravataProcessor::process_isGatewayExist;
+    processMap_["createNotification"] = &AiravataProcessor::process_createNotification;
+    processMap_["updateNotification"] = &AiravataProcessor::process_updateNotification;
+    processMap_["deleteNotification"] = &AiravataProcessor::process_deleteNotification;
+    processMap_["getNotification"] = &AiravataProcessor::process_getNotification;
+    processMap_["getAllNotifications"] = &AiravataProcessor::process_getAllNotifications;
     processMap_["generateAndRegisterSSHKeys"] = &AiravataProcessor::process_generateAndRegisterSSHKeys;
+    processMap_["registerPwdCredential"] = &AiravataProcessor::process_registerPwdCredential;
     processMap_["getSSHPubKey"] = &AiravataProcessor::process_getSSHPubKey;
-    processMap_["getAllUserSSHPubKeys"] = &AiravataProcessor::process_getAllUserSSHPubKeys;
     processMap_["getAllGatewaySSHPubKeys"] = &AiravataProcessor::process_getAllGatewaySSHPubKeys;
+    processMap_["getAllGatewayPWDCredentials"] = &AiravataProcessor::process_getAllGatewayPWDCredentials;
     processMap_["deleteSSHPubKey"] = &AiravataProcessor::process_deleteSSHPubKey;
+    processMap_["deletePWDCredential"] = &AiravataProcessor::process_deletePWDCredential;
     processMap_["createProject"] = &AiravataProcessor::process_createProject;
     processMap_["updateProject"] = &AiravataProcessor::process_updateProject;
     processMap_["getProject"] = &AiravataProcessor::process_getProject;
     processMap_["deleteProject"] = &AiravataProcessor::process_deleteProject;
     processMap_["getUserProjects"] = &AiravataProcessor::process_getUserProjects;
-    processMap_["searchProjectsByProjectName"] = &AiravataProcessor::process_searchProjectsByProjectName;
-    processMap_["searchProjectsByProjectDesc"] = &AiravataProcessor::process_searchProjectsByProjectDesc;
-    processMap_["searchExperimentsByName"] = &AiravataProcessor::process_searchExperimentsByName;
-    processMap_["searchExperimentsByDesc"] = &AiravataProcessor::process_searchExperimentsByDesc;
-    processMap_["searchExperimentsByApplication"] = &AiravataProcessor::process_searchExperimentsByApplication;
-    processMap_["searchExperimentsByStatus"] = &AiravataProcessor::process_searchExperimentsByStatus;
-    processMap_["searchExperimentsByCreationTime"] = &AiravataProcessor::process_searchExperimentsByCreationTime;
+    processMap_["searchProjects"] = &AiravataProcessor::process_searchProjects;
     processMap_["searchExperiments"] = &AiravataProcessor::process_searchExperiments;
     processMap_["getExperimentStatistics"] = &AiravataProcessor::process_getExperimentStatistics;
     processMap_["getExperimentsInProject"] = &AiravataProcessor::process_getExperimentsInProject;
@@ -23491,6 +23513,16 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
+  void getAllUsersInGateway(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getAllUsersInGateway(_return, authzToken, gatewayId);
+    }
+    ifaces_[i]->getAllUsersInGateway(_return, authzToken, gatewayId);
+    return;
+  }
+
   void updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway) {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -23538,6 +23570,54 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->isGatewayExist(authzToken, gatewayId);
   }
 
+  void createNotification(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->createNotification(_return, authzToken, notification);
+    }
+    ifaces_[i]->createNotification(_return, authzToken, notification);
+    return;
+  }
+
+  bool updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->updateNotification(authzToken, notification);
+    }
+    return ifaces_[i]->updateNotification(authzToken, notification);
+  }
+
+  bool deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->deleteNotification(authzToken, gatewayId, notificationId);
+    }
+    return ifaces_[i]->deleteNotification(authzToken, gatewayId, notificationId);
+  }
+
+  void getNotification( ::apache::airavata::model::workspace::Notification& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getNotification(_return, authzToken, gatewayId, notificationId);
+    }
+    ifaces_[i]->getNotification(_return, authzToken, gatewayId, notificationId);
+    return;
+  }
+
+  void getAllNotifications(std::vector< ::apache::airavata::model::workspace::Notification> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getAllNotifications(_return, authzToken, gatewayId);
+    }
+    ifaces_[i]->getAllNotifications(_return, authzToken, gatewayId);
+    return;
+  }
+
   void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName) {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -23545,6 +23625,16 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->generateAndRegisterSSHKeys(_return, authzToken, gatewayId, userName);
     }
     ifaces_[i]->generateAndRegisterSSHKeys(_return, authzToken, gatewayId, userName);
+    return;
+  }
+
+  void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password, const std::string& description) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->registerPwdCredential(_return, authzToken, gatewayId, portalUserName, loginUserName, password, description);
+    }
+    ifaces_[i]->registerPwdCredential(_return, authzToken, gatewayId, portalUserName, loginUserName, password, description);
     return;
   }
 
@@ -23558,16 +23648,6 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllUserSSHPubKeys(_return, authzToken, userName);
-    }
-    ifaces_[i]->getAllUserSSHPubKeys(_return, authzToken, userName);
-    return;
-  }
-
   void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -23578,6 +23658,16 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
+  void getAllGatewayPWDCredentials(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getAllGatewayPWDCredentials(_return, authzToken, gatewayId);
+    }
+    ifaces_[i]->getAllGatewayPWDCredentials(_return, authzToken, gatewayId);
+    return;
+  }
+
   bool deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -23585,6 +23675,15 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->deleteSSHPubKey(authzToken, airavataCredStoreToken, gatewayId);
     }
     return ifaces_[i]->deleteSSHPubKey(authzToken, airavataCredStoreToken, gatewayId);
+  }
+
+  bool deletePWDCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->deletePWDCredential(authzToken, airavataCredStoreToken, gatewayId);
+    }
+    return ifaces_[i]->deletePWDCredential(authzToken, airavataCredStoreToken, gatewayId);
   }
 
   void createProject(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project) {
@@ -23635,73 +23734,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset) {
+  void searchProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchProjectsByProjectName(_return, authzToken, gatewayId, userName, projectName, limit, offset);
+      ifaces_[i]->searchProjects(_return, authzToken, gatewayId, userName, filters, limit, offset);
     }
-    ifaces_[i]->searchProjectsByProjectName(_return, authzToken, gatewayId, userName, projectName, limit, offset);
-    return;
-  }
-
-  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchProjectsByProjectDesc(_return, authzToken, gatewayId, userName, description, limit, offset);
-    }
-    ifaces_[i]->searchProjectsByProjectDesc(_return, authzToken, gatewayId, userName, description, limit, offset);
-    return;
-  }
-
-  void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByName(_return, authzToken, gatewayId, userName, expName, limit, offset);
-    }
-    ifaces_[i]->searchExperimentsByName(_return, authzToken, gatewayId, userName, expName, limit, offset);
-    return;
-  }
-
-  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByDesc(_return, authzToken, gatewayId, userName, description, limit, offset);
-    }
-    ifaces_[i]->searchExperimentsByDesc(_return, authzToken, gatewayId, userName, description, limit, offset);
-    return;
-  }
-
-  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByApplication(_return, authzToken, gatewayId, userName, applicationId, limit, offset);
-    }
-    ifaces_[i]->searchExperimentsByApplication(_return, authzToken, gatewayId, userName, applicationId, limit, offset);
-    return;
-  }
-
-  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByStatus(_return, authzToken, gatewayId, userName, experimentState, limit, offset);
-    }
-    ifaces_[i]->searchExperimentsByStatus(_return, authzToken, gatewayId, userName, experimentState, limit, offset);
-    return;
-  }
-
-  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByCreationTime(_return, authzToken, gatewayId, userName, fromTime, toTime, limit, offset);
-    }
-    ifaces_[i]->searchExperimentsByCreationTime(_return, authzToken, gatewayId, userName, fromTime, toTime, limit, offset);
+    ifaces_[i]->searchProjects(_return, authzToken, gatewayId, userName, filters, limit, offset);
     return;
   }
 
@@ -24839,6 +24878,9 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void addGateway(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Gateway& gateway);
   int32_t send_addGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Gateway& gateway);
   void recv_addGateway(std::string& _return, const int32_t seqid);
+  void getAllUsersInGateway(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
+  int32_t send_getAllUsersInGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
+  void recv_getAllUsersInGateway(std::vector<std::string> & _return, const int32_t seqid);
   void updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway);
   int32_t send_updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway);
   void recv_updateGateway(const int32_t seqid);
@@ -24854,21 +24896,42 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   bool isGatewayExist(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   int32_t send_isGatewayExist(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   bool recv_isGatewayExist(const int32_t seqid);
+  void createNotification(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification);
+  int32_t send_createNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification);
+  void recv_createNotification(std::string& _return, const int32_t seqid);
+  bool updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification);
+  int32_t send_updateNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Notification& notification);
+  bool recv_updateNotification(const int32_t seqid);
+  bool deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId);
+  int32_t send_deleteNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId);
+  bool recv_deleteNotification(const int32_t seqid);
+  void getNotification( ::apache::airavata::model::workspace::Notification& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId);
+  int32_t send_getNotification(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& notificationId);
+  void recv_getNotification( ::apache::airavata::model::workspace::Notification& _return, const int32_t seqid);
+  void getAllNotifications(std::vector< ::apache::airavata::model::workspace::Notification> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
+  int32_t send_getAllNotifications(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
+  void recv_getAllNotifications(std::vector< ::apache::airavata::model::workspace::Notification> & _return, const int32_t seqid);
   void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
   int32_t send_generateAndRegisterSSHKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
   void recv_generateAndRegisterSSHKeys(std::string& _return, const int32_t seqid);
+  void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password, const std::string& description);
+  int32_t send_registerPwdCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password, const std::string& description);
+  void recv_registerPwdCredential(std::string& _return, const int32_t seqid);
   void getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
   int32_t send_getSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
   void recv_getSSHPubKey(std::string& _return, const int32_t seqid);
-  void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName);
-  int32_t send_getAllUserSSHPubKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName);
-  void recv_getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const int32_t seqid);
   void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   int32_t send_getAllGatewaySSHPubKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const int32_t seqid);
+  void getAllGatewayPWDCredentials(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
+  int32_t send_getAllGatewayPWDCredentials(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
+  void recv_getAllGatewayPWDCredentials(std::map<std::string, std::string> & _return, const int32_t seqid);
   bool deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
   int32_t send_deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
   bool recv_deleteSSHPubKey(const int32_t seqid);
+  bool deletePWDCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
+  int32_t send_deletePWDCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId);
+  bool recv_deletePWDCredential(const int32_t seqid);
   void createProject(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project);
   int32_t send_createProject(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project);
   void recv_createProject(std::string& _return, const int32_t seqid);
@@ -24884,27 +24947,9 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void getUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset);
   int32_t send_getUserProjects(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset);
   void recv_getUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const int32_t seqid);
-  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset);
-  int32_t send_searchProjectsByProjectName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset);
-  void recv_searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const int32_t seqid);
-  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
-  int32_t send_searchProjectsByProjectDesc(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
-  void recv_searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const int32_t seqid);
-  void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset);
-  int32_t send_searchExperimentsByName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const int32_t seqid);
-  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
-  int32_t send_searchExperimentsByDesc(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const int32_t seqid);
-  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset);
-  int32_t send_searchExperimentsByApplication(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const int32_t seqid);
-  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset);
-  int32_t send_searchExperimentsByStatus(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const int32_t seqid);
-  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset);
-  int32_t send_searchExperimentsByCreationTime(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const int32_t seqid);
+  void searchProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
+  int32_t send_searchProjects(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ProjectSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
+  void recv_searchProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const int32_t seqid);
   void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
   int32_t send_searchExperiments(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
   void recv_searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const int32_t seqid);

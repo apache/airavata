@@ -45,6 +45,7 @@
 #include "status_models_types.h"
 #include "data_movement_models_types.h"
 #include "replica_catalog_models_types.h"
+#include "user_profile_model_types.h"
 
 
 namespace apache { namespace airavata { namespace model {

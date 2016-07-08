@@ -68,6 +68,11 @@ void ApplicationInterfaceDescription::__set_archiveWorkingDirectory(const bool v
 __isset.archiveWorkingDirectory = true;
 }
 
+void ApplicationInterfaceDescription::__set_hasOptionalFileInputs(const bool val) {
+  this->hasOptionalFileInputs = val;
+__isset.hasOptionalFileInputs = true;
+}
+
 uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -183,6 +188,14 @@ uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProt
           xfer += iprot->skip(ftype);
         }
         break;
+      case 8:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->hasOptionalFileInputs);
+          this->__isset.hasOptionalFileInputs = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -261,6 +274,11 @@ uint32_t ApplicationInterfaceDescription::write(::apache::thrift::protocol::TPro
     xfer += oprot->writeBool(this->archiveWorkingDirectory);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.hasOptionalFileInputs) {
+    xfer += oprot->writeFieldBegin("hasOptionalFileInputs", ::apache::thrift::protocol::T_BOOL, 8);
+    xfer += oprot->writeBool(this->hasOptionalFileInputs);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -275,6 +293,7 @@ void swap(ApplicationInterfaceDescription &a, ApplicationInterfaceDescription &b
   swap(a.applicationInputs, b.applicationInputs);
   swap(a.applicationOutputs, b.applicationOutputs);
   swap(a.archiveWorkingDirectory, b.archiveWorkingDirectory);
+  swap(a.hasOptionalFileInputs, b.hasOptionalFileInputs);
   swap(a.__isset, b.__isset);
 }
 
@@ -286,6 +305,7 @@ ApplicationInterfaceDescription::ApplicationInterfaceDescription(const Applicati
   applicationInputs = other18.applicationInputs;
   applicationOutputs = other18.applicationOutputs;
   archiveWorkingDirectory = other18.archiveWorkingDirectory;
+  hasOptionalFileInputs = other18.hasOptionalFileInputs;
   __isset = other18.__isset;
 }
 ApplicationInterfaceDescription& ApplicationInterfaceDescription::operator=(const ApplicationInterfaceDescription& other19) {
@@ -296,6 +316,7 @@ ApplicationInterfaceDescription& ApplicationInterfaceDescription::operator=(cons
   applicationInputs = other19.applicationInputs;
   applicationOutputs = other19.applicationOutputs;
   archiveWorkingDirectory = other19.archiveWorkingDirectory;
+  hasOptionalFileInputs = other19.hasOptionalFileInputs;
   __isset = other19.__isset;
   return *this;
 }
@@ -309,6 +330,7 @@ void ApplicationInterfaceDescription::printTo(std::ostream& out) const {
   out << ", " << "applicationInputs="; (__isset.applicationInputs ? (out << to_string(applicationInputs)) : (out << "<null>"));
   out << ", " << "applicationOutputs="; (__isset.applicationOutputs ? (out << to_string(applicationOutputs)) : (out << "<null>"));
   out << ", " << "archiveWorkingDirectory="; (__isset.archiveWorkingDirectory ? (out << to_string(archiveWorkingDirectory)) : (out << "<null>"));
+  out << ", " << "hasOptionalFileInputs="; (__isset.hasOptionalFileInputs ? (out << to_string(hasOptionalFileInputs)) : (out << "<null>"));
   out << ")";
 }
 

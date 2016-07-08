@@ -49,6 +49,9 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
     private Integer wallTimeLimit;
     private Integer totalPhysicalMemory;
     private String staticWorkingDir;
+    private String overrideLoginUserName;
+    private String overrideScratchLocation;
+    private String overrideAllocationProjectNumber;
     private String storageId;
     private String experimentDataDir;
 
@@ -180,6 +183,30 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
         this.staticWorkingDir = staticWorkingDir;
     }
 
+    public String getOverrideLoginUserName() {
+        return overrideLoginUserName;
+    }
+
+    public void setOverrideLoginUserName(String overrideLoginUserName) {
+        this.overrideLoginUserName = overrideLoginUserName;
+    }
+
+    public String getOverrideScratchLocation() {
+        return overrideScratchLocation;
+    }
+
+    public void setOverrideScratchLocation(String overrideScratchLocation) {
+        this.overrideScratchLocation = overrideScratchLocation;
+    }
+
+    public String getOverrideAllocationProjectNumber() {
+        return overrideAllocationProjectNumber;
+    }
+
+    public void setOverrideAllocationProjectNumber(String overrideAllocationProjectNumber) {
+        this.overrideAllocationProjectNumber = overrideAllocationProjectNumber;
+    }
+
     public String getExperimentDataDir() {
         return experimentDataDir;
     }
@@ -193,36 +220,36 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
         throw new UnsupportedOperationException();
     }
 
-    
+
     public void remove(ResourceType type, Object name) throws RegistryException {
         logger.error("Unsupported resource type for process resource scheduling data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    
-    public ExperimentCatResource get(ResourceType type, Object name) throws RegistryException{
+
+    public ExperimentCatResource get(ResourceType type, Object name) throws RegistryException {
         logger.error("Unsupported resource type for process resource scheduling data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    
-    public List<ExperimentCatResource> get(ResourceType type) throws RegistryException{
+
+    public List<ExperimentCatResource> get(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for process resource scheduling data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    
-    public void save() throws RegistryException{
+
+    public void save() throws RegistryException {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
             UserConfigurationData userConfigurationData;
-            if(experimentId == null){
+            if (experimentId == null) {
                 throw new RegistryException("Does not have the experiment id");
             }
             UserConfigurationData existingConf = em.find(UserConfigurationData.class, experimentId);
             if (em.isOpen()) {
-                if (em.getTransaction().isActive()){
+                if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
                 em.close();
@@ -230,9 +257,9 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
 
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            if(existingConf == null){
+            if (existingConf == null) {
                 userConfigurationData = new UserConfigurationData();
-            }else {
+            } else {
                 userConfigurationData = existingConf;
             }
             userConfigurationData.setExperimentId(experimentId);
@@ -249,17 +276,20 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
             userConfigurationData.setQueueName(queueName);
             userConfigurationData.setWallTimeLimit(wallTimeLimit);
             userConfigurationData.setStaticWorkingDir(staticWorkingDir);
+            userConfigurationData.setOverrideLoginUserName(overrideLoginUserName);
+            userConfigurationData.setOverrideScratchLocation(overrideScratchLocation);
+            userConfigurationData.setOverrideAllocationProjectNumber(overrideAllocationProjectNumber);
             userConfigurationData.setTotalPhysicalMemory(totalPhysicalMemory);
             userConfigurationData.setStorageId(storageId);
             userConfigurationData.setExperimentDataDir(experimentDataDir);
-            if (existingConf == null){
+            if (existingConf == null) {
                 em.persist(userConfigurationData);
-            }else {
+            } else {
                 em.merge(userConfigurationData);
             }
             em.getTransaction().commit();
             if (em.isOpen()) {
-                if (em.getTransaction().isActive()){
+                if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
                 em.close();
@@ -269,7 +299,7 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
             throw new RegistryException(e);
         } finally {
             if (em != null && em.isOpen()) {
-                if (em.getTransaction().isActive()){
+                if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
                 em.close();

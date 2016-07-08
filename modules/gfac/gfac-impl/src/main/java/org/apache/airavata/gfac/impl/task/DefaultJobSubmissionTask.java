@@ -94,6 +94,7 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 					if (jobSubmissionOutput.isJobSubmissionFailed()) {
 						jobModel.setJobStatus(new JobStatus(JobState.FAILED));
 						jobModel.getJobStatus().setReason(jobSubmissionOutput.getFailureReason());
+						GFacUtils.saveJobModel(processContext, jobModel);
 						log.error("expId: {}, processid: {}, taskId: {} :- Job submission failed for job name {}",
                                 experimentId, taskContext.getProcessId(), taskContext.getTaskId(), jobModel.getJobName());
 						ErrorModel errorModel = new ErrorModel();
@@ -103,27 +104,30 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 						GFacUtils.saveProcessError(processContext, errorModel);
 						GFacUtils.saveTaskError(taskContext, errorModel);
 						taskStatus.setState(TaskState.FAILED);
-						taskStatus.setReason("Job submission command exit with non zero exit code");
+						taskStatus.setReason("Job submission command didn't return a jobId");
 						taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 						taskContext.setTaskStatus(taskStatus);
 					} else {
 						String msg;
 						GFacUtils.saveJobModel(processContext, jobModel);
+						ErrorModel errorModel = new ErrorModel();
 						if (exitCode != Integer.MIN_VALUE) {
 							msg = "expId:" + processContext.getProcessModel().getExperimentId() + ", processId:" +
 									processContext.getProcessId() + ", taskId: " + taskContext.getTaskId() +
 									" return non zero exit code:" + exitCode + "  for JobName:" + jobModel.getJobName() +
-									", with failure reason :  " + jobSubmissionOutput.getStdOut() +  " Hence changing job state to Failed." ;
+									", with failure reason : " + jobSubmissionOutput.getFailureReason()
+									+ " Hence changing job state to Failed." ;
+							errorModel.setActualErrorMessage(jobSubmissionOutput.getFailureReason());
 						} else {
 							msg = "expId:" + processContext.getProcessModel().getExperimentId() + ", processId:" +
 									processContext.getProcessId() + ", taskId: " + taskContext.getTaskId() +
 									" doesn't  return valid job submission exit code for JobName:" + jobModel.getJobName() +
-                                    ", with failure reason :  " + jobSubmissionOutput.getStdOut() +  " Hence changing job state to Failed." ;
+									", with failure reason : stdout ->" + jobSubmissionOutput.getStdOut() +
+									" stderr -> " + jobSubmissionOutput.getStdErr() + " Hence changing job state to Failed." ;
+							errorModel.setActualErrorMessage(msg);
 						}
 						log.error(msg);
-						ErrorModel errorModel = new ErrorModel();
 						errorModel.setUserFriendlyMessage(msg);
-						errorModel.setActualErrorMessage(msg);
 						GFacUtils.saveExperimentError(processContext, errorModel);
 						GFacUtils.saveProcessError(processContext, errorModel);
 						GFacUtils.saveTaskError(taskContext, errorModel);

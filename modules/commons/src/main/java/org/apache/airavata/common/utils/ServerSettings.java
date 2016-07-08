@@ -21,12 +21,12 @@
 
 package org.apache.airavata.common.utils;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class ServerSettings extends ApplicationSettings {
 
@@ -66,6 +66,9 @@ public class ServerSettings extends ApplicationSettings {
     private static final String CREDENTIAL_STORE_DB_USER = "credential.store.jdbc.user";
     private static final String CREDENTIAL_STORE_DB_PASSWORD = "credential.store.jdbc.password";
     private static final String CREDENTIAL_STORE_DB_DRIVER = "credential.store.jdbc.driver";
+
+    private static String USER_PROFILE_MONGODB_HOST = "userprofile.mongodb.host";
+    private static String USER_PROFILE_MONGODB_PORT = "userprofile.mongodb.port";
 
     private static final String REGISTRY_DB_URL = "registry.jdbc.url";
     private static final String REGISTRY_DB_USER = "registry.jdbc.user";
@@ -278,14 +281,6 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(Constants.REMOTE_OAUTH_SERVER_URL);
     }
 
-    public static String getAdminUsername() throws ApplicationSettingsException {
-        return getSetting(Constants.ADMIN_USERNAME);
-    }
-
-    public static String getAdminPassword() throws ApplicationSettingsException {
-        return getSetting(Constants.ADMIN_PASSWORD);
-    }
-
     public static String getAuthorizationPoliyName() throws ApplicationSettingsException {
         return getSetting(Constants.AUTHORIZATION_POLICY_NAME);
     }
@@ -372,6 +367,14 @@ public class ServerSettings extends ApplicationSettings {
 
     public static int getCacheSize() throws ApplicationSettingsException {
         return Integer.valueOf(getSetting(Constants.IN_MEMORY_CACHE_SIZE));
+    }
+
+    public static String getUserProfileMongodbHost() throws ApplicationSettingsException{
+        return getSetting(USER_PROFILE_MONGODB_HOST);
+    }
+
+    public static int getUserProfileMongodbPort() throws ApplicationSettingsException{
+        return Integer.parseInt(getSetting(USER_PROFILE_MONGODB_PORT));
     }
 
     public static String getLocalDataLocation() {

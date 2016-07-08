@@ -36,6 +36,8 @@ import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.Notification;
+import org.apache.airavata.model.workspace.NotificationPriority;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.resources.*;
@@ -515,6 +517,9 @@ public class ThriftDataModelConversion {
             resourceSchedulingModel.setWallTimeLimit(resource.getWallTimeLimit());
             resourceSchedulingModel.setTotalPhysicalMemory(resource.getTotalPhysicalMemory());
             resourceSchedulingModel.setStaticWorkingDir(resource.getStaticWorkingDir());
+            resourceSchedulingModel.setOverrideLoginUserName(resource.getOverrideLoginUserName());
+            resourceSchedulingModel.setOverrideScratchLocation(resource.getOverrideScratchLocation());
+            resourceSchedulingModel.setOverrideAllocationProjectNumber(resource.getOverrideAllocationProjectNumber());
             data.setComputationalResourceScheduling(resourceSchedulingModel);
 
             return data;
@@ -533,6 +538,9 @@ public class ThriftDataModelConversion {
             resourceSchedulingModel.setWallTimeLimit(resource.getWallTimeLimit());
             resourceSchedulingModel.setTotalPhysicalMemory(resource.getTotalPhysicalMemory());
             resourceSchedulingModel.setStaticWorkingDir(resource.getStaticWorkingDir());
+            resourceSchedulingModel.setOverrideLoginUserName(resource.getOverrideLoginUserName());
+            resourceSchedulingModel.setOverrideScratchLocation(resource.getOverrideScratchLocation());
+            resourceSchedulingModel.setOverrideAllocationProjectNumber(resource.getOverrideAllocationProjectNumber());
             return resourceSchedulingModel;
         }
         return null;
@@ -549,7 +557,29 @@ public class ThriftDataModelConversion {
             resourceSchedulingModel.setWallTimeLimit(resource.getWallTimeLimit());
             resourceSchedulingModel.setTotalPhysicalMemory(resource.getTotalPhysicalMemory());
             resourceSchedulingModel.setStaticWorkingDir(resource.getStaticWorkingDir());
+            resourceSchedulingModel.setOverrideLoginUserName(resource.getOverrideLoginUserName());
+            resourceSchedulingModel.setOverrideScratchLocation(resource.getOverrideScratchLocation());
+            resourceSchedulingModel.setOverrideAllocationProjectNumber(resource.getOverrideAllocationProjectNumber());
             return resourceSchedulingModel;
+        }
+        return null;
+    }
+
+    public static Notification getNotification(NotificationResource resource){
+        if(resource != null){
+            Notification notification = new Notification();
+            notification.setNotificationId(resource.getNotificationId());
+            notification.setGatewayId(resource.getGatewayId());
+            notification.setTitle(resource.getTitle());
+            notification.setNotificationMessage(resource.getNotificationMessage());
+            notification.setPriority(NotificationPriority.valueOf(resource.getPriority()));
+            if(resource.getPublishedTime() != null)
+                notification.setPublishedTime(resource.getPublishedTime().getTime());
+            if(resource.getExpirationTime() != null)
+                notification.setExpirationTime(resource.getExpirationTime().getTime());
+            if(resource.getCreationTime() != null)
+                notification.setCreationTime(resource.getCreationTime().getTime());
+            return notification;
         }
         return null;
     }

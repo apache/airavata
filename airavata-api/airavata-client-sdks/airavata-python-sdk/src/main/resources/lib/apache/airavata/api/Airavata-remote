@@ -27,28 +27,30 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  string getAPIVersion(AuthzToken authzToken)')
   print('  bool isUserExists(AuthzToken authzToken, string gatewayId, string userName)')
   print('  string addGateway(AuthzToken authzToken, Gateway gateway)')
+  print('   getAllUsersInGateway(AuthzToken authzToken, string gatewayId)')
   print('  void updateGateway(AuthzToken authzToken, string gatewayId, Gateway updatedGateway)')
   print('  Gateway getGateway(AuthzToken authzToken, string gatewayId)')
   print('  bool deleteGateway(AuthzToken authzToken, string gatewayId)')
   print('   getAllGateways(AuthzToken authzToken)')
   print('  bool isGatewayExist(AuthzToken authzToken, string gatewayId)')
+  print('  string createNotification(AuthzToken authzToken, Notification notification)')
+  print('  bool updateNotification(AuthzToken authzToken, Notification notification)')
+  print('  bool deleteNotification(AuthzToken authzToken, string gatewayId, string notificationId)')
+  print('  Notification getNotification(AuthzToken authzToken, string gatewayId, string notificationId)')
+  print('   getAllNotifications(AuthzToken authzToken, string gatewayId)')
   print('  string generateAndRegisterSSHKeys(AuthzToken authzToken, string gatewayId, string userName)')
+  print('  string registerPwdCredential(AuthzToken authzToken, string gatewayId, string portalUserName, string loginUserName, string password, string description)')
   print('  string getSSHPubKey(AuthzToken authzToken, string airavataCredStoreToken, string gatewayId)')
-  print('   getAllUserSSHPubKeys(AuthzToken authzToken, string userName)')
   print('   getAllGatewaySSHPubKeys(AuthzToken authzToken, string gatewayId)')
+  print('   getAllGatewayPWDCredentials(AuthzToken authzToken, string gatewayId)')
   print('  bool deleteSSHPubKey(AuthzToken authzToken, string airavataCredStoreToken, string gatewayId)')
+  print('  bool deletePWDCredential(AuthzToken authzToken, string airavataCredStoreToken, string gatewayId)')
   print('  string createProject(AuthzToken authzToken, string gatewayId, Project project)')
   print('  void updateProject(AuthzToken authzToken, string projectId, Project updatedProject)')
   print('  Project getProject(AuthzToken authzToken, string projectId)')
   print('  bool deleteProject(AuthzToken authzToken, string projectId)')
   print('   getUserProjects(AuthzToken authzToken, string gatewayId, string userName, i32 limit, i32 offset)')
-  print('   searchProjectsByProjectName(AuthzToken authzToken, string gatewayId, string userName, string projectName, i32 limit, i32 offset)')
-  print('   searchProjectsByProjectDesc(AuthzToken authzToken, string gatewayId, string userName, string description, i32 limit, i32 offset)')
-  print('   searchExperimentsByName(AuthzToken authzToken, string gatewayId, string userName, string expName, i32 limit, i32 offset)')
-  print('   searchExperimentsByDesc(AuthzToken authzToken, string gatewayId, string userName, string description, i32 limit, i32 offset)')
-  print('   searchExperimentsByApplication(AuthzToken authzToken, string gatewayId, string userName, string applicationId, i32 limit, i32 offset)')
-  print('   searchExperimentsByStatus(AuthzToken authzToken, string gatewayId, string userName, ExperimentState experimentState, i32 limit, i32 offset)')
-  print('   searchExperimentsByCreationTime(AuthzToken authzToken, string gatewayId, string userName, i64 fromTime, i64 toTime, i32 limit, i32 offset)')
+  print('   searchProjects(AuthzToken authzToken, string gatewayId, string userName,  filters, i32 limit, i32 offset)')
   print('   searchExperiments(AuthzToken authzToken, string gatewayId, string userName,  filters, i32 limit, i32 offset)')
   print('  ExperimentStatistics getExperimentStatistics(AuthzToken authzToken, string gatewayId, i64 fromTime, i64 toTime)')
   print('   getExperimentsInProject(AuthzToken authzToken, string projectId, i32 limit, i32 offset)')
@@ -237,6 +239,12 @@ elif cmd == 'addGateway':
     sys.exit(1)
   pp.pprint(client.addGateway(eval(args[0]),eval(args[1]),))
 
+elif cmd == 'getAllUsersInGateway':
+  if len(args) != 2:
+    print('getAllUsersInGateway requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.getAllUsersInGateway(eval(args[0]),args[1],))
+
 elif cmd == 'updateGateway':
   if len(args) != 3:
     print('updateGateway requires 3 args')
@@ -267,11 +275,47 @@ elif cmd == 'isGatewayExist':
     sys.exit(1)
   pp.pprint(client.isGatewayExist(eval(args[0]),args[1],))
 
+elif cmd == 'createNotification':
+  if len(args) != 2:
+    print('createNotification requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.createNotification(eval(args[0]),eval(args[1]),))
+
+elif cmd == 'updateNotification':
+  if len(args) != 2:
+    print('updateNotification requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.updateNotification(eval(args[0]),eval(args[1]),))
+
+elif cmd == 'deleteNotification':
+  if len(args) != 3:
+    print('deleteNotification requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.deleteNotification(eval(args[0]),args[1],args[2],))
+
+elif cmd == 'getNotification':
+  if len(args) != 3:
+    print('getNotification requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.getNotification(eval(args[0]),args[1],args[2],))
+
+elif cmd == 'getAllNotifications':
+  if len(args) != 2:
+    print('getAllNotifications requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.getAllNotifications(eval(args[0]),args[1],))
+
 elif cmd == 'generateAndRegisterSSHKeys':
   if len(args) != 3:
     print('generateAndRegisterSSHKeys requires 3 args')
     sys.exit(1)
   pp.pprint(client.generateAndRegisterSSHKeys(eval(args[0]),args[1],args[2],))
+
+elif cmd == 'registerPwdCredential':
+  if len(args) != 6:
+    print('registerPwdCredential requires 6 args')
+    sys.exit(1)
+  pp.pprint(client.registerPwdCredential(eval(args[0]),args[1],args[2],args[3],args[4],args[5],))
 
 elif cmd == 'getSSHPubKey':
   if len(args) != 3:
@@ -279,23 +323,29 @@ elif cmd == 'getSSHPubKey':
     sys.exit(1)
   pp.pprint(client.getSSHPubKey(eval(args[0]),args[1],args[2],))
 
-elif cmd == 'getAllUserSSHPubKeys':
-  if len(args) != 2:
-    print('getAllUserSSHPubKeys requires 2 args')
-    sys.exit(1)
-  pp.pprint(client.getAllUserSSHPubKeys(eval(args[0]),args[1],))
-
 elif cmd == 'getAllGatewaySSHPubKeys':
   if len(args) != 2:
     print('getAllGatewaySSHPubKeys requires 2 args')
     sys.exit(1)
   pp.pprint(client.getAllGatewaySSHPubKeys(eval(args[0]),args[1],))
 
+elif cmd == 'getAllGatewayPWDCredentials':
+  if len(args) != 2:
+    print('getAllGatewayPWDCredentials requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.getAllGatewayPWDCredentials(eval(args[0]),args[1],))
+
 elif cmd == 'deleteSSHPubKey':
   if len(args) != 3:
     print('deleteSSHPubKey requires 3 args')
     sys.exit(1)
   pp.pprint(client.deleteSSHPubKey(eval(args[0]),args[1],args[2],))
+
+elif cmd == 'deletePWDCredential':
+  if len(args) != 3:
+    print('deletePWDCredential requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.deletePWDCredential(eval(args[0]),args[1],args[2],))
 
 elif cmd == 'createProject':
   if len(args) != 3:
@@ -327,47 +377,11 @@ elif cmd == 'getUserProjects':
     sys.exit(1)
   pp.pprint(client.getUserProjects(eval(args[0]),args[1],args[2],eval(args[3]),eval(args[4]),))
 
-elif cmd == 'searchProjectsByProjectName':
+elif cmd == 'searchProjects':
   if len(args) != 6:
-    print('searchProjectsByProjectName requires 6 args')
+    print('searchProjects requires 6 args')
     sys.exit(1)
-  pp.pprint(client.searchProjectsByProjectName(eval(args[0]),args[1],args[2],args[3],eval(args[4]),eval(args[5]),))
-
-elif cmd == 'searchProjectsByProjectDesc':
-  if len(args) != 6:
-    print('searchProjectsByProjectDesc requires 6 args')
-    sys.exit(1)
-  pp.pprint(client.searchProjectsByProjectDesc(eval(args[0]),args[1],args[2],args[3],eval(args[4]),eval(args[5]),))
-
-elif cmd == 'searchExperimentsByName':
-  if len(args) != 6:
-    print('searchExperimentsByName requires 6 args')
-    sys.exit(1)
-  pp.pprint(client.searchExperimentsByName(eval(args[0]),args[1],args[2],args[3],eval(args[4]),eval(args[5]),))
-
-elif cmd == 'searchExperimentsByDesc':
-  if len(args) != 6:
-    print('searchExperimentsByDesc requires 6 args')
-    sys.exit(1)
-  pp.pprint(client.searchExperimentsByDesc(eval(args[0]),args[1],args[2],args[3],eval(args[4]),eval(args[5]),))
-
-elif cmd == 'searchExperimentsByApplication':
-  if len(args) != 6:
-    print('searchExperimentsByApplication requires 6 args')
-    sys.exit(1)
-  pp.pprint(client.searchExperimentsByApplication(eval(args[0]),args[1],args[2],args[3],eval(args[4]),eval(args[5]),))
-
-elif cmd == 'searchExperimentsByStatus':
-  if len(args) != 6:
-    print('searchExperimentsByStatus requires 6 args')
-    sys.exit(1)
-  pp.pprint(client.searchExperimentsByStatus(eval(args[0]),args[1],args[2],eval(args[3]),eval(args[4]),eval(args[5]),))
-
-elif cmd == 'searchExperimentsByCreationTime':
-  if len(args) != 7:
-    print('searchExperimentsByCreationTime requires 7 args')
-    sys.exit(1)
-  pp.pprint(client.searchExperimentsByCreationTime(eval(args[0]),args[1],args[2],eval(args[3]),eval(args[4]),eval(args[5]),eval(args[6]),))
+  pp.pprint(client.searchProjects(eval(args[0]),args[1],args[2],eval(args[3]),eval(args[4]),eval(args[5]),))
 
 elif cmd == 'searchExperiments':
   if len(args) != 6:

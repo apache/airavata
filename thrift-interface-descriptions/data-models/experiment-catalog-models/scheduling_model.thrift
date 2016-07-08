@@ -37,5 +37,8 @@ struct ComputationalResourceSchedulingModel {
     6: optional i32 wallTimeLimit,
     7: optional i32 totalPhysicalMemory,
     8: optional string chessisNumber,
-    9: optional string staticWorkingDir
+    9: optional string staticWorkingDir,
+    10: optional string overrideLoginUserName,
+    11: optional string overrideScratchLocation,
+    12: optional string overrideAllocationProjectNumber
 }
