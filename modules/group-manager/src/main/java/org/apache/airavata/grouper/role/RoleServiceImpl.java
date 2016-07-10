@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.apache.airavata.grouper.role;
 
@@ -17,10 +17,10 @@ import static org.apache.airavata.grouper.AiravataGrouperUtil.*;
  *
  */
 public class RoleServiceImpl {
-  
-  
+
+
   public Group createRole(String roleId, GrouperSession session) {
-    
+
     GrouperSession grouperSession = null;
     Group role = null;
     try {
@@ -41,7 +41,7 @@ public class RoleServiceImpl {
     }
     return role;
   }
-  
+
   public void deleteRole(String roleId, GrouperSession session) {
     GrouperSession grouperSession = null;
     try {
@@ -56,9 +56,9 @@ public class RoleServiceImpl {
       }
     }
   }
-  
+
   public void assignRoleToUser(String userId, String roleId, GrouperSession session) throws GroupNotFoundException, SubjectNotFoundException {
-    
+
     GrouperSession grouperSession = null;
     try {
       grouperSession = session != null? session : GrouperSession.startRootSession();
@@ -66,7 +66,7 @@ public class RoleServiceImpl {
       if (role == null) {
         throw new GroupNotFoundException("Role "+roleId+" was not found.");
       }
-      Subject subject = SubjectFinder.findByIdAndSource(userId, SUBJECT_SOURCE, false);
+      Subject subject = SubjectFinder.findById(userId, false);
       if (subject == null) {
         throw new SubjectNotFoundException("userId "+userId+" was not found.");
       }
@@ -76,9 +76,9 @@ public class RoleServiceImpl {
         GrouperSession.stopQuietly(grouperSession);
       }
     }
-    
+
   }
-  
+
   public void removeRoleFromUser(String userId, String roleId, GrouperSession session) throws GroupNotFoundException, SubjectNotFoundException {
     GrouperSession grouperSession = null;
     try {
@@ -98,14 +98,14 @@ public class RoleServiceImpl {
       }
     }
   }
-  
+
   public static void main(String[] args) {
     RoleServiceImpl roleServiceImpl = new RoleServiceImpl();
-    
+
     roleServiceImpl.createRole("test_role", null);
-    
+
     roleServiceImpl.assignRoleToUser("test.subject.3", "test_role", null);
-    
+
     //roleServiceImpl.deleteRole("test_role", null);
   }
 
