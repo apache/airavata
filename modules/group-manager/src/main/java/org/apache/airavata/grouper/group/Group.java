@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.apache.airavata.grouper.group;
 
@@ -11,15 +11,26 @@ import java.util.List;
  *
  */
 public class Group {
-  
+
   private String id;
-  
+
   private String name;
-  
+
+  private String ownerId;
+
   private String description;
-  
-  private List<String> users = new ArrayList<String>();
-  
+
+  private List<String> members = new ArrayList<String>();
+
+  public Group(String id, String ownerId) {
+    if (id == null || ownerId == null) {
+      throw new IllegalArgumentException("id or ownerId is null");
+    }
+    this.id = id;
+    this.ownerId = ownerId;
+  }
+
+
   /**
    * @return the id
    */
@@ -27,15 +38,6 @@ public class Group {
     return id;
   }
 
-  
-  /**
-   * @param id the id to set
-   */
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  
   /**
    * @return the name
    */
@@ -43,7 +45,7 @@ public class Group {
     return name;
   }
 
-  
+
   /**
    * @param name the name to set
    */
@@ -51,7 +53,15 @@ public class Group {
     this.name = name;
   }
 
-  
+
+  /**
+   * @return the ownerId
+   */
+  public String getOwnerId() {
+    return ownerId;
+  }
+
+
   /**
    * @return the description
    */
@@ -59,7 +69,7 @@ public class Group {
     return description;
   }
 
-  
+
   /**
    * @param description the description to set
    */
@@ -67,28 +77,25 @@ public class Group {
     this.description = description;
   }
 
-  
   /**
-   * @return the users
+   * @return the members
    */
-  public List<String> getUsers() {
-    return users;
+  public List<String> getMembers() {
+    return members;
   }
 
   /**
-   * @param users the users to set
+   * @param members the members to set
    */
-  public void setUsers(List<String> users) {
-    this.users = users;
+  public void setMembers(List<String> members) {
+    this.members = members;
   }
 
 
-  /**
-   * @see Object#toString()
-   */
   @Override
   public String toString() {
-    return "Group [id=" + id + ", name=" + name + ", description=" + description + "]";
+    return "Group [id=" + id + ", name=" + name + ", ownerId=" + ownerId
+        + ", description=" + description + "]";
   }
-  
+
 }
