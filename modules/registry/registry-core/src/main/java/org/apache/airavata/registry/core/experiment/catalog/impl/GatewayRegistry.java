@@ -52,12 +52,10 @@ public class GatewayRegistry {
             resource.setGatewayName(gateway.getGatewayName());
             resource.setEmailAddress(gateway.getEmailAddress());
             resource.setDomain(gateway.getDomain());
-//            resource.setGatewayAcronym(gateway.getG);
-//
-//            gateway.setGatewayAcronym(gatewayAcronym);
-//            gateway.setGatewayUrl(gatewayUrl);
-//            gateway.setGatewayPublicAbstract(gatewayPublicAbstract);
-//            gateway.setReviewProposalDescription(reviewProposalDescription);
+            resource.setGatewayAcronym(gateway.getGatewayAcronym());
+            resource.setGatewayUrl(gateway.getGatewayURL());
+            resource.setGatewayPublicAbstract(gateway.getGatewayPublicAbstract());
+            resource.setReviewProposalDescription(gateway.getReviewProposalDescription());
             resource.save();
             return gateway.getGatewayId();
         }catch (RegistryException e){
@@ -72,6 +70,10 @@ public class GatewayRegistry {
             existingGateway.setGatewayName(updatedGateway.getGatewayName());
             existingGateway.setEmailAddress(updatedGateway.getEmailAddress());
             existingGateway.setDomain(updatedGateway.getDomain());
+            existingGateway.setGatewayAcronym(updatedGateway.getGatewayAcronym());
+            existingGateway.setGatewayUrl(updatedGateway.getGatewayURL());
+            existingGateway.setGatewayPublicAbstract(updatedGateway.getGatewayPublicAbstract());
+            existingGateway.setReviewProposalDescription(updatedGateway.getReviewProposalDescription());
             existingGateway.save();
         }catch (RegistryException e){
             logger.error("Error while updating gateway to registry", e);

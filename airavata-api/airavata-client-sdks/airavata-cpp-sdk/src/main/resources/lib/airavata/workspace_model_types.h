@@ -37,6 +37,17 @@
 
 namespace apache { namespace airavata { namespace model { namespace workspace {
 
+struct GatewayApprovalStatus {
+  enum type {
+    REQUESTED = 0,
+    APPROVED = 1,
+    ACTIVE = 2,
+    DEACTIVATED = 3
+  };
+};
+
+extern const std::map<int, const char*> _GatewayApprovalStatus_VALUES_TO_NAMES;
+
 struct NotificationPriority {
   enum type {
     LOW = 0,
@@ -251,10 +262,14 @@ inline std::ostream& operator<<(std::ostream& out, const User& obj)
 }
 
 typedef struct _Gateway__isset {
-  _Gateway__isset() : gatewayName(false), domain(false), emailAddress(false) {}
+  _Gateway__isset() : gatewayName(false), domain(false), emailAddress(false), gatewayAcronym(false), gatewayURL(false), gatewayPublicAbstract(false), reviewProposalDescription(false) {}
   bool gatewayName :1;
   bool domain :1;
   bool emailAddress :1;
+  bool gatewayAcronym :1;
+  bool gatewayURL :1;
+  bool gatewayPublicAbstract :1;
+  bool reviewProposalDescription :1;
 } _Gateway__isset;
 
 class Gateway {
@@ -262,18 +277,25 @@ class Gateway {
 
   Gateway(const Gateway&);
   Gateway& operator=(const Gateway&);
-  Gateway() : gatewayId(), gatewayName(), domain(), emailAddress() {
+  Gateway() : gatewayId(), gatewayApprovalStatus((GatewayApprovalStatus::type)0), gatewayName(), domain(), emailAddress(), gatewayAcronym(), gatewayURL(), gatewayPublicAbstract(), reviewProposalDescription() {
   }
 
   virtual ~Gateway() throw();
   std::string gatewayId;
+  GatewayApprovalStatus::type gatewayApprovalStatus;
   std::string gatewayName;
   std::string domain;
   std::string emailAddress;
+  std::string gatewayAcronym;
+  std::string gatewayURL;
+  std::string gatewayPublicAbstract;
+  std::string reviewProposalDescription;
 
   _Gateway__isset __isset;
 
   void __set_gatewayId(const std::string& val);
+
+  void __set_gatewayApprovalStatus(const GatewayApprovalStatus::type val);
 
   void __set_gatewayName(const std::string& val);
 
@@ -281,9 +303,19 @@ class Gateway {
 
   void __set_emailAddress(const std::string& val);
 
+  void __set_gatewayAcronym(const std::string& val);
+
+  void __set_gatewayURL(const std::string& val);
+
+  void __set_gatewayPublicAbstract(const std::string& val);
+
+  void __set_reviewProposalDescription(const std::string& val);
+
   bool operator == (const Gateway & rhs) const
   {
     if (!(gatewayId == rhs.gatewayId))
+      return false;
+    if (!(gatewayApprovalStatus == rhs.gatewayApprovalStatus))
       return false;
     if (__isset.gatewayName != rhs.__isset.gatewayName)
       return false;
@@ -296,6 +328,22 @@ class Gateway {
     if (__isset.emailAddress != rhs.__isset.emailAddress)
       return false;
     else if (__isset.emailAddress && !(emailAddress == rhs.emailAddress))
+      return false;
+    if (__isset.gatewayAcronym != rhs.__isset.gatewayAcronym)
+      return false;
+    else if (__isset.gatewayAcronym && !(gatewayAcronym == rhs.gatewayAcronym))
+      return false;
+    if (__isset.gatewayURL != rhs.__isset.gatewayURL)
+      return false;
+    else if (__isset.gatewayURL && !(gatewayURL == rhs.gatewayURL))
+      return false;
+    if (__isset.gatewayPublicAbstract != rhs.__isset.gatewayPublicAbstract)
+      return false;
+    else if (__isset.gatewayPublicAbstract && !(gatewayPublicAbstract == rhs.gatewayPublicAbstract))
+      return false;
+    if (__isset.reviewProposalDescription != rhs.__isset.reviewProposalDescription)
+      return false;
+    else if (__isset.reviewProposalDescription && !(reviewProposalDescription == rhs.reviewProposalDescription))
       return false;
     return true;
   }
