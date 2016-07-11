@@ -6,6 +6,39 @@ Apache Airavata - Version 0.16 Released on 2016-07-12
 =====================================================
 Below you will find the detail list of JIRA tasks/issues resolutions incorporated in 0.16.
 
+** New Feature
+    * [AIRAVATA-1349] - API method to get Data Transfer details
+    * [AIRAVATA-1895] - Report Gateway End users to XSEDE Resources
+    * [AIRAVATA-1899] - Email notification to gateway user when his/her account is activated and gateway is ready for use.
+    * [AIRAVATA-1945] - Allow API calls to pass ComputeResource Login Name
+    * [AIRAVATA-1960] - Ability to mark inputs as 'Optional'. These are not mandatory to be available at create experiment.
+
+** Improvement
+    * [AIRAVATA-447] - Optional maven profile to download grid certificate
+    * [AIRAVATA-1136] - Distribution module executed in default build profile
+    * [AIRAVATA-1265] - Create GridPushMonitorHandler
+    * [AIRAVATA-1416] - Validate application exists while creating and launching a experiment
+    * [AIRAVATA-1429] - Read SSH keys from credential store in AdvancedSCPInput and Output handlers
+    * [AIRAVATA-1730] - Expose input and output variable set for an application as variables
+    * [AIRAVATA-1813] - Please display Application interface ID and Application Module ID in PGA Admin Dashboard
+    * [AIRAVATA-1851] - 3rd party file transfer with Jcraft jsch
+    * [AIRAVATA-1855] - Currently for PgA user signing in we are guided to a new page with third party IS themes; lets remove this and reduce a step to users
+    * [AIRAVATA-1907] - Remove 'Continue' button in Create experiment page in PGA.
+    * [AIRAVATA-1921] - Display the 'User Friendly Description' for application inputs in Create Experiment in SEAGrid desktop client.
+    * [AIRAVATA-1922] - In desktop client experiment is not displayed under the correct project
+    * [AIRAVATA-1923] - Folder structure and files are not correctly structured and displayed in Storage in Desktop Client and in web client
+    * [AIRAVATA-1925] - In SEAGrid desktop client have a link in the login window to reset password.
+    * [AIRAVATA-1926] - In both SEAGrid desktop client and PGA web client make project non-editable when editing and cloning
+    * [AIRAVATA-1954] - Ability to tag a queue in compute resource as the default.
+
+** Task
+    * [AIRAVATA-1149] - Create a new user using the Airavata API
+    * [AIRAVATA-1796] - Enable Process Recovery
+    * [AIRAVATA-1829] - Deprecate Credential Store Webapp
+    * [AIRAVATA-1853] - New validations to PGA user account password
+    * [AIRAVATA-1882] - Organize Thrift APIs and Data Models in source tree
+    * [AIRAVATA-1883] - Migrate to Thrift 0.9.3
+
 ** Sub-task
     * [AIRAVATA-957] - Add GSISSH production scenario test cases to integration tests
     * [AIRAVATA-1120] - Modularizing existing data models
@@ -18,6 +51,12 @@ Below you will find the detail list of JIRA tasks/issues resolutions incorporate
     * [AIRAVATA-1826] - Implementation of OAuth request_code grant flow in pga
     * [AIRAVATA-1827] - Enabling tls communication between PGA and Airavata
     * [AIRAVATA-1828] - Integration of API security components & test the implementation
+
+** Documentation
+    * [AIRAVATA-1891] - http://scigap.readthedocs.org/en/latest/Gateway-Configurations/ step 7 missing info
+
+** Epic
+    * [AIRAVATA-1271] - Improve end-user documentation
 
 ** Bug
     * [AIRAVATA-960] - JSDLGeneratorTest (part of Gfac module) fails due to default trust dir reference  
@@ -103,45 +142,6 @@ Below you will find the detail list of JIRA tasks/issues resolutions incorporate
     * [AIRAVATA-1970] - Experiments in EXECUTING when there is a 'Remote Cluster initialization error
     * [AIRAVATA-1976] - "Become a Contributror" link in Airavata website footer is broken
     * [AIRAVATA-1977] - Broken "Accepting Contributions" link on Airavata website
-
-** Documentation
-    * [AIRAVATA-1891] - http://scigap.readthedocs.org/en/latest/Gateway-Configurations/ step 7 missing info
-
-** Epic
-    * [AIRAVATA-1271] - Improve end-user documentation
-
-** Improvement
-    * [AIRAVATA-447] - Optional maven profile to download grid certificate 
-    * [AIRAVATA-1136] - Distribution module executed in default build profile
-    * [AIRAVATA-1265] - Create GridPushMonitorHandler
-    * [AIRAVATA-1416] - Validate application exists while creating and launching a experiment
-    * [AIRAVATA-1429] - Read SSH keys from credential store in AdvancedSCPInput and Output handlers
-    * [AIRAVATA-1730] - Expose input and output variable set for an application as variables
-    * [AIRAVATA-1813] - Please display Application interface ID and Application Module ID in PGA Admin Dashboard
-    * [AIRAVATA-1851] - 3rd party file transfer with Jcraft jsch
-    * [AIRAVATA-1855] - Currently for PgA user signing in we are guided to a new page with third party IS themes; lets remove this and reduce a step to users
-    * [AIRAVATA-1907] - Remove 'Continue' button in Create experiment page in PGA.
-    * [AIRAVATA-1921] - Display the 'User Friendly Description' for application inputs in Create Experiment in SEAGrid desktop client.
-    * [AIRAVATA-1922] - In desktop client experiment is not displayed under the correct project
-    * [AIRAVATA-1923] - Folder structure and files are not correctly structured and displayed in Storage in Desktop Client and in web client
-    * [AIRAVATA-1925] - In SEAGrid desktop client have a link in the login window to reset password. 
-    * [AIRAVATA-1926] - In both SEAGrid desktop client and PGA web client make project non-editable when editing and cloning 
-    * [AIRAVATA-1954] - Ability to tag a queue in compute resource as the default.
-
-** New Feature
-    * [AIRAVATA-1349] - API method to get Data Transfer details
-    * [AIRAVATA-1895] - Report Gateway End users to XSEDE Resources
-    * [AIRAVATA-1899] - Email notification to gateway user when his/her account is activated and gateway is ready for use.
-    * [AIRAVATA-1945] - Allow API calls to pass ComputeResource Login Name
-    * [AIRAVATA-1960] - Ability to mark inputs as 'Optional'. These are not mandatory to be available at create experiment.
-
-** Task
-    * [AIRAVATA-1149] - Create a new user using the Airavata API
-    * [AIRAVATA-1796] - Enable Process Recovery
-    * [AIRAVATA-1829] - Deprecate Credential Store Webapp
-    * [AIRAVATA-1853] - New validations to PGA user account password
-    * [AIRAVATA-1882] - Organize Thrift APIs and Data Models in source tree
-    * [AIRAVATA-1883] - Migrate to Thrift 0.9.3
 
 
 Apache Airavata Version 0.15 Released on 2015-12-04
