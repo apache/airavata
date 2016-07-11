@@ -44659,6 +44659,1540 @@ uint32_t Airavata_getAllAccessibleUsers_presult::read(::apache::thrift::protocol
   return xfer;
 }
 
+
+Airavata_createGroup_args::~Airavata_createGroup_args() throw() {
+}
+
+
+uint32_t Airavata_createGroup_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_authzToken = false;
+  bool isset_groupModel = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->authzToken.read(iprot);
+          isset_authzToken = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->groupModel.read(iprot);
+          isset_groupModel = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_authzToken)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_groupModel)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Airavata_createGroup_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("Airavata_createGroup_args");
+
+  xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->authzToken.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("groupModel", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += this->groupModel.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+Airavata_createGroup_pargs::~Airavata_createGroup_pargs() throw() {
+}
+
+
+uint32_t Airavata_createGroup_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("Airavata_createGroup_pargs");
+
+  xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += (*(this->authzToken)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("groupModel", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += (*(this->groupModel)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+Airavata_createGroup_result::~Airavata_createGroup_result() throw() {
+}
+
+
+uint32_t Airavata_createGroup_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ae.read(iprot);
+          this->__isset.ae = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_createGroup_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("Airavata_createGroup_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
+    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ae) {
+    xfer += oprot->writeFieldBegin("ae", ::apache::thrift::protocol::T_STRUCT, 4);
+    xfer += this->ae.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+Airavata_createGroup_presult::~Airavata_createGroup_presult() throw() {
+}
+
+
+uint32_t Airavata_createGroup_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ae.read(iprot);
+          this->__isset.ae = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+
+Airavata_updateGroup_args::~Airavata_updateGroup_args() throw() {
+}
+
+
+uint32_t Airavata_updateGroup_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_authzToken = false;
+  bool isset_groupModel = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->authzToken.read(iprot);
+          isset_authzToken = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->groupModel.read(iprot);
+          isset_groupModel = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_authzToken)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_groupModel)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Airavata_updateGroup_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("Airavata_updateGroup_args");
+
+  xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->authzToken.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("groupModel", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += this->groupModel.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+Airavata_updateGroup_pargs::~Airavata_updateGroup_pargs() throw() {
+}
+
+
+uint32_t Airavata_updateGroup_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("Airavata_updateGroup_pargs");
+
+  xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += (*(this->authzToken)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("groupModel", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += (*(this->groupModel)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+Airavata_updateGroup_result::~Airavata_updateGroup_result() throw() {
+}
+
+
+uint32_t Airavata_updateGroup_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ae.read(iprot);
+          this->__isset.ae = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_updateGroup_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("Airavata_updateGroup_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
+    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ae) {
+    xfer += oprot->writeFieldBegin("ae", ::apache::thrift::protocol::T_STRUCT, 4);
+    xfer += this->ae.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+Airavata_updateGroup_presult::~Airavata_updateGroup_presult() throw() {
+}
+
+
+uint32_t Airavata_updateGroup_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ae.read(iprot);
+          this->__isset.ae = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+
+Airavata_deleteGroup_args::~Airavata_deleteGroup_args() throw() {
+}
+
+
+uint32_t Airavata_deleteGroup_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_authzToken = false;
+  bool isset_groupId = false;
+  bool isset_ownerId = false;
+  bool isset_gatewayId = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->authzToken.read(iprot);
+          isset_authzToken = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->groupId);
+          isset_groupId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->ownerId);
+          isset_ownerId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_authzToken)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_groupId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_ownerId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Airavata_deleteGroup_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("Airavata_deleteGroup_args");
+
+  xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->authzToken.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("groupId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->groupId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("ownerId", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString(this->ownerId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 4);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+Airavata_deleteGroup_pargs::~Airavata_deleteGroup_pargs() throw() {
+}
+
+
+uint32_t Airavata_deleteGroup_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("Airavata_deleteGroup_pargs");
+
+  xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += (*(this->authzToken)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("groupId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->groupId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("ownerId", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString((*(this->ownerId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 4);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+Airavata_deleteGroup_result::~Airavata_deleteGroup_result() throw() {
+}
+
+
+uint32_t Airavata_deleteGroup_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ae.read(iprot);
+          this->__isset.ae = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_deleteGroup_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("Airavata_deleteGroup_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
+    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ae) {
+    xfer += oprot->writeFieldBegin("ae", ::apache::thrift::protocol::T_STRUCT, 4);
+    xfer += this->ae.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+Airavata_deleteGroup_presult::~Airavata_deleteGroup_presult() throw() {
+}
+
+
+uint32_t Airavata_deleteGroup_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ae.read(iprot);
+          this->__isset.ae = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+
+Airavata_getGroup_args::~Airavata_getGroup_args() throw() {
+}
+
+
+uint32_t Airavata_getGroup_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_authzToken = false;
+  bool isset_groupId = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->authzToken.read(iprot);
+          isset_authzToken = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->groupId);
+          isset_groupId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_authzToken)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_groupId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Airavata_getGroup_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("Airavata_getGroup_args");
+
+  xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->authzToken.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("groupId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->groupId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+Airavata_getGroup_pargs::~Airavata_getGroup_pargs() throw() {
+}
+
+
+uint32_t Airavata_getGroup_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("Airavata_getGroup_pargs");
+
+  xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += (*(this->authzToken)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("groupId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->groupId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+Airavata_getGroup_result::~Airavata_getGroup_result() throw() {
+}
+
+
+uint32_t Airavata_getGroup_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->success.read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ae.read(iprot);
+          this->__isset.ae = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_getGroup_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("Airavata_getGroup_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
+    xfer += this->success.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ae) {
+    xfer += oprot->writeFieldBegin("ae", ::apache::thrift::protocol::T_STRUCT, 4);
+    xfer += this->ae.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+Airavata_getGroup_presult::~Airavata_getGroup_presult() throw() {
+}
+
+
+uint32_t Airavata_getGroup_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += (*(this->success)).read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ae.read(iprot);
+          this->__isset.ae = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+
+Airavata_getAllGroupsUserBelongs_args::~Airavata_getAllGroupsUserBelongs_args() throw() {
+}
+
+
+uint32_t Airavata_getAllGroupsUserBelongs_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_authzToken = false;
+  bool isset_userName = false;
+  bool isset_gatewayId = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->authzToken.read(iprot);
+          isset_authzToken = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->userName);
+          isset_userName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_authzToken)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_userName)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Airavata_getAllGroupsUserBelongs_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("Airavata_getAllGroupsUserBelongs_args");
+
+  xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->authzToken.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->userName);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+Airavata_getAllGroupsUserBelongs_pargs::~Airavata_getAllGroupsUserBelongs_pargs() throw() {
+}
+
+
+uint32_t Airavata_getAllGroupsUserBelongs_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("Airavata_getAllGroupsUserBelongs_pargs");
+
+  xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += (*(this->authzToken)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->userName)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+Airavata_getAllGroupsUserBelongs_result::~Airavata_getAllGroupsUserBelongs_result() throw() {
+}
+
+
+uint32_t Airavata_getAllGroupsUserBelongs_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->success.clear();
+            uint32_t _size425;
+            ::apache::thrift::protocol::TType _etype428;
+            xfer += iprot->readListBegin(_etype428, _size425);
+            this->success.resize(_size425);
+            uint32_t _i429;
+            for (_i429 = 0; _i429 < _size425; ++_i429)
+            {
+              xfer += this->success[_i429].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ae.read(iprot);
+          this->__isset.ae = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_getAllGroupsUserBelongs_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("Airavata_getAllGroupsUserBelongs_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
+      std::vector< ::apache::airavata::model::group::GroupModel> ::const_iterator _iter430;
+      for (_iter430 = this->success.begin(); _iter430 != this->success.end(); ++_iter430)
+      {
+        xfer += (*_iter430).write(oprot);
+      }
+      xfer += oprot->writeListEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ae) {
+    xfer += oprot->writeFieldBegin("ae", ::apache::thrift::protocol::T_STRUCT, 4);
+    xfer += this->ae.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+Airavata_getAllGroupsUserBelongs_presult::~Airavata_getAllGroupsUserBelongs_presult() throw() {
+}
+
+
+uint32_t Airavata_getAllGroupsUserBelongs_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            (*(this->success)).clear();
+            uint32_t _size431;
+            ::apache::thrift::protocol::TType _etype434;
+            xfer += iprot->readListBegin(_etype434, _size431);
+            (*(this->success)).resize(_size431);
+            uint32_t _i435;
+            for (_i435 = 0; _i435 < _size431; ++_i435)
+            {
+              xfer += (*(this->success))[_i435].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ae.read(iprot);
+          this->__isset.ae = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
 void AiravataClient::getAPIVersion(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken)
 {
   send_getAPIVersion(authzToken);
@@ -54949,6 +56483,364 @@ void AiravataClient::recv_getAllAccessibleUsers(std::vector<std::string> & _retu
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllAccessibleUsers failed: unknown result");
 }
 
+bool AiravataClient::createGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel)
+{
+  send_createGroup(authzToken, groupModel);
+  return recv_createGroup();
+}
+
+void AiravataClient::send_createGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("createGroup", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_createGroup_pargs args;
+  args.authzToken = &authzToken;
+  args.groupModel = &groupModel;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+bool AiravataClient::recv_createGroup()
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("createGroup") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  bool _return;
+  Airavata_createGroup_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    return _return;
+  }
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  if (result.__isset.ae) {
+    throw result.ae;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "createGroup failed: unknown result");
+}
+
+bool AiravataClient::updateGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel)
+{
+  send_updateGroup(authzToken, groupModel);
+  return recv_updateGroup();
+}
+
+void AiravataClient::send_updateGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("updateGroup", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_updateGroup_pargs args;
+  args.authzToken = &authzToken;
+  args.groupModel = &groupModel;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+bool AiravataClient::recv_updateGroup()
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("updateGroup") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  bool _return;
+  Airavata_updateGroup_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    return _return;
+  }
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  if (result.__isset.ae) {
+    throw result.ae;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateGroup failed: unknown result");
+}
+
+bool AiravataClient::deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId, const std::string& gatewayId)
+{
+  send_deleteGroup(authzToken, groupId, ownerId, gatewayId);
+  return recv_deleteGroup();
+}
+
+void AiravataClient::send_deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId, const std::string& gatewayId)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("deleteGroup", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_deleteGroup_pargs args;
+  args.authzToken = &authzToken;
+  args.groupId = &groupId;
+  args.ownerId = &ownerId;
+  args.gatewayId = &gatewayId;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+bool AiravataClient::recv_deleteGroup()
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("deleteGroup") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  bool _return;
+  Airavata_deleteGroup_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    return _return;
+  }
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  if (result.__isset.ae) {
+    throw result.ae;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "deleteGroup failed: unknown result");
+}
+
+void AiravataClient::getGroup( ::apache::airavata::model::group::GroupModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId)
+{
+  send_getGroup(authzToken, groupId);
+  recv_getGroup(_return);
+}
+
+void AiravataClient::send_getGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("getGroup", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_getGroup_pargs args;
+  args.authzToken = &authzToken;
+  args.groupId = &groupId;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void AiravataClient::recv_getGroup( ::apache::airavata::model::group::GroupModel& _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("getGroup") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  Airavata_getGroup_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  if (result.__isset.ae) {
+    throw result.ae;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getGroup failed: unknown result");
+}
+
+void AiravataClient::getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId)
+{
+  send_getAllGroupsUserBelongs(authzToken, userName, gatewayId);
+  recv_getAllGroupsUserBelongs(_return);
+}
+
+void AiravataClient::send_getAllGroupsUserBelongs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("getAllGroupsUserBelongs", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_getAllGroupsUserBelongs_pargs args;
+  args.authzToken = &authzToken;
+  args.userName = &userName;
+  args.gatewayId = &gatewayId;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void AiravataClient::recv_getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("getAllGroupsUserBelongs") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  Airavata_getAllGroupsUserBelongs_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  if (result.__isset.ae) {
+    throw result.ae;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllGroupsUserBelongs failed: unknown result");
+}
+
 bool AiravataProcessor::dispatchCall(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, const std::string& fname, int32_t seqid, void* callContext) {
   ProcessMap::iterator pfn;
   pfn = processMap_.find(fname);
@@ -64469,6 +66361,336 @@ void AiravataProcessor::process_getAllAccessibleUsers(int32_t seqid, ::apache::t
 
   if (this->eventHandler_.get() != NULL) {
     this->eventHandler_->postWrite(ctx, "Airavata.getAllAccessibleUsers", bytes);
+  }
+}
+
+void AiravataProcessor::process_createGroup(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("Airavata.createGroup", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.createGroup");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "Airavata.createGroup");
+  }
+
+  Airavata_createGroup_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "Airavata.createGroup", bytes);
+  }
+
+  Airavata_createGroup_result result;
+  try {
+    result.success = iface_->createGroup(args.authzToken, args.groupModel);
+    result.__isset.success = true;
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch ( ::apache::airavata::api::error::AuthorizationException &ae) {
+    result.ae = ae;
+    result.__isset.ae = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "Airavata.createGroup");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("createGroup", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "Airavata.createGroup");
+  }
+
+  oprot->writeMessageBegin("createGroup", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "Airavata.createGroup", bytes);
+  }
+}
+
+void AiravataProcessor::process_updateGroup(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("Airavata.updateGroup", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.updateGroup");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "Airavata.updateGroup");
+  }
+
+  Airavata_updateGroup_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "Airavata.updateGroup", bytes);
+  }
+
+  Airavata_updateGroup_result result;
+  try {
+    result.success = iface_->updateGroup(args.authzToken, args.groupModel);
+    result.__isset.success = true;
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch ( ::apache::airavata::api::error::AuthorizationException &ae) {
+    result.ae = ae;
+    result.__isset.ae = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "Airavata.updateGroup");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("updateGroup", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "Airavata.updateGroup");
+  }
+
+  oprot->writeMessageBegin("updateGroup", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "Airavata.updateGroup", bytes);
+  }
+}
+
+void AiravataProcessor::process_deleteGroup(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("Airavata.deleteGroup", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.deleteGroup");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "Airavata.deleteGroup");
+  }
+
+  Airavata_deleteGroup_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "Airavata.deleteGroup", bytes);
+  }
+
+  Airavata_deleteGroup_result result;
+  try {
+    result.success = iface_->deleteGroup(args.authzToken, args.groupId, args.ownerId, args.gatewayId);
+    result.__isset.success = true;
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch ( ::apache::airavata::api::error::AuthorizationException &ae) {
+    result.ae = ae;
+    result.__isset.ae = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "Airavata.deleteGroup");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("deleteGroup", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "Airavata.deleteGroup");
+  }
+
+  oprot->writeMessageBegin("deleteGroup", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "Airavata.deleteGroup", bytes);
+  }
+}
+
+void AiravataProcessor::process_getGroup(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("Airavata.getGroup", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.getGroup");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "Airavata.getGroup");
+  }
+
+  Airavata_getGroup_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "Airavata.getGroup", bytes);
+  }
+
+  Airavata_getGroup_result result;
+  try {
+    iface_->getGroup(result.success, args.authzToken, args.groupId);
+    result.__isset.success = true;
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch ( ::apache::airavata::api::error::AuthorizationException &ae) {
+    result.ae = ae;
+    result.__isset.ae = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "Airavata.getGroup");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("getGroup", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "Airavata.getGroup");
+  }
+
+  oprot->writeMessageBegin("getGroup", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "Airavata.getGroup", bytes);
+  }
+}
+
+void AiravataProcessor::process_getAllGroupsUserBelongs(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("Airavata.getAllGroupsUserBelongs", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.getAllGroupsUserBelongs");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "Airavata.getAllGroupsUserBelongs");
+  }
+
+  Airavata_getAllGroupsUserBelongs_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "Airavata.getAllGroupsUserBelongs", bytes);
+  }
+
+  Airavata_getAllGroupsUserBelongs_result result;
+  try {
+    iface_->getAllGroupsUserBelongs(result.success, args.authzToken, args.userName, args.gatewayId);
+    result.__isset.success = true;
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch ( ::apache::airavata::api::error::AuthorizationException &ae) {
+    result.ae = ae;
+    result.__isset.ae = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "Airavata.getAllGroupsUserBelongs");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("getAllGroupsUserBelongs", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "Airavata.getAllGroupsUserBelongs");
+  }
+
+  oprot->writeMessageBegin("getAllGroupsUserBelongs", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "Airavata.getAllGroupsUserBelongs", bytes);
   }
 }
 
@@ -79074,6 +81296,514 @@ void AiravataConcurrentClient::recv_getAllAccessibleUsers(std::vector<std::strin
       }
       // in a bad state, don't commit
       throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllAccessibleUsers failed: unknown result");
+    }
+    // seqid != rseqid
+    this->sync_.updatePending(fname, mtype, rseqid);
+
+    // this will temporarily unlock the readMutex, and let other clients get work done
+    this->sync_.waitForWork(seqid);
+  } // end while(true)
+}
+
+bool AiravataConcurrentClient::createGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel)
+{
+  int32_t seqid = send_createGroup(authzToken, groupModel);
+  return recv_createGroup(seqid);
+}
+
+int32_t AiravataConcurrentClient::send_createGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel)
+{
+  int32_t cseqid = this->sync_.generateSeqId();
+  ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
+  oprot_->writeMessageBegin("createGroup", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_createGroup_pargs args;
+  args.authzToken = &authzToken;
+  args.groupModel = &groupModel;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+
+  sentry.commit();
+  return cseqid;
+}
+
+bool AiravataConcurrentClient::recv_createGroup(const int32_t seqid)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  // the read mutex gets dropped and reacquired as part of waitForWork()
+  // The destructor of this sentry wakes up other clients
+  ::apache::thrift::async::TConcurrentRecvSentry sentry(&this->sync_, seqid);
+
+  while(true) {
+    if(!this->sync_.getPending(fname, mtype, rseqid)) {
+      iprot_->readMessageBegin(fname, mtype, rseqid);
+    }
+    if(seqid == rseqid) {
+      if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+        ::apache::thrift::TApplicationException x;
+        x.read(iprot_);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+        sentry.commit();
+        throw x;
+      }
+      if (mtype != ::apache::thrift::protocol::T_REPLY) {
+        iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+      }
+      if (fname.compare("createGroup") != 0) {
+        iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+
+        // in a bad state, don't commit
+        using ::apache::thrift::protocol::TProtocolException;
+        throw TProtocolException(TProtocolException::INVALID_DATA);
+      }
+      bool _return;
+      Airavata_createGroup_presult result;
+      result.success = &_return;
+      result.read(iprot_);
+      iprot_->readMessageEnd();
+      iprot_->getTransport()->readEnd();
+
+      if (result.__isset.success) {
+        sentry.commit();
+        return _return;
+      }
+      if (result.__isset.ire) {
+        sentry.commit();
+        throw result.ire;
+      }
+      if (result.__isset.ace) {
+        sentry.commit();
+        throw result.ace;
+      }
+      if (result.__isset.ase) {
+        sentry.commit();
+        throw result.ase;
+      }
+      if (result.__isset.ae) {
+        sentry.commit();
+        throw result.ae;
+      }
+      // in a bad state, don't commit
+      throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "createGroup failed: unknown result");
+    }
+    // seqid != rseqid
+    this->sync_.updatePending(fname, mtype, rseqid);
+
+    // this will temporarily unlock the readMutex, and let other clients get work done
+    this->sync_.waitForWork(seqid);
+  } // end while(true)
+}
+
+bool AiravataConcurrentClient::updateGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel)
+{
+  int32_t seqid = send_updateGroup(authzToken, groupModel);
+  return recv_updateGroup(seqid);
+}
+
+int32_t AiravataConcurrentClient::send_updateGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel)
+{
+  int32_t cseqid = this->sync_.generateSeqId();
+  ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
+  oprot_->writeMessageBegin("updateGroup", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_updateGroup_pargs args;
+  args.authzToken = &authzToken;
+  args.groupModel = &groupModel;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+
+  sentry.commit();
+  return cseqid;
+}
+
+bool AiravataConcurrentClient::recv_updateGroup(const int32_t seqid)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  // the read mutex gets dropped and reacquired as part of waitForWork()
+  // The destructor of this sentry wakes up other clients
+  ::apache::thrift::async::TConcurrentRecvSentry sentry(&this->sync_, seqid);
+
+  while(true) {
+    if(!this->sync_.getPending(fname, mtype, rseqid)) {
+      iprot_->readMessageBegin(fname, mtype, rseqid);
+    }
+    if(seqid == rseqid) {
+      if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+        ::apache::thrift::TApplicationException x;
+        x.read(iprot_);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+        sentry.commit();
+        throw x;
+      }
+      if (mtype != ::apache::thrift::protocol::T_REPLY) {
+        iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+      }
+      if (fname.compare("updateGroup") != 0) {
+        iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+
+        // in a bad state, don't commit
+        using ::apache::thrift::protocol::TProtocolException;
+        throw TProtocolException(TProtocolException::INVALID_DATA);
+      }
+      bool _return;
+      Airavata_updateGroup_presult result;
+      result.success = &_return;
+      result.read(iprot_);
+      iprot_->readMessageEnd();
+      iprot_->getTransport()->readEnd();
+
+      if (result.__isset.success) {
+        sentry.commit();
+        return _return;
+      }
+      if (result.__isset.ire) {
+        sentry.commit();
+        throw result.ire;
+      }
+      if (result.__isset.ace) {
+        sentry.commit();
+        throw result.ace;
+      }
+      if (result.__isset.ase) {
+        sentry.commit();
+        throw result.ase;
+      }
+      if (result.__isset.ae) {
+        sentry.commit();
+        throw result.ae;
+      }
+      // in a bad state, don't commit
+      throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateGroup failed: unknown result");
+    }
+    // seqid != rseqid
+    this->sync_.updatePending(fname, mtype, rseqid);
+
+    // this will temporarily unlock the readMutex, and let other clients get work done
+    this->sync_.waitForWork(seqid);
+  } // end while(true)
+}
+
+bool AiravataConcurrentClient::deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId, const std::string& gatewayId)
+{
+  int32_t seqid = send_deleteGroup(authzToken, groupId, ownerId, gatewayId);
+  return recv_deleteGroup(seqid);
+}
+
+int32_t AiravataConcurrentClient::send_deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId, const std::string& gatewayId)
+{
+  int32_t cseqid = this->sync_.generateSeqId();
+  ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
+  oprot_->writeMessageBegin("deleteGroup", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_deleteGroup_pargs args;
+  args.authzToken = &authzToken;
+  args.groupId = &groupId;
+  args.ownerId = &ownerId;
+  args.gatewayId = &gatewayId;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+
+  sentry.commit();
+  return cseqid;
+}
+
+bool AiravataConcurrentClient::recv_deleteGroup(const int32_t seqid)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  // the read mutex gets dropped and reacquired as part of waitForWork()
+  // The destructor of this sentry wakes up other clients
+  ::apache::thrift::async::TConcurrentRecvSentry sentry(&this->sync_, seqid);
+
+  while(true) {
+    if(!this->sync_.getPending(fname, mtype, rseqid)) {
+      iprot_->readMessageBegin(fname, mtype, rseqid);
+    }
+    if(seqid == rseqid) {
+      if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+        ::apache::thrift::TApplicationException x;
+        x.read(iprot_);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+        sentry.commit();
+        throw x;
+      }
+      if (mtype != ::apache::thrift::protocol::T_REPLY) {
+        iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+      }
+      if (fname.compare("deleteGroup") != 0) {
+        iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+
+        // in a bad state, don't commit
+        using ::apache::thrift::protocol::TProtocolException;
+        throw TProtocolException(TProtocolException::INVALID_DATA);
+      }
+      bool _return;
+      Airavata_deleteGroup_presult result;
+      result.success = &_return;
+      result.read(iprot_);
+      iprot_->readMessageEnd();
+      iprot_->getTransport()->readEnd();
+
+      if (result.__isset.success) {
+        sentry.commit();
+        return _return;
+      }
+      if (result.__isset.ire) {
+        sentry.commit();
+        throw result.ire;
+      }
+      if (result.__isset.ace) {
+        sentry.commit();
+        throw result.ace;
+      }
+      if (result.__isset.ase) {
+        sentry.commit();
+        throw result.ase;
+      }
+      if (result.__isset.ae) {
+        sentry.commit();
+        throw result.ae;
+      }
+      // in a bad state, don't commit
+      throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "deleteGroup failed: unknown result");
+    }
+    // seqid != rseqid
+    this->sync_.updatePending(fname, mtype, rseqid);
+
+    // this will temporarily unlock the readMutex, and let other clients get work done
+    this->sync_.waitForWork(seqid);
+  } // end while(true)
+}
+
+void AiravataConcurrentClient::getGroup( ::apache::airavata::model::group::GroupModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId)
+{
+  int32_t seqid = send_getGroup(authzToken, groupId);
+  recv_getGroup(_return, seqid);
+}
+
+int32_t AiravataConcurrentClient::send_getGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId)
+{
+  int32_t cseqid = this->sync_.generateSeqId();
+  ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
+  oprot_->writeMessageBegin("getGroup", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_getGroup_pargs args;
+  args.authzToken = &authzToken;
+  args.groupId = &groupId;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+
+  sentry.commit();
+  return cseqid;
+}
+
+void AiravataConcurrentClient::recv_getGroup( ::apache::airavata::model::group::GroupModel& _return, const int32_t seqid)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  // the read mutex gets dropped and reacquired as part of waitForWork()
+  // The destructor of this sentry wakes up other clients
+  ::apache::thrift::async::TConcurrentRecvSentry sentry(&this->sync_, seqid);
+
+  while(true) {
+    if(!this->sync_.getPending(fname, mtype, rseqid)) {
+      iprot_->readMessageBegin(fname, mtype, rseqid);
+    }
+    if(seqid == rseqid) {
+      if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+        ::apache::thrift::TApplicationException x;
+        x.read(iprot_);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+        sentry.commit();
+        throw x;
+      }
+      if (mtype != ::apache::thrift::protocol::T_REPLY) {
+        iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+      }
+      if (fname.compare("getGroup") != 0) {
+        iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+
+        // in a bad state, don't commit
+        using ::apache::thrift::protocol::TProtocolException;
+        throw TProtocolException(TProtocolException::INVALID_DATA);
+      }
+      Airavata_getGroup_presult result;
+      result.success = &_return;
+      result.read(iprot_);
+      iprot_->readMessageEnd();
+      iprot_->getTransport()->readEnd();
+
+      if (result.__isset.success) {
+        // _return pointer has now been filled
+        sentry.commit();
+        return;
+      }
+      if (result.__isset.ire) {
+        sentry.commit();
+        throw result.ire;
+      }
+      if (result.__isset.ace) {
+        sentry.commit();
+        throw result.ace;
+      }
+      if (result.__isset.ase) {
+        sentry.commit();
+        throw result.ase;
+      }
+      if (result.__isset.ae) {
+        sentry.commit();
+        throw result.ae;
+      }
+      // in a bad state, don't commit
+      throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getGroup failed: unknown result");
+    }
+    // seqid != rseqid
+    this->sync_.updatePending(fname, mtype, rseqid);
+
+    // this will temporarily unlock the readMutex, and let other clients get work done
+    this->sync_.waitForWork(seqid);
+  } // end while(true)
+}
+
+void AiravataConcurrentClient::getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId)
+{
+  int32_t seqid = send_getAllGroupsUserBelongs(authzToken, userName, gatewayId);
+  recv_getAllGroupsUserBelongs(_return, seqid);
+}
+
+int32_t AiravataConcurrentClient::send_getAllGroupsUserBelongs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId)
+{
+  int32_t cseqid = this->sync_.generateSeqId();
+  ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
+  oprot_->writeMessageBegin("getAllGroupsUserBelongs", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_getAllGroupsUserBelongs_pargs args;
+  args.authzToken = &authzToken;
+  args.userName = &userName;
+  args.gatewayId = &gatewayId;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+
+  sentry.commit();
+  return cseqid;
+}
+
+void AiravataConcurrentClient::recv_getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const int32_t seqid)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  // the read mutex gets dropped and reacquired as part of waitForWork()
+  // The destructor of this sentry wakes up other clients
+  ::apache::thrift::async::TConcurrentRecvSentry sentry(&this->sync_, seqid);
+
+  while(true) {
+    if(!this->sync_.getPending(fname, mtype, rseqid)) {
+      iprot_->readMessageBegin(fname, mtype, rseqid);
+    }
+    if(seqid == rseqid) {
+      if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+        ::apache::thrift::TApplicationException x;
+        x.read(iprot_);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+        sentry.commit();
+        throw x;
+      }
+      if (mtype != ::apache::thrift::protocol::T_REPLY) {
+        iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+      }
+      if (fname.compare("getAllGroupsUserBelongs") != 0) {
+        iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+
+        // in a bad state, don't commit
+        using ::apache::thrift::protocol::TProtocolException;
+        throw TProtocolException(TProtocolException::INVALID_DATA);
+      }
+      Airavata_getAllGroupsUserBelongs_presult result;
+      result.success = &_return;
+      result.read(iprot_);
+      iprot_->readMessageEnd();
+      iprot_->getTransport()->readEnd();
+
+      if (result.__isset.success) {
+        // _return pointer has now been filled
+        sentry.commit();
+        return;
+      }
+      if (result.__isset.ire) {
+        sentry.commit();
+        throw result.ire;
+      }
+      if (result.__isset.ace) {
+        sentry.commit();
+        throw result.ace;
+      }
+      if (result.__isset.ase) {
+        sentry.commit();
+        throw result.ase;
+      }
+      if (result.__isset.ae) {
+        sentry.commit();
+        throw result.ae;
+      }
+      // in a bad state, don't commit
+      throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllGroupsUserBelongs failed: unknown result");
     }
     // seqid != rseqid
     this->sync_.updatePending(fname, mtype, rseqid);

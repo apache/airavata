@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.grouper;
 
+import org.apache.airavata.grouper.group.Group;
+import org.apache.airavata.grouper.group.GroupServiceImpl;
 import org.apache.airavata.grouper.permission.PermissionAction;
 import org.apache.airavata.grouper.permission.PermissionServiceImpl;
 import org.apache.airavata.grouper.resource.Resource;
@@ -38,10 +40,12 @@ public class GroupManagerImpl implements GroupManagerCPI {
 
     private ResourceServiceImpl resourceService;
     private PermissionServiceImpl permissionService;
+    private GroupServiceImpl groupService;
 
     public GroupManagerImpl(){
         this.resourceService = new ResourceServiceImpl();
         this.permissionService = new PermissionServiceImpl();
+        this.groupService = new GroupServiceImpl();
     }
 
     @Override
@@ -81,5 +85,15 @@ public class GroupManagerImpl implements GroupManagerCPI {
         List<String> ids = new ArrayList<>(allResources.size());
         allResources.stream().forEach(r->ids.add(r.getId()));
         return ids;
+    }
+
+    @Override
+    public void createGroup(Group group) {
+        groupService.createGroup(group);
+    }
+
+    @Override
+    public void updateGroup(Group group) {
+        groupService.updateGroup(group);
     }
 }

@@ -57,6 +57,88 @@ struct ResourcePermissionType {
 
 extern const std::map<int, const char*> _ResourcePermissionType_VALUES_TO_NAMES;
 
+class GroupModel;
+
+typedef struct _GroupModel__isset {
+  _GroupModel__isset() : id(false), name(false), ownerId(false), description(false), members(false) {}
+  bool id :1;
+  bool name :1;
+  bool ownerId :1;
+  bool description :1;
+  bool members :1;
+} _GroupModel__isset;
+
+class GroupModel {
+ public:
+
+  GroupModel(const GroupModel&);
+  GroupModel& operator=(const GroupModel&);
+  GroupModel() : id(), name(), ownerId(), description() {
+  }
+
+  virtual ~GroupModel() throw();
+  std::string id;
+  std::string name;
+  std::string ownerId;
+  std::string description;
+  std::vector<std::string>  members;
+
+  _GroupModel__isset __isset;
+
+  void __set_id(const std::string& val);
+
+  void __set_name(const std::string& val);
+
+  void __set_ownerId(const std::string& val);
+
+  void __set_description(const std::string& val);
+
+  void __set_members(const std::vector<std::string> & val);
+
+  bool operator == (const GroupModel & rhs) const
+  {
+    if (__isset.id != rhs.__isset.id)
+      return false;
+    else if (__isset.id && !(id == rhs.id))
+      return false;
+    if (__isset.name != rhs.__isset.name)
+      return false;
+    else if (__isset.name && !(name == rhs.name))
+      return false;
+    if (__isset.ownerId != rhs.__isset.ownerId)
+      return false;
+    else if (__isset.ownerId && !(ownerId == rhs.ownerId))
+      return false;
+    if (__isset.description != rhs.__isset.description)
+      return false;
+    else if (__isset.description && !(description == rhs.description))
+      return false;
+    if (__isset.members != rhs.__isset.members)
+      return false;
+    else if (__isset.members && !(members == rhs.members))
+      return false;
+    return true;
+  }
+  bool operator != (const GroupModel &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const GroupModel & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(GroupModel &a, GroupModel &b);
+
+inline std::ostream& operator<<(std::ostream& out, const GroupModel& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
 }}}} // namespace
 
 #endif

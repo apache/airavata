@@ -37,3 +37,11 @@ enum ResourcePermissionType {
     WRITE,
     READ
 }
+
+struct GroupModel{
+    1: optional string id,
+    2: optional string name,
+    3: optional string ownerId,
+    4: optional string description,
+    5: optional list<string> members
+}
