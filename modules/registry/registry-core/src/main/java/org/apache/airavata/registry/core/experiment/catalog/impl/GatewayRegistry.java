@@ -52,6 +52,12 @@ public class GatewayRegistry {
             resource.setGatewayName(gateway.getGatewayName());
             resource.setEmailAddress(gateway.getEmailAddress());
             resource.setDomain(gateway.getDomain());
+//            resource.setGatewayAcronym(gateway.getG);
+//
+//            gateway.setGatewayAcronym(gatewayAcronym);
+//            gateway.setGatewayUrl(gatewayUrl);
+//            gateway.setGatewayPublicAbstract(gatewayPublicAbstract);
+//            gateway.setReviewProposalDescription(reviewProposalDescription);
             resource.save();
             return gateway.getGatewayId();
         }catch (RegistryException e){

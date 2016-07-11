@@ -41,6 +41,11 @@ public class GatewayResource extends AbstractExpCatResource {
     private String gatewayName;
     private String domain;
     private String emailAddress;
+    private String gatewayApprovalStatus;
+    private String gatewayAcronym;
+    private String gatewayUrl;
+    private String gatewayPublicAbstract;
+    private String reviewProposalDescription;
 
     public String getGatewayId() {
         return gatewayId;
@@ -56,6 +61,46 @@ public class GatewayResource extends AbstractExpCatResource {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    public String getGatewayApprovalStatus() {
+        return gatewayApprovalStatus;
+    }
+
+    public void setGatewayApprovalStatus(String gatewayApprovalStatus) {
+        this.gatewayApprovalStatus = gatewayApprovalStatus;
+    }
+
+    public String getGatewayAcronym() {
+        return gatewayAcronym;
+    }
+
+    public void setGatewayAcronym(String gatewayAcronym) {
+        this.gatewayAcronym = gatewayAcronym;
+    }
+
+    public String getGatewayUrl() {
+        return gatewayUrl;
+    }
+
+    public void setGatewayUrl(String gatewayUrl) {
+        this.gatewayUrl = gatewayUrl;
+    }
+
+    public String getGatewayPublicAbstract() {
+        return gatewayPublicAbstract;
+    }
+
+    public void setGatewayPublicAbstract(String gatewayPublicAbstract) {
+        this.gatewayPublicAbstract = gatewayPublicAbstract;
+    }
+
+    public String getReviewProposalDescription() {
+        return reviewProposalDescription;
+    }
+
+    public void setReviewProposalDescription(String reviewProposalDescription) {
+        this.reviewProposalDescription = reviewProposalDescription;
     }
 
     /**
@@ -332,10 +377,18 @@ public class GatewayResource extends AbstractExpCatResource {
             gateway.setGatewayId(gatewayId);
             gateway.setDomain(domain);
             gateway.setEmailAddress(emailAddress);
+            gateway.setGatewayAcronym(gatewayAcronym);
+            gateway.setGatewayUrl(gatewayUrl);
+            gateway.setGatewayPublicAbstract(gatewayPublicAbstract);
+            gateway.setReviewProposalDescription(reviewProposalDescription);
             if (existingGateway != null) {
                 existingGateway.setDomain(domain);
                 existingGateway.setGatewayName(gatewayName);
                 existingGateway.setEmailAddress(emailAddress);
+                existingGateway.setGatewayAcronym(gatewayAcronym);
+                existingGateway.setGatewayUrl(gatewayUrl);
+                existingGateway.setGatewayPublicAbstract(gatewayPublicAbstract);
+                existingGateway.setReviewProposalDescription(reviewProposalDescription);
                 em.merge(existingGateway);
             } else {
                 em.persist(gateway);
