@@ -2897,6 +2897,36 @@ service Airavata {
                                                  3: airavata_errors.AiravataSystemException ase,
                                                  4: airavata_errors.AuthorizationException ae)
 
+bool createGroup(1: required security_model.AuthzToken authzToken, 2: required group_manager_model.GroupModel groupModel)
+                throws (1: airavata_errors.InvalidRequestException ire,
+                                                  2: airavata_errors.AiravataClientException ace,
+                                                  3: airavata_errors.AiravataSystemException ase,
+                                                  4: airavata_errors.AuthorizationException ae)
+
+ bool updateGroup(1: required security_model.AuthzToken authzToken, 2: required group_manager_model.GroupModel groupModel)
+                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                   2: airavata_errors.AiravataClientException ace,
+                                                   3: airavata_errors.AiravataSystemException ase,
+                                                   4: airavata_errors.AuthorizationException ae)
+
+ bool deleteGroup(1: required security_model.AuthzToken authzToken, 2: required string groupId, 3: required string ownerId, 4: required string gatewayId)
+                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                    2: airavata_errors.AiravataClientException ace,
+                                                    3: airavata_errors.AiravataSystemException ase,
+                                                    4: airavata_errors.AuthorizationException ae)
+
+ group_manager_model.GroupModel getGroup(1: required security_model.AuthzToken authzToken, 2: required string groupId)
+                  throws (1: airavata_errors.InvalidRequestException ire,
+                                                     2: airavata_errors.AiravataClientException ace,
+                                                     3: airavata_errors.AiravataSystemException ase,
+                                                     4: airavata_errors.AuthorizationException ae)
+
+ list<group_manager_model.GroupModel> getAllGroupsUserBelongs(1: required security_model.AuthzToken authzToken, 2: required string userName, 3: required string gatewayId)
+                   throws (1: airavata_errors.InvalidRequestException ire,
+                                                      2: airavata_errors.AiravataClientException ace,
+                                                      3: airavata_errors.AiravataSystemException ase,
+                                                      4: airavata_errors.AuthorizationException ae)
+ //
  //End of API
  }
 

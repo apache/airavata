@@ -30,6 +30,13 @@ public class Group {
     this.ownerId = ownerId;
   }
 
+  public Group() {
+
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
 
   /**
    * @return the id

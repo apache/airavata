@@ -1,5 +1,6 @@
 package org.apache.airavata.grouper;
 
+import org.apache.airavata.grouper.group.Group;
 import org.apache.airavata.grouper.permission.PermissionAction;
 import org.apache.airavata.grouper.resource.Resource;
 import org.apache.airavata.grouper.resource.ResourceType;
@@ -21,4 +22,8 @@ public interface GroupManagerCPI {
     Set<String> getAllAccessibleUsers(String resourceId, ResourceType resourceType, PermissionAction permissionType);
 
     List<String> getAccessibleResourcesForUser(String userId, ResourceType resourceType, PermissionAction permissionAction);
+
+    void createGroup(Group group);
+
+    void updateGroup(Group group);
 }

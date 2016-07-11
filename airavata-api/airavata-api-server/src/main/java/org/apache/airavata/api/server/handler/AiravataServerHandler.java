@@ -37,6 +37,7 @@ import org.apache.airavata.grouper.GroupManagerCPI;
 import org.apache.airavata.grouper.GroupManagerException;
 import org.apache.airavata.grouper.GroupManagerFactory;
 import org.apache.airavata.grouper.SubjectType;
+import org.apache.airavata.grouper.group.Group;
 import org.apache.airavata.grouper.permission.PermissionAction;
 import org.apache.airavata.grouper.resource.Resource;
 import org.apache.airavata.messaging.core.MessageContext;
@@ -60,6 +61,7 @@ import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.experiment.*;
+import org.apache.airavata.model.group.GroupModel;
 import org.apache.airavata.model.group.ResourcePermissionType;
 import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.model.job.JobModel;
@@ -4498,6 +4500,75 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage(msg + " More info : " + e.getMessage());
             throw exception;
         }
+    }
+
+    @Override
+    @SecurityCheck
+    public boolean createGroup(AuthzToken authzToken, GroupModel groupModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
+            Group group = new Group();
+            group.setName(groupModel.getName());
+            group.setDescription(groupModel.getDescription());
+            group.setMembers(groupModel.getMembers());
+            groupManager.createGroup(group);
+        } catch (Exception e) {
+            String msg = "Error Creating Group" ;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        }
+        return true;
+    }
+
+    @Override
+    @SecurityCheck
+    public boolean updateGroup(AuthzToken authzToken, GroupModel groupModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
+            Group group = new Group();
+            group.setId(groupModel.getId());
+            group.setName(groupModel.getName());
+            group.setDescription(groupModel.getDescription());
+            group.setMembers(groupModel.getMembers());
+            groupManager.updateGroup(group);
+        } catch (Exception e) {
+            String msg = "Error Updating Group" ;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        }
+        return true;
+    }
+
+    @Override
+    @SecurityCheck
+    public boolean deleteGroup(AuthzToken authzToken, String groupId, String ownerId, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
+
+        } catch (Exception e) {
+            String msg = "Error Deleting Group. Group ID: " + groupId ;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        }
+        return true;
+    }
+
+    @Override
+    @SecurityCheck
+    public GroupModel getGroup(AuthzToken authzToken, String groupId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        return null;
+    }
+
+    @Override
+    @SecurityCheck
+    public List<GroupModel> getAllGroupsUserBelongs(AuthzToken authzToken, String userName, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        return null;
     }
 
     private void initializeResourceWithGrouper(String resourceId, ResourceType resourceType) throws RegistryException, GroupManagerException {

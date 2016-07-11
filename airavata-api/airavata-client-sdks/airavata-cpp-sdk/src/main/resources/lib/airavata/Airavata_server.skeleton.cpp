@@ -2939,6 +2939,31 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllAccessibleUsers\n");
   }
 
+  bool createGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel) {
+    // Your implementation goes here
+    printf("createGroup\n");
+  }
+
+  bool updateGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel) {
+    // Your implementation goes here
+    printf("updateGroup\n");
+  }
+
+  bool deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("deleteGroup\n");
+  }
+
+  void getGroup( ::apache::airavata::model::group::GroupModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId) {
+    // Your implementation goes here
+    printf("getGroup\n");
+  }
+
+  void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("getAllGroupsUserBelongs\n");
+  }
+
 };
 
 int main(int argc, char **argv) {
