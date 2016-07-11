@@ -4520,8 +4520,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             experimentResource.setParentResourceId(experiment.getProjectId());
             experimentResource.setOwnerId(experiment.getUserName()+"@"+experiment.getGatewayId());
             groupManager.createResource(experimentResource);
+        }else{
+            throw new GroupManagerException("Unsupported Resource Type");
         }
-        throw new GroupManagerException("Unsupported Resource Type");
+
     }
 
     private boolean isResourceExistsInGrouper(String resourceId, ResourceType resourceType) throws GroupManagerException {
@@ -4530,8 +4532,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             return groupManager.isResourceRegistered(resourceId, org.apache.airavata.grouper.resource.ResourceType.PROJECT);
         }else if(resourceType.equals(ResourceType.EXPERIMENT)){
             return groupManager.isResourceRegistered(resourceId, org.apache.airavata.grouper.resource.ResourceType.EXPERIMENT);
+        }else{
+            throw new GroupManagerException("Unsupported Resource Type");
         }
-        throw new GroupManagerException("Unsupported Resource Type");
+
     }
 
     private boolean hasPermission(String userId, String resourceId, ResourceType resourceType, ResourcePermissionType permissionType) throws GroupManagerException {
