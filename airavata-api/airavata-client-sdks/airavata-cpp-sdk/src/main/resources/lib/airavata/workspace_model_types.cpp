@@ -30,6 +30,20 @@
 
 namespace apache { namespace airavata { namespace model { namespace workspace {
 
+int _kGatewayApprovalStatusValues[] = {
+  GatewayApprovalStatus::REQUESTED,
+  GatewayApprovalStatus::APPROVED,
+  GatewayApprovalStatus::ACTIVE,
+  GatewayApprovalStatus::DEACTIVATED
+};
+const char* _kGatewayApprovalStatusNames[] = {
+  "REQUESTED",
+  "APPROVED",
+  "ACTIVE",
+  "DEACTIVATED"
+};
+const std::map<int, const char*> _GatewayApprovalStatus_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(4, _kGatewayApprovalStatusValues, _kGatewayApprovalStatusNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
 int _kNotificationPriorityValues[] = {
   NotificationPriority::LOW,
   NotificationPriority::NORMAL,
@@ -556,6 +570,10 @@ void Gateway::__set_gatewayId(const std::string& val) {
   this->gatewayId = val;
 }
 
+void Gateway::__set_gatewayApprovalStatus(const GatewayApprovalStatus::type val) {
+  this->gatewayApprovalStatus = val;
+}
+
 void Gateway::__set_gatewayName(const std::string& val) {
   this->gatewayName = val;
 __isset.gatewayName = true;
@@ -571,6 +589,26 @@ void Gateway::__set_emailAddress(const std::string& val) {
 __isset.emailAddress = true;
 }
 
+void Gateway::__set_gatewayAcronym(const std::string& val) {
+  this->gatewayAcronym = val;
+__isset.gatewayAcronym = true;
+}
+
+void Gateway::__set_gatewayURL(const std::string& val) {
+  this->gatewayURL = val;
+__isset.gatewayURL = true;
+}
+
+void Gateway::__set_gatewayPublicAbstract(const std::string& val) {
+  this->gatewayPublicAbstract = val;
+__isset.gatewayPublicAbstract = true;
+}
+
+void Gateway::__set_reviewProposalDescription(const std::string& val) {
+  this->reviewProposalDescription = val;
+__isset.reviewProposalDescription = true;
+}
+
 uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -584,6 +622,7 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_gatewayId = false;
+  bool isset_gatewayApprovalStatus = false;
 
   while (true)
   {
@@ -602,6 +641,16 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 2:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast24;
+          xfer += iprot->readI32(ecast24);
+          this->gatewayApprovalStatus = (GatewayApprovalStatus::type)ecast24;
+          isset_gatewayApprovalStatus = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->gatewayName);
           this->__isset.gatewayName = true;
@@ -609,7 +658,7 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 3:
+      case 4:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->domain);
           this->__isset.domain = true;
@@ -617,10 +666,42 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->emailAddress);
           this->__isset.emailAddress = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 6:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayAcronym);
+          this->__isset.gatewayAcronym = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 7:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayURL);
+          this->__isset.gatewayURL = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 8:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayPublicAbstract);
+          this->__isset.gatewayPublicAbstract = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 9:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->reviewProposalDescription);
+          this->__isset.reviewProposalDescription = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -636,6 +717,8 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   if (!isset_gatewayId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_gatewayApprovalStatus)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
@@ -648,19 +731,43 @@ uint32_t Gateway::write(::apache::thrift::protocol::TProtocol* oprot) const {
   xfer += oprot->writeString(this->gatewayId);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("gatewayApprovalStatus", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeI32((int32_t)this->gatewayApprovalStatus);
+  xfer += oprot->writeFieldEnd();
+
   if (this->__isset.gatewayName) {
-    xfer += oprot->writeFieldBegin("gatewayName", ::apache::thrift::protocol::T_STRING, 2);
+    xfer += oprot->writeFieldBegin("gatewayName", ::apache::thrift::protocol::T_STRING, 3);
     xfer += oprot->writeString(this->gatewayName);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.domain) {
-    xfer += oprot->writeFieldBegin("domain", ::apache::thrift::protocol::T_STRING, 3);
+    xfer += oprot->writeFieldBegin("domain", ::apache::thrift::protocol::T_STRING, 4);
     xfer += oprot->writeString(this->domain);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.emailAddress) {
-    xfer += oprot->writeFieldBegin("emailAddress", ::apache::thrift::protocol::T_STRING, 4);
+    xfer += oprot->writeFieldBegin("emailAddress", ::apache::thrift::protocol::T_STRING, 5);
     xfer += oprot->writeString(this->emailAddress);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.gatewayAcronym) {
+    xfer += oprot->writeFieldBegin("gatewayAcronym", ::apache::thrift::protocol::T_STRING, 6);
+    xfer += oprot->writeString(this->gatewayAcronym);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.gatewayURL) {
+    xfer += oprot->writeFieldBegin("gatewayURL", ::apache::thrift::protocol::T_STRING, 7);
+    xfer += oprot->writeString(this->gatewayURL);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.gatewayPublicAbstract) {
+    xfer += oprot->writeFieldBegin("gatewayPublicAbstract", ::apache::thrift::protocol::T_STRING, 8);
+    xfer += oprot->writeString(this->gatewayPublicAbstract);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.reviewProposalDescription) {
+    xfer += oprot->writeFieldBegin("reviewProposalDescription", ::apache::thrift::protocol::T_STRING, 9);
+    xfer += oprot->writeString(this->reviewProposalDescription);
     xfer += oprot->writeFieldEnd();
   }
   xfer += oprot->writeFieldStop();
@@ -671,34 +778,54 @@ uint32_t Gateway::write(::apache::thrift::protocol::TProtocol* oprot) const {
 void swap(Gateway &a, Gateway &b) {
   using ::std::swap;
   swap(a.gatewayId, b.gatewayId);
+  swap(a.gatewayApprovalStatus, b.gatewayApprovalStatus);
   swap(a.gatewayName, b.gatewayName);
   swap(a.domain, b.domain);
   swap(a.emailAddress, b.emailAddress);
+  swap(a.gatewayAcronym, b.gatewayAcronym);
+  swap(a.gatewayURL, b.gatewayURL);
+  swap(a.gatewayPublicAbstract, b.gatewayPublicAbstract);
+  swap(a.reviewProposalDescription, b.reviewProposalDescription);
   swap(a.__isset, b.__isset);
 }
 
-Gateway::Gateway(const Gateway& other24) {
-  gatewayId = other24.gatewayId;
-  gatewayName = other24.gatewayName;
-  domain = other24.domain;
-  emailAddress = other24.emailAddress;
-  __isset = other24.__isset;
-}
-Gateway& Gateway::operator=(const Gateway& other25) {
+Gateway::Gateway(const Gateway& other25) {
   gatewayId = other25.gatewayId;
+  gatewayApprovalStatus = other25.gatewayApprovalStatus;
   gatewayName = other25.gatewayName;
   domain = other25.domain;
   emailAddress = other25.emailAddress;
+  gatewayAcronym = other25.gatewayAcronym;
+  gatewayURL = other25.gatewayURL;
+  gatewayPublicAbstract = other25.gatewayPublicAbstract;
+  reviewProposalDescription = other25.reviewProposalDescription;
   __isset = other25.__isset;
+}
+Gateway& Gateway::operator=(const Gateway& other26) {
+  gatewayId = other26.gatewayId;
+  gatewayApprovalStatus = other26.gatewayApprovalStatus;
+  gatewayName = other26.gatewayName;
+  domain = other26.domain;
+  emailAddress = other26.emailAddress;
+  gatewayAcronym = other26.gatewayAcronym;
+  gatewayURL = other26.gatewayURL;
+  gatewayPublicAbstract = other26.gatewayPublicAbstract;
+  reviewProposalDescription = other26.reviewProposalDescription;
+  __isset = other26.__isset;
   return *this;
 }
 void Gateway::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
   out << "Gateway(";
   out << "gatewayId=" << to_string(gatewayId);
+  out << ", " << "gatewayApprovalStatus=" << to_string(gatewayApprovalStatus);
   out << ", " << "gatewayName="; (__isset.gatewayName ? (out << to_string(gatewayName)) : (out << "<null>"));
   out << ", " << "domain="; (__isset.domain ? (out << to_string(domain)) : (out << "<null>"));
   out << ", " << "emailAddress="; (__isset.emailAddress ? (out << to_string(emailAddress)) : (out << "<null>"));
+  out << ", " << "gatewayAcronym="; (__isset.gatewayAcronym ? (out << to_string(gatewayAcronym)) : (out << "<null>"));
+  out << ", " << "gatewayURL="; (__isset.gatewayURL ? (out << to_string(gatewayURL)) : (out << "<null>"));
+  out << ", " << "gatewayPublicAbstract="; (__isset.gatewayPublicAbstract ? (out << to_string(gatewayPublicAbstract)) : (out << "<null>"));
+  out << ", " << "reviewProposalDescription="; (__isset.reviewProposalDescription ? (out << to_string(reviewProposalDescription)) : (out << "<null>"));
   out << ")";
 }
 
@@ -826,9 +953,9 @@ uint32_t Notification::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 8:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast26;
-          xfer += iprot->readI32(ecast26);
-          this->priority = (NotificationPriority::type)ecast26;
+          int32_t ecast27;
+          xfer += iprot->readI32(ecast27);
+          this->priority = (NotificationPriority::type)ecast27;
           this->__isset.priority = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -912,18 +1039,7 @@ void swap(Notification &a, Notification &b) {
   swap(a.__isset, b.__isset);
 }
 
-Notification::Notification(const Notification& other27) {
-  notificationId = other27.notificationId;
-  gatewayId = other27.gatewayId;
-  title = other27.title;
-  notificationMessage = other27.notificationMessage;
-  creationTime = other27.creationTime;
-  publishedTime = other27.publishedTime;
-  expirationTime = other27.expirationTime;
-  priority = other27.priority;
-  __isset = other27.__isset;
-}
-Notification& Notification::operator=(const Notification& other28) {
+Notification::Notification(const Notification& other28) {
   notificationId = other28.notificationId;
   gatewayId = other28.gatewayId;
   title = other28.title;
@@ -933,6 +1049,17 @@ Notification& Notification::operator=(const Notification& other28) {
   expirationTime = other28.expirationTime;
   priority = other28.priority;
   __isset = other28.__isset;
+}
+Notification& Notification::operator=(const Notification& other29) {
+  notificationId = other29.notificationId;
+  gatewayId = other29.gatewayId;
+  title = other29.title;
+  notificationMessage = other29.notificationMessage;
+  creationTime = other29.creationTime;
+  publishedTime = other29.publishedTime;
+  expirationTime = other29.expirationTime;
+  priority = other29.priority;
+  __isset = other29.__isset;
   return *this;
 }
 void Notification::printTo(std::ostream& out) const {

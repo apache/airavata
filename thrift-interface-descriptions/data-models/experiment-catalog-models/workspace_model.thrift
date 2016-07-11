@@ -58,7 +58,6 @@ struct User {
 enum GatewayApprovalStatus {
     REQUESTED,
     APPROVED,
-    APPROVED,
     ACTIVE,
     DEACTIVATED
 }
