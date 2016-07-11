@@ -185,9 +185,8 @@ inline std::ostream& operator<<(std::ostream& out, const NSFDemographics& obj)
 }
 
 typedef struct _UserProfile__isset {
-  _UserProfile__isset() : userName(false), gatewayId(false), orcidId(false), phones(false), country(false), nationality(false), homeOrganization(false), orginationAffiliation(false), comments(false), labeledURI(false), gpgKey(false), timeZone(false), nsfDemographics(false) {}
+  _UserProfile__isset() : userName(false), orcidId(false), phones(false), country(false), nationality(false), homeOrganization(false), orginationAffiliation(false), comments(false), labeledURI(false), gpgKey(false), timeZone(false), nsfDemographics(false) {}
   bool userName :1;
-  bool gatewayId :1;
   bool orcidId :1;
   bool phones :1;
   bool country :1;
@@ -206,7 +205,7 @@ class UserProfile {
 
   UserProfile(const UserProfile&);
   UserProfile& operator=(const UserProfile&);
-  UserProfile() : userModelVersion("1.0"), airavataInternalUserId("DO_NOT_SET_AT_CLIENTS"), userId(), userName(), gatewayId(), orcidId(), country(), homeOrganization(), orginationAffiliation(), creationTime(), lastAccessTime(), validUntil(), State((Status::type)0), comments(), gpgKey(), timeZone() {
+  UserProfile() : userModelVersion("1.0"), airavataInternalUserId("DO_NOT_SET_AT_CLIENTS"), userId(), userName(), orcidId(), country(), homeOrganization(), orginationAffiliation(), creationTime(), lastAccessTime(), validUntil(), State((Status::type)0), comments(), gpgKey(), timeZone() {
   }
 
   virtual ~UserProfile() throw();
@@ -215,7 +214,6 @@ class UserProfile {
   std::string userId;
   std::vector<std::string>  emails;
   std::string userName;
-  std::string gatewayId;
   std::string orcidId;
   std::vector<std::string>  phones;
   std::string country;
@@ -243,8 +241,6 @@ class UserProfile {
   void __set_emails(const std::vector<std::string> & val);
 
   void __set_userName(const std::string& val);
-
-  void __set_gatewayId(const std::string& val);
 
   void __set_orcidId(const std::string& val);
 
@@ -289,10 +285,6 @@ class UserProfile {
     if (__isset.userName != rhs.__isset.userName)
       return false;
     else if (__isset.userName && !(userName == rhs.userName))
-      return false;
-    if (__isset.gatewayId != rhs.__isset.gatewayId)
-      return false;
-    else if (__isset.gatewayId && !(gatewayId == rhs.gatewayId))
       return false;
     if (__isset.orcidId != rhs.__isset.orcidId)
       return false;
