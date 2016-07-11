@@ -384,8 +384,8 @@ public class ExpCatResourceUtils {
             em.getTransaction().commit();
             em.close();
             ArrayList<String> usernameList = new ArrayList<>();
-            if(usernameList != null) {
-                for (int i = 0; i<usernameList.size(); i++){
+            if(users != null) {
+                for (int i = 0; i<users.size(); i++){
                     usernameList.add(users.get(i).getUserName());
                 }
             }
