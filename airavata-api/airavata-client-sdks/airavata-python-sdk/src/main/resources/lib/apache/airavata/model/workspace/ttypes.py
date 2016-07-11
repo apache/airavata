@@ -18,6 +18,26 @@ except:
   fastbinary = None
 
 
+class GatewayApprovalStatus:
+  REQUESTED = 0
+  APPROVED = 1
+  ACTIVE = 2
+  DEACTIVATED = 3
+
+  _VALUES_TO_NAMES = {
+    0: "REQUESTED",
+    1: "APPROVED",
+    2: "ACTIVE",
+    3: "DEACTIVATED",
+  }
+
+  _NAMES_TO_VALUES = {
+    "REQUESTED": 0,
+    "APPROVED": 1,
+    "ACTIVE": 2,
+    "DEACTIVATED": 3,
+  }
+
 class NotificationPriority:
   LOW = 0
   NORMAL = 1
@@ -374,24 +394,39 @@ class Gateway:
   """
   Attributes:
    - gatewayId
+   - gatewayApprovalStatus
    - gatewayName
    - domain
    - emailAddress
+   - gatewayAcronym
+   - gatewayURL
+   - gatewayPublicAbstract
+   - reviewProposalDescription
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'gatewayId', None, None, ), # 1
-    (2, TType.STRING, 'gatewayName', None, None, ), # 2
-    (3, TType.STRING, 'domain', None, None, ), # 3
-    (4, TType.STRING, 'emailAddress', None, None, ), # 4
+    (2, TType.I32, 'gatewayApprovalStatus', None, None, ), # 2
+    (3, TType.STRING, 'gatewayName', None, None, ), # 3
+    (4, TType.STRING, 'domain', None, None, ), # 4
+    (5, TType.STRING, 'emailAddress', None, None, ), # 5
+    (6, TType.STRING, 'gatewayAcronym', None, None, ), # 6
+    (7, TType.STRING, 'gatewayURL', None, None, ), # 7
+    (8, TType.STRING, 'gatewayPublicAbstract', None, None, ), # 8
+    (9, TType.STRING, 'reviewProposalDescription', None, None, ), # 9
   )
 
-  def __init__(self, gatewayId=None, gatewayName=None, domain=None, emailAddress=None,):
+  def __init__(self, gatewayId=None, gatewayApprovalStatus=None, gatewayName=None, domain=None, emailAddress=None, gatewayAcronym=None, gatewayURL=None, gatewayPublicAbstract=None, reviewProposalDescription=None,):
     self.gatewayId = gatewayId
+    self.gatewayApprovalStatus = gatewayApprovalStatus
     self.gatewayName = gatewayName
     self.domain = domain
     self.emailAddress = emailAddress
+    self.gatewayAcronym = gatewayAcronym
+    self.gatewayURL = gatewayURL
+    self.gatewayPublicAbstract = gatewayPublicAbstract
+    self.reviewProposalDescription = reviewProposalDescription
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -408,18 +443,43 @@ class Gateway:
         else:
           iprot.skip(ftype)
       elif fid == 2:
-        if ftype == TType.STRING:
-          self.gatewayName = iprot.readString()
+        if ftype == TType.I32:
+          self.gatewayApprovalStatus = iprot.readI32()
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
-          self.domain = iprot.readString()
+          self.gatewayName = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 4:
         if ftype == TType.STRING:
+          self.domain = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.STRING:
           self.emailAddress = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.STRING:
+          self.gatewayAcronym = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 7:
+        if ftype == TType.STRING:
+          self.gatewayURL = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.STRING:
+          self.gatewayPublicAbstract = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 9:
+        if ftype == TType.STRING:
+          self.reviewProposalDescription = iprot.readString()
         else:
           iprot.skip(ftype)
       else:
@@ -436,17 +496,37 @@ class Gateway:
       oprot.writeFieldBegin('gatewayId', TType.STRING, 1)
       oprot.writeString(self.gatewayId)
       oprot.writeFieldEnd()
+    if self.gatewayApprovalStatus is not None:
+      oprot.writeFieldBegin('gatewayApprovalStatus', TType.I32, 2)
+      oprot.writeI32(self.gatewayApprovalStatus)
+      oprot.writeFieldEnd()
     if self.gatewayName is not None:
-      oprot.writeFieldBegin('gatewayName', TType.STRING, 2)
+      oprot.writeFieldBegin('gatewayName', TType.STRING, 3)
       oprot.writeString(self.gatewayName)
       oprot.writeFieldEnd()
     if self.domain is not None:
-      oprot.writeFieldBegin('domain', TType.STRING, 3)
+      oprot.writeFieldBegin('domain', TType.STRING, 4)
       oprot.writeString(self.domain)
       oprot.writeFieldEnd()
     if self.emailAddress is not None:
-      oprot.writeFieldBegin('emailAddress', TType.STRING, 4)
+      oprot.writeFieldBegin('emailAddress', TType.STRING, 5)
       oprot.writeString(self.emailAddress)
+      oprot.writeFieldEnd()
+    if self.gatewayAcronym is not None:
+      oprot.writeFieldBegin('gatewayAcronym', TType.STRING, 6)
+      oprot.writeString(self.gatewayAcronym)
+      oprot.writeFieldEnd()
+    if self.gatewayURL is not None:
+      oprot.writeFieldBegin('gatewayURL', TType.STRING, 7)
+      oprot.writeString(self.gatewayURL)
+      oprot.writeFieldEnd()
+    if self.gatewayPublicAbstract is not None:
+      oprot.writeFieldBegin('gatewayPublicAbstract', TType.STRING, 8)
+      oprot.writeString(self.gatewayPublicAbstract)
+      oprot.writeFieldEnd()
+    if self.reviewProposalDescription is not None:
+      oprot.writeFieldBegin('reviewProposalDescription', TType.STRING, 9)
+      oprot.writeString(self.reviewProposalDescription)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -454,15 +534,22 @@ class Gateway:
   def validate(self):
     if self.gatewayId is None:
       raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
+    if self.gatewayApprovalStatus is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayApprovalStatus is unset!')
     return
 
 
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.gatewayId)
+    value = (value * 31) ^ hash(self.gatewayApprovalStatus)
     value = (value * 31) ^ hash(self.gatewayName)
     value = (value * 31) ^ hash(self.domain)
     value = (value * 31) ^ hash(self.emailAddress)
+    value = (value * 31) ^ hash(self.gatewayAcronym)
+    value = (value * 31) ^ hash(self.gatewayURL)
+    value = (value * 31) ^ hash(self.gatewayPublicAbstract)
+    value = (value * 31) ^ hash(self.reviewProposalDescription)
     return value
 
   def __repr__(self):
