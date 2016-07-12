@@ -16,6 +16,7 @@ import edu.internet2.middleware.grouper.permissions.PermissionEntry;
 import edu.internet2.middleware.grouper.permissions.PermissionFinder;
 import edu.internet2.middleware.subject.Subject;
 import edu.internet2.middleware.subject.SubjectNotFoundException;
+import org.apache.airavata.grouper.AiravataGrouperUtil;
 import org.apache.airavata.grouper.SubjectType;
 import org.apache.airavata.grouper.group.GroupServiceImpl;
 import org.apache.airavata.grouper.permission.PermissionAction;
@@ -236,6 +237,7 @@ public class ResourceServiceImpl {
       Stem stem = StemFinder.findByName(grouperSession, resourceType.getStemFromResourceType(), true);
       permissionFinder.assignPermissionNameFolder(stem);
       permissionFinder.assignPermissionNameFolderScope(Scope.ONE);
+      permissionFinder.addRole(AiravataGrouperUtil.ROLES_STEM_NAME+ ":" + resourceId + "_" + action.toString());
       Set<PermissionEntry> permissions = permissionFinder.findPermissions();
 
       for (PermissionEntry entry: permissions) {
