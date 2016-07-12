@@ -29,6 +29,8 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
                         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">^(?:(?!
+/airavata/getAllGateways|
+/airavata/getGateway|
 /airavata/getSSHPubKey|
 /airavata/getAllGatewaySSHPubKeys|
 /airavata/getAllGatewayPWDCredentials|
@@ -123,6 +125,8 @@
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
                         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">^(?:(?!
 /airavata/getAPIVersion|
+/airavata/getAllGateways|
+/airavata/getGateway|
 /airavata/getNotification|
 /airavata/getAllNotifications|
 /airavata/createProject|

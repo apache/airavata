@@ -21,6 +21,7 @@
 package org.apache.airavata.grouper;
 
 import org.apache.airavata.grouper.group.Group;
+import org.apache.airavata.grouper.group.GroupMembership;
 import org.apache.airavata.grouper.group.GroupServiceImpl;
 import org.apache.airavata.grouper.permission.PermissionAction;
 import org.apache.airavata.grouper.permission.PermissionServiceImpl;
@@ -95,5 +96,23 @@ public class GroupManagerImpl implements GroupManagerCPI {
     @Override
     public void updateGroup(Group group) {
         groupService.updateGroup(group);
+    }
+
+    @Override
+    public void deleteGroup(String groupId, String userId) {
+        groupService.deleteGroup(groupId, userId);
+    }
+
+    @Override
+    public Group getGroup(String groupId) {
+        return groupService.getGroup(groupId);
+    }
+
+    @Override
+    public List<Group> getAllGroupsUserBelongs(String userId) {
+        List<GroupMembership> groupMemberships = groupService.getAllMembershipsForUser(userId);
+        List<Group> groupList = new ArrayList<>();
+        groupMemberships.stream().forEach(gm->groupList.add(getGroup(gm.getGroupId())));
+        return groupList;
     }
 }
