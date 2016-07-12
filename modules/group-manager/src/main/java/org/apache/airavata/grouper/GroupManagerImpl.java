@@ -115,9 +115,4 @@ public class GroupManagerImpl implements GroupManagerCPI {
         groupMemberships.stream().forEach(gm->groupList.add(getGroup(gm.getGroupId())));
         return groupList;
     }
-
-    public static void main(String[] args) {
-        GroupManagerImpl groupManager = new GroupManagerImpl();
-        groupManager.getAllAccessibleUsers("TestProj4_ca7b95df-dd56-41b5-b112-d58b2748fc46", ResourceType.PROJECT, PermissionAction.READ);
-    }
 }
