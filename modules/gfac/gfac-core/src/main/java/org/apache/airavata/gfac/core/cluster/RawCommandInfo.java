@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,16 +16,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.gfac.core.cluster;
-
-/**
- * User: AmilaJ (amilaj@apache.org)
- * Date: 8/14/13
- * Time: 5:18 PM
- */
 
 /**
  * The raw command information. String returned by getCommand is directly executed in SSH
