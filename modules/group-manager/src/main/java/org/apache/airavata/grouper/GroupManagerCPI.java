@@ -26,4 +26,10 @@ public interface GroupManagerCPI {
     void createGroup(Group group);
 
     void updateGroup(Group group);
+
+    void deleteGroup(String groupId, String s);
+
+    Group getGroup(String groupId);
+
+    List<Group> getAllGroupsUserBelongs(String userId);
 }

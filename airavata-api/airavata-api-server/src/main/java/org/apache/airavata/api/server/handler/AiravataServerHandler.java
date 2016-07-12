@@ -4548,7 +4548,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean deleteGroup(AuthzToken authzToken, String groupId, String ownerId, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
-
+            groupManager.deleteGroup(groupId, ownerId + "@" + gatewayId);
         } catch (Exception e) {
             String msg = "Error Deleting Group. Group ID: " + groupId ;
             logger.error(msg, e);
@@ -4562,13 +4562,49 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public GroupModel getGroup(AuthzToken authzToken, String groupId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        return null;
+        try {
+            GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
+            Group group = groupManager.getGroup(groupId);
+            GroupModel groupModel = new GroupModel();
+            groupModel.setId(group.getId());
+            groupModel.setName(group.getName());
+            groupModel.setDescription(group.getDescription());
+            groupModel.setMembers(group.getMembers());
+
+            return  groupModel;
+        } catch (Exception e) {
+            String msg = "Error Retreiving Group. Group ID: " + groupId ;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     @SecurityCheck
     public List<GroupModel> getAllGroupsUserBelongs(AuthzToken authzToken, String userName, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        return null;
+        try {
+            GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
+            List<Group> userGroups = groupManager.getAllGroupsUserBelongs(userName+"@"+gatewayId);
+            List<GroupModel> groupModels = new ArrayList<>();
+            userGroups.stream().forEach(group->{
+                GroupModel groupModel = new GroupModel();
+                groupModel.setId(group.getId());
+                groupModel.setName(group.getName());
+                groupModel.setDescription(group.getDescription());
+                groupModel.setMembers(group.getMembers());
+
+                groupModels.add(groupModel);
+            });
+            return groupModels;
+        } catch (Exception e) {
+            String msg = "Error Retreiving All Groups for User. User ID: " + userName ;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     private void initializeResourceWithGrouper(String resourceId, ResourceType resourceType) throws RegistryException, GroupManagerException {
