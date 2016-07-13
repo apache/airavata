@@ -35,10 +35,7 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.model.workspace.Notification;
-import org.apache.airavata.model.workspace.NotificationPriority;
-import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.model.workspace.*;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.resources.*;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -80,6 +77,7 @@ public class ThriftDataModelConversion {
     public static Gateway getGateway (GatewayResource resource){
         Gateway gateway = new Gateway();
         gateway.setGatewayId(resource.getGatewayId());
+        gateway.setGatewayApprovalStatus(GatewayApprovalStatus.valueOf(resource.getGatewayApprovalStatus()));
         gateway.setGatewayName(resource.getGatewayName());
         gateway.setDomain(resource.getDomain());
         gateway.setEmailAddress(resource.getEmailAddress());
