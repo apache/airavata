@@ -609,6 +609,31 @@ void Gateway::__set_reviewProposalDescription(const std::string& val) {
 __isset.reviewProposalDescription = true;
 }
 
+void Gateway::__set_gatewayAdminFirstName(const std::string& val) {
+  this->gatewayAdminFirstName = val;
+__isset.gatewayAdminFirstName = true;
+}
+
+void Gateway::__set_gatewayAdminLastName(const std::string& val) {
+  this->gatewayAdminLastName = val;
+__isset.gatewayAdminLastName = true;
+}
+
+void Gateway::__set_gatewayAdminEmail(const std::string& val) {
+  this->gatewayAdminEmail = val;
+__isset.gatewayAdminEmail = true;
+}
+
+void Gateway::__set_identityServerUserName(const std::string& val) {
+  this->identityServerUserName = val;
+__isset.identityServerUserName = true;
+}
+
+void Gateway::__set_identityServerPasswordToken(const std::string& val) {
+  this->identityServerPasswordToken = val;
+__isset.identityServerPasswordToken = true;
+}
+
 uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -706,6 +731,46 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 10:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayAdminFirstName);
+          this->__isset.gatewayAdminFirstName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 11:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayAdminLastName);
+          this->__isset.gatewayAdminLastName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 12:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayAdminEmail);
+          this->__isset.gatewayAdminEmail = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 13:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->identityServerUserName);
+          this->__isset.identityServerUserName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 14:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->identityServerPasswordToken);
+          this->__isset.identityServerPasswordToken = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -770,6 +835,31 @@ uint32_t Gateway::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeString(this->reviewProposalDescription);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.gatewayAdminFirstName) {
+    xfer += oprot->writeFieldBegin("gatewayAdminFirstName", ::apache::thrift::protocol::T_STRING, 10);
+    xfer += oprot->writeString(this->gatewayAdminFirstName);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.gatewayAdminLastName) {
+    xfer += oprot->writeFieldBegin("gatewayAdminLastName", ::apache::thrift::protocol::T_STRING, 11);
+    xfer += oprot->writeString(this->gatewayAdminLastName);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.gatewayAdminEmail) {
+    xfer += oprot->writeFieldBegin("gatewayAdminEmail", ::apache::thrift::protocol::T_STRING, 12);
+    xfer += oprot->writeString(this->gatewayAdminEmail);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.identityServerUserName) {
+    xfer += oprot->writeFieldBegin("identityServerUserName", ::apache::thrift::protocol::T_STRING, 13);
+    xfer += oprot->writeString(this->identityServerUserName);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.identityServerPasswordToken) {
+    xfer += oprot->writeFieldBegin("identityServerPasswordToken", ::apache::thrift::protocol::T_STRING, 14);
+    xfer += oprot->writeString(this->identityServerPasswordToken);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -786,6 +876,11 @@ void swap(Gateway &a, Gateway &b) {
   swap(a.gatewayURL, b.gatewayURL);
   swap(a.gatewayPublicAbstract, b.gatewayPublicAbstract);
   swap(a.reviewProposalDescription, b.reviewProposalDescription);
+  swap(a.gatewayAdminFirstName, b.gatewayAdminFirstName);
+  swap(a.gatewayAdminLastName, b.gatewayAdminLastName);
+  swap(a.gatewayAdminEmail, b.gatewayAdminEmail);
+  swap(a.identityServerUserName, b.identityServerUserName);
+  swap(a.identityServerPasswordToken, b.identityServerPasswordToken);
   swap(a.__isset, b.__isset);
 }
 
@@ -799,6 +894,11 @@ Gateway::Gateway(const Gateway& other25) {
   gatewayURL = other25.gatewayURL;
   gatewayPublicAbstract = other25.gatewayPublicAbstract;
   reviewProposalDescription = other25.reviewProposalDescription;
+  gatewayAdminFirstName = other25.gatewayAdminFirstName;
+  gatewayAdminLastName = other25.gatewayAdminLastName;
+  gatewayAdminEmail = other25.gatewayAdminEmail;
+  identityServerUserName = other25.identityServerUserName;
+  identityServerPasswordToken = other25.identityServerPasswordToken;
   __isset = other25.__isset;
 }
 Gateway& Gateway::operator=(const Gateway& other26) {
@@ -811,6 +911,11 @@ Gateway& Gateway::operator=(const Gateway& other26) {
   gatewayURL = other26.gatewayURL;
   gatewayPublicAbstract = other26.gatewayPublicAbstract;
   reviewProposalDescription = other26.reviewProposalDescription;
+  gatewayAdminFirstName = other26.gatewayAdminFirstName;
+  gatewayAdminLastName = other26.gatewayAdminLastName;
+  gatewayAdminEmail = other26.gatewayAdminEmail;
+  identityServerUserName = other26.identityServerUserName;
+  identityServerPasswordToken = other26.identityServerPasswordToken;
   __isset = other26.__isset;
   return *this;
 }
@@ -826,6 +931,11 @@ void Gateway::printTo(std::ostream& out) const {
   out << ", " << "gatewayURL="; (__isset.gatewayURL ? (out << to_string(gatewayURL)) : (out << "<null>"));
   out << ", " << "gatewayPublicAbstract="; (__isset.gatewayPublicAbstract ? (out << to_string(gatewayPublicAbstract)) : (out << "<null>"));
   out << ", " << "reviewProposalDescription="; (__isset.reviewProposalDescription ? (out << to_string(reviewProposalDescription)) : (out << "<null>"));
+  out << ", " << "gatewayAdminFirstName="; (__isset.gatewayAdminFirstName ? (out << to_string(gatewayAdminFirstName)) : (out << "<null>"));
+  out << ", " << "gatewayAdminLastName="; (__isset.gatewayAdminLastName ? (out << to_string(gatewayAdminLastName)) : (out << "<null>"));
+  out << ", " << "gatewayAdminEmail="; (__isset.gatewayAdminEmail ? (out << to_string(gatewayAdminEmail)) : (out << "<null>"));
+  out << ", " << "identityServerUserName="; (__isset.identityServerUserName ? (out << to_string(identityServerUserName)) : (out << "<null>"));
+  out << ", " << "identityServerPasswordToken="; (__isset.identityServerPasswordToken ? (out << to_string(identityServerPasswordToken)) : (out << "<null>"));
   out << ")";
 }
 

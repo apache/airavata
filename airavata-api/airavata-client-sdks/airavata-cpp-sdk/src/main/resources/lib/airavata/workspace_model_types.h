@@ -262,7 +262,7 @@ inline std::ostream& operator<<(std::ostream& out, const User& obj)
 }
 
 typedef struct _Gateway__isset {
-  _Gateway__isset() : gatewayName(false), domain(false), emailAddress(false), gatewayAcronym(false), gatewayURL(false), gatewayPublicAbstract(false), reviewProposalDescription(false) {}
+  _Gateway__isset() : gatewayName(false), domain(false), emailAddress(false), gatewayAcronym(false), gatewayURL(false), gatewayPublicAbstract(false), reviewProposalDescription(false), gatewayAdminFirstName(false), gatewayAdminLastName(false), gatewayAdminEmail(false), identityServerUserName(false), identityServerPasswordToken(false) {}
   bool gatewayName :1;
   bool domain :1;
   bool emailAddress :1;
@@ -270,6 +270,11 @@ typedef struct _Gateway__isset {
   bool gatewayURL :1;
   bool gatewayPublicAbstract :1;
   bool reviewProposalDescription :1;
+  bool gatewayAdminFirstName :1;
+  bool gatewayAdminLastName :1;
+  bool gatewayAdminEmail :1;
+  bool identityServerUserName :1;
+  bool identityServerPasswordToken :1;
 } _Gateway__isset;
 
 class Gateway {
@@ -277,7 +282,7 @@ class Gateway {
 
   Gateway(const Gateway&);
   Gateway& operator=(const Gateway&);
-  Gateway() : gatewayId(), gatewayApprovalStatus((GatewayApprovalStatus::type)0), gatewayName(), domain(), emailAddress(), gatewayAcronym(), gatewayURL(), gatewayPublicAbstract(), reviewProposalDescription() {
+  Gateway() : gatewayId(), gatewayApprovalStatus((GatewayApprovalStatus::type)0), gatewayName(), domain(), emailAddress(), gatewayAcronym(), gatewayURL(), gatewayPublicAbstract(), reviewProposalDescription(), gatewayAdminFirstName(), gatewayAdminLastName(), gatewayAdminEmail(), identityServerUserName(), identityServerPasswordToken() {
   }
 
   virtual ~Gateway() throw();
@@ -290,6 +295,11 @@ class Gateway {
   std::string gatewayURL;
   std::string gatewayPublicAbstract;
   std::string reviewProposalDescription;
+  std::string gatewayAdminFirstName;
+  std::string gatewayAdminLastName;
+  std::string gatewayAdminEmail;
+  std::string identityServerUserName;
+  std::string identityServerPasswordToken;
 
   _Gateway__isset __isset;
 
@@ -310,6 +320,16 @@ class Gateway {
   void __set_gatewayPublicAbstract(const std::string& val);
 
   void __set_reviewProposalDescription(const std::string& val);
+
+  void __set_gatewayAdminFirstName(const std::string& val);
+
+  void __set_gatewayAdminLastName(const std::string& val);
+
+  void __set_gatewayAdminEmail(const std::string& val);
+
+  void __set_identityServerUserName(const std::string& val);
+
+  void __set_identityServerPasswordToken(const std::string& val);
 
   bool operator == (const Gateway & rhs) const
   {
@@ -344,6 +364,26 @@ class Gateway {
     if (__isset.reviewProposalDescription != rhs.__isset.reviewProposalDescription)
       return false;
     else if (__isset.reviewProposalDescription && !(reviewProposalDescription == rhs.reviewProposalDescription))
+      return false;
+    if (__isset.gatewayAdminFirstName != rhs.__isset.gatewayAdminFirstName)
+      return false;
+    else if (__isset.gatewayAdminFirstName && !(gatewayAdminFirstName == rhs.gatewayAdminFirstName))
+      return false;
+    if (__isset.gatewayAdminLastName != rhs.__isset.gatewayAdminLastName)
+      return false;
+    else if (__isset.gatewayAdminLastName && !(gatewayAdminLastName == rhs.gatewayAdminLastName))
+      return false;
+    if (__isset.gatewayAdminEmail != rhs.__isset.gatewayAdminEmail)
+      return false;
+    else if (__isset.gatewayAdminEmail && !(gatewayAdminEmail == rhs.gatewayAdminEmail))
+      return false;
+    if (__isset.identityServerUserName != rhs.__isset.identityServerUserName)
+      return false;
+    else if (__isset.identityServerUserName && !(identityServerUserName == rhs.identityServerUserName))
+      return false;
+    if (__isset.identityServerPasswordToken != rhs.__isset.identityServerPasswordToken)
+      return false;
+    else if (__isset.identityServerPasswordToken && !(identityServerPasswordToken == rhs.identityServerPasswordToken))
       return false;
     return true;
   }
