@@ -428,7 +428,7 @@ public class WorkerResource extends AbstractExpCatResource {
      * @return list of projects for the user
      */
     public List<org.apache.airavata.registry.core.experiment.catalog.resources.ProjectResource> getProjects(int limit, int offset, Object orderByIdentifier,
-                                             ResultOrderType resultOrderType) throws RegistryException {
+                                                                                                            ResultOrderType resultOrderType) throws RegistryException {
         List<org.apache.airavata.registry.core.experiment.catalog.resources.ProjectResource> result = new ArrayList<org.apache.airavata.registry.core.experiment.catalog.resources.ProjectResource>();
         List<ExperimentCatResource> list = get(ResourceType.PROJECT, limit, offset, orderByIdentifier, resultOrderType);
         for (ExperimentCatResource resource : list) {
@@ -518,58 +518,58 @@ public class WorkerResource extends AbstractExpCatResource {
             String query = "SELECT DISTINCT p from Project p WHERE ";
 
             // FIXME There is a performance bottleneck for using IN clause. Try using temporary tables ?
-            if(accessibleIds != null && accessibleIds.size()>0) {
+            if (accessibleIds != null && accessibleIds.size() > 0) {
                 query += " p.projectId IN (";
                 for (String id : accessibleIds)
                     query += ("'" + id + "'" + ",");
                 query = query.substring(0, query.length() - 1) + ") AND ";
+            }
 
-
-                if (filters != null && filters.size() != 0) {
-                    for (String field : filters.keySet()) {
-                        String filterVal = filters.get(field);
-                        if (field.equals(ProjectConstants.USERNAME)) {
-                            query += "p." + field + "= '" + filterVal + "' AND ";
-                        } else if (field.equals(ProjectConstants.GATEWAY_ID)) {
-                            query += "p." + field + "= '" + filterVal + "' AND ";
-                        } else {
-                            if (filterVal.contains("*")) {
-                                filterVal = filterVal.replaceAll("\\*", "");
-                            }
-                            query += "p." + field + " LIKE '%" + filterVal + "%' AND ";
+            if (filters != null && filters.size() != 0) {
+                for (String field : filters.keySet()) {
+                    String filterVal = filters.get(field);
+                    if (field.equals(ProjectConstants.USERNAME)) {
+                        query += "p." + field + "= '" + filterVal + "' AND ";
+                    } else if (field.equals(ProjectConstants.GATEWAY_ID)) {
+                        query += "p." + field + "= '" + filterVal + "' AND ";
+                    } else {
+                        if (filterVal.contains("*")) {
+                            filterVal = filterVal.replaceAll("\\*", "");
                         }
+                        query += "p." + field + " LIKE '%" + filterVal + "%' AND ";
                     }
                 }
-                query = query.substring(0, query.length() - 5);
-
-                //ordering
-                if (orderByIdentifier != null && resultOrderType != null
-                        && orderByIdentifier.equals(Constants.FieldConstants.ProjectConstants.CREATION_TIME)) {
-                    String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
-                    query += " ORDER BY p." + ProjectConstants.CREATION_TIME + " " + order;
-                }
-
-                em = ExpCatResourceUtils.getEntityManager();
-                em.getTransaction().begin();
-                Query q;
-
-                //pagination
-                if (offset >= 0 && limit >= 0) {
-                    q = em.createQuery(query).setFirstResult(offset).setMaxResults(limit);
-                } else {
-                    q = em.createQuery(query);
-                }
-
-                List resultList = q.getResultList();
-                for (Object o : resultList) {
-                    Project project = (Project) o;
-                    org.apache.airavata.registry.core.experiment.catalog.resources.ProjectResource projectResource =
-                            (ProjectResource) Utils.getResource(ResourceType.PROJECT, project);
-                    result.add(projectResource);
-                }
-                em.getTransaction().commit();
-                em.close();
             }
+            query = query.substring(0, query.length() - 5);
+
+            //ordering
+            if (orderByIdentifier != null && resultOrderType != null
+                    && orderByIdentifier.equals(Constants.FieldConstants.ProjectConstants.CREATION_TIME)) {
+                String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
+                query += " ORDER BY p." + ProjectConstants.CREATION_TIME + " " + order;
+            }
+
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Query q;
+
+            //pagination
+            if (offset >= 0 && limit >= 0) {
+                q = em.createQuery(query).setFirstResult(offset).setMaxResults(limit);
+            } else {
+                q = em.createQuery(query);
+            }
+
+            List resultList = q.getResultList();
+            for (Object o : resultList) {
+                Project project = (Project) o;
+                org.apache.airavata.registry.core.experiment.catalog.resources.ProjectResource projectResource =
+                        (ProjectResource) Utils.getResource(ResourceType.PROJECT, project);
+                result.add(projectResource);
+            }
+            em.getTransaction().commit();
+            em.close();
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -609,71 +609,70 @@ public class WorkerResource extends AbstractExpCatResource {
                     "WHERE ";
 
             // FIXME There is a performance bottleneck for using IN clause. Try using temporary tables ?
-            if(accessibleIds != null && accessibleIds.size()>0) {
+            if (accessibleIds != null && accessibleIds.size() > 0) {
                 query += " e.experimentId IN (";
                 for (String id : accessibleIds)
                     query += ("'" + id + "'" + ",");
                 query = query.substring(0, query.length() - 1) + ") AND ";
+            }
 
+            if (filters.get(ExperimentStatusConstants.STATE) != null) {
+                String experimentState = ExperimentState.valueOf(filters.get(ExperimentStatusConstants.STATE)).toString();
+                query += "e.state='" + experimentState + "' AND ";
+            }
 
-                if (filters.get(ExperimentStatusConstants.STATE) != null) {
-                    String experimentState = ExperimentState.valueOf(filters.get(ExperimentStatusConstants.STATE)).toString();
-                    query += "e.state='" + experimentState + "' AND ";
-                }
+            if (toTime != null && fromTime != null && toTime.after(fromTime)) {
+                query += "e.creationTime > '" + fromTime + "' " + "AND e.creationTime <'" + toTime + "' AND ";
+            }
 
-                if (toTime != null && fromTime != null && toTime.after(fromTime)) {
-                    query += "e.creationTime > '" + fromTime + "' " + "AND e.creationTime <'" + toTime + "' AND ";
-                }
-
-                filters.remove(ExperimentStatusConstants.STATE);
-                if (filters != null && filters.size() != 0) {
-                    for (String field : filters.keySet()) {
-                        String filterVal = filters.get(field);
-                        if (field.equals(ExperimentConstants.USER_NAME)) {
-                            query += "e." + field + "= '" + filterVal + "' AND ";
-                        } else if (field.equals(ExperimentConstants.GATEWAY_ID)) {
-                            query += "e." + field + "= '" + filterVal + "' AND ";
-                        } else if (field.equals(ExperimentConstants.PROJECT_ID)) {
-                            query += "e." + field + "= '" + filterVal + "' AND ";
-                        } else {
-                            if (filterVal.contains("*")) {
-                                filterVal = filterVal.replaceAll("\\*", "");
-                            }
-                            query += "e." + field + " LIKE '%" + filterVal + "%' AND ";
+            filters.remove(ExperimentStatusConstants.STATE);
+            if (filters != null && filters.size() != 0) {
+                for (String field : filters.keySet()) {
+                    String filterVal = filters.get(field);
+                    if (field.equals(ExperimentConstants.USER_NAME)) {
+                        query += "e." + field + "= '" + filterVal + "' AND ";
+                    } else if (field.equals(ExperimentConstants.GATEWAY_ID)) {
+                        query += "e." + field + "= '" + filterVal + "' AND ";
+                    } else if (field.equals(ExperimentConstants.PROJECT_ID)) {
+                        query += "e." + field + "= '" + filterVal + "' AND ";
+                    } else {
+                        if (filterVal.contains("*")) {
+                            filterVal = filterVal.replaceAll("\\*", "");
                         }
+                        query += "e." + field + " LIKE '%" + filterVal + "%' AND ";
                     }
                 }
-                query = query.substring(0, query.length() - 5);
-
-                //ordering
-                if (orderByIdentifier != null && resultOrderType != null
-                        && orderByIdentifier.equals(Constants.FieldConstants.ExperimentConstants.CREATION_TIME)) {
-                    String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
-                    query += " ORDER BY e." + ExperimentConstants.CREATION_TIME + " " + order;
-                }
-
-                em = ExpCatResourceUtils.getEntityManager();
-                em.getTransaction().begin();
-                Query q;
-
-                //pagination
-                if (offset >= 0 && limit >= 0) {
-                    q = em.createQuery(query).setFirstResult(offset).setMaxResults(limit);
-                } else {
-                    q = em.createQuery(query);
-                }
-
-                List resultList = q.getResultList();
-                for (Object o : resultList) {
-                    ExperimentSummary experimentSummary = (ExperimentSummary) o;
-                    ExperimentSummaryResource experimentSummaryResource =
-                            (ExperimentSummaryResource) Utils.getResource(ResourceType.EXPERIMENT_SUMMARY,
-                                    experimentSummary);
-                    result.add(experimentSummaryResource);
-                }
-                em.getTransaction().commit();
-                em.close();
             }
+            query = query.substring(0, query.length() - 5);
+
+            //ordering
+            if (orderByIdentifier != null && resultOrderType != null
+                    && orderByIdentifier.equals(Constants.FieldConstants.ExperimentConstants.CREATION_TIME)) {
+                String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
+                query += " ORDER BY e." + ExperimentConstants.CREATION_TIME + " " + order;
+            }
+
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Query q;
+
+            //pagination
+            if (offset >= 0 && limit >= 0) {
+                q = em.createQuery(query).setFirstResult(offset).setMaxResults(limit);
+            } else {
+                q = em.createQuery(query);
+            }
+
+            List resultList = q.getResultList();
+            for (Object o : resultList) {
+                ExperimentSummary experimentSummary = (ExperimentSummary) o;
+                ExperimentSummaryResource experimentSummaryResource =
+                        (ExperimentSummaryResource) Utils.getResource(ResourceType.EXPERIMENT_SUMMARY,
+                                experimentSummary);
+                result.add(experimentSummaryResource);
+            }
+            em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

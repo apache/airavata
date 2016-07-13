@@ -598,9 +598,15 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
             String projectId = (String) experimentCatalog.add(ExpCatParentDataType.PROJECT, project, gatewayId);
+            GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
+            Resource projResource = new Resource(projectId, org.apache.airavata.grouper.resource.ResourceType.PROJECT);
+            projResource.setOwnerId(project.getOwner() + "@" + project.getGatewayId());
+            projResource.setName(project.getName());
+            projResource.setDescription(project.getDescription());
+            groupManager.createResource(projResource);
             logger.debug("Airavata created project with project Id : " + projectId + " for gateway Id : " + gatewayId);
             return projectId;
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             logger.error("Error while creating the project", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -864,24 +870,8 @@ public class AiravataServerHandler implements Airavata.Iface {
                     regFilters.put(Constants.FieldConstants.ProjectConstants.DESCRIPTION, entry.getValue());
                 }
             }
-
-            Map<String, String> temp = new HashMap();
-            temp.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
-            temp.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
-            final List<String> accessibleProjIds  = new ArrayList<>();
-            try{
-                accessibleProjIds.addAll(getAllAccessibleResourcesForUser(userName+"@"+gatewayId, ResourceType.PROJECT, ResourcePermissionType.READ));
-            }catch (Exception ex){
-                logger.error(ex.getMessage(), ex);
-            }
-            List<Object> allUserProjects = experimentCatalog.search(ExperimentCatalogModelType.PROJECT, temp, -1,
-                    0, Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
-            allUserProjects.stream().forEach(e->accessibleProjIds.add(((Project) e).getProjectID()));
-            Set<String> hs = new HashSet<>();
-            hs.addAll(accessibleProjIds);
-            accessibleProjIds.clear();
-            accessibleProjIds.addAll(hs);
-
+            List<String> accessibleProjIds  = new ArrayList<>();
+            accessibleProjIds.addAll(getAllAccessibleResourcesForUser(userName+"@"+gatewayId, ResourceType.PROJECT, ResourcePermissionType.READ));
             List<Object> results = experimentCatalog.searchAllAccessible(ExperimentCatalogModelType.PROJECT, accessibleProjIds,
                     regFilters, limit, offset, Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
@@ -960,25 +950,8 @@ public class AiravataServerHandler implements Airavata.Iface {
                     regFilters.put(Constants.FieldConstants.ExperimentConstants.PROJECT_ID, entry.getValue());
                 }
             }
-
-            Map<String, String> temp = new HashMap();
-            temp.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
-            temp.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
-
-            final List<String> accessibleExpIds = new ArrayList<>();
-            try{
-                accessibleExpIds.addAll(getAllAccessibleResourcesForUser(userName + "@" + gatewayId, ResourceType.EXPERIMENT, ResourcePermissionType.READ));
-            }catch (Exception ex){
-                logger.error(ex.getMessage(), ex);
-            }
-            List<Object> allUserExperiments = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, temp, -1,
-                    0, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
-            allUserExperiments.stream().forEach(e->accessibleExpIds.add(((ExperimentSummaryModel) e).getExperimentId()));
-            Set<String> hs = new HashSet<>();
-            hs.addAll(accessibleExpIds);
-            accessibleExpIds.clear();
-            accessibleExpIds.addAll(hs);
-
+            List<String> accessibleExpIds = new ArrayList<>();
+            accessibleExpIds.addAll(getAllAccessibleResourcesForUser(userName + "@" + gatewayId, ResourceType.EXPERIMENT, ResourcePermissionType.READ));
             List<Object> results = experimentCatalog.searchAllAccessible(ExperimentCatalogModelType.EXPERIMENT,
                     accessibleExpIds, regFilters, limit,
                     offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
@@ -1217,6 +1190,13 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
 
             String experimentId = (String) experimentCatalog.add(ExpCatParentDataType.EXPERIMENT, experiment, gatewayId);
+            GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
+            Resource expResource = new Resource(experimentId, org.apache.airavata.grouper.resource.ResourceType.EXPERIMENT);
+            expResource.setOwnerId(experiment.getUserName()+"@"+experiment.getGatewayId());
+            expResource.setParentResourceId(experiment.getProjectId());
+            expResource.setName(experiment.getExperimentName());
+            expResource.setDescription(experiment.getDescription());
+            groupManager.createResource(expResource);
             ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.CREATED,
                     experimentId,
                     gatewayId);
