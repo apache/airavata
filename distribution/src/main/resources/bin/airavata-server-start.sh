@@ -43,7 +43,7 @@ do
             JAVA_OPTS="${JAVA_OPTS} -Djava.security.manager -Djava.security.policy=${AIRAVATA_HOME}/conf/axis2.policy -Daxis2.home=${AIRAVATA_HOME}"
             shift
         ;;
-	    apiserver | gfac | orchestrator)
+	    apiserver | gfac | orchestrator | credentialstore)
 	        if [ -z ${SERVERS} ] ; then
 	            SERVERS="${var}"
 	        else
@@ -94,7 +94,12 @@ done
 if ${IS_SUBSET} ; then
     AIRAVATA_COMMAND="--servers=${SUBSET} ${AIRAVATA_COMMAND} ${EXTRA_ARGS}"
 else
-    AIRAVATA_COMMAND="--servers=${SERVERS} ${AIRAVATA_COMMAND} ${EXTRA_ARGS}"
+    if [ -z ${SERVERS} ] ; then
+        echo "You should provide at least one server component to start the airavata server. Please use -h option to get more details."
+        exit -1
+    else
+        AIRAVATA_COMMAND="--servers=${SERVERS} ${AIRAVATA_COMMAND} ${EXTRA_ARGS}"
+    fi
 fi
 
 #print logo file

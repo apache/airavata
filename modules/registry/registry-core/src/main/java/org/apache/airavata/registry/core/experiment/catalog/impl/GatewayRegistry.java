@@ -52,6 +52,15 @@ public class GatewayRegistry {
             resource.setGatewayName(gateway.getGatewayName());
             resource.setEmailAddress(gateway.getEmailAddress());
             resource.setDomain(gateway.getDomain());
+            resource.setGatewayAcronym(gateway.getGatewayAcronym());
+            resource.setGatewayUrl(gateway.getGatewayURL());
+            resource.setGatewayPublicAbstract(gateway.getGatewayPublicAbstract());
+            resource.setReviewProposalDescription(gateway.getReviewProposalDescription());
+            resource.setGatewayAdminFirstName(gateway.getGatewayAdminFirstName());
+            resource.setGetGatewayAdminLastName(gateway.getGatewayAdminLastName());
+            resource.setGatewayAdminEmail(gateway.getGatewayAdminEmail());
+            resource.setIdentityServerUserName(gateway.getIdentityServerUserName());
+            resource.setIdentityServerPasswordToken(gateway.getIdentityServerPasswordToken());
             resource.save();
             return gateway.getGatewayId();
         }catch (RegistryException e){
@@ -66,6 +75,15 @@ public class GatewayRegistry {
             existingGateway.setGatewayName(updatedGateway.getGatewayName());
             existingGateway.setEmailAddress(updatedGateway.getEmailAddress());
             existingGateway.setDomain(updatedGateway.getDomain());
+            existingGateway.setGatewayAcronym(updatedGateway.getGatewayAcronym());
+            existingGateway.setGatewayUrl(updatedGateway.getGatewayURL());
+            existingGateway.setGatewayPublicAbstract(updatedGateway.getGatewayPublicAbstract());
+            existingGateway.setReviewProposalDescription(updatedGateway.getReviewProposalDescription());
+            existingGateway.setGatewayAdminFirstName(updatedGateway.getGatewayAdminFirstName());
+            existingGateway.setGetGatewayAdminLastName(updatedGateway.getGatewayAdminLastName());
+            existingGateway.setGatewayAdminEmail(updatedGateway.getGatewayAdminEmail());
+            existingGateway.setIdentityServerUserName(updatedGateway.getIdentityServerUserName());
+            existingGateway.setIdentityServerPasswordToken(updatedGateway.getIdentityServerPasswordToken());
             existingGateway.save();
         }catch (RegistryException e){
             logger.error("Error while updating gateway to registry", e);

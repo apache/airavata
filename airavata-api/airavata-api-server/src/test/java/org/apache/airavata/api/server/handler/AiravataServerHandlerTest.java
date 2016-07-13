@@ -34,6 +34,7 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
+import org.apache.airavata.model.workspace.NotificationPriority;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.thrift.TException;
 import org.junit.AfterClass;
@@ -51,11 +52,11 @@ public class AiravataServerHandlerTest {
 
     private static AiravataServerHandler airavataServerHandler;
     private static String gatewayId = "php_reference_gateway";
-    private static  String computeResouceId = null;
+    private static String computeResouceId = null;
     private AuthzToken token = new AuthzToken("empty_token");
 
     @BeforeClass
-    public static void setupBeforeClass() throws Exception{
+    public static void setupBeforeClass() throws Exception {
         AppCatInit appCatInit = new AppCatInit("appcatalog-derby.sql");
         appCatInit.initializeDB();
         ExpCatInit expCatInit = new ExpCatInit("expcatalog-derby.sql");
@@ -75,7 +76,7 @@ public class AiravataServerHandlerTest {
     }
 
     @AfterClass
-    public static void tearDown(){
+    public static void tearDown() {
         ExperimentCatalogInitUtil.stopDerbyInServerMode();
     }
 
@@ -83,25 +84,25 @@ public class AiravataServerHandlerTest {
      * Testing for project related API methods
      */
     @Test
-    public void testProject(){
+    public void testProject() {
         try {
             String TAG = System.currentTimeMillis() + "";
 
 
             //testing the creation of a project
             Project project = new Project();
-            project.setOwner("TestUser"+TAG);
-            project.setName("TestProject"+TAG);
-            project.setDescription("This is a test project"+TAG);
+            project.setOwner("TestUser" + TAG);
+            project.setName("TestProject" + TAG);
+            project.setDescription("This is a test project" + TAG);
             String projectId1 = airavataServerHandler.createProject(new AuthzToken(""), gatewayId, project);
             Assert.assertNotNull(projectId1);
 
             //testing the update of a project
             Project updatedProject = new Project();
             updatedProject.setProjectID(projectId1);
-            updatedProject.setOwner("TestUser"+TAG);
-            updatedProject.setName("UpdatedTestProject"+TAG);
-            updatedProject.setDescription("This is an updated test project"+TAG);
+            updatedProject.setOwner("TestUser" + TAG);
+            updatedProject.setName("UpdatedTestProject" + TAG);
+            updatedProject.setDescription("This is an updated test project" + TAG);
             airavataServerHandler.updateProject(new AuthzToken(""), projectId1, updatedProject);
 
             //testing project retrieval
@@ -112,44 +113,44 @@ public class AiravataServerHandlerTest {
             Assert.assertEquals(updatedProject.getDescription(), retrievedProject.getDescription());
             Assert.assertNotNull(retrievedProject.getCreationTime());
             //created user should be in the shared users list
-            Assert.assertTrue(retrievedProject.getSharedUsers().size()==1);
+            Assert.assertTrue(retrievedProject.getSharedUsers().size() == 1);
 
             //creating more projects for the same user
             project = new Project();
-            project.setOwner("TestUser"+TAG);
-            project.setName("Project Terrible"+TAG);
-            project.setDescription("This is a test project_2"+TAG);
+            project.setOwner("TestUser" + TAG);
+            project.setName("Project Terrible" + TAG);
+            project.setDescription("This is a test project_2" + TAG);
             String projectId2 = airavataServerHandler.createProject(new AuthzToken(""), gatewayId, project);
             Assert.assertNotNull(projectId2);
 
             project = new Project();
-            project.setOwner("TestUser"+TAG);
-            project.setName("Project Funny"+TAG);
-            project.setDescription("This is a test project_3"+TAG);
+            project.setOwner("TestUser" + TAG);
+            project.setName("Project Funny" + TAG);
+            project.setDescription("This is a test project_3" + TAG);
             String projectId3 = airavataServerHandler.createProject(new AuthzToken(""), gatewayId, project);
             Assert.assertNotNull(projectId3);
 
             project = new Project();
-            project.setOwner("TestUser"+TAG);
-            project.setName("Project Stupid"+TAG);
-            project.setDescription("This is a test project_4"+TAG);
+            project.setOwner("TestUser" + TAG);
+            project.setName("Project Stupid" + TAG);
+            project.setDescription("This is a test project_4" + TAG);
             String projectId4 = airavataServerHandler.createProject(new AuthzToken(""), gatewayId, project);
             Assert.assertNotNull(projectId4);
 
             project = new Project();
-            project.setOwner("TestUser"+TAG);
-            project.setName("Project Boring"+TAG);
-            project.setDescription("This is a test project_5"+TAG);
+            project.setOwner("TestUser" + TAG);
+            project.setName("Project Boring" + TAG);
+            project.setDescription("This is a test project_5" + TAG);
             String projectId5 = airavataServerHandler.createProject(token, gatewayId, project);
             Assert.assertNotNull(projectId5);
 
 
             //get all projects of user
-            List<Project> list = airavataServerHandler.getUserProjects(token, gatewayId, "TestUser"+TAG, 2,2);
-            Assert.assertTrue(list.size()==2);
+            List<Project> list = airavataServerHandler.getUserProjects(token, gatewayId, "TestUser" + TAG, 2, 2);
+            Assert.assertTrue(list.size() == 2);
             Project project1 = list.get(0);
             Project project2 = list.get(1);
-            Assert.assertTrue(project1.getCreationTime()-project2.getCreationTime() > 0);
+            Assert.assertTrue(project1.getCreationTime() - project2.getCreationTime() > 0);
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail();
@@ -160,7 +161,7 @@ public class AiravataServerHandlerTest {
      * Testing for project related API methods
      */
     @Test
-    public void testExperiment(){
+    public void testExperiment() {
         try {
             String TAG = System.currentTimeMillis() + "";
 
@@ -168,10 +169,10 @@ public class AiravataServerHandlerTest {
 
             //creating project
             Project project = new Project();
-            project.setOwner("TestUser"+TAG);
-            project.setName("TestProject"+TAG);
-            project.setDescription("This is a test project"+TAG);
-            String projectId1 = airavataServerHandler.createProject(new AuthzToken(""), gatewayId,project);
+            project.setOwner("TestUser" + TAG);
+            project.setName("TestProject" + TAG);
+            project.setDescription("This is a test project" + TAG);
+            String projectId1 = airavataServerHandler.createProject(new AuthzToken(""), gatewayId, project);
             Assert.assertNotNull(projectId1);
 
             //creating sample echo experiment. assumes echo application is already defined
@@ -253,23 +254,22 @@ public class AiravataServerHandlerTest {
 
             //retrieving all experiments in project
             List<ExperimentModel> list = airavataServerHandler.getExperimentsInProject(token, projectId1, 2, 1);
-            Assert.assertTrue(list.size()==2);
+            Assert.assertTrue(list.size() == 2);
 
             //getting all user experiments
             list = airavataServerHandler.getUserExperiments(token,
                     gatewayId, "TestUser" + TAG, 2, 0);
             //testing time ordering
-            Assert.assertTrue(list.size()==2);
+            Assert.assertTrue(list.size() == 2);
             ExperimentModel exp1 = list.get(0);
             ExperimentModel exp2 = list.get(1);
-            Assert.assertTrue(exp1.getCreationTime()-exp2.getCreationTime() > 0);
+            Assert.assertTrue(exp1.getCreationTime() - exp2.getCreationTime() > 0);
 
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail();
         }
     }
-
     @Test
     public void testNotifications(){
         try {
@@ -279,6 +279,7 @@ public class AiravataServerHandlerTest {
             notification.setTitle("3424234");
             notification.setGatewayId("test");
             notification.setNotificationMessage("sdkjfbjks kjbsdf kjsdbfkjsdbf");
+            notification.setPriority(NotificationPriority.NORMAL);
             String notificationId = airavataServerHandler.createNotification(authzToken, notification);
             Assert.assertNotNull(notificationId);
             List<Notification> notifications = airavataServerHandler.getAllNotifications(authzToken, "test");

@@ -1,4 +1,4 @@
-package org.apache.airavata.gfac.core.authentication;/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,8 @@ package org.apache.airavata.gfac.core.authentication;/*
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
+package org.apache.airavata.gfac.core.authentication;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
