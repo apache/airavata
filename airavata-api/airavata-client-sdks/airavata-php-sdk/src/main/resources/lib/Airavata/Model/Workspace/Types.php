@@ -569,6 +569,26 @@ class Gateway {
    * @var string
    */
   public $reviewProposalDescription = null;
+  /**
+   * @var string
+   */
+  public $gatewayAdminFirstName = null;
+  /**
+   * @var string
+   */
+  public $gatewayAdminLastName = null;
+  /**
+   * @var string
+   */
+  public $gatewayAdminEmail = null;
+  /**
+   * @var string
+   */
+  public $identityServerUserName = null;
+  /**
+   * @var string
+   */
+  public $identityServerPasswordToken = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -609,6 +629,26 @@ class Gateway {
           'var' => 'reviewProposalDescription',
           'type' => TType::STRING,
           ),
+        10 => array(
+          'var' => 'gatewayAdminFirstName',
+          'type' => TType::STRING,
+          ),
+        11 => array(
+          'var' => 'gatewayAdminLastName',
+          'type' => TType::STRING,
+          ),
+        12 => array(
+          'var' => 'gatewayAdminEmail',
+          'type' => TType::STRING,
+          ),
+        13 => array(
+          'var' => 'identityServerUserName',
+          'type' => TType::STRING,
+          ),
+        14 => array(
+          'var' => 'identityServerPasswordToken',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -638,6 +678,21 @@ class Gateway {
       }
       if (isset($vals['reviewProposalDescription'])) {
         $this->reviewProposalDescription = $vals['reviewProposalDescription'];
+      }
+      if (isset($vals['gatewayAdminFirstName'])) {
+        $this->gatewayAdminFirstName = $vals['gatewayAdminFirstName'];
+      }
+      if (isset($vals['gatewayAdminLastName'])) {
+        $this->gatewayAdminLastName = $vals['gatewayAdminLastName'];
+      }
+      if (isset($vals['gatewayAdminEmail'])) {
+        $this->gatewayAdminEmail = $vals['gatewayAdminEmail'];
+      }
+      if (isset($vals['identityServerUserName'])) {
+        $this->identityServerUserName = $vals['identityServerUserName'];
+      }
+      if (isset($vals['identityServerPasswordToken'])) {
+        $this->identityServerPasswordToken = $vals['identityServerPasswordToken'];
       }
     }
   }
@@ -724,6 +779,41 @@ class Gateway {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 10:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayAdminFirstName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 11:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayAdminLastName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 12:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayAdminEmail);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 13:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->identityServerUserName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 14:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->identityServerPasswordToken);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -780,6 +870,31 @@ class Gateway {
     if ($this->reviewProposalDescription !== null) {
       $xfer += $output->writeFieldBegin('reviewProposalDescription', TType::STRING, 9);
       $xfer += $output->writeString($this->reviewProposalDescription);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayAdminFirstName !== null) {
+      $xfer += $output->writeFieldBegin('gatewayAdminFirstName', TType::STRING, 10);
+      $xfer += $output->writeString($this->gatewayAdminFirstName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayAdminLastName !== null) {
+      $xfer += $output->writeFieldBegin('gatewayAdminLastName', TType::STRING, 11);
+      $xfer += $output->writeString($this->gatewayAdminLastName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayAdminEmail !== null) {
+      $xfer += $output->writeFieldBegin('gatewayAdminEmail', TType::STRING, 12);
+      $xfer += $output->writeString($this->gatewayAdminEmail);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->identityServerUserName !== null) {
+      $xfer += $output->writeFieldBegin('identityServerUserName', TType::STRING, 13);
+      $xfer += $output->writeString($this->identityServerUserName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->identityServerPasswordToken !== null) {
+      $xfer += $output->writeFieldBegin('identityServerPasswordToken', TType::STRING, 14);
+      $xfer += $output->writeString($this->identityServerPasswordToken);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
