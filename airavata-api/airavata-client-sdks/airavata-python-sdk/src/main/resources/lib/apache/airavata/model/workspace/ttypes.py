@@ -402,6 +402,11 @@ class Gateway:
    - gatewayURL
    - gatewayPublicAbstract
    - reviewProposalDescription
+   - gatewayAdminFirstName
+   - gatewayAdminLastName
+   - gatewayAdminEmail
+   - identityServerUserName
+   - identityServerPasswordToken
   """
 
   thrift_spec = (
@@ -415,9 +420,14 @@ class Gateway:
     (7, TType.STRING, 'gatewayURL', None, None, ), # 7
     (8, TType.STRING, 'gatewayPublicAbstract', None, None, ), # 8
     (9, TType.STRING, 'reviewProposalDescription', None, None, ), # 9
+    (10, TType.STRING, 'gatewayAdminFirstName', None, None, ), # 10
+    (11, TType.STRING, 'gatewayAdminLastName', None, None, ), # 11
+    (12, TType.STRING, 'gatewayAdminEmail', None, None, ), # 12
+    (13, TType.STRING, 'identityServerUserName', None, None, ), # 13
+    (14, TType.STRING, 'identityServerPasswordToken', None, None, ), # 14
   )
 
-  def __init__(self, gatewayId=None, gatewayApprovalStatus=None, gatewayName=None, domain=None, emailAddress=None, gatewayAcronym=None, gatewayURL=None, gatewayPublicAbstract=None, reviewProposalDescription=None,):
+  def __init__(self, gatewayId=None, gatewayApprovalStatus=None, gatewayName=None, domain=None, emailAddress=None, gatewayAcronym=None, gatewayURL=None, gatewayPublicAbstract=None, reviewProposalDescription=None, gatewayAdminFirstName=None, gatewayAdminLastName=None, gatewayAdminEmail=None, identityServerUserName=None, identityServerPasswordToken=None,):
     self.gatewayId = gatewayId
     self.gatewayApprovalStatus = gatewayApprovalStatus
     self.gatewayName = gatewayName
@@ -427,6 +437,11 @@ class Gateway:
     self.gatewayURL = gatewayURL
     self.gatewayPublicAbstract = gatewayPublicAbstract
     self.reviewProposalDescription = reviewProposalDescription
+    self.gatewayAdminFirstName = gatewayAdminFirstName
+    self.gatewayAdminLastName = gatewayAdminLastName
+    self.gatewayAdminEmail = gatewayAdminEmail
+    self.identityServerUserName = identityServerUserName
+    self.identityServerPasswordToken = identityServerPasswordToken
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -482,6 +497,31 @@ class Gateway:
           self.reviewProposalDescription = iprot.readString()
         else:
           iprot.skip(ftype)
+      elif fid == 10:
+        if ftype == TType.STRING:
+          self.gatewayAdminFirstName = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 11:
+        if ftype == TType.STRING:
+          self.gatewayAdminLastName = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 12:
+        if ftype == TType.STRING:
+          self.gatewayAdminEmail = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 13:
+        if ftype == TType.STRING:
+          self.identityServerUserName = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 14:
+        if ftype == TType.STRING:
+          self.identityServerPasswordToken = iprot.readString()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -528,6 +568,26 @@ class Gateway:
       oprot.writeFieldBegin('reviewProposalDescription', TType.STRING, 9)
       oprot.writeString(self.reviewProposalDescription)
       oprot.writeFieldEnd()
+    if self.gatewayAdminFirstName is not None:
+      oprot.writeFieldBegin('gatewayAdminFirstName', TType.STRING, 10)
+      oprot.writeString(self.gatewayAdminFirstName)
+      oprot.writeFieldEnd()
+    if self.gatewayAdminLastName is not None:
+      oprot.writeFieldBegin('gatewayAdminLastName', TType.STRING, 11)
+      oprot.writeString(self.gatewayAdminLastName)
+      oprot.writeFieldEnd()
+    if self.gatewayAdminEmail is not None:
+      oprot.writeFieldBegin('gatewayAdminEmail', TType.STRING, 12)
+      oprot.writeString(self.gatewayAdminEmail)
+      oprot.writeFieldEnd()
+    if self.identityServerUserName is not None:
+      oprot.writeFieldBegin('identityServerUserName', TType.STRING, 13)
+      oprot.writeString(self.identityServerUserName)
+      oprot.writeFieldEnd()
+    if self.identityServerPasswordToken is not None:
+      oprot.writeFieldBegin('identityServerPasswordToken', TType.STRING, 14)
+      oprot.writeString(self.identityServerPasswordToken)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -550,6 +610,11 @@ class Gateway:
     value = (value * 31) ^ hash(self.gatewayURL)
     value = (value * 31) ^ hash(self.gatewayPublicAbstract)
     value = (value * 31) ^ hash(self.reviewProposalDescription)
+    value = (value * 31) ^ hash(self.gatewayAdminFirstName)
+    value = (value * 31) ^ hash(self.gatewayAdminLastName)
+    value = (value * 31) ^ hash(self.gatewayAdminEmail)
+    value = (value * 31) ^ hash(self.identityServerUserName)
+    value = (value * 31) ^ hash(self.identityServerPasswordToken)
     return value
 
   def __repr__(self):
