@@ -46,6 +46,51 @@ public class GatewayResource extends AbstractExpCatResource {
     private String gatewayUrl;
     private String gatewayPublicAbstract;
     private String reviewProposalDescription;
+    private String gatewayAdminFirstName;
+    private String getGatewayAdminLastName;
+    private String gatewayAdminEmail;
+    private String identityServerUserName;
+    private String identityServerPasswordToken;
+
+    public String getGatewayAdminFirstName() {
+        return gatewayAdminFirstName;
+    }
+
+    public void setGatewayAdminFirstName(String gatewayAdminFirstName) {
+        this.gatewayAdminFirstName = gatewayAdminFirstName;
+    }
+
+    public String getGetGatewayAdminLastName() {
+        return getGatewayAdminLastName;
+    }
+
+    public void setGetGatewayAdminLastName(String getGatewayAdminLastName) {
+        this.getGatewayAdminLastName = getGatewayAdminLastName;
+    }
+
+    public String getGatewayAdminEmail() {
+        return gatewayAdminEmail;
+    }
+
+    public void setGatewayAdminEmail(String gatewayAdminEmail) {
+        this.gatewayAdminEmail = gatewayAdminEmail;
+    }
+
+    public String getIdentityServerUserName() {
+        return identityServerUserName;
+    }
+
+    public void setIdentityServerUserName(String identityServerUserName) {
+        this.identityServerUserName = identityServerUserName;
+    }
+
+    public String getIdentityServerPasswordToken() {
+        return identityServerPasswordToken;
+    }
+
+    public void setIdentityServerPasswordToken(String identityServerPasswordToken) {
+        this.identityServerPasswordToken = identityServerPasswordToken;
+    }
 
     public String getGatewayId() {
         return gatewayId;
@@ -381,6 +426,11 @@ public class GatewayResource extends AbstractExpCatResource {
             gateway.setGatewayUrl(gatewayUrl);
             gateway.setGatewayPublicAbstract(gatewayPublicAbstract);
             gateway.setReviewProposalDescription(reviewProposalDescription);
+            gateway.setGatewayAdminFirstName(gatewayAdminFirstName);
+            gateway.setGetGatewayAdminLastName(getGatewayAdminLastName);
+            gateway.setGatewayAdminEmail(gatewayAdminEmail);
+            gateway.setIdentityServerUserName(identityServerUserName);
+            gateway.setIdentityServerPasswordToken(identityServerPasswordToken);
             if (existingGateway != null) {
                 existingGateway.setDomain(domain);
                 existingGateway.setGatewayName(gatewayName);
@@ -389,6 +439,11 @@ public class GatewayResource extends AbstractExpCatResource {
                 existingGateway.setGatewayUrl(gatewayUrl);
                 existingGateway.setGatewayPublicAbstract(gatewayPublicAbstract);
                 existingGateway.setReviewProposalDescription(reviewProposalDescription);
+                existingGateway.setGatewayAdminFirstName(gatewayAdminFirstName);
+                existingGateway.setGetGatewayAdminLastName(getGatewayAdminLastName);
+                existingGateway.setGatewayAdminEmail(gatewayAdminEmail);
+                existingGateway.setIdentityServerUserName(identityServerUserName);
+                existingGateway.setIdentityServerPasswordToken(identityServerPasswordToken);
                 em.merge(existingGateway);
             } else {
                 em.persist(gateway);
