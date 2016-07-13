@@ -39,6 +39,11 @@ public class Gateway {
     private String gatewayUrl;
     private String gatewayPublicAbstract;
     private String reviewProposalDescription;
+    private String gatewayAdminFirstName;
+    private String getGatewayAdminLastName;
+    private String gatewayAdminEmail;
+    private String identityServerUserName;
+    private String identityServerPasswordToken;
     private Collection<GatewayWorker> gatewayWorkers;
     private Collection<Project> projects;
 
@@ -124,6 +129,50 @@ public class Gateway {
         this.reviewProposalDescription = reviewProposalDescription;
     }
 
+    @Column(name = "GATEWAY_ADMIN_FIRST_NAME")
+    public String getGatewayAdminFirstName() {
+        return gatewayAdminFirstName;
+    }
+
+    public void setGatewayAdminFirstName(String gatewayAdminFirstName) {
+        this.gatewayAdminFirstName = gatewayAdminFirstName;
+    }
+
+    @Column(name = "GATEWAY_ADMIN_LAST_NAME")
+    public String getGetGatewayAdminLastName() {
+        return getGatewayAdminLastName;
+    }
+
+    public void setGetGatewayAdminLastName(String getGatewayAdminLastName) {
+        this.getGatewayAdminLastName = getGatewayAdminLastName;
+    }
+
+    @Column(name = "GATEWAY_ADMIN_EMAIL")
+    public String getGatewayAdminEmail() {
+        return gatewayAdminEmail;
+    }
+
+    public void setGatewayAdminEmail(String gatewayAdminEmail) {
+        this.gatewayAdminEmail = gatewayAdminEmail;
+    }
+
+    @Column(name = "IDENTITY_SERVER_USERNAME")
+    public String getIdentityServerUserName() {
+        return identityServerUserName;
+    }
+
+    public void setIdentityServerUserName(String identityServerUserName) {
+        this.identityServerUserName = identityServerUserName;
+    }
+
+    @Column(name = "IDENTITY_SERVER_PASSWORD_TOKEN")
+    public String getIdentityServerPasswordToken() {
+        return identityServerPasswordToken;
+    }
+
+    public void setIdentityServerPasswordToken(String identityServerPasswordToken) {
+        this.identityServerPasswordToken = identityServerPasswordToken;
+    }
 
     //    @Override
 //    public boolean equals(Object o) {
