@@ -37,6 +37,17 @@
 
 namespace apache { namespace airavata { namespace model { namespace workspace {
 
+struct GatewayApprovalStatus {
+  enum type {
+    REQUESTED = 0,
+    APPROVED = 1,
+    ACTIVE = 2,
+    DEACTIVATED = 3
+  };
+};
+
+extern const std::map<int, const char*> _GatewayApprovalStatus_VALUES_TO_NAMES;
+
 struct NotificationPriority {
   enum type {
     LOW = 0,
@@ -285,10 +296,19 @@ inline std::ostream& operator<<(std::ostream& out, const User& obj)
 }
 
 typedef struct _Gateway__isset {
-  _Gateway__isset() : gatewayName(false), domain(false), emailAddress(false) {}
+  _Gateway__isset() : gatewayName(false), domain(false), emailAddress(false), gatewayAcronym(false), gatewayURL(false), gatewayPublicAbstract(false), reviewProposalDescription(false), gatewayAdminFirstName(false), gatewayAdminLastName(false), gatewayAdminEmail(false), identityServerUserName(false), identityServerPasswordToken(false) {}
   bool gatewayName :1;
   bool domain :1;
   bool emailAddress :1;
+  bool gatewayAcronym :1;
+  bool gatewayURL :1;
+  bool gatewayPublicAbstract :1;
+  bool reviewProposalDescription :1;
+  bool gatewayAdminFirstName :1;
+  bool gatewayAdminLastName :1;
+  bool gatewayAdminEmail :1;
+  bool identityServerUserName :1;
+  bool identityServerPasswordToken :1;
 } _Gateway__isset;
 
 class Gateway {
@@ -296,18 +316,30 @@ class Gateway {
 
   Gateway(const Gateway&);
   Gateway& operator=(const Gateway&);
-  Gateway() : gatewayId(), gatewayName(), domain(), emailAddress() {
+  Gateway() : gatewayId(), gatewayApprovalStatus((GatewayApprovalStatus::type)0), gatewayName(), domain(), emailAddress(), gatewayAcronym(), gatewayURL(), gatewayPublicAbstract(), reviewProposalDescription(), gatewayAdminFirstName(), gatewayAdminLastName(), gatewayAdminEmail(), identityServerUserName(), identityServerPasswordToken() {
   }
 
   virtual ~Gateway() throw();
   std::string gatewayId;
+  GatewayApprovalStatus::type gatewayApprovalStatus;
   std::string gatewayName;
   std::string domain;
   std::string emailAddress;
+  std::string gatewayAcronym;
+  std::string gatewayURL;
+  std::string gatewayPublicAbstract;
+  std::string reviewProposalDescription;
+  std::string gatewayAdminFirstName;
+  std::string gatewayAdminLastName;
+  std::string gatewayAdminEmail;
+  std::string identityServerUserName;
+  std::string identityServerPasswordToken;
 
   _Gateway__isset __isset;
 
   void __set_gatewayId(const std::string& val);
+
+  void __set_gatewayApprovalStatus(const GatewayApprovalStatus::type val);
 
   void __set_gatewayName(const std::string& val);
 
@@ -315,9 +347,29 @@ class Gateway {
 
   void __set_emailAddress(const std::string& val);
 
+  void __set_gatewayAcronym(const std::string& val);
+
+  void __set_gatewayURL(const std::string& val);
+
+  void __set_gatewayPublicAbstract(const std::string& val);
+
+  void __set_reviewProposalDescription(const std::string& val);
+
+  void __set_gatewayAdminFirstName(const std::string& val);
+
+  void __set_gatewayAdminLastName(const std::string& val);
+
+  void __set_gatewayAdminEmail(const std::string& val);
+
+  void __set_identityServerUserName(const std::string& val);
+
+  void __set_identityServerPasswordToken(const std::string& val);
+
   bool operator == (const Gateway & rhs) const
   {
     if (!(gatewayId == rhs.gatewayId))
+      return false;
+    if (!(gatewayApprovalStatus == rhs.gatewayApprovalStatus))
       return false;
     if (__isset.gatewayName != rhs.__isset.gatewayName)
       return false;
@@ -330,6 +382,42 @@ class Gateway {
     if (__isset.emailAddress != rhs.__isset.emailAddress)
       return false;
     else if (__isset.emailAddress && !(emailAddress == rhs.emailAddress))
+      return false;
+    if (__isset.gatewayAcronym != rhs.__isset.gatewayAcronym)
+      return false;
+    else if (__isset.gatewayAcronym && !(gatewayAcronym == rhs.gatewayAcronym))
+      return false;
+    if (__isset.gatewayURL != rhs.__isset.gatewayURL)
+      return false;
+    else if (__isset.gatewayURL && !(gatewayURL == rhs.gatewayURL))
+      return false;
+    if (__isset.gatewayPublicAbstract != rhs.__isset.gatewayPublicAbstract)
+      return false;
+    else if (__isset.gatewayPublicAbstract && !(gatewayPublicAbstract == rhs.gatewayPublicAbstract))
+      return false;
+    if (__isset.reviewProposalDescription != rhs.__isset.reviewProposalDescription)
+      return false;
+    else if (__isset.reviewProposalDescription && !(reviewProposalDescription == rhs.reviewProposalDescription))
+      return false;
+    if (__isset.gatewayAdminFirstName != rhs.__isset.gatewayAdminFirstName)
+      return false;
+    else if (__isset.gatewayAdminFirstName && !(gatewayAdminFirstName == rhs.gatewayAdminFirstName))
+      return false;
+    if (__isset.gatewayAdminLastName != rhs.__isset.gatewayAdminLastName)
+      return false;
+    else if (__isset.gatewayAdminLastName && !(gatewayAdminLastName == rhs.gatewayAdminLastName))
+      return false;
+    if (__isset.gatewayAdminEmail != rhs.__isset.gatewayAdminEmail)
+      return false;
+    else if (__isset.gatewayAdminEmail && !(gatewayAdminEmail == rhs.gatewayAdminEmail))
+      return false;
+    if (__isset.identityServerUserName != rhs.__isset.identityServerUserName)
+      return false;
+    else if (__isset.identityServerUserName && !(identityServerUserName == rhs.identityServerUserName))
+      return false;
+    if (__isset.identityServerPasswordToken != rhs.__isset.identityServerPasswordToken)
+      return false;
+    else if (__isset.identityServerPasswordToken && !(identityServerPasswordToken == rhs.identityServerPasswordToken))
       return false;
     return true;
   }

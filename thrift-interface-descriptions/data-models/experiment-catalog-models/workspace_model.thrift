@@ -60,11 +60,28 @@ struct User {
     6: optional string email
 }
 
+enum GatewayApprovalStatus {
+    REQUESTED,
+    APPROVED,
+    ACTIVE,
+    DEACTIVATED
+}
+
 struct Gateway {
     1: required string gatewayId,
-    2: optional string gatewayName,
-    3: optional string domain,
-    4: optional string emailAddress
+    2: required GatewayApprovalStatus gatewayApprovalStatus,
+    3: optional string gatewayName,
+    4: optional string domain,
+    5: optional string emailAddress
+    6: optional string gatewayAcronym,
+    7: optional string gatewayURL,
+    8: optional string gatewayPublicAbstract,
+    9: optional string reviewProposalDescription,
+    10: optional string gatewayAdminFirstName,
+    11: optional string gatewayAdminLastName,
+    12: optional string gatewayAdminEmail,
+    13: optional string identityServerUserName,
+    14: optional string identityServerPasswordToken
 }
 
 enum NotificationPriority {
