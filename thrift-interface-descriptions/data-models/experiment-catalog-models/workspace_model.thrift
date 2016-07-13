@@ -71,7 +71,12 @@ struct Gateway {
     6: optional string gatewayAcronym,
     7: optional string gatewayURL,
     8: optional string gatewayPublicAbstract,
-    9: optional string reviewProposalDescription
+    9: optional string reviewProposalDescription,
+    10: optional string gatewayAdminFirstName,
+    11: optional string gatewayAdminLastName,
+    12: optional string gatewayAdminEmail,
+    13: optional string identityServerUserName,
+    14: optional string identityServerPasswordToken
 }
 
 enum NotificationPriority {
