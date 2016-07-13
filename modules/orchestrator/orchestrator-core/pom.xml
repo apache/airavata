@@ -14,7 +14,7 @@ the License. -->
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>orchestrator</artifactId>
-        <version>0.16</version>
+        <version>0.17-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
