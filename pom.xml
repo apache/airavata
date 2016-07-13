@@ -99,6 +99,7 @@
 		<zk.version>3.4.0</zk.version>
 		<amqp.client.version>3.5.1</amqp.client.version>
         <snakeyaml.version>1.15</snakeyaml.version>
+		<maven.javadoc.failOnError>false</maven.javadoc.failOnError>
 	</properties>
 
 	<developers>
