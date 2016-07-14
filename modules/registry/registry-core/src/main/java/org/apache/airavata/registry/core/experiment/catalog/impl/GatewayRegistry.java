@@ -49,6 +49,7 @@ public class GatewayRegistry {
     public String addGateway (Gateway gateway) throws RegistryException{
         try {
             GatewayResource resource = (GatewayResource) ExpCatResourceUtils.createGateway(gateway.getGatewayId());
+            resource.setGatewayApprovalStatus(gateway.getGatewayApprovalStatus().toString());
             resource.setGatewayName(gateway.getGatewayName());
             resource.setEmailAddress(gateway.getEmailAddress());
             resource.setDomain(gateway.getDomain());
@@ -72,6 +73,7 @@ public class GatewayRegistry {
     public void updateGateway (String gatewayId, Gateway updatedGateway) throws RegistryException{
         try {
             GatewayResource existingGateway = (GatewayResource) ExpCatResourceUtils.getGateway(gatewayId);
+            existingGateway.setGatewayApprovalStatus(updatedGateway.getGatewayApprovalStatus().toString());
             existingGateway.setGatewayName(updatedGateway.getGatewayName());
             existingGateway.setEmailAddress(updatedGateway.getEmailAddress());
             existingGateway.setDomain(updatedGateway.getDomain());
