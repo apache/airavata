@@ -435,6 +435,7 @@ public class GatewayResource extends AbstractExpCatResource {
             if (existingGateway != null) {
                 existingGateway.setDomain(domain);
                 existingGateway.setGatewayName(gatewayName);
+                gateway.setGatewayApprovalStatus(gatewayApprovalStatus);
                 existingGateway.setEmailAddress(emailAddress);
                 existingGateway.setGatewayAcronym(gatewayAcronym);
                 existingGateway.setGatewayUrl(gatewayUrl);
