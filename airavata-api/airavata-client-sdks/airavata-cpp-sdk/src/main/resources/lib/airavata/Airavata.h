@@ -113,7 +113,7 @@ class AiravataIf {
    * @param gatewayId
    * @param updatedGateway
    */
-  virtual void updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway) = 0;
+  virtual bool updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway) = 0;
 
   /**
    * Get Gateway details by providing gatewayId
@@ -2512,8 +2512,9 @@ class AiravataNull : virtual public AiravataIf {
   void getAllUsersInGateway(std::vector<std::string> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */) {
     return;
   }
-  void updateGateway(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const  ::apache::airavata::model::workspace::Gateway& /* updatedGateway */) {
-    return;
+  bool updateGateway(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const  ::apache::airavata::model::workspace::Gateway& /* updatedGateway */) {
+    bool _return = false;
+    return _return;
   }
   void getGateway( ::apache::airavata::model::workspace::Gateway& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */) {
     return;
@@ -3570,7 +3571,8 @@ class Airavata_updateGateway_pargs {
 };
 
 typedef struct _Airavata_updateGateway_result__isset {
-  _Airavata_updateGateway_result__isset() : ire(false), ace(false), ase(false), ae(false) {}
+  _Airavata_updateGateway_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
@@ -3582,16 +3584,19 @@ class Airavata_updateGateway_result {
 
   Airavata_updateGateway_result(const Airavata_updateGateway_result&);
   Airavata_updateGateway_result& operator=(const Airavata_updateGateway_result&);
-  Airavata_updateGateway_result() {
+  Airavata_updateGateway_result() : success(0) {
   }
 
   virtual ~Airavata_updateGateway_result() throw();
+  bool success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
    ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_updateGateway_result__isset __isset;
+
+  void __set_success(const bool val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -3603,6 +3608,8 @@ class Airavata_updateGateway_result {
 
   bool operator == (const Airavata_updateGateway_result & rhs) const
   {
+    if (!(success == rhs.success))
+      return false;
     if (!(ire == rhs.ire))
       return false;
     if (!(ace == rhs.ace))
@@ -3625,7 +3632,8 @@ class Airavata_updateGateway_result {
 };
 
 typedef struct _Airavata_updateGateway_presult__isset {
-  _Airavata_updateGateway_presult__isset() : ire(false), ace(false), ase(false), ae(false) {}
+  _Airavata_updateGateway_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
@@ -3637,6 +3645,7 @@ class Airavata_updateGateway_presult {
 
 
   virtual ~Airavata_updateGateway_presult() throw();
+  bool* success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -22745,9 +22754,9 @@ class AiravataClient : virtual public AiravataIf {
   void getAllUsersInGateway(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void send_getAllUsersInGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getAllUsersInGateway(std::vector<std::string> & _return);
-  void updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway);
+  bool updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway);
   void send_updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway);
-  void recv_updateGateway();
+  bool recv_updateGateway();
   void getGateway( ::apache::airavata::model::workspace::Gateway& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void send_getGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getGateway( ::apache::airavata::model::workspace::Gateway& _return);
@@ -23523,13 +23532,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway) {
+  bool updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
       ifaces_[i]->updateGateway(authzToken, gatewayId, updatedGateway);
     }
-    ifaces_[i]->updateGateway(authzToken, gatewayId, updatedGateway);
+    return ifaces_[i]->updateGateway(authzToken, gatewayId, updatedGateway);
   }
 
   void getGateway( ::apache::airavata::model::workspace::Gateway& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
@@ -24881,9 +24890,9 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void getAllUsersInGateway(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   int32_t send_getAllUsersInGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getAllUsersInGateway(std::vector<std::string> & _return, const int32_t seqid);
-  void updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway);
+  bool updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway);
   int32_t send_updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway);
-  void recv_updateGateway(const int32_t seqid);
+  bool recv_updateGateway(const int32_t seqid);
   void getGateway( ::apache::airavata::model::workspace::Gateway& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   int32_t send_getGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getGateway( ::apache::airavata::model::workspace::Gateway& _return, const int32_t seqid);
