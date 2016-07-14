@@ -145,7 +145,7 @@ service Airavata {
    *
    **/
 
-  void updateGateway(1: required security_model.AuthzToken authzToken, 2: required string gatewayId, 3: required workspace_model.Gateway updatedGateway)
+  bool updateGateway(1: required security_model.AuthzToken authzToken, 2: required string gatewayId, 3: required workspace_model.Gateway updatedGateway)
          throws (1: airavata_errors.InvalidRequestException ire,
                  2: airavata_errors.AiravataClientException ace,
                  3: airavata_errors.AiravataSystemException ase,

@@ -201,7 +201,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public void updateGateway(AuthzToken authzToken, String gatewayId, Gateway updatedGateway)
+    public boolean updateGateway(AuthzToken authzToken, String gatewayId, Gateway updatedGateway)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
         try {
@@ -214,6 +214,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             experimentCatalog.update(ExperimentCatalogModelType.GATEWAY, updatedGateway, gatewayId);
             logger.debug("Airavata update gateway with gateway id : " + gatewayId);
+            return true;
         } catch (RegistryException e) {
             logger.error("Error while updating the gateway", e);
             AiravataSystemException exception = new AiravataSystemException();
