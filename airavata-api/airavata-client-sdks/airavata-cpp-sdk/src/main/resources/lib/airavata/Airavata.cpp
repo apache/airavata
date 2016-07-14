@@ -1359,6 +1359,14 @@ uint32_t Airavata_updateGateway_result::read(::apache::thrift::protocol::TProtoc
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -1409,7 +1417,11 @@ uint32_t Airavata_updateGateway_result::write(::apache::thrift::protocol::TProto
 
   xfer += oprot->writeStructBegin("Airavata_updateGateway_result");
 
-  if (this->__isset.ire) {
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
+    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
     xfer += this->ire.write(oprot);
     xfer += oprot->writeFieldEnd();
@@ -1457,6 +1469,14 @@ uint32_t Airavata_updateGateway_presult::read(::apache::thrift::protocol::TProto
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -43858,10 +43878,10 @@ void AiravataClient::recv_getAllUsersInGateway(std::vector<std::string> & _retur
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllUsersInGateway failed: unknown result");
 }
 
-void AiravataClient::updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway)
+bool AiravataClient::updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway)
 {
   send_updateGateway(authzToken, gatewayId, updatedGateway);
-  recv_updateGateway();
+  return recv_updateGateway();
 }
 
 void AiravataClient::send_updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway)
@@ -43880,7 +43900,7 @@ void AiravataClient::send_updateGateway(const  ::apache::airavata::model::securi
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_updateGateway()
+bool AiravataClient::recv_updateGateway()
 {
 
   int32_t rseqid = 0;
@@ -43905,11 +43925,16 @@ void AiravataClient::recv_updateGateway()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
+  bool _return;
   Airavata_updateGateway_presult result;
+  result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
+  if (result.__isset.success) {
+    return _return;
+  }
   if (result.__isset.ire) {
     throw result.ire;
   }
@@ -43922,7 +43947,7 @@ void AiravataClient::recv_updateGateway()
   if (result.__isset.ae) {
     throw result.ae;
   }
-  return;
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateGateway failed: unknown result");
 }
 
 void AiravataClient::getGateway( ::apache::airavata::model::workspace::Gateway& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId)
@@ -53951,7 +53976,8 @@ void AiravataProcessor::process_updateGateway(int32_t seqid, ::apache::thrift::p
 
   Airavata_updateGateway_result result;
   try {
-    iface_->updateGateway(args.authzToken, args.gatewayId, args.updatedGateway);
+    result.success = iface_->updateGateway(args.authzToken, args.gatewayId, args.updatedGateway);
+    result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
@@ -63381,10 +63407,10 @@ void AiravataConcurrentClient::recv_getAllUsersInGateway(std::vector<std::string
   } // end while(true)
 }
 
-void AiravataConcurrentClient::updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway)
+bool AiravataConcurrentClient::updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway)
 {
   int32_t seqid = send_updateGateway(authzToken, gatewayId, updatedGateway);
-  recv_updateGateway(seqid);
+  return recv_updateGateway(seqid);
 }
 
 int32_t AiravataConcurrentClient::send_updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway)
@@ -63407,7 +63433,7 @@ int32_t AiravataConcurrentClient::send_updateGateway(const  ::apache::airavata::
   return cseqid;
 }
 
-void AiravataConcurrentClient::recv_updateGateway(const int32_t seqid)
+bool AiravataConcurrentClient::recv_updateGateway(const int32_t seqid)
 {
 
   int32_t rseqid = 0;
@@ -63445,11 +63471,17 @@ void AiravataConcurrentClient::recv_updateGateway(const int32_t seqid)
         using ::apache::thrift::protocol::TProtocolException;
         throw TProtocolException(TProtocolException::INVALID_DATA);
       }
+      bool _return;
       Airavata_updateGateway_presult result;
+      result.success = &_return;
       result.read(iprot_);
       iprot_->readMessageEnd();
       iprot_->getTransport()->readEnd();
 
+      if (result.__isset.success) {
+        sentry.commit();
+        return _return;
+      }
       if (result.__isset.ire) {
         sentry.commit();
         throw result.ire;
@@ -63466,8 +63498,8 @@ void AiravataConcurrentClient::recv_updateGateway(const int32_t seqid)
         sentry.commit();
         throw result.ae;
       }
-      sentry.commit();
-      return;
+      // in a bad state, don't commit
+      throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateGateway failed: unknown result");
     }
     // seqid != rseqid
     this->sync_.updatePending(fname, mtype, rseqid);
