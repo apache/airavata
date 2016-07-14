@@ -84,6 +84,7 @@ import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
+import org.apache.airavata.registry.core.experiment.catalog.resources.ExperimentResource;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
@@ -1955,7 +1956,16 @@ public class AiravataServerHandler implements Airavata.Iface {
                 }
             }
             logger.debug("Airavata cloned experiment with experiment id : " + existingExperimentID);
-            return (String) experimentCatalog.add(ExpCatParentDataType.EXPERIMENT, existingExperiment, gatewayId);
+            existingExperiment.setUserName(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME));
+            String expId = (String) experimentCatalog.add(ExpCatParentDataType.EXPERIMENT, existingExperiment, gatewayId);
+            GroupManagerCPI groupManagerCPI = GroupManagerFactory.getGroupManager();
+            Resource expResource = new Resource(expId, org.apache.airavata.grouper.resource.ResourceType.EXPERIMENT);
+            expResource.setParentResourceId(existingExperiment.getProjectId());
+            expResource.setName(existingExperiment.getExperimentName());
+            expResource.setDescription(existingExperiment.getDescription());
+            groupManagerCPI.createResource(expResource);
+
+            return expId;
         } catch (Exception e) {
 
             logger.error(existingExperimentID, "Error while cloning the experiment with existing configuration...", e);
