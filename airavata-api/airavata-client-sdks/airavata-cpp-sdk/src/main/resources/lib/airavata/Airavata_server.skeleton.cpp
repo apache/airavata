@@ -125,7 +125,7 @@ class AiravataHandler : virtual public AiravataIf {
    * @param gatewayId
    * @param updatedGateway
    */
-  void updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway) {
+  bool updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway) {
     // Your implementation goes here
     printf("updateGateway\n");
   }

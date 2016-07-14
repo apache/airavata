@@ -106,6 +106,7 @@ interface AiravataIf {
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayId
    * @param \Airavata\Model\Workspace\Gateway $updatedGateway
+   * @return bool
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
@@ -3730,7 +3731,7 @@ class AiravataClient implements \Airavata\API\AiravataIf {
   public function updateGateway(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, \Airavata\Model\Workspace\Gateway $updatedGateway)
   {
     $this->send_updateGateway($authzToken, $gatewayId, $updatedGateway);
-    $this->recv_updateGateway();
+    return $this->recv_updateGateway();
   }
 
   public function send_updateGateway(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, \Airavata\Model\Workspace\Gateway $updatedGateway)
@@ -3774,6 +3775,9 @@ class AiravataClient implements \Airavata\API\AiravataIf {
       $result->read($this->input_);
       $this->input_->readMessageEnd();
     }
+    if ($result->success !== null) {
+      return $result->success;
+    }
     if ($result->ire !== null) {
       throw $result->ire;
     }
@@ -3786,7 +3790,7 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     if ($result->ae !== null) {
       throw $result->ae;
     }
-    return;
+    throw new \Exception("updateGateway failed: unknown result");
   }
 
   public function getGateway(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId)
@@ -14376,6 +14380,10 @@ class Airavata_updateGateway_result {
   static $_TSPEC;
 
   /**
+   * @var bool
+   */
+  public $success = null;
+  /**
    * @var \Airavata\API\Error\InvalidRequestException
    */
   public $ire = null;
@@ -14395,6 +14403,10 @@ class Airavata_updateGateway_result {
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::BOOL,
+          ),
         1 => array(
           'var' => 'ire',
           'type' => TType::STRUCT,
@@ -14418,6 +14430,9 @@ class Airavata_updateGateway_result {
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
       if (isset($vals['ire'])) {
         $this->ire = $vals['ire'];
       }
@@ -14452,6 +14467,13 @@ class Airavata_updateGateway_result {
       }
       switch ($fid)
       {
+        case 0:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         case 1:
           if ($ftype == TType::STRUCT) {
             $this->ire = new \Airavata\API\Error\InvalidRequestException();
@@ -14497,6 +14519,11 @@ class Airavata_updateGateway_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_updateGateway_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
+      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->ire !== null) {
       $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
       $xfer += $this->ire->write($output);

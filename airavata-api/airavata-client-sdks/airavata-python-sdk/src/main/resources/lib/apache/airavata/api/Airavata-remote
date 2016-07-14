@@ -28,7 +28,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  bool isUserExists(AuthzToken authzToken, string gatewayId, string userName)')
   print('  string addGateway(AuthzToken authzToken, Gateway gateway)')
   print('   getAllUsersInGateway(AuthzToken authzToken, string gatewayId)')
-  print('  void updateGateway(AuthzToken authzToken, string gatewayId, Gateway updatedGateway)')
+  print('  bool updateGateway(AuthzToken authzToken, string gatewayId, Gateway updatedGateway)')
   print('  Gateway getGateway(AuthzToken authzToken, string gatewayId)')
   print('  bool deleteGateway(AuthzToken authzToken, string gatewayId)')
   print('   getAllGateways(AuthzToken authzToken)')
