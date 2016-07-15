@@ -1966,9 +1966,20 @@ public class AiravataServerHandler implements Airavata.Iface {
             existingExperiment.setUserName(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME));
             String expId = (String) experimentCatalog.add(ExpCatParentDataType.EXPERIMENT, existingExperiment, gatewayId);
             GroupManagerCPI groupManagerCPI = GroupManagerFactory.getGroupManager();
+
+            String projectId = existingExperiment.getProjectId();
+            if(!groupManagerCPI.isResourceRegistered(projectId, org.apache.airavata.grouper.resource.ResourceType.PROJECT)){
+                Project project = (Project)experimentCatalog.get(ExperimentCatalogModelType.PROJECT, projectId);
+                Resource projectResource = new Resource(projectId, org.apache.airavata.grouper.resource.ResourceType.PROJECT);
+                projectResource.setName(project.getName());
+                projectResource.setDescription(project.getDescription());
+                projectResource.setOwnerId(project.getOwner()+"@"+project.getGatewayId());
+            }
+
             Resource expResource = new Resource(expId, org.apache.airavata.grouper.resource.ResourceType.EXPERIMENT);
             expResource.setParentResourceId(existingExperiment.getProjectId());
             expResource.setName(existingExperiment.getExperimentName());
+            expResource.setOwnerId(existingExperiment.getUserName()+"@"+existingExperiment.getGatewayId());
             expResource.setDescription(existingExperiment.getDescription());
             groupManagerCPI.createResource(expResource);
 
