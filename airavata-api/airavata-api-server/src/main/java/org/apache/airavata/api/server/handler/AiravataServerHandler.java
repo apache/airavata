@@ -1965,27 +1965,14 @@ public class AiravataServerHandler implements Airavata.Iface {
             logger.debug("Airavata cloned experiment with experiment id : " + existingExperimentID);
             existingExperiment.setUserName(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME));
             String expId = (String) experimentCatalog.add(ExpCatParentDataType.EXPERIMENT, existingExperiment, gatewayId);
-            GroupManagerCPI groupManagerCPI = GroupManagerFactory.getGroupManager();
 
             String projectId = existingExperiment.getProjectId();
-            if(!groupManagerCPI.isResourceRegistered(projectId, org.apache.airavata.grouper.resource.ResourceType.PROJECT)){
-                Project project = (Project)experimentCatalog.get(ExperimentCatalogModelType.PROJECT, projectId);
-                Resource projectResource = new Resource(projectId, org.apache.airavata.grouper.resource.ResourceType.PROJECT);
-                projectResource.setName(project.getName());
-                projectResource.setDescription(project.getDescription());
-                projectResource.setOwnerId(project.getOwner()+"@"+project.getGatewayId());
+            if(!isResourceExistsInGrouper(projectId, ResourceType.PROJECT)){
+                initializeResourceWithGrouper(projectId, ResourceType.PROJECT);
             }
-
-            Resource expResource = new Resource(expId, org.apache.airavata.grouper.resource.ResourceType.EXPERIMENT);
-            expResource.setParentResourceId(existingExperiment.getProjectId());
-            expResource.setName(existingExperiment.getExperimentName());
-            expResource.setOwnerId(existingExperiment.getUserName()+"@"+existingExperiment.getGatewayId());
-            expResource.setDescription(existingExperiment.getDescription());
-            groupManagerCPI.createResource(expResource);
-
+            initializeResourceWithGrouper(expId, ResourceType.EXPERIMENT);
             return expId;
         } catch (Exception e) {
-
             logger.error(existingExperimentID, "Error while cloning the experiment with existing configuration...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -4630,6 +4617,9 @@ public class AiravataServerHandler implements Airavata.Iface {
 
         }else if(resourceType.equals(ResourceType.EXPERIMENT)){
             ExperimentModel experiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, resourceId);
+            if(!isResourceExistsInGrouper(experiment.getProjectId(), ResourceType.PROJECT)){
+                initializeResourceWithGrouper(experiment.getProjectId(), ResourceType.PROJECT);
+            }
             Resource experimentResource = new Resource(experiment.getExperimentId(), org.apache.airavata.grouper.resource.ResourceType.EXPERIMENT);
             experimentResource.setName(experiment.getExperimentName());
             experimentResource.setDescription(experiment.getDescription());
@@ -4654,7 +4644,10 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     }
 
-    private boolean hasPermission(String userId, String resourceId, ResourceType resourceType, ResourcePermissionType permissionType) throws GroupManagerException {
+    private boolean hasPermission(String userId, String resourceId, ResourceType resourceType, ResourcePermissionType permissionType) throws GroupManagerException, RegistryException {
+        if(!isResourceExistsInGrouper(resourceId, resourceType)){
+            initializeResourceWithGrouper(resourceId, resourceType);
+        }
         GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
         org.apache.airavata.grouper.resource.ResourceType gResourceType;
         if(resourceType.equals(ResourceType.PROJECT)){
