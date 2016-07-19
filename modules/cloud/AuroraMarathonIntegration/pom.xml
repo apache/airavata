@@ -8,10 +8,10 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>AuroraIntegration</artifactId>
+	<artifactId>AuroraMarathonIntegration</artifactId>
   <groupId>org.apache.airavata.cloud.drivers.auroraDriver</groupId>
 	<packaging>jar</packaging>
-	<name>Airavata Aurora Integration</name>
+	<name>Airavata Aurora Marathon Integration</name>
 	<url>http://airavata.apache.org/</url>
 
 
