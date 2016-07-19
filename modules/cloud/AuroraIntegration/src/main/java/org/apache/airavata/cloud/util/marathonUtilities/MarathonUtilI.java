@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.cloud.utilities.marathonUtilities;
+package org.apache.airavata.cloud.util.marathonUtilities;
 
 import java.io.BufferedReader;
 
