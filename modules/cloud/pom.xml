@@ -18,7 +18,7 @@
 
     <modules>
         <module>cloud-provisioning</module>
-	<module>AuroraIntegration</module>
+	  <module>AuroraMarathonIntegration</module>
     </modules>
 
 </project>

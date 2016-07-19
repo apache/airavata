@@ -38,11 +38,10 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 
 	public void jobKill(String name, String address) throws MarathonException{
 		try{
-			String line;
-			Process marathonJob = Runtime.getRuntime().exec("curl -X DELETE "+address+""+name);
-			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+		
+			String completeCommandToRunProcess = "curl -X DELETE "+address+""+name;
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
 			util.printLog(stdout);
-			marathonJob.waitFor();
 		}
 
 		catch (Exception ex) {
@@ -51,11 +50,10 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 	}
 	public void jobLaunch(String name, String address) throws MarathonException{
 		try{
-			String line;
-			Process marathonJob = Runtime.getRuntime().exec("curl -X POST "+address+"/v2/apps -d @"+name+" -H Content-type: application/json");
-			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+
+			String completeCommandToRunProcess = "curl -X POST "+address+"/v2/apps -d @"+name+" -H Content-type: application/json";
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
 			util.printLog(stdout);
-			marathonJob.waitFor();
 		}
 
 		catch (Exception ex) {
