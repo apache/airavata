@@ -29,8 +29,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.apache.airavata.cloud.exceptions.marathonExceptions.MarathonException;
-import org.apache.airavata.cloud.utilities.marathonUtilities.MarathonUtilImpl;
-import org.apache.airavata.cloud.utilities.marathonUtilities.MarathonUtilI;
+import org.apache.airavata.cloud.util.marathonUtilities.MarathonUtilImpl;
+import org.apache.airavata.cloud.util.marathonUtilities.MarathonUtilI;
 
 public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 	MarathonUtilI util = new MarathonUtilImpl();

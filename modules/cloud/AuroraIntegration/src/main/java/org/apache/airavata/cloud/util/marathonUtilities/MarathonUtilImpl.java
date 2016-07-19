@@ -19,13 +19,16 @@
  *
  */
 
-package org.apache.airavata.cloud.utilities.auroraUtilities;
+package org.apache.airavata.cloud.util.marathonUtilities;
+
 
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
-import org.apache.airavata.cloud.exceptions.auroraExceptions.AuroraException;
+import org.apache.airavata.cloud.exceptions.marathonExceptions.MarathonException;
 
-public interface AuroraUtilI{
-  public void printLog(BufferedReader stdout) throws AuroraException;
-  public BufferedReader executeProcess(String commandToRunProcess) throws AuroraException;
+public class MarathonUtilImpl implements MarathonUtilI{
+  //TODO: Marathon utilities code goes here
+
 }

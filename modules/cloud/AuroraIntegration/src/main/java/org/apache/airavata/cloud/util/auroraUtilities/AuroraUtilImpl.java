@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.cloud.utilities.auroraUtilities;
+package org.apache.airavata.cloud.util.auroraUtilities;
 
 
 import java.io.BufferedReader;
