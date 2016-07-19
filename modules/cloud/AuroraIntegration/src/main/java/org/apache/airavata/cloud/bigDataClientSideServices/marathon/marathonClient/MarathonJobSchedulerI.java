@@ -25,6 +25,9 @@ import org.apache.airavata.cloud.exceptions.marathonExceptions.MarathonException
 
 public interface MarathonJobSchedulerI {
 
-	public void marathonJobCommand(String info, String command) throws MarathonException;
+	public void jobKill(String kill, String address) throws MarathonException;
+	public void jobLaunch(String name, String address) throws MarathonException;
+	public void configCreate(String name, String ram, String cpu, String disk, String image, String command) throws MarathonException;
+
 
 }

@@ -23,10 +23,11 @@ package org.apache.airavata.cloud.util.marathonUtilities;
 
 import java.io.BufferedReader;
 
-import org.apache.airavata.cloud.exceptions.auroraExceptions.AuroraException;
+import org.apache.airavata.cloud.exceptions.marathonExceptions.MarathonException;
 
 public interface MarathonUtilI{
 
-  //TODO:Abstract Marathon methods goes heresss
+  public void printLog(BufferedReader stdout) throws MarathonException;
+  public BufferedReader executeProcess(String commandToRunProcess) throws MarathonException;
 
 }
