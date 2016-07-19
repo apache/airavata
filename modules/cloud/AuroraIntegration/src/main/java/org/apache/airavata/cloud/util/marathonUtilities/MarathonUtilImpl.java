@@ -29,6 +29,36 @@ import java.io.InputStreamReader;
 import org.apache.airavata.cloud.exceptions.marathonExceptions.MarathonException;
 
 public class MarathonUtilImpl implements MarathonUtilI{
-  //TODO: Marathon utilities code goes here
+
+  public void printLog(BufferedReader stdout) throws MarathonException
+  {
+    try{
+      String line;
+      line = stdout.readLine();
+      while (line != null) {
+          System.out.println(line);
+          line = stdout.readLine();
+        }
+      }
+      catch (IOException ex) {
+  			throw new MarathonException("IO Exception occured while passing the command.\n"+ex.toString());
+  		}
+  }
+
+  public BufferedReader executeProcess(String commandToRunProcess) throws MarathonException
+  {
+	BufferedReader stdout = null;
+	try{
+		Process marathonJob = Runtime.getRuntime().exec(commandToRunProcess);
+		marathonJob.waitFor();
+		stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+	}
+	catch(Exception ex)
+	{
+		throw new MarathonException("Exception occured while passing the command.\n"+ex.toString());
+
+	}
+	return stdout;
+  }
 
 }
