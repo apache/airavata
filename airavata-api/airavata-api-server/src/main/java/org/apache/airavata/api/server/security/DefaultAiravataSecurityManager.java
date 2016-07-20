@@ -179,8 +179,11 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
                         if(authorizedUserName.contains("@")){
                             authorizedUserName = authorizedUserName.split("@")[0];
                         }
+                        if(subject.contains("@")){
+                            subject = subject.split("@")[0];
+                        }
                         //cannot impersonate users
-                        if(!authorizedUserName.equals(subject))
+                        if(!authorizedUserName.toLowerCase().equals(subject.toLowerCase()))
                             return false;
 
                         long expiryTimestamp = validationResponse.getExpiryTime();
