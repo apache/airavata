@@ -36,7 +36,12 @@ package org.apache.airavata.orchestrator.core.utils;
 }*/
 
 
-
+/**
+ * This enum contains all the constants in orchestrator-core
+   enum is the way about dealing with constants as its very powerful.
+   Hence, a design change has been made to change the class to enum.
+ *
+ */
 public enum OrchestratorConstants {
     AIRAVATA_PROPERTIES("airavata-server.properties"),
     hotUpdateInterval(1000),
