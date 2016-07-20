@@ -48,17 +48,29 @@ import org.slf4j.LoggerFactory;
  * This contains orchestrator specific utilities
  */
 public class OrchestratorUtils {
+
+
     private final static Logger logger = LoggerFactory.getLogger(OrchestratorUtils.class);
+
+    public static String OrchestratorStringConstant(OrchestratorConstants constant)
+    {
+      return constant.getOrchestratorStringConstant();
+    }
+
+    public static int OrchestratorIntegerConstant(OrchestratorConstants constant)
+    {
+      return constant.getOrchestratorIntegerConstant();
+    }
 
     public static OrchestratorConfiguration loadOrchestratorConfiguration() throws OrchestratorException, IOException, NumberFormatException, ApplicationSettingsException {
         OrchestratorConfiguration orchestratorConfiguration = new OrchestratorConfiguration();
-        orchestratorConfiguration.setSubmitterInterval(Integer.parseInt((String) ServerSettings.getSetting(OrchestratorConstants.SUBMIT_INTERVAL)));
-        orchestratorConfiguration.setThreadPoolSize(Integer.parseInt((String) ServerSettings.getSetting(OrchestratorConstants.THREAD_POOL_SIZE)));
-        orchestratorConfiguration.setStartSubmitter(Boolean.valueOf(ServerSettings.getSetting(OrchestratorConstants.START_SUBMITTER)));
-        orchestratorConfiguration.setEmbeddedMode(Boolean.valueOf(ServerSettings.getSetting(OrchestratorConstants.EMBEDDED_MODE)));
-        orchestratorConfiguration.setEnableValidation(Boolean.valueOf(ServerSettings.getSetting(OrchestratorConstants.ENABLE_VALIDATION)));
+        orchestratorConfiguration.setSubmitterInterval(Integer.parseInt((String) ServerSettings.getSetting(OrchestratorStringConstant(OrchestratorConstants.SUBMIT_INTERVAL))));
+        orchestratorConfiguration.setThreadPoolSize(Integer.parseInt((String) ServerSettings.getSetting(OrchestratorStringConstant(OrchestratorConstants.THREAD_POOL_SIZE))));
+        orchestratorConfiguration.setStartSubmitter(Boolean.valueOf(ServerSettings.getSetting(OrchestratorStringConstant(OrchestratorConstants.START_SUBMITTER))));
+        orchestratorConfiguration.setEmbeddedMode(Boolean.valueOf(ServerSettings.getSetting(OrchestratorStringConstant(OrchestratorConstants.EMBEDDED_MODE))));
+        orchestratorConfiguration.setEnableValidation(Boolean.valueOf(ServerSettings.getSetting(OrchestratorStringConstant(OrchestratorConstants.ENABLE_VALIDATION))));
         if (orchestratorConfiguration.isEnableValidation()) {
-            orchestratorConfiguration.setValidatorClasses(Arrays.asList(ServerSettings.getSetting(OrchestratorConstants.JOB_VALIDATOR).split(",")));
+            orchestratorConfiguration.setValidatorClasses(Arrays.asList(ServerSettings.getSetting(OrchestratorStringConstant(OrchestratorConstants.JOB_VALIDATOR)).split(",")));
         }
         return orchestratorConfiguration;
     }

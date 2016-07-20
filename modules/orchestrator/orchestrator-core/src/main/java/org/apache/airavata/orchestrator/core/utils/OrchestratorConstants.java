@@ -24,7 +24,7 @@ package org.apache.airavata.orchestrator.core.utils;
  * This class contains all the constants in orchestrator-core
  *
  */
-public class OrchestratorConstants {
+/*public class OrchestratorConstants {
     public static final String AIRAVATA_PROPERTIES = "airavata-server.properties";
     public static final int hotUpdateInterval=1000;
     public static final String SUBMIT_INTERVAL = "submitter.interval";
@@ -33,4 +33,40 @@ public class OrchestratorConstants {
     public static final String EMBEDDED_MODE = "embedded.mode";
     public static final String ENABLE_VALIDATION = "enable.validation";
     public static final String JOB_VALIDATOR = "job.validators";
+}*/
+
+
+
+public enum OrchestratorConstants {
+    AIRAVATA_PROPERTIES("airavata-server.properties"),
+    hotUpdateInterval(1000),
+    SUBMIT_INTERVAL("submitter.interval"),
+    THREAD_POOL_SIZE("threadpool.size"),
+    START_SUBMITTER("start.submitter"),
+    EMBEDDED_MODE("embedded.mode"),
+    ENABLE_VALIDATION("enable.validation"),
+    JOB_VALIDATOR("job.validators");
+
+
+    private String stringConstant;
+    private int integerConstant;
+
+    OrchestratorConstants(String stringConstantIn)
+    {
+      stringConstant = stringConstantIn;
+    }
+    OrchestratorConstants(int integerConstantIn)
+    {
+      integerConstant = integerConstantIn;
+    }
+
+    public String getOrchestratorStringConstant()
+    {
+      return stringConstant;
+    }
+    public int getOrchestratorIntegerConstant()
+    {
+      return integerConstant;
+    }
+
 }
