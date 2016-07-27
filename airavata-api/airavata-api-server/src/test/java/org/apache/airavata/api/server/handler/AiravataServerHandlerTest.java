@@ -33,6 +33,7 @@ import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.NotificationPriority;
 import org.apache.airavata.model.workspace.Project;
@@ -65,6 +66,7 @@ public class AiravataServerHandlerTest {
 
         Gateway gateway = new Gateway();
         gateway.setGatewayId(gatewayId);
+        gateway.setGatewayApprovalStatus(GatewayApprovalStatus.REQUESTED);
         airavataServerHandler.addGateway(new AuthzToken(""), gateway);
 
         ComputeResourceDescription computeResourceDescription = new ComputeResourceDescription();
