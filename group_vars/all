@@ -1,0 +1,51 @@
+---
+ansible_connection: ssh
+ansible_ssh_user: root
+ansible_ssh_private_key_file: /Users/syodage/Projects/scigap/JetCloud/jetcloud.key
+
+user: airavata
+group: airavata
+user_home: "/home/{{ user }}"
+deployment_dir: "{{ user_home }}/master-deployment"
+
+airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
+airavata_dist_name: "{{ airavata_dist }}-bin.tar.gz"
+
+db_server: "gw62.iu.xsede.org"
+db_user: "SciGaP15Deploy"
+db_password: "xxxxxxxxxxx"
+app_catalog: "app_catalog"
+exp_catalog: "exp_catalog"
+replica_catalog: "replica_catalog"
+workflow_catalog: "wf_catalog"
+credential_store: "credential_store"
+
+rabbitmq_server: "localhost"
+rabbitmq_vhost: "master"
+rabbitmq_user: "airavata"
+rabbitmq_password: "airavata"
+rabbitmq_broker_url: "amqp://{{ rabbitmq_user }}:{{ rabbitmq_password }}@{{ rabbitmq_server}}:5672/{{ rabbitmq_vhost }}"
+
+key_store: "airavata.jks"
+cred_key_store: "client_truststore.jks"
+cred_store_server_host: "gw77.iu.xsede.org"
+key_stores_location: "{{ deployment_dir }}/keystores"
+
+mysql_connector_jar: "mysql-connector-java-5.1.37-bin.jar"
+
+api_server_name: "apiserver-node0"
+api_server_host: "{{ host_address }}"
+api_server_port: "8930"
+
+orchestrator_name: "orchestrator-node0"
+orchestrator_host: "{{ host_address }}"
+orchestrator_port: "8940"
+
+gfac_name: "gfac-node0"
+gfac_host: "{{ host_address }}"
+gfac_port: "8950"
+
+monitor_email_address: "jobs@scigap.org"
+monitor_email_password: "xxxxx"
+
+...
