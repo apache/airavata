@@ -562,6 +562,7 @@
 				<module>modules/server</module>
 				<module>modules/workflow</module>
 				<module>modules/test-suite</module>
+				<module>modules/group-manager</module>
 				<!-- Deprecated Modules-->
 				<!--<module>modules/integration-tests</module>-->
 				<!--<module>modules/workflow-model</module>-->

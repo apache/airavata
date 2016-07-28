@@ -1,0 +1,6 @@
+# This is a sample sqltool.rc file for use with hsqldb.
+urlid grouper
+url jdbc:hsqldb:hsql://127.0.0.1/grouper
+username sa
+password 
+

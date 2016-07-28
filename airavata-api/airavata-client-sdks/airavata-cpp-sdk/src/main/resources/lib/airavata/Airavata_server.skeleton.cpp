@@ -2915,6 +2915,55 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getChildDataProducts\n");
   }
 
+  /**
+   * Group Manager and Data Sharing Related API methods
+   * 
+   * 
+   * @param authzToken
+   * @param resourceId
+   * @param resourceType
+   * @param userPermissionList
+   */
+  bool shareResourceWithUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList) {
+    // Your implementation goes here
+    printf("shareResourceWithUsers\n");
+  }
+
+  bool revokeSharingOfResourceFromUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList) {
+    // Your implementation goes here
+    printf("revokeSharingOfResourceFromUsers\n");
+  }
+
+  void getAllAccessibleUsers(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType) {
+    // Your implementation goes here
+    printf("getAllAccessibleUsers\n");
+  }
+
+  bool createGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel) {
+    // Your implementation goes here
+    printf("createGroup\n");
+  }
+
+  bool updateGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel) {
+    // Your implementation goes here
+    printf("updateGroup\n");
+  }
+
+  bool deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("deleteGroup\n");
+  }
+
+  void getGroup( ::apache::airavata::model::group::GroupModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId) {
+    // Your implementation goes here
+    printf("getGroup\n");
+  }
+
+  void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("getAllGroupsUserBelongs\n");
+  }
+
 };
 
 int main(int argc, char **argv) {

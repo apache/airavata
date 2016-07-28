@@ -60,6 +60,7 @@ public class ThriftDataModelConversion {
 			}
 			project.setDescription(pr.getDescription());
             project.setOwner(pr.getWorker().getUser());
+            project.setGatewayId(pr.getGatewayId());
             List<ProjectUserResource> projectUserList = pr.getProjectUserList();
             List<String> sharedUsers = new ArrayList<String>();
             if (projectUserList != null && !projectUserList.isEmpty()){
