@@ -6,12 +6,12 @@ Ansible script to deploy Apache Airavata
 
 ## Roles
 **setup** :- Create user and group, install oracle java 8   
-**zookeeper** :- Download and install zookeeper
-**rabbitmq** :- Download and install rabbitmq as service
-**common** :- Checkout Airavata source from git and run maven build. Move keystore files
-**gfac** :- Setup Gfac deployment and Change configurations.
-**api-orch** :- Setup Api-Orch deployment and Change configurations.
-**pga** :- Deploy Airavata PHP Gateway.
+**zookeeper** :- Download and install zookeeper.  
+**rabbitmq** :- Download and install rabbitmq as service.  
+**common** :- Checkout Airavata source from git and run maven build. Move keystore files.  
+**gfac** :- Setup Gfac deployment and Change configurations.  
+**api-orch** :- Setup Api-Orch deployment and Change configurations.  
+**pga** :- Deploy Airavata PHP Gateway.  
 
 ## Useful commands
   * `ansible-playbook -i hosts site.yml`  
