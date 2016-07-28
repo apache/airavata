@@ -20,6 +20,7 @@
  */
 package org.apache.airavata.api.server.security.xacml;
 
+import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.axis2.AxisFault;
@@ -28,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.wso2.carbon.identity.entitlement.stub.EntitlementServiceException;
 import org.wso2.carbon.identity.entitlement.stub.EntitlementServiceStub;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.xml.sax.SAXException;
@@ -38,6 +40,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.rmi.RemoteException;
 import java.util.Map;
 
 /**
@@ -71,28 +74,26 @@ public class DefaultXACMLPEP {
      * @return
      */
     public boolean getAuthorizationDecision(AuthzToken authzToken, Map<String, String> metaData) throws AiravataSecurityException {
-        //FIXME
-        return true;
-//        String decision;
-//        try {
-//            String subject = authzToken.getClaimsMap().get(Constants.USER_NAME);
-//            String action = "/airavata/" + metaData.get(Constants.API_METHOD_NAME);
-//            String decisionString = entitlementServiceStub.getDecisionByAttributes(subject, null, action, null);
-//            //parse the XML decision string and obtain the decision
-//            decision = parseDecisionString(decisionString);
-//            if (Constants.PERMIT.equals(decision)) {
-//                return true;
-//            } else {
-//                logger.error("Authorization decision is: " + decision);
-//                return false;
-//            }
-//        } catch (RemoteException e) {
-//            logger.error(e.getMessage(), e);
-//            throw new AiravataSecurityException("Error in authorizing the user.");
-//        } catch (EntitlementServiceException e) {
-//            logger.error(e.getMessage(), e);
-//            throw new AiravataSecurityException("Error in authorizing the user.");
-//        }
+        String decision;
+        try {
+            String subject = authzToken.getClaimsMap().get(Constants.USER_NAME);
+            String action = "/airavata/" + metaData.get(Constants.API_METHOD_NAME);
+            String decisionString = entitlementServiceStub.getDecisionByAttributes(subject, null, action, null);
+            //parse the XML decision string and obtain the decision
+            decision = parseDecisionString(decisionString);
+            if (Constants.PERMIT.equals(decision)) {
+                return true;
+            } else {
+                logger.error("Authorization decision is: " + decision);
+                return false;
+            }
+        } catch (RemoteException e) {
+            logger.error(e.getMessage(), e);
+            throw new AiravataSecurityException("Error in authorizing the user.");
+        } catch (EntitlementServiceException e) {
+            logger.error(e.getMessage(), e);
+            throw new AiravataSecurityException("Error in authorizing the user.");
+        }
     }
 
     /**
