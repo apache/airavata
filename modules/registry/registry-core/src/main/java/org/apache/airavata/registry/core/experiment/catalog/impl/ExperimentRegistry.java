@@ -1346,11 +1346,63 @@ public class ExperimentRegistry {
                 }
                 List<ExperimentSummaryResource> experimentSummaryResources;
                 if (fromTime != 0 && toTime != 0) {
-                    experimentSummaryResources = workerResource.searchExperiments(new Timestamp(fromTime), new Timestamp(toTime), fil
+                    experimentSummaryResources = workerResource.searchExperiments(null, new Timestamp(fromTime), new Timestamp(toTime), fil
                             ,limit , offset, orderByIdentifier, resultOrderType);
                 } else {
                     experimentSummaryResources = workerResource
-                            .searchExperiments(null, null, fil, limit, offset, orderByIdentifier, resultOrderType);
+                            .searchExperiments(null, null, null, fil, limit, offset, orderByIdentifier, resultOrderType);
+                }
+                if (experimentSummaryResources != null && !experimentSummaryResources.isEmpty()) {
+                    for (ExperimentSummaryResource ex : experimentSummaryResources) {
+                        experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+                    }
+                }
+                return experimentSummaries;
+
+            } catch (Exception e) {
+                logger.error("Error while retrieving experiment summary from registry", e);
+                throw new RegistryException(e);
+            }
+        }
+        return null;
+    }
+
+    public List<ExperimentSummaryModel> searchAllAccessibleExperiments(List<String> accessibleIds, Map<String, String> filters, int limit,
+                                                          int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+        Map<String, String> fil = new HashMap<String, String>();
+        if (filters != null && filters.size() != 0) {
+            List<ExperimentSummaryModel> experimentSummaries = new ArrayList<>();
+            long fromTime = 0;
+            long toTime = 0;
+            try {
+                for (String field : filters.keySet()) {
+                    if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME)) {
+                        fil.put(AbstractExpCatResource.ExperimentConstants.EXPERIMENT_NAME, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
+                        fil.put(AbstractExpCatResource.ExperimentConstants.USER_NAME, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
+                        fil.put(AbstractExpCatResource.ExperimentConstants.PROJECT_ID, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID)) {
+                        fil.put(AbstractExpCatResource.ExperimentConstants.GATEWAY_ID, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.DESCRIPTION)) {
+                        fil.put(AbstractExpCatResource.ExperimentConstants.DESCRIPTION, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXECUTION_ID)) {
+                        fil.put(AbstractExpCatResource.ExperimentConstants.EXECUTION_ID, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS)) {
+                        fil.put(AbstractExpCatResource.ExperimentStatusConstants.STATE, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.FROM_DATE)) {
+                        fromTime = Long.parseLong(filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.TO_DATE)) {
+                        toTime = Long.parseLong(filters.get(field));
+                    }
+                }
+                List<ExperimentSummaryResource> experimentSummaryResources;
+                if (fromTime != 0 && toTime != 0) {
+                    experimentSummaryResources = workerResource.searchExperiments(accessibleIds, new Timestamp(fromTime), new Timestamp(toTime), fil
+                            ,limit , offset, orderByIdentifier, resultOrderType);
+                } else {
+                    experimentSummaryResources = workerResource
+                            .searchExperiments(accessibleIds, null, null, fil, limit, offset, orderByIdentifier, resultOrderType);
                 }
                 if (experimentSummaryResources != null && !experimentSummaryResources.isEmpty()) {
                     for (ExperimentSummaryResource ex : experimentSummaryResources) {

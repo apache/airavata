@@ -43,16 +43,21 @@ struct Group {
 struct Project {
     1: required string projectID = airavata_commons.DEFAULT_ID,
     2: required string owner,
-    3: required string name,
-    4: optional string description
-    5: optional i64 creationTime
-    6: optional list<string> sharedUsers,
-    7: optional list<string> sharedGroups
+    3: required string gatewayId,
+    4: required string name,
+    5: optional string description
+    6: optional i64 creationTime
+    7: optional list<string> sharedUsers,
+    8: optional list<string> sharedGroups
 }
 
 struct User {
-    1: required string userName,
-    2: optional list<Group> groupList
+    1: required string airavataInternalUserId = airavata_commons.DEFAULT_ID,
+    2: optional string userName,
+    3: required string gatewayId,
+    4: optional string firstName,
+    5: optional string lastName,
+    6: optional string email
 }
 
 enum GatewayApprovalStatus {
