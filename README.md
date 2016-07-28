@@ -21,3 +21,7 @@ Ansible script to deploy Apache Airavata
 - `ansible-playbook -i hosts site.yml`
 - `ansible-playbook -i hosts site.yml -t "tags"`
 - `ansible-playbook -i hosts site.yml --start-at-task="name of the ansible task"`
+
+## Configurations
+
+- Set correct private key file to `ansible_ssh_private_key_file` property in group_vars/all
