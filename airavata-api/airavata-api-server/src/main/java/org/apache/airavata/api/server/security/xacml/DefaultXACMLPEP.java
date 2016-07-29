@@ -77,6 +77,10 @@ public class DefaultXACMLPEP {
         String decision;
         try {
             String subject = authzToken.getClaimsMap().get(Constants.USER_NAME);
+            //FIXME hacky way to fix OpenID -> CILogon issue in WSO2 IS
+            if(subject.startsWith("http://")){
+                subject = subject.substring(6);
+            }
             String action = "/airavata/" + metaData.get(Constants.API_METHOD_NAME);
             String decisionString = entitlementServiceStub.getDecisionByAttributes(subject, null, action, null);
             //parse the XML decision string and obtain the decision
