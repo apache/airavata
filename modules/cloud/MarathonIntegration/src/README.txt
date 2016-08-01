@@ -12,5 +12,5 @@ ant all
 #Run command
 ## TODO: add the command to run and test the code
 
-## Add sample output that shows the Aurora code working
+## Add sample output that shows the Marathon code working
 

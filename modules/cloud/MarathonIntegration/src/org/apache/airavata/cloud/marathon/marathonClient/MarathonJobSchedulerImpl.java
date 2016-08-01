@@ -13,6 +13,45 @@ import org.apache.airavata.cloud.marathon.utilities.MarathonUtilI;
 
 public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 	MarathonUtilI util = new MarathonUtilImpl();
+	public void jobListById(String address, String id) throws MarathonException{
+		try{
+			String line;
+			Process marathonJob = Runtime.getRuntime().exec("curl GET "+address+"/v2/apps/"+id);
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+			util.printLog(stdout);
+			marathonJob.waitFor();
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list jobs.\n"+ex.toString());
+		}
+	}
+	public void jobListByName(String address, String name) throws MarathonException{
+		try{
+			String line;
+			Process marathonJob = Runtime.getRuntime().exec("curl GET "+address+"/v2/apps/"+name);
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+			util.printLog(stdout);
+			marathonJob.waitFor();
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list jobs.\n"+ex.toString());
+		}
+	}
+	public void jobList(String address) throws MarathonException{
+		try{
+			String line;
+			Process marathonJob = Runtime.getRuntime().exec("curl GET "+address+"/v2/apps");
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+			util.printLog(stdout);
+			marathonJob.waitFor();
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list jobs.\n"+ex.toString());
+		}
+	}
 	public void jobKill(String name, String address) throws MarathonException{
 		try{
 			String line;
@@ -23,7 +62,7 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 		}
 
 		catch (Exception ex) {
-			throw new MarathonException("Exception occured while launching the job.\n"+ex.toString());
+			throw new MarathonException("Exception occured while killing the job.\n"+ex.toString());
 		}
 	}
 	public void jobLaunch(String name, String address) throws MarathonException{
