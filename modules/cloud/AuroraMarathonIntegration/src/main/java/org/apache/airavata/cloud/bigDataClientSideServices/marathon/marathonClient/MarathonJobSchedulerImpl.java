@@ -94,5 +94,30 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 		}
 	}
 
+	public void jobListById(String address, String id) throws MarathonException{
+		try{
+
+			String completeCommandToRunProcess ="curl GET "+address+"/v2/apps/"+id;
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list jobs.\n"+ex.toString());
+		}
+	}
+	public void jobListByName(String address, String name) throws MarathonException{
+		try{
+
+			String completeCommandToRunProcess = "curl GET "+address+"/v2/apps/"+name;
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list jobs.\n"+ex.toString());
+		}
+	}
+
 
 }
