@@ -38,7 +38,7 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 
 	public void jobKill(String name, String address) throws MarathonException{
 		try{
-		
+
 			String completeCommandToRunProcess = "curl -X DELETE "+address+""+name;
 			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
 			util.printLog(stdout);
@@ -78,6 +78,19 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 			throw new MarathonException("IO Exception occured while creating the configuration file.\n"+ex.toString());
 		}catch (Exception ex) {
 			throw new MarathonException("Exception occured while creating the configuration file.\n"+ex.toString());
+		}
+	}
+
+	public void jobList(String address) throws MarathonException{
+		try{
+
+			String completeCommandToRunProcess = "curl GET "+address+"/v2/apps";
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list jobs.\n"+ex.toString());
 		}
 	}
 
