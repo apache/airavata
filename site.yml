@@ -3,26 +3,26 @@
 - hosts: zookeeper
   tags: zookeeper
   roles:
-    - setup
+    - env_setup
     - zookeeper
 
 - hosts: rabbitmq
   tags: rabbitmq
   roles:
-    - setup
+    - env_setup
     - rabbitmq
 
 - hosts: gfac
   tags: gfac
   roles:
-    - setup
+    - env_setup
     - common
     - gfac
 
 - hosts: api-orch
   tags: api-orch
   roles:
-    - setup
+    - env_setup
     - common
     - api-orch
 
