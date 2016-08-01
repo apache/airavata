@@ -1,26 +1,26 @@
 ---
 #Master playbook
 - hosts: zookeeper
-  tags: zookeeper
+  tags: zookeeper, airavata
   roles:
     - env_setup
     - zookeeper
 
 - hosts: rabbitmq
-  tags: rabbitmq
+  tags: rabbitmq, airavata
   roles:
     - env_setup
     - rabbitmq
 
 - hosts: gfac
-  tags: gfac
+  tags: gfac, airavata
   roles:
     - env_setup
     - common
     - gfac
 
 - hosts: api-orch
-  tags: api-orch
+  tags: api-orch, airavata
   roles:
     - env_setup
     - common
