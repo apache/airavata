@@ -1,0 +1,41 @@
+---
+# - name: yum update
+#   yum: name=* state=latest
+
+# Install Mysql
+- name: install pip
+  yum: name=python-pip state=latest
+
+- name: install pexpect
+  pip: name=pexpect
+
+# - name: Adds Python MySQL support on Debian/Ubuntu
+#   apt: pkg="python-mysqldb" state=present
+#   when: ansible_os_family == 'Debian'
+
+- name: Adds Python MySQL support on RedHat/CentOS
+  yum: name=MySQL-python state=present
+  # when: ansible_os_family == 'RedHat'
+
+- name: install mariadb
+  yum: name="{{ item }}" state=latest update_cache=yes
+  with_items: "{{ mysql_packages }}"
+
+- name: start mariadb
+  service: name=mariadb state=started enabled=yes
+
+- include: secure_install.yml
+
+- name: create databases
+  mysql_db: name="{{ item }}" state=present
+  with_items:
+    - "{{ app_catalog }}"
+    - "{{ exp_catalog }}"
+    - "{{ replica_catalog }}"
+    - "{{ workflow_catalog }}"
+    - "{{ credential_store }}"
+
+- name: create new user {{ db_user }} with all privilege
+  mysql_user: name="{{ db_user }}" password="{{ db_password }}" priv=*.*:ALL state=present
+
+...

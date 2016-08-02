@@ -30,4 +30,10 @@
   tags: pga
   roles:
     - pga
+
+- hosts: database
+  tags: mysql
+  roles:
+    - database
+
 ...
