@@ -34,15 +34,15 @@ key_stores_location: "{{ deployment_dir }}/keystores"
 mysql_connector_jar: "mysql-connector-java-5.1.37-bin.jar"
 
 api_server_name: "apiserver-node0"
-api_server_host: "{{ host_address }}"
+api_server_host: "{{ ansible_fqdn }}"
 api_server_port: "8930"
 
 orchestrator_name: "orchestrator-node0"
-orchestrator_host: "{{ host_address }}"
+orchestrator_host: "{{ ansible_fqdn }}"
 orchestrator_port: "8940"
 
 gfac_name: "gfac-node0"
-gfac_host: "{{ host_address }}"
+gfac_host: "{{ ansible_fqdn }}"
 gfac_port: "8950"
 
 monitor_email_address: "jobs@scigap.org"

@@ -2,24 +2,24 @@
 
 [api-orch]
 #149.165.156.196 host_name=js-156-196 host_address=149.165.156.196
-149.165.171.11 host_name=js-171-11 host_address=149.165.171.11
+js-171-11.jetstream-cloud.org
 
 [gfac]
 #149.165.156.196 host_name=js-156-196 host_address=149.165.156.196
-149.165.171.11 host_name=js-171-11 host_address=149.165.171.11
+js-171-11.jetstream-cloud.org
 
 [pga]
 #149.165.156.196
-149.165.171.11
+js-171-11.jetstream-cloud.org
 
 [zookeeper]
 #149.165.156.196 host_name=js-156-196 host_address=149.165.156.196
-149.165.171.11 host_name=js-171-11 host_address=149.165.171.11
+js-171-11.jetstream-cloud.org
 
 [rabbitmq]
 #149.165.156.196 host_name=js-156-196 host_address=149.165.156.196
-149.165.171.11 host_name=js-171-11 host_address=149.165.171.11
+js-171-11.jetstream-cloud.org
 
 [database]
 #149.165.156.196
-149.165.171.11
+js-171-11.jetstream-cloud.org
