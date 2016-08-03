@@ -34,15 +34,19 @@ int _kGatewayApprovalStatusValues[] = {
   GatewayApprovalStatus::REQUESTED,
   GatewayApprovalStatus::APPROVED,
   GatewayApprovalStatus::ACTIVE,
-  GatewayApprovalStatus::DEACTIVATED
+  GatewayApprovalStatus::DEACTIVATED,
+  GatewayApprovalStatus::CANCELLED,
+  GatewayApprovalStatus::DENIED
 };
 const char* _kGatewayApprovalStatusNames[] = {
   "REQUESTED",
   "APPROVED",
   "ACTIVE",
-  "DEACTIVATED"
+  "DEACTIVATED",
+  "CANCELLED",
+  "DENIED"
 };
-const std::map<int, const char*> _GatewayApprovalStatus_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(4, _kGatewayApprovalStatusValues, _kGatewayApprovalStatusNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _GatewayApprovalStatus_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kGatewayApprovalStatusValues, _kGatewayApprovalStatusNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kNotificationPriorityValues[] = {
   NotificationPriority::LOW,
@@ -726,6 +730,11 @@ void Gateway::__set_identityServerPasswordToken(const std::string& val) {
 __isset.identityServerPasswordToken = true;
 }
 
+void Gateway::__set_declinedReason(const std::string& val) {
+  this->declinedReason = val;
+__isset.declinedReason = true;
+}
+
 uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -863,6 +872,14 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 15:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->declinedReason);
+          this->__isset.declinedReason = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -952,6 +969,11 @@ uint32_t Gateway::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeString(this->identityServerPasswordToken);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.declinedReason) {
+    xfer += oprot->writeFieldBegin("declinedReason", ::apache::thrift::protocol::T_STRING, 15);
+    xfer += oprot->writeString(this->declinedReason);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -973,6 +995,7 @@ void swap(Gateway &a, Gateway &b) {
   swap(a.gatewayAdminEmail, b.gatewayAdminEmail);
   swap(a.identityServerUserName, b.identityServerUserName);
   swap(a.identityServerPasswordToken, b.identityServerPasswordToken);
+  swap(a.declinedReason, b.declinedReason);
   swap(a.__isset, b.__isset);
 }
 
@@ -991,6 +1014,7 @@ Gateway::Gateway(const Gateway& other19) {
   gatewayAdminEmail = other19.gatewayAdminEmail;
   identityServerUserName = other19.identityServerUserName;
   identityServerPasswordToken = other19.identityServerPasswordToken;
+  declinedReason = other19.declinedReason;
   __isset = other19.__isset;
 }
 Gateway& Gateway::operator=(const Gateway& other20) {
@@ -1008,6 +1032,7 @@ Gateway& Gateway::operator=(const Gateway& other20) {
   gatewayAdminEmail = other20.gatewayAdminEmail;
   identityServerUserName = other20.identityServerUserName;
   identityServerPasswordToken = other20.identityServerPasswordToken;
+  declinedReason = other20.declinedReason;
   __isset = other20.__isset;
   return *this;
 }
@@ -1028,6 +1053,7 @@ void Gateway::printTo(std::ostream& out) const {
   out << ", " << "gatewayAdminEmail="; (__isset.gatewayAdminEmail ? (out << to_string(gatewayAdminEmail)) : (out << "<null>"));
   out << ", " << "identityServerUserName="; (__isset.identityServerUserName ? (out << to_string(identityServerUserName)) : (out << "<null>"));
   out << ", " << "identityServerPasswordToken="; (__isset.identityServerPasswordToken ? (out << to_string(identityServerPasswordToken)) : (out << "<null>"));
+  out << ", " << "declinedReason="; (__isset.declinedReason ? (out << to_string(declinedReason)) : (out << "<null>"));
   out << ")";
 }
 

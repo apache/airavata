@@ -23,12 +23,16 @@ class GatewayApprovalStatus:
   APPROVED = 1
   ACTIVE = 2
   DEACTIVATED = 3
+  CANCELLED = 4
+  DENIED = 5
 
   _VALUES_TO_NAMES = {
     0: "REQUESTED",
     1: "APPROVED",
     2: "ACTIVE",
     3: "DEACTIVATED",
+    4: "CANCELLED",
+    5: "DENIED",
   }
 
   _NAMES_TO_VALUES = {
@@ -36,6 +40,8 @@ class GatewayApprovalStatus:
     "APPROVED": 1,
     "ACTIVE": 2,
     "DEACTIVATED": 3,
+    "CANCELLED": 4,
+    "DENIED": 5,
   }
 
 class NotificationPriority:
@@ -467,6 +473,7 @@ class Gateway:
    - gatewayAdminEmail
    - identityServerUserName
    - identityServerPasswordToken
+   - declinedReason
   """
 
   thrift_spec = (
@@ -485,9 +492,10 @@ class Gateway:
     (12, TType.STRING, 'gatewayAdminEmail', None, None, ), # 12
     (13, TType.STRING, 'identityServerUserName', None, None, ), # 13
     (14, TType.STRING, 'identityServerPasswordToken', None, None, ), # 14
+    (15, TType.STRING, 'declinedReason', None, None, ), # 15
   )
 
-  def __init__(self, gatewayId=None, gatewayApprovalStatus=None, gatewayName=None, domain=None, emailAddress=None, gatewayAcronym=None, gatewayURL=None, gatewayPublicAbstract=None, reviewProposalDescription=None, gatewayAdminFirstName=None, gatewayAdminLastName=None, gatewayAdminEmail=None, identityServerUserName=None, identityServerPasswordToken=None,):
+  def __init__(self, gatewayId=None, gatewayApprovalStatus=None, gatewayName=None, domain=None, emailAddress=None, gatewayAcronym=None, gatewayURL=None, gatewayPublicAbstract=None, reviewProposalDescription=None, gatewayAdminFirstName=None, gatewayAdminLastName=None, gatewayAdminEmail=None, identityServerUserName=None, identityServerPasswordToken=None, declinedReason=None,):
     self.gatewayId = gatewayId
     self.gatewayApprovalStatus = gatewayApprovalStatus
     self.gatewayName = gatewayName
@@ -502,6 +510,7 @@ class Gateway:
     self.gatewayAdminEmail = gatewayAdminEmail
     self.identityServerUserName = identityServerUserName
     self.identityServerPasswordToken = identityServerPasswordToken
+    self.declinedReason = declinedReason
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -582,6 +591,11 @@ class Gateway:
           self.identityServerPasswordToken = iprot.readString()
         else:
           iprot.skip(ftype)
+      elif fid == 15:
+        if ftype == TType.STRING:
+          self.declinedReason = iprot.readString()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -648,6 +662,10 @@ class Gateway:
       oprot.writeFieldBegin('identityServerPasswordToken', TType.STRING, 14)
       oprot.writeString(self.identityServerPasswordToken)
       oprot.writeFieldEnd()
+    if self.declinedReason is not None:
+      oprot.writeFieldBegin('declinedReason', TType.STRING, 15)
+      oprot.writeString(self.declinedReason)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -675,6 +693,7 @@ class Gateway:
     value = (value * 31) ^ hash(self.gatewayAdminEmail)
     value = (value * 31) ^ hash(self.identityServerUserName)
     value = (value * 31) ^ hash(self.identityServerPasswordToken)
+    value = (value * 31) ^ hash(self.declinedReason)
     return value
 
   def __repr__(self):

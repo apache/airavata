@@ -32,7 +32,9 @@ public enum GatewayApprovalStatus implements org.apache.thrift.TEnum {
   REQUESTED(0),
   APPROVED(1),
   ACTIVE(2),
-  DEACTIVATED(3);
+  DEACTIVATED(3),
+  CANCELLED(4),
+  DENIED(5);
 
   private final int value;
 
@@ -61,6 +63,10 @@ public enum GatewayApprovalStatus implements org.apache.thrift.TEnum {
         return ACTIVE;
       case 3:
         return DEACTIVATED;
+      case 4:
+        return CANCELLED;
+      case 5:
+        return DENIED;
       default:
         return null;
     }

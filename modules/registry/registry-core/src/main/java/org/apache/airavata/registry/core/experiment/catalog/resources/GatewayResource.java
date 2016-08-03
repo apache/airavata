@@ -51,6 +51,7 @@ public class GatewayResource extends AbstractExpCatResource {
     private String gatewayAdminEmail;
     private String identityServerUserName;
     private String identityServerPasswordToken;
+    private String declinedReason;
 
     public String getGatewayAdminFirstName() {
         return gatewayAdminFirstName;
@@ -146,6 +147,14 @@ public class GatewayResource extends AbstractExpCatResource {
 
     public void setReviewProposalDescription(String reviewProposalDescription) {
         this.reviewProposalDescription = reviewProposalDescription;
+    }
+
+    public String getDeclinedReason() {
+        return declinedReason;
+    }
+
+    public void setDeclinedReason(String declinedReason) {
+        this.declinedReason = declinedReason;
     }
 
     /**
@@ -432,6 +441,7 @@ public class GatewayResource extends AbstractExpCatResource {
             gateway.setGatewayAdminEmail(gatewayAdminEmail);
             gateway.setIdentityServerUserName(identityServerUserName);
             gateway.setIdentityServerPasswordToken(identityServerPasswordToken);
+            gateway.setDeclinedReason(declinedReason);
             if (existingGateway != null) {
                 existingGateway.setDomain(domain);
                 existingGateway.setGatewayApprovalStatus(gatewayApprovalStatus);
@@ -447,6 +457,7 @@ public class GatewayResource extends AbstractExpCatResource {
                 existingGateway.setGatewayAdminEmail(gatewayAdminEmail);
                 existingGateway.setIdentityServerUserName(identityServerUserName);
                 existingGateway.setIdentityServerPasswordToken(identityServerPasswordToken);
+                existingGateway.setDeclinedReason(declinedReason);
                 em.merge(existingGateway);
             } else {
                 em.persist(gateway);
