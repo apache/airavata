@@ -85,6 +85,7 @@ public class ThriftDataModelConversion {
         gateway.setGatewayURL(resource.getGatewayUrl());
         gateway.setGatewayPublicAbstract(resource.getGatewayPublicAbstract());
         gateway.setReviewProposalDescription(resource.getReviewProposalDescription());
+        gateway.setDeclinedReason(resource.getDeclinedReason());
         gateway.setGatewayAdminFirstName(resource.getGatewayAdminFirstName());
         gateway.setGatewayAdminLastName(resource.getGetGatewayAdminLastName());
         gateway.setGatewayAdminEmail(resource.getGatewayAdminEmail());

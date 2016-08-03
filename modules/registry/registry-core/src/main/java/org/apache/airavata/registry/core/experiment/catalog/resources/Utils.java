@@ -356,6 +356,7 @@ public class Utils {
         gatewayResource.setGatewayAdminEmail(o.getGatewayAdminEmail());
         gatewayResource.setIdentityServerUserName(o.getIdentityServerUserName());
         gatewayResource.setIdentityServerPasswordToken(o.getIdentityServerPasswordToken());
+        gatewayResource.setDeclinedReason(o.getDeclinedReason());
         return gatewayResource;
     }
 

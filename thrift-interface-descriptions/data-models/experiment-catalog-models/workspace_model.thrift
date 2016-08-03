@@ -64,7 +64,9 @@ enum GatewayApprovalStatus {
     REQUESTED,
     APPROVED,
     ACTIVE,
-    DEACTIVATED
+    DEACTIVATED,
+    CANCELLED,
+    DENIED
 }
 
 struct Gateway {
@@ -81,7 +83,8 @@ struct Gateway {
     11: optional string gatewayAdminLastName,
     12: optional string gatewayAdminEmail,
     13: optional string identityServerUserName,
-    14: optional string identityServerPasswordToken
+    14: optional string identityServerPasswordToken,
+    15: optional string declinedReason
 }
 
 enum NotificationPriority {

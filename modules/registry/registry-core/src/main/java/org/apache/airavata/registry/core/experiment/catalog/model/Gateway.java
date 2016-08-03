@@ -44,6 +44,7 @@ public class Gateway {
     private String gatewayAdminEmail;
     private String identityServerUserName;
     private String identityServerPasswordToken;
+    private String declinedReason;
     private Collection<GatewayWorker> gatewayWorkers;
     private Collection<Project> projects;
 
@@ -172,6 +173,15 @@ public class Gateway {
 
     public void setIdentityServerPasswordToken(String identityServerPasswordToken) {
         this.identityServerPasswordToken = identityServerPasswordToken;
+    }
+
+    @Column(name = "DECLINED_REASON")
+    public String getDeclinedReason() {
+        return declinedReason;
+    }
+
+    public void setDeclinedReason(String declinedReason) {
+        this.declinedReason = declinedReason;
     }
 
     //    @Override

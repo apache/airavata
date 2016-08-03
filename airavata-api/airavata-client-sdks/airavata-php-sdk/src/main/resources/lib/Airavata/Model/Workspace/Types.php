@@ -22,11 +22,15 @@ final class GatewayApprovalStatus {
   const APPROVED = 1;
   const ACTIVE = 2;
   const DEACTIVATED = 3;
+  const CANCELLED = 4;
+  const DENIED = 5;
   static public $__names = array(
     0 => 'REQUESTED',
     1 => 'APPROVED',
     2 => 'ACTIVE',
     3 => 'DEACTIVATED',
+    4 => 'CANCELLED',
+    5 => 'DENIED',
   );
 }
 
@@ -676,6 +680,10 @@ class Gateway {
    * @var string
    */
   public $identityServerPasswordToken = null;
+  /**
+   * @var string
+   */
+  public $declinedReason = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -736,6 +744,10 @@ class Gateway {
           'var' => 'identityServerPasswordToken',
           'type' => TType::STRING,
           ),
+        15 => array(
+          'var' => 'declinedReason',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -780,6 +792,9 @@ class Gateway {
       }
       if (isset($vals['identityServerPasswordToken'])) {
         $this->identityServerPasswordToken = $vals['identityServerPasswordToken'];
+      }
+      if (isset($vals['declinedReason'])) {
+        $this->declinedReason = $vals['declinedReason'];
       }
     }
   }
@@ -901,6 +916,13 @@ class Gateway {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 15:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->declinedReason);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -982,6 +1004,11 @@ class Gateway {
     if ($this->identityServerPasswordToken !== null) {
       $xfer += $output->writeFieldBegin('identityServerPasswordToken', TType::STRING, 14);
       $xfer += $output->writeString($this->identityServerPasswordToken);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->declinedReason !== null) {
+      $xfer += $output->writeFieldBegin('declinedReason', TType::STRING, 15);
+      $xfer += $output->writeString($this->declinedReason);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
