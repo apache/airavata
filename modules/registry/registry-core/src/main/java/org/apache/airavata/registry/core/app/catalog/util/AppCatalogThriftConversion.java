@@ -832,6 +832,10 @@ public class AppCatalogThriftConversion {
         preference.setLoginUserName(resource.getLoginUserName());
         preference.setResourceSpecificCredentialStoreToken(resource.getResourceCSToken());
         preference.setUsageReportingGatewayId(resource.getGatewayId());
+        preference.setQualityOfService(resource.getQualityOfService());
+        preference.setReservation(resource.getReservation());
+        preference.setReservationStartTime(resource.getReservationStartTime().getTime());
+        preference.setReservationEndTime(resource.getReservationEndTime().getTime());
         return preference;
     }
 
