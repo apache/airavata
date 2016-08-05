@@ -99,6 +99,10 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
   private static final org.apache.thrift.protocol.TField ALLOCATION_PROJECT_NUMBER_FIELD_DESC = new org.apache.thrift.protocol.TField("allocationProjectNumber", org.apache.thrift.protocol.TType.STRING, (short)8);
   private static final org.apache.thrift.protocol.TField RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceSpecificCredentialStoreToken", org.apache.thrift.protocol.TType.STRING, (short)9);
   private static final org.apache.thrift.protocol.TField USAGE_REPORTING_GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("usageReportingGatewayId", org.apache.thrift.protocol.TType.STRING, (short)10);
+  private static final org.apache.thrift.protocol.TField QUALITY_OF_SERVICE_FIELD_DESC = new org.apache.thrift.protocol.TField("qualityOfService", org.apache.thrift.protocol.TType.STRING, (short)11);
+  private static final org.apache.thrift.protocol.TField RESERVATION_FIELD_DESC = new org.apache.thrift.protocol.TField("reservation", org.apache.thrift.protocol.TType.STRING, (short)12);
+  private static final org.apache.thrift.protocol.TField RESERVATION_START_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("reservationStartTime", org.apache.thrift.protocol.TType.I64, (short)13);
+  private static final org.apache.thrift.protocol.TField RESERVATION_END_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("reservationEndTime", org.apache.thrift.protocol.TType.I64, (short)14);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -116,6 +120,10 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
   private String allocationProjectNumber; // optional
   private String resourceSpecificCredentialStoreToken; // optional
   private String usageReportingGatewayId; // optional
+  private String qualityOfService; // optional
+  private String reservation; // optional
+  private long reservationStartTime; // optional
+  private long reservationEndTime; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -136,7 +144,11 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     SCRATCH_LOCATION((short)7, "scratchLocation"),
     ALLOCATION_PROJECT_NUMBER((short)8, "allocationProjectNumber"),
     RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN((short)9, "resourceSpecificCredentialStoreToken"),
-    USAGE_REPORTING_GATEWAY_ID((short)10, "usageReportingGatewayId");
+    USAGE_REPORTING_GATEWAY_ID((short)10, "usageReportingGatewayId"),
+    QUALITY_OF_SERVICE((short)11, "qualityOfService"),
+    RESERVATION((short)12, "reservation"),
+    RESERVATION_START_TIME((short)13, "reservationStartTime"),
+    RESERVATION_END_TIME((short)14, "reservationEndTime");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -171,6 +183,14 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
           return RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN;
         case 10: // USAGE_REPORTING_GATEWAY_ID
           return USAGE_REPORTING_GATEWAY_ID;
+        case 11: // QUALITY_OF_SERVICE
+          return QUALITY_OF_SERVICE;
+        case 12: // RESERVATION
+          return RESERVATION;
+        case 13: // RESERVATION_START_TIME
+          return RESERVATION_START_TIME;
+        case 14: // RESERVATION_END_TIME
+          return RESERVATION_END_TIME;
         default:
           return null;
       }
@@ -212,8 +232,10 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
 
   // isset id assignments
   private static final int __OVERRIDEBYAIRAVATA_ISSET_ID = 0;
+  private static final int __RESERVATIONSTARTTIME_ISSET_ID = 1;
+  private static final int __RESERVATIONENDTIME_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.LOGIN_USER_NAME,_Fields.PREFERRED_JOB_SUBMISSION_PROTOCOL,_Fields.PREFERRED_DATA_MOVEMENT_PROTOCOL,_Fields.PREFERRED_BATCH_QUEUE,_Fields.SCRATCH_LOCATION,_Fields.ALLOCATION_PROJECT_NUMBER,_Fields.RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN,_Fields.USAGE_REPORTING_GATEWAY_ID};
+  private static final _Fields optionals[] = {_Fields.LOGIN_USER_NAME,_Fields.PREFERRED_JOB_SUBMISSION_PROTOCOL,_Fields.PREFERRED_DATA_MOVEMENT_PROTOCOL,_Fields.PREFERRED_BATCH_QUEUE,_Fields.SCRATCH_LOCATION,_Fields.ALLOCATION_PROJECT_NUMBER,_Fields.RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN,_Fields.USAGE_REPORTING_GATEWAY_ID,_Fields.QUALITY_OF_SERVICE,_Fields.RESERVATION,_Fields.RESERVATION_START_TIME,_Fields.RESERVATION_END_TIME};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -237,6 +259,14 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.USAGE_REPORTING_GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("usageReportingGatewayId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.QUALITY_OF_SERVICE, new org.apache.thrift.meta_data.FieldMetaData("qualityOfService", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.RESERVATION, new org.apache.thrift.meta_data.FieldMetaData("reservation", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.RESERVATION_START_TIME, new org.apache.thrift.meta_data.FieldMetaData("reservationStartTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+    tmpMap.put(_Fields.RESERVATION_END_TIME, new org.apache.thrift.meta_data.FieldMetaData("reservationEndTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ComputeResourcePreference.class, metaDataMap);
   }
@@ -289,6 +319,14 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     if (other.isSetUsageReportingGatewayId()) {
       this.usageReportingGatewayId = other.usageReportingGatewayId;
     }
+    if (other.isSetQualityOfService()) {
+      this.qualityOfService = other.qualityOfService;
+    }
+    if (other.isSetReservation()) {
+      this.reservation = other.reservation;
+    }
+    this.reservationStartTime = other.reservationStartTime;
+    this.reservationEndTime = other.reservationEndTime;
   }
 
   public ComputeResourcePreference deepCopy() {
@@ -308,6 +346,12 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     this.allocationProjectNumber = null;
     this.resourceSpecificCredentialStoreToken = null;
     this.usageReportingGatewayId = null;
+    this.qualityOfService = null;
+    this.reservation = null;
+    setReservationStartTimeIsSet(false);
+    this.reservationStartTime = 0;
+    setReservationEndTimeIsSet(false);
+    this.reservationEndTime = 0;
   }
 
   public String getComputeResourceId() {
@@ -555,6 +599,96 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     }
   }
 
+  public String getQualityOfService() {
+    return this.qualityOfService;
+  }
+
+  public void setQualityOfService(String qualityOfService) {
+    this.qualityOfService = qualityOfService;
+  }
+
+  public void unsetQualityOfService() {
+    this.qualityOfService = null;
+  }
+
+  /** Returns true if field qualityOfService is set (has been assigned a value) and false otherwise */
+  public boolean isSetQualityOfService() {
+    return this.qualityOfService != null;
+  }
+
+  public void setQualityOfServiceIsSet(boolean value) {
+    if (!value) {
+      this.qualityOfService = null;
+    }
+  }
+
+  public String getReservation() {
+    return this.reservation;
+  }
+
+  public void setReservation(String reservation) {
+    this.reservation = reservation;
+  }
+
+  public void unsetReservation() {
+    this.reservation = null;
+  }
+
+  /** Returns true if field reservation is set (has been assigned a value) and false otherwise */
+  public boolean isSetReservation() {
+    return this.reservation != null;
+  }
+
+  public void setReservationIsSet(boolean value) {
+    if (!value) {
+      this.reservation = null;
+    }
+  }
+
+  public long getReservationStartTime() {
+    return this.reservationStartTime;
+  }
+
+  public void setReservationStartTime(long reservationStartTime) {
+    this.reservationStartTime = reservationStartTime;
+    setReservationStartTimeIsSet(true);
+  }
+
+  public void unsetReservationStartTime() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __RESERVATIONSTARTTIME_ISSET_ID);
+  }
+
+  /** Returns true if field reservationStartTime is set (has been assigned a value) and false otherwise */
+  public boolean isSetReservationStartTime() {
+    return EncodingUtils.testBit(__isset_bitfield, __RESERVATIONSTARTTIME_ISSET_ID);
+  }
+
+  public void setReservationStartTimeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __RESERVATIONSTARTTIME_ISSET_ID, value);
+  }
+
+  public long getReservationEndTime() {
+    return this.reservationEndTime;
+  }
+
+  public void setReservationEndTime(long reservationEndTime) {
+    this.reservationEndTime = reservationEndTime;
+    setReservationEndTimeIsSet(true);
+  }
+
+  public void unsetReservationEndTime() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __RESERVATIONENDTIME_ISSET_ID);
+  }
+
+  /** Returns true if field reservationEndTime is set (has been assigned a value) and false otherwise */
+  public boolean isSetReservationEndTime() {
+    return EncodingUtils.testBit(__isset_bitfield, __RESERVATIONENDTIME_ISSET_ID);
+  }
+
+  public void setReservationEndTimeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __RESERVATIONENDTIME_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case COMPUTE_RESOURCE_ID:
@@ -637,6 +771,38 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       }
       break;
 
+    case QUALITY_OF_SERVICE:
+      if (value == null) {
+        unsetQualityOfService();
+      } else {
+        setQualityOfService((String)value);
+      }
+      break;
+
+    case RESERVATION:
+      if (value == null) {
+        unsetReservation();
+      } else {
+        setReservation((String)value);
+      }
+      break;
+
+    case RESERVATION_START_TIME:
+      if (value == null) {
+        unsetReservationStartTime();
+      } else {
+        setReservationStartTime((Long)value);
+      }
+      break;
+
+    case RESERVATION_END_TIME:
+      if (value == null) {
+        unsetReservationEndTime();
+      } else {
+        setReservationEndTime((Long)value);
+      }
+      break;
+
     }
   }
 
@@ -672,6 +838,18 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     case USAGE_REPORTING_GATEWAY_ID:
       return getUsageReportingGatewayId();
 
+    case QUALITY_OF_SERVICE:
+      return getQualityOfService();
+
+    case RESERVATION:
+      return getReservation();
+
+    case RESERVATION_START_TIME:
+      return getReservationStartTime();
+
+    case RESERVATION_END_TIME:
+      return getReservationEndTime();
+
     }
     throw new IllegalStateException();
   }
@@ -703,6 +881,14 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       return isSetResourceSpecificCredentialStoreToken();
     case USAGE_REPORTING_GATEWAY_ID:
       return isSetUsageReportingGatewayId();
+    case QUALITY_OF_SERVICE:
+      return isSetQualityOfService();
+    case RESERVATION:
+      return isSetReservation();
+    case RESERVATION_START_TIME:
+      return isSetReservationStartTime();
+    case RESERVATION_END_TIME:
+      return isSetReservationEndTime();
     }
     throw new IllegalStateException();
   }
@@ -810,6 +996,42 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
         return false;
     }
 
+    boolean this_present_qualityOfService = true && this.isSetQualityOfService();
+    boolean that_present_qualityOfService = true && that.isSetQualityOfService();
+    if (this_present_qualityOfService || that_present_qualityOfService) {
+      if (!(this_present_qualityOfService && that_present_qualityOfService))
+        return false;
+      if (!this.qualityOfService.equals(that.qualityOfService))
+        return false;
+    }
+
+    boolean this_present_reservation = true && this.isSetReservation();
+    boolean that_present_reservation = true && that.isSetReservation();
+    if (this_present_reservation || that_present_reservation) {
+      if (!(this_present_reservation && that_present_reservation))
+        return false;
+      if (!this.reservation.equals(that.reservation))
+        return false;
+    }
+
+    boolean this_present_reservationStartTime = true && this.isSetReservationStartTime();
+    boolean that_present_reservationStartTime = true && that.isSetReservationStartTime();
+    if (this_present_reservationStartTime || that_present_reservationStartTime) {
+      if (!(this_present_reservationStartTime && that_present_reservationStartTime))
+        return false;
+      if (this.reservationStartTime != that.reservationStartTime)
+        return false;
+    }
+
+    boolean this_present_reservationEndTime = true && this.isSetReservationEndTime();
+    boolean that_present_reservationEndTime = true && that.isSetReservationEndTime();
+    if (this_present_reservationEndTime || that_present_reservationEndTime) {
+      if (!(this_present_reservationEndTime && that_present_reservationEndTime))
+        return false;
+      if (this.reservationEndTime != that.reservationEndTime)
+        return false;
+    }
+
     return true;
   }
 
@@ -866,6 +1088,26 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     list.add(present_usageReportingGatewayId);
     if (present_usageReportingGatewayId)
       list.add(usageReportingGatewayId);
+
+    boolean present_qualityOfService = true && (isSetQualityOfService());
+    list.add(present_qualityOfService);
+    if (present_qualityOfService)
+      list.add(qualityOfService);
+
+    boolean present_reservation = true && (isSetReservation());
+    list.add(present_reservation);
+    if (present_reservation)
+      list.add(reservation);
+
+    boolean present_reservationStartTime = true && (isSetReservationStartTime());
+    list.add(present_reservationStartTime);
+    if (present_reservationStartTime)
+      list.add(reservationStartTime);
+
+    boolean present_reservationEndTime = true && (isSetReservationEndTime());
+    list.add(present_reservationEndTime);
+    if (present_reservationEndTime)
+      list.add(reservationEndTime);
 
     return list.hashCode();
   }
@@ -974,6 +1216,46 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     }
     if (isSetUsageReportingGatewayId()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.usageReportingGatewayId, other.usageReportingGatewayId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetQualityOfService()).compareTo(other.isSetQualityOfService());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetQualityOfService()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.qualityOfService, other.qualityOfService);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetReservation()).compareTo(other.isSetReservation());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetReservation()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.reservation, other.reservation);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetReservationStartTime()).compareTo(other.isSetReservationStartTime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetReservationStartTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.reservationStartTime, other.reservationStartTime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetReservationEndTime()).compareTo(other.isSetReservationEndTime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetReservationEndTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.reservationEndTime, other.reservationEndTime);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1087,6 +1369,38 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       } else {
         sb.append(this.usageReportingGatewayId);
       }
+      first = false;
+    }
+    if (isSetQualityOfService()) {
+      if (!first) sb.append(", ");
+      sb.append("qualityOfService:");
+      if (this.qualityOfService == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.qualityOfService);
+      }
+      first = false;
+    }
+    if (isSetReservation()) {
+      if (!first) sb.append(", ");
+      sb.append("reservation:");
+      if (this.reservation == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.reservation);
+      }
+      first = false;
+    }
+    if (isSetReservationStartTime()) {
+      if (!first) sb.append(", ");
+      sb.append("reservationStartTime:");
+      sb.append(this.reservationStartTime);
+      first = false;
+    }
+    if (isSetReservationEndTime()) {
+      if (!first) sb.append(", ");
+      sb.append("reservationEndTime:");
+      sb.append(this.reservationEndTime);
       first = false;
     }
     sb.append(")");
@@ -1222,6 +1536,38 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 11: // QUALITY_OF_SERVICE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.qualityOfService = iprot.readString();
+              struct.setQualityOfServiceIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 12: // RESERVATION
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.reservation = iprot.readString();
+              struct.setReservationIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 13: // RESERVATION_START_TIME
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.reservationStartTime = iprot.readI64();
+              struct.setReservationStartTimeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 14: // RESERVATION_END_TIME
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.reservationEndTime = iprot.readI64();
+              struct.setReservationEndTimeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1299,6 +1645,30 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
           oprot.writeFieldEnd();
         }
       }
+      if (struct.qualityOfService != null) {
+        if (struct.isSetQualityOfService()) {
+          oprot.writeFieldBegin(QUALITY_OF_SERVICE_FIELD_DESC);
+          oprot.writeString(struct.qualityOfService);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.reservation != null) {
+        if (struct.isSetReservation()) {
+          oprot.writeFieldBegin(RESERVATION_FIELD_DESC);
+          oprot.writeString(struct.reservation);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.isSetReservationStartTime()) {
+        oprot.writeFieldBegin(RESERVATION_START_TIME_FIELD_DESC);
+        oprot.writeI64(struct.reservationStartTime);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetReservationEndTime()) {
+        oprot.writeFieldBegin(RESERVATION_END_TIME_FIELD_DESC);
+        oprot.writeI64(struct.reservationEndTime);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1343,7 +1713,19 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       if (struct.isSetUsageReportingGatewayId()) {
         optionals.set(7);
       }
-      oprot.writeBitSet(optionals, 8);
+      if (struct.isSetQualityOfService()) {
+        optionals.set(8);
+      }
+      if (struct.isSetReservation()) {
+        optionals.set(9);
+      }
+      if (struct.isSetReservationStartTime()) {
+        optionals.set(10);
+      }
+      if (struct.isSetReservationEndTime()) {
+        optionals.set(11);
+      }
+      oprot.writeBitSet(optionals, 12);
       if (struct.isSetLoginUserName()) {
         oprot.writeString(struct.loginUserName);
       }
@@ -1368,6 +1750,18 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       if (struct.isSetUsageReportingGatewayId()) {
         oprot.writeString(struct.usageReportingGatewayId);
       }
+      if (struct.isSetQualityOfService()) {
+        oprot.writeString(struct.qualityOfService);
+      }
+      if (struct.isSetReservation()) {
+        oprot.writeString(struct.reservation);
+      }
+      if (struct.isSetReservationStartTime()) {
+        oprot.writeI64(struct.reservationStartTime);
+      }
+      if (struct.isSetReservationEndTime()) {
+        oprot.writeI64(struct.reservationEndTime);
+      }
     }
 
     @Override
@@ -1377,7 +1771,7 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       struct.setComputeResourceIdIsSet(true);
       struct.overridebyAiravata = iprot.readBool();
       struct.setOverridebyAiravataIsSet(true);
-      BitSet incoming = iprot.readBitSet(8);
+      BitSet incoming = iprot.readBitSet(12);
       if (incoming.get(0)) {
         struct.loginUserName = iprot.readString();
         struct.setLoginUserNameIsSet(true);
@@ -1409,6 +1803,22 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       if (incoming.get(7)) {
         struct.usageReportingGatewayId = iprot.readString();
         struct.setUsageReportingGatewayIdIsSet(true);
+      }
+      if (incoming.get(8)) {
+        struct.qualityOfService = iprot.readString();
+        struct.setQualityOfServiceIsSet(true);
+      }
+      if (incoming.get(9)) {
+        struct.reservation = iprot.readString();
+        struct.setReservationIsSet(true);
+      }
+      if (incoming.get(10)) {
+        struct.reservationStartTime = iprot.readI64();
+        struct.setReservationStartTimeIsSet(true);
+      }
+      if (incoming.get(11)) {
+        struct.reservationEndTime = iprot.readI64();
+        struct.setReservationEndTimeIsSet(true);
       }
     }
   }

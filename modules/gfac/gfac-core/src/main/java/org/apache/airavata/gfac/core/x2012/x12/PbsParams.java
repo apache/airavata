@@ -35,7 +35,7 @@ package org.apache.airavata.gfac.core.x2012.x12;
 public interface PbsParams extends org.apache.xmlbeans.XmlObject
 {
     public static final org.apache.xmlbeans.SchemaType type = (org.apache.xmlbeans.SchemaType)
-        org.apache.xmlbeans.XmlBeans.typeSystemForClassLoader(PbsParams.class.getClassLoader(), "schemaorg_apache_xmlbeans.system.sCF8C40CE6FDA0A41BEE004F5930560FF").resolveHandle("pbsparams7913type");
+        org.apache.xmlbeans.XmlBeans.typeSystemForClassLoader(PbsParams.class.getClassLoader(), "schemaorg_apache_xmlbeans.system.sD070E302A2FC7CFEA0F2B3EB44FAE57D").resolveHandle("pbsparams7913type");
     
     /**
      * Gets the "jobID" element
@@ -1361,6 +1361,66 @@ public interface PbsParams extends org.apache.xmlbeans.XmlObject
      * Unsets the "chassisName" element
      */
     void unsetChassisName();
+    
+    /**
+     * Gets the "qualityOfService" element
+     */
+    java.lang.String getQualityOfService();
+    
+    /**
+     * Gets (as xml) the "qualityOfService" element
+     */
+    org.apache.xmlbeans.XmlString xgetQualityOfService();
+    
+    /**
+     * True if has "qualityOfService" element
+     */
+    boolean isSetQualityOfService();
+    
+    /**
+     * Sets the "qualityOfService" element
+     */
+    void setQualityOfService(java.lang.String qualityOfService);
+    
+    /**
+     * Sets (as xml) the "qualityOfService" element
+     */
+    void xsetQualityOfService(org.apache.xmlbeans.XmlString qualityOfService);
+    
+    /**
+     * Unsets the "qualityOfService" element
+     */
+    void unsetQualityOfService();
+    
+    /**
+     * Gets the "reservation" element
+     */
+    java.lang.String getReservation();
+    
+    /**
+     * Gets (as xml) the "reservation" element
+     */
+    org.apache.xmlbeans.XmlString xgetReservation();
+    
+    /**
+     * True if has "reservation" element
+     */
+    boolean isSetReservation();
+    
+    /**
+     * Sets the "reservation" element
+     */
+    void setReservation(java.lang.String reservation);
+    
+    /**
+     * Sets (as xml) the "reservation" element
+     */
+    void xsetReservation(org.apache.xmlbeans.XmlString reservation);
+    
+    /**
+     * Unsets the "reservation" element
+     */
+    void unsetReservation();
     
     /**
      * A factory class with static methods for creating instances
