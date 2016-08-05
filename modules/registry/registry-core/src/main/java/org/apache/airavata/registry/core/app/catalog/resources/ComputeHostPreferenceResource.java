@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +54,10 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
     private String loginUserName;
     private String resourceCSToken;
     private String usageReportingGatewayId;
+    private String qualityOfService;
+    private String reservation;
+    private Timestamp reservationStartTime;
+    private Timestamp reservationEndTime;
 
     private GatewayProfileResource gatewayProfile;
     private ComputeResourceResource computeHostResource;
@@ -159,6 +164,38 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
 
     public void setUsageReportingGatewayId(String usageReportingGatewayId) {
         this.usageReportingGatewayId = usageReportingGatewayId;
+    }
+
+    public String getQualityOfService() {
+        return qualityOfService;
+    }
+
+    public void setQualityOfService(String qualityOfService) {
+        this.qualityOfService = qualityOfService;
+    }
+
+    public String getReservation() {
+        return reservation;
+    }
+
+    public void setReservation(String reservation) {
+        this.reservation = reservation;
+    }
+
+    public Timestamp getReservationStartTime() {
+        return reservationStartTime;
+    }
+
+    public void setReservationStartTime(Timestamp reservationStartTime) {
+        this.reservationStartTime = reservationStartTime;
+    }
+
+    public Timestamp getReservationEndTime() {
+        return reservationEndTime;
+    }
+
+    public void setReservationEndTime(Timestamp reservationEndTime) {
+        this.reservationEndTime = reservationEndTime;
     }
 
     @Override
@@ -394,6 +431,10 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
                 existingPreference.setLoginUserName(loginUserName);
                 existingPreference.setComputeResourceCSToken(resourceCSToken);
                 existingPreference.setUsageReportingGWId(usageReportingGatewayId);
+                existingPreference.setQualityOfService(qualityOfService);
+                existingPreference.setReservation(reservation);
+                existingPreference.setReservationStartTime(reservationStartTime);
+                existingPreference.setReservationEndTime(reservationEndTime);
                 em.merge(existingPreference);
             } else {
                 ComputeResourcePreference resourcePreference = new ComputeResourcePreference();
@@ -410,6 +451,10 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
                 resourcePreference.setLoginUserName(loginUserName);
                 resourcePreference.setComputeResourceCSToken(resourceCSToken);
                 resourcePreference.setUsageReportingGWId(usageReportingGatewayId);
+                resourcePreference.setQualityOfService(qualityOfService);
+                resourcePreference.setReservation(reservation);
+                resourcePreference.setReservationStartTime(reservationStartTime);
+                resourcePreference.setReservationEndTime(reservationEndTime);
                 em.persist(resourcePreference);
             }
             em.getTransaction().commit();

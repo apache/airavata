@@ -873,6 +873,10 @@ public class AppCatalogJPAUtils {
             resource.setUsageReportingGatewayId(o.getUsageReportingGWId());
             resource.setComputeHostResource((ComputeResourceResource) createComputeResource(o.getComputeHostResource()));
             resource.setGatewayProfile((GatewayProfileResource) createGatewayProfile(o.getGatewayProfile()));
+            resource.setQualityOfService(o.getQualityOfService());
+            resource.setReservation(o.getReservation());
+            resource.setReservationStartTime(o.getReservationStartTime());
+            resource.setReservationEndTime(o.getReservationEndTime());
         }
         return resource;
     }

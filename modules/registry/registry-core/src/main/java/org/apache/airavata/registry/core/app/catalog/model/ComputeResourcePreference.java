@@ -30,6 +30,7 @@ import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "COMPUTE_RESOURCE_PREFERENCE")
@@ -59,6 +60,15 @@ public class ComputeResourcePreference {
     private String computeResourceCSToken;
     @Column(name = "USAGE_REPORTING_GATEWAY_ID")
     private String usageReportingGWId;
+    @Column(name = "QUALITY_OF_SERVICE")
+    private String qualityOfService;
+    @Column(name = "RESERVATION")
+    private String reservation;
+    @Column(name = "RESERVATION_START_TIME")
+    private Timestamp reservationStartTime;
+    @Column(name = "RESERVATION_END_TIME")
+    private Timestamp reservationEndTime;
+
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "RESOURCE_ID")
@@ -67,6 +77,7 @@ public class ComputeResourcePreference {
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "GATEWAY_ID")
     private GatewayProfile gatewayProfile;
+
 
     public String getGatewayId() {
         return gatewayId;
@@ -170,5 +181,37 @@ public class ComputeResourcePreference {
 
     public void setUsageReportingGWId(String usageReportingGWId) {
         this.usageReportingGWId = usageReportingGWId;
+    }
+
+    public String getQualityOfService() {
+        return qualityOfService;
+    }
+
+    public void setQualityOfService(String qualityOfService) {
+        this.qualityOfService = qualityOfService;
+    }
+
+    public String getReservation() {
+        return reservation;
+    }
+
+    public void setReservation(String reservation) {
+        this.reservation = reservation;
+    }
+
+    public Timestamp getReservationStartTime() {
+        return reservationStartTime;
+    }
+
+    public void setReservationStartTime(Timestamp reservationStratTime) {
+        this.reservationStartTime = reservationStratTime;
+    }
+
+    public Timestamp getReservationEndTime() {
+        return reservationEndTime;
+    }
+
+    public void setReservationEndTime(Timestamp reservationEndTime) {
+        this.reservationEndTime = reservationEndTime;
     }
 }
