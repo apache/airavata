@@ -21,6 +21,7 @@
 
 package org.apache.airavata.registry.core.app.catalog.impl;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
@@ -81,6 +82,10 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     resource.setBatchQueue(preference.getPreferredBatchQueue());
                     resource.setProjectNumber(preference.getAllocationProjectNumber());
                     resource.setScratchLocation(preference.getScratchLocation());
+                    resource.setQualityOfService(preference.getQualityOfService());
+                    resource.setReservation(preference.getReservation());
+                    resource.setReservationStartTime(AiravataUtils.getTime(preference.getReservationStartTime()));
+                    resource.setReservationEndTime(AiravataUtils.getTime(preference.getReservationEndTime()));
                     resource.save();
                 }
             }
@@ -137,6 +142,10 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     resource.setScratchLocation(preference.getScratchLocation());
                     resource.setResourceCSToken(preference.getResourceSpecificCredentialStoreToken());
                     resource.setUsageReportingGatewayId(preference.getUsageReportingGatewayId());
+                    resource.setQualityOfService(preference.getQualityOfService());
+                    resource.setReservation(preference.getReservation());
+                    resource.setReservationStartTime(AiravataUtils.getTime(preference.getReservationStartTime()));
+                    resource.setReservationEndTime(AiravataUtils.getTime(preference.getReservationEndTime()));
                     resource.save();
                 }
             }
