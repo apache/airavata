@@ -45,7 +45,7 @@ class StoragePreference;
 class GatewayResourceProfile;
 
 typedef struct _ComputeResourcePreference__isset {
-  _ComputeResourcePreference__isset() : loginUserName(false), preferredJobSubmissionProtocol(false), preferredDataMovementProtocol(false), preferredBatchQueue(false), scratchLocation(false), allocationProjectNumber(false), resourceSpecificCredentialStoreToken(false), usageReportingGatewayId(false), allocations(false) {}
+  _ComputeResourcePreference__isset() : loginUserName(false), preferredJobSubmissionProtocol(false), preferredDataMovementProtocol(false), preferredBatchQueue(false), scratchLocation(false), allocationProjectNumber(false), resourceSpecificCredentialStoreToken(false), usageReportingGatewayId(false), qualityOfService(false), reservation(false), reservationStartTime(false), reservationEndTime(false) {}
   bool loginUserName :1;
   bool preferredJobSubmissionProtocol :1;
   bool preferredDataMovementProtocol :1;
@@ -54,7 +54,10 @@ typedef struct _ComputeResourcePreference__isset {
   bool allocationProjectNumber :1;
   bool resourceSpecificCredentialStoreToken :1;
   bool usageReportingGatewayId :1;
-  bool allocations :1;
+  bool qualityOfService :1;
+  bool reservation :1;
+  bool reservationStartTime :1;
+  bool reservationEndTime :1;
 } _ComputeResourcePreference__isset;
 
 class ComputeResourcePreference {
@@ -62,7 +65,7 @@ class ComputeResourcePreference {
 
   ComputeResourcePreference(const ComputeResourcePreference&);
   ComputeResourcePreference& operator=(const ComputeResourcePreference&);
-  ComputeResourcePreference() : computeResourceId(), overridebyAiravata(true), loginUserName(), preferredJobSubmissionProtocol(( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)0), preferredDataMovementProtocol(( ::apache::airavata::model::data::movement::DataMovementProtocol::type)0), preferredBatchQueue(), scratchLocation(), allocationProjectNumber(), resourceSpecificCredentialStoreToken(), usageReportingGatewayId(), allocations() {
+  ComputeResourcePreference() : computeResourceId(), overridebyAiravata(true), loginUserName(), preferredJobSubmissionProtocol(( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)0), preferredDataMovementProtocol(( ::apache::airavata::model::data::movement::DataMovementProtocol::type)0), preferredBatchQueue(), scratchLocation(), allocationProjectNumber(), resourceSpecificCredentialStoreToken(), usageReportingGatewayId(), qualityOfService(), reservation(), reservationStartTime(0), reservationEndTime(0) {
   }
 
   virtual ~ComputeResourcePreference() throw();
@@ -76,7 +79,10 @@ class ComputeResourcePreference {
   std::string allocationProjectNumber;
   std::string resourceSpecificCredentialStoreToken;
   std::string usageReportingGatewayId;
-  std::string allocations;
+  std::string qualityOfService;
+  std::string reservation;
+  int64_t reservationStartTime;
+  int64_t reservationEndTime;
 
   _ComputeResourcePreference__isset __isset;
 
@@ -100,7 +106,13 @@ class ComputeResourcePreference {
 
   void __set_usageReportingGatewayId(const std::string& val);
 
-  void __set_allocations(const std::string& val);
+  void __set_qualityOfService(const std::string& val);
+
+  void __set_reservation(const std::string& val);
+
+  void __set_reservationStartTime(const int64_t val);
+
+  void __set_reservationEndTime(const int64_t val);
 
   bool operator == (const ComputeResourcePreference & rhs) const
   {
@@ -140,9 +152,21 @@ class ComputeResourcePreference {
       return false;
     else if (__isset.usageReportingGatewayId && !(usageReportingGatewayId == rhs.usageReportingGatewayId))
       return false;
-    if (__isset.allocations != rhs.__isset.allocations)
+    if (__isset.qualityOfService != rhs.__isset.qualityOfService)
       return false;
-    else if (__isset.allocations && !(allocations == rhs.allocations))
+    else if (__isset.qualityOfService && !(qualityOfService == rhs.qualityOfService))
+      return false;
+    if (__isset.reservation != rhs.__isset.reservation)
+      return false;
+    else if (__isset.reservation && !(reservation == rhs.reservation))
+      return false;
+    if (__isset.reservationStartTime != rhs.__isset.reservationStartTime)
+      return false;
+    else if (__isset.reservationStartTime && !(reservationStartTime == rhs.reservationStartTime))
+      return false;
+    if (__isset.reservationEndTime != rhs.__isset.reservationEndTime)
+      return false;
+    else if (__isset.reservationEndTime && !(reservationEndTime == rhs.reservationEndTime))
       return false;
     return true;
   }

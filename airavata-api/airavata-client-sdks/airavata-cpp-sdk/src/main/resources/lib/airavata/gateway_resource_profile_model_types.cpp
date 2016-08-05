@@ -83,9 +83,24 @@ void ComputeResourcePreference::__set_usageReportingGatewayId(const std::string&
 __isset.usageReportingGatewayId = true;
 }
 
-void ComputeResourcePreference::__set_allocations(const std::string& val) {
-  this->allocations = val;
-__isset.allocations = true;
+void ComputeResourcePreference::__set_qualityOfService(const std::string& val) {
+  this->qualityOfService = val;
+__isset.qualityOfService = true;
+}
+
+void ComputeResourcePreference::__set_reservation(const std::string& val) {
+  this->reservation = val;
+__isset.reservation = true;
+}
+
+void ComputeResourcePreference::__set_reservationStartTime(const int64_t val) {
+  this->reservationStartTime = val;
+__isset.reservationStartTime = true;
+}
+
+void ComputeResourcePreference::__set_reservationEndTime(const int64_t val) {
+  this->reservationEndTime = val;
+__isset.reservationEndTime = true;
 }
 
 uint32_t ComputeResourcePreference::read(::apache::thrift::protocol::TProtocol* iprot) {
@@ -197,8 +212,32 @@ uint32_t ComputeResourcePreference::read(::apache::thrift::protocol::TProtocol* 
         break;
       case 11:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->allocations);
-          this->__isset.allocations = true;
+          xfer += iprot->readString(this->qualityOfService);
+          this->__isset.qualityOfService = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 12:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->reservation);
+          this->__isset.reservation = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 13:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->reservationStartTime);
+          this->__isset.reservationStartTime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 14:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->reservationEndTime);
+          this->__isset.reservationEndTime = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -272,9 +311,24 @@ uint32_t ComputeResourcePreference::write(::apache::thrift::protocol::TProtocol*
     xfer += oprot->writeString(this->usageReportingGatewayId);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.allocations) {
-    xfer += oprot->writeFieldBegin("allocations", ::apache::thrift::protocol::T_STRING, 11);
-    xfer += oprot->writeString(this->allocations);
+  if (this->__isset.qualityOfService) {
+    xfer += oprot->writeFieldBegin("qualityOfService", ::apache::thrift::protocol::T_STRING, 11);
+    xfer += oprot->writeString(this->qualityOfService);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.reservation) {
+    xfer += oprot->writeFieldBegin("reservation", ::apache::thrift::protocol::T_STRING, 12);
+    xfer += oprot->writeString(this->reservation);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.reservationStartTime) {
+    xfer += oprot->writeFieldBegin("reservationStartTime", ::apache::thrift::protocol::T_I64, 13);
+    xfer += oprot->writeI64(this->reservationStartTime);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.reservationEndTime) {
+    xfer += oprot->writeFieldBegin("reservationEndTime", ::apache::thrift::protocol::T_I64, 14);
+    xfer += oprot->writeI64(this->reservationEndTime);
     xfer += oprot->writeFieldEnd();
   }
   xfer += oprot->writeFieldStop();
@@ -294,7 +348,10 @@ void swap(ComputeResourcePreference &a, ComputeResourcePreference &b) {
   swap(a.allocationProjectNumber, b.allocationProjectNumber);
   swap(a.resourceSpecificCredentialStoreToken, b.resourceSpecificCredentialStoreToken);
   swap(a.usageReportingGatewayId, b.usageReportingGatewayId);
-  swap(a.allocations, b.allocations);
+  swap(a.qualityOfService, b.qualityOfService);
+  swap(a.reservation, b.reservation);
+  swap(a.reservationStartTime, b.reservationStartTime);
+  swap(a.reservationEndTime, b.reservationEndTime);
   swap(a.__isset, b.__isset);
 }
 
@@ -309,7 +366,10 @@ ComputeResourcePreference::ComputeResourcePreference(const ComputeResourcePrefer
   allocationProjectNumber = other2.allocationProjectNumber;
   resourceSpecificCredentialStoreToken = other2.resourceSpecificCredentialStoreToken;
   usageReportingGatewayId = other2.usageReportingGatewayId;
-  allocations = other2.allocations;
+  qualityOfService = other2.qualityOfService;
+  reservation = other2.reservation;
+  reservationStartTime = other2.reservationStartTime;
+  reservationEndTime = other2.reservationEndTime;
   __isset = other2.__isset;
 }
 ComputeResourcePreference& ComputeResourcePreference::operator=(const ComputeResourcePreference& other3) {
@@ -323,7 +383,10 @@ ComputeResourcePreference& ComputeResourcePreference::operator=(const ComputeRes
   allocationProjectNumber = other3.allocationProjectNumber;
   resourceSpecificCredentialStoreToken = other3.resourceSpecificCredentialStoreToken;
   usageReportingGatewayId = other3.usageReportingGatewayId;
-  allocations = other3.allocations;
+  qualityOfService = other3.qualityOfService;
+  reservation = other3.reservation;
+  reservationStartTime = other3.reservationStartTime;
+  reservationEndTime = other3.reservationEndTime;
   __isset = other3.__isset;
   return *this;
 }
@@ -340,7 +403,10 @@ void ComputeResourcePreference::printTo(std::ostream& out) const {
   out << ", " << "allocationProjectNumber="; (__isset.allocationProjectNumber ? (out << to_string(allocationProjectNumber)) : (out << "<null>"));
   out << ", " << "resourceSpecificCredentialStoreToken="; (__isset.resourceSpecificCredentialStoreToken ? (out << to_string(resourceSpecificCredentialStoreToken)) : (out << "<null>"));
   out << ", " << "usageReportingGatewayId="; (__isset.usageReportingGatewayId ? (out << to_string(usageReportingGatewayId)) : (out << "<null>"));
-  out << ", " << "allocations="; (__isset.allocations ? (out << to_string(allocations)) : (out << "<null>"));
+  out << ", " << "qualityOfService="; (__isset.qualityOfService ? (out << to_string(qualityOfService)) : (out << "<null>"));
+  out << ", " << "reservation="; (__isset.reservation ? (out << to_string(reservation)) : (out << "<null>"));
+  out << ", " << "reservationStartTime="; (__isset.reservationStartTime ? (out << to_string(reservationStartTime)) : (out << "<null>"));
+  out << ", " << "reservationEndTime="; (__isset.reservationEndTime ? (out << to_string(reservationEndTime)) : (out << "<null>"));
   out << ")";
 }
 

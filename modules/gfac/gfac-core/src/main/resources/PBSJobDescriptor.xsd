@@ -60,6 +60,8 @@
             <element name="callBackIp" type="xsd:string" minOccurs="0" maxOccurs="1"/>
             <element name="callBackPort" type="xsd:string" minOccurs="0" maxOccurs="1"/>
             <element name="chassisName" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="qualityOfService" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="reservation" type="xsd:string" minOccurs="0" maxOccurs="1"/>
         </sequence>
 	</complexType>
 

@@ -451,9 +451,17 @@ public class GFacUtils {
         jobDescriptor.setExecutablePath(processContext.getApplicationDeploymentDescription().getExecutablePath());
         jobDescriptor.setStandardOutFile(processContext.getStdoutLocation());
         jobDescriptor.setStandardErrorFile(processContext.getStderrLocation());
-        String computationalProjectAccount = getComputeResourcePreference(processContext).getAllocationProjectNumber();
-        if (computationalProjectAccount != null) {
-            jobDescriptor.setAcountString(computationalProjectAccount);
+        ComputeResourcePreference crp = getComputeResourcePreference(processContext);
+        if (crp.getAllocationProjectNumber() != null) {
+            jobDescriptor.setAcountString(crp.getAllocationProjectNumber());
+        }
+
+        if (crp.getQualityOfService() != null) {
+            jobDescriptor.setQoS(crp.getQualityOfService());
+        }
+
+        if (crp.getReservation() != null) {
+            jobDescriptor.setReservation(crp.getReservation());
         }
         // To make job name alpha numeric
         jobDescriptor.setJobName("A" + String.valueOf(generateJobName()));
