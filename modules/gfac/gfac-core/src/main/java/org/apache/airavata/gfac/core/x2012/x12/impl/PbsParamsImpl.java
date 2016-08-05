@@ -131,6 +131,10 @@ public class PbsParamsImpl extends org.apache.xmlbeans.impl.values.XmlComplexCon
         new javax.xml.namespace.QName("http://airavata.apache.org/gfac/core/2012/12", "callBackPort");
     private static final javax.xml.namespace.QName CHASSISNAME$90 = 
         new javax.xml.namespace.QName("http://airavata.apache.org/gfac/core/2012/12", "chassisName");
+    private static final javax.xml.namespace.QName QUALITYOFSERVICE$92 = 
+        new javax.xml.namespace.QName("http://airavata.apache.org/gfac/core/2012/12", "qualityOfService");
+    private static final javax.xml.namespace.QName RESERVATION$94 = 
+        new javax.xml.namespace.QName("http://airavata.apache.org/gfac/core/2012/12", "reservation");
     
     
     /**
@@ -4188,6 +4192,190 @@ public class PbsParamsImpl extends org.apache.xmlbeans.impl.values.XmlComplexCon
         {
             check_orphaned();
             get_store().remove_element(CHASSISNAME$90, 0);
+        }
+    }
+    
+    /**
+     * Gets the "qualityOfService" element
+     */
+    public java.lang.String getQualityOfService()
+    {
+        synchronized (monitor())
+        {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_element_user(QUALITYOFSERVICE$92, 0);
+            if (target == null)
+            {
+                return null;
+            }
+            return target.getStringValue();
+        }
+    }
+    
+    /**
+     * Gets (as xml) the "qualityOfService" element
+     */
+    public org.apache.xmlbeans.XmlString xgetQualityOfService()
+    {
+        synchronized (monitor())
+        {
+            check_orphaned();
+            org.apache.xmlbeans.XmlString target = null;
+            target = (org.apache.xmlbeans.XmlString)get_store().find_element_user(QUALITYOFSERVICE$92, 0);
+            return target;
+        }
+    }
+    
+    /**
+     * True if has "qualityOfService" element
+     */
+    public boolean isSetQualityOfService()
+    {
+        synchronized (monitor())
+        {
+            check_orphaned();
+            return get_store().count_elements(QUALITYOFSERVICE$92) != 0;
+        }
+    }
+    
+    /**
+     * Sets the "qualityOfService" element
+     */
+    public void setQualityOfService(java.lang.String qualityOfService)
+    {
+        synchronized (monitor())
+        {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_element_user(QUALITYOFSERVICE$92, 0);
+            if (target == null)
+            {
+                target = (org.apache.xmlbeans.SimpleValue)get_store().add_element_user(QUALITYOFSERVICE$92);
+            }
+            target.setStringValue(qualityOfService);
+        }
+    }
+    
+    /**
+     * Sets (as xml) the "qualityOfService" element
+     */
+    public void xsetQualityOfService(org.apache.xmlbeans.XmlString qualityOfService)
+    {
+        synchronized (monitor())
+        {
+            check_orphaned();
+            org.apache.xmlbeans.XmlString target = null;
+            target = (org.apache.xmlbeans.XmlString)get_store().find_element_user(QUALITYOFSERVICE$92, 0);
+            if (target == null)
+            {
+                target = (org.apache.xmlbeans.XmlString)get_store().add_element_user(QUALITYOFSERVICE$92);
+            }
+            target.set(qualityOfService);
+        }
+    }
+    
+    /**
+     * Unsets the "qualityOfService" element
+     */
+    public void unsetQualityOfService()
+    {
+        synchronized (monitor())
+        {
+            check_orphaned();
+            get_store().remove_element(QUALITYOFSERVICE$92, 0);
+        }
+    }
+    
+    /**
+     * Gets the "reservation" element
+     */
+    public java.lang.String getReservation()
+    {
+        synchronized (monitor())
+        {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_element_user(RESERVATION$94, 0);
+            if (target == null)
+            {
+                return null;
+            }
+            return target.getStringValue();
+        }
+    }
+    
+    /**
+     * Gets (as xml) the "reservation" element
+     */
+    public org.apache.xmlbeans.XmlString xgetReservation()
+    {
+        synchronized (monitor())
+        {
+            check_orphaned();
+            org.apache.xmlbeans.XmlString target = null;
+            target = (org.apache.xmlbeans.XmlString)get_store().find_element_user(RESERVATION$94, 0);
+            return target;
+        }
+    }
+    
+    /**
+     * True if has "reservation" element
+     */
+    public boolean isSetReservation()
+    {
+        synchronized (monitor())
+        {
+            check_orphaned();
+            return get_store().count_elements(RESERVATION$94) != 0;
+        }
+    }
+    
+    /**
+     * Sets the "reservation" element
+     */
+    public void setReservation(java.lang.String reservation)
+    {
+        synchronized (monitor())
+        {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_element_user(RESERVATION$94, 0);
+            if (target == null)
+            {
+                target = (org.apache.xmlbeans.SimpleValue)get_store().add_element_user(RESERVATION$94);
+            }
+            target.setStringValue(reservation);
+        }
+    }
+    
+    /**
+     * Sets (as xml) the "reservation" element
+     */
+    public void xsetReservation(org.apache.xmlbeans.XmlString reservation)
+    {
+        synchronized (monitor())
+        {
+            check_orphaned();
+            org.apache.xmlbeans.XmlString target = null;
+            target = (org.apache.xmlbeans.XmlString)get_store().find_element_user(RESERVATION$94, 0);
+            if (target == null)
+            {
+                target = (org.apache.xmlbeans.XmlString)get_store().add_element_user(RESERVATION$94);
+            }
+            target.set(reservation);
+        }
+    }
+    
+    /**
+     * Unsets the "reservation" element
+     */
+    public void unsetReservation()
+    {
+        synchronized (monitor())
+        {
+            check_orphaned();
+            get_store().remove_element(RESERVATION$94, 0);
         }
     }
 }

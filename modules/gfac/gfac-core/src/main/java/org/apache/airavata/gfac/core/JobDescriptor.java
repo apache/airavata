@@ -468,7 +468,22 @@ public class JobDescriptor {
     public void setChassisName(String chassisName){
         this.getJobDescriptorDocument().getJobDescriptor().setChassisName(chassisName);
     }
-    
 
+    public void setQoS(String qos){
+        this.getJobDescriptorDocument().getJobDescriptor().setQualityOfService(qos);
+    }
+
+    public String getQoS() {
+        return this.getJobDescriptorDocument().getJobDescriptor().getQualityOfService();
+    }
+
+    public void setReservation(String reservation) {
+        this.getJobDescriptorDocument().getJobDescriptor().setReservation(reservation);
+    }
+
+    public String getReservation() {
+        return this.getJobDescriptorDocument().getJobDescriptor().getReservation();
+    }
+    
 }
 

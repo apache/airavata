@@ -71,7 +71,10 @@ struct ComputeResourcePreference {
     8: optional string allocationProjectNumber,
     9: optional string resourceSpecificCredentialStoreToken,
     10: optional string usageReportingGatewayId,
-    11: optional string allocations
+    11: optional string qualityOfService,
+    12: optional string reservation,
+    13: optional i64 reservationStartTime,
+    14: optional i64 reservationEndTime
 }
 
 struct StoragePreference {
