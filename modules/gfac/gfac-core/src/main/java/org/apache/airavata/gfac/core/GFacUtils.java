@@ -73,6 +73,8 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 //import org.apache.airavata.commons.gfac.type.ActualParameter;
 
@@ -457,12 +459,12 @@ public class GFacUtils {
         }
 
         if (crp.getQualityOfService() != null) {
-            jobDescriptor.setQoS(crp.getQualityOfService());
+            // qos per queue
+            jobDescriptor.setQoS(
+                    getQoS(crp.getQualityOfService(), crp.getPreferredBatchQueue()));
         }
 
-        if (crp.getReservation() != null) {
-            jobDescriptor.setReservation(crp.getReservation());
-        }
+        jobDescriptor.setReservation(crp.getReservation());
         // To make job name alpha numeric
         jobDescriptor.setJobName("A" + String.valueOf(generateJobName()));
         jobDescriptor.setWorkingDirectory(processContext.getWorkingDir());
@@ -632,6 +634,16 @@ public class GFacUtils {
             }
         }
         return jobDescriptor;
+    }
+
+    private static String getQoS(String qualityOfService, String preferredBatchQueue) {
+        final String qos = "qos";
+        Pattern pattern = Pattern.compile(preferredBatchQueue + "=(?<" + qos + ">[^,]*)");
+        Matcher matcher = pattern.matcher(qualityOfService);
+        if (matcher.matches()) {
+            return matcher.group(qos);
+        }
+        return null;
     }
 
     private static int generateJobName() {
