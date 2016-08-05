@@ -70,7 +70,8 @@ struct ComputeResourcePreference {
     7: optional string scratchLocation,
     8: optional string allocationProjectNumber,
     9: optional string resourceSpecificCredentialStoreToken,
-    10: optional string usageReportingGatewayId
+    10: optional string usageReportingGatewayId,
+    11: optional string allocations
 }
 
 struct StoragePreference {

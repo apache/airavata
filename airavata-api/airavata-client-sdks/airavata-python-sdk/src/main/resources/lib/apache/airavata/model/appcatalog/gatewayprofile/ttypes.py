@@ -66,6 +66,7 @@ class ComputeResourcePreference:
    - allocationProjectNumber
    - resourceSpecificCredentialStoreToken
    - usageReportingGatewayId
+   - allocations
   """
 
   thrift_spec = (
@@ -80,9 +81,10 @@ class ComputeResourcePreference:
     (8, TType.STRING, 'allocationProjectNumber', None, None, ), # 8
     (9, TType.STRING, 'resourceSpecificCredentialStoreToken', None, None, ), # 9
     (10, TType.STRING, 'usageReportingGatewayId', None, None, ), # 10
+    (11, TType.STRING, 'allocations', None, None, ), # 11
   )
 
-  def __init__(self, computeResourceId=None, overridebyAiravata=thrift_spec[2][4], loginUserName=None, preferredJobSubmissionProtocol=None, preferredDataMovementProtocol=None, preferredBatchQueue=None, scratchLocation=None, allocationProjectNumber=None, resourceSpecificCredentialStoreToken=None, usageReportingGatewayId=None,):
+  def __init__(self, computeResourceId=None, overridebyAiravata=thrift_spec[2][4], loginUserName=None, preferredJobSubmissionProtocol=None, preferredDataMovementProtocol=None, preferredBatchQueue=None, scratchLocation=None, allocationProjectNumber=None, resourceSpecificCredentialStoreToken=None, usageReportingGatewayId=None, allocations=None,):
     self.computeResourceId = computeResourceId
     self.overridebyAiravata = overridebyAiravata
     self.loginUserName = loginUserName
@@ -93,6 +95,7 @@ class ComputeResourcePreference:
     self.allocationProjectNumber = allocationProjectNumber
     self.resourceSpecificCredentialStoreToken = resourceSpecificCredentialStoreToken
     self.usageReportingGatewayId = usageReportingGatewayId
+    self.allocations = allocations
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -153,6 +156,11 @@ class ComputeResourcePreference:
           self.usageReportingGatewayId = iprot.readString()
         else:
           iprot.skip(ftype)
+      elif fid == 11:
+        if ftype == TType.STRING:
+          self.allocations = iprot.readString()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -203,6 +211,10 @@ class ComputeResourcePreference:
       oprot.writeFieldBegin('usageReportingGatewayId', TType.STRING, 10)
       oprot.writeString(self.usageReportingGatewayId)
       oprot.writeFieldEnd()
+    if self.allocations is not None:
+      oprot.writeFieldBegin('allocations', TType.STRING, 11)
+      oprot.writeString(self.allocations)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -226,6 +238,7 @@ class ComputeResourcePreference:
     value = (value * 31) ^ hash(self.allocationProjectNumber)
     value = (value * 31) ^ hash(self.resourceSpecificCredentialStoreToken)
     value = (value * 31) ^ hash(self.usageReportingGatewayId)
+    value = (value * 31) ^ hash(self.allocations)
     return value
 
   def __repr__(self):
