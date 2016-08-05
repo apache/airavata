@@ -100,6 +100,7 @@
 		<amqp.client.version>3.5.1</amqp.client.version>
         <snakeyaml.version>1.15</snakeyaml.version>
 		<maven.javadoc.failOnError>false</maven.javadoc.failOnError>
+		<maven.replacer.plugin.version>1.5.3</maven.replacer.plugin.version>
 	</properties>
 
 	<developers>
