@@ -99,6 +99,7 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
   private static final org.apache.thrift.protocol.TField ALLOCATION_PROJECT_NUMBER_FIELD_DESC = new org.apache.thrift.protocol.TField("allocationProjectNumber", org.apache.thrift.protocol.TType.STRING, (short)8);
   private static final org.apache.thrift.protocol.TField RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceSpecificCredentialStoreToken", org.apache.thrift.protocol.TType.STRING, (short)9);
   private static final org.apache.thrift.protocol.TField USAGE_REPORTING_GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("usageReportingGatewayId", org.apache.thrift.protocol.TType.STRING, (short)10);
+  private static final org.apache.thrift.protocol.TField ALLOCATIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("allocations", org.apache.thrift.protocol.TType.STRING, (short)11);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -116,6 +117,7 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
   private String allocationProjectNumber; // optional
   private String resourceSpecificCredentialStoreToken; // optional
   private String usageReportingGatewayId; // optional
+  private String allocations; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -136,7 +138,8 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     SCRATCH_LOCATION((short)7, "scratchLocation"),
     ALLOCATION_PROJECT_NUMBER((short)8, "allocationProjectNumber"),
     RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN((short)9, "resourceSpecificCredentialStoreToken"),
-    USAGE_REPORTING_GATEWAY_ID((short)10, "usageReportingGatewayId");
+    USAGE_REPORTING_GATEWAY_ID((short)10, "usageReportingGatewayId"),
+    ALLOCATIONS((short)11, "allocations");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -171,6 +174,8 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
           return RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN;
         case 10: // USAGE_REPORTING_GATEWAY_ID
           return USAGE_REPORTING_GATEWAY_ID;
+        case 11: // ALLOCATIONS
+          return ALLOCATIONS;
         default:
           return null;
       }
@@ -213,7 +218,7 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
   // isset id assignments
   private static final int __OVERRIDEBYAIRAVATA_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.LOGIN_USER_NAME,_Fields.PREFERRED_JOB_SUBMISSION_PROTOCOL,_Fields.PREFERRED_DATA_MOVEMENT_PROTOCOL,_Fields.PREFERRED_BATCH_QUEUE,_Fields.SCRATCH_LOCATION,_Fields.ALLOCATION_PROJECT_NUMBER,_Fields.RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN,_Fields.USAGE_REPORTING_GATEWAY_ID};
+  private static final _Fields optionals[] = {_Fields.LOGIN_USER_NAME,_Fields.PREFERRED_JOB_SUBMISSION_PROTOCOL,_Fields.PREFERRED_DATA_MOVEMENT_PROTOCOL,_Fields.PREFERRED_BATCH_QUEUE,_Fields.SCRATCH_LOCATION,_Fields.ALLOCATION_PROJECT_NUMBER,_Fields.RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN,_Fields.USAGE_REPORTING_GATEWAY_ID,_Fields.ALLOCATIONS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -236,6 +241,8 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     tmpMap.put(_Fields.RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("resourceSpecificCredentialStoreToken", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.USAGE_REPORTING_GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("usageReportingGatewayId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.ALLOCATIONS, new org.apache.thrift.meta_data.FieldMetaData("allocations", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ComputeResourcePreference.class, metaDataMap);
@@ -289,6 +296,9 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     if (other.isSetUsageReportingGatewayId()) {
       this.usageReportingGatewayId = other.usageReportingGatewayId;
     }
+    if (other.isSetAllocations()) {
+      this.allocations = other.allocations;
+    }
   }
 
   public ComputeResourcePreference deepCopy() {
@@ -308,6 +318,7 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     this.allocationProjectNumber = null;
     this.resourceSpecificCredentialStoreToken = null;
     this.usageReportingGatewayId = null;
+    this.allocations = null;
   }
 
   public String getComputeResourceId() {
@@ -555,6 +566,29 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     }
   }
 
+  public String getAllocations() {
+    return this.allocations;
+  }
+
+  public void setAllocations(String allocations) {
+    this.allocations = allocations;
+  }
+
+  public void unsetAllocations() {
+    this.allocations = null;
+  }
+
+  /** Returns true if field allocations is set (has been assigned a value) and false otherwise */
+  public boolean isSetAllocations() {
+    return this.allocations != null;
+  }
+
+  public void setAllocationsIsSet(boolean value) {
+    if (!value) {
+      this.allocations = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case COMPUTE_RESOURCE_ID:
@@ -637,6 +671,14 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       }
       break;
 
+    case ALLOCATIONS:
+      if (value == null) {
+        unsetAllocations();
+      } else {
+        setAllocations((String)value);
+      }
+      break;
+
     }
   }
 
@@ -672,6 +714,9 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     case USAGE_REPORTING_GATEWAY_ID:
       return getUsageReportingGatewayId();
 
+    case ALLOCATIONS:
+      return getAllocations();
+
     }
     throw new IllegalStateException();
   }
@@ -703,6 +748,8 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       return isSetResourceSpecificCredentialStoreToken();
     case USAGE_REPORTING_GATEWAY_ID:
       return isSetUsageReportingGatewayId();
+    case ALLOCATIONS:
+      return isSetAllocations();
     }
     throw new IllegalStateException();
   }
@@ -810,6 +857,15 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
         return false;
     }
 
+    boolean this_present_allocations = true && this.isSetAllocations();
+    boolean that_present_allocations = true && that.isSetAllocations();
+    if (this_present_allocations || that_present_allocations) {
+      if (!(this_present_allocations && that_present_allocations))
+        return false;
+      if (!this.allocations.equals(that.allocations))
+        return false;
+    }
+
     return true;
   }
 
@@ -866,6 +922,11 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     list.add(present_usageReportingGatewayId);
     if (present_usageReportingGatewayId)
       list.add(usageReportingGatewayId);
+
+    boolean present_allocations = true && (isSetAllocations());
+    list.add(present_allocations);
+    if (present_allocations)
+      list.add(allocations);
 
     return list.hashCode();
   }
@@ -978,6 +1039,16 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetAllocations()).compareTo(other.isSetAllocations());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetAllocations()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.allocations, other.allocations);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1086,6 +1157,16 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
         sb.append("null");
       } else {
         sb.append(this.usageReportingGatewayId);
+      }
+      first = false;
+    }
+    if (isSetAllocations()) {
+      if (!first) sb.append(", ");
+      sb.append("allocations:");
+      if (this.allocations == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.allocations);
       }
       first = false;
     }
@@ -1222,6 +1303,14 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 11: // ALLOCATIONS
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.allocations = iprot.readString();
+              struct.setAllocationsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1299,6 +1388,13 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
           oprot.writeFieldEnd();
         }
       }
+      if (struct.allocations != null) {
+        if (struct.isSetAllocations()) {
+          oprot.writeFieldBegin(ALLOCATIONS_FIELD_DESC);
+          oprot.writeString(struct.allocations);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1343,7 +1439,10 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       if (struct.isSetUsageReportingGatewayId()) {
         optionals.set(7);
       }
-      oprot.writeBitSet(optionals, 8);
+      if (struct.isSetAllocations()) {
+        optionals.set(8);
+      }
+      oprot.writeBitSet(optionals, 9);
       if (struct.isSetLoginUserName()) {
         oprot.writeString(struct.loginUserName);
       }
@@ -1368,6 +1467,9 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       if (struct.isSetUsageReportingGatewayId()) {
         oprot.writeString(struct.usageReportingGatewayId);
       }
+      if (struct.isSetAllocations()) {
+        oprot.writeString(struct.allocations);
+      }
     }
 
     @Override
@@ -1377,7 +1479,7 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       struct.setComputeResourceIdIsSet(true);
       struct.overridebyAiravata = iprot.readBool();
       struct.setOverridebyAiravataIsSet(true);
-      BitSet incoming = iprot.readBitSet(8);
+      BitSet incoming = iprot.readBitSet(9);
       if (incoming.get(0)) {
         struct.loginUserName = iprot.readString();
         struct.setLoginUserNameIsSet(true);
@@ -1409,6 +1511,10 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       if (incoming.get(7)) {
         struct.usageReportingGatewayId = iprot.readString();
         struct.setUsageReportingGatewayIdIsSet(true);
+      }
+      if (incoming.get(8)) {
+        struct.allocations = iprot.readString();
+        struct.setAllocationsIsSet(true);
       }
     }
   }

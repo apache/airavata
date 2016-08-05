@@ -45,7 +45,7 @@ class StoragePreference;
 class GatewayResourceProfile;
 
 typedef struct _ComputeResourcePreference__isset {
-  _ComputeResourcePreference__isset() : loginUserName(false), preferredJobSubmissionProtocol(false), preferredDataMovementProtocol(false), preferredBatchQueue(false), scratchLocation(false), allocationProjectNumber(false), resourceSpecificCredentialStoreToken(false), usageReportingGatewayId(false) {}
+  _ComputeResourcePreference__isset() : loginUserName(false), preferredJobSubmissionProtocol(false), preferredDataMovementProtocol(false), preferredBatchQueue(false), scratchLocation(false), allocationProjectNumber(false), resourceSpecificCredentialStoreToken(false), usageReportingGatewayId(false), allocations(false) {}
   bool loginUserName :1;
   bool preferredJobSubmissionProtocol :1;
   bool preferredDataMovementProtocol :1;
@@ -54,6 +54,7 @@ typedef struct _ComputeResourcePreference__isset {
   bool allocationProjectNumber :1;
   bool resourceSpecificCredentialStoreToken :1;
   bool usageReportingGatewayId :1;
+  bool allocations :1;
 } _ComputeResourcePreference__isset;
 
 class ComputeResourcePreference {
@@ -61,7 +62,7 @@ class ComputeResourcePreference {
 
   ComputeResourcePreference(const ComputeResourcePreference&);
   ComputeResourcePreference& operator=(const ComputeResourcePreference&);
-  ComputeResourcePreference() : computeResourceId(), overridebyAiravata(true), loginUserName(), preferredJobSubmissionProtocol(( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)0), preferredDataMovementProtocol(( ::apache::airavata::model::data::movement::DataMovementProtocol::type)0), preferredBatchQueue(), scratchLocation(), allocationProjectNumber(), resourceSpecificCredentialStoreToken(), usageReportingGatewayId() {
+  ComputeResourcePreference() : computeResourceId(), overridebyAiravata(true), loginUserName(), preferredJobSubmissionProtocol(( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)0), preferredDataMovementProtocol(( ::apache::airavata::model::data::movement::DataMovementProtocol::type)0), preferredBatchQueue(), scratchLocation(), allocationProjectNumber(), resourceSpecificCredentialStoreToken(), usageReportingGatewayId(), allocations() {
   }
 
   virtual ~ComputeResourcePreference() throw();
@@ -75,6 +76,7 @@ class ComputeResourcePreference {
   std::string allocationProjectNumber;
   std::string resourceSpecificCredentialStoreToken;
   std::string usageReportingGatewayId;
+  std::string allocations;
 
   _ComputeResourcePreference__isset __isset;
 
@@ -97,6 +99,8 @@ class ComputeResourcePreference {
   void __set_resourceSpecificCredentialStoreToken(const std::string& val);
 
   void __set_usageReportingGatewayId(const std::string& val);
+
+  void __set_allocations(const std::string& val);
 
   bool operator == (const ComputeResourcePreference & rhs) const
   {
@@ -135,6 +139,10 @@ class ComputeResourcePreference {
     if (__isset.usageReportingGatewayId != rhs.__isset.usageReportingGatewayId)
       return false;
     else if (__isset.usageReportingGatewayId && !(usageReportingGatewayId == rhs.usageReportingGatewayId))
+      return false;
+    if (__isset.allocations != rhs.__isset.allocations)
+      return false;
+    else if (__isset.allocations && !(allocations == rhs.allocations))
       return false;
     return true;
   }

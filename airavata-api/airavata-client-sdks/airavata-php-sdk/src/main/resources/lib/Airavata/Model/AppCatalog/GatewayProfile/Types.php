@@ -94,6 +94,10 @@ class ComputeResourcePreference {
    * @var string
    */
   public $usageReportingGatewayId = null;
+  /**
+   * @var string
+   */
+  public $allocations = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -138,6 +142,10 @@ class ComputeResourcePreference {
           'var' => 'usageReportingGatewayId',
           'type' => TType::STRING,
           ),
+        11 => array(
+          'var' => 'allocations',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -170,6 +178,9 @@ class ComputeResourcePreference {
       }
       if (isset($vals['usageReportingGatewayId'])) {
         $this->usageReportingGatewayId = $vals['usageReportingGatewayId'];
+      }
+      if (isset($vals['allocations'])) {
+        $this->allocations = $vals['allocations'];
       }
     }
   }
@@ -263,6 +274,13 @@ class ComputeResourcePreference {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 11:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->allocations);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -324,6 +342,11 @@ class ComputeResourcePreference {
     if ($this->usageReportingGatewayId !== null) {
       $xfer += $output->writeFieldBegin('usageReportingGatewayId', TType::STRING, 10);
       $xfer += $output->writeString($this->usageReportingGatewayId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->allocations !== null) {
+      $xfer += $output->writeFieldBegin('allocations', TType::STRING, 11);
+      $xfer += $output->writeString($this->allocations);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
