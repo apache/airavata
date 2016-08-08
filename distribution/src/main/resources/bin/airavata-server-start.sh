@@ -71,6 +71,7 @@ do
             echo "  gfac                Start gfac server"
             echo "  orchestrator        Start orchestrator server"
             echo "  credentialstore     Start credentialstore server"
+            echo "  registry            Start registry server"
             echo "  all                 Start all servers in one JVM"
 
             echo "command options:"
