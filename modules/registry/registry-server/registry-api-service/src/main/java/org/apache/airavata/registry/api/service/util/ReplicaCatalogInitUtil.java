@@ -35,7 +35,7 @@ import java.sql.SQLException;
 
 public class ReplicaCatalogInitUtil {
     private static final Logger logger = LoggerFactory.getLogger(ReplicaCatalogInitUtil.class);
-    public static final String REPLICA_CATALOG = "REPLICA_CATALOG";
+    public static final String REPLICA_CATALOG = "DATA_PRODUCT";
     public static final String REPLICA_CATALOG_JDBC_DRIVER = "replicacatalog.jdbc.driver";
     public static final String REPLICA_CATALOG_JDBC_URL = "replicacatalog.jdbc.url";
     public static final String REPLICA_CATALOG_JDBC_USER = "replicacatalog.jdbc.user";
