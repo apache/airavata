@@ -20,14 +20,6 @@
  */
 package org.apache.airavata.server;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.*;
 import org.apache.airavata.common.utils.ApplicationSettings.ShutdownStrategy;
@@ -37,6 +29,14 @@ import org.apache.commons.cli.ParseException;
 import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ServerMain {
 	private static List<IServer> servers;
@@ -55,6 +55,7 @@ public class ServerMain {
 	// server names
 	private static final String API_SERVER = "apiserver";
 	private static final String CREDENTIAL_STORE = "credentialstore";
+	private static final String REGISTRY_SERVER = "regserver";
 	private static final String GFAC_SERVER = "gfac";
 	private static final String ORCHESTRATOR = "orchestrator";
 
@@ -106,6 +107,7 @@ public class ServerMain {
 		List<String> serverList = new ArrayList<>(Arrays.asList(serverNames.split(",")));
 		if (serverList.indexOf(ALL_IN_ONE) > -1) {
 			serverList.clear();
+			serverList.add(REGISTRY_SERVER);  // registry server should start before everything
 			serverList.add(CREDENTIAL_STORE); // credential store should start before api server
 			serverList.add(API_SERVER);
 			serverList.add(ORCHESTRATOR);
@@ -119,11 +121,20 @@ public class ServerMain {
 			serverList.clear();
 			serverList.add(GFAC_SERVER);
 		} else {
+			// registry server should start before everything
+			int regPos = serverList.indexOf(REGISTRY_SERVER);
+			if (regPos > 0) {
+				String temp = serverList.get(0);
+				serverList.set(0, serverList.get(regPos));
+				serverList.set(regPos, temp);
+			}
+
 			// credential store should start before api server
 			int credPos = serverList.indexOf(CREDENTIAL_STORE);
-			if (credPos > 0) { // neither absent nor credentialstore is first element
-				String temp = serverList.get(0);
-				serverList.set(0, serverList.get(credPos));
+			int apiPos = serverList.indexOf(API_SERVER);
+			if (credPos >= 0 && apiPos >= 0 && (credPos > apiPos)) {
+				String temp = serverList.get(apiPos);
+				serverList.set(apiPos, serverList.get(credPos));
 				serverList.set(credPos, temp);
 			}
 		}
