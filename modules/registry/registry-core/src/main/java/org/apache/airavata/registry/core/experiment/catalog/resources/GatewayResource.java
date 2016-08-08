@@ -52,6 +52,8 @@ public class GatewayResource extends AbstractExpCatResource {
     private String identityServerUserName;
     private String identityServerPasswordToken;
     private String declinedReason;
+    private String oauthClientId;
+    private String oauthClientSecret;
 
     public String getGatewayAdminFirstName() {
         return gatewayAdminFirstName;
@@ -155,6 +157,22 @@ public class GatewayResource extends AbstractExpCatResource {
 
     public void setDeclinedReason(String declinedReason) {
         this.declinedReason = declinedReason;
+    }
+
+    public String getOauthClientId() {
+        return oauthClientId;
+    }
+
+    public void setOauthClientId(String oauthClientId) {
+        this.oauthClientId = oauthClientId;
+    }
+
+    public String getOauthClientSecret() {
+        return oauthClientSecret;
+    }
+
+    public void setOauthClientSecret(String oauthClientSecret) {
+        this.oauthClientSecret = oauthClientSecret;
     }
 
     /**
@@ -442,6 +460,8 @@ public class GatewayResource extends AbstractExpCatResource {
             gateway.setIdentityServerUserName(identityServerUserName);
             gateway.setIdentityServerPasswordToken(identityServerPasswordToken);
             gateway.setDeclinedReason(declinedReason);
+            gateway.setOauthClientId(oauthClientId);
+            gateway.setGetOauthClientSecret(oauthClientSecret);
             if (existingGateway != null) {
                 existingGateway.setDomain(domain);
                 existingGateway.setGatewayApprovalStatus(gatewayApprovalStatus);
@@ -458,6 +478,8 @@ public class GatewayResource extends AbstractExpCatResource {
                 existingGateway.setIdentityServerUserName(identityServerUserName);
                 existingGateway.setIdentityServerPasswordToken(identityServerPasswordToken);
                 existingGateway.setDeclinedReason(declinedReason);
+                existingGateway.setOauthClientId(oauthClientId);
+                existingGateway.setGetOauthClientSecret(oauthClientSecret);
                 em.merge(existingGateway);
             } else {
                 em.persist(gateway);

@@ -70,6 +70,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
   private static final org.apache.thrift.protocol.TField IDENTITY_SERVER_USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("identityServerUserName", org.apache.thrift.protocol.TType.STRING, (short)13);
   private static final org.apache.thrift.protocol.TField IDENTITY_SERVER_PASSWORD_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("identityServerPasswordToken", org.apache.thrift.protocol.TType.STRING, (short)14);
   private static final org.apache.thrift.protocol.TField DECLINED_REASON_FIELD_DESC = new org.apache.thrift.protocol.TField("declinedReason", org.apache.thrift.protocol.TType.STRING, (short)15);
+  private static final org.apache.thrift.protocol.TField OAUTH_CLIENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("oauthClientId", org.apache.thrift.protocol.TType.STRING, (short)16);
+  private static final org.apache.thrift.protocol.TField OAUTH_CLIENT_SECRET_FIELD_DESC = new org.apache.thrift.protocol.TField("oauthClientSecret", org.apache.thrift.protocol.TType.STRING, (short)17);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -92,6 +94,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
   private String identityServerUserName; // optional
   private String identityServerPasswordToken; // optional
   private String declinedReason; // optional
+  private String oauthClientId; // optional
+  private String oauthClientSecret; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -113,7 +117,9 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     GATEWAY_ADMIN_EMAIL((short)12, "gatewayAdminEmail"),
     IDENTITY_SERVER_USER_NAME((short)13, "identityServerUserName"),
     IDENTITY_SERVER_PASSWORD_TOKEN((short)14, "identityServerPasswordToken"),
-    DECLINED_REASON((short)15, "declinedReason");
+    DECLINED_REASON((short)15, "declinedReason"),
+    OAUTH_CLIENT_ID((short)16, "oauthClientId"),
+    OAUTH_CLIENT_SECRET((short)17, "oauthClientSecret");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -158,6 +164,10 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
           return IDENTITY_SERVER_PASSWORD_TOKEN;
         case 15: // DECLINED_REASON
           return DECLINED_REASON;
+        case 16: // OAUTH_CLIENT_ID
+          return OAUTH_CLIENT_ID;
+        case 17: // OAUTH_CLIENT_SECRET
+          return OAUTH_CLIENT_SECRET;
         default:
           return null;
       }
@@ -198,7 +208,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
   }
 
   // isset id assignments
-  private static final _Fields optionals[] = {_Fields.GATEWAY_NAME,_Fields.DOMAIN,_Fields.EMAIL_ADDRESS,_Fields.GATEWAY_ACRONYM,_Fields.GATEWAY_URL,_Fields.GATEWAY_PUBLIC_ABSTRACT,_Fields.REVIEW_PROPOSAL_DESCRIPTION,_Fields.GATEWAY_ADMIN_FIRST_NAME,_Fields.GATEWAY_ADMIN_LAST_NAME,_Fields.GATEWAY_ADMIN_EMAIL,_Fields.IDENTITY_SERVER_USER_NAME,_Fields.IDENTITY_SERVER_PASSWORD_TOKEN,_Fields.DECLINED_REASON};
+  private static final _Fields optionals[] = {_Fields.GATEWAY_NAME,_Fields.DOMAIN,_Fields.EMAIL_ADDRESS,_Fields.GATEWAY_ACRONYM,_Fields.GATEWAY_URL,_Fields.GATEWAY_PUBLIC_ABSTRACT,_Fields.REVIEW_PROPOSAL_DESCRIPTION,_Fields.GATEWAY_ADMIN_FIRST_NAME,_Fields.GATEWAY_ADMIN_LAST_NAME,_Fields.GATEWAY_ADMIN_EMAIL,_Fields.IDENTITY_SERVER_USER_NAME,_Fields.IDENTITY_SERVER_PASSWORD_TOKEN,_Fields.DECLINED_REASON,_Fields.OAUTH_CLIENT_ID,_Fields.OAUTH_CLIENT_SECRET};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -231,6 +241,10 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     tmpMap.put(_Fields.IDENTITY_SERVER_PASSWORD_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("identityServerPasswordToken", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.DECLINED_REASON, new org.apache.thrift.meta_data.FieldMetaData("declinedReason", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.OAUTH_CLIENT_ID, new org.apache.thrift.meta_data.FieldMetaData("oauthClientId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.OAUTH_CLIENT_SECRET, new org.apache.thrift.meta_data.FieldMetaData("oauthClientSecret", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Gateway.class, metaDataMap);
@@ -297,6 +311,12 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     if (other.isSetDeclinedReason()) {
       this.declinedReason = other.declinedReason;
     }
+    if (other.isSetOauthClientId()) {
+      this.oauthClientId = other.oauthClientId;
+    }
+    if (other.isSetOauthClientSecret()) {
+      this.oauthClientSecret = other.oauthClientSecret;
+    }
   }
 
   public Gateway deepCopy() {
@@ -320,6 +340,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     this.identityServerUserName = null;
     this.identityServerPasswordToken = null;
     this.declinedReason = null;
+    this.oauthClientId = null;
+    this.oauthClientSecret = null;
   }
 
   public String getGatewayId() {
@@ -675,6 +697,52 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     }
   }
 
+  public String getOauthClientId() {
+    return this.oauthClientId;
+  }
+
+  public void setOauthClientId(String oauthClientId) {
+    this.oauthClientId = oauthClientId;
+  }
+
+  public void unsetOauthClientId() {
+    this.oauthClientId = null;
+  }
+
+  /** Returns true if field oauthClientId is set (has been assigned a value) and false otherwise */
+  public boolean isSetOauthClientId() {
+    return this.oauthClientId != null;
+  }
+
+  public void setOauthClientIdIsSet(boolean value) {
+    if (!value) {
+      this.oauthClientId = null;
+    }
+  }
+
+  public String getOauthClientSecret() {
+    return this.oauthClientSecret;
+  }
+
+  public void setOauthClientSecret(String oauthClientSecret) {
+    this.oauthClientSecret = oauthClientSecret;
+  }
+
+  public void unsetOauthClientSecret() {
+    this.oauthClientSecret = null;
+  }
+
+  /** Returns true if field oauthClientSecret is set (has been assigned a value) and false otherwise */
+  public boolean isSetOauthClientSecret() {
+    return this.oauthClientSecret != null;
+  }
+
+  public void setOauthClientSecretIsSet(boolean value) {
+    if (!value) {
+      this.oauthClientSecret = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case GATEWAY_ID:
@@ -797,6 +865,22 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       }
       break;
 
+    case OAUTH_CLIENT_ID:
+      if (value == null) {
+        unsetOauthClientId();
+      } else {
+        setOauthClientId((String)value);
+      }
+      break;
+
+    case OAUTH_CLIENT_SECRET:
+      if (value == null) {
+        unsetOauthClientSecret();
+      } else {
+        setOauthClientSecret((String)value);
+      }
+      break;
+
     }
   }
 
@@ -847,6 +931,12 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     case DECLINED_REASON:
       return getDeclinedReason();
 
+    case OAUTH_CLIENT_ID:
+      return getOauthClientId();
+
+    case OAUTH_CLIENT_SECRET:
+      return getOauthClientSecret();
+
     }
     throw new IllegalStateException();
   }
@@ -888,6 +978,10 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       return isSetIdentityServerPasswordToken();
     case DECLINED_REASON:
       return isSetDeclinedReason();
+    case OAUTH_CLIENT_ID:
+      return isSetOauthClientId();
+    case OAUTH_CLIENT_SECRET:
+      return isSetOauthClientSecret();
     }
     throw new IllegalStateException();
   }
@@ -1040,6 +1134,24 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
         return false;
     }
 
+    boolean this_present_oauthClientId = true && this.isSetOauthClientId();
+    boolean that_present_oauthClientId = true && that.isSetOauthClientId();
+    if (this_present_oauthClientId || that_present_oauthClientId) {
+      if (!(this_present_oauthClientId && that_present_oauthClientId))
+        return false;
+      if (!this.oauthClientId.equals(that.oauthClientId))
+        return false;
+    }
+
+    boolean this_present_oauthClientSecret = true && this.isSetOauthClientSecret();
+    boolean that_present_oauthClientSecret = true && that.isSetOauthClientSecret();
+    if (this_present_oauthClientSecret || that_present_oauthClientSecret) {
+      if (!(this_present_oauthClientSecret && that_present_oauthClientSecret))
+        return false;
+      if (!this.oauthClientSecret.equals(that.oauthClientSecret))
+        return false;
+    }
+
     return true;
   }
 
@@ -1121,6 +1233,16 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     list.add(present_declinedReason);
     if (present_declinedReason)
       list.add(declinedReason);
+
+    boolean present_oauthClientId = true && (isSetOauthClientId());
+    list.add(present_oauthClientId);
+    if (present_oauthClientId)
+      list.add(oauthClientId);
+
+    boolean present_oauthClientSecret = true && (isSetOauthClientSecret());
+    list.add(present_oauthClientSecret);
+    if (present_oauthClientSecret)
+      list.add(oauthClientSecret);
 
     return list.hashCode();
   }
@@ -1279,6 +1401,26 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     }
     if (isSetDeclinedReason()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.declinedReason, other.declinedReason);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetOauthClientId()).compareTo(other.isSetOauthClientId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetOauthClientId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.oauthClientId, other.oauthClientId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetOauthClientSecret()).compareTo(other.isSetOauthClientSecret());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetOauthClientSecret()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.oauthClientSecret, other.oauthClientSecret);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1445,6 +1587,26 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
         sb.append("null");
       } else {
         sb.append(this.declinedReason);
+      }
+      first = false;
+    }
+    if (isSetOauthClientId()) {
+      if (!first) sb.append(", ");
+      sb.append("oauthClientId:");
+      if (this.oauthClientId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.oauthClientId);
+      }
+      first = false;
+    }
+    if (isSetOauthClientSecret()) {
+      if (!first) sb.append(", ");
+      sb.append("oauthClientSecret:");
+      if (this.oauthClientSecret == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.oauthClientSecret);
       }
       first = false;
     }
@@ -1619,6 +1781,22 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 16: // OAUTH_CLIENT_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.oauthClientId = iprot.readString();
+              struct.setOauthClientIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 17: // OAUTH_CLIENT_SECRET
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.oauthClientSecret = iprot.readString();
+              struct.setOauthClientSecretIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1733,6 +1911,20 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
           oprot.writeFieldEnd();
         }
       }
+      if (struct.oauthClientId != null) {
+        if (struct.isSetOauthClientId()) {
+          oprot.writeFieldBegin(OAUTH_CLIENT_ID_FIELD_DESC);
+          oprot.writeString(struct.oauthClientId);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.oauthClientSecret != null) {
+        if (struct.isSetOauthClientSecret()) {
+          oprot.writeFieldBegin(OAUTH_CLIENT_SECRET_FIELD_DESC);
+          oprot.writeString(struct.oauthClientSecret);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1792,7 +1984,13 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       if (struct.isSetDeclinedReason()) {
         optionals.set(12);
       }
-      oprot.writeBitSet(optionals, 13);
+      if (struct.isSetOauthClientId()) {
+        optionals.set(13);
+      }
+      if (struct.isSetOauthClientSecret()) {
+        optionals.set(14);
+      }
+      oprot.writeBitSet(optionals, 15);
       if (struct.isSetGatewayName()) {
         oprot.writeString(struct.gatewayName);
       }
@@ -1832,6 +2030,12 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       if (struct.isSetDeclinedReason()) {
         oprot.writeString(struct.declinedReason);
       }
+      if (struct.isSetOauthClientId()) {
+        oprot.writeString(struct.oauthClientId);
+      }
+      if (struct.isSetOauthClientSecret()) {
+        oprot.writeString(struct.oauthClientSecret);
+      }
     }
 
     @Override
@@ -1841,7 +2045,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       struct.setGatewayIdIsSet(true);
       struct.gatewayApprovalStatus = org.apache.airavata.model.workspace.GatewayApprovalStatus.findByValue(iprot.readI32());
       struct.setGatewayApprovalStatusIsSet(true);
-      BitSet incoming = iprot.readBitSet(13);
+      BitSet incoming = iprot.readBitSet(15);
       if (incoming.get(0)) {
         struct.gatewayName = iprot.readString();
         struct.setGatewayNameIsSet(true);
@@ -1893,6 +2097,14 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       if (incoming.get(12)) {
         struct.declinedReason = iprot.readString();
         struct.setDeclinedReasonIsSet(true);
+      }
+      if (incoming.get(13)) {
+        struct.oauthClientId = iprot.readString();
+        struct.setOauthClientIdIsSet(true);
+      }
+      if (incoming.get(14)) {
+        struct.oauthClientSecret = iprot.readString();
+        struct.setOauthClientSecretIsSet(true);
       }
     }
   }

@@ -357,6 +357,8 @@ public class Utils {
         gatewayResource.setIdentityServerUserName(o.getIdentityServerUserName());
         gatewayResource.setIdentityServerPasswordToken(o.getIdentityServerPasswordToken());
         gatewayResource.setDeclinedReason(o.getDeclinedReason());
+        gatewayResource.setOauthClientId(o.getOauthClientId());
+        gatewayResource.setOauthClientSecret(o.getGetOauthClientSecret());
         return gatewayResource;
     }
 
