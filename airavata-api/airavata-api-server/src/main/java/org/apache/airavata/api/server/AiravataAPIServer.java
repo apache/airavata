@@ -72,6 +72,9 @@ public class AiravataAPIServer implements IServer{
             WorkflowCatalogInitUtil.initializeDB();
             // creating credential store db
             CredentialStoreInitUtil.initializeDB();
+			// creating replica catalog db
+			ReplicaCatalogInitUtil.initializeDB();
+
             final String serverHost = ServerSettings.getSetting(Constants.API_SERVER_HOST, null);
             if (!ServerSettings.isTLSEnabled()) {
                 final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_PORT, "8930"));
