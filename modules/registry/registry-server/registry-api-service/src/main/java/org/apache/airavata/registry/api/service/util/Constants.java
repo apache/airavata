@@ -22,8 +22,8 @@
 package org.apache.airavata.registry.api.service.util;
 
 public class Constants {
-    public static final String REGISTRY_SERVER_PORT = "regserver.port";
-    public static final String REGISTRY_SERVER_HOST = "regserver.host";
-	public static final String REGISTRY_SERVER_NAME = "regserver.name";
+    public static final String REGISTRY_SERVER_PORT = "regserver.server.port";
+    public static final String REGISTRY_SERVER_HOST = "regserver.server.host";
+	public static final String REGISTRY_SERVER_NAME = "regserver.server.name";
     public static final String REGISTRY_SERVER_MIN_THREADS = "regserver.server.min.threads";
 }
