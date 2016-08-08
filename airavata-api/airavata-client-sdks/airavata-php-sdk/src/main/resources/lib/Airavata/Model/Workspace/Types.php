@@ -684,6 +684,14 @@ class Gateway {
    * @var string
    */
   public $declinedReason = null;
+  /**
+   * @var string
+   */
+  public $oauthClientId = null;
+  /**
+   * @var string
+   */
+  public $oauthClientSecret = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -748,6 +756,14 @@ class Gateway {
           'var' => 'declinedReason',
           'type' => TType::STRING,
           ),
+        16 => array(
+          'var' => 'oauthClientId',
+          'type' => TType::STRING,
+          ),
+        17 => array(
+          'var' => 'oauthClientSecret',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -795,6 +811,12 @@ class Gateway {
       }
       if (isset($vals['declinedReason'])) {
         $this->declinedReason = $vals['declinedReason'];
+      }
+      if (isset($vals['oauthClientId'])) {
+        $this->oauthClientId = $vals['oauthClientId'];
+      }
+      if (isset($vals['oauthClientSecret'])) {
+        $this->oauthClientSecret = $vals['oauthClientSecret'];
       }
     }
   }
@@ -923,6 +945,20 @@ class Gateway {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 16:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->oauthClientId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 17:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->oauthClientSecret);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -1009,6 +1045,16 @@ class Gateway {
     if ($this->declinedReason !== null) {
       $xfer += $output->writeFieldBegin('declinedReason', TType::STRING, 15);
       $xfer += $output->writeString($this->declinedReason);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->oauthClientId !== null) {
+      $xfer += $output->writeFieldBegin('oauthClientId', TType::STRING, 16);
+      $xfer += $output->writeString($this->oauthClientId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->oauthClientSecret !== null) {
+      $xfer += $output->writeFieldBegin('oauthClientSecret', TType::STRING, 17);
+      $xfer += $output->writeString($this->oauthClientSecret);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

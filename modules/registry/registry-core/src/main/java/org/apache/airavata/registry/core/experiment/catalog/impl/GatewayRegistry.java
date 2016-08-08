@@ -63,6 +63,8 @@ public class GatewayRegistry {
             resource.setIdentityServerUserName(gateway.getIdentityServerUserName());
             resource.setIdentityServerPasswordToken(gateway.getIdentityServerPasswordToken());
             resource.setDeclinedReason(gateway.getDeclinedReason());
+            resource.setOauthClientId(gateway.getOauthClientId());
+            resource.setOauthClientSecret(gateway.getOauthClientSecret());
             resource.save();
             return gateway.getGatewayId();
         }catch (RegistryException e){
@@ -88,6 +90,8 @@ public class GatewayRegistry {
             existingGateway.setIdentityServerUserName(updatedGateway.getIdentityServerUserName());
             existingGateway.setIdentityServerPasswordToken(updatedGateway.getIdentityServerPasswordToken());
             existingGateway.setDeclinedReason(updatedGateway.getDeclinedReason());
+            existingGateway.setOauthClientId(updatedGateway.getOauthClientId());
+            existingGateway.setOauthClientSecret(updatedGateway.getOauthClientSecret());
             existingGateway.save();
         }catch (RegistryException e){
             logger.error("Error while updating gateway to registry", e);

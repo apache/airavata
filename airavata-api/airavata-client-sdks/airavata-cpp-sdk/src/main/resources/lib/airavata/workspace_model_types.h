@@ -298,7 +298,7 @@ inline std::ostream& operator<<(std::ostream& out, const User& obj)
 }
 
 typedef struct _Gateway__isset {
-  _Gateway__isset() : gatewayName(false), domain(false), emailAddress(false), gatewayAcronym(false), gatewayURL(false), gatewayPublicAbstract(false), reviewProposalDescription(false), gatewayAdminFirstName(false), gatewayAdminLastName(false), gatewayAdminEmail(false), identityServerUserName(false), identityServerPasswordToken(false), declinedReason(false) {}
+  _Gateway__isset() : gatewayName(false), domain(false), emailAddress(false), gatewayAcronym(false), gatewayURL(false), gatewayPublicAbstract(false), reviewProposalDescription(false), gatewayAdminFirstName(false), gatewayAdminLastName(false), gatewayAdminEmail(false), identityServerUserName(false), identityServerPasswordToken(false), declinedReason(false), oauthClientId(false), oauthClientSecret(false) {}
   bool gatewayName :1;
   bool domain :1;
   bool emailAddress :1;
@@ -312,6 +312,8 @@ typedef struct _Gateway__isset {
   bool identityServerUserName :1;
   bool identityServerPasswordToken :1;
   bool declinedReason :1;
+  bool oauthClientId :1;
+  bool oauthClientSecret :1;
 } _Gateway__isset;
 
 class Gateway {
@@ -319,7 +321,7 @@ class Gateway {
 
   Gateway(const Gateway&);
   Gateway& operator=(const Gateway&);
-  Gateway() : gatewayId(), gatewayApprovalStatus((GatewayApprovalStatus::type)0), gatewayName(), domain(), emailAddress(), gatewayAcronym(), gatewayURL(), gatewayPublicAbstract(), reviewProposalDescription(), gatewayAdminFirstName(), gatewayAdminLastName(), gatewayAdminEmail(), identityServerUserName(), identityServerPasswordToken(), declinedReason() {
+  Gateway() : gatewayId(), gatewayApprovalStatus((GatewayApprovalStatus::type)0), gatewayName(), domain(), emailAddress(), gatewayAcronym(), gatewayURL(), gatewayPublicAbstract(), reviewProposalDescription(), gatewayAdminFirstName(), gatewayAdminLastName(), gatewayAdminEmail(), identityServerUserName(), identityServerPasswordToken(), declinedReason(), oauthClientId(), oauthClientSecret() {
   }
 
   virtual ~Gateway() throw();
@@ -338,6 +340,8 @@ class Gateway {
   std::string identityServerUserName;
   std::string identityServerPasswordToken;
   std::string declinedReason;
+  std::string oauthClientId;
+  std::string oauthClientSecret;
 
   _Gateway__isset __isset;
 
@@ -370,6 +374,10 @@ class Gateway {
   void __set_identityServerPasswordToken(const std::string& val);
 
   void __set_declinedReason(const std::string& val);
+
+  void __set_oauthClientId(const std::string& val);
+
+  void __set_oauthClientSecret(const std::string& val);
 
   bool operator == (const Gateway & rhs) const
   {
@@ -428,6 +436,14 @@ class Gateway {
     if (__isset.declinedReason != rhs.__isset.declinedReason)
       return false;
     else if (__isset.declinedReason && !(declinedReason == rhs.declinedReason))
+      return false;
+    if (__isset.oauthClientId != rhs.__isset.oauthClientId)
+      return false;
+    else if (__isset.oauthClientId && !(oauthClientId == rhs.oauthClientId))
+      return false;
+    if (__isset.oauthClientSecret != rhs.__isset.oauthClientSecret)
+      return false;
+    else if (__isset.oauthClientSecret && !(oauthClientSecret == rhs.oauthClientSecret))
       return false;
     return true;
   }

@@ -84,7 +84,9 @@ struct Gateway {
     12: optional string gatewayAdminEmail,
     13: optional string identityServerUserName,
     14: optional string identityServerPasswordToken,
-    15: optional string declinedReason
+    15: optional string declinedReason,
+    16: optional string oauthClientId,
+    17: optional string oauthClientSecret
 }
 
 enum NotificationPriority {
