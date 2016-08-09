@@ -17,8 +17,10 @@
 // * specific language governing permissions and limitations
 // * under the License.
 // *
-//*/
+// */
+//
 //package org.apache.airavata.messaging.core.impl;
+//
 //
 //import com.rabbitmq.client.*;
 //import org.apache.airavata.common.exception.AiravataException;
@@ -26,6 +28,7 @@
 //import org.apache.airavata.common.utils.AiravataUtils;
 //import org.apache.airavata.common.utils.ServerSettings;
 //import org.apache.airavata.common.utils.ThriftUtils;
+//import org.apache.airavata.messaging.core.Subscriber;
 //import org.apache.airavata.messaging.core.MessageContext;
 //import org.apache.airavata.messaging.core.MessageHandler;
 //import org.apache.airavata.messaging.core.MessagingConstants;
@@ -35,31 +38,28 @@
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 //
+//import javax.annotation.Nonnull;
 //import java.io.IOException;
 //import java.util.ArrayList;
 //import java.util.HashMap;
 //import java.util.List;
 //import java.util.Map;
 //
-//public class RabbitMQProcessLaunchConsumer {
-//    private final static Logger logger = LoggerFactory.getLogger(RabbitMQProcessLaunchConsumer.class);
-//    private static Logger log = LoggerFactory.getLogger(RabbitMQStatusSubscriber.class);
+//public class RabbitMQStatusSubscriber implements Subscriber {
+//	public static final String EXCHANGE_TYPE = "topic";
+//	private static Logger log = LoggerFactory.getLogger(RabbitMQStatusSubscriber.class);
 //
-//    private String taskLaunchExchangeName;
+//    private String exchangeName;
 //    private String url;
 //    private Connection connection;
 //    private Channel channel;
-//    private Map<String, QueueDetails> queueDetailsMap = new HashMap<String, QueueDetails>();
-//    private boolean durableQueue;
-//    private MessageHandler messageHandler;
 //    private int prefetchCount;
+//    private Map<String, QueueDetails> queueDetailsMap = new HashMap<String, QueueDetails>();
 //
-//
-//    public RabbitMQProcessLaunchConsumer() throws AiravataException {
+//    public RabbitMQStatusSubscriber() throws AiravataException {
 //        try {
 //            url = ServerSettings.getSetting(MessagingConstants.RABBITMQ_BROKER_URL);
-//            durableQueue = Boolean.parseBoolean(ServerSettings.getSetting(MessagingConstants.DURABLE_QUEUE));
-//            taskLaunchExchangeName = ServerSettings.getSetting(MessagingConstants.RABBITMQ_TASK_LAUNCH_EXCHANGE_NAME);
+//            exchangeName = ServerSettings.getSetting(MessagingConstants.RABBITMQ_STATUS_EXCHANGE_NAME);
 //            prefetchCount = Integer.valueOf(ServerSettings.getSetting(MessagingConstants.PREFETCH_COUNT, String.valueOf(64)));
 //            createConnection();
 //        } catch (ApplicationSettingsException e) {
@@ -69,8 +69,8 @@
 //        }
 //    }
 //
-//    public RabbitMQProcessLaunchConsumer(String brokerUrl, String exchangeName) throws AiravataException {
-//        this.taskLaunchExchangeName = exchangeName;
+//    public RabbitMQStatusSubscriber(String brokerUrl, String exchangeName) throws AiravataException {
+//        this.exchangeName = exchangeName;
 //        this.url = brokerUrl;
 //
 //        createConnection();
@@ -86,40 +86,27 @@
 //                public void shutdownCompleted(ShutdownSignalException cause) {
 //                }
 //            });
-//            log.info("connected to rabbitmq: " + connection + " for " + taskLaunchExchangeName);
+//            log.info("connected to rabbitmq: " + connection + " for " + exchangeName);
 //
 //            channel = connection.createChannel();
 //            channel.basicQos(prefetchCount);
-//
-////            channel.exchangeDeclare(taskLaunchExchangeName, "fanout");
+//            channel.exchangeDeclare(exchangeName, EXCHANGE_TYPE, false);
 //
 //        } catch (Exception e) {
-//            String msg = "could not open channel for exchange " + taskLaunchExchangeName;
+//            String msg = "could not open channel for exchange " + exchangeName;
 //            log.error(msg);
 //            throw new AiravataException(msg, e);
 //        }
 //    }
 //
-//    public void reconnect() throws AiravataException{
-//        if(messageHandler!=null) {
-//            try {
-//                listen(messageHandler);
-//            } catch (AiravataException e) {
-//                String msg = "could not open channel for exchange " + taskLaunchExchangeName;
-//                log.error(msg);
-//                throw new AiravataException(msg, e);
-//
-//            }
-//        }
-//    }
 //    public String listen(final MessageHandler handler) throws AiravataException {
 //        try {
-//            messageHandler = handler;
 //            Map<String, Object> props = handler.getProperties();
 //            final Object routing = props.get(MessagingConstants.RABBIT_ROUTING_KEY);
 //            if (routing == null) {
 //                throw new IllegalArgumentException("The routing key must be present");
 //            }
+//
 //            List<String> keys = new ArrayList<String>();
 //            if (routing instanceof List) {
 //                for (Object o : (List)routing) {
@@ -134,13 +121,11 @@
 //            if (queueName == null) {
 //                if (!channel.isOpen()) {
 //                    channel = connection.createChannel();
-//                    channel.basicQos(prefetchCount);
-////                    channel.exchangeDeclare(taskLaunchExchangeName, "fanout");
+//                    channel.exchangeDeclare(exchangeName, "topic", false);
 //                }
 //                queueName = channel.queueDeclare().getQueue();
 //            } else {
-//
-//                channel.queueDeclare(queueName, durableQueue, false, false, null);
+//                channel.queueDeclare(queueName, true, false, false, null);
 //            }
 //
 //            final String id = getId(keys, queueName);
@@ -154,11 +139,11 @@
 //            }
 //
 //            // bind all the routing keys
-////            for (String routingKey : keys) {
-////                channel.queueBind(queueName, taskLaunchExchangeName, routingKey);
-////            }
-//            // autoAck=false, we will ack after task is done
-//            channel.basicConsume(queueName, false, consumerTag, new QueueingConsumer(channel) {
+//            for (String routingKey : keys) {
+//                channel.queueBind(queueName, exchangeName, routingKey);
+//            }
+//
+//            channel.basicConsume(queueName, true, consumerTag, new DefaultConsumer(channel) {
 //                @Override
 //                public void handleDelivery(String consumerTag,
 //                                           Envelope envelope,
@@ -170,44 +155,77 @@
 //                        ThriftUtils.createThriftFromBytes(body, message);
 //                        TBase event = null;
 //                        String gatewayId = null;
-//                        long deliveryTag = envelope.getDeliveryTag();
-//	                    if (message.getMessageType().equals(MessageType.LAUNCHPROCESS)) {
-//		                    ProcessSubmitEvent processSubmitEvent = new ProcessSubmitEvent();
-//		                    ThriftUtils.createThriftFromBytes(message.getEvent(), processSubmitEvent);
-//		                    log.debug(" Message Received with message id '" + message.getMessageId()
-//				                    + "' and with message type '" + message.getMessageType() + "'  for experimentId:" +
-//				                    " " +
-//				                    processSubmitEvent.getProcessId());
-//		                    event = processSubmitEvent;
-//		                    gatewayId = processSubmitEvent.getGatewayId();
-//		                    MessageContext messageContext = new MessageContext(event, message.getMessageType(),
-//				                    message.getMessageId(), gatewayId, deliveryTag);
-//		                    messageContext.setUpdatedTime(AiravataUtils.getTime(message.getUpdatedTime()));
-//		                    messageContext.setIsRedeliver(envelope.isRedeliver());
-//		                    handler.onMessage(messageContext);
-//	                    } else {
-//		                    log.error("{} message type is not handle in ProcessLaunch Subscriber. Sending ack for " +
-//				                    "delivery tag {} ", message.getMessageType().name(), deliveryTag);
-//		                    sendAck(deliveryTag);
-//	                    }
+//
+//                        if (message.getMessageType().equals(MessageType.EXPERIMENT)) {
+//                            ExperimentStatusChangeEvent experimentStatusChangeEvent = new ExperimentStatusChangeEvent();
+//                            ThriftUtils.createThriftFromBytes(message.getEvent(), experimentStatusChangeEvent);
+//                            log.debug(" Message Received with message id '" + message.getMessageId()
+//                                    + "' and with message type '" + message.getMessageType() + "'  with status " +
+//                                    experimentStatusChangeEvent.getState());
+//                            event = experimentStatusChangeEvent;
+//                            gatewayId = experimentStatusChangeEvent.getGatewayId();
+//                        } else if (message.getMessageType().equals(MessageType.PROCESS)) {
+//	                        ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent();
+//	                        ThriftUtils.createThriftFromBytes(message.getEvent(), processStatusChangeEvent);
+//	                        log.debug("Message Recieved with message id :" + message.getMessageId() + " and with " +
+//			                        "message type " + message.getMessageType() + " with status " +
+//			                        processStatusChangeEvent.getState());
+//	                        event = processStatusChangeEvent;
+//	                        gatewayId = processStatusChangeEvent.getProcessIdentity().getGatewayId();
+//                        } else if (message.getMessageType().equals(MessageType.TASK)) {
+//                            TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent();
+//                            ThriftUtils.createThriftFromBytes(message.getEvent(), taskStatusChangeEvent);
+//                            log.debug(" Message Received with message id '" + message.getMessageId()
+//                                    + "' and with message type '" + message.getMessageType() + "'  with status " +
+//                                    taskStatusChangeEvent.getState());
+//                            event = taskStatusChangeEvent;
+//                            gatewayId = taskStatusChangeEvent.getTaskIdentity().getGatewayId();
+//                        }else if (message.getMessageType() == MessageType.PROCESSOUTPUT) {
+//                            TaskOutputChangeEvent taskOutputChangeEvent = new TaskOutputChangeEvent();
+//                            ThriftUtils.createThriftFromBytes(message.getEvent(), taskOutputChangeEvent);
+//                            log.debug(" Message Received with message id '" + message.getMessageId() + "' and with message type '" + message.getMessageType());
+//                            event = taskOutputChangeEvent;
+//                            gatewayId = taskOutputChangeEvent.getTaskIdentity().getGatewayId();
+//                        } else if (message.getMessageType().equals(MessageType.JOB)) {
+//                            JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent();
+//                            ThriftUtils.createThriftFromBytes(message.getEvent(), jobStatusChangeEvent);
+//                            log.debug(" Message Received with message id '" + message.getMessageId()
+//                                    + "' and with message type '" + message.getMessageType() + "'  with status " +
+//                                    jobStatusChangeEvent.getState());
+//                            event = jobStatusChangeEvent;
+//                            gatewayId = jobStatusChangeEvent.getJobIdentity().getGatewayId();
+//                        } else if (message.getMessageType().equals(MessageType.LAUNCHPROCESS)) {
+//                            TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent();
+//                            ThriftUtils.createThriftFromBytes(message.getEvent(), taskSubmitEvent);
+//                            log.debug(" Message Received with message id '" + message.getMessageId()
+//                                    + "' and with message type '" + message.getMessageType() + "'  for experimentId: " +
+//                                    taskSubmitEvent.getExperimentId() + "and taskId: " + taskSubmitEvent.getTaskId());
+//                            event = taskSubmitEvent;
+//                            gatewayId = taskSubmitEvent.getGatewayId();
+//                        } else if (message.getMessageType().equals(MessageType.TERMINATEPROCESS)) {
+//                            TaskTerminateEvent taskTerminateEvent = new TaskTerminateEvent();
+//                            ThriftUtils.createThriftFromBytes(message.getEvent(), taskTerminateEvent);
+//                            log.debug(" Message Received with message id '" + message.getMessageId()
+//                                    + "' and with message type '" + message.getMessageType() + "'  for experimentId: " +
+//                                    taskTerminateEvent.getExperimentId() + "and taskId: " + taskTerminateEvent.getTaskId());
+//                            event = taskTerminateEvent;
+//                            gatewayId = null;
+//                        }
+//                        MessageContext messageContext = new MessageContext(event, message.getMessageType(), message.getMessageId(), gatewayId);
+//                        messageContext.setUpdatedTime(AiravataUtils.getTime(message.getUpdatedTime()));
+//	                    messageContext.setIsRedeliver(envelope.isRedeliver());
+//                        handler.onMessage(messageContext);
 //                    } catch (TException e) {
 //                        String msg = "Failed to de-serialize the thrift message, from routing keys and queueName " + id;
 //                        log.warn(msg, e);
 //                    }
 //                }
-//
-//                @Override
-//                public void handleCancel(String consumerTag) throws IOException {
-//                    super.handleCancel(consumerTag);
-//                    log.info("Subscriber cancelled : " + consumerTag);
-//                }
 //            });
-//
 //            // save the name for deleting the queue
 //            queueDetailsMap.put(id, new QueueDetails(queueName, keys));
 //            return id;
 //        } catch (Exception e) {
-//            String msg = "could not open channel for exchange " + taskLaunchExchangeName;
+//            String msg = "could not open channel for exchange " + exchangeName;
 //            log.error(msg);
 //            throw new AiravataException(msg, e);
 //        }
@@ -218,10 +236,11 @@
 //        if (details != null) {
 //            try {
 //                for (String key : details.getRoutingKeys()) {
-//                    channel.queueUnbind(details.getQueueName(), taskLaunchExchangeName, key);
+//                    channel.queueUnbind(details.getQueueName(), exchangeName, key);
 //                }
+//                channel.queueDelete(details.getQueueName(), true, true);
 //            } catch (IOException e) {
-//                String msg = "could not un-bind queue: " + details.getQueueName() + " for exchange " + taskLaunchExchangeName;
+//                String msg = "could not un-bind queue: " + details.getQueueName() + " for exchange " + exchangeName;
 //                log.debug(msg);
 //            }
 //        }
@@ -263,26 +282,6 @@
 //                connection.close();
 //            } catch (IOException ignore) {
 //            }
-//        }
-//    }
-//    public boolean isOpen(){
-//        if(connection!=null){
-//            return connection.isOpen();
-//        }
-//        return false;
-//    }
-//
-//    public void sendAck(long deliveryTag){
-//        try {
-//            if (channel.isOpen()){
-//                channel.basicAck(deliveryTag,false);
-//            }else {
-//                channel = connection.createChannel();
-//                channel.basicQos(prefetchCount);
-//                channel.basicAck(deliveryTag, false);
-//            }
-//        } catch (IOException e) {
-//            logger.error(e.getMessage(), e);
 //        }
 //    }
 //}
