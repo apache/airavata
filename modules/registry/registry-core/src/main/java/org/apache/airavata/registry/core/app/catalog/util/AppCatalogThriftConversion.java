@@ -834,8 +834,13 @@ public class AppCatalogThriftConversion {
         preference.setUsageReportingGatewayId(resource.getGatewayId());
         preference.setQualityOfService(resource.getQualityOfService());
         preference.setReservation(resource.getReservation());
-        preference.setReservationStartTime(resource.getReservationStartTime().getTime());
-        preference.setReservationEndTime(resource.getReservationEndTime().getTime());
+        if (resource.getReservationStartTime() != null) {
+            preference.setReservationStartTime(resource.getReservationStartTime().getTime());
+        }
+
+        if (resource.getReservationEndTime() != null) {
+            preference.setReservationEndTime(resource.getReservationEndTime().getTime());
+        }
         return preference;
     }
 
