@@ -52,24 +52,24 @@ public class OrchestratorConfiguration {
         return validatorClasses;
     }
 
-    public void setValidatorClasses(List<String> validatorClasses) {
-        this.validatorClasses = validatorClasses;
+    public void setValidatorClasses(List<String> validatorClassesIn) {
+        this.validatorClasses = validatorClassesIn;
     }
 
     public boolean isEmbeddedMode() {
         return embeddedMode;
     }
 
-    public void setEmbeddedMode(boolean embeddedMode) {
-        this.embeddedMode = embeddedMode;
+    public void setEmbeddedMode(boolean embeddedModeIn) {
+        this.embeddedMode = embeddedModeIn;
     }
 
     public URL getBrokerURL() {
         return brokerURL;
     }
 
-    public void setBrokerURL(URL brokerURL) {
-        this.brokerURL = brokerURL;
+    public void setBrokerURL(URL brokerURLIn) {
+        this.brokerURL = brokerURLIn;
     }
 
     public String getNewJobSubmitterClass() {
@@ -84,39 +84,39 @@ public class OrchestratorConfiguration {
         return threadPoolSize;
     }
 
-    public void setNewJobSubmitterClass(String newJobSubmitterClass) {
-        this.newJobSubmitterClass = newJobSubmitterClass;
+    public void setNewJobSubmitterClass(String newJobSubmitterClassIn) {
+        this.newJobSubmitterClass = newJobSubmitterClassIn;
     }
 
-    public void setSubmitterInterval(int submitterInterval) {
-        this.submitterInterval = submitterInterval;
+    public void setSubmitterInterval(int submitterIntervalIn) {
+        this.submitterInterval = submitterIntervalIn;
     }
 
-    public void setThreadPoolSize(int threadPoolSize) {
-        this.threadPoolSize = threadPoolSize;
+    public void setThreadPoolSize(int threadPoolSizeIn) {
+        this.threadPoolSize = threadPoolSizeIn;
     }
 
     public boolean isStartSubmitter() {
         return startSubmitter;
     }
 
-    public void setStartSubmitter(boolean startSubmitter) {
-        this.startSubmitter = startSubmitter;
+    public void setStartSubmitter(boolean startSubmitterIn) {
+        this.startSubmitter = startSubmitterIn;
     }
 
     public String getHangedJobSubmitterClass() {
         return hangedJobSubmitterClass;
     }
 
-    public void setHangedJobSubmitterClass(String hangedJobSubmitterClass) {
-        this.hangedJobSubmitterClass = hangedJobSubmitterClass;
+    public void setHangedJobSubmitterClass(String hangedJobSubmitterClassIn) {
+        this.hangedJobSubmitterClass = hangedJobSubmitterClassIn;
     }
 
     public boolean isEnableValidation() {
         return enableValidation;
     }
 
-    public void setEnableValidation(boolean enableValidation) {
-        this.enableValidation = enableValidation;
+    public void setEnableValidation(boolean enableValidationIn) {
+        this.enableValidation = enableValidationIn;
     }
 }
