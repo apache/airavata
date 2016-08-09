@@ -3661,7 +3661,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
         } catch (RegistryServiceException e) {
-            throw new TException("Unable to create credential store client...", e);
+            throw new TException("Unable to create registry client...", e);
         }
     }
 }
