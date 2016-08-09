@@ -395,11 +395,11 @@ public class ApplicationSettings {
     }
 
     public static String getRegistryServerPort() throws ApplicationSettingsException {
-        return getSetting("regserver.server.host");
+        return getSetting("regserver.server.port");
     }
 
     public static String getRegistryServerHost() throws ApplicationSettingsException {
-        return getSetting("regserver.server.port");
+        return getSetting("regserver.server.host");
     }
 
     /**
