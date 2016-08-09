@@ -26,6 +26,7 @@ import org.apache.airavata.common.exception.AiravataException;
 /**
  * This is the basic publisher interface.
  */
+@FunctionalInterface
 public interface Publisher {
 
     /**
