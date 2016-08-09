@@ -21,21 +21,17 @@
 
 package org.apache.airavata.common.utils;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ApplicationSettings {
     public static final String SERVER_PROPERTIES="airavata-server.properties";
@@ -396,6 +392,14 @@ public class ApplicationSettings {
 
     public static String getCredentialStoreEmailFromEmail() throws ApplicationSettingsException {
         return getSetting("email.from");
+    }
+
+    public static String getRegistryServerPort() throws ApplicationSettingsException {
+        return getSetting("regserver.server.host");
+    }
+
+    public static String getRegistryServerHost() throws ApplicationSettingsException {
+        return getSetting("regserver.server.port");
     }
 
     /**

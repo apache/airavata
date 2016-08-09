@@ -293,9 +293,10 @@ service RegistryService {
         list<workspace_model.Project> searchProjects(
                                     1: required string gatewayId,
                                     2: required string userName,
-                                    3: map<experiment_model.ProjectSearchFields, string> filters,
-                                    4: required i32 limit,
-                                    5: required i32 offset)
+                                    3: required list<string> accessibleProjIds,
+                                    4: map<experiment_model.ProjectSearchFields, string> filters,
+                                    5: required i32 limit,
+                                    6: required i32 offset)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
 
@@ -326,9 +327,10 @@ service RegistryService {
 
             list<experiment_model.ExperimentSummaryModel> searchExperiments(1: required string gatewayId,
                                     2: required string userName,
-                                    3: map<experiment_model.ExperimentSearchFields, string> filters,
-                                    4: required i32 limit,
-                                    5: required i32 offset)
+                                    3: required list<string> accessibleExpIds,
+                                    4: map<experiment_model.ExperimentSearchFields, string> filters,
+                                    5: required i32 limit,
+                                    6: required i32 offset)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
             /**
