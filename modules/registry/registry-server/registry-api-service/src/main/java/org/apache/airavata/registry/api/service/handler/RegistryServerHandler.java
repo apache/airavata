@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.registry.api.service.handler;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.WorkflowModel;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
@@ -35,36 +36,47 @@ import org.apache.airavata.model.data.movement.DMType;
 import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
-import org.apache.airavata.model.error.AiravataClientException;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.error.ExperimentNotFoundException;
-import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.model.job.JobModel;
+import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.registry.api.registry_apiConstants;
+import org.apache.airavata.registry.core.app.catalog.resources.*;
+import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
+import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
+import org.apache.airavata.registry.cpi.*;
+import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RegistryServerHandler implements RegistryService.Iface {
     private final static Logger logger = LoggerFactory.getLogger(RegistryServerHandler.class);
+
+    private ExperimentCatalog experimentCatalog;
+    private AppCatalog appCatalog;
+    private ReplicaCatalog dataCatalog;
+    private WorkflowCatalog workflowCatalog;
 
     /**
      * Fetch Apache Registry API version
      */
     @Override
     public String getAPIVersion() throws RegistryServiceException, TException {
-        return null;
+        return registry_apiConstants.REGISTRY_API_VERSION;
     }
 
     /**
@@ -76,7 +88,14 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean isUserExists(String gatewayId, String userName) throws RegistryServiceException, TException {
-        return false;
+        try {
+            return ExpCatResourceUtils.isUserExist(userName, gatewayId);
+        } catch (RegistryException e) {
+            logger.error("Error while verifying user", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while verifying user. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -88,7 +107,14 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<String> getAllUsersInGateway(String gatewayId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            return ExpCatResourceUtils.getAllUsersInGateway(gatewayId);
+        } catch (RegistryException e) {
+            logger.error("Error while retrieving users", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving users. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -100,7 +126,23 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public Gateway getGateway(String gatewayId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
+            if (!experimentCatalog.isExist(ExperimentCatalogModelType.GATEWAY, gatewayId)){
+                logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setMessage("Gateway does not exist in the system. Please provide a valid gateway ID...");
+                throw exception;
+            }
+            Gateway gateway = (Gateway) experimentCatalog.get(ExperimentCatalogModelType.GATEWAY, gatewayId);
+            logger.debug("Airavata retrieved gateway with gateway id : " + gateway.getGatewayId());
+            return gateway;
+        } catch (RegistryException e) {
+            logger.error("Error while getting the gateway", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting the gateway. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -112,7 +154,23 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteGateway(String gatewayId) throws RegistryServiceException, TException {
-        return false;
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
+            if (!experimentCatalog.isExist(ExperimentCatalogModelType.GATEWAY, gatewayId)){
+                logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setMessage("Gateway does not exist in the system. Please provide a valid gateway ID...");
+                throw exception;
+            }
+            experimentCatalog.remove(ExperimentCatalogModelType.GATEWAY, gatewayId);
+            logger.debug("Airavata deleted gateway with gateway id : " + gatewayId);
+            return true;
+        } catch (RegistryException e) {
+            logger.error("Error while deleting the gateway", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting the gateway. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -120,7 +178,21 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<Gateway> getAllGateways() throws RegistryServiceException, TException {
-        return null;
+        try {
+            List<Gateway> gateways = new ArrayList<Gateway>();
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            List<Object> list = experimentCatalog.get(ExperimentCatalogModelType.GATEWAY, null, null);
+            for (Object gateway : list){
+                gateways.add((Gateway)gateway);
+            }
+            logger.debug("Airavata retrieved all available gateways...");
+            return gateways;
+        } catch (RegistryException e) {
+            logger.error("Error while getting all the gateways", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting all the gateways. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -132,22 +204,59 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean isGatewayExist(String gatewayId) throws RegistryServiceException, TException {
-        return false;
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
+            return experimentCatalog.isExist(ExperimentCatalogModelType.GATEWAY, gatewayId);
+        } catch (RegistryException e) {
+            logger.error("Error while getting gateway", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting gateway. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     public boolean deleteNotification(String gatewayId, String notificationId) throws RegistryServiceException, TException {
-        return false;
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
+            experimentCatalog.remove(ExperimentCatalogModelType.NOTIFICATION, notificationId);
+            return true;
+        } catch (RegistryException e) {
+            logger.error("Error while deleting notification", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting notification. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     public Notification getNotification(String gatewayId, String notificationId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
+            return (Notification)experimentCatalog.get(ExperimentCatalogModelType.NOTIFICATION, notificationId);
+        } catch (RegistryException e) {
+            logger.error("Error while retrieving notification", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retreiving notification. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     public List<Notification> getAllNotifications(String gatewayId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
+            List<Object> objectList = experimentCatalog.get(ExperimentCatalogModelType.NOTIFICATION, null, gatewayId);
+            List<Notification> notifications = new ArrayList<>();
+            for(Object o : objectList)
+                notifications.add((Notification) o);
+            return notifications;
+        } catch (RegistryException e) {
+            logger.error("Error while getting all notifications", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting all notifications. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -160,7 +269,24 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public Project getProject(String projectId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            if (!experimentCatalog.isExist(ExperimentCatalogModelType.PROJECT, projectId)){
+                logger.error("Project does not exist in the system. Please provide a valid project ID...");
+                ProjectNotFoundException exception = new ProjectNotFoundException();
+                exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
+                throw exception;
+            }
+            logger.debug("Airavata retrieved project with project Id : " + projectId );
+
+            Project project = (Project) experimentCatalog.get(ExperimentCatalogModelType.PROJECT, projectId);
+            return project;
+        } catch (RegistryException e) {
+            logger.error("Error while retrieving the project", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving the project. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -175,7 +301,24 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteProject(String projectId) throws RegistryServiceException, TException {
-        return false;
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            if (!experimentCatalog.isExist(ExperimentCatalogModelType.PROJECT, projectId)) {
+                logger.error("Project does not exist in the system. Please provide a valid project ID...");
+                ProjectNotFoundException exception = new ProjectNotFoundException();
+                exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
+                throw exception;
+            }
+
+            experimentCatalog.remove(ExperimentCatalogModelType.PROJECT, projectId);
+            logger.debug("Airavata deleted project with project Id : " + projectId );
+            return true;
+        } catch (RegistryException e) {
+            logger.error("Error while removing the project", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while removing the project. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -189,7 +332,44 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<Project> getUserProjects(String gatewayId, String userName, int limit, int offset) throws RegistryServiceException, TException {
-        return null;
+        if (!validateString(userName)){
+            logger.error("Username cannot be empty. Please provide a valid user..");
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Username cannot be empty. Please provide a valid user..");
+            throw exception;
+        }
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+        }
+        List<Project> projects = new ArrayList<Project>();
+        try {
+            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
+                logger.error("User does not exist in the system. Please provide a valid user..");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("User does not exist in the system. Please provide a valid user..");
+                throw exception;
+            }
+            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
+            Map<String, String> filters = new HashMap<String, String>();
+            filters.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
+            filters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
+            List<Object> list = experimentCatalog.search(ExperimentCatalogModelType.PROJECT, filters, limit, offset,
+                    Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
+            if (list != null && !list.isEmpty()){
+                for (Object o : list){
+                    projects.add((Project) o);
+                }
+            }
+            logger.debug("Airavata retrieved projects for user : " + userName + " and gateway id : " + gatewayId );
+            return projects;
+        } catch (RegistryException e) {
+            logger.error("Error while retrieving projects", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving projects. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -202,7 +382,25 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public ExperimentStatistics getExperimentStatistics(String gatewayId, long fromTime, long toTime) throws RegistryServiceException, TException {
-        return null;
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+        }
+        try {
+            Map<String, String> filters = new HashMap();
+            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
+            filters.put(Constants.FieldConstants.ExperimentConstants.FROM_DATE, fromTime+"");
+            filters.put(Constants.FieldConstants.ExperimentConstants.TO_DATE, toTime+"");
+
+            List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT_STATISTICS, filters);
+            logger.debug("Airavata retrieved experiments for gateway id : " + gatewayId + " between : " + AiravataUtils.getTime(fromTime) + " and " + AiravataUtils.getTime(toTime));
+            return (ExperimentStatistics) results.get(0);
+        }catch (Exception e) {
+            logger.error("Error while retrieving experiments", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving experiments. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -215,7 +413,38 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<ExperimentModel> getExperimentsInProject(String projectId, int limit, int offset) throws RegistryServiceException, TException {
-        return null;
+        if (!validateString(projectId)){
+            logger.error("Project id cannot be empty. Please provide a valid project ID...");
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Project id cannot be empty. Please provide a valid project ID...");
+            throw exception;
+        }
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            if (!experimentCatalog.isExist(ExperimentCatalogModelType.PROJECT, projectId)){
+                logger.error("Project does not exist in the system. Please provide a valid project ID...");
+                ProjectNotFoundException exception = new ProjectNotFoundException();
+                exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
+                throw exception;
+            }
+
+            List<ExperimentModel> experiments = new ArrayList<ExperimentModel>();
+            List<Object> list = experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT,
+                    Constants.FieldConstants.ExperimentConstants.PROJECT_ID, projectId, limit, offset,
+                    Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
+            if (list != null && !list.isEmpty()) {
+                for (Object o : list) {
+                    experiments.add((ExperimentModel) o);
+                }
+            }
+            logger.debug("Airavata retrieved experiments for project : " + projectId);
+            return experiments;
+        } catch (Exception e) {
+            logger.error("Error while retrieving the experiments", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving the experiments. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -229,7 +458,43 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<ExperimentModel> getUserExperiments(String gatewayId, String userName, int limit, int offset) throws RegistryServiceException, TException {
-        return null;
+        if (!validateString(userName)){
+            logger.error("Username cannot be empty. Please provide a valid user..");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Username cannot be empty. Please provide a valid user..");
+            throw exception;
+        }
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+        }
+        try {
+            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
+                logger.error("User does not exist in the system. Please provide a valid user..");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("User does not exist in the system. Please provide a valid user..");
+                throw exception;
+            }
+            List<ExperimentModel> experiments = new ArrayList<ExperimentModel>();
+            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
+            List<Object> list = experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT,
+                    Constants.FieldConstants.ExperimentConstants.USER_NAME, userName, limit, offset,
+                    Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
+            if (list != null && !list.isEmpty()){
+                for (Object o : list){
+                    experiments.add((ExperimentModel)o);
+                }
+            }
+            logger.debug("Airavata retrieved experiments for user : " + userName);
+            return experiments;
+        } catch (Exception e) {
+            logger.error("Error while retrieving the experiments", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving the experiments. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -241,7 +506,26 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteExperiment(String experimentId) throws RegistryServiceException, TException {
-        return false;
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, experimentId)){
+                throw new ExperimentNotFoundException("Requested experiment id " + experimentId + " does not exist in the system..");
+            }
+            ExperimentModel experimentModel = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+
+            if(!(experimentModel.getExperimentStatus().getState() == ExperimentState.CREATED)){
+                logger.error("Error while deleting the experiment");
+                throw new ExperimentCatalogException("Experiment is not in CREATED state. Hence cannot deleted. ID:"+ experimentId);
+            }
+            experimentCatalog.remove(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            logger.debug("Airavata removed experiment with experiment id : " + experimentId);
+            return true;
+        } catch (Exception e) {
+            logger.error("Error while deleting the experiment", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting the experiment. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -284,7 +568,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public ExperimentModel getExperiment(String airavataExperimentId) throws RegistryServiceException, TException {
-        return null;
+        ExperimentModel experimentModel = getExperimentInternal(airavataExperimentId);
+        return experimentModel;
     }
 
     /**
@@ -314,7 +599,46 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public ExperimentModel getDetailedExperimentTree(String airavataExperimentId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            ExperimentModel experimentModel =  getExperimentInternal(airavataExperimentId);
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            List<Object> processObjects  = experimentCatalog.get(ExperimentCatalogModelType.PROCESS,
+                    Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentModel.getExperimentId());
+            List<ProcessModel> processList = new ArrayList<>();
+            if(processObjects != null){
+                processObjects.stream().forEach(p -> {
+                    //Process already has the task object
+                    ((ProcessModel)p).getTasks().stream().forEach(t->{
+                        try {
+                            List<Object> jobObjects = experimentCatalog.get(ExperimentCatalogModelType.JOB,
+                                    Constants.FieldConstants.JobConstants.TASK_ID, ((TaskModel)t).getTaskId());
+                            List<JobModel> jobList  = new ArrayList<JobModel>();
+                            if(jobObjects != null){
+                                jobObjects.stream().forEach(j -> jobList.add((JobModel)j));
+                                Collections.sort(jobList, new Comparator<JobModel>() {
+                                    @Override
+                                    public int compare(JobModel o1, JobModel o2) {
+                                        return (int) (o1.getCreationTime() - o2.getCreationTime());
+                                    }
+                                });
+                                t.setJobs(jobList);
+                            }
+                        } catch (RegistryException e) {
+                            logger.error(e.getMessage(), e);
+                        }
+                    });
+                    processList.add((ProcessModel)p);
+                });
+                experimentModel.setProcesses(processList);
+            }
+            logger.debug("Airavata retrieved detailed experiment with experiment id : " + airavataExperimentId);
+            return experimentModel;
+        } catch (Exception e) {
+            logger.error("Error while retrieving the experiment", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving the experiment. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -328,7 +652,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public ExperimentStatus getExperimentStatus(String airavataExperimentId) throws RegistryServiceException, TException {
-        return null;
+        ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
+        logger.debug("Airavata retrieved experiment status for experiment id : " + airavataExperimentId);
+        return experimentStatus;
     }
 
     /**
@@ -341,7 +667,20 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<OutputDataObjectType> getExperimentOutputs(String airavataExperimentId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
+                logger.error(airavataExperimentId, "Get experiment outputs failed, experiment {} doesn't exit.", airavataExperimentId);
+                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
+            logger.debug("Airavata retrieved experiment outputs for experiment id : " + airavataExperimentId);
+            return (List<OutputDataObjectType>) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT_OUTPUT, airavataExperimentId);
+        } catch (Exception e) {
+            logger.error(airavataExperimentId, "Error while retrieving the experiment outputs", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving the experiment outputs. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -366,7 +705,45 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public Map<String, JobStatus> getJobStatuses(String airavataExperimentId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
+                logger.error(airavataExperimentId, "Error while retrieving job details, experiment {} doesn't exist.", airavataExperimentId);
+                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
+            List<Object> processModels = experimentCatalog.get(ExperimentCatalogModelType.PROCESS, Constants.FieldConstants.ProcessConstants.EXPERIMENT_ID, airavataExperimentId);
+            Map<String, JobStatus> jobStatus = new HashMap<String, JobStatus>();
+            if (processModels != null && !processModels.isEmpty()){
+                for (Object process : processModels) {
+                    ProcessModel processModel = (ProcessModel) process;
+                    List<TaskModel> tasks = processModel.getTasks();
+                    if (tasks != null && !tasks.isEmpty()){
+                        for (TaskModel task : tasks){
+                            String taskId =  task.getTaskId();
+                            List<Object> jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.TASK_ID, taskId);
+                            if (jobs != null && !jobs.isEmpty()){
+                                for (Object jobObject : jobs) {
+                                    JobModel jobModel = (JobModel) jobObject;
+                                    String jobID = jobModel.getJobId();
+                                    JobStatus status = jobModel.getJobStatus();
+                                    if (status != null){
+                                        jobStatus.put(jobID, status);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            logger.debug("Airavata retrieved job statuses for experiment with experiment id : " + airavataExperimentId);
+            return jobStatus;
+        } catch (Exception e) {
+            logger.error(airavataExperimentId, "Error while retrieving the job statuses", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving the job statuses. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -378,7 +755,37 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<JobModel> getJobDetails(String airavataExperimentId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
+                logger.error(airavataExperimentId, "Error while retrieving job details, experiment {} doesn't exist.", airavataExperimentId);
+                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
+            List<Object> processModels = experimentCatalog.get(ExperimentCatalogModelType.PROCESS, Constants.FieldConstants.ProcessConstants.EXPERIMENT_ID, airavataExperimentId);
+            List<JobModel> jobList = new ArrayList<>();
+            if (processModels != null && !processModels.isEmpty()){
+                for (Object process : processModels) {
+                    ProcessModel processModel = (ProcessModel) process;
+                    List<TaskModel> tasks = processModel.getTasks();
+                    if (tasks != null && !tasks.isEmpty()){
+                        for (TaskModel taskModel : tasks){
+                            String taskId =  taskModel.getTaskId();
+                            List<Object> jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.TASK_ID, taskId);
+                            for (Object jobObject : jobs) {
+                                jobList.add ((JobModel)jobObject);
+                            }
+                        }
+                    }
+                }
+            }
+            logger.debug("Airavata retrieved job models for experiment with experiment id : " + airavataExperimentId);
+            return jobList;
+        } catch (Exception e) {
+            logger.error(airavataExperimentId, "Error while retrieving the job details", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving the job details. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -390,7 +797,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public ApplicationModule getApplicationModule(String appModuleId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            ApplicationModule module = appCatalog.getApplicationInterface().getApplicationModule(appModuleId);
+            logger.debug("Airavata retrieved application module with module id : " + appModuleId);
+            return module;
+        } catch (AppCatalogException e) {
+            logger.error(appModuleId, "Error while retrieving application module...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving the adding application module. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -402,7 +819,21 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<ApplicationModule> getAllAppModules(String gatewayId) throws RegistryServiceException, TException {
-        return null;
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+        }
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            List<ApplicationModule> moduleList = appCatalog.getApplicationInterface().getAllApplicationModules(gatewayId);
+            logger.debug("Airavata retrieved modules for gateway id : " + gatewayId);
+            return moduleList;
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving all application modules...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving all application modules. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -414,7 +845,16 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteApplicationModule(String appModuleId) throws RegistryServiceException, TException {
-        return false;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            logger.debug("Airavata deleted application module with module id : " + appModuleId);
+            return appCatalog.getApplicationInterface().removeApplicationModule(appModuleId);
+        } catch (AppCatalogException e) {
+            logger.error(appModuleId, "Error while deleting application module...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting the application module. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -426,7 +866,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public ApplicationDeploymentDescription getApplicationDeployment(String appDeploymentId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            ApplicationDeploymentDescription deployement = appCatalog.getApplicationDeployment().getApplicationDeployement(appDeploymentId);
+            logger.debug("Airavata registered application deployment for deployment id : " + appDeploymentId);
+            return deployement;
+        } catch (AppCatalogException e) {
+            logger.error(appDeploymentId, "Error while retrieving application deployment...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving application deployment. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -438,7 +888,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteApplicationDeployment(String appDeploymentId) throws RegistryServiceException, TException {
-        return false;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            appCatalog.getApplicationDeployment().removeAppDeployment(appDeploymentId);
+            logger.debug("Airavata removed application deployment with deployment id : " + appDeploymentId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(appDeploymentId, "Error while deleting application deployment...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting application deployment. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -451,7 +911,21 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<ApplicationDeploymentDescription> getAllApplicationDeployments(String gatewayId) throws RegistryServiceException, TException {
-        return null;
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+        }
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            List<ApplicationDeploymentDescription> deployements = appCatalog.getApplicationDeployment().getAllApplicationDeployements(gatewayId);
+            logger.debug("Airavata retrieved application deployments for gateway id : " + gatewayId);
+            return deployements;
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving application deployments...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving application deployments. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -463,7 +937,23 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<String> getAppModuleDeployedResources(String appModuleId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            List<String> appDeployments = new ArrayList<String>();
+            appCatalog = RegistryFactory.getAppCatalog();
+            Map<String, String> filters = new HashMap<String, String>();
+            filters.put(AppCatAbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, appModuleId);
+            List<ApplicationDeploymentDescription> applicationDeployments = appCatalog.getApplicationDeployment().getApplicationDeployements(filters);
+            for (ApplicationDeploymentDescription description : applicationDeployments){
+                appDeployments.add(description.getAppDeploymentId());
+            }
+            logger.debug("Airavata retrieved application deployments for module id : " + appModuleId);
+            return appDeployments;
+        } catch (AppCatalogException e) {
+            logger.error(appModuleId, "Error while retrieving application deployments...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving application deployment. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -475,7 +965,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            ApplicationInterfaceDescription interfaceDescription = appCatalog.getApplicationInterface().getApplicationInterface(appInterfaceId);
+            logger.debug("Airavata retrieved application interface with interface id : " + appInterfaceId);
+            return interfaceDescription;
+        } catch (AppCatalogException e) {
+            logger.error(appInterfaceId, "Error while retrieving application interface...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving application interface. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -487,7 +987,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteApplicationInterface(String appInterfaceId) throws RegistryServiceException, TException {
-        return false;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            boolean removeApplicationInterface = appCatalog.getApplicationInterface().removeApplicationInterface(appInterfaceId);
+            logger.debug("Airavata removed application interface with interface id : " + appInterfaceId);
+            return removeApplicationInterface;
+        } catch (AppCatalogException e) {
+            logger.error(appInterfaceId, "Error while deleting application interface...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting application interface. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -499,7 +1009,27 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public Map<String, String> getAllApplicationInterfaceNames(String gatewayId) throws RegistryServiceException, TException {
-        return null;
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+        }
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            List<ApplicationInterfaceDescription> allApplicationInterfaces = appCatalog.getApplicationInterface().getAllApplicationInterfaces(gatewayId);
+            Map<String, String> allApplicationInterfacesMap = new HashMap<String, String>();
+            if (allApplicationInterfaces != null && !allApplicationInterfaces.isEmpty()){
+                for (ApplicationInterfaceDescription interfaceDescription : allApplicationInterfaces){
+                    allApplicationInterfacesMap.put(interfaceDescription.getApplicationInterfaceId(), interfaceDescription.getApplicationName());
+                }
+            }
+            logger.debug("Airavata retrieved application interfaces for gateway id : " + gatewayId);
+            return allApplicationInterfacesMap;
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving application interfaces...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving application interfaces. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -511,7 +1041,21 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(String gatewayId) throws RegistryServiceException, TException {
-        return null;
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+        }
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            List<ApplicationInterfaceDescription> interfaces = appCatalog.getApplicationInterface().getAllApplicationInterfaces(gatewayId);
+            logger.debug("Airavata retrieved application interfaces for gateway id : " + gatewayId);
+            return interfaces;
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving application interfaces...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving application interfaces. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -523,7 +1067,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<InputDataObjectType> getApplicationInputs(String appInterfaceId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            List<InputDataObjectType> applicationInputs = appCatalog.getApplicationInterface().getApplicationInputs(appInterfaceId);
+            logger.debug("Airavata retrieved application inputs for application interface id : " + appInterfaceId);
+            return applicationInputs;
+        } catch (AppCatalogException e) {
+            logger.error(appInterfaceId, "Error while retrieving application inputs...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving application inputs. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -535,7 +1089,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<OutputDataObjectType> getApplicationOutputs(String appInterfaceId) throws RegistryServiceException, TException {
-        return null;
+        List<OutputDataObjectType> list = getApplicationOutputsInternal(appInterfaceId);
+        logger.debug("Airavata retrieved application outputs for app interface id : " + appInterfaceId);
+        return list;
     }
 
     /**
@@ -548,7 +1104,36 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public Map<String, String> getAvailableAppInterfaceComputeResources(String appInterfaceId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            ApplicationDeployment applicationDeployment = appCatalog.getApplicationDeployment();
+            Map<String, String> allComputeResources = appCatalog.getComputeResource().getAvailableComputeResourceIdList();
+            Map<String, String> availableComputeResources = new HashMap<String, String>();
+            ApplicationInterfaceDescription applicationInterface =
+                    appCatalog.getApplicationInterface().getApplicationInterface(appInterfaceId);
+            HashMap<String, String> filters = new HashMap<String,String>();
+            List<String> applicationModules = applicationInterface.getApplicationModules();
+            if (applicationModules != null && !applicationModules.isEmpty()){
+                for (String moduleId : applicationModules) {
+                    filters.put(AppCatAbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, moduleId);
+                    List<ApplicationDeploymentDescription> applicationDeployments =
+                            applicationDeployment.getApplicationDeployements(filters);
+                    for (ApplicationDeploymentDescription deploymentDescription : applicationDeployments) {
+                        if (allComputeResources.get(deploymentDescription.getComputeHostId()) != null){
+                            availableComputeResources.put(deploymentDescription.getComputeHostId(),
+                                    allComputeResources.get(deploymentDescription.getComputeHostId()));
+                        }
+                    }
+                }
+            }
+            logger.debug("Airavata retrieved available compute resources for application interface id : " + appInterfaceId);
+            return availableComputeResources;
+        } catch (AppCatalogException e) {
+            logger.error(appInterfaceId, "Error while saving compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while saving compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -560,7 +1145,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public ComputeResourceDescription getComputeResource(String computeResourceId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            ComputeResourceDescription computeResource = appCatalog.getComputeResource().getComputeResource(computeResourceId);
+            logger.debug("Airavata retrieved compute resource with compute resource Id : " + computeResourceId);
+            return computeResource;
+        } catch (AppCatalogException e) {
+            logger.error(computeResourceId, "Error while retrieving compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -571,7 +1166,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public Map<String, String> getAllComputeResourceNames() throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            Map<String, String> computeResourceIdList = appCatalog.getComputeResource().getAllComputeResourceIdList();
+            logger.debug("Airavata retrieved all the available compute resources...");
+            return computeResourceIdList;
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -583,7 +1188,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteComputeResource(String computeResourceId) throws RegistryServiceException, TException {
-        return false;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            appCatalog.getComputeResource().removeComputeResource(computeResourceId);
+            logger.debug("Airavata deleted compute resource with compute resource Id : " + computeResourceId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(computeResourceId, "Error while deleting compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -595,7 +1210,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public StorageResourceDescription getStorageResource(String storageResourceId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            StorageResourceDescription storageResource = appCatalog.getStorageResource().getStorageResource(storageResourceId);
+            logger.debug("Airavata retrieved storage resource with storage resource Id : " + storageResourceId);
+            return storageResource;
+        } catch (AppCatalogException e) {
+            logger.error(storageResourceId, "Error while retrieving storage resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving storage resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -606,7 +1231,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public Map<String, String> getAllStorageResourceNames() throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            Map<String, String> resourceIdList = appCatalog.getStorageResource().getAllStorageResourceIdList();
+            logger.debug("Airavata retrieved storage resources list...");
+            return resourceIdList;
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving storage resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving storage resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -618,7 +1253,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteStorageResource(String storageResourceId) throws RegistryServiceException, TException {
-        return false;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            appCatalog.getStorageResource().removeStorageResource(storageResourceId);
+            logger.debug("Airavata deleted storage resource with storage resource Id : " + storageResourceId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(storageResourceId, "Error while deleting storage resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting storage resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -628,7 +1273,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public LOCALSubmission getLocalJobSubmission(String jobSubmissionId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            LOCALSubmission localJobSubmission = appCatalog.getComputeResource().getLocalJobSubmission(jobSubmissionId);
+            logger.debug("Airavata retrieved local job submission for job submission interface id: " + jobSubmissionId);
+            return localJobSubmission;
+        } catch (AppCatalogException e) {
+            String errorMsg = "Error while retrieving local job submission interface to resource compute resource...";
+            logger.error(jobSubmissionId, errorMsg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(errorMsg + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -638,7 +1294,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public SSHJobSubmission getSSHJobSubmission(String jobSubmissionId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(jobSubmissionId);
+            logger.debug("Airavata retrieved SSH job submission for job submission interface id: " + jobSubmissionId);
+            return sshJobSubmission;
+        } catch (AppCatalogException e) {
+            String errorMsg = "Error while retrieving SSH job submission interface to resource compute resource...";
+            logger.error(jobSubmissionId, errorMsg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(errorMsg + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -655,7 +1322,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public UnicoreJobSubmission getUnicoreJobSubmission(String jobSubmissionId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            UnicoreJobSubmission unicoreJobSubmission = appCatalog.getComputeResource().getUNICOREJobSubmission(jobSubmissionId);
+            logger.debug("Airavata retrieved UNICORE job submission for job submission interface id: " + jobSubmissionId);
+            return unicoreJobSubmission;
+        } catch (AppCatalogException e) {
+            String errorMsg = "Error while retrieving Unicore job submission interface to resource compute resource...";
+            logger.error(jobSubmissionId, errorMsg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(errorMsg + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -670,7 +1348,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public CloudJobSubmission getCloudJobSubmission(String jobSubmissionId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            CloudJobSubmission cloudJobSubmission = appCatalog.getComputeResource().getCloudJobSubmission(jobSubmissionId);
+            logger.debug("Airavata retrieved cloud job submission for job submission interface id: " + jobSubmissionId);
+            return cloudJobSubmission;
+        } catch (AppCatalogException e) {
+            String errorMsg = "Error while retrieving Cloud job submission interface to resource compute resource...";
+            logger.error(jobSubmissionId, errorMsg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(errorMsg + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -681,7 +1370,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public LOCALDataMovement getLocalDataMovement(String dataMovementId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            LOCALDataMovement localDataMovement = appCatalog.getComputeResource().getLocalDataMovement(dataMovementId);
+            logger.debug("Airavata retrieved local data movement with data movement id: " + dataMovementId);
+            return localDataMovement;
+        } catch (AppCatalogException e) {
+            String errorMsg = "Error while retrieving local data movement interface to resource compute resource...";
+            logger.error(dataMovementId, errorMsg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(errorMsg + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -692,7 +1392,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public SCPDataMovement getSCPDataMovement(String dataMovementId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            SCPDataMovement scpDataMovement = appCatalog.getComputeResource().getSCPDataMovement(dataMovementId);
+            logger.debug("Airavata retrieved SCP data movement with data movement id: " + dataMovementId);
+            return scpDataMovement;
+        } catch (AppCatalogException e) {
+            String errorMsg = "Error while retrieving SCP data movement interface to resource compute resource...";
+            logger.error(dataMovementId, errorMsg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(errorMsg + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -703,7 +1414,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public UnicoreDataMovement getUnicoreDataMovement(String dataMovementId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            UnicoreDataMovement unicoreDataMovement = appCatalog.getComputeResource().getUNICOREDataMovement(dataMovementId);
+            logger.debug("Airavata retrieved UNICORE data movement with data movement id: " + dataMovementId);
+            return unicoreDataMovement;
+        } catch (AppCatalogException e) {
+            String errorMsg = "Error while retrieving UNICORE data movement interface...";
+            logger.error(dataMovementId, errorMsg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(errorMsg + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -714,7 +1436,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public GridFTPDataMovement getGridFTPDataMovement(String dataMovementId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            GridFTPDataMovement gridFTPDataMovement = appCatalog.getComputeResource().getGridFTPDataMovement(dataMovementId);
+            logger.debug("Airavata retrieved GRIDFTP data movement with data movement id: " + dataMovementId);
+            return gridFTPDataMovement;
+        } catch (AppCatalogException e) {
+            String errorMsg = "Error while retrieving GridFTP data movement interface to resource compute resource...";
+            logger.error(dataMovementId, errorMsg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(errorMsg + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -777,17 +1510,44 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId) throws RegistryServiceException, TException {
-        return false;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            appCatalog.getComputeResource().removeJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
+            logger.debug("Airavata deleted job submission interface with interface id : " + jobSubmissionInterfaceId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(jobSubmissionInterfaceId, "Error while deleting job submission interface...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting job submission interface. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     public ResourceJobManager getResourceJobManager(String resourceJobManagerId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            return appCatalog.getComputeResource().getResourceJobManager(resourceJobManagerId);
+        } catch (AppCatalogException e) {
+            logger.error(resourceJobManagerId, "Error while retrieving resource job manager...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving resource job manager. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     public boolean deleteResourceJobManager(String resourceJobManagerId) throws RegistryServiceException, TException {
-        return false;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            appCatalog.getComputeResource().deleteResourceJobManager(resourceJobManagerId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(resourceJobManagerId, "Error while deleting resource job manager...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting resource job manager. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -800,7 +1560,16 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteBatchQueue(String computeResourceId, String queueName) throws RegistryServiceException, TException {
-        return false;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            appCatalog.getComputeResource().removeBatchQueue(computeResourceId, queueName);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(computeResourceId, "Error while deleting batch queue...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting batch queue. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -812,7 +1581,22 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public GatewayResourceProfile getGatewayResourceProfile(String gatewayID) throws RegistryServiceException, TException {
-        return null;
+        try {
+            if (!isGatewayExistInternal(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            GatewayResourceProfile gatewayResourceProfile = gatewayProfile.getGatewayProfile(gatewayID);
+            logger.debug("Airavata retrieved gateway profile with gateway id : " + gatewayID);
+            return gatewayResourceProfile;
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while retrieving gateway resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving gateway resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -824,7 +1608,22 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteGatewayResourceProfile(String gatewayID) throws RegistryServiceException, TException {
-        return false;
+        try {
+            if (!isGatewayExistInternal(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            gatewayProfile.removeGatewayResourceProfile(gatewayID);
+            logger.debug("Airavata deleted gateway profile with gateway id : " + gatewayID);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while removing gateway resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while removing gateway resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -837,7 +1636,35 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public ComputeResourcePreference getGatewayComputeResourcePreference(String gatewayID, String computeResourceId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            if (!isGatewayExistInternal(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            ComputeResource computeResource = appCatalog.getComputeResource();
+            if (!gatewayProfile.isGatewayResourceProfileExists(gatewayID)){
+                logger.error(gatewayID, "Given gateway profile does not exist in the system. Please provide a valid gateway id...");
+                RegistryServiceException exception = new RegistryServiceException();
+                exception.setMessage("Given gateway profile does not exist in the system. Please provide a valid gateway id...");
+                throw exception;
+            }
+            if (!computeResource.isComputeResourceExists(computeResourceId)){
+                logger.error(computeResourceId, "Given compute resource does not exist in the system. Please provide a valid compute resource id...");
+                RegistryServiceException exception = new RegistryServiceException();
+                exception.setMessage("Given compute resource does not exist in the system. Please provide a valid compute resource id...");
+                throw exception;
+            }
+            ComputeResourcePreference computeResourcePreference = gatewayProfile.getComputeResourcePreference(gatewayID, computeResourceId);
+            logger.debug("Airavata retrieved gateway compute resource preference with gateway id : " + gatewayID + " and for compute resoruce id : " + computeResourceId );
+            return computeResourcePreference;
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while reading gateway compute resource preference...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while reading gateway compute resource preference. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -849,8 +1676,30 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns the StoragePreference object.
      */
     @Override
-    public StoragePreference getGatewayStoragePreference(String gatewayID, String storageResourceId) throws RegistryServiceException, TException {
-        return null;
+    public StoragePreference getGatewayStoragePreference(String gatewayID, String storageId) throws RegistryServiceException, TException {
+        try {
+            if (!isGatewayExistInternal(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            if (!gatewayProfile.isGatewayResourceProfileExists(gatewayID)){
+                logger.error(gatewayID, "Given gateway profile does not exist in the system. Please provide a valid gateway id...");
+                RegistryServiceException exception = new RegistryServiceException();
+                exception.setMessage("Given gateway profile does not exist in the system. Please provide a valid gateway id...");
+                throw exception;
+            }
+
+            StoragePreference storagePreference = gatewayProfile.getStoragePreference(gatewayID, storageId);
+            logger.debug("Airavata retrieved storage resource preference with gateway id : " + gatewayID + " and for storage resource id : " + storageId);
+            return storagePreference;
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while reading gateway data storage preference...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while reading gateway data storage preference. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -862,7 +1711,20 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<ComputeResourcePreference> getAllGatewayComputeResourcePreferences(String gatewayID) throws RegistryServiceException, TException {
-        return null;
+        try {
+            if (!isGatewayExistInternal(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            return gatewayProfile.getGatewayProfile(gatewayID).getComputeResourcePreferences();
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while reading gateway compute resource preferences...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while reading gateway compute resource preferences. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -874,7 +1736,20 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<StoragePreference> getAllGatewayStoragePreferences(String gatewayID) throws RegistryServiceException, TException {
-        return null;
+        try {
+            if (!isGatewayExistInternal(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            return gatewayProfile.getGatewayProfile(gatewayID).getStoragePreferences();
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while reading gateway data storage preferences...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while reading gateway data storage preferences. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -885,7 +1760,15 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<GatewayResourceProfile> getAllGatewayResourceProfiles() throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            return gatewayProfile.getAllGatewayProfiles();
+        } catch (AppCatalogException e) {
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while reading retrieving all gateway profiles. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -898,7 +1781,20 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteGatewayComputeResourcePreference(String gatewayID, String computeResourceId) throws RegistryServiceException, TException {
-        return false;
+        try {
+            if (!isGatewayExistInternal(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            return gatewayProfile.removeComputeResourcePreferenceFromGateway(gatewayID, computeResourceId);
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while reading gateway compute resource preference...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating gateway compute resource preference. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -911,7 +1807,20 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteGatewayStoragePreference(String gatewayID, String storageId) throws RegistryServiceException, TException {
-        return false;
+        try {
+            if (!isGatewayExistInternal(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            return gatewayProfile.removeDataStoragePreferenceFromGateway(gatewayID, storageId);
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while reading gateway data storage preference...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating gateway data storage preference. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -922,7 +1831,19 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<String> getAllWorkflows(String gatewayId) throws RegistryServiceException, TException {
-        return null;
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+        }
+        try {
+            return getWorkflowCatalog().getAllWorkflows(gatewayId);
+        } catch (WorkflowCatalogException e) {
+            String msg = "Error in retrieving all workflow template Ids.";
+            logger.error(msg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -932,42 +1853,114 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public WorkflowModel getWorkflow(String workflowTemplateId) throws RegistryServiceException, TException {
-        return null;
+        try {
+            return getWorkflowCatalog().getWorkflow(workflowTemplateId);
+        } catch (WorkflowCatalogException e) {
+            String msg = "Error in retrieving the workflow "+workflowTemplateId+".";
+            logger.error(msg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     public void deleteWorkflow(String workflowTemplateId) throws RegistryServiceException, TException {
-
+        try {
+            getWorkflowCatalog().deleteWorkflow(workflowTemplateId);
+        } catch (WorkflowCatalogException e) {
+            String msg = "Error in deleting the workflow "+workflowTemplateId+".";
+            logger.error(msg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     public String getWorkflowTemplateId(String workflowName) throws RegistryServiceException, TException {
-        return null;
+        try {
+            return getWorkflowCatalog().getWorkflowTemplateId(workflowName);
+        } catch (WorkflowCatalogException e) {
+            String msg = "Error in retrieving the workflow template id for "+workflowName+".";
+            logger.error(msg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     public boolean isWorkflowExistWithName(String workflowName) throws RegistryServiceException, TException {
-        return false;
+        try {
+            return getWorkflowCatalog().isWorkflowExistWithName(workflowName);
+        } catch (WorkflowCatalogException e) {
+            String msg = "Error in veriying the workflow for workflow name "+workflowName+".";
+            logger.error(msg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
-    public DataProductModel getDataProduct(String dataProductUri) throws RegistryServiceException, TException {
-        return null;
+    public DataProductModel getDataProduct(String productUri) throws RegistryServiceException, TException {
+        try {
+            dataCatalog = RegistryFactory.getReplicaCatalog();
+            DataProductModel dataProductModel = dataCatalog.getDataProduct(productUri);
+            return dataProductModel;
+        } catch (RegistryException e) {
+            String msg = "Error in retreiving the data product "+productUri+".";
+            logger.error(msg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     public DataProductModel getParentDataProduct(String productUri) throws RegistryServiceException, TException {
-        return null;
+        try {
+            dataCatalog = RegistryFactory.getReplicaCatalog();
+            DataProductModel dataProductModel = dataCatalog.getParentDataProduct(productUri);
+            return dataProductModel;
+        } catch (RegistryException e) {
+            String msg = "Error in retreiving the parent data product for "+ productUri+".";
+            logger.error(msg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     public List<DataProductModel> getChildDataProducts(String productUri) throws RegistryServiceException, TException {
-        return null;
+        try {
+            dataCatalog = RegistryFactory.getReplicaCatalog();
+            List<DataProductModel> dataProductModels = dataCatalog.getChildDataProducts(productUri);
+            return dataProductModels;
+        } catch (RegistryException e) {
+            String msg = "Error in retreiving the child products for "+productUri+".";
+            logger.error(msg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel) throws RegistryServiceException, TException {
-        return null;
+        try {
+            dataCatalog = RegistryFactory.getReplicaCatalog();
+            String replicaId = dataCatalog.registerReplicaLocation(replicaLocationModel);
+            return replicaId;
+        } catch (RegistryException e) {
+            String msg = "Error in retreiving the replica "+replicaLocationModel.getReplicaName()+".";
+            logger.error(msg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -977,17 +1970,47 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String registerDataProduct(DataProductModel dataProductModel) throws RegistryServiceException, TException {
-        return null;
+        try {
+            dataCatalog = RegistryFactory.getReplicaCatalog();
+            String productUrl = dataCatalog.registerDataProduct(dataProductModel);
+            return productUrl;
+        } catch (RegistryException e) {
+            String msg = "Error in registering the data resource"+dataProductModel.getProductName()+".";
+            logger.error(msg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     public void updateWorkflow(String workflowTemplateId, WorkflowModel workflow) throws RegistryServiceException, TException {
-
+        try {
+            getWorkflowCatalog().updateWorkflow(workflowTemplateId, workflow);
+        } catch (WorkflowCatalogException e) {
+            String msg = "Error in updating the workflow "+workflow.getName()+".";
+            logger.error(msg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     public String registerWorkflow(String gatewayId, WorkflowModel workflow) throws RegistryServiceException, TException {
-        return null;
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+        }
+        try {
+            return getWorkflowCatalog().registerWorkflow(workflow, gatewayId);
+        } catch (WorkflowCatalogException e) {
+            String msg = "Error in registering the workflow "+workflow.getName()+".";
+            logger.error(msg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1001,7 +2024,36 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateGatewayStoragePreference(String gatewayID, String storageId, StoragePreference storagePreference) throws RegistryServiceException, TException {
-        return false;
+        try {
+            if (!isGatewayExistInternal(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
+            List<StoragePreference> dataStoragePreferences = profile.getStoragePreferences();
+            StoragePreference preferenceToRemove = null;
+            for (StoragePreference preference : dataStoragePreferences) {
+                if (preference.getStorageResourceId().equals(storageId)){
+                    preferenceToRemove=preference;
+                    break;
+                }
+            }
+            if (preferenceToRemove!=null) {
+                profile.getStoragePreferences().remove(
+                        preferenceToRemove);
+            }
+            profile.getStoragePreferences().add(storagePreference);
+            gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
+            logger.debug("Airavata updated storage resource preference with gateway id : " + gatewayID + " and for storage resource id : " + storageId );
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while reading gateway data storage preference...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating gateway data storage preference. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1015,7 +2067,36 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateGatewayComputeResourcePreference(String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference) throws RegistryServiceException, TException {
-        return false;
+        try {
+            if (!isGatewayExistInternal(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
+            List<ComputeResourcePreference> computeResourcePreferences = profile.getComputeResourcePreferences();
+            ComputeResourcePreference preferenceToRemove = null;
+            for (ComputeResourcePreference preference : computeResourcePreferences) {
+                if (preference.getComputeResourceId().equals(computeResourceId)){
+                    preferenceToRemove=preference;
+                    break;
+                }
+            }
+            if (preferenceToRemove!=null) {
+                profile.getComputeResourcePreferences().remove(
+                        preferenceToRemove);
+            }
+            profile.getComputeResourcePreferences().add(computeResourcePreference);
+            gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
+            logger.debug("Airavata updated compute resource preference with gateway id : " + gatewayID + " and for compute resource id : " + computeResourceId );
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while reading gateway compute resource preference...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating gateway compute resource preference. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1029,8 +2110,30 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Instead an update should be used.
      */
     @Override
-    public boolean addGatewayStoragePreference(String gatewayID, String storageResourceId, StoragePreference storagePreference) throws RegistryServiceException, TException {
-        return false;
+    public boolean addGatewayStoragePreference(String gatewayID, String storageResourceId, StoragePreference dataStoragePreference) throws RegistryServiceException, TException {
+        try {
+            if (!isGatewayExistInternal(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            if (!gatewayProfile.isGatewayResourceProfileExists(gatewayID)){
+                throw new RegistryServiceException("Gateway resource profile '"+gatewayID+"' does not exist!!!");
+            }
+            GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
+//            gatewayProfile.removeGatewayResourceProfile(gatewayID);
+            dataStoragePreference.setStorageResourceId(storageResourceId);
+            profile.addToStoragePreferences(dataStoragePreference);
+            gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
+            logger.debug("Airavata added storage resource preference with gateway id : " + gatewayID + " and for storage resource id : " + storageResourceId );
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while registering gateway resource profile preference...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while registering gateway resource profile preference. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1045,7 +2148,28 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean addGatewayComputeResourcePreference(String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference) throws RegistryServiceException, TException {
-        return false;
+        try {
+            if (!isGatewayExistInternal(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            if (!gatewayProfile.isGatewayResourceProfileExists(gatewayID)){
+                throw new RegistryServiceException("Gateway resource profile '"+gatewayID+"' does not exist!!!");
+            }
+            GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
+//            gatewayProfile.removeGatewayResourceProfile(gatewayID);
+            profile.addToComputeResourcePreferences(computeResourcePreference);
+            gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
+            logger.debug("Airavata added gateway compute resource preference with gateway id : " + gatewayID + " and for compute resource id : " + computeResourceId );
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while registering gateway resource profile preference...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while registering gateway resource profile preference. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1058,7 +2182,22 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateGatewayResourceProfile(String gatewayID, GatewayResourceProfile gatewayResourceProfile) throws RegistryServiceException, TException {
-        return false;
+        try {
+            if (!isGatewayExistInternal(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            gatewayProfile.updateGatewayResourceProfile(gatewayID, gatewayResourceProfile);
+            logger.debug("Airavata updated gateway profile with gateway id : " + gatewayID);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while updating gateway resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating gateway resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1072,17 +2211,55 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String registerGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) throws RegistryServiceException, TException {
-        return null;
+        try {
+            if (!validateString(gatewayResourceProfile.getGatewayID())){
+                logger.error("Cannot create gateway profile with empty gateway id");
+                RegistryServiceException exception =  new RegistryServiceException();
+                exception.setMessage("Cannot create gateway profile with empty gateway id");
+                throw exception;
+            }
+            if (!isGatewayExistInternal(gatewayResourceProfile.getGatewayID())){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            String resourceProfile = gatewayProfile.addGatewayResourceProfile(gatewayResourceProfile);
+            logger.debug("Airavata registered gateway profile with gateway id : " + gatewayResourceProfile.getGatewayID());
+            return resourceProfile;
+        } catch (AppCatalogException e) {
+            logger.error("Error while registering gateway resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while registering gateway resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     public boolean updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager) throws RegistryServiceException, TException {
-        return false;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            appCatalog.getComputeResource().updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(resourceJobManagerId, "Error while updating resource job manager...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating resource job manager. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     public String registerResourceJobManager(ResourceJobManager resourceJobManager) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            return appCatalog.getComputeResource().addResourceJobManager(resourceJobManager);
+        } catch (AppCatalogException e) {
+            logger.error(resourceJobManager.getResourceJobManagerId(), "Error while adding resource job manager...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding resource job manager. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1095,8 +2272,28 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteDataMovementInterface(String productUri, String dataMovementInterfaceId, DMType dataMoveType) throws RegistryServiceException, TException {
-        return false;
+    public boolean deleteDataMovementInterface(String resourceId, String dataMovementInterfaceId, DMType dmType) throws RegistryServiceException, TException {
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            switch (dmType){
+                case COMPUTE_RESOURCE:
+                    appCatalog.getComputeResource().removeDataMovementInterface(resourceId, dataMovementInterfaceId);
+                    logger.debug("Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
+                    return true;
+                case STORAGE_RESOURCE:
+                    appCatalog.getStorageResource().removeDataMovementInterface(resourceId, dataMovementInterfaceId);
+                    logger.debug("Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
+                    return true;
+                default:
+                    logger.error("Unsupported data movement type specifies.. Please provide the correct data movement type... ");
+                    return false;
+            }
+        } catch (AppCatalogException e) {
+            logger.error(dataMovementInterfaceId, "Error while deleting data movement interface...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting data movement interface. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1110,7 +2307,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateGridFTPDataMovementDetails(String dataMovementInterfaceId, GridFTPDataMovement gridFTPDataMovement) throws RegistryServiceException, TException {
-        return false;
+        try {
+            GridftpDataMovementResource movment = AppCatalogThriftConversion.getGridFTPDataMovementDescription(gridFTPDataMovement);
+            movment.setDataMovementInterfaceId(dataMovementInterfaceId);
+            movment.save();
+            logger.debug("Airavata updated GRIDFTP data movement with data movement id: " + dataMovementInterfaceId );
+            return true;
+        } catch (Exception e) {
+            logger.error(dataMovementInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1125,8 +2333,21 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns the unique data movement id.
      */
     @Override
-    public String addGridFTPDataMovementDetails(String productUri, DMType dataMoveType, int priorityOrder, GridFTPDataMovement gridFTPDataMovement) throws RegistryServiceException, TException {
-        return null;
+    public String addGridFTPDataMovementDetails(String computeResourceId, DMType dmType, int priorityOrder, GridFTPDataMovement gridFTPDataMovement) throws RegistryServiceException, TException {
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            ComputeResource computeResource = appCatalog.getComputeResource();
+            String addDataMovementInterface = addDataMovementInterface(computeResource, computeResourceId, dmType,
+                    computeResource.addGridFTPDataMovement(gridFTPDataMovement), DataMovementProtocol.GridFTP, priorityOrder);
+            logger.debug("Airavata registered GridFTP data movement for resource Id: " + computeResourceId);
+            return addDataMovementInterface;
+        } catch (AppCatalogException e) {
+            logger.error(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding data movement interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1140,7 +2361,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateUnicoreDataMovementDetails(String dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement) throws RegistryServiceException, TException {
-        return false;
+        try {
+            UnicoreDataMovementResource movment = AppCatalogThriftConversion.getUnicoreDMResource(unicoreDataMovement);
+            movment.setDataMovementId(dataMovementInterfaceId);
+            movment.save();
+            logger.debug("Airavata updated UNICORE data movement with data movement id: " + dataMovementInterfaceId);
+            return true;
+        } catch (Exception e) {
+            logger.error(dataMovementInterfaceId, "Error while updating unicore data movement to compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating unicore data movement to compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1155,8 +2387,20 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns the unique data movement id.
      */
     @Override
-    public String addUnicoreDataMovementDetails(String productUri, DMType dataMoveType, int priorityOrder, UnicoreDataMovement unicoreDataMovement) throws RegistryServiceException, TException {
-        return null;
+    public String addUnicoreDataMovementDetails(String resourceId, DMType dmType, int priorityOrder, UnicoreDataMovement unicoreDataMovement) throws RegistryServiceException, TException {
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            ComputeResource computeResource = appCatalog.getComputeResource();
+            String movementInterface = addDataMovementInterface(computeResource, resourceId, dmType,
+                    computeResource.addUnicoreDataMovement(unicoreDataMovement), DataMovementProtocol.UNICORE_STORAGE_SERVICE, priorityOrder);
+            logger.debug("Airavata registered UNICORE data movement for resource Id: " + resourceId);
+            return movementInterface;
+        } catch (AppCatalogException e) {
+            logger.error(resourceId, "Error while adding data movement interface to resource compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding data movement interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1170,7 +2414,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateSCPDataMovementDetails(String dataMovementInterfaceId, SCPDataMovement scpDataMovement) throws RegistryServiceException, TException {
-        return false;
+        try {
+            ScpDataMovementResource movment = AppCatalogThriftConversion.getSCPDataMovementDescription(scpDataMovement);
+            movment.setDataMovementInterfaceId(dataMovementInterfaceId);
+            movment.save();
+            logger.debug("Airavata updated SCP data movement with data movement id: " + dataMovementInterfaceId);
+            return true;
+        } catch (Exception e) {
+            logger.error(dataMovementInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1185,8 +2440,20 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns the unique job submission id.
      */
     @Override
-    public String addSCPDataMovementDetails(String productUri, DMType dataMoveType, int priorityOrder, SCPDataMovement scpDataMovement) throws RegistryServiceException, TException {
-        return null;
+    public String addSCPDataMovementDetails(String resourceId, DMType dmType, int priorityOrder, SCPDataMovement scpDataMovement) throws RegistryServiceException, TException {
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            ComputeResource computeResource = appCatalog.getComputeResource();
+            String movementInterface = addDataMovementInterface(computeResource, resourceId, dmType,
+                    computeResource.addScpDataMovement(scpDataMovement), DataMovementProtocol.SCP, priorityOrder);
+            logger.debug("Airavata registered SCP data movement for resource Id: " + resourceId);
+            return movementInterface;
+        } catch (AppCatalogException e) {
+            logger.error(resourceId, "Error while adding data movement interface to resource compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding data movement interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1199,7 +2466,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateLocalDataMovementDetails(String dataMovementInterfaceId, LOCALDataMovement localDataMovement) throws RegistryServiceException, TException {
-        return false;
+        try {
+            LocalDataMovementResource movment = AppCatalogThriftConversion.getLocalDataMovement(localDataMovement);
+            movment.setDataMovementInterfaceId(dataMovementInterfaceId);
+            movment.save();
+            logger.debug("Airavata updated local data movement with data movement id: " + dataMovementInterfaceId);
+            return true;
+        } catch (Exception e) {
+            logger.error(dataMovementInterfaceId, "Error while updating local data movement interface..", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating local data movement interface. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1214,8 +2492,20 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns the unique job submission id.
      */
     @Override
-    public String addLocalDataMovementDetails(String productUri, DMType dataMoveType, int priorityOrder, LOCALDataMovement localDataMovement) throws RegistryServiceException, TException {
-        return null;
+    public String addLocalDataMovementDetails(String resourceId, DMType dataMoveType, int priorityOrder, LOCALDataMovement localDataMovement) throws RegistryServiceException, TException {
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            ComputeResource computeResource = appCatalog.getComputeResource();
+            String movementInterface = addDataMovementInterface(computeResource, resourceId, dataMoveType,
+                    computeResource.addLocalDataMovement(localDataMovement), DataMovementProtocol.LOCAL, priorityOrder);
+            logger.debug("Airavata registered local data movement for resource Id: " + resourceId);
+            return movementInterface;
+        } catch (AppCatalogException e) {
+            logger.error(resourceId, "Error while adding data movement interface to resource resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding data movement interface to resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1228,7 +2518,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateUnicoreJobSubmissionDetails(String jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission) throws RegistryServiceException, TException {
-        return false;
+        try {
+            UnicoreJobSubmissionResource submission = AppCatalogThriftConversion.getUnicoreJobSubmission(unicoreJobSubmission);
+            submission.setjobSubmissionInterfaceId(jobSubmissionInterfaceId);
+            submission.save();
+            logger.debug("Airavata updated UNICORE job submission for job submission interface id: " + jobSubmissionInterfaceId);
+            return true;
+        } catch (Exception e) {
+            logger.error(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1241,7 +2542,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateCloudJobSubmissionDetails(String jobSubmissionInterfaceId, CloudJobSubmission sshJobSubmission) throws RegistryServiceException, TException {
-        return false;
+        try {
+            CloudSubmissionResource submission = AppCatalogThriftConversion.getCloudJobSubmission(sshJobSubmission);
+            submission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
+            submission.save();
+            logger.debug("Airavata updated Cloud job submission for job submission interface id: " + jobSubmissionInterfaceId);
+            return true;
+        } catch (Exception e) {
+            logger.error(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1254,7 +2566,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateSSHJobSubmissionDetails(String jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission) throws RegistryServiceException, TException {
-        return false;
+        try {
+            SshJobSubmissionResource submission = AppCatalogThriftConversion.getSSHJobSubmission(sshJobSubmission);
+            submission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
+            submission.save();
+            logger.debug("Airavata updated SSH job submission for job submission interface id: " + jobSubmissionInterfaceId);
+            return true;
+        } catch (Exception e) {
+            logger.error(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1282,7 +2605,19 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String addCloudJobSubmissionDetails(String computeResourceId, int priorityOrder, CloudJobSubmission cloudSubmission) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            ComputeResource computeResource = appCatalog.getComputeResource();
+            String submissionInterface = addJobSubmissionInterface(computeResource, computeResourceId,
+                    computeResource.addCloudJobSubmission(cloudSubmission), JobSubmissionProtocol.CLOUD, priorityOrder);
+            logger.debug("Airavata registered Cloud job submission for compute resource id: " + computeResourceId);
+            return submissionInterface;
+        } catch (AppCatalogException e) {
+            logger.error(computeResourceId, "Error while adding job submission interface to resource compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1297,7 +2632,19 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String addUNICOREJobSubmissionDetails(String computeResourceId, int priorityOrder, UnicoreJobSubmission unicoreJobSubmission) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            ComputeResource computeResource = appCatalog.getComputeResource();
+            String submissionInterface = addJobSubmissionInterface(computeResource, computeResourceId,
+                    computeResource.addUNICOREJobSubmission(unicoreJobSubmission), JobSubmissionProtocol.UNICORE, priorityOrder);
+            logger.debug("Airavata registered UNICORE job submission for compute resource id: " + computeResourceId);
+            return submissionInterface;
+        } catch (AppCatalogException e) {
+            logger.error("Error while adding job submission interface to resource compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1312,7 +2659,19 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String addSSHForkJobSubmissionDetails(String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            ComputeResource computeResource = appCatalog.getComputeResource();
+            String submissionDetails = addJobSubmissionInterface(computeResource, computeResourceId,
+                    computeResource.addSSHJobSubmission(sshJobSubmission), JobSubmissionProtocol.SSH_FORK, priorityOrder);
+            logger.debug("Airavata registered Fork job submission for compute resource id: " + computeResourceId);
+            return submissionDetails;
+        } catch (AppCatalogException e) {
+            logger.error(computeResourceId, "Error while adding job submission interface to resource compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1327,7 +2686,19 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String addSSHJobSubmissionDetails(String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            ComputeResource computeResource = appCatalog.getComputeResource();
+            String submissionInterface = addJobSubmissionInterface(computeResource, computeResourceId,
+                    computeResource.addSSHJobSubmission(sshJobSubmission), JobSubmissionProtocol.SSH, priorityOrder);
+            logger.debug("Airavata registered SSH job submission for compute resource id: " + computeResourceId);
+            return submissionInterface;
+        } catch (AppCatalogException e) {
+            logger.error(computeResourceId, "Error while adding job submission interface to resource compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1340,7 +2711,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateLocalSubmissionDetails(String jobSubmissionInterfaceId, LOCALSubmission localSubmission) throws RegistryServiceException, TException {
-        return false;
+        try {
+            LocalSubmissionResource submission = AppCatalogThriftConversion.getLocalJobSubmission(localSubmission);
+            submission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
+            submission.save();
+            logger.debug("Airavata updated local job submission for job submission interface id: " + jobSubmissionInterfaceId);
+            return true;
+        } catch (Exception e) {
+            logger.error(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1355,7 +2737,19 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String addLocalSubmissionDetails(String computeResourceId, int priorityOrder, LOCALSubmission localSubmission) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            ComputeResource computeResource = appCatalog.getComputeResource();
+            String submissionInterface = addJobSubmissionInterface(computeResource, computeResourceId,
+                    computeResource.addLocalJobSubmission(localSubmission), JobSubmissionProtocol.LOCAL, priorityOrder);
+            logger.debug("Airavata added local job submission for compute resource id: " + computeResourceId);
+            return submissionInterface;
+        } catch (AppCatalogException e) {
+            logger.error(computeResourceId, "Error while adding job submission interface to resource compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1368,7 +2762,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateStorageResource(String storageResourceId, StorageResourceDescription storageResourceDescription) throws RegistryServiceException, TException {
-        return false;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            appCatalog.getStorageResource().updateStorageResource(storageResourceId, storageResourceDescription);
+            logger.debug("Airavata updated storage resource with storage resource Id : " + storageResourceId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(storageResourceId, "Error while updating storage resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updaing storage resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1380,7 +2784,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String registerStorageResource(StorageResourceDescription storageResourceDescription) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            String storageResource = appCatalog.getStorageResource().addStorageResource(storageResourceDescription);
+            logger.debug("Airavata registered storage resource with storage resource Id : " + storageResource);
+            return storageResource;
+        } catch (AppCatalogException e) {
+            logger.error("Error while saving storage resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while saving storage resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1393,7 +2807,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateComputeResource(String computeResourceId, ComputeResourceDescription computeResourceDescription) throws RegistryServiceException, TException {
-        return false;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            appCatalog.getComputeResource().updateComputeResource(computeResourceId, computeResourceDescription);
+            logger.debug("Airavata updated compute resource with compute resource Id : " + computeResourceId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(computeResourceId, "Error while updating compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updaing compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1405,7 +2829,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String registerComputeResource(ComputeResourceDescription computeResourceDescription) throws RegistryServiceException, TException {
-        return null;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            String computeResource = appCatalog.getComputeResource().addComputeResource(computeResourceDescription);
+            logger.debug("Airavata registered compute resource with compute resource Id : " + computeResource);
+            return computeResource;
+        } catch (AppCatalogException e) {
+            logger.error("Error while saving compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while saving compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1418,7 +2852,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateApplicationInterface(String appInterfaceId, ApplicationInterfaceDescription applicationInterface) throws RegistryServiceException, TException {
-        return false;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            appCatalog.getApplicationInterface().updateApplicationInterface(appInterfaceId, applicationInterface);
+            logger.debug("Airavata updated application interface with interface id : " + appInterfaceId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(appInterfaceId, "Error while updating application interface...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating application interface. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1431,7 +2875,21 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String registerApplicationInterface(String gatewayId, ApplicationInterfaceDescription applicationInterface) throws RegistryServiceException, TException {
-        return null;
+            if (!isGatewayExistInternal(gatewayId)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            try {
+                appCatalog = RegistryFactory.getAppCatalog();
+                String interfaceId = appCatalog.getApplicationInterface().addApplicationInterface(applicationInterface, gatewayId);
+                logger.debug("Airavata registered application interface for gateway id : " + gatewayId);
+                return interfaceId;
+            } catch (AppCatalogException e) {
+                logger.error("Error while adding application interface...", e);
+                RegistryServiceException exception = new RegistryServiceException();
+                exception.setMessage("Error while adding application interface. More info : " + e.getMessage());
+                throw exception;
+            }
     }
 
     /**
@@ -1444,7 +2902,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateApplicationDeployment(String appDeploymentId, ApplicationDeploymentDescription applicationDeployment) throws RegistryServiceException, TException {
-        return false;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            appCatalog.getApplicationDeployment().updateApplicationDeployment(appDeploymentId, applicationDeployment);
+            logger.debug("Airavata updated application deployment for deployment id : " + appDeploymentId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(appDeploymentId, "Error while updating application deployment...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating application deployment. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1457,7 +2925,21 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String registerApplicationDeployment(String gatewayId, ApplicationDeploymentDescription applicationDeployment) throws RegistryServiceException, TException {
-        return null;
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+        }
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            String deployment = appCatalog.getApplicationDeployment().addApplicationDeployment(applicationDeployment, gatewayId);
+            logger.debug("Airavata registered application deployment for gateway id : " + gatewayId);
+            return deployment;
+        } catch (AppCatalogException e) {
+            logger.error("Error while adding application deployment...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding application deployment. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1470,7 +2952,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateApplicationModule(String appModuleId, ApplicationModule applicationModule) throws RegistryServiceException, TException {
-        return false;
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            appCatalog.getApplicationInterface().updateApplicationModule(appModuleId, applicationModule);
+            logger.debug("Airavata updated application module with module id: " + appModuleId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(appModuleId, "Error while updating application module...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating application module. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1484,17 +2976,99 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String registerApplicationModule(String gatewayId, ApplicationModule applicationModule) throws RegistryServiceException, TException {
-        return null;
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+        }
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            String module = appCatalog.getApplicationInterface().addApplicationModule(applicationModule, gatewayId);
+            logger.debug("Airavata registered application module for gateway id : " + gatewayId);
+            return module;
+        } catch (AppCatalogException e) {
+            logger.error("Error while adding application module...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding application module. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     public void updateResourceScheduleing(String airavataExperimentId, ComputationalResourceSchedulingModel resourceScheduling) throws RegistryServiceException, TException {
-
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
+                logger.debug(airavataExperimentId, "Update resource scheduling failed, experiment {} doesn't exist.", airavataExperimentId);
+                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
+            ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
+            if (experimentStatus != null){
+                ExperimentState experimentState = experimentStatus.getState();
+                switch (experimentState){
+                    case CREATED: case VALIDATED: case CANCELED: case FAILED:
+                        experimentCatalog.add(ExpCatChildDataType.PROCESS_RESOURCE_SCHEDULE, resourceScheduling, airavataExperimentId);
+                        logger.debug(airavataExperimentId, "Successfully updated resource scheduling for the experiment {}.", airavataExperimentId);
+                        break;
+                    default:
+                        logger.error(airavataExperimentId, "Error while updating scheduling info. Update experiment is only valid for experiments " +
+                                "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
+                                "experiment is in one of above statuses... ");
+                        AiravataSystemException exception = new AiravataSystemException();
+                        exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                        exception.setMessage("Error while updating experiment. Update experiment is only valid for experiments " +
+                                "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
+                                "experiment is in one of above statuses... ");
+                        throw exception;
+                }
+            }
+        } catch (Exception e) {
+            logger.error(airavataExperimentId, "Error while updating scheduling info", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating scheduling info. " +
+                    "Update experiment is only valid for experiments " +
+                    "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
+                    "experiment is in one of above statuses...  " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationDataModel userConfiguration) throws RegistryServiceException, TException {
-
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
+                logger.error(airavataExperimentId, "Update experiment configuration failed, experiment {} doesn't exist.", airavataExperimentId);
+                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
+            ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
+            if (experimentStatus != null){
+                ExperimentState experimentState = experimentStatus.getState();
+                switch (experimentState){
+                    case CREATED: case VALIDATED: case CANCELED: case FAILED:
+                        experimentCatalog.add(ExpCatChildDataType.USER_CONFIGURATION_DATA, userConfiguration, airavataExperimentId);
+                        logger.debug(airavataExperimentId, "Successfully updated experiment configuration for experiment {}.", airavataExperimentId);
+                        break;
+                    default:
+                        logger.error(airavataExperimentId, "Error while updating experiment {}. Update experiment is only valid for experiments " +
+                                "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
+                                "experiment is in one of above statuses... ", airavataExperimentId);
+                        AiravataSystemException exception = new AiravataSystemException();
+                        exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                        exception.setMessage("Error while updating experiment. Update experiment is only valid for experiments " +
+                                "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
+                                "experiment is in one of above statuses... ");
+                        throw exception;
+                }
+            }
+        } catch (Exception e) {
+            logger.error(airavataExperimentId, "Error while updating user configuration", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating user configuration. " +
+                    "Update experiment is only valid for experiments " +
+                    "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
+                    "experiment is in one of above statuses...  " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1523,7 +3097,58 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public void updateExperiment(String airavataExperimentId, ExperimentModel experiment) throws RegistryServiceException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)) {
+                logger.error(airavataExperimentId, "Update request failed, Experiment {} doesn't exist.", airavataExperimentId);
+                throw new RegistryServiceException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
 
+            ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
+            if (experimentStatus != null){
+                ExperimentState experimentState = experimentStatus.getState();
+                switch (experimentState){
+                    case CREATED: case VALIDATED:
+                        if(experiment.getUserConfigurationData() != null && experiment.getUserConfigurationData()
+                                .getComputationalResourceScheduling() != null){
+                            String compResourceId = experiment.getUserConfigurationData()
+                                    .getComputationalResourceScheduling().getResourceHostId();
+                            ComputeResourceDescription computeResourceDescription = appCatalog.getComputeResource()
+                                    .getComputeResource(compResourceId);
+                            if(!computeResourceDescription.isEnabled()){
+                                logger.error("Compute Resource is not enabled by the Admin!");
+                                AiravataSystemException exception = new AiravataSystemException();
+                                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                                exception.setMessage("Compute Resource is not enabled by the Admin!");
+                                throw exception;
+                            }
+                        }
+                        experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT, experiment, airavataExperimentId);
+                        logger.debug(airavataExperimentId, "Successfully updated experiment {} ", experiment.getExperimentName());
+                        break;
+                    default:
+                        logger.error(airavataExperimentId, "Error while updating experiment. Update experiment is only valid for experiments " +
+                                "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
+                                "experiment is in one of above statuses... ");
+                        AiravataSystemException exception = new AiravataSystemException();
+                        exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                        exception.setMessage("Error while updating experiment. Update experiment is only valid for experiments " +
+                                "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
+                                "experiment is in one of above statuses... ");
+                        throw exception;
+                }
+            }
+        } catch (RegistryException e) {
+            logger.error(airavataExperimentId, "Error while updating experiment", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating experiment. More info : " + e.getMessage());
+            throw exception;
+        } catch (AppCatalogException e) {
+            logger.error(airavataExperimentId, "Error while updating experiment", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating experiment. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1572,7 +3197,46 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String createExperiment(String gatewayId, ExperimentModel experiment) throws RegistryServiceException, TException {
-        return null;
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
+            appCatalog = RegistryFactory.getAppCatalog();
+            if (!validateString(experiment.getExperimentName())){
+                logger.error("Cannot create experiments with empty experiment name");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("Cannot create experiments with empty experiment name");
+                throw exception;
+            }
+            if (!isGatewayExistInternal(gatewayId)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
+
+            if(experiment.getUserConfigurationData() != null && experiment.getUserConfigurationData()
+                    .getComputationalResourceScheduling() != null){
+
+                String compResourceId = experiment.getUserConfigurationData()
+                        .getComputationalResourceScheduling().getResourceHostId();
+                ComputeResourceDescription computeResourceDescription = appCatalog.getComputeResource()
+                        .getComputeResource(compResourceId);
+                if(!computeResourceDescription.isEnabled()){
+                    logger.error("Compute Resource is not enabled by the Admin!");
+                    AiravataSystemException exception = new AiravataSystemException();
+                    exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                    exception.setMessage("Compute Resource is not enabled by the Admin!");
+                    throw exception;
+                }
+            }
+
+            String experimentId = (String) experimentCatalog.add(ExpCatParentDataType.EXPERIMENT, experiment, gatewayId);
+            logger.debug(experimentId, "Created new experiment with experiment name {}", experiment.getExperimentName());
+            return experimentId;
+        } catch (Exception e) {
+            logger.error("Error while creating the experiment with experiment name {}", experiment.getExperimentName());
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while creating the experiment. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1588,8 +3252,67 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * List of experiments for the given search filter. Here only the Experiment summary will be returned.
      */
     @Override
-    public List<ExperimentSummaryModel> searchExperiments(String gatewayId, String userName, Map<ExperimentSearchFields, String> filters, int limit, int offset) throws RegistryServiceException, TException {
-        return null;
+    public List<ExperimentSummaryModel> searchExperiments(String gatewayId, String userName, List<String> accessibleExpIds,
+                                                          Map<ExperimentSearchFields, String> filters, int limit, int offset) throws RegistryServiceException, TException {
+        if (!validateString(userName)){
+            logger.error("Username cannot be empty. Please provide a valid user..");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Username cannot be empty. Please provide a valid user..");
+            throw exception;
+        }
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+        }
+        try {
+            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
+                logger.error("User does not exist in the system. Please provide a valid user..");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("User does not exist in the system. Please provide a valid user..");
+                throw exception;
+            }
+            List<ExperimentSummaryModel> summaries = new ArrayList<ExperimentSummaryModel>();
+            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
+            Map<String, String> regFilters = new HashMap();
+            regFilters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
+            for(Map.Entry<ExperimentSearchFields, String> entry : filters.entrySet())
+            {
+                if(entry.getKey().equals(ExperimentSearchFields.EXPERIMENT_NAME)){
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME, entry.getValue());
+                }else if(entry.getKey().equals(ExperimentSearchFields.EXPERIMENT_DESC)){
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.DESCRIPTION, entry.getValue());
+                }else if(entry.getKey().equals(ExperimentSearchFields.APPLICATION_ID)){
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.EXECUTION_ID, entry.getValue());
+                }else if(entry.getKey().equals(ExperimentSearchFields.STATUS)){
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS, entry.getValue());
+                }else if(entry.getKey().equals(ExperimentSearchFields.FROM_DATE)){
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.FROM_DATE, entry.getValue());
+                }else if(entry.getKey().equals(ExperimentSearchFields.TO_DATE)){
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.TO_DATE, entry.getValue());
+                }else if(entry.getKey().equals(ExperimentSearchFields.PROJECT_ID)){
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.PROJECT_ID, entry.getValue());
+                }
+            }
+
+            if(accessibleExpIds.size() == 0)
+                return new ArrayList<>();
+
+            List<Object> results = experimentCatalog.searchAllAccessible(ExperimentCatalogModelType.EXPERIMENT,
+                    accessibleExpIds, regFilters, limit,
+                    offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
+            for (Object object : results) {
+                summaries.add((ExperimentSummaryModel) object);
+            }
+            logger.debug("Airavata retrieved experiments for user : " + userName + " and gateway id : " + gatewayId );
+            return summaries;
+        }catch (Exception e) {
+            logger.error("Error while retrieving experiments", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving experiments. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1604,8 +3327,56 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * @param offset    The starting point of the results to be fetched.
      */
     @Override
-    public List<Project> searchProjects(String gatewayId, String userName, Map<ProjectSearchFields, String> filters, int limit, int offset) throws RegistryServiceException, TException {
-        return null;
+    public List<Project> searchProjects(String gatewayId, String userName, List<String> accessibleProjIds,
+                                        Map<ProjectSearchFields, String> filters, int limit, int offset) throws RegistryServiceException, TException {
+        if (!validateString(userName)){
+            logger.error("Username cannot be empty. Please provide a valid user..");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Username cannot be empty. Please provide a valid user..");
+            throw exception;
+        }
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+        }
+        try {
+            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
+                logger.error("User does not exist in the system. Please provide a valid user..");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("User does not exist in the system. Please provide a valid user..");
+                throw exception;
+            }
+            List<Project> projects = new ArrayList<Project>();
+            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
+            Map<String, String> regFilters = new HashMap<String, String>();
+            regFilters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
+            for(Map.Entry<ProjectSearchFields, String> entry : filters.entrySet())
+            {
+                if(entry.getKey().equals(ProjectSearchFields.PROJECT_NAME)){
+                    regFilters.put(Constants.FieldConstants.ProjectConstants.PROJECT_NAME, entry.getValue());
+                }else if(entry.getKey().equals(ProjectSearchFields.PROJECT_DESCRIPTION)){
+                    regFilters.put(Constants.FieldConstants.ProjectConstants.DESCRIPTION, entry.getValue());
+                }
+            }
+
+            if(accessibleProjIds.size() == 0)
+                return new ArrayList<>();
+
+            List<Object> results = experimentCatalog.searchAllAccessible(ExperimentCatalogModelType.PROJECT, accessibleProjIds,
+                    regFilters, limit, offset, Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
+            for (Object object : results) {
+                projects.add((Project)object);
+            }
+            logger.debug("Airavata retrieved projects for user : " + userName + " and gateway id : " + gatewayId);
+            return projects;
+        }catch (Exception e) {
+            logger.error("Error while retrieving projects", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving projects. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1618,7 +3389,30 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public void updateProject(String projectId, Project updatedProject) throws RegistryServiceException, TException {
+        if (!validateString(projectId) || !validateString(projectId)){
+            logger.error("Project id cannot be empty...");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Project id cannot be empty...");
+            throw exception;
+        }
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            if (!experimentCatalog.isExist(ExperimentCatalogModelType.PROJECT, projectId)){
+                logger.error("Project does not exist in the system. Please provide a valid project ID...");
+                ProjectNotFoundException exception = new ProjectNotFoundException();
+                exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
+                throw exception;
+            }
 
+            experimentCatalog.update(ExperimentCatalogModelType.PROJECT, updatedProject, projectId);
+            logger.debug("Airavata updated project with project Id : " + projectId );
+        } catch (RegistryException e) {
+            logger.error("Error while updating the project", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating the project. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1630,12 +3424,42 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String createProject(String gatewayId, Project project) throws RegistryServiceException, TException {
-        return null;
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
+            if (!validateString(project.getName()) || !validateString(project.getOwner())){
+                logger.error("Project name and owner cannot be empty...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
+            if (!validateString(gatewayId)){
+                logger.error("Gateway ID cannot be empty...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
+            if (!isGatewayExistInternal(gatewayId)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
+            String projectId = (String) experimentCatalog.add(ExpCatParentDataType.PROJECT, project, gatewayId);
+            return projectId;
+        } catch (Exception e) {
+            logger.error("Error while creating the project", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while creating the project. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     public boolean updateNotification(Notification notification) throws RegistryServiceException, TException {
-        return false;
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(notification.getGatewayId());
+            experimentCatalog.update(ExperimentCatalogModelType.NOTIFICATION, notification, notification.getGatewayId());
+            return true;
+        } catch (RegistryException e) {
+            logger.error("Error while updating notification", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting gateway. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1646,7 +3470,15 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String createNotification(Notification notification) throws RegistryServiceException, TException {
-        return null;
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(notification.getGatewayId());
+            return (String) experimentCatalog.add(ExpCatParentDataType.NOTIFICATION, notification, notification.getGatewayId());
+        } catch (RegistryException e) {
+            logger.error("Error while creating notification", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while creating notification. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1660,7 +3492,23 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateGateway(String gatewayId, Gateway updatedGateway) throws RegistryServiceException, TException {
-        return false;
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
+            if (!experimentCatalog.isExist(ExperimentCatalogModelType.GATEWAY, gatewayId)){
+                logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setMessage("Gateway does not exist in the system. Please provide a valid gateway ID...");
+                throw exception;
+            }
+            experimentCatalog.update(ExperimentCatalogModelType.GATEWAY, updatedGateway, gatewayId);
+            logger.debug("Airavata update gateway with gateway id : " + gatewayId);
+            return true;
+        } catch (RegistryException e) {
+            logger.error("Error while updating the gateway", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating the gateway. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1672,6 +3520,138 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String addGateway(Gateway gateway) throws RegistryServiceException, TException {
-        return null;
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            appCatalog = RegistryFactory.getAppCatalog();
+            if (!validateString(gateway.getGatewayId())){
+                logger.error("Gateway id cannot be empty...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
+            String gatewayId = (String) experimentCatalog.add(ExpCatParentDataType.GATEWAY, gateway, gateway.getGatewayId());
+            GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
+            gatewayResourceProfile.setGatewayID(gatewayId);
+            appCatalog.getGatewayProfile().addGatewayResourceProfile(gatewayResourceProfile);
+            logger.debug("Airavata added gateway with gateway id : " + gateway.getGatewayId());
+            return gatewayId;
+        } catch (RegistryException e) {
+            logger.error("Error while adding gateway", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding gateway. More info : " + e.getMessage());
+            throw exception;
+        } catch (AppCatalogException e) {
+            logger.error("Error while adding gateway profile", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding gateway profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    private boolean validateString(String name){
+        boolean valid = true;
+        if (name == null || name.equals("") || name.trim().length() == 0){
+            valid = false;
+        }
+        return valid;
+    }
+
+    /*Following method wraps the logic of isGatewayExist method and this is to be called by any other method of the API as needed.*/
+    private boolean isGatewayExistInternal(String gatewayId) throws InvalidRequestException, AiravataClientException,
+            AiravataSystemException, AuthorizationException, TException{
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
+            return experimentCatalog.isExist(ExperimentCatalogModelType.GATEWAY, gatewayId);
+        } catch (RegistryException e) {
+            logger.error("Error while getting gateway", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while getting gateway. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /*This private method wraps the logic of getExperiment method as this method is called internally in the API.*/
+    private ExperimentModel getExperimentInternal(String airavataExperimentId) throws InvalidRequestException,
+            ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
+                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
+            return (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId);
+        } catch (RegistryException e) {
+            logger.error("Error while retrieving the experiment", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving the experiment. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /*Private method wraps the logic of getExperimentStatus method since this method is called internally.*/
+    private ExperimentStatus getExperimentStatusInternal(String airavataExperimentId) throws InvalidRequestException,
+            ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
+                logger.error(airavataExperimentId, "Error while retrieving experiment status, experiment {} doesn't exist.", airavataExperimentId);
+                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId +
+                        " does not exist in the system..");
+            }
+            return (ExperimentStatus) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT_STATUS, airavataExperimentId);
+        } catch (Exception e) {
+            logger.error(airavataExperimentId, "Error while retrieving the experiment status", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving the experiment status. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+
+    /*This private method wraps the logic of getApplicationOutputs method as this method is called internally in the API.*/
+    private List<OutputDataObjectType> getApplicationOutputsInternal(String appInterfaceId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, TException {
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            return appCatalog.getApplicationInterface().getApplicationOutputs(appInterfaceId);
+        } catch (AppCatalogException e) {
+            logger.error(appInterfaceId, "Error while retrieving application outputs...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving application outputs. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    private String addJobSubmissionInterface(ComputeResource computeResource,
+                                             String computeResourceId, String jobSubmissionInterfaceId,
+                                             JobSubmissionProtocol protocolType, int priorityOrder)
+            throws AppCatalogException {
+        JobSubmissionInterface jobSubmissionInterface = new JobSubmissionInterface();
+        jobSubmissionInterface.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
+        jobSubmissionInterface.setPriorityOrder(priorityOrder);
+        jobSubmissionInterface.setJobSubmissionProtocol(protocolType);
+        return computeResource.addJobSubmissionProtocol(computeResourceId,jobSubmissionInterface);
+    }
+
+    private String addDataMovementInterface(ComputeResource computeResource,
+                                            String computeResourceId, DMType dmType, String dataMovementInterfaceId,
+                                            DataMovementProtocol protocolType, int priorityOrder)
+            throws AppCatalogException {
+        DataMovementInterface dataMovementInterface = new DataMovementInterface();
+        dataMovementInterface.setDataMovementInterfaceId(dataMovementInterfaceId);
+        dataMovementInterface.setPriorityOrder(priorityOrder);
+        dataMovementInterface.setDataMovementProtocol(protocolType);
+        return computeResource.addDataMovementProtocol(computeResourceId, dmType, dataMovementInterface);
+    }
+
+    private WorkflowCatalog getWorkflowCatalog() {
+        if (workflowCatalog == null) {
+            try {
+                workflowCatalog = RegistryFactory.getAppCatalog().getWorkflowCatalog();
+            } catch (Exception e) {
+                logger.error("Unable to create Workflow Catalog", e);
+            }
+        }
+        return workflowCatalog;
     }
 }
