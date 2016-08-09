@@ -43,7 +43,7 @@ do
             JAVA_OPTS="${JAVA_OPTS} -Djava.security.manager -Djava.security.policy=${AIRAVATA_HOME}/conf/axis2.policy -Daxis2.home=${AIRAVATA_HOME}"
             shift
         ;;
-	    apiserver | gfac | orchestrator | credentialstore)
+	    apiserver | gfac | orchestrator | credentialstore | regserver)
 	        if [ -z ${SERVERS} ] ; then
 	            SERVERS="${var}"
 	        else
@@ -71,6 +71,7 @@ do
             echo "  gfac                Start gfac server"
             echo "  orchestrator        Start orchestrator server"
             echo "  credentialstore     Start credentialstore server"
+            echo "  regserver           Start registry server"
             echo "  all                 Start all servers in one JVM"
 
             echo "command options:"

@@ -45,6 +45,8 @@ public class Gateway {
     private String identityServerUserName;
     private String identityServerPasswordToken;
     private String declinedReason;
+    private String oauthClientId;
+    private String getOauthClientSecret;
     private Collection<GatewayWorker> gatewayWorkers;
     private Collection<Project> projects;
 
@@ -182,6 +184,24 @@ public class Gateway {
 
     public void setDeclinedReason(String declinedReason) {
         this.declinedReason = declinedReason;
+    }
+
+    @Column(name = "OAUTH_CLIENT_ID")
+    public String getOauthClientId() {
+        return oauthClientId;
+    }
+
+    public void setOauthClientId(String oauthClientId) {
+        this.oauthClientId = oauthClientId;
+    }
+
+    @Column(name = "OAUTH_CLIENT_SECRET")
+    public String getGetOauthClientSecret() {
+        return getOauthClientSecret;
+    }
+
+    public void setGetOauthClientSecret(String oauthClientSecret) {
+        this.getOauthClientSecret = oauthClientSecret;
     }
 
     //    @Override

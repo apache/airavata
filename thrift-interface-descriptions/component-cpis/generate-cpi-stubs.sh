@@ -24,7 +24,8 @@ show_usage() {
 	echo -e "\tcs Generate/Update Credential Store Stubs"
 	echo -e "\torch Generate/Update Orchestrator Stubs"
 	echo -e "\tgfac Generate/Update GFac Stubs"
-	echo -e "\tall Generate/Update all stubs (Credential Store, Orchestrator, GFac)."
+	echo -e "\registry Generate/Update Registry Stubs"
+	echo -e "\tall Generate/Update all stubs (Credential Store, Orchestrator, GFac, Registry)."
 	echo -e "\t-h[elp] Print the usage options of this script"
 }
 
@@ -68,6 +69,9 @@ ORCHESTRATOR_SRC_DIR='../../modules/orchestrator/orchestrator-client/src/main/ja
 
 GFAC_THRIFT_FILE='gfac-cpi.thrift'
 GFAC_SRC_DIR='../../modules/gfac/gfac-client/src/main/java/'
+
+REGISTRY_THRIFT_FILE='registry-api.thrift'
+REGISTRY_SRC_DIR='../../modules/registry/registry-server/registry-api-stubs/src/main/java/'
 
 # Initialize the thrift arguments.
 #  Since most of the Airavata API and Data Models have includes, use recursive option by default.
@@ -171,6 +175,7 @@ do
             generate_thrift_stubs ${CS_THRIFT_FILE} ${CS_SRC_DIR}
             generate_thrift_stubs ${ORCHESTRATOR_THRIFT_FILE} ${ORCHESTRATOR_SRC_DIR}
             generate_thrift_stubs ${GFAC_THRIFT_FILE} ${GFAC_SRC_DIR}
+            generate_thrift_stubs ${REGISTRY_THRIFT_FILE} ${REGISTRY_SRC_DIR}
             ;;
     cs)   echo "Generating Credential Store Stubs"
             generate_thrift_stubs ${CS_THRIFT_FILE} ${CS_SRC_DIR}
@@ -180,6 +185,9 @@ do
             ;;
     gfac)    echo "Generate GFac Stubs"
             generate_thrift_stubs ${GFAC_THRIFT_FILE} ${GFAC_SRC_DIR}
+            ;;
+    registry)    echo "Generate Registry Stubs"
+            generate_thrift_stubs ${REGISTRY_THRIFT_FILE} ${REGISTRY_SRC_DIR}
             ;;
     *)      echo "Invalid or unsupported option"
     	    show_usage

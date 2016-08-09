@@ -91,6 +91,8 @@ public class ThriftDataModelConversion {
         gateway.setGatewayAdminEmail(resource.getGatewayAdminEmail());
         gateway.setIdentityServerUserName(resource.getIdentityServerUserName());
         gateway.setIdentityServerPasswordToken(resource.getIdentityServerPasswordToken());
+        gateway.setOauthClientId(resource.getOauthClientId());
+        gateway.setOauthClientSecret(resource.getOauthClientSecret());
         return gateway;
     }
 
