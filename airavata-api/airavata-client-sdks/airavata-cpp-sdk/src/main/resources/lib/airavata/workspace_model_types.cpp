@@ -735,6 +735,16 @@ void Gateway::__set_declinedReason(const std::string& val) {
 __isset.declinedReason = true;
 }
 
+void Gateway::__set_oauthClientId(const std::string& val) {
+  this->oauthClientId = val;
+__isset.oauthClientId = true;
+}
+
+void Gateway::__set_oauthClientSecret(const std::string& val) {
+  this->oauthClientSecret = val;
+__isset.oauthClientSecret = true;
+}
+
 uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -880,6 +890,22 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 16:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->oauthClientId);
+          this->__isset.oauthClientId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 17:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->oauthClientSecret);
+          this->__isset.oauthClientSecret = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -974,6 +1000,16 @@ uint32_t Gateway::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeString(this->declinedReason);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.oauthClientId) {
+    xfer += oprot->writeFieldBegin("oauthClientId", ::apache::thrift::protocol::T_STRING, 16);
+    xfer += oprot->writeString(this->oauthClientId);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.oauthClientSecret) {
+    xfer += oprot->writeFieldBegin("oauthClientSecret", ::apache::thrift::protocol::T_STRING, 17);
+    xfer += oprot->writeString(this->oauthClientSecret);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -996,6 +1032,8 @@ void swap(Gateway &a, Gateway &b) {
   swap(a.identityServerUserName, b.identityServerUserName);
   swap(a.identityServerPasswordToken, b.identityServerPasswordToken);
   swap(a.declinedReason, b.declinedReason);
+  swap(a.oauthClientId, b.oauthClientId);
+  swap(a.oauthClientSecret, b.oauthClientSecret);
   swap(a.__isset, b.__isset);
 }
 
@@ -1015,6 +1053,8 @@ Gateway::Gateway(const Gateway& other19) {
   identityServerUserName = other19.identityServerUserName;
   identityServerPasswordToken = other19.identityServerPasswordToken;
   declinedReason = other19.declinedReason;
+  oauthClientId = other19.oauthClientId;
+  oauthClientSecret = other19.oauthClientSecret;
   __isset = other19.__isset;
 }
 Gateway& Gateway::operator=(const Gateway& other20) {
@@ -1033,6 +1073,8 @@ Gateway& Gateway::operator=(const Gateway& other20) {
   identityServerUserName = other20.identityServerUserName;
   identityServerPasswordToken = other20.identityServerPasswordToken;
   declinedReason = other20.declinedReason;
+  oauthClientId = other20.oauthClientId;
+  oauthClientSecret = other20.oauthClientSecret;
   __isset = other20.__isset;
   return *this;
 }
@@ -1054,6 +1096,8 @@ void Gateway::printTo(std::ostream& out) const {
   out << ", " << "identityServerUserName="; (__isset.identityServerUserName ? (out << to_string(identityServerUserName)) : (out << "<null>"));
   out << ", " << "identityServerPasswordToken="; (__isset.identityServerPasswordToken ? (out << to_string(identityServerPasswordToken)) : (out << "<null>"));
   out << ", " << "declinedReason="; (__isset.declinedReason ? (out << to_string(declinedReason)) : (out << "<null>"));
+  out << ", " << "oauthClientId="; (__isset.oauthClientId ? (out << to_string(oauthClientId)) : (out << "<null>"));
+  out << ", " << "oauthClientSecret="; (__isset.oauthClientSecret ? (out << to_string(oauthClientSecret)) : (out << "<null>"));
   out << ")";
 }
 
