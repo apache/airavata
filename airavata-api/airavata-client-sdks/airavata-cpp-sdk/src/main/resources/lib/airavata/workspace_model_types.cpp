@@ -745,6 +745,11 @@ void Gateway::__set_oauthClientSecret(const std::string& val) {
 __isset.oauthClientSecret = true;
 }
 
+void Gateway::__set_requestCreationTime(const int64_t val) {
+  this->requestCreationTime = val;
+__isset.requestCreationTime = true;
+}
+
 uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -906,6 +911,14 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 18:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->requestCreationTime);
+          this->__isset.requestCreationTime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -1010,6 +1023,11 @@ uint32_t Gateway::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeString(this->oauthClientSecret);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.requestCreationTime) {
+    xfer += oprot->writeFieldBegin("requestCreationTime", ::apache::thrift::protocol::T_I64, 18);
+    xfer += oprot->writeI64(this->requestCreationTime);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -1034,6 +1052,7 @@ void swap(Gateway &a, Gateway &b) {
   swap(a.declinedReason, b.declinedReason);
   swap(a.oauthClientId, b.oauthClientId);
   swap(a.oauthClientSecret, b.oauthClientSecret);
+  swap(a.requestCreationTime, b.requestCreationTime);
   swap(a.__isset, b.__isset);
 }
 
@@ -1055,6 +1074,7 @@ Gateway::Gateway(const Gateway& other19) {
   declinedReason = other19.declinedReason;
   oauthClientId = other19.oauthClientId;
   oauthClientSecret = other19.oauthClientSecret;
+  requestCreationTime = other19.requestCreationTime;
   __isset = other19.__isset;
 }
 Gateway& Gateway::operator=(const Gateway& other20) {
@@ -1075,6 +1095,7 @@ Gateway& Gateway::operator=(const Gateway& other20) {
   declinedReason = other20.declinedReason;
   oauthClientId = other20.oauthClientId;
   oauthClientSecret = other20.oauthClientSecret;
+  requestCreationTime = other20.requestCreationTime;
   __isset = other20.__isset;
   return *this;
 }
@@ -1098,6 +1119,7 @@ void Gateway::printTo(std::ostream& out) const {
   out << ", " << "declinedReason="; (__isset.declinedReason ? (out << to_string(declinedReason)) : (out << "<null>"));
   out << ", " << "oauthClientId="; (__isset.oauthClientId ? (out << to_string(oauthClientId)) : (out << "<null>"));
   out << ", " << "oauthClientSecret="; (__isset.oauthClientSecret ? (out << to_string(oauthClientSecret)) : (out << "<null>"));
+  out << ", " << "requestCreationTime="; (__isset.requestCreationTime ? (out << to_string(requestCreationTime)) : (out << "<null>"));
   out << ")";
 }
 

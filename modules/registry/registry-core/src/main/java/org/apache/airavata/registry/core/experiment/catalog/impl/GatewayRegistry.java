@@ -32,6 +32,7 @@ import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +66,7 @@ public class GatewayRegistry {
             resource.setDeclinedReason(gateway.getDeclinedReason());
             resource.setOauthClientId(gateway.getOauthClientId());
             resource.setOauthClientSecret(gateway.getOauthClientSecret());
+            resource.setRequestCreationTime(new Timestamp(gateway.getRequestCreationTime()));
             resource.save();
             return gateway.getGatewayId();
         }catch (RegistryException e){
@@ -92,6 +94,7 @@ public class GatewayRegistry {
             existingGateway.setDeclinedReason(updatedGateway.getDeclinedReason());
             existingGateway.setOauthClientId(updatedGateway.getOauthClientId());
             existingGateway.setOauthClientSecret(updatedGateway.getOauthClientSecret());
+            existingGateway.setRequestCreationTime(new Timestamp(updatedGateway.getRequestCreationTime()));
             existingGateway.save();
         }catch (RegistryException e){
             logger.error("Error while updating gateway to registry", e);
