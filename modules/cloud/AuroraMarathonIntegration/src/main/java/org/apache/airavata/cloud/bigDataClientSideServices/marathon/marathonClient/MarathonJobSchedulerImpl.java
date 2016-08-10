@@ -157,6 +157,7 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 			throw new MarathonException("Exception occured while creating the group.\n"+ex.toString());
 		}
 	}
+
 	public void groups(String address) throws MarathonException{
 		try{
 
@@ -169,6 +170,32 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 			throw new MarathonException("Exception occured while retrieving the list of groups.\n"+ex.toString());
 		}
 	}
+
+	public void groupsId(String address, String groupid) throws MarathonException{
+			try{
+
+				String completeCommandToRunProcess = "curl GET "+address+"/v2/groups/"+groupid;
+				BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+				util.printLog(stdout);
+			}
+
+			catch (Exception ex) {
+				throw new MarathonException("Exception occured while retrieving the list of groups.\n"+ex.toString());
+			}
+		}
+		public void jobDeleteId(String address, String appid, String taskid) throws MarathonException{
+			try{
+		
+				String completeCommandToRunProcess = "curl DELETE "+address+"/v2/apps/"+appid+"/"+taskid;
+				BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+				util.printLog(stdout);
+			}
+
+			catch (Exception ex) {
+				throw new MarathonException("Exception occured while retrieving the list jobs.\n"+ex.toString());
+			}
+		}
+
 
 
 
