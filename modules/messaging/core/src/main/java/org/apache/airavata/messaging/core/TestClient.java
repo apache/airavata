@@ -46,7 +46,7 @@ public class TestClient {
             List<String> routingKeys = new ArrayList<>();
             routingKeys.add(experimentId);
             routingKeys.add(experimentId + ".*");
-            MessagingFactory.getSubscriber(getMessageHandler(),routingKeys,  Subscriber.Type.STATUS);
+            MessagingFactory.getSubscriber(getMessageHandler(),routingKeys,  Type.STATUS);
         } catch (ApplicationSettingsException e) {
             logger.error("Error reading airavata server properties", e);
         }catch (Exception e) {

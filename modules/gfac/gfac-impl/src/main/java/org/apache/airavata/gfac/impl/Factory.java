@@ -66,7 +66,8 @@ import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Subscriber;
-import org.apache.airavata.messaging.core.impl.RabbitMQStatusPublisher;
+import org.apache.airavata.messaging.core.Type;
+import org.apache.airavata.messaging.core.impl.RabbitMQPublisher;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
@@ -145,9 +146,9 @@ public abstract class Factory {
 
 	public static Publisher getStatusPublisher() throws AiravataException {
 		if (statusPublisher == null) {
-			synchronized (RabbitMQStatusPublisher.class) {
+			synchronized (RabbitMQPublisher.class) {
 				if (statusPublisher == null) {
-					statusPublisher = new RabbitMQStatusPublisher();
+					statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
 				}
 			}
 		}
@@ -169,7 +170,7 @@ public abstract class Factory {
 
 	public static synchronized  Subscriber getProcessLaunchSubscriber() throws AiravataException {
 		if (processLaunchSubscriber == null) {
-			processLaunchSubscriber = MessagingFactory.getSubscriber(message -> {}, new ArrayList<>(), Subscriber.Type.PROCESS_LAUNCH);
+			processLaunchSubscriber = MessagingFactory.getSubscriber(message -> {}, new ArrayList<>(), Type.PROCESS_LAUNCH);
 		}
 		return processLaunchSubscriber;
 	}
