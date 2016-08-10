@@ -13,6 +13,33 @@ import org.apache.airavata.cloud.marathon.utilities.MarathonUtilI;
 
 public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 	MarathonUtilI util = new MarathonUtilImpl();
+	public void jobDelete(String address, String appid) throws MarathonException{
+		try{
+			String line;
+			Process marathonJob = Runtime.getRuntime().exec("curl DELETE "+address+"/v2/apps/"+appid+"/tasks");
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+			util.printLog(stdout);
+			marathonJob.waitFor();
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list jobs.\n"+ex.toString());
+		}
+	}
+	
+	public void runningJobs(String address, String appid) throws MarathonException{
+		try{
+			String line;
+			Process marathonJob = Runtime.getRuntime().exec("curl GET "+address+"/v2/apps/"+appid+"/tasks");
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+			util.printLog(stdout);
+			marathonJob.waitFor();
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list jobs.\n"+ex.toString());
+		}
+	}
 	public void jobListById(String address, String id) throws MarathonException{
 		try{
 			String line;
