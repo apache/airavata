@@ -25,8 +25,9 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
+import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Subscriber;
-import org.apache.airavata.messaging.core.impl.RabbitMQProcessLaunchPublisher;
+import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.messaging.event.ProcessIdentifier;
 import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
@@ -55,7 +56,7 @@ public class WorkflowEnactmentService {
         workflowMap = new ConcurrentHashMap<>();
         statusSubscriber = MessagingFactory.getSubscriber((message -> executor.execute(new StatusHandler(message))),
                                                            getRoutingKeys(),
-                                                           Subscriber.Type.STATUS);
+                                                           Type.STATUS);
         // register the shutdown hook to un-bind status consumer.
         Runtime.getRuntime().addShutdownHook(new EnactmentShutDownHook());
     }
@@ -74,7 +75,7 @@ public class WorkflowEnactmentService {
     public void submitWorkflow(String experimentId,
                                   String credentialToken,
                                   String gatewayName,
-                                  RabbitMQProcessLaunchPublisher publisher) throws Exception {
+                                  Publisher publisher) throws Exception {
 
         WorkflowInterpreter workflowInterpreter = new WorkflowInterpreter(
                 experimentId, credentialToken,gatewayName, publisher);

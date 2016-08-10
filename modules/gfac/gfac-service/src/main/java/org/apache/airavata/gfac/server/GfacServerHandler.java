@@ -39,7 +39,7 @@ import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Subscriber;
-import org.apache.airavata.messaging.core.impl.RabbitMQStatusPublisher;
+import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.messaging.event.ProcessIdentifier;
 import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
@@ -98,9 +98,9 @@ public class GfacServerHandler implements GfacService.Iface {
 	    // init process consumer
         List<String> routingKeys = new ArrayList<>();
         routingKeys.add(ServerSettings.getRabbitmqProcessLaunchQueueName());
-        processLaunchSubscriber = MessagingFactory.getSubscriber(new ProcessLaunchMessageHandler(),routingKeys, Subscriber.Type.PROCESS_LAUNCH);
+        processLaunchSubscriber = MessagingFactory.getSubscriber(new ProcessLaunchMessageHandler(),routingKeys, Type.PROCESS_LAUNCH);
         // init status publisher
-	    statusPublisher = new RabbitMQStatusPublisher();
+	    statusPublisher = Factory.getStatusPublisher();
     }
 
     private void startCuratorClient() throws ApplicationSettingsException {

@@ -27,9 +27,8 @@ import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.ShutdownListener;
 import com.rabbitmq.client.ShutdownSignalException;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.messaging.core.Subscriber;
-import org.apache.airavata.messaging.core.SubscriberProperties;
+import org.apache.airavata.messaging.core.RabbitMQProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,9 +45,9 @@ public class RabbitMQSubscriber implements Subscriber {
     private Connection connection;
     private Channel channel;
     private Map<String, QueueDetail> queueDetailMap = new HashMap<>();
-    private SubscriberProperties properties;
+    private RabbitMQProperties properties;
 
-    public RabbitMQSubscriber(SubscriberProperties properties) throws AiravataException {
+    public RabbitMQSubscriber(RabbitMQProperties properties) throws AiravataException {
         this.properties = properties;
         createConnection();
     }

@@ -35,6 +35,7 @@ import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
 import org.apache.airavata.messaging.core.Subscriber;
+import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
@@ -130,7 +131,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 //			routingKeys.add("*"); // listen for gateway level messages
 //			routingKeys.add("*.*"); // listen for gateway/experiment level messages
 			routingKeys.add("*.*.*"); // listen for gateway/experiment/process level messages
-			statusSubscribe = MessagingFactory.getSubscriber(new ProcessStatusHandler(),routingKeys, Subscriber.Type.STATUS);
+			statusSubscribe = MessagingFactory.getSubscriber(new ProcessStatusHandler(),routingKeys, Type.STATUS);
 			startCurator();
 		} catch (OrchestratorException | RegistryException | AppCatalogException | AiravataException e) {
 			log.error(e.getMessage(), e);

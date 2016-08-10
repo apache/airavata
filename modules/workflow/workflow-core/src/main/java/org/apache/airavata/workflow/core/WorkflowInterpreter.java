@@ -22,7 +22,7 @@
 package org.apache.airavata.workflow.core;
 
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.messaging.core.impl.RabbitMQProcessLaunchPublisher;
+import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.ComponentState;
 import org.apache.airavata.model.ComponentStatus;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -75,18 +75,18 @@ class WorkflowInterpreter {
     private Map<String, WorkflowNode> completeList = new HashMap<>();
     private Registry registry;
     private List<OutputNode> completeWorkflowOutputs = new ArrayList<>();
-    private RabbitMQProcessLaunchPublisher publisher;
+    private Publisher publisher;
     private String consumerId;
     private boolean continueWorkflow = true;
 
-    public WorkflowInterpreter(String experimentId, String credentialToken, String gatewayName, RabbitMQProcessLaunchPublisher publisher) throws RegistryException {
+    public WorkflowInterpreter(String experimentId, String credentialToken, String gatewayName, Publisher publisher) throws RegistryException {
         this.gatewayName = gatewayName;
         setExperiment(experimentId);
         this.credentialToken = credentialToken;
         this.publisher = publisher;
     }
 
-    public WorkflowInterpreter(ExperimentModel experiment, String credentialStoreToken, String gatewayName, RabbitMQProcessLaunchPublisher publisher) {
+    public WorkflowInterpreter(ExperimentModel experiment, String credentialStoreToken, String gatewayName, Publisher publisher) {
         this.gatewayName = gatewayName;
         this.experiment = experiment;
         this.credentialToken = credentialStoreToken;
