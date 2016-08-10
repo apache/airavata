@@ -134,11 +134,10 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 
 	public void runningJobs(String address, String appid) throws MarathonException{
 		try{
-			String line;
-			Process marathonJob = Runtime.getRuntime().exec("curl GET "+address+"/v2/apps/"+appid+"/tasks");
-			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+	
+			String completeCommandToRunProcess = "curl GET "+address+"/v2/apps/"+appid+"/tasks";
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
 			util.printLog(stdout);
-			marathonJob.waitFor();
 		}
 
 		catch (Exception ex) {
