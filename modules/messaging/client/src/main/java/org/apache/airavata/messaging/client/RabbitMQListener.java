@@ -22,25 +22,32 @@
 package org.apache.airavata.messaging.client;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
-import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.airavata.messaging.core.MessagingConstants;
-import org.apache.airavata.messaging.core.impl.RabbitMQStatusConsumer;
-import org.apache.airavata.model.messaging.event.*;
-import org.apache.commons.cli.*;
+import org.apache.airavata.messaging.core.MessagingFactory;
+import org.apache.airavata.messaging.core.Subscriber;
+import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class RabbitMQListener {
@@ -48,12 +55,9 @@ public class RabbitMQListener {
     public static final String RABBITMQ_EXCHANGE_NAME = "rabbitmq.exchange.name";
     private final static Logger logger = LoggerFactory.getLogger(RabbitMQListener.class);
     private static String gatewayId = "*";
-    private static boolean gatewayLevelMessages = false;
-    private static boolean experimentLevelMessages = false;
-    private static boolean jobLevelMessages = false;
     private static String experimentId = "*";
     private static String jobId = "*";
-    private static boolean allMessages = false;
+    private static LEVEL level = LEVEL.ALL;
 
     public static void main(String[] args) {
         File file = new File("/tmp/latency_client");
@@ -64,66 +68,39 @@ public class RabbitMQListener {
             String brokerUrl = ServerSettings.getSetting(RABBITMQ_BROKER_URL);
             System.out.println("broker url " + brokerUrl);
             final String exchangeName = ServerSettings.getSetting(RABBITMQ_EXCHANGE_NAME);
-            RabbitMQStatusConsumer consumer = new RabbitMQStatusConsumer(brokerUrl, exchangeName);
-            consumer.listen(new MessageHandler() {
-                @Override
-                public Map<String, Object> getProperties() {
-                    Map<String, Object> props = new HashMap<String, Object>();
-                    List<String> routingKeys = new ArrayList<String>();
-                    if (allMessages){
-                        routingKeys.add("*");
-                        routingKeys.add("*.*");
-                        routingKeys.add("*.*.*");
-                        routingKeys.add("*.*.*.*");
-                        routingKeys.add("*.*.*.*.*");
-                    }else {
-                        if (gatewayLevelMessages){
-                            routingKeys.add(gatewayId);
-                            routingKeys.add(gatewayId + ".*");
-                            routingKeys.add(gatewayId + ".*.*");
-                            routingKeys.add(gatewayId + ".*.*.*");
-                            routingKeys.add(gatewayId + ".*.*.*.*");
-                        }else if (experimentLevelMessages){
-                            routingKeys.add(gatewayId);
-                            routingKeys.add(gatewayId + "." + experimentId);
-                            routingKeys.add(gatewayId + "." + experimentId+ ".*");
-                            routingKeys.add(gatewayId + "." + experimentId+ ".*.*");
-                            routingKeys.add(gatewayId + "." + experimentId+ ".*.*.*");
-                        }else if  (jobLevelMessages){
-                            routingKeys.add(gatewayId);
-                            routingKeys.add(gatewayId + "." + experimentId);
-                            routingKeys.add(gatewayId + "." + experimentId+ ".*");
-                            routingKeys.add(gatewayId + "." + experimentId+ ".*.*");
-                            routingKeys.add(gatewayId + "." + experimentId+ ".*." + jobId);
-                        }
-                    }
-                    props.put(MessagingConstants.RABBIT_ROUTING_KEY, routingKeys);
-                    return props;
-                }
+            List<String> routingKeys = getRoutingKeys(level);
+            Subscriber subscriber = MessagingFactory.getSubscriber(null, routingKeys, Subscriber.Type.STATUS);
+        } catch (ApplicationSettingsException e) {
+            logger.error("Error reading airavata server properties", e);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
 
-                @Override
-                public void onMessage(MessageContext message) {
-                    try {
-                        long latency = System.currentTimeMillis() - message.getUpdatedTime().getTime();
-                        bw.write(message.getMessageId() + " :" + latency);
-                        bw.newLine();
-                        bw.flush();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    if (message.getType().equals(MessageType.EXPERIMENT)){
-                        try {
-                            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent();
-                            TBase messageEvent = message.getEvent();
-                            byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
-                            ThriftUtils.createThriftFromBytes(bytes, event);
-                            System.out.println(" Message Received with message id '" + message.getMessageId()
-                                    + "' and with message type '" + message.getType() + "' and with state : '" + event.getState().toString() +
-                                       " for Gateway " + event.getGatewayId());
-                        } catch (TException e) {
-                            logger.error(e.getMessage(), e);
-                        }
-                    }else if (message.getType().equals(MessageType.PROCESS)){
+    }
+
+    private static MessageHandler getMessageHandler(final BufferedWriter bw) {
+        return message -> {
+            try {
+                long latency = System.currentTimeMillis() - message.getUpdatedTime().getTime();
+                bw.write(message.getMessageId() + " :" + latency);
+                bw.newLine();
+                bw.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (message.getType().equals(MessageType.EXPERIMENT)) {
+                try {
+                    ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent();
+                    TBase messageEvent = message.getEvent();
+                    byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
+                    ThriftUtils.createThriftFromBytes(bytes, event);
+                    System.out.println(" Message Received with message id '" + message.getMessageId()
+                            + "' and with message type '" + message.getType() + "' and with state : '" + event.getState().toString() +
+                            " for Gateway " + event.getGatewayId());
+                } catch (TException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            } else if (message.getType().equals(MessageType.PROCESS)) {
                         /*try {
                             WorkflowNodeStatusChangeEvent event = new WorkflowNodeStatusChangeEvent();
                             TBase messageEvent = message.getEvent();
@@ -135,93 +112,132 @@ public class RabbitMQListener {
                         } catch (TException e) {
                             logger.error(e.getMessage(), e);
                         }*/
-                    }else if (message.getType().equals(MessageType.TASK)){
-                        try {
-                            TaskStatusChangeEvent event = new TaskStatusChangeEvent();
-                            TBase messageEvent = message.getEvent();
-                            byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
-                            ThriftUtils.createThriftFromBytes(bytes, event);
-                            System.out.println(" Message Received with message id '" + message.getMessageId()
-                                    + "' and with message type '" + message.getType() + "' and with state : '" + event.getState().toString() +
-                                    " for Gateway " + event.getTaskIdentity().getGatewayId());
-                        } catch (TException e) {
-                            logger.error(e.getMessage(), e);
-                        }
-                    }else if (message.getType().equals(MessageType.JOB)){
-                        try {
-                            JobStatusChangeEvent event = new JobStatusChangeEvent();
-                            TBase messageEvent = message.getEvent();
-                            byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
-                            ThriftUtils.createThriftFromBytes(bytes, event);
-                            System.out.println(" Message Received with message id '" + message.getMessageId()
-                                    + "' and with message type '" + message.getType() + "' and with state : '" + event.getState().toString() +
-                                    " for Gateway " + event.getJobIdentity().getGatewayId());
-                        } catch (TException e) {
-                            logger.error(e.getMessage(), e);
-                        }
-                    }
+            } else if (message.getType().equals(MessageType.TASK)) {
+                try {
+                    TaskStatusChangeEvent event = new TaskStatusChangeEvent();
+                    TBase messageEvent = message.getEvent();
+                    byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
+                    ThriftUtils.createThriftFromBytes(bytes, event);
+                    System.out.println(" Message Received with message id '" + message.getMessageId()
+                            + "' and with message type '" + message.getType() + "' and with state : '" + event.getState().toString() +
+                            " for Gateway " + event.getTaskIdentity().getGatewayId());
+                } catch (TException e) {
+                    logger.error(e.getMessage(), e);
                 }
-            });
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error reading airavata server properties", e);
-        }catch (Exception e) {
-           logger.error(e.getMessage(), e);
-        }
+            } else if (message.getType().equals(MessageType.JOB)) {
+                try {
+                    JobStatusChangeEvent event = new JobStatusChangeEvent();
+                    TBase messageEvent = message.getEvent();
+                    byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
+                    ThriftUtils.createThriftFromBytes(bytes, event);
+                    System.out.println(" Message Received with message id '" + message.getMessageId()
+                            + "' and with message type '" + message.getType() + "' and with state : '" + event.getState().toString() +
+                            " for Gateway " + event.getJobIdentity().getGatewayId());
+                } catch (TException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        };
 
     }
 
+    private static List<String> getRoutingKeys(LEVEL level) {
+        List<String> routingKeys = new ArrayList<String>();
+        switch (level) {
+            case ALL:
+                routingKeys.add("*");
+                routingKeys.add("*.*");
+                routingKeys.add("*.*.*");
+                routingKeys.add("*.*.*.*");
+                routingKeys.add("*.*.*.*.*");
+                break;
+            case GATEWAY:
+                routingKeys.add(gatewayId);
+                routingKeys.add(gatewayId + ".*");
+                routingKeys.add(gatewayId + ".*.*");
+                routingKeys.add(gatewayId + ".*.*.*");
+                routingKeys.add(gatewayId + ".*.*.*.*");
+                break;
+            case EXPERIMENT:
+                routingKeys.add(gatewayId);
+                routingKeys.add(gatewayId + "." + experimentId);
+                routingKeys.add(gatewayId + "." + experimentId + ".*");
+                routingKeys.add(gatewayId + "." + experimentId + ".*.*");
+                routingKeys.add(gatewayId + "." + experimentId + ".*.*.*");
+                break;
+            case JOB:
+                routingKeys.add(gatewayId);
+                routingKeys.add(gatewayId + "." + experimentId);
+                routingKeys.add(gatewayId + "." + experimentId + ".*");
+                routingKeys.add(gatewayId + "." + experimentId + ".*.*");
+                routingKeys.add(gatewayId + "." + experimentId + ".*." + jobId);
+                break;
+            default:
+                break;
+        }
+        return routingKeys;
+    }
+
     public static void parseArguments(String[] args) {
-        try{
+        try {
             Options options = new Options();
 
-            options.addOption("gId", true , "Gateway ID");
+            options.addOption("gId", true, "Gateway ID");
             options.addOption("eId", true, "Experiment ID");
             options.addOption("jId", true, "Job ID");
             options.addOption("a", false, "All Notifications");
 
             CommandLineParser parser = new PosixParser();
-            CommandLine cmd = parser.parse( options, args);
-            if (cmd.getOptions() == null || cmd.getOptions().length == 0){
+            CommandLine cmd = parser.parse(options, args);
+            if (cmd.getOptions() == null || cmd.getOptions().length == 0) {
                 logger.info("You have not specified any options. We assume you need to listen to all the messages...");
-                allMessages = true;
+                level = LEVEL.ALL;
                 gatewayId = "*";
             }
-            if (cmd.hasOption("a")){
+            if (cmd.hasOption("a")) {
                 logger.info("Listening to all the messages...");
-                allMessages = true;
+                level = LEVEL.ALL;
                 gatewayId = "*";
-            }else {
+            } else {
                 gatewayId = cmd.getOptionValue("gId");
-                if (gatewayId == null){
+                if (gatewayId == null) {
                     gatewayId = "*";
                     logger.info("You have not specified a gateway id. We assume you need to listen to all the messages...");
                 } else {
-                    gatewayLevelMessages = true;
+                    level = LEVEL.GATEWAY;
                 }
                 experimentId = cmd.getOptionValue("eId");
-                if (experimentId == null && !gatewayId.equals("*")){
+                if (experimentId == null && !gatewayId.equals("*")) {
                     experimentId = "*";
                     logger.info("You have not specified a experiment id. We assume you need to listen to all the messages for the gateway with id " + gatewayId);
                 } else if (experimentId == null && gatewayId.equals("*")) {
                     experimentId = "*";
                     logger.info("You have not specified a experiment id and a gateway id. We assume you need to listen to all the messages...");
-                }else {
-                    experimentLevelMessages = true;
+                } else {
+                    level = LEVEL.EXPERIMENT;
                 }
                 jobId = cmd.getOptionValue("jId");
-                if (jobId == null && !gatewayId.equals("*") && !experimentId.equals("*")){
+                if (jobId == null && !gatewayId.equals("*") && !experimentId.equals("*")) {
                     jobId = "*";
                     logger.info("You have not specified a job id. We assume you need to listen to all the messages for the gateway with id " + gatewayId
-                            + " with experiment id : " + experimentId );
+                            + " with experiment id : " + experimentId);
                 } else if (jobId == null && gatewayId.equals("*") && experimentId.equals("*")) {
                     jobId = "*";
                     logger.info("You have not specified a job Id or experiment Id or a gateway Id. We assume you need to listen to all the messages...");
-                }else {
-                    jobLevelMessages = true;
+                } else {
+                    level = LEVEL.JOB;
                 }
             }
         } catch (ParseException e) {
-            logger.error("Error while reading command line parameters" , e);
+            logger.error("Error while reading command line parameters", e);
         }
     }
+
+    private enum LEVEL {
+        ALL,
+        GATEWAY,
+        EXPERIMENT,
+        JOB;
+    }
 }
+

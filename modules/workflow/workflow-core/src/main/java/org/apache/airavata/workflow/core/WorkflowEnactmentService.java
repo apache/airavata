@@ -24,16 +24,18 @@ package org.apache.airavata.workflow.core;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.messaging.core.MessageContext;
-import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.airavata.messaging.core.MessagingConstants;
+import org.apache.airavata.messaging.core.MessagingFactory;
+import org.apache.airavata.messaging.core.Subscriber;
 import org.apache.airavata.messaging.core.impl.RabbitMQProcessLaunchPublisher;
-import org.apache.airavata.messaging.core.impl.RabbitMQStatusConsumer;
-import org.apache.airavata.model.messaging.event.*;
+import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.messaging.event.ProcessIdentifier;
+import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.TaskIdentifier;
+import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,16 +45,17 @@ import java.util.concurrent.Executors;
 public class WorkflowEnactmentService {
 
     private static WorkflowEnactmentService workflowEnactmentService;
-    private final RabbitMQStatusConsumer statusConsumer;
+    private final Subscriber statusSubscriber;
     private String consumerId;
     private ExecutorService executor;
     private Map<String,WorkflowInterpreter> workflowMap;
 
     private WorkflowEnactmentService () throws AiravataException {
         executor = Executors.newFixedThreadPool(getThreadPoolSize());
-        workflowMap = new ConcurrentHashMap<String, WorkflowInterpreter>();
-        statusConsumer = new RabbitMQStatusConsumer();
-        consumerId = statusConsumer.listen(new TaskMessageHandler());
+        workflowMap = new ConcurrentHashMap<>();
+        statusSubscriber = MessagingFactory.getSubscriber((message -> executor.execute(new StatusHandler(message))),
+                                                           getRoutingKeys(),
+                                                           Subscriber.Type.STATUS);
         // register the shutdown hook to un-bind status consumer.
         Runtime.getRuntime().addShutdownHook(new EnactmentShutDownHook());
     }
@@ -80,33 +83,20 @@ public class WorkflowEnactmentService {
 
     }
 
-    private int getThreadPoolSize() {
-        return ServerSettings.getEnactmentThreadPoolSize();
+
+    public List<String> getRoutingKeys() {
+        String gatewayId = "*";
+        String experimentId = "*";
+        List<String> routingKeys = new ArrayList<String>();
+        routingKeys.add(gatewayId);
+        routingKeys.add(gatewayId + "." + experimentId);
+        routingKeys.add(gatewayId + "." + experimentId+ ".*");
+        routingKeys.add(gatewayId + "." + experimentId+ ".*.*");
+        return routingKeys;
     }
 
-    private class TaskMessageHandler implements MessageHandler {
-
-        @Override
-        public Map<String, Object> getProperties() {
-            Map<String, Object> props = new HashMap<String, Object>();
-            String gatewayId = "*";
-            String experimentId = "*";
-            List<String> routingKeys = new ArrayList<String>();
-            routingKeys.add(gatewayId);
-            routingKeys.add(gatewayId + "." + experimentId);
-            routingKeys.add(gatewayId + "." + experimentId+ ".*");
-            routingKeys.add(gatewayId + "." + experimentId+ ".*.*");
-            props.put(MessagingConstants.RABBIT_ROUTING_KEY, routingKeys);
-            return props;
-        }
-
-        @Override
-        public void onMessage(MessageContext msgCtx) {
-            StatusHandler statusHandler = new StatusHandler(msgCtx);
-            executor.execute(statusHandler);
-        }
-
-
+    private int getThreadPoolSize() {
+        return ServerSettings.getEnactmentThreadPoolSize();
     }
 
     private class StatusHandler implements Runnable{
@@ -169,7 +159,7 @@ public class WorkflowEnactmentService {
         public void run() {
             super.run();
             try {
-                statusConsumer.stopListen(consumerId);
+                statusSubscriber.stopListen(consumerId);
                 log.info("Successfully un-binded task status consumer");
             } catch (AiravataException e) {
                 log.error("Error while un-bind enactment status consumer", e);

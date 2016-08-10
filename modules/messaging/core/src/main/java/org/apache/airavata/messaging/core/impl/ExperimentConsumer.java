@@ -18,8 +18,25 @@
  * under the License.
  *
  */
+package org.apache.airavata.messaging.core.impl;
 
-package org.apache.airavata.messaging.core;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.QueueingConsumer;
 
-public class Metadata {
+import java.io.IOException;
+
+public class ExperimentConsumer extends QueueingConsumer {
+    public ExperimentConsumer(Channel ch) {
+        super(ch);
+    }
+
+
+    @Override
+    public void handleDelivery(String consumerTag,
+                               Envelope envelope,
+                               AMQP.BasicProperties properties,
+                               byte[] body) throws IOException {
+    }
 }

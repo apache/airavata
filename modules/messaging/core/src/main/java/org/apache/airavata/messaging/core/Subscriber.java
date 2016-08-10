@@ -21,20 +21,38 @@
 
 package org.apache.airavata.messaging.core;
 
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.Consumer;
 import org.apache.airavata.common.exception.AiravataException;
+
+import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * This is the basic consumer
  */
-public interface Consumer {
+public interface Subscriber {
     /**
      * Start listening for messages, The binding properties are specified in the handler.
-     * Returns and unique id to this Consumer. This id can be used to stop the listening
-     * @param handler
-     * @return
+     * Returns and unique id to this Subscriber. This id can be used to stop the listening
+     * @param supplier - return RabbitMQ Consumer
+     * @return string id
      * @throws AiravataException
      */
-    public String listen(MessageHandler handler) throws AiravataException;
+    String listen(BiFunction<Connection, Channel, Consumer>  supplier,
+                  String queueName,
+                  List<String> routingKeys) throws AiravataException;
 
-    public void stopListen(final String id) throws AiravataException;
+    void stopListen(final String id) throws AiravataException;
+
+    void sendAck(long deliveryTag);
+
+    enum Type {
+        EXPERIMENT_LAUNCH,
+        PROCESS_LAUNCH,
+        STATUS
+    }
 }

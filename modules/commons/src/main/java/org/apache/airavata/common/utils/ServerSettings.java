@@ -84,8 +84,15 @@ public class ServerSettings extends ApplicationSettings {
     public static final String JOB_NOTIFICATION_ENABLE = "job.notification.enable";
     public static final String JOB_NOTIFICATION_EMAILIDS = "job.notification.emailids";
     public static final String JOB_NOTIFICATION_FLAGS = "job.notification.flags";
-    public static final String LAUNCH_QUEUE_NAME = "launch.queue.name";
-    public static final String CANCEL_QUEUE_NAME = "cancel.queue.name";
+
+    public static final String RABBITMQ_BROKER_URL = "rabbitmq.broker.url";
+    public static final String RABBITMQ_STATUS_EXCHANGE_NAME = "rabbitmq.status.exchange.name";
+    public static final String RABBITMQ_PROCESS_EXCHANGE_NAME = "rabbitmq.process.exchange.name";
+    public static final String RABBITMQ_EXPERIMENT_EXCHANGE_NAME = "rabbitmq.experiment.exchange.name";
+    public static final String RABBITMQ_PROCESS_LAUNCH_QUEUE_NAME = "process.launch.queue.name";
+    public static final String RABBITMQ_EXPERIMENT_LAUNCH_QUEUE_NAME = "experiment.launch.queue.name";
+    public static final String RABBITMQ_DURABLE_QUEUE="durable.queue";
+    public static final String RABBITMQ_PREFETCH_COUNT="prefetch.count";
 
 
     //    Workflow Enactment Service component configuration.
@@ -110,13 +117,36 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(DEFAULT_USER);
     }
 
-    public static String getLaunchQueueName() {
-        return getSetting(LAUNCH_QUEUE_NAME, "launch.queue");
+    public static String getRabbitmqProcessLaunchQueueName() {
+        return getSetting(RABBITMQ_PROCESS_LAUNCH_QUEUE_NAME, "process.launch.queue");
     }
 
+    public static String getRabbitmqExperimentLaunchQueueName() {
+        return getSetting(RABBITMQ_EXPERIMENT_EXCHANGE_NAME, "experiment.launch.queue");
+    }
 
-    public static String getCancelQueueName() {
-        return getSetting(CANCEL_QUEUE_NAME, "cancel.queue");
+    public static String getRabbitmqBrokerUrl() throws ApplicationSettingsException {
+        return getSetting(RABBITMQ_BROKER_URL);
+    }
+
+    public static String getRabbitmqStatusExchangeName(){
+        return getSetting(RABBITMQ_STATUS_EXCHANGE_NAME, "status_exchange");
+    }
+
+    public static String getRabbitmqProcessExchangeName(){
+        return getSetting(RABBITMQ_PROCESS_EXCHANGE_NAME, "process_exchange");
+    }
+
+    public static String getRabbitmqExperimentExchangeName() {
+        return getSetting(RABBITMQ_EXPERIMENT_EXCHANGE_NAME, "experiment_exchange");
+    }
+
+    public static boolean getRabbitmqDurableQueue(){
+        return Boolean.valueOf(getSetting(RABBITMQ_DURABLE_QUEUE, "false"));
+    }
+
+    public static int getRabbitmqPrefetchCount(){
+        return Integer.valueOf(getSetting(RABBITMQ_PREFETCH_COUNT, "200"));
     }
 
     public static String getDefaultUserPassword() throws ApplicationSettingsException {
