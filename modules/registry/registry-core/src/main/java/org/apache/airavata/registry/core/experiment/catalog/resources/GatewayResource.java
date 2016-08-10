@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +55,7 @@ public class GatewayResource extends AbstractExpCatResource {
     private String declinedReason;
     private String oauthClientId;
     private String oauthClientSecret;
+    private Timestamp requestCreationTime;
 
     public String getGatewayAdminFirstName() {
         return gatewayAdminFirstName;
@@ -173,6 +175,14 @@ public class GatewayResource extends AbstractExpCatResource {
 
     public void setOauthClientSecret(String oauthClientSecret) {
         this.oauthClientSecret = oauthClientSecret;
+    }
+
+    public Timestamp getRequestCreationTime() {
+        return requestCreationTime;
+    }
+
+    public void setRequestCreationTime(Timestamp requestCreationTime) {
+        this.requestCreationTime = requestCreationTime;
     }
 
     /**
@@ -462,6 +472,7 @@ public class GatewayResource extends AbstractExpCatResource {
             gateway.setDeclinedReason(declinedReason);
             gateway.setOauthClientId(oauthClientId);
             gateway.setGetOauthClientSecret(oauthClientSecret);
+            gateway.setRequestCreationTime(requestCreationTime);
             if (existingGateway != null) {
                 existingGateway.setDomain(domain);
                 existingGateway.setGatewayApprovalStatus(gatewayApprovalStatus);
@@ -480,6 +491,7 @@ public class GatewayResource extends AbstractExpCatResource {
                 existingGateway.setDeclinedReason(declinedReason);
                 existingGateway.setOauthClientId(oauthClientId);
                 existingGateway.setGetOauthClientSecret(oauthClientSecret);
+                existingGateway.setRequestCreationTime(requestCreationTime);
                 em.merge(existingGateway);
             } else {
                 em.persist(gateway);
