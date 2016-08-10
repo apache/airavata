@@ -132,6 +132,20 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 		}
 	}
 
+	public void runningJobs(String address, String appid) throws MarathonException{
+		try{
+			String line;
+			Process marathonJob = Runtime.getRuntime().exec("curl GET "+address+"/v2/apps/"+appid+"/tasks");
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+			util.printLog(stdout);
+			marathonJob.waitFor();
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list jobs.\n"+ex.toString());
+		}
+	}
+
 
 
 }
