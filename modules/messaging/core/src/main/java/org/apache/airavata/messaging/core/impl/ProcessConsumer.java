@@ -48,16 +48,12 @@ public class ProcessConsumer extends QueueingConsumer{
     private Connection connection;
 
     public ProcessConsumer(MessageHandler messageHandler, Connection connection, Channel channel){
-        this(channel);
+        super(channel);
         this.handler = messageHandler;
         this.connection = connection;
         this.channel = channel;
     }
 
-
-    private ProcessConsumer(Channel ch) {
-        super(ch);
-    }
 
     @Override
     public void handleDelivery(String consumerTag,
