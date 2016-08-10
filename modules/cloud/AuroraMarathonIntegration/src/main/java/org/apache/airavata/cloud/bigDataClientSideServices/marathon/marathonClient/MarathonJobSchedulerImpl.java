@@ -145,6 +145,31 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 		}
 	}
 
+	public void createGroups(String address, String json) throws MarathonException{
+		try{
+
+			String completeCommandToRunProcess = "curl -X POST -H \"Content-type: application/json\" "+address+"/v2/groups/"+json;
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while creating the group.\n"+ex.toString());
+		}
+	}
+	public void groups(String address) throws MarathonException{
+		try{
+
+			String completeCommandToRunProcess = "curl GET "+address+"/v2/groups/";
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list of groups.\n"+ex.toString());
+		}
+	}
+
 
 
 }
