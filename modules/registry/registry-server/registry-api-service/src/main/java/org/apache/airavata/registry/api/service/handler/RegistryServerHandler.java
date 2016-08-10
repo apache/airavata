@@ -55,6 +55,7 @@ import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
+import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
@@ -3299,6 +3300,11 @@ public class RegistryServerHandler implements RegistryService.Iface {
             if(accessibleExpIds.size() == 0)
                 return new ArrayList<>();
 
+            if(accessibleExpIds.size() == 0){
+                if(!regFilters.containsKey(AbstractExpCatResource.ExperimentConstants.USER_NAME)){
+                    regFilters.put(AbstractExpCatResource.ExperimentConstants.USER_NAME, userName);
+                }
+            }
             List<Object> results = experimentCatalog.searchAllAccessible(ExperimentCatalogModelType.EXPERIMENT,
                     accessibleExpIds, regFilters, limit,
                     offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
@@ -3363,6 +3369,12 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
             if(accessibleProjIds.size() == 0)
                 return new ArrayList<>();
+
+            if(accessibleProjIds.size() == 0){
+                if(!regFilters.containsKey(AbstractExpCatResource.ProjectConstants.USERNAME)){
+                    regFilters.put(AbstractExpCatResource.ProjectConstants.USERNAME, userName);
+                }
+            }
 
             List<Object> results = experimentCatalog.searchAllAccessible(ExperimentCatalogModelType.PROJECT, accessibleProjIds,
                     regFilters, limit, offset, Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);

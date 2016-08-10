@@ -3621,7 +3621,13 @@ public class AiravataServerHandler implements Airavata.Iface {
         return accessibleUsers.contains(userId);
     }
 
-    private List<String> getAllAccessibleResourcesForUser(String userId, ResourceType resourceType, ResourcePermissionType permissionType) throws GroupManagerException {
+    private List<String> getAllAccessibleResourcesForUser(String userId, ResourceType resourceType, ResourcePermissionType permissionType)
+            throws GroupManagerException, TException, ApplicationSettingsException {
+        if(!getRegistryServiceClient().isUserExists(userId.split("@")[1], userId.split("@")[0])){
+            //user is still not initialized in the sistem
+            return new ArrayList<>();
+        }
+
         GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
         org.apache.airavata.grouper.resource.ResourceType gResourceType;
         if(resourceType.equals(ResourceType.PROJECT)){
