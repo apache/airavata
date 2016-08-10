@@ -134,7 +134,7 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 
 	public void runningJobs(String address, String appid) throws MarathonException{
 		try{
-	
+
 			String completeCommandToRunProcess = "curl GET "+address+"/v2/apps/"+appid+"/tasks";
 			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
 			util.printLog(stdout);
