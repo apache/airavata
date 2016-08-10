@@ -13,6 +13,58 @@ import org.apache.airavata.cloud.marathon.utilities.MarathonUtilI;
 
 public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 	MarathonUtilI util = new MarathonUtilImpl();
+	public void createGroups(String address, String json) throws MarathonException{
+		try{
+			String line;
+			Process marathonJob = Runtime.getRuntime().exec("curl -X POST -H \"Content-type: application/json\" "+address+"/v2/groups/"+json);
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+			util.printLog(stdout);
+			marathonJob.waitFor();
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while creating the group.\n"+ex.toString());
+		}
+	}
+	public void groups(String address) throws MarathonException{
+		try{
+			String line;
+			Process marathonJob = Runtime.getRuntime().exec("curl GET "+address+"/v2/groups/");
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+			util.printLog(stdout);
+			marathonJob.waitFor();
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list of groups.\n"+ex.toString());
+		}
+	}
+	public void groupsId(String address, String groupid) throws MarathonException{
+		try{
+			String line;
+			Process marathonJob = Runtime.getRuntime().exec("curl GET "+address+"/v2/groups/"+groupid);
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+			util.printLog(stdout);
+			marathonJob.waitFor();
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list of groups.\n"+ex.toString());
+		}
+	}
+	public void jobDeleteId(String address, String appid, String taskid) throws MarathonException{
+		try{
+			String line;
+			Process marathonJob = Runtime.getRuntime().exec("curl DELETE "+address+"/v2/apps/"+appid+"/"+taskid);
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+			util.printLog(stdout);
+			marathonJob.waitFor();
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list jobs.\n"+ex.toString());
+		}
+	}
 	public void jobDelete(String address, String appid) throws MarathonException{
 		try{
 			String line;
@@ -26,7 +78,6 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 			throw new MarathonException("Exception occured while retrieving the list jobs.\n"+ex.toString());
 		}
 	}
-	
 	public void runningJobs(String address, String appid) throws MarathonException{
 		try{
 			String line;
@@ -107,7 +158,7 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 	}
 	public void configCreate(String name, String ram, String cpu, String disk, String image, String command) throws MarathonException{
 	try {
-		String config = "'id': "+name+",'cmd': \""+command+"\", \"container\": {\"type\": \"DOCKER\", \"docker\": {\"image\": \"danielpan/dacapo\", \"forcePullImage\": bool(1)}},\"constraints\":[[\"hostname\",\"UNIQUE\"]],\"cpus\": float("+cpu+"), \"mem\": "+ram+"), \"disk\": "+disk+", \"instances\": 1";
+		String config = "'id': "+name+",'cmd': \""+command+"\", \"container\": {\"type\": \"DOCKER\", \"docker\": {\"image\": \""+image+"\", \"forcePullImage\": bool(1)}},\"constraints\":[[\"hostname\",\"UNIQUE\"]],\"cpus\": float("+cpu+"), \"mem\": "+ram+"), \"disk\": "+disk+", \"instances\": 1";
 		File file = new File(name+".json");
 
 		if (!file.exists()) {
