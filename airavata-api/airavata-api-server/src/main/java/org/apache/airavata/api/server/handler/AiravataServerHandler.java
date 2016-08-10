@@ -41,8 +41,9 @@ import org.apache.airavata.grouper.group.Group;
 import org.apache.airavata.grouper.permission.PermissionAction;
 import org.apache.airavata.grouper.resource.Resource;
 import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.messaging.core.PublisherFactory;
+import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.model.WorkflowModel;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
@@ -99,7 +100,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     public AiravataServerHandler() {
         try {
-            publisher = PublisherFactory.createActivityPublisher();
+            publisher = MessagingFactory.getPublisher(Type.STATUS);
         } catch (ApplicationSettingsException e) {
             logger.error("Error occured while reading airavata-server properties..", e);
         } catch (AiravataException e) {
