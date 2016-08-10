@@ -119,5 +119,19 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 		}
 	}
 
+	public void jobDelete(String address, String appid) throws MarathonException{
+		try{
+
+			String completeCommandToRunProcess = "curl DELETE "+address+"/v2/apps/"+appid+"/tasks";
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list jobs.\n"+ex.toString());
+		}
+	}
+
+
 
 }
