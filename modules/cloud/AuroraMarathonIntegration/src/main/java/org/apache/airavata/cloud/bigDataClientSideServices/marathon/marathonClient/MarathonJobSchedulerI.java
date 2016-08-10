@@ -33,6 +33,8 @@ public interface MarathonJobSchedulerI {
 	public void jobListByName(String address, String name) throws MarathonException;
 	public void jobDelete(String address, String appid) throws MarathonException;
 	public void runningJobs(String address, String appid) throws MarathonException;
+	public void createGroups(String address, String json) throws MarathonException;
+	public void groups(String address) throws MarathonException;
 
 
 }
