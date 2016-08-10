@@ -476,6 +476,7 @@ class Gateway:
    - declinedReason
    - oauthClientId
    - oauthClientSecret
+   - requestCreationTime
   """
 
   thrift_spec = (
@@ -497,9 +498,10 @@ class Gateway:
     (15, TType.STRING, 'declinedReason', None, None, ), # 15
     (16, TType.STRING, 'oauthClientId', None, None, ), # 16
     (17, TType.STRING, 'oauthClientSecret', None, None, ), # 17
+    (18, TType.I64, 'requestCreationTime', None, None, ), # 18
   )
 
-  def __init__(self, gatewayId=None, gatewayApprovalStatus=None, gatewayName=None, domain=None, emailAddress=None, gatewayAcronym=None, gatewayURL=None, gatewayPublicAbstract=None, reviewProposalDescription=None, gatewayAdminFirstName=None, gatewayAdminLastName=None, gatewayAdminEmail=None, identityServerUserName=None, identityServerPasswordToken=None, declinedReason=None, oauthClientId=None, oauthClientSecret=None,):
+  def __init__(self, gatewayId=None, gatewayApprovalStatus=None, gatewayName=None, domain=None, emailAddress=None, gatewayAcronym=None, gatewayURL=None, gatewayPublicAbstract=None, reviewProposalDescription=None, gatewayAdminFirstName=None, gatewayAdminLastName=None, gatewayAdminEmail=None, identityServerUserName=None, identityServerPasswordToken=None, declinedReason=None, oauthClientId=None, oauthClientSecret=None, requestCreationTime=None,):
     self.gatewayId = gatewayId
     self.gatewayApprovalStatus = gatewayApprovalStatus
     self.gatewayName = gatewayName
@@ -517,6 +519,7 @@ class Gateway:
     self.declinedReason = declinedReason
     self.oauthClientId = oauthClientId
     self.oauthClientSecret = oauthClientSecret
+    self.requestCreationTime = requestCreationTime
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -612,6 +615,11 @@ class Gateway:
           self.oauthClientSecret = iprot.readString()
         else:
           iprot.skip(ftype)
+      elif fid == 18:
+        if ftype == TType.I64:
+          self.requestCreationTime = iprot.readI64()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -690,6 +698,10 @@ class Gateway:
       oprot.writeFieldBegin('oauthClientSecret', TType.STRING, 17)
       oprot.writeString(self.oauthClientSecret)
       oprot.writeFieldEnd()
+    if self.requestCreationTime is not None:
+      oprot.writeFieldBegin('requestCreationTime', TType.I64, 18)
+      oprot.writeI64(self.requestCreationTime)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -720,6 +732,7 @@ class Gateway:
     value = (value * 31) ^ hash(self.declinedReason)
     value = (value * 31) ^ hash(self.oauthClientId)
     value = (value * 31) ^ hash(self.oauthClientSecret)
+    value = (value * 31) ^ hash(self.requestCreationTime)
     return value
 
   def __repr__(self):

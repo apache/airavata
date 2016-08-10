@@ -692,6 +692,10 @@ class Gateway {
    * @var string
    */
   public $oauthClientSecret = null;
+  /**
+   * @var int
+   */
+  public $requestCreationTime = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -764,6 +768,10 @@ class Gateway {
           'var' => 'oauthClientSecret',
           'type' => TType::STRING,
           ),
+        18 => array(
+          'var' => 'requestCreationTime',
+          'type' => TType::I64,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -817,6 +825,9 @@ class Gateway {
       }
       if (isset($vals['oauthClientSecret'])) {
         $this->oauthClientSecret = $vals['oauthClientSecret'];
+      }
+      if (isset($vals['requestCreationTime'])) {
+        $this->requestCreationTime = $vals['requestCreationTime'];
       }
     }
   }
@@ -959,6 +970,13 @@ class Gateway {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 18:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->requestCreationTime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -1055,6 +1073,11 @@ class Gateway {
     if ($this->oauthClientSecret !== null) {
       $xfer += $output->writeFieldBegin('oauthClientSecret', TType::STRING, 17);
       $xfer += $output->writeString($this->oauthClientSecret);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->requestCreationTime !== null) {
+      $xfer += $output->writeFieldBegin('requestCreationTime', TType::I64, 18);
+      $xfer += $output->writeI64($this->requestCreationTime);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
