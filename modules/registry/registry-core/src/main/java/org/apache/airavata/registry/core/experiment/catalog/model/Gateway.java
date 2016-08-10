@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Collection;
 
 @Entity
@@ -47,6 +48,7 @@ public class Gateway {
     private String declinedReason;
     private String oauthClientId;
     private String getOauthClientSecret;
+    private Timestamp requestCreationTime;
     private Collection<GatewayWorker> gatewayWorkers;
     private Collection<Project> projects;
 
@@ -193,6 +195,15 @@ public class Gateway {
 
     public void setOauthClientId(String oauthClientId) {
         this.oauthClientId = oauthClientId;
+    }
+
+    @Column(name = "REQUEST_CREATION_TIME")
+    public Timestamp getRequestCreationTime() {
+        return requestCreationTime;
+    }
+
+    public void setRequestCreationTime(Timestamp requestCreationTime) {
+        this.requestCreationTime = requestCreationTime;
     }
 
     @Column(name = "OAUTH_CLIENT_SECRET")
