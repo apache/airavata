@@ -22,6 +22,7 @@ package org.apache.airavata.messaging.core;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.messaging.core.impl.ExperimentConsumer;
 import org.apache.airavata.messaging.core.impl.ProcessConsumer;
 import org.apache.airavata.messaging.core.impl.RabbitMQPublisher;
 import org.apache.airavata.messaging.core.impl.RabbitMQSubscriber;
@@ -45,6 +46,10 @@ public class MessagingFactory {
 
         switch (type) {
             case EXPERIMENT_LAUNCH:
+                subscriber = getExperimentSubscriber(rProperties);
+                subscriber.listen(((connection, channel) -> new ExperimentConsumer(messageHandler, connection, channel)),
+                        null,
+                        routingKeys);
                 break;
             case PROCESS_LAUNCH:
                 subscriber = getProcessSubscriber(rProperties);
@@ -70,6 +75,7 @@ public class MessagingFactory {
         Publisher publiser = null;
         switch (type) {
             case EXPERIMENT_LAUNCH:
+                publiser = getExperimentPublisher(rProperties);
                 break;
             case PROCESS_LAUNCH:
                 publiser = gerProcessPublisher(rProperties);
@@ -82,6 +88,11 @@ public class MessagingFactory {
         }
 
         return publiser;
+    }
+
+    private static Publisher getExperimentPublisher(RabbitMQProperties rProperties) throws AiravataException {
+        rProperties.setExchangeName(ServerSettings.getRabbitmqExperimentExchangeName());
+        return new RabbitMQPublisher(rProperties, messageContext -> rProperties.getExchangeName());
     }
 
     private static Publisher getStatusPublisher(RabbitMQProperties rProperties) throws AiravataException {
@@ -110,12 +121,19 @@ public class MessagingFactory {
         return new RabbitMQSubscriber(sp);
     }
 
-
     private static RabbitMQSubscriber getProcessSubscriber(RabbitMQProperties sp) throws AiravataException {
         sp.setExchangeName(ServerSettings.getRabbitmqProcessExchangeName())
                 .setQueueName(ServerSettings.getRabbitmqProcessLaunchQueueName())
                 .setAutoAck(false);
         return new RabbitMQSubscriber(sp);
+    }
+
+
+    private static Subscriber getExperimentSubscriber(RabbitMQProperties sp) throws AiravataException {
+        sp.setExchangeName(ServerSettings.getRabbitmqExperimentExchangeName())
+                .setAutoAck(false);
+        return new RabbitMQSubscriber(sp);
+
     }
 
 
