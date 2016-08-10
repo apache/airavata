@@ -42,7 +42,7 @@ public class RabbitMQProcessLaunchPublisher implements Publisher{
         String brokerUrl;
         try {
             brokerUrl = ServerSettings.getSetting(MessagingConstants.RABBITMQ_BROKER_URL);
-            launchTask = ServerSettings.getLaunchQueueName();
+            launchTask = ServerSettings.getRabbitmqProcessLaunchQueueName();
         } catch (ApplicationSettingsException e) {
             String message = "Failed to get read the required properties from airavata to initialize rabbitmq";
             log.error(message, e);
