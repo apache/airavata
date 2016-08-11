@@ -37,6 +37,9 @@ public interface MarathonJobSchedulerI {
 	public void groups(String address) throws MarathonException;
 	public void groupsId(String address, String groupid) throws MarathonException;
 	public void jobDeleteId(String address, String appid, String taskid) throws MarathonException;
+	public void deleteDeployment(String address, String id) throws MarathonException;
+	public void deploymentList(String address) throws MarathonException;
+	//TODO:Delete groups function
 
 
 }
