@@ -13,6 +13,45 @@ import org.apache.airavata.cloud.marathon.utilities.MarathonUtilI;
 
 public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 	MarathonUtilI util = new MarathonUtilImpl();
+	public void deleteDeployment(String address, String id) throws MarathonException{
+		try{
+			String line;
+			Process marathonJob = Runtime.getRuntime().exec("curl -X DELETE "+address+"/v2/deployments/"+id);
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+			util.printLog(stdout);
+			marathonJob.waitFor();
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while deleting the deployment.\n"+ex.toString());
+		}
+	}
+	public void deploymentList(String address) throws MarathonException{
+		try{
+			String line;
+			Process marathonJob = Runtime.getRuntime().exec("curl GET "+address+"/v2/deployments/");
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+			util.printLog(stdout);
+			marathonJob.waitFor();
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list of deployment.\n"+ex.toString());
+		}
+	}
+	public void deleteGroups(String address, String id) throws MarathonException{
+		try{
+			String line;
+			Process marathonJob = Runtime.getRuntime().exec("curl -X DELETE "+address+"/v2/groups/"+id);
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+			util.printLog(stdout);
+			marathonJob.waitFor();
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while deleting the group.\n"+ex.toString());
+		}
+	}
 	public void createGroups(String address, String json) throws MarathonException{
 		try{
 			String line;
