@@ -48,6 +48,7 @@ import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.ExperimentSubmitEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.messaging.event.ProcessIdentifier;
 import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
@@ -99,7 +100,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	private String airavataUserName;
 	private String gatewayName;
 	private Publisher publisher;
-	private Subscriber statusSubscribe;
+	private final Subscriber statusSubscribe;
+	private final Subscriber experimentSubscriber;
 	private CuratorFramework curatorClient;
 
     /**
@@ -112,7 +114,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	public OrchestratorServerHandler() throws OrchestratorException{
 		try {
 	        publisher = MessagingFactory.getPublisher(Type.STATUS);
-            setAiravataUserName(ServerSettings.getDefaultUser());
+			List<String> routingKeys = new ArrayList<>();
+			routingKeys.add(ServerSettings.getRabbitmqExperimentLaunchQueueName());
+			experimentSubscriber = MessagingFactory.getSubscriber(new ExperimentHandler(), routingKeys, Type.EXPERIMENT_LAUNCH);
+			setAiravataUserName(ServerSettings.getDefaultUser());
 		} catch (AiravataException e) {
             log.error(e.getMessage(), e);
             throw new OrchestratorException("Error while initializing orchestrator service", e);
@@ -601,4 +606,32 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			}
 		}
 	}
+
+
+	private class ExperimentHandler implements MessageHandler {
+
+		@Override
+		public void onMessage(MessageContext messageContext) {
+			if (messageContext.getType() != MessageType.EXPERIMENT) {
+				experimentSubscriber.sendAck(messageContext.getDeliveryTag());
+				log.error("Orchestrator got un-support message type : " + messageContext.getType());
+			}
+			try {
+				byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
+				ExperimentSubmitEvent expEvent = new ExperimentSubmitEvent();
+				ThriftUtils.createThriftFromBytes(bytes, expEvent);
+				if (messageContext.isRedeliver()) {
+                    // TODO - handle redelivery scenario
+                    experimentSubscriber.sendAck(messageContext.getDeliveryTag());
+                } else {
+                    launchExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
+                    experimentSubscriber.sendAck(messageContext.getDeliveryTag());
+                }
+			} catch (TException e) {
+				log.error("Experiment launch failed due to Thrift conversion error", e);
+                experimentSubscriber.sendAck(messageContext.getDeliveryTag());
+			}
+		}
+	}
+
 }
