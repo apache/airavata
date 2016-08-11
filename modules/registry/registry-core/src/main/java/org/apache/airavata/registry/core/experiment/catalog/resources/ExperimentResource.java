@@ -22,6 +22,8 @@
 package org.apache.airavata.registry.core.experiment.catalog.resources;
 
 import org.apache.airavata.model.status.ExperimentState;
+import org.apache.airavata.registry.core.Committer;
+import org.apache.airavata.registry.core.JPAUtil;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
@@ -29,6 +31,7 @@ import org.apache.airavata.registry.core.experiment.catalog.model.*;
 import org.apache.airavata.registry.core.experiment.catalog.model.Process;
 import org.apache.airavata.registry.core.experiment.catalog.utils.QueryGenerator;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.openjpa.persistence.Generator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -264,120 +267,65 @@ public class ExperimentResource extends AbstractExpCatResource {
 
     
     public ExperimentCatResource get(ResourceType type, Object name) throws RegistryException{
-        EntityManager em = null;
         try {
-            em = ExpCatResourceUtils.getEntityManager();
-            em.getTransaction().begin();
-            QueryGenerator generator;
-            Query q;
             switch (type) {
                 case EXPERIMENT_STATUS:
-                    generator = new QueryGenerator(EXPERIMENT_STATUS);
-                    generator.setParameter(ExperimentStatusConstants.STATUS_ID, name);
-                    q = generator.selectQuery(em);
-                    ExperimentStatus status = (ExperimentStatus) q.getSingleResult();
-                    ExperimentStatusResource statusResource = (ExperimentStatusResource) Utils.getResource(ResourceType.EXPERIMENT_STATUS, status);
-                    em.getTransaction().commit();
-                    if (em.isOpen()) {
-                        if (em.getTransaction().isActive()){
-                            em.getTransaction().rollback();
-                        }
-                        em.close();
-                    }
-                    return statusResource;
+                    return JPAUtil.executeOnExpCatalog(entityManager -> {
+                        QueryGenerator generator = new QueryGenerator(EXPERIMENT_STATUS);
+                        generator.setParameter(ExperimentStatusConstants.STATUS_ID, name);
+                        Query q = generator.selectQuery(entityManager);
+                        ExperimentStatus status = (ExperimentStatus) q.getSingleResult();
+                        return (ExperimentStatusResource) Utils.getResource(ResourceType.EXPERIMENT_STATUS, status);
+                    });
                 case EXPERIMENT_ERROR:
-                    generator = new QueryGenerator(EXPERIMENT_ERROR);
-                    generator.setParameter(ExperimentErrorConstants.ERROR_ID, name);
-                    q = generator.selectQuery(em);
-                    ExperimentError experimentError = (ExperimentError) q.getSingleResult();
-                    ExperimentErrorResource processErrorResource = (ExperimentErrorResource) Utils.getResource(ResourceType.EXPERIMENT_ERROR, experimentError);
-                    em.getTransaction().commit();
-                    if (em.isOpen()) {
-                        if (em.getTransaction().isActive()){
-                            em.getTransaction().rollback();
-                        }
-                        em.close();
-                    }
-                    return processErrorResource;
+                    return JPAUtil.executeOnExpCatalog(entityManager -> {
+                        QueryGenerator generator = new QueryGenerator(EXPERIMENT_ERROR);
+                        generator.setParameter(ExperimentErrorConstants.ERROR_ID, name);
+                        Query q = generator.selectQuery(entityManager);
+                        ExperimentError experimentError = (ExperimentError) q.getSingleResult();
+                        return (ExperimentErrorResource) Utils.getResource(ResourceType.EXPERIMENT_ERROR, experimentError);
+                    });
                 case EXPERIMENT_INPUT:
-                    generator = new QueryGenerator(EXPERIMENT_INPUT);
-                    generator.setParameter(ExperimentInputConstants.INPUT_NAME, name);
-                    generator.setParameter(ExperimentInputConstants.EXPERIMENT_ID, experimentId);
-                    q = generator.selectQuery(em);
-                    ExperimentInput experimentInput = (ExperimentInput) q.getSingleResult();
-                    ExperimentInputResource experimentInputResource = (ExperimentInputResource) Utils.getResource(ResourceType.EXPERIMENT_INPUT, experimentInput);
-                    em.getTransaction().commit();
-                    if (em.isOpen()) {
-                        if (em.getTransaction().isActive()){
-                            em.getTransaction().rollback();
-                        }
-                        em.close();
-                    }
-                    return experimentInputResource;
+                    return JPAUtil.executeOnExpCatalog(entityManager -> {
+                        QueryGenerator generator = new QueryGenerator(EXPERIMENT_INPUT);
+                        generator.setParameter(ExperimentInputConstants.INPUT_NAME, name);
+                        generator.setParameter(ExperimentInputConstants.EXPERIMENT_ID, experimentId);
+                        Query q = generator.selectQuery(entityManager);
+                        ExperimentInput experimentInput = (ExperimentInput) q.getSingleResult();
+                        return (ExperimentInputResource) Utils.getResource(ResourceType.EXPERIMENT_INPUT, experimentInput);
+                    });
                 case EXPERIMENT_OUTPUT:
-                    generator = new QueryGenerator(EXPERIMENT_OUTPUT);
-                    generator.setParameter(ExperimentOutputConstants.OUTPUT_NAME, name);
-                    generator.setParameter(ExperimentInputConstants.EXPERIMENT_ID, experimentId);
-                    q = generator.selectQuery(em);
-                    ExperimentOutput experimentOutput = (ExperimentOutput) q.getSingleResult();
-                    ExperimentOutputResource outputResource = (ExperimentOutputResource) Utils.getResource(ResourceType.EXPERIMENT_OUTPUT, experimentOutput);
-                    em.getTransaction().commit();
-                    if (em.isOpen()) {
-                        if (em.getTransaction().isActive()){
-                            em.getTransaction().rollback();
-                        }
-                        em.close();
-                    }
-                    return outputResource;
+                    return JPAUtil.executeOnExpCatalog(entityManager -> {
+                        QueryGenerator generator = new QueryGenerator(EXPERIMENT_OUTPUT);
+                        generator.setParameter(ExperimentOutputConstants.OUTPUT_NAME, name);
+                        generator.setParameter(ExperimentInputConstants.EXPERIMENT_ID, experimentId);
+                        Query q = generator.selectQuery(entityManager);
+                        ExperimentOutput experimentOutput = (ExperimentOutput) q.getSingleResult();
+                        return (ExperimentOutputResource) Utils.getResource(ResourceType.EXPERIMENT_OUTPUT, experimentOutput);
+                    });
                 case USER_CONFIGURATION_DATA:
-                    generator = new QueryGenerator(USER_CONFIGURATION_DATA);
-                    generator.setParameter(UserConfigurationDataConstants.EXPERIMENT_ID, name);
-                    q = generator.selectQuery(em);
-                    UserConfigurationData configurationData = (UserConfigurationData) q.getSingleResult();
-                    UserConfigurationDataResource configurationDataResource = (UserConfigurationDataResource)
-                            Utils.getResource(ResourceType.USER_CONFIGURATION_DATA, configurationData);
-                    em.getTransaction().commit();
-                    if (em.isOpen()) {
-                        if (em.getTransaction().isActive()){
-                            em.getTransaction().rollback();
-                        }
-                        em.close();
-                    }
-                    return configurationDataResource;
+                    return JPAUtil.executeOnExpCatalog(entityManager -> {
+                        QueryGenerator generator = new QueryGenerator(USER_CONFIGURATION_DATA);
+                        generator.setParameter(UserConfigurationDataConstants.EXPERIMENT_ID, name);
+                        Query q = generator.selectQuery(entityManager);
+                        UserConfigurationData configurationData = (UserConfigurationData) q.getSingleResult();
+                        return (UserConfigurationDataResource)
+                                Utils.getResource(ResourceType.USER_CONFIGURATION_DATA, configurationData);
+                    });
                 case PROCESS:
-                    generator = new QueryGenerator(PROCESS);
-                    generator.setParameter(ProcessConstants.PROCESS_ID, name);
-                    q = generator.selectQuery(em);
-                    Process process = (Process) q.getSingleResult();
-                    ProcessResource processResource = (ProcessResource) Utils.getResource(ResourceType.PROCESS, process);
-                    em.getTransaction().commit();
-                    if (em.isOpen()) {
-                        if (em.getTransaction().isActive()){
-                            em.getTransaction().rollback();
-                        }
-                        em.close();
-                    }
-                    return processResource;
+                    return JPAUtil.executeOnExpCatalog(entityManager -> {
+                        QueryGenerator generator = new QueryGenerator(PROCESS);
+                        generator.setParameter(ProcessConstants.PROCESS_ID, name);
+                        Query q = generator.selectQuery(entityManager);
+                        Process process = (Process) q.getSingleResult();
+                        return (ProcessResource) Utils.getResource(ResourceType.PROCESS, process);
+                    });
                 default:
-                    em.getTransaction().commit();
-                    if (em.isOpen()) {
-                        if (em.getTransaction().isActive()){
-                            em.getTransaction().rollback();
-                        }
-                        em.close();
-                    }
                     logger.error("Unsupported resource type for experiment resource.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Unsupported resource type for experiment resource.");
             }
         } catch (Exception e) {
             throw new RegistryException(e);
-        } finally {
-            if (em != null && em.isOpen()) {
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
-                }
-                em.close();
-            }
         }
     }
 
