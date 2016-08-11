@@ -79,8 +79,6 @@ public class ServerSettings extends ApplicationSettings {
     private static final String MY_PROXY_USER = "myproxy.user";
     private static final String MY_PROXY_PASSWORD = "myproxy.password";
     private static final String MY_PROXY_LIFETIME = "myproxy.life";
-    private static final String STATUS_PUBLISHER = "status.publisher";
-    private static final String TASK_LAUNCH_PUBLISHER = "task.launch.publisher";
     public static final String JOB_NOTIFICATION_ENABLE = "job.notification.enable";
     public static final String JOB_NOTIFICATION_EMAILIDS = "job.notification.emailids";
     public static final String JOB_NOTIFICATION_FLAGS = "job.notification.flags";
@@ -232,14 +230,6 @@ public class ServerSettings extends ApplicationSettings {
 
     public static int getMyProxyLifetime() throws ApplicationSettingsException {
         return Integer.parseInt(getSetting(MY_PROXY_LIFETIME));
-    }
-
-    public static String getStatusPublisher() throws ApplicationSettingsException {
-        return getSetting(STATUS_PUBLISHER);
-    }
-
-    public static String getTaskLaunchPublisher() throws ApplicationSettingsException {
-        return getSetting(TASK_LAUNCH_PUBLISHER);
     }
 
     public static boolean isEmbeddedZK() {

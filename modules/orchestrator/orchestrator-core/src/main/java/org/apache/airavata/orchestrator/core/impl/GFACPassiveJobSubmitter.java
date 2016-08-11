@@ -27,9 +27,12 @@ import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.client.GFACInstance;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.messaging.core.PublisherFactory;
-import org.apache.airavata.model.messaging.event.*;
+import org.apache.airavata.messaging.core.Type;
+import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.messaging.event.ProcessSubmitEvent;
+import org.apache.airavata.model.messaging.event.ProcessTerminateEvent;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
@@ -53,7 +56,7 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
             this.publisher = orchestratorContext.getPublisher();
         }else {
             try {
-                this.publisher = PublisherFactory.createTaskLaunchPublisher();
+                this.publisher = MessagingFactory.getPublisher(Type.PROCESS_LAUNCH);
             } catch (AiravataException e) {
                 logger.error(e.getMessage(), e);
                 throw new OrchestratorException("Cannot initialize " + GFACPassiveJobSubmitter.class + " need to start Rabbitmq server to use " + GFACPassiveJobSubmitter.class);
