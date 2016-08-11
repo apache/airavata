@@ -185,7 +185,7 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 		}
 		public void jobDeleteId(String address, String appid, String taskid) throws MarathonException{
 			try{
-		
+
 				String completeCommandToRunProcess = "curl DELETE "+address+"/v2/apps/"+appid+"/"+taskid;
 				BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
 				util.printLog(stdout);
@@ -195,6 +195,32 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 				throw new MarathonException("Exception occured while retrieving the list jobs.\n"+ex.toString());
 			}
 		}
+
+		public void deleteDeployment(String address, String id) throws MarathonException{
+		try{
+
+			String completeCommandToRunProcess = "curl -X DELETE "+address+"/v2/deployments/"+id;
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while deleting the deployment.\n"+ex.toString());
+		}
+	}
+	public void deploymentList(String address) throws MarathonException{
+		try{
+
+
+			String completeCommandToRunProcess = "curl GET "+address+"/v2/deployments/";
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list of deployment.\n"+ex.toString());
+		}
+	}
 
 
 
