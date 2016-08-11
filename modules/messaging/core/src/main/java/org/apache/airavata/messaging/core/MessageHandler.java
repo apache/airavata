@@ -24,5 +24,5 @@ package org.apache.airavata.messaging.core;
 @FunctionalInterface
 public interface MessageHandler {
 
-    void onMessage(MessageContext message);
+    void onMessage(MessageContext messageContext);
 }
