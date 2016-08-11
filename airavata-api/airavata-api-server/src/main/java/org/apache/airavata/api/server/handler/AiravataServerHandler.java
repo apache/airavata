@@ -81,8 +81,6 @@ import org.apache.airavata.orchestrator.cpi.OrchestratorService.Client;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.*;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -913,7 +911,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
             if(!(experimentModel.getExperimentStatus().getState() == ExperimentState.CREATED)){
                 logger.error("Error while deleting the experiment");
-                throw new ExperimentCatalogException("Experiment is not in CREATED state. Hence cannot deleted. ID:"+ experimentId);
+                throw new RegistryServiceException("Experiment is not in CREATED state. Hence cannot deleted. ID:"+ experimentId);
             }
             return regClient.deleteExperiment(experimentId);
         } catch (Exception e) {
@@ -2203,17 +2201,6 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    private String addJobSubmissionInterface(ComputeResource computeResource,
-			String computeResourceId, String jobSubmissionInterfaceId,
-			JobSubmissionProtocol protocolType, int priorityOrder)
-			throws AppCatalogException {
-		JobSubmissionInterface jobSubmissionInterface = new JobSubmissionInterface();
-		jobSubmissionInterface.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
-		jobSubmissionInterface.setPriorityOrder(priorityOrder);
-		jobSubmissionInterface.setJobSubmissionProtocol(protocolType);
-		return computeResource.addJobSubmissionProtocol(computeResourceId,jobSubmissionInterface);
-	}
-
     /**
      * Add a SSH Job Submission details to a compute resource
      * App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
@@ -2480,16 +2467,6 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    private String addDataMovementInterface(ComputeResource computeResource,
-			String computeResourceId, DMType dmType, String dataMovementInterfaceId,
-			DataMovementProtocol protocolType, int priorityOrder)
-			throws AppCatalogException {
-		DataMovementInterface dataMovementInterface = new DataMovementInterface();
-		dataMovementInterface.setDataMovementInterfaceId(dataMovementInterfaceId);
-		dataMovementInterface.setPriorityOrder(priorityOrder);
-		dataMovementInterface.setDataMovementProtocol(protocolType);
-		return computeResource.addDataMovementProtocol(computeResourceId, dmType, dataMovementInterface);
-	}
 
     /**
      * Add a SCP data moevement details to a compute resource
@@ -3554,11 +3531,10 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    private void initializeResourceWithGrouper(String resourceId, ResourceType resourceType) throws RegistryException, GroupManagerException {
-        ExperimentCatalog experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+    private void initializeResourceWithGrouper(String resourceId, ResourceType resourceType) throws RegistryServiceException, GroupManagerException, TException, ApplicationSettingsException {
         GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
         if(resourceType.equals(ResourceType.PROJECT)){
-            Project project = (Project) experimentCatalog.get(ExperimentCatalogModelType.PROJECT, resourceId);
+            Project project = (Project) getRegistryServiceClient().getProject(resourceId);
 
             Resource projectResource = new Resource(project.getProjectID(), org.apache.airavata.grouper.resource.ResourceType.PROJECT);
             projectResource.setName(project.getName());
@@ -3567,7 +3543,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             groupManager.createResource(projectResource);
 
         }else if(resourceType.equals(ResourceType.EXPERIMENT)){
-            ExperimentModel experiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, resourceId);
+            ExperimentModel experiment = getRegistryServiceClient().getExperiment(resourceId);
             if(!isResourceExistsInGrouper(experiment.getProjectId(), ResourceType.PROJECT)){
                 initializeResourceWithGrouper(experiment.getProjectId(), ResourceType.PROJECT);
             }
@@ -3595,7 +3571,8 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     }
 
-    private boolean hasPermission(String userId, String resourceId, ResourceType resourceType, ResourcePermissionType permissionType) throws GroupManagerException, RegistryException {
+    private boolean hasPermission(String userId, String resourceId, ResourceType resourceType, ResourcePermissionType permissionType)
+            throws GroupManagerException, TException, ApplicationSettingsException {
         if(!isResourceExistsInGrouper(resourceId, resourceType)){
             initializeResourceWithGrouper(resourceId, resourceType);
         }
