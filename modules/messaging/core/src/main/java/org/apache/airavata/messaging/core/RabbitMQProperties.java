@@ -20,7 +20,7 @@
  */
 package org.apache.airavata.messaging.core;
 
-public class SubscriberProperties {
+public class RabbitMQProperties {
     private String brokerUrl;
     private EXCHANGE_TYPE exchangeType;
     private String exchangeName;
@@ -35,7 +35,7 @@ public class SubscriberProperties {
         return brokerUrl;
     }
 
-    public SubscriberProperties setBrokerUrl(String brokerUrl) {
+    public RabbitMQProperties setBrokerUrl(String brokerUrl) {
         this.brokerUrl = brokerUrl;
         return this;
     }
@@ -44,7 +44,7 @@ public class SubscriberProperties {
         return durable;
     }
 
-    public SubscriberProperties setDurable(boolean durable) {
+    public RabbitMQProperties setDurable(boolean durable) {
         this.durable = durable;
         return this;
     }
@@ -53,7 +53,7 @@ public class SubscriberProperties {
         return exchangeName;
     }
 
-    public SubscriberProperties setExchangeName(String exchangeName) {
+    public RabbitMQProperties setExchangeName(String exchangeName) {
         this.exchangeName = exchangeName;
         return this;
     }
@@ -62,7 +62,7 @@ public class SubscriberProperties {
         return prefetchCount;
     }
 
-    public SubscriberProperties setPrefetchCount(int prefetchCount) {
+    public RabbitMQProperties setPrefetchCount(int prefetchCount) {
         this.prefetchCount = prefetchCount;
         return this;
     }
@@ -71,7 +71,7 @@ public class SubscriberProperties {
         return queueName;
     }
 
-    public SubscriberProperties setQueueName(String queueName) {
+    public RabbitMQProperties setQueueName(String queueName) {
         this.queueName = queueName;
         return this;
     }
@@ -80,7 +80,7 @@ public class SubscriberProperties {
         return consumerTag;
     }
 
-    public SubscriberProperties setConsumerTag(String consumerTag) {
+    public RabbitMQProperties setConsumerTag(String consumerTag) {
         this.consumerTag = consumerTag;
         return this;
     }
@@ -89,7 +89,7 @@ public class SubscriberProperties {
         return autoRecoveryEnable;
     }
 
-    public SubscriberProperties setAutoRecoveryEnable(boolean autoRecoveryEnable) {
+    public RabbitMQProperties setAutoRecoveryEnable(boolean autoRecoveryEnable) {
         this.autoRecoveryEnable = autoRecoveryEnable;
         return this;
     }
@@ -98,7 +98,7 @@ public class SubscriberProperties {
         return exchangeType.type;
     }
 
-    public SubscriberProperties setExchangeType(EXCHANGE_TYPE exchangeType) {
+    public RabbitMQProperties setExchangeType(EXCHANGE_TYPE exchangeType) {
         this.exchangeType = exchangeType;
         return this;
     }
@@ -107,7 +107,7 @@ public class SubscriberProperties {
         return autoAck;
     }
 
-    public SubscriberProperties setAutoAck(boolean autoAck) {
+    public RabbitMQProperties setAutoAck(boolean autoAck) {
         this.autoAck = autoAck;
         return this;
     }

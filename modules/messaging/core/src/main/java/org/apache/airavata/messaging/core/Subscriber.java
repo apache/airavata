@@ -50,9 +50,4 @@ public interface Subscriber {
 
     void sendAck(long deliveryTag);
 
-    enum Type {
-        EXPERIMENT_LAUNCH,
-        PROCESS_LAUNCH,
-        STATUS
-    }
 }
