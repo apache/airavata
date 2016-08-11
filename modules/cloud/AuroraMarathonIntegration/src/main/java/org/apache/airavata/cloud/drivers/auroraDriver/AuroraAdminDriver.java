@@ -32,6 +32,12 @@ import org.apache.airavata.cloud.bigDataClientSideServices.aurora.auroraClient.A
 import org.apache.airavata.cloud.bigDataInjections.AuroraInjectorImpl;
 import org.apache.airavata.cloud.bigDataInjections.BigDataInjectorI;
 
+
+import org.apache.airavata.cloud.exceptions.marathonExceptions.MarathonException;
+import org.apache.airavata.cloud.bigDataClientSideServices.marathon.marathonClient.MarathonJobSchedulerI;
+import org.apache.airavata.cloud.bigDataClientSideServices.marathon.marathonClient.MarathonJobSchedulerImpl;
+import org.apache.airavata.cloud.bigDataInjections.MarathonInjectorImpl;
+
 public class AuroraAdminDriver{
 	public static void main(String[] args) {
 
@@ -74,9 +80,18 @@ public class AuroraAdminDriver{
 		}// end of for (int i=0; ...
 
 		// use the code below to decide between injecting Aurora, Marathon, etc. as injections
+
 		AuroraJobSchedulerI auroraJS = new AuroraJobSchedulerImpl();
 		BigDataInjectorI auroraInjector = new AuroraInjectorImpl(auroraJS);
 		auroraInjector.executeTheBigDataClientSideCommand(params);
+
+
+
+		// UNCOMMENT NEXT 3 LINES TO USE MARATHON and comment the 3 lines above to shut AURORA off.
+		/*MarathonJobSchedulerI marathonJS = new MarathonJobSchedulerImpl();
+		BigDataInjectorI marathonInjector = new MarathonInjectorImpl(marathonJS);
+		marathonInjector.executeTheBigDataClientSideCommand(params);*/
+
 
 
 	} // end of public static void main
