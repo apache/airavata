@@ -211,7 +211,6 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 	public void deploymentList(String address) throws MarathonException{
 		try{
 
-
 			String completeCommandToRunProcess = "curl GET "+address+"/v2/deployments/";
 			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
 			util.printLog(stdout);
@@ -219,6 +218,19 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 
 		catch (Exception ex) {
 			throw new MarathonException("Exception occured while retrieving the list of deployment.\n"+ex.toString());
+		}
+	}
+
+	public void deleteGroups(String address, String id) throws MarathonException{
+		try{
+
+			String completeCommandToRunProcess = "curl -X DELETE "+address+"/v2/groups/"+id;
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while deleting the group.\n"+ex.toString());
 		}
 	}
 

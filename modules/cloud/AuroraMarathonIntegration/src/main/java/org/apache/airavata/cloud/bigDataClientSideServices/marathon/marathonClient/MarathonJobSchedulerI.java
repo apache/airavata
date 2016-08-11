@@ -39,7 +39,7 @@ public interface MarathonJobSchedulerI {
 	public void jobDeleteId(String address, String appid, String taskid) throws MarathonException;
 	public void deleteDeployment(String address, String id) throws MarathonException;
 	public void deploymentList(String address) throws MarathonException;
-	//TODO:Delete groups function
+	public void deleteGroups(String address, String id) throws MarathonException;
 
 
 }
