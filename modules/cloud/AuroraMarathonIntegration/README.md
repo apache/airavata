@@ -1,6 +1,9 @@
+#AURORA MARATHON INTEGRATION
+
 #Requirements:
 1. Apache Aurora
 2. Apache Mesos
+3. Marathon
 
 #Installation:
 ##Please follow the link to set up Apache Aurora and Apache Mesos
