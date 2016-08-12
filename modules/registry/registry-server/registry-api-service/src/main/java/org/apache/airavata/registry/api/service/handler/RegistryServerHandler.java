@@ -466,6 +466,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
             exception.setMessage("Username cannot be empty. Please provide a valid user..");
             throw exception;
         }
+        if(!isUserExists(gatewayId, userName)){
+            return new ArrayList<>();
+        }
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
