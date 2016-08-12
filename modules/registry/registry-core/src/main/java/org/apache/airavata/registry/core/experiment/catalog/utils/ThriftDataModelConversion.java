@@ -93,7 +93,9 @@ public class ThriftDataModelConversion {
         gateway.setIdentityServerPasswordToken(resource.getIdentityServerPasswordToken());
         gateway.setOauthClientId(resource.getOauthClientId());
         gateway.setOauthClientSecret(resource.getOauthClientSecret());
-        gateway.setRequestCreationTime(resource.getRequestCreationTime().getTime());
+        if (resource.getRequestCreationTime() != null) {
+            gateway.setRequestCreationTime(resource.getRequestCreationTime().getTime());
+        }
         return gateway;
     }
 
