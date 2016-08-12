@@ -21,44 +21,44 @@
 #Example:
 To create and launch:
 ```
-java -jar AuroraIntegration-0.16-SNAPSHOT.jar -o create -r 1024 -n batik -c 2.0 -d 1000 -i gouravr/dacapo:tag9
+java -jar AuroraMarathonIntegration-0.17-SNAPSHOT.jar -o create -r 1024 -n batik -c 2.0 -d 1000 -i gouravr/dacapo:tag9
 ```
 To kill:
 ```
-java -jar AuroraIntegration-0.16-SNAPSHOT.jar -o kill -n batik
+java -jar AuroraMarathonIntegration-0.17-SNAPSHOT.jar -o kill -n batik
 ```
 
 To update:
 ```
-java -jar AuroraIntegration-0.16-SNAPSHOT.jar -o update -n batik
+java -jar AuroraMarathonIntegration-0.17-SNAPSHOT.jar -o update -n batik
 ```
 
 To retrieve update information:
 ```
-java -jar AuroraIntegration-0.16-SNAPSHOT.jar -o update-info -n batik
+java -jar AuroraMarathonIntegration-0.17-SNAPSHOT.jar -o update-info -n batik
 ```
 
 To pause an update:
 ```
-java -jar AuroraIntegration-0.16-SNAPSHOT.jar -o update-pause -n batik
+java -jar AuroraMarathonIntegration-0.17-SNAPSHOT.jar -o update-pause -n batik
 ```
 
 To list the update progress:
 ```
-java -jar AuroraIntegration-0.16-SNAPSHOT.jar -o update-list -n batik
+java -jar AuroraMarathonIntegration-0.17-SNAPSHOT.jar -o update-list -n batik
 ```
 
 To abort an update:
 ```
-java -jar AuroraIntegration-0.16-SNAPSHOT.jar -o update-abort -n batik
+java -jar AuroraMarathonIntegration-0.17-SNAPSHOT.jar -o update-abort -n batik
 ```
 
 To resume an update:
 ```
-java -jar AuroraIntegration-0.16-SNAPSHOT.jar -o update-resume -n batik
+java -jar AuroraMarathonIntegration-0.17-SNAPSHOT.jar -o update-resume -n batik
 ```
 
 To restart a job:
 ```
-java -jar AuroraIntegration-0.16-SNAPSHOT.jar -o restart -n batik
+java -jar AuroraMarathonIntegration-0.17-SNAPSHOT.jar -o restart -n batik
 ```
