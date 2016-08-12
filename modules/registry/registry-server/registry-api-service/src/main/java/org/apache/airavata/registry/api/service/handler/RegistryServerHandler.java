@@ -346,11 +346,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
         List<Project> projects = new ArrayList<Project>();
         try {
             if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
-                logger.error("User does not exist in the system. Please provide a valid user..");
-                AiravataSystemException exception = new AiravataSystemException();
-                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-                exception.setMessage("User does not exist in the system. Please provide a valid user..");
-                throw exception;
+                logger.warn("User does not exist in the system. Please provide a valid user..");
+                return projects;
             }
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             Map<String, String> filters = new HashMap<String, String>();
@@ -466,22 +463,16 @@ public class RegistryServerHandler implements RegistryService.Iface {
             exception.setMessage("Username cannot be empty. Please provide a valid user..");
             throw exception;
         }
-        if(!isUserExists(gatewayId, userName)){
-            return new ArrayList<>();
-        }
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
+        List<ExperimentModel> experiments = new ArrayList<ExperimentModel>();
         try {
             if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
-                logger.error("User does not exist in the system. Please provide a valid user..");
-                AiravataSystemException exception = new AiravataSystemException();
-                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-                exception.setMessage("User does not exist in the system. Please provide a valid user..");
-                throw exception;
+                logger.warn("User does not exist in the system. Please provide a valid user..");
+                return experiments;
             }
-            List<ExperimentModel> experiments = new ArrayList<ExperimentModel>();
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             List<Object> list = experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT,
                     Constants.FieldConstants.ExperimentConstants.USER_NAME, userName, limit, offset,
