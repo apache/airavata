@@ -11,6 +11,7 @@
 	<artifactId>AuroraMarathonIntegration</artifactId>
   <groupId>org.apache.airavata.cloud.drivers.auroraDriver</groupId>
 	<packaging>jar</packaging>
+	<version>0.17-SNAPSHOT</version>
 	<name>Airavata Aurora Marathon Integration</name>
 	<url>http://airavata.apache.org/</url>
 
