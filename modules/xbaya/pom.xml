@@ -21,7 +21,7 @@
   <url>http://maven.apache.org</url>
  <properties>
         <!-- Airavata version-->
-        <airavata.version>0.16-SNAPSHOT</airavata.version>
+        <airavata.version>0.17-SNAPSHOT</airavata.version>
 
       
         <!-- Optional parameters to the application, will be embedded in the launcher and can be overriden on the command line -->
