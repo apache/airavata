@@ -48,7 +48,14 @@ import org.apache.airavata.model.WorkflowModel;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
@@ -57,16 +64,33 @@ import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.data.movement.DMType;
-import org.apache.airavata.model.data.movement.*;
+import org.apache.airavata.model.data.movement.DataMovementInterface;
+import org.apache.airavata.model.data.movement.DataMovementProtocol;
+import org.apache.airavata.model.data.movement.GridFTPDataMovement;
+import org.apache.airavata.model.data.movement.LOCALDataMovement;
+import org.apache.airavata.model.data.movement.SCPDataMovement;
+import org.apache.airavata.model.data.movement.UnicoreDataMovement;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
-import org.apache.airavata.model.error.*;
-import org.apache.airavata.model.experiment.*;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataErrorType;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.AuthorizationException;
+import org.apache.airavata.model.error.ExperimentNotFoundException;
+import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.airavata.model.error.ProjectNotFoundException;
+import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.ExperimentSearchFields;
+import org.apache.airavata.model.experiment.ExperimentStatistics;
+import org.apache.airavata.model.experiment.ExperimentSummaryModel;
+import org.apache.airavata.model.experiment.ProjectSearchFields;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.group.GroupModel;
 import org.apache.airavata.model.group.ResourcePermissionType;
 import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.ExperimentSubmitEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.security.AuthzToken;
@@ -76,9 +100,6 @@ import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
-import org.apache.airavata.orchestrator.cpi.OrchestratorService;
-import org.apache.airavata.orchestrator.cpi.OrchestratorService.Client;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
@@ -90,15 +111,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class AiravataServerHandler implements Airavata.Iface {
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
-    private Publisher publisher;
+    private Publisher statusPublisher;
+    private Publisher experimentPublisher;
     private CredentialStoreService.Client csClient;
 
     public AiravataServerHandler() {
         try {
-            publisher = MessagingFactory.getPublisher(Type.STATUS);
+            statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
+            experimentPublisher = MessagingFactory.getPublisher(Type.EXPERIMENT_LAUNCH);
         } catch (ApplicationSettingsException e) {
             logger.error("Error occured while reading airavata-server properties..", e);
         } catch (AiravataException e) {
@@ -363,7 +387,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *
      * @param authzToken
      * @param gatewayId  The identifier for the requested Gateway.
-     * @param userName   The User for which the credential should be registered. For community accounts, this user is the name of the
+     * @param portalUserName The User for which the credential should be registered. For community accounts, this user is the name of the
      *                   community user name. For computational resources, this user name need not be the same user name on resoruces.
      * @param password
      * @return airavataCredStoreToken
@@ -865,8 +889,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             String messageId = AiravataUtils.getId("EXPERIMENT");
             MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
             messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            if(publisher!=null) {
-                publisher.publish(messageContext);
+            if(statusPublisher !=null) {
+                statusPublisher.publish(messageContext);
             }
             logger.debug(experimentId, "Created new experiment with experiment name {}", experiment.getExperimentName());
             return experimentId;
@@ -1120,9 +1144,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public boolean validateExperiment(AuthzToken authzToken, String airavataExperimentId) throws InvalidRequestException,
-            ExperimentNotFoundException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-     	try {
+    public boolean validateExperiment(AuthzToken authzToken, String airavataExperimentId) throws TException {
+        // TODO - call validation module and validate experiment
+/*     	try {
             ExperimentModel experimentModel = getRegistryServiceClient().getExperiment(airavataExperimentId);
  			if (experimentModel == null) {
                 logger.error(airavataExperimentId, "Experiment validation failed , experiment {} doesn't exist.", airavataExperimentId);
@@ -1149,9 +1173,9 @@ public class AiravataServerHandler implements Airavata.Iface {
         }finally {
             orchestratorClient.getOutputProtocol().getTransport().close();
             orchestratorClient.getInputProtocol().getTransport().close();
-        }
+        }*/
 
-
+        return true;
     }
 
     /**
@@ -1178,8 +1202,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public ExperimentStatus getExperimentStatus(AuthzToken authzToken, String airavataExperimentId) throws InvalidRequestException,
-            ExperimentNotFoundException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public ExperimentStatus getExperimentStatus(AuthzToken authzToken, String airavataExperimentId) throws TException {
         try {
             return getRegistryServiceClient().getExperimentStatus(airavataExperimentId);
         } catch (ApplicationSettingsException e) {
@@ -1272,50 +1295,37 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public void launchExperiment(AuthzToken authzToken, final String airavataExperimentId, String gatewayId)
-            throws AuthorizationException, TException {
-    	try {
+            throws TException {
+        try {
             ExperimentModel experiment = getRegistryServiceClient().getExperiment(airavataExperimentId);
             if (experiment == null) {
                 logger.error(airavataExperimentId, "Error while launching experiment, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-//            FIXME
-//            String applicationID = experiment.getExecutionId();
-//            if (!appCatalog.getApplicationInterface().isApplicationInterfaceExists(applicationID)){
-//                logger.error(airavataExperimentId, "Error while launching experiment, application id {} for experiment {} doesn't exist.", applicationID, airavataExperimentId);
-//                AiravataSystemException exception = new AiravataSystemException();
-//                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-//                exception.setMessage("Error while launching experiment, application id : " + applicationID  + " for experiment : " + airavataExperimentId +
-//                        " doesn't exist..");
-//                throw exception;
-//            }
-            OrchestratorService.Client orchestratorClient = getOrchestratorClient();
-            if (orchestratorClient.validateExperiment(airavataExperimentId)) {
-                orchestratorClient.launchExperiment(airavataExperimentId, gatewayId);
-                logger.debug("Airavata launched experiment with experiment id : " + airavataExperimentId);
-            }else {
-                logger.error(airavataExperimentId, "Couldn't identify experiment type, experiment {} is neither single application nor workflow.", airavataExperimentId);
-                throw new InvalidRequestException("Experiment '" + airavataExperimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getExecutionId());
-            }
+            submitExperiment(gatewayId, airavataExperimentId);
         } catch (RegistryServiceException | ApplicationSettingsException e1) {
             logger.error(airavataExperimentId, "Error while instantiate the registry instance", e1);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while instantiate the registry instance. More info : " + e1.getMessage());
             throw exception;
+        } catch (AiravataException ex) {
+            logger.error("Experiment publish event fails", ex);
+
         }
     }
 
 
-    private OrchestratorService.Client getOrchestratorClient() throws TException {
-	    try {
-		    final String serverHost = ServerSettings.getOrchestratorServerHost();
-		    final int serverPort = ServerSettings.getOrchestratorServerPort();
-		    return OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
-	    } catch (AiravataException e) {
-		    throw new TException(e);
-	    }
-    }
+
+//    private OrchestratorService.Client getOrchestratorClient() throws TException {
+//	    try {
+//		    final String serverHost = ServerSettings.getOrchestratorServerHost();
+//		    final int serverPort = ServerSettings.getOrchestratorServerPort();
+//		    return OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
+//	    } catch (AiravataException e) {
+//		    throw new TException(e);
+//	    }
+//    }
 
     /**
      * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
@@ -1435,26 +1445,34 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public void terminateExperiment(AuthzToken authzToken, String airavataExperimentId, String gatewayId) throws InvalidRequestException,
-            ExperimentNotFoundException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public void terminateExperiment(AuthzToken authzToken, String airavataExperimentId, String gatewayId)
+            throws TException {
         try {
             RegistryService.Client regClient = getRegistryServiceClient();
             ExperimentModel existingExperiment = regClient.getExperiment(airavataExperimentId);
             if (existingExperiment == null){
-                logger.error(airavataExperimentId, "Error while cloning experiment {}, experiment doesn't exist.", airavataExperimentId);
+                logger.error(airavataExperimentId, "Error while cancelling experiment {}, experiment doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
+            ExperimentStatus experimentStatus = null;
+            switch (experimentStatus.getState()) {
+                case COMPLETED: case CANCELED: case FAILED: case CANCELING:
+                    logger.warn("Can't terminate already {} experiment", experimentStatus.getState().name());
+                case CREATED:
+                    logger.warn("Experiment termination is only allowed for launched experiments.");
+                default:
+                    submitCancelExperiment(airavataExperimentId, gatewayId);
 
-            Client client = getOrchestratorClient();
-            client.terminateExperiment(airavataExperimentId, gatewayId);
+            }
             logger.debug("Airavata cancelled experiment with experiment id : " + airavataExperimentId);
-        } catch (RegistryServiceException | ApplicationSettingsException e) {
+        } catch (RegistryServiceException | AiravataException e) {
             logger.error(airavataExperimentId, "Error while cancelling the experiment...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while cancelling the experiment. More info : " + e.getMessage());
             throw exception;
         }
+
     }
 
     /**
@@ -2879,8 +2897,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public boolean updateGatewayResourceProfile(AuthzToken authzToken, String gatewayID, GatewayResourceProfile gatewayResourceProfile)
-            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean updateGatewayResourceProfile(AuthzToken authzToken,
+                                                String gatewayID,
+                                                GatewayResourceProfile gatewayResourceProfile) throws TException {
         try {
             return getRegistryServiceClient().updateGatewayResourceProfile(gatewayID, gatewayResourceProfile);
         } catch (ApplicationSettingsException | RegistryServiceException e) {
@@ -2901,8 +2920,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public boolean deleteGatewayResourceProfile(AuthzToken authzToken, String gatewayID) throws InvalidRequestException,
-            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean deleteGatewayResourceProfile(AuthzToken authzToken, String gatewayID) throws TException {
         try {
             return getRegistryServiceClient().deleteGatewayResourceProfile(gatewayID);
         } catch (ApplicationSettingsException | RegistryServiceException e) {
@@ -3627,6 +3645,19 @@ public class AiravataServerHandler implements Airavata.Iface {
 
         List<String> allAccessibleResources = groupManager.getAccessibleResourcesForUser(userId, gResourceType, gPermissionType);
         return allAccessibleResources;
+    }
+
+
+    private void submitExperiment(String gatewayId,String experimentId) throws AiravataException {
+        ExperimentSubmitEvent event = new ExperimentSubmitEvent(experimentId, gatewayId);
+        MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, "LAUNCH.EXP-" + UUID.randomUUID().toString(), gatewayId);
+        experimentPublisher.publish(messageContext);
+    }
+
+    private void submitCancelExperiment(String gatewayId, String experimentId) throws AiravataException {
+        ExperimentSubmitEvent event = new ExperimentSubmitEvent(experimentId, gatewayId);
+        MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT_CANCEL, "CANCEL.EXP-" + UUID.randomUUID().toString(), gatewayId);
+        experimentPublisher.publish(messageContext);
     }
 
     private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {

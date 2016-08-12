@@ -96,7 +96,7 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
 	        ProcessSubmitEvent processSubmitEvent = new ProcessSubmitEvent(processId, gatewayId, experimentId,
 			        tokenId);
 	        MessageContext messageContext = new MessageContext(processSubmitEvent, MessageType.LAUNCHPROCESS, "LAUNCH" +
-			        ".TASK-" + UUID.randomUUID().toString(), gatewayId);
+			        ".PROCESS-" + UUID.randomUUID().toString(), gatewayId);
 	        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             publisher.publish(messageContext);
         } catch (Exception e) {

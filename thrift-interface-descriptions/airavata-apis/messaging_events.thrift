@@ -36,6 +36,7 @@ enum MessageLevel {
 
 enum MessageType {
     EXPERIMENT,
+    EXPERIMENT_CANCEL,
     TASK,
     PROCESS,
     JOB,
@@ -107,6 +108,11 @@ struct JobIdentifier {
 //    // FIXME - Job execution context
 //    //8:
 // }
+
+struct ExperimentSubmitEvent{
+    1: required string experimentId,
+    2: required string gatewayId,
+}
 
 struct ProcessSubmitEvent{
     1: required string processId,
