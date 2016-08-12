@@ -53,12 +53,13 @@ extern const std::map<int, const char*> _MessageLevel_VALUES_TO_NAMES;
 struct MessageType {
   enum type {
     EXPERIMENT = 0,
-    TASK = 1,
-    PROCESS = 2,
-    JOB = 3,
-    LAUNCHPROCESS = 4,
-    TERMINATEPROCESS = 5,
-    PROCESSOUTPUT = 6
+    EXPERIMENT_CANCEL = 1,
+    TASK = 2,
+    PROCESS = 3,
+    JOB = 4,
+    LAUNCHPROCESS = 5,
+    TERMINATEPROCESS = 6,
+    PROCESSOUTPUT = 7
   };
 };
 
@@ -81,6 +82,8 @@ class ProcessStatusChangeRequestEvent;
 class TaskOutputChangeEvent;
 
 class JobIdentifier;
+
+class ExperimentSubmitEvent;
 
 class ProcessSubmitEvent;
 
@@ -527,6 +530,51 @@ class JobIdentifier {
 void swap(JobIdentifier &a, JobIdentifier &b);
 
 inline std::ostream& operator<<(std::ostream& out, const JobIdentifier& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+
+class ExperimentSubmitEvent {
+ public:
+
+  ExperimentSubmitEvent(const ExperimentSubmitEvent&);
+  ExperimentSubmitEvent& operator=(const ExperimentSubmitEvent&);
+  ExperimentSubmitEvent() : experimentId(), gatewayId() {
+  }
+
+  virtual ~ExperimentSubmitEvent() throw();
+  std::string experimentId;
+  std::string gatewayId;
+
+  void __set_experimentId(const std::string& val);
+
+  void __set_gatewayId(const std::string& val);
+
+  bool operator == (const ExperimentSubmitEvent & rhs) const
+  {
+    if (!(experimentId == rhs.experimentId))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    return true;
+  }
+  bool operator != (const ExperimentSubmitEvent &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ExperimentSubmitEvent & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(ExperimentSubmitEvent &a, ExperimentSubmitEvent &b);
+
+inline std::ostream& operator<<(std::ostream& out, const ExperimentSubmitEvent& obj)
 {
   obj.printTo(out);
   return out;
