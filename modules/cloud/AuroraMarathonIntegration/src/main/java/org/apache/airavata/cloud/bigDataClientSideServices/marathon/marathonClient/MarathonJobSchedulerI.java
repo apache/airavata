@@ -40,6 +40,9 @@ public interface MarathonJobSchedulerI {
 	public void deleteDeployment(String address, String id) throws MarathonException;
 	public void deploymentList(String address) throws MarathonException;
 	public void deleteGroups(String address, String id) throws MarathonException;
+	public void eventsList(String address) throws MarathonException;
+	public void eventSubscriptionList(String address) throws MarathonException;
+	public void launchQueue(String address) throws MarathonException;
 
 
 }

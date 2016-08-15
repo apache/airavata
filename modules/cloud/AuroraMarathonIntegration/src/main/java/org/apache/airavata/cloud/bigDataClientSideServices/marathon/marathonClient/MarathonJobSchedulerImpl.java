@@ -234,6 +234,45 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 		}
 	}
 
+	public void launchQueue(String address) throws MarathonException{
+		try{
+
+			String completeCommandToRunProcess = "curl GET "+address+"/v2/queue";
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the launch queue.\n"+ex.toString());
+		}
+	}
+	public void eventSubscriptionList(String address) throws MarathonException{
+		try{
+
+
+			String completeCommandToRunProcess = "curl GET "+address+"/v2/eventSubscriptions";
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list of event subscriptions.\n"+ex.toString());
+		}
+	}
+	public void eventsList(String address) throws MarathonException{
+		try{
+
+			String completeCommandToRunProcess = "curl GET "+address+"/v2/events";
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list of events.\n"+ex.toString());
+		}
+	}
+
+
 
 
 
