@@ -97,7 +97,7 @@ public class GfacServerHandler implements GfacService.Iface {
     private void initAMQPClient() throws AiravataException {
 	    // init process consumer
         List<String> routingKeys = new ArrayList<>();
-        routingKeys.add(ServerSettings.getRabbitmqProcessLaunchQueueName());
+        routingKeys.add(ServerSettings.getRabbitmqProcessExchangeName());
         processLaunchSubscriber = MessagingFactory.getSubscriber(new ProcessLaunchMessageHandler(),routingKeys, Type.PROCESS_LAUNCH);
         // init status publisher
 	    statusPublisher = Factory.getStatusPublisher();

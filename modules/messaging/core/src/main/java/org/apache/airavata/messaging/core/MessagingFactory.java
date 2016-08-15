@@ -123,7 +123,7 @@ public class MessagingFactory {
 
     private static RabbitMQSubscriber getProcessSubscriber(RabbitMQProperties sp) throws AiravataException {
         sp.setExchangeName(ServerSettings.getRabbitmqProcessExchangeName())
-                .setQueueName(ServerSettings.getRabbitmqProcessLaunchQueueName())
+                .setQueueName("process_launch")
                 .setAutoAck(false);
         return new RabbitMQSubscriber(sp);
     }
@@ -131,6 +131,7 @@ public class MessagingFactory {
 
     private static Subscriber getExperimentSubscriber(RabbitMQProperties sp) throws AiravataException {
         sp.setExchangeName(ServerSettings.getRabbitmqExperimentExchangeName())
+                .setQueueName("experiment_launch")
                 .setAutoAck(false);
         return new RabbitMQSubscriber(sp);
 
