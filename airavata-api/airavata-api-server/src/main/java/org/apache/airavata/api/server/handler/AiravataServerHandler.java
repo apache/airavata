@@ -3651,12 +3651,14 @@ public class AiravataServerHandler implements Airavata.Iface {
     private void submitExperiment(String gatewayId,String experimentId) throws AiravataException {
         ExperimentSubmitEvent event = new ExperimentSubmitEvent(experimentId, gatewayId);
         MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, "LAUNCH.EXP-" + UUID.randomUUID().toString(), gatewayId);
+        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
         experimentPublisher.publish(messageContext);
     }
 
     private void submitCancelExperiment(String gatewayId, String experimentId) throws AiravataException {
         ExperimentSubmitEvent event = new ExperimentSubmitEvent(experimentId, gatewayId);
         MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT_CANCEL, "CANCEL.EXP-" + UUID.randomUUID().toString(), gatewayId);
+        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
         experimentPublisher.publish(messageContext);
     }
 
