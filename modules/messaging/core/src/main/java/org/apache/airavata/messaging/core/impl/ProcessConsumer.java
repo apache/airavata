@@ -55,8 +55,7 @@ public class ProcessConsumer extends QueueingConsumer{
     }
 
 
-    @Override
-    public void handleDelivery(String consumerTag,
+    @Override public void handleDelivery(String consumerTag,
                                Envelope envelope,
                                AMQP.BasicProperties basicProperties,
                                byte[] body) throws IOException {
@@ -71,10 +70,9 @@ public class ProcessConsumer extends QueueingConsumer{
             if (message.getMessageType().equals(MessageType.LAUNCHPROCESS)) {
                 ProcessSubmitEvent processSubmitEvent = new ProcessSubmitEvent();
                 ThriftUtils.createThriftFromBytes(message.getEvent(), processSubmitEvent);
-                log.debug(" Message Received with message id '" + message.getMessageId()
-                        + "' and with message type '" + message.getMessageType() + "'  for experimentId:" +
-                        " " +
-                        processSubmitEvent.getProcessId());
+                log.info(" Message Received with message id '" + message.getMessageId()
+                        + " and with message type:" + message.getMessageType() + ", for processId:" +
+                        processSubmitEvent.getProcessId() + ", expId:" + processSubmitEvent.getExperimentId());
                 event = processSubmitEvent;
                 gatewayId = processSubmitEvent.getGatewayId();
                 MessageContext messageContext = new MessageContext(event, message.getMessageType(),

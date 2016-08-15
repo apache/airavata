@@ -85,7 +85,11 @@ public class RabbitMQSubscriber implements Subscriber {
             if (queueName == null) {
                 queueName = channel.queueDeclare().getQueue();
             } else {
-                channel.queueDeclare(queueName, true, false, false, null);
+                channel.queueDeclare(queueName,
+                                     true, // durable
+                                     false, // exclusive
+                                     false, // autoDelete
+                                     null);// arguments
             }
             final String id = getId(routingKeys, queueName);
             if (queueDetailMap.containsKey(id)) {
@@ -94,6 +98,7 @@ public class RabbitMQSubscriber implements Subscriber {
             }
             // bind all the routing keys
             for (String key : routingKeys) {
+                log.info("Binding key:" + key + " to queue:" + queueName);
                 channel.queueBind(queueName, properties.getExchangeName(), key);
             }
 

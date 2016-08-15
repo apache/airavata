@@ -72,7 +72,7 @@ public class ExperimentConsumer extends QueueingConsumer {
                 String gatewayId = null;
                 ExperimentSubmitEvent experimentEvent = new ExperimentSubmitEvent();
                 ThriftUtils.createThriftFromBytes(message.getEvent(), experimentEvent);
-                log.debug(" Message Received with message id '" + message.getMessageId()
+                log.info(" Message Received with message id '" + message.getMessageId()
                         + "' and with message type '" + message.getMessageType() + "'  for experimentId:" +
                         " " +
                         experimentEvent.getExperimentId());

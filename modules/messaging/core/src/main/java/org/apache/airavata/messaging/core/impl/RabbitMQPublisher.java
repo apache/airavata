@@ -71,7 +71,7 @@ public class RabbitMQPublisher implements Publisher {
             if (properties.getExchangeName() != null) {
                 channel.exchangeDeclare(properties.getExchangeName(),
                                         properties.getExchangeType(),
-                                        false);
+                                        true); //durable
             }
         } catch (Exception e) {
             String msg = "RabbitMQ connection issue for exchange : " + properties.getExchangeName();
@@ -93,6 +93,7 @@ public class RabbitMQPublisher implements Publisher {
             message.setMessageType(messageContext.getType());
             message.setUpdatedTime(messageContext.getUpdatedTime().getTime());
             String routingKey = routingKeySupplier.apply(messageContext);
+            log.info("publish messageId:" + messageContext.getMessageId() + ", messageType:" + messageContext.getType() + ", to routingKey:" + routingKey);
             byte[] messageBody = ThriftUtils.serializeThriftObject(message);
             send(messageBody, routingKey);
         } catch (TException e) {
