@@ -4,6 +4,12 @@ import org.apache.airavata.cloud.marathon.exception.MarathonException;
 
 public interface MarathonJobSchedulerI {
 
+	public void deleteMarathonLeader(String address) throws MarathonException;
+	public void marathonLeader(String address) throws MarathonException;
+	public void marathonInfo(String address) throws MarathonException;
+	public void launchQueue(String address) throws MarathonException;
+	public void eventSubscriptionList(String address) throws MarathonException;
+	public void eventsList(String address) throws MarathonException;
 	public void deleteDeployment(String address, String id) throws MarathonException;
 	public void deploymentList(String address) throws MarathonException;
 	public void deleteGroups(String address, String id) throws MarathonException;

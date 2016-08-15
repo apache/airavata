@@ -13,6 +13,84 @@ import org.apache.airavata.cloud.marathon.utilities.MarathonUtilI;
 
 public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 	MarathonUtilI util = new MarathonUtilImpl();
+	public void deleteMarathonLeader(String address) throws MarathonException{
+		try{
+			String line;
+			Process marathonJob = Runtime.getRuntime().exec("curl -X DELETE "+address+"/v2/leader");
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+			util.printLog(stdout);
+			marathonJob.waitFor();
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the launch queue.\n"+ex.toString());
+		}
+	}
+	public void marathonLeader(String address) throws MarathonException{
+		try{
+			String line;
+			Process marathonJob = Runtime.getRuntime().exec("curl GET "+address+"/v2/leader");
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+			util.printLog(stdout);
+			marathonJob.waitFor();
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the leader information.\n"+ex.toString());
+		}
+	}
+	public void marathonInfo(String address) throws MarathonException{
+		try{
+			String line;
+			Process marathonJob = Runtime.getRuntime().exec("curl GET "+address+"/v2/info");
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+			util.printLog(stdout);
+			marathonJob.waitFor();
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the marathon information.\n"+ex.toString());
+		}
+	}
+	public void launchQueue(String address) throws MarathonException{
+		try{
+			String line;
+			Process marathonJob = Runtime.getRuntime().exec("curl GET "+address+"/v2/queue");
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+			util.printLog(stdout);
+			marathonJob.waitFor();
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the launch queue.\n"+ex.toString());
+		}
+	}
+	public void eventSubscriptionList(String address) throws MarathonException{
+		try{
+			String line;
+			Process marathonJob = Runtime.getRuntime().exec("curl GET "+address+"/v2/eventSubscriptions");
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+			util.printLog(stdout);
+			marathonJob.waitFor();
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list of event subscriptions.\n"+ex.toString());
+		}
+	}
+	public void eventsList(String address) throws MarathonException{
+		try{
+			String line;
+			Process marathonJob = Runtime.getRuntime().exec("curl GET "+address+"/v2/events");
+			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
+			util.printLog(stdout);
+			marathonJob.waitFor();
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the list of events.\n"+ex.toString());
+		}
+	}
 	public void deleteDeployment(String address, String id) throws MarathonException{
 		try{
 			String line;
@@ -29,7 +107,7 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 	public void deploymentList(String address) throws MarathonException{
 		try{
 			String line;
-			Process marathonJob = Runtime.getRuntime().exec("curl GET "+address+"/v2/deployments/");
+			Process marathonJob = Runtime.getRuntime().exec("curl GET "+address+"/v2/deployments");
 			BufferedReader stdout = new BufferedReader(new InputStreamReader(marathonJob.getInputStream()));
 			util.printLog(stdout);
 			marathonJob.waitFor();
