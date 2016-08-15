@@ -107,7 +107,7 @@ public class MessagingFactory {
 
     private static RabbitMQProperties getProperties() {
         return new RabbitMQProperties()
-                .setBrokerUrl(ServerSettings.RABBITMQ_BROKER_URL)
+                .setBrokerUrl(ServerSettings.getRabbitmqBrokerUrl())
                 .setDurable(ServerSettings.getRabbitmqDurableQueue())
                 .setPrefetchCount(ServerSettings.getRabbitmqPrefetchCount())
                 .setAutoRecoveryEnable(true)
