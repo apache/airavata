@@ -123,8 +123,8 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(RABBITMQ_EXPERIMENT_EXCHANGE_NAME, "experiment.launch.queue");
     }
 
-    public static String getRabbitmqBrokerUrl() throws ApplicationSettingsException {
-        return getSetting(RABBITMQ_BROKER_URL);
+    public static String getRabbitmqBrokerUrl() {
+        return getSetting(RABBITMQ_BROKER_URL, "amqp://localhost:5672");
     }
 
     public static String getRabbitmqStatusExchangeName(){
