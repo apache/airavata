@@ -43,6 +43,9 @@ public interface MarathonJobSchedulerI {
 	public void eventsList(String address) throws MarathonException;
 	public void eventSubscriptionList(String address) throws MarathonException;
 	public void launchQueue(String address) throws MarathonException;
+	public void deleteMarathonLeader(String address) throws MarathonException;
+	public void marathonLeader(String address) throws MarathonException;
+	public void marathonInfo(String address) throws MarathonException;
 
 
 }

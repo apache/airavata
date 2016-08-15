@@ -272,6 +272,45 @@ public class MarathonJobSchedulerImpl implements MarathonJobSchedulerI {
 		}
 	}
 
+	public void deleteMarathonLeader(String address) throws MarathonException{
+		try{
+
+			String completeCommandToRunProcess = "curl -X DELETE "+address+"/v2/leader";
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the launch queue.\n"+ex.toString());
+		}
+	}
+	public void marathonLeader(String address) throws MarathonException{
+		try{
+
+
+			String completeCommandToRunProcess = "curl GET "+address+"/v2/leader";
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the leader information.\n"+ex.toString());
+		}
+	}
+	public void marathonInfo(String address) throws MarathonException{
+		try{
+
+
+			String completeCommandToRunProcess = "curl GET "+address+"/v2/info";
+			BufferedReader stdout = util.executeProcess(completeCommandToRunProcess);
+			util.printLog(stdout);
+		}
+
+		catch (Exception ex) {
+			throw new MarathonException("Exception occured while retrieving the marathon information.\n"+ex.toString());
+		}
+	}
+
 
 
 
