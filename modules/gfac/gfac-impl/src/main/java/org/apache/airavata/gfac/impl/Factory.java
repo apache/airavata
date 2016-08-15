@@ -63,6 +63,7 @@ import org.apache.airavata.gfac.impl.task.ArchiveTask;
 import org.apache.airavata.gfac.impl.watcher.CancelRequestWatcherImpl;
 import org.apache.airavata.gfac.impl.watcher.RedeliveryRequestWatcherImpl;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
+import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Subscriber;
@@ -91,6 +92,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -168,10 +170,16 @@ public abstract class Factory {
 		return curatorClient;
 	}
 
+	public static synchronized void initPrcessLaunchSubscriber(MessageHandler processMessageHandler) throws AiravataException {
+	    if(getProcessLaunchSubscriber() != null)
+			throw new AiravataException("Process launch Subscriber is already initialized");
+
+		List<String> routingKeys = new ArrayList<>();
+		routingKeys.add(ServerSettings.getRabbitmqProcessExchangeName());
+		 processLaunchSubscriber = MessagingFactory.getSubscriber(processMessageHandler, routingKeys, Type.PROCESS_LAUNCH);
+	}
+
 	public static synchronized  Subscriber getProcessLaunchSubscriber() throws AiravataException {
-		if (processLaunchSubscriber == null) {
-			processLaunchSubscriber = MessagingFactory.getSubscriber(message -> {}, new ArrayList<>(), Type.PROCESS_LAUNCH);
-		}
 		return processLaunchSubscriber;
 	}
 
