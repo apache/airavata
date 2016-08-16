@@ -1458,13 +1458,15 @@ public class AiravataServerHandler implements Airavata.Iface {
             switch (experimentStatus.getState()) {
                 case COMPLETED: case CANCELED: case FAILED: case CANCELING:
                     logger.warn("Can't terminate already {} experiment", experimentStatus.getState().name());
+                    break;
                 case CREATED:
                     logger.warn("Experiment termination is only allowed for launched experiments.");
+                    break;
                 default:
                     submitCancelExperiment(airavataExperimentId, gatewayId);
-
+                    logger.debug("Airavata cancelled experiment with experiment id : " + airavataExperimentId);
+                    break;
             }
-            logger.debug("Airavata cancelled experiment with experiment id : " + airavataExperimentId);
         } catch (RegistryServiceException | AiravataException e) {
             logger.error(airavataExperimentId, "Error while cancelling the experiment...", e);
             AiravataSystemException exception = new AiravataSystemException();

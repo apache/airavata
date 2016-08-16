@@ -90,6 +90,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	private static Logger log = LoggerFactory.getLogger(OrchestratorServerHandler.class);
@@ -612,25 +613,56 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
 		@Override
 		public void onMessage(MessageContext messageContext) {
-			if (messageContext.getType() != MessageType.EXPERIMENT) {
-				experimentSubscriber.sendAck(messageContext.getDeliveryTag());
-				log.error("Orchestrator got un-support message type : " + messageContext.getType());
+
+			switch (messageContext.getType()) {
+				case EXPERIMENT:
+					launchExperiment(messageContext);
+					break;
+				case EXPERIMENT_CANCEL:
+                    cancelExperiment(messageContext);
+					break;
+				default:
+					experimentSubscriber.sendAck(messageContext.getDeliveryTag());
+					log.error("Orchestrator got un-support message type : " + messageContext.getType());
+					break;
 			}
+		}
+
+		private void cancelExperiment(MessageContext messageContext) {
 			try {
 				byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
 				ExperimentSubmitEvent expEvent = new ExperimentSubmitEvent();
 				ThriftUtils.createThriftFromBytes(bytes, expEvent);
-				if (messageContext.isRedeliver()) {
-                    // TODO - handle redelivery scenario
-                    experimentSubscriber.sendAck(messageContext.getDeliveryTag());
-                } else {
-                    launchExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
-                    experimentSubscriber.sendAck(messageContext.getDeliveryTag());
-                }
+				terminateExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
 			} catch (TException e) {
-				log.error("Experiment launch failed due to Thrift conversion error", e);
-                experimentSubscriber.sendAck(messageContext.getDeliveryTag());
+				log.error("Experiment cancellation failed due to Thrift conversion error", e);
+			}finally {
+				experimentSubscriber.sendAck(messageContext.getDeliveryTag());
 			}
+
+		}
+	}
+
+	private void launchExperiment(MessageContext messageContext) {
+		try {
+            byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
+            ExperimentSubmitEvent expEvent = new ExperimentSubmitEvent();
+            ThriftUtils.createThriftFromBytes(bytes, expEvent);
+            if (messageContext.isRedeliver()) {
+				ExperimentModel experimentModel = (ExperimentModel) experimentCatalog.
+						get(ExperimentCatalogModelType.EXPERIMENT, expEvent.getExperimentId());
+				if (experimentModel.getExperimentStatus().getState() == ExperimentState.CREATED) {
+					launchExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
+				}
+            } else {
+                launchExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
+            }
+		} catch (TException e) {
+            log.error("Experiment launch failed due to Thrift conversion error", e);
+		} catch (RegistryException e) {
+			log.error("Experiment launch failed due to registry access issue", e);
+		}finally {
+			experimentSubscriber.sendAck(messageContext.getDeliveryTag());
 		}
 	}
 
