@@ -23,27 +23,38 @@
   become: yes
 
 - name: Edit /etc/hosts file
-  lineinfile: dest=/etc/hosts line="{{ _ip4.stdout }} {{ rabbit_hostName }}"
+  lineinfile: dest=/etc/hosts line="{{ _ip4.stdout }} {{ ansible_fqdn }}"
   notify:
     - restart rabbitmq
   become: yes
 
 - name: Start Rabbitmq server
   service: name=rabbitmq-server state=started
+  become: yes
 
 - name: Enable rabbitmq management plugin
   rabbitmq_plugin: names=rabbitmq_management state=enabled
+  notify:
+    - restart rabbitmq
+  become: yes
 
 - name: Create rabbitmq vhost {{ rabbitmq_vhost }}
   rabbitmq_vhost: name="{{ rabbitmq_vhost }}" state=present
+  become: yes
 
 - name: Add user {{ rabbitmq_user }} to vhost {{ rabbitmq_vhost }}  and give permission
   rabbitmq_user: user="{{ rabbitmq_user }}"
                  password="{{ rabbitmq_password }}"
                  vhost="{{ rabbitmq_vhost }}"
+                 tags="administrator"
                  configure_priv=.*
                  read_priv=.*
                  write_priv=.*
                  state=present
+  become: yes
+
+- name: restart rabbitmq
+  service: name=rabbitmq-server state=restarted
+  become: yes
 
 ...

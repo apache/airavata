@@ -3,38 +3,15 @@
 #All commons tasks goes here
 - name: Create a new user group "{{ group }}"
   group: name={{ group }}
+  become: yes
 
 - name: Create a new user "{{ user }}"
   user: name={{ user }} group={{ group }}
+  become: yes
 
-################################################################################
-- name: Install pre-requireties
-  yum: name={{ item }} state=latest update_cache=yes
-  with_items:
-    - git
-    - maven
-    - firewalld
-    - unzip  #need for wso2
-
-
-################################################################################
-# Install Orcal Java
-- name: download oracle java 8 rpm
-  get_url: url="{{ java_rpm_url }}" dest="{{ java_dir_source }}" headers='Cookie:oraclelicense=accept-securebackup-cookie'
-
-- name: Install oracle java 8
-  yum: name="{{ java_dir_source }}/{{ java_rpm_filename }}" state=present
-
-- name: set Oracle Java {{ java_version_string }} as default
-  alternatives:
-    name="{{ item.exe }}"
-    link="/usr/bin/{{ item.exe }}"
-    path="{{ item.path }}/{{ item.exe }}"
-  with_items:
-    - { path: "{{ java_home }}/jre/bin", exe: 'java' }
-    - { path: "{{ java_home }}/jre/bin", exe: 'keytool' }
-    - { path: "{{ java_home }}/bin", exe: 'javac' }
-    - { path: "{{ java_home }}/bin", exe: 'javadoc' }
+- name: Install Firewalld
+  yum: name=firewalld state=latest update_cache=yes
+  become: yes
 
   # TODO: stop iptables service, can't have both iptables and firewalld on same host
   # if we try to stop non existing service ansible fails.

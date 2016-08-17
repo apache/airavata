@@ -20,10 +20,11 @@
 [rabbitmq]
 #js-156.196.jetstream-cloud.org
 #js-171-11.jetstream-cloud.org rabbit_hostName="jetcloud-1-centos-7"
+54.236.73.114
 
 [database]
 #js-156.196.jetstream-cloud.org
 #js-171-11.jetstream-cloud.org
 
 [wso2is]
-107.23.143.252
+52.91.87.213

@@ -39,5 +39,7 @@
 - hosts: wso2is
   tags: wso2is
   roles:
+    - env_setup
+    - java
     - wso2_is
 ...
