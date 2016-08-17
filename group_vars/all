@@ -1,10 +1,11 @@
 ---
 ansible_connection: ssh
-ansible_ssh_user: root
-ansible_ssh_private_key_file: /Users/syodage/Projects/scigap/JetCloud/jetcloud.key
+ansible_ssh_user: centos
+#ansible_ssh_private_key_file: /Users/syodage/Projects/scigap/JetCloud/jetcloud.key
+ansible_ssh_private_key_file: /Users/syodage/Projects/airavata-ansible/shameera-aws.pem.txt
 
-user: airavata
-group: airavata
+user: centos
+group: centos 
 user_home: "/home/{{ user }}"
 deployment_dir: "{{ user_home }}/master-deployment"
 
@@ -24,7 +25,8 @@ rabbitmq_server: "localhost"
 rabbitmq_vhost: "master"
 rabbitmq_user: "airavata"
 rabbitmq_password: "airavata"
-rabbitmq_broker_url: "amqp://{{ rabbitmq_user }}:{{ rabbitmq_password }}@{{ rabbitmq_server}}:5672/{{ rabbitmq_vhost }}"
+rabbitmq_port: "5672"
+rabbitmq_broker_url: "amqp://{{ rabbitmq_user }}:{{ rabbitmq_password }}@{{ rabbitmq_server}}:{{ rabbitmq_port }}/{{ rabbitmq_vhost }}"
 
 key_store: "airavata.jks"
 cred_key_store: "client_truststore.jks"

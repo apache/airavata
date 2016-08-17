@@ -1,25 +1,29 @@
+---
 # inventory file : production
 
 [api-orch]
-#149.165.156.196 host_name=js-156-196 host_address=149.165.156.196
-js-171-11.jetstream-cloud.org
+#js-156.196.jetstream-cloud.org
+#js-171-11.jetstream-cloud.org
 
 [gfac]
-#149.165.156.196 host_name=js-156-196 host_address=149.165.156.196
-js-171-11.jetstream-cloud.org
+#js-156.196.jetstream-cloud.org
+#js-171-11.jetstream-cloud.org
 
 [pga]
-#149.165.156.196
-js-171-11.jetstream-cloud.org
+#js-156.196.jetstream-cloud.org
+#js-171-11.jetstream-cloud.org
 
 [zookeeper]
-#149.165.156.196 host_name=js-156-196 host_address=149.165.156.196
-js-171-11.jetstream-cloud.org
+#js-156.196.jetstream-cloud.org
+#js-171-11.jetstream-cloud.org
 
 [rabbitmq]
-#149.165.156.196 host_name=js-156-196 host_address=149.165.156.196
-js-171-11.jetstream-cloud.org
+#js-156.196.jetstream-cloud.org
+#js-171-11.jetstream-cloud.org rabbit_hostName="jetcloud-1-centos-7"
 
 [database]
-#149.165.156.196
-js-171-11.jetstream-cloud.org
+#js-156.196.jetstream-cloud.org
+#js-171-11.jetstream-cloud.org
+
+[wso2is]
+107.23.143.252

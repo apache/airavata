@@ -3,32 +3,29 @@
 #All commons tasks goes here
 - name: Create a new user group "{{ group }}"
   group: name={{ group }}
-  tags: user
 
 - name: Create a new user "{{ user }}"
   user: name={{ user }} group={{ group }}
-  tags: user
 
 ################################################################################
-- name: Install git latest version
-  yum: name=git state=latest update_cache=yes
-  tags: env
+- name: Install pre-requireties
+  yum: name={{ item }} state=latest update_cache=yes
+  with_items:
+    - git
+    - maven
+    - firewalld
+    - unzip  #need for wso2
 
-- name: Install maven latest version
-  yum: name=maven state=latest update_cache=yes
-  tags: env
 
 ################################################################################
 # Install Orcal Java
 - name: download oracle java 8 rpm
   get_url: url="{{ java_rpm_url }}" dest="{{ java_dir_source }}" headers='Cookie:oraclelicense=accept-securebackup-cookie'
-  tags: env
 
 - name: Install oracle java 8
   yum: name="{{ java_dir_source }}/{{ java_rpm_filename }}" state=present
-  tags: env
 
-- name: set Java version as default
+- name: set Oracle Java {{ java_version_string }} as default
   alternatives:
     name="{{ item.exe }}"
     link="/usr/bin/{{ item.exe }}"
@@ -38,7 +35,17 @@
     - { path: "{{ java_home }}/jre/bin", exe: 'keytool' }
     - { path: "{{ java_home }}/bin", exe: 'javac' }
     - { path: "{{ java_home }}/bin", exe: 'javadoc' }
-  tags: env
 
-# End
+  # TODO: stop iptables service, can't have both iptables and firewalld on same host
+  # if we try to stop non existing service ansible fails.
+# - name: Stop iptables, ip6tables services
+#   service: name="{{ item }}" state=stopped
+#   with_items:
+#     - iptables
+#     - ip6tables
+
+- name: Start firewalld service
+  service: name=firewalld state=started
+  become: yes
+
 ...

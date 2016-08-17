@@ -36,4 +36,8 @@
   roles:
     - database
 
+- hosts: wso2is
+  tags: wso2is
+  roles:
+    - wso2_is
 ...
