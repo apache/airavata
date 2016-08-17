@@ -232,16 +232,16 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         return executor;
     }
 
-    public void setExecutor(ExecutorService executor) {
-        this.executor = executor;
+    public void setExecutor(ExecutorService executorIn) {
+        executor = executorIn;
     }
 
     public JobSubmitter getJobSubmitter() {
         return jobSubmitter;
     }
 
-    public void setJobSubmitter(JobSubmitter jobSubmitter) {
-        this.jobSubmitter = jobSubmitter;
+    public void setJobSubmitter(JobSubmitter jobSubmitterIn) {
+        jobSubmitter = jobSubmitterIn;
     }
 
     public void initialize() throws OrchestratorException {
