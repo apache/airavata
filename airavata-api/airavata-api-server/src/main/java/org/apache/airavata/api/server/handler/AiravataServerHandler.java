@@ -1454,17 +1454,18 @@ public class AiravataServerHandler implements Airavata.Iface {
                 logger.error(airavataExperimentId, "Error while cancelling experiment {}, experiment doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            ExperimentStatus experimentStatus = null;
-            switch (experimentStatus.getState()) {
+            switch (existingExperiment.getExperimentStatus().getState()) {
                 case COMPLETED: case CANCELED: case FAILED: case CANCELING:
-                    logger.warn("Can't terminate already {} experiment", experimentStatus.getState().name());
+                    logger.warn("Can't terminate already {} experiment", existingExperiment.getExperimentStatus().getState().name());
+                    break;
                 case CREATED:
                     logger.warn("Experiment termination is only allowed for launched experiments.");
+                    break;
                 default:
-                    submitCancelExperiment(airavataExperimentId, gatewayId);
-
+                    submitCancelExperiment(gatewayId, airavataExperimentId);
+                    logger.debug("Airavata cancelled experiment with experiment id : " + airavataExperimentId);
+                    break;
             }
-            logger.debug("Airavata cancelled experiment with experiment id : " + airavataExperimentId);
         } catch (RegistryServiceException | AiravataException e) {
             logger.error(airavataExperimentId, "Error while cancelling the experiment...", e);
             AiravataSystemException exception = new AiravataSystemException();

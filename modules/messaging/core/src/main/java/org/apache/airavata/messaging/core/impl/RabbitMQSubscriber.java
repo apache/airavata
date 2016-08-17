@@ -64,7 +64,7 @@ public class RabbitMQSubscriber implements Subscriber {
             channel.basicQos(properties.getPrefetchCount());
             channel.exchangeDeclare(properties.getExchangeName(),
                     properties.getExchangeType(),
-                    false);
+                    true); // durable
         } catch (Exception e) {
             String msg = "could not open channel for exchange " + properties.getExchangeName();
             log.error(msg);
@@ -98,7 +98,7 @@ public class RabbitMQSubscriber implements Subscriber {
             }
             // bind all the routing keys
             for (String key : routingKeys) {
-                log.info("Binding key:" + key + " to queue:" + queueName);
+//                log.info("Binding key:" + key + " to queue:" + queueName);
                 channel.queueBind(queueName, properties.getExchangeName(), key);
             }
 

@@ -48,19 +48,19 @@ public class MessagingFactory {
             case EXPERIMENT_LAUNCH:
                 subscriber = getExperimentSubscriber(rProperties);
                 subscriber.listen(((connection, channel) -> new ExperimentConsumer(messageHandler, connection, channel)),
-                        null,
+                        rProperties.getQueueName(),
                         routingKeys);
                 break;
             case PROCESS_LAUNCH:
                 subscriber = getProcessSubscriber(rProperties);
                 subscriber.listen((connection ,channel) -> new ProcessConsumer(messageHandler, connection, channel),
-                        null,
+                        rProperties.getQueueName(),
                         routingKeys);
                 break;
             case STATUS:
                 subscriber = getStatusSubscriber(rProperties);
                 subscriber.listen((connection, channel) -> new StatusConsumer(messageHandler, connection, channel),
-                        null,
+                        rProperties.getQueueName(),
                         routingKeys);
                 break;
             default:

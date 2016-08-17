@@ -93,7 +93,7 @@ public class RabbitMQPublisher implements Publisher {
             message.setMessageType(messageContext.getType());
             message.setUpdatedTime(messageContext.getUpdatedTime().getTime());
             String routingKey = routingKeySupplier.apply(messageContext);
-            log.info("publish messageId:" + messageContext.getMessageId() + ", messageType:" + messageContext.getType() + ", to routingKey:" + routingKey);
+//            log.info("publish messageId:" + messageContext.getMessageId() + ", messageType:" + messageContext.getType() + ", to routingKey:" + routingKey);
             byte[] messageBody = ThriftUtils.serializeThriftObject(message);
             send(messageBody, routingKey);
         } catch (TException e) {
