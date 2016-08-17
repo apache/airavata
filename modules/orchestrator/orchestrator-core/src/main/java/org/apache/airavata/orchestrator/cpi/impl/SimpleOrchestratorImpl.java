@@ -129,16 +129,16 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                         }
                         break;
                     }
-                } catch (ClassNotFoundException e) {
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                     logger.error("Error loading the validation class: ", validator, e);
                     validationResults.setValidationState(false);
-                } catch (InstantiationException e) {
+                } /*catch (InstantiationException e) {
                     logger.error("Error loading the validation class: ", validator, e);
                     validationResults.setValidationState(false);
                 } catch (IllegalAccessException e) {
                     logger.error("Error loading the validation class: ", validator, e);
                     validationResults.setValidationState(false);
-                }
+                }*/
             }
         }
         if(validationResults.isValidationState()){
