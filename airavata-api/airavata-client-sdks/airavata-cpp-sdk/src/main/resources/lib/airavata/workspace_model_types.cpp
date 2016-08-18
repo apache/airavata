@@ -36,7 +36,8 @@ int _kGatewayApprovalStatusValues[] = {
   GatewayApprovalStatus::ACTIVE,
   GatewayApprovalStatus::DEACTIVATED,
   GatewayApprovalStatus::CANCELLED,
-  GatewayApprovalStatus::DENIED
+  GatewayApprovalStatus::DENIED,
+  GatewayApprovalStatus::CREATED
 };
 const char* _kGatewayApprovalStatusNames[] = {
   "REQUESTED",
@@ -44,9 +45,10 @@ const char* _kGatewayApprovalStatusNames[] = {
   "ACTIVE",
   "DEACTIVATED",
   "CANCELLED",
-  "DENIED"
+  "DENIED",
+  "CREATED"
 };
-const std::map<int, const char*> _GatewayApprovalStatus_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kGatewayApprovalStatusValues, _kGatewayApprovalStatusNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _GatewayApprovalStatus_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(7, _kGatewayApprovalStatusValues, _kGatewayApprovalStatusNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kNotificationPriorityValues[] = {
   NotificationPriority::LOW,
@@ -750,6 +752,11 @@ void Gateway::__set_requestCreationTime(const int64_t val) {
 __isset.requestCreationTime = true;
 }
 
+void Gateway::__set_requesterUsername(const std::string& val) {
+  this->requesterUsername = val;
+__isset.requesterUsername = true;
+}
+
 uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -919,6 +926,14 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 19:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->requesterUsername);
+          this->__isset.requesterUsername = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -1028,6 +1043,11 @@ uint32_t Gateway::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeI64(this->requestCreationTime);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.requesterUsername) {
+    xfer += oprot->writeFieldBegin("requesterUsername", ::apache::thrift::protocol::T_STRING, 19);
+    xfer += oprot->writeString(this->requesterUsername);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -1053,6 +1073,7 @@ void swap(Gateway &a, Gateway &b) {
   swap(a.oauthClientId, b.oauthClientId);
   swap(a.oauthClientSecret, b.oauthClientSecret);
   swap(a.requestCreationTime, b.requestCreationTime);
+  swap(a.requesterUsername, b.requesterUsername);
   swap(a.__isset, b.__isset);
 }
 
@@ -1075,6 +1096,7 @@ Gateway::Gateway(const Gateway& other19) {
   oauthClientId = other19.oauthClientId;
   oauthClientSecret = other19.oauthClientSecret;
   requestCreationTime = other19.requestCreationTime;
+  requesterUsername = other19.requesterUsername;
   __isset = other19.__isset;
 }
 Gateway& Gateway::operator=(const Gateway& other20) {
@@ -1096,6 +1118,7 @@ Gateway& Gateway::operator=(const Gateway& other20) {
   oauthClientId = other20.oauthClientId;
   oauthClientSecret = other20.oauthClientSecret;
   requestCreationTime = other20.requestCreationTime;
+  requesterUsername = other20.requesterUsername;
   __isset = other20.__isset;
   return *this;
 }
@@ -1120,6 +1143,7 @@ void Gateway::printTo(std::ostream& out) const {
   out << ", " << "oauthClientId="; (__isset.oauthClientId ? (out << to_string(oauthClientId)) : (out << "<null>"));
   out << ", " << "oauthClientSecret="; (__isset.oauthClientSecret ? (out << to_string(oauthClientSecret)) : (out << "<null>"));
   out << ", " << "requestCreationTime="; (__isset.requestCreationTime ? (out << to_string(requestCreationTime)) : (out << "<null>"));
+  out << ", " << "requesterUsername="; (__isset.requesterUsername ? (out << to_string(requesterUsername)) : (out << "<null>"));
   out << ")";
 }
 

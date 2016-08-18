@@ -67,6 +67,7 @@ public class GatewayRegistry {
             resource.setOauthClientId(gateway.getOauthClientId());
             resource.setOauthClientSecret(gateway.getOauthClientSecret());
             resource.setRequestCreationTime(new Timestamp(System.currentTimeMillis()));
+            resource.setRequesterUsername(gateway.getRequesterUsername());
             resource.save();
             return gateway.getGatewayId();
         }catch (RegistryException e){
