@@ -1,8 +1,10 @@
 ---
 - name: start mariadb
   service: name=mariadb state=started enabled=yes
+  become: yes
 
 - name: stop mariadb
   service: name=mariadb state=stopped
+  become: yes
 
 ...
