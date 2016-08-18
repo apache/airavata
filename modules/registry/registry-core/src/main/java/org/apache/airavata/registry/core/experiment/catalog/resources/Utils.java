@@ -359,7 +359,7 @@ public class Utils {
         gatewayResource.setDeclinedReason(o.getDeclinedReason());
         gatewayResource.setOauthClientId(o.getOauthClientId());
         gatewayResource.setRequestCreationTime(o.getRequestCreationTime());
-        gatewayResource.setRequestCreationTime(o.getRequestCreationTime());
+        gatewayResource.setRequesterUsername(o.getRequesterUsername());
 
         gatewayResource.setOauthClientSecret(o.getGetOauthClientSecret());
         return gatewayResource;

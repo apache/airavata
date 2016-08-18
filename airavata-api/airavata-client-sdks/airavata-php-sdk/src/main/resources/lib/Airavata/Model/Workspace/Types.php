@@ -24,6 +24,7 @@ final class GatewayApprovalStatus {
   const DEACTIVATED = 3;
   const CANCELLED = 4;
   const DENIED = 5;
+  const CREATED = 6;
   static public $__names = array(
     0 => 'REQUESTED',
     1 => 'APPROVED',
@@ -31,6 +32,7 @@ final class GatewayApprovalStatus {
     3 => 'DEACTIVATED',
     4 => 'CANCELLED',
     5 => 'DENIED',
+    6 => 'CREATED',
   );
 }
 
@@ -696,6 +698,10 @@ class Gateway {
    * @var int
    */
   public $requestCreationTime = null;
+  /**
+   * @var string
+   */
+  public $requesterUsername = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -772,6 +778,10 @@ class Gateway {
           'var' => 'requestCreationTime',
           'type' => TType::I64,
           ),
+        19 => array(
+          'var' => 'requesterUsername',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -828,6 +838,9 @@ class Gateway {
       }
       if (isset($vals['requestCreationTime'])) {
         $this->requestCreationTime = $vals['requestCreationTime'];
+      }
+      if (isset($vals['requesterUsername'])) {
+        $this->requesterUsername = $vals['requesterUsername'];
       }
     }
   }
@@ -977,6 +990,13 @@ class Gateway {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 19:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->requesterUsername);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -1078,6 +1098,11 @@ class Gateway {
     if ($this->requestCreationTime !== null) {
       $xfer += $output->writeFieldBegin('requestCreationTime', TType::I64, 18);
       $xfer += $output->writeI64($this->requestCreationTime);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->requesterUsername !== null) {
+      $xfer += $output->writeFieldBegin('requesterUsername', TType::STRING, 19);
+      $xfer += $output->writeString($this->requesterUsername);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

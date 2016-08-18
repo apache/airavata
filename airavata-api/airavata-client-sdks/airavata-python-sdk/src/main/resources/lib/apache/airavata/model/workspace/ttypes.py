@@ -25,6 +25,7 @@ class GatewayApprovalStatus:
   DEACTIVATED = 3
   CANCELLED = 4
   DENIED = 5
+  CREATED = 6
 
   _VALUES_TO_NAMES = {
     0: "REQUESTED",
@@ -33,6 +34,7 @@ class GatewayApprovalStatus:
     3: "DEACTIVATED",
     4: "CANCELLED",
     5: "DENIED",
+    6: "CREATED",
   }
 
   _NAMES_TO_VALUES = {
@@ -42,6 +44,7 @@ class GatewayApprovalStatus:
     "DEACTIVATED": 3,
     "CANCELLED": 4,
     "DENIED": 5,
+    "CREATED": 6,
   }
 
 class NotificationPriority:
@@ -477,6 +480,7 @@ class Gateway:
    - oauthClientId
    - oauthClientSecret
    - requestCreationTime
+   - requesterUsername
   """
 
   thrift_spec = (
@@ -499,9 +503,10 @@ class Gateway:
     (16, TType.STRING, 'oauthClientId', None, None, ), # 16
     (17, TType.STRING, 'oauthClientSecret', None, None, ), # 17
     (18, TType.I64, 'requestCreationTime', None, None, ), # 18
+    (19, TType.STRING, 'requesterUsername', None, None, ), # 19
   )
 
-  def __init__(self, gatewayId=None, gatewayApprovalStatus=None, gatewayName=None, domain=None, emailAddress=None, gatewayAcronym=None, gatewayURL=None, gatewayPublicAbstract=None, reviewProposalDescription=None, gatewayAdminFirstName=None, gatewayAdminLastName=None, gatewayAdminEmail=None, identityServerUserName=None, identityServerPasswordToken=None, declinedReason=None, oauthClientId=None, oauthClientSecret=None, requestCreationTime=None,):
+  def __init__(self, gatewayId=None, gatewayApprovalStatus=None, gatewayName=None, domain=None, emailAddress=None, gatewayAcronym=None, gatewayURL=None, gatewayPublicAbstract=None, reviewProposalDescription=None, gatewayAdminFirstName=None, gatewayAdminLastName=None, gatewayAdminEmail=None, identityServerUserName=None, identityServerPasswordToken=None, declinedReason=None, oauthClientId=None, oauthClientSecret=None, requestCreationTime=None, requesterUsername=None,):
     self.gatewayId = gatewayId
     self.gatewayApprovalStatus = gatewayApprovalStatus
     self.gatewayName = gatewayName
@@ -520,6 +525,7 @@ class Gateway:
     self.oauthClientId = oauthClientId
     self.oauthClientSecret = oauthClientSecret
     self.requestCreationTime = requestCreationTime
+    self.requesterUsername = requesterUsername
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -620,6 +626,11 @@ class Gateway:
           self.requestCreationTime = iprot.readI64()
         else:
           iprot.skip(ftype)
+      elif fid == 19:
+        if ftype == TType.STRING:
+          self.requesterUsername = iprot.readString()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -702,6 +713,10 @@ class Gateway:
       oprot.writeFieldBegin('requestCreationTime', TType.I64, 18)
       oprot.writeI64(self.requestCreationTime)
       oprot.writeFieldEnd()
+    if self.requesterUsername is not None:
+      oprot.writeFieldBegin('requesterUsername', TType.STRING, 19)
+      oprot.writeString(self.requesterUsername)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -733,6 +748,7 @@ class Gateway:
     value = (value * 31) ^ hash(self.oauthClientId)
     value = (value * 31) ^ hash(self.oauthClientSecret)
     value = (value * 31) ^ hash(self.requestCreationTime)
+    value = (value * 31) ^ hash(self.requesterUsername)
     return value
 
   def __repr__(self):
