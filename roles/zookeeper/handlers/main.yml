@@ -1,19 +1,12 @@
 ---
-
-# Zookeeper related handlers
 - name: start zookeeper
-  command: ./bin/zkServer.sh start chdir={{zookeeper_dir}}/ creates={{zookeeper_data_dir}}/zookeeper_server.pid
-  become: true
-  become_user: "{{ user }}"
+  service: name=zookeeper state=started
+  become: yes
 
 - name: stop zookeeper
-  command: ./bin/zkServer.sh stop chdir={{zookeeper_dir}}/ removes={{zookeeper_data_dir}}/zookeeper_server.pid
-  become: true
-  become_user: "{{ user }}"
+  service: name=zookeeper state=stopped
+  become: yes
 
 - name: restart zookeeper
-  command: ./bin/zkServer.sh restart chdir={{zookeeper_dir}}/ removes={{zookeeper_data_dir}}/zookeeper_server.pid
-  become: true
-  become_user: "{{ user }}"
-
-...
+  service: name=zookeeper state=restarted
+  become: yes

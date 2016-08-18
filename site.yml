@@ -4,6 +4,7 @@
   tags: zookeeper, airavata
   roles:
     - env_setup
+    - java
     - zookeeper
 
 - hosts: rabbitmq
