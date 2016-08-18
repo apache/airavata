@@ -73,6 +73,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
   private static final org.apache.thrift.protocol.TField OAUTH_CLIENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("oauthClientId", org.apache.thrift.protocol.TType.STRING, (short)16);
   private static final org.apache.thrift.protocol.TField OAUTH_CLIENT_SECRET_FIELD_DESC = new org.apache.thrift.protocol.TField("oauthClientSecret", org.apache.thrift.protocol.TType.STRING, (short)17);
   private static final org.apache.thrift.protocol.TField REQUEST_CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("requestCreationTime", org.apache.thrift.protocol.TType.I64, (short)18);
+  private static final org.apache.thrift.protocol.TField REQUESTER_USERNAME_FIELD_DESC = new org.apache.thrift.protocol.TField("requesterUsername", org.apache.thrift.protocol.TType.STRING, (short)19);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -98,6 +99,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
   private String oauthClientId; // optional
   private String oauthClientSecret; // optional
   private long requestCreationTime; // optional
+  private String requesterUsername; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -122,7 +124,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     DECLINED_REASON((short)15, "declinedReason"),
     OAUTH_CLIENT_ID((short)16, "oauthClientId"),
     OAUTH_CLIENT_SECRET((short)17, "oauthClientSecret"),
-    REQUEST_CREATION_TIME((short)18, "requestCreationTime");
+    REQUEST_CREATION_TIME((short)18, "requestCreationTime"),
+    REQUESTER_USERNAME((short)19, "requesterUsername");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -173,6 +176,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
           return OAUTH_CLIENT_SECRET;
         case 18: // REQUEST_CREATION_TIME
           return REQUEST_CREATION_TIME;
+        case 19: // REQUESTER_USERNAME
+          return REQUESTER_USERNAME;
         default:
           return null;
       }
@@ -215,7 +220,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
   // isset id assignments
   private static final int __REQUESTCREATIONTIME_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.GATEWAY_NAME,_Fields.DOMAIN,_Fields.EMAIL_ADDRESS,_Fields.GATEWAY_ACRONYM,_Fields.GATEWAY_URL,_Fields.GATEWAY_PUBLIC_ABSTRACT,_Fields.REVIEW_PROPOSAL_DESCRIPTION,_Fields.GATEWAY_ADMIN_FIRST_NAME,_Fields.GATEWAY_ADMIN_LAST_NAME,_Fields.GATEWAY_ADMIN_EMAIL,_Fields.IDENTITY_SERVER_USER_NAME,_Fields.IDENTITY_SERVER_PASSWORD_TOKEN,_Fields.DECLINED_REASON,_Fields.OAUTH_CLIENT_ID,_Fields.OAUTH_CLIENT_SECRET,_Fields.REQUEST_CREATION_TIME};
+  private static final _Fields optionals[] = {_Fields.GATEWAY_NAME,_Fields.DOMAIN,_Fields.EMAIL_ADDRESS,_Fields.GATEWAY_ACRONYM,_Fields.GATEWAY_URL,_Fields.GATEWAY_PUBLIC_ABSTRACT,_Fields.REVIEW_PROPOSAL_DESCRIPTION,_Fields.GATEWAY_ADMIN_FIRST_NAME,_Fields.GATEWAY_ADMIN_LAST_NAME,_Fields.GATEWAY_ADMIN_EMAIL,_Fields.IDENTITY_SERVER_USER_NAME,_Fields.IDENTITY_SERVER_PASSWORD_TOKEN,_Fields.DECLINED_REASON,_Fields.OAUTH_CLIENT_ID,_Fields.OAUTH_CLIENT_SECRET,_Fields.REQUEST_CREATION_TIME,_Fields.REQUESTER_USERNAME};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -255,6 +260,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.REQUEST_CREATION_TIME, new org.apache.thrift.meta_data.FieldMetaData("requestCreationTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+    tmpMap.put(_Fields.REQUESTER_USERNAME, new org.apache.thrift.meta_data.FieldMetaData("requesterUsername", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Gateway.class, metaDataMap);
   }
@@ -328,6 +335,9 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       this.oauthClientSecret = other.oauthClientSecret;
     }
     this.requestCreationTime = other.requestCreationTime;
+    if (other.isSetRequesterUsername()) {
+      this.requesterUsername = other.requesterUsername;
+    }
   }
 
   public Gateway deepCopy() {
@@ -355,6 +365,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     this.oauthClientSecret = null;
     setRequestCreationTimeIsSet(false);
     this.requestCreationTime = 0;
+    this.requesterUsername = null;
   }
 
   public String getGatewayId() {
@@ -778,6 +789,29 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __REQUESTCREATIONTIME_ISSET_ID, value);
   }
 
+  public String getRequesterUsername() {
+    return this.requesterUsername;
+  }
+
+  public void setRequesterUsername(String requesterUsername) {
+    this.requesterUsername = requesterUsername;
+  }
+
+  public void unsetRequesterUsername() {
+    this.requesterUsername = null;
+  }
+
+  /** Returns true if field requesterUsername is set (has been assigned a value) and false otherwise */
+  public boolean isSetRequesterUsername() {
+    return this.requesterUsername != null;
+  }
+
+  public void setRequesterUsernameIsSet(boolean value) {
+    if (!value) {
+      this.requesterUsername = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case GATEWAY_ID:
@@ -924,6 +958,14 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       }
       break;
 
+    case REQUESTER_USERNAME:
+      if (value == null) {
+        unsetRequesterUsername();
+      } else {
+        setRequesterUsername((String)value);
+      }
+      break;
+
     }
   }
 
@@ -983,6 +1025,9 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     case REQUEST_CREATION_TIME:
       return getRequestCreationTime();
 
+    case REQUESTER_USERNAME:
+      return getRequesterUsername();
+
     }
     throw new IllegalStateException();
   }
@@ -1030,6 +1075,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       return isSetOauthClientSecret();
     case REQUEST_CREATION_TIME:
       return isSetRequestCreationTime();
+    case REQUESTER_USERNAME:
+      return isSetRequesterUsername();
     }
     throw new IllegalStateException();
   }
@@ -1209,6 +1256,15 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
         return false;
     }
 
+    boolean this_present_requesterUsername = true && this.isSetRequesterUsername();
+    boolean that_present_requesterUsername = true && that.isSetRequesterUsername();
+    if (this_present_requesterUsername || that_present_requesterUsername) {
+      if (!(this_present_requesterUsername && that_present_requesterUsername))
+        return false;
+      if (!this.requesterUsername.equals(that.requesterUsername))
+        return false;
+    }
+
     return true;
   }
 
@@ -1305,6 +1361,11 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     list.add(present_requestCreationTime);
     if (present_requestCreationTime)
       list.add(requestCreationTime);
+
+    boolean present_requesterUsername = true && (isSetRequesterUsername());
+    list.add(present_requesterUsername);
+    if (present_requesterUsername)
+      list.add(requesterUsername);
 
     return list.hashCode();
   }
@@ -1493,6 +1554,16 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     }
     if (isSetRequestCreationTime()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.requestCreationTime, other.requestCreationTime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetRequesterUsername()).compareTo(other.isSetRequesterUsername());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetRequesterUsername()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.requesterUsername, other.requesterUsername);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1686,6 +1757,16 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       if (!first) sb.append(", ");
       sb.append("requestCreationTime:");
       sb.append(this.requestCreationTime);
+      first = false;
+    }
+    if (isSetRequesterUsername()) {
+      if (!first) sb.append(", ");
+      sb.append("requesterUsername:");
+      if (this.requesterUsername == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.requesterUsername);
+      }
       first = false;
     }
     sb.append(")");
@@ -1885,6 +1966,14 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 19: // REQUESTER_USERNAME
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.requesterUsername = iprot.readString();
+              struct.setRequesterUsernameIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -2018,6 +2107,13 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
         oprot.writeI64(struct.requestCreationTime);
         oprot.writeFieldEnd();
       }
+      if (struct.requesterUsername != null) {
+        if (struct.isSetRequesterUsername()) {
+          oprot.writeFieldBegin(REQUESTER_USERNAME_FIELD_DESC);
+          oprot.writeString(struct.requesterUsername);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -2086,7 +2182,10 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       if (struct.isSetRequestCreationTime()) {
         optionals.set(15);
       }
-      oprot.writeBitSet(optionals, 16);
+      if (struct.isSetRequesterUsername()) {
+        optionals.set(16);
+      }
+      oprot.writeBitSet(optionals, 17);
       if (struct.isSetGatewayName()) {
         oprot.writeString(struct.gatewayName);
       }
@@ -2135,6 +2234,9 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       if (struct.isSetRequestCreationTime()) {
         oprot.writeI64(struct.requestCreationTime);
       }
+      if (struct.isSetRequesterUsername()) {
+        oprot.writeString(struct.requesterUsername);
+      }
     }
 
     @Override
@@ -2144,7 +2246,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       struct.setGatewayIdIsSet(true);
       struct.gatewayApprovalStatus = org.apache.airavata.model.workspace.GatewayApprovalStatus.findByValue(iprot.readI32());
       struct.setGatewayApprovalStatusIsSet(true);
-      BitSet incoming = iprot.readBitSet(16);
+      BitSet incoming = iprot.readBitSet(17);
       if (incoming.get(0)) {
         struct.gatewayName = iprot.readString();
         struct.setGatewayNameIsSet(true);
@@ -2208,6 +2310,10 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       if (incoming.get(15)) {
         struct.requestCreationTime = iprot.readI64();
         struct.setRequestCreationTimeIsSet(true);
+      }
+      if (incoming.get(16)) {
+        struct.requesterUsername = iprot.readString();
+        struct.setRequesterUsernameIsSet(true);
       }
     }
   }

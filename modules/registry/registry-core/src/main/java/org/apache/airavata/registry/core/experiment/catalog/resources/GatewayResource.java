@@ -56,6 +56,7 @@ public class GatewayResource extends AbstractExpCatResource {
     private String oauthClientId;
     private String oauthClientSecret;
     private Timestamp requestCreationTime;
+    private String requesterUsername;
 
     public String getGatewayAdminFirstName() {
         return gatewayAdminFirstName;
@@ -183,6 +184,14 @@ public class GatewayResource extends AbstractExpCatResource {
 
     public void setRequestCreationTime(Timestamp requestCreationTime) {
         this.requestCreationTime = requestCreationTime;
+    }
+
+    public String getRequesterUsername() {
+        return requesterUsername;
+    }
+
+    public void setRequesterUsername(String requesterUsername) {
+        this.requesterUsername = requesterUsername;
     }
 
     /**
@@ -473,6 +482,7 @@ public class GatewayResource extends AbstractExpCatResource {
             gateway.setOauthClientId(oauthClientId);
             gateway.setGetOauthClientSecret(oauthClientSecret);
             gateway.setRequestCreationTime(requestCreationTime);
+            gateway.setRequesterUsername(requesterUsername);
             if (existingGateway != null) {
                 existingGateway.setDomain(domain);
                 existingGateway.setGatewayApprovalStatus(gatewayApprovalStatus);
@@ -492,6 +502,7 @@ public class GatewayResource extends AbstractExpCatResource {
                 existingGateway.setOauthClientId(oauthClientId);
                 existingGateway.setGetOauthClientSecret(oauthClientSecret);
                 existingGateway.setRequestCreationTime(requestCreationTime);
+                existingGateway.setRequesterUsername(requesterUsername);
                 em.merge(existingGateway);
             } else {
                 em.persist(gateway);

@@ -96,6 +96,7 @@ public class ThriftDataModelConversion {
         if (resource.getRequestCreationTime() != null) {
             gateway.setRequestCreationTime(resource.getRequestCreationTime().getTime());
         }
+        gateway.setRequesterUsername(resource.getRequesterUsername());
         return gateway;
     }
 

@@ -49,6 +49,7 @@ public class Gateway {
     private String oauthClientId;
     private String getOauthClientSecret;
     private Timestamp requestCreationTime;
+    private String requesterUsername;
     private Collection<GatewayWorker> gatewayWorkers;
     private Collection<Project> projects;
 
@@ -177,6 +178,15 @@ public class Gateway {
 
     public void setIdentityServerPasswordToken(String identityServerPasswordToken) {
         this.identityServerPasswordToken = identityServerPasswordToken;
+    }
+
+    @Column(name = "REQUESTER_USERNAME")
+    public String getRequesterUsername() {
+        return requesterUsername;
+    }
+
+    public void setRequesterUsername(String requesterUsername) {
+        this.requesterUsername = requesterUsername;
     }
 
     @Column(name = "DECLINED_REASON")
