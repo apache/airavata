@@ -66,7 +66,8 @@ enum GatewayApprovalStatus {
     ACTIVE,
     DEACTIVATED,
     CANCELLED,
-    DENIED
+    DENIED,
+    CREATED
 }
 
 struct Gateway {
@@ -87,7 +88,8 @@ struct Gateway {
     15: optional string declinedReason,
     16: optional string oauthClientId,
     17: optional string oauthClientSecret,
-    18: optional i64 requestCreationTime
+    18: optional i64 requestCreationTime,
+    19: optional string requesterUsername
 }
 
 enum NotificationPriority {
