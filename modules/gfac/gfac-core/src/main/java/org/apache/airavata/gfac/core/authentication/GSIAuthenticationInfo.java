@@ -37,7 +37,7 @@ public abstract class GSIAuthenticationInfo implements AuthenticationInfo {
         return properties;
     }
 
-    public void setProperties(Properties properties) {
-        this.properties = properties;
+    public void setProperties(Properties propertiesIn) {
+        properties = propertiesIn;
     }
 }

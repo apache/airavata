@@ -27,9 +27,9 @@ public class SSHPasswordAuthentication implements AuthenticationInfo {
 	private String userName;
 	private String password;
 
-	public SSHPasswordAuthentication(String userName, String password) {
-		this.userName = userName;
-		this.password = password;
+	public SSHPasswordAuthentication(String userNameIn, String passwordIn) {
+		this.userName = userNameIn;
+		this.password = passwordIn;
 	}
 
 	public String getUserName() {

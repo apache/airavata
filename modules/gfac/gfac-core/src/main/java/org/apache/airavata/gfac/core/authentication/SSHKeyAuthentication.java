@@ -44,47 +44,47 @@ public class SSHKeyAuthentication implements AuthenticationInfo {
 		return userName;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUserName(String userNameIn) {
+		this.userName = userNameIn;
 	}
 
 	public byte[] getPrivateKey() {
 		return privateKey;
 	}
 
-	public void setPrivateKey(byte[] privateKey) {
-		this.privateKey = privateKey;
+	public void setPrivateKey(byte[] privateKeyIn) {
+		this.privateKey = privateKeyIn;
 	}
 
 	public byte[] getPublicKey() {
 		return publicKey;
 	}
 
-	public void setPublicKey(byte[] publicKey) {
-		this.publicKey = publicKey;
+	public void setPublicKey(byte[] publicKeyIn) {
+		this.publicKey = publicKeyIn;
 	}
 
 	public String getPassphrase() {
 		return passphrase;
 	}
 
-	public void setPassphrase(String passphrase) {
-		this.passphrase = passphrase;
+	public void setPassphrase(String passphraseIn) {
+		this.passphrase = passphraseIn;
 	}
 
 	public String getKnownHostsFilePath() {
 		return knownHostsFilePath;
 	}
 
-	public void setKnownHostsFilePath(String knownHostsFilePath) {
-		this.knownHostsFilePath = knownHostsFilePath;
+	public void setKnownHostsFilePath(String knownHostsFilePathIn) {
+		this.knownHostsFilePath = knownHostsFilePathIn;
 	}
 
 	public String getStrictHostKeyChecking() {
 		return strictHostKeyChecking;
 	}
 
-	public void setStrictHostKeyChecking(String strictHostKeyChecking) {
-		this.strictHostKeyChecking = strictHostKeyChecking;
+	public void setStrictHostKeyChecking(String strictHostKeyCheckingIn) {
+		this.strictHostKeyChecking = strictHostKeyCheckingIn;
 	}
 }
