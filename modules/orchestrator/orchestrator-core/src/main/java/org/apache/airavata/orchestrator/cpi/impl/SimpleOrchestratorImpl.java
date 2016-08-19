@@ -233,7 +233,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     }
 
     public void setExecutor(ExecutorService executorIn) {
-        executor = executorIn;
+        this.executor = executorIn;
     }
 
     public JobSubmitter getJobSubmitter() {
@@ -241,7 +241,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     }
 
     public void setJobSubmitter(JobSubmitter jobSubmitterIn) {
-        jobSubmitter = jobSubmitterIn;
+        this.jobSubmitter = jobSubmitterIn;
     }
 
     public void initialize() throws OrchestratorException {
