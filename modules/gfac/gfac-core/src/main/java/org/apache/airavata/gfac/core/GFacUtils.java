@@ -809,7 +809,7 @@ public class GFacUtils {
     public static File createJobFile(TaskContext taskContext, JobDescriptor jobDescriptor, JobManagerConfiguration jobManagerConfiguration) throws GFacException {
         try {
             TransformerFactory factory = TransformerFactory.newInstance();
-            URL resource = GFacUtils.class.getClassLoader().getResource(jobManagerConfiguration.getJobDescriptionTemplateName());
+            URL resource = ApplicationSettings.loadFile(jobManagerConfiguration.getJobDescriptionTemplateName());
 
             if (resource == null) {
                 String error = "System configuration file '" + jobManagerConfiguration.getJobDescriptionTemplateName()

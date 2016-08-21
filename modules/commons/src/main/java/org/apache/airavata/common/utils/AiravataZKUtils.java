@@ -119,13 +119,14 @@ public class AiravataZKUtils implements Watcher {
     public static void startEmbeddedZK(ServerCnxnFactory cnxnFactory) {
         if (ServerSettings.isEmbeddedZK()) {
             ServerConfig serverConfig = new ServerConfig();
-            URL resource = AiravataZKUtils.class.getClassLoader().getResource("zoo.cfg");
-            if (resource == null) {
-                logger.error("There is no zoo.cfg file in the classpath... Failed to start Zookeeper Server");
-                System.exit(1);
-            }
+            URL resource = ApplicationSettings.loadFile("zoo.cfg");
             try {
+                if (resource == null) {
+                    logger.error("There is no zoo.cfg file in the classpath... Failed to start Zookeeper Server");
+                    System.exit(1);
+                }
                 serverConfig.parse(resource.getPath());
+
             } catch (QuorumPeerConfig.ConfigException e) {
                 logger.error("Error while starting embedded Zookeeper", e);
                 System.exit(2);
@@ -193,7 +194,5 @@ public class AiravataZKUtils implements Watcher {
         } else {
             return bytesToLong(curatorClient.getData().storingStatIn(exists).forPath(cancelDeliveryTagPath));
         }
-
-
     }
 }

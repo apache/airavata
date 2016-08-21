@@ -54,7 +54,7 @@
 //    @Before
 //    public void setUp() throws Exception {
 //
-//    	URL resource = SSHProviderTestWithSSHAuth.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
+//    	URL resource = ApplicationSettings.loadFile(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
 //        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()),null);
 ////        gFacConfiguration.s
 //        //have to set InFlwo Handlers and outFlowHandlers
