@@ -91,7 +91,7 @@
 //            System.out.println("Use -Dssh.username=xxx -Dssh.password=yyy -Dssh.keypass=zzz " +
 //                    "-Dprivate.ssh.key -Dpublic.ssh.key -Dssh.working.directory ");
 //        }
-//        URL resource = BigRed2TestWithSSHAuth.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
+//        URL resource = ApplicationSettings.loadFile(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
 //        assert resource != null;
 //        System.out.println(resource.getFile());
 //        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), null);

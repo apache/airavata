@@ -23,6 +23,8 @@ package org.apache.airavata.orchestrator.server;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.logging.MDCConstants;
+import org.apache.airavata.common.logging.MDCUtil;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
@@ -67,6 +69,7 @@ import org.apache.thrift.TException;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.util.*;
 
@@ -139,7 +142,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
             experiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
             if (experiment == null) {
-                log.error(experimentId, "Error retrieving the Experiment by the given experimentID: {} ", experimentId);
+                log.error("Error retrieving the Experiment by the given experimentID: {} ", experimentId);
                 return false;
             }
 
@@ -225,7 +228,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                 OrchestratorUtils.updageAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
                 log.info("expId: {}, Launched experiment ", experimentId);
-                OrchestratorServerThreadPoolExecutor.getCachedThreadPool().execute(new SingleAppExperimentRunner(experimentId, token, gatewayId));
+                OrchestratorServerThreadPoolExecutor.getCachedThreadPool().execute(MDCUtil.wrapWithMDC(new SingleAppExperimentRunner(experimentId, token, gatewayId)));
             } else if (executionType == ExperimentType.WORKFLOW) {
                 //its a workflow execution experiment
                 log.debug(experimentId, "Launching workflow experiment {}.", experimentId);
@@ -591,7 +594,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
 		@Override
 		public void onMessage(MessageContext messageContext) {
-
+			MDC.put(MDCConstants.GATEWAY_ID, messageContext.getGatewayId());
 			switch (messageContext.getType()) {
 				case EXPERIMENT:
 					launchExperiment(messageContext);
@@ -604,6 +607,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 					log.error("Orchestrator got un-support message type : " + messageContext.getType());
 					break;
 			}
+			MDC.clear();
 		}
 
 		private void cancelExperiment(MessageContext messageContext) {
@@ -611,6 +615,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 				byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
 				ExperimentSubmitEvent expEvent = new ExperimentSubmitEvent();
 				ThriftUtils.createThriftFromBytes(bytes, expEvent);
+				log.info("Cancelling experiment with experimentId: {} gateway Id: {}", expEvent.getExperimentId(), expEvent.getGatewayId());
 				terminateExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
 			} catch (TException e) {
 				log.error("Experiment cancellation failed due to Thrift conversion error", e);
@@ -622,13 +627,16 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	}
 
 	private void launchExperiment(MessageContext messageContext) {
+		ExperimentSubmitEvent expEvent = new ExperimentSubmitEvent();
 		try {
-            byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
-            ExperimentSubmitEvent expEvent = new ExperimentSubmitEvent();
-            ThriftUtils.createThriftFromBytes(bytes, expEvent);
-            if (messageContext.isRedeliver()) {
+			byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
+			ThriftUtils.createThriftFromBytes(bytes, expEvent);
+			MDC.put(MDCConstants.EXPERIMENT_ID, expEvent.getExperimentId());
+			log.info("Launching experiment with experimentId: {} gateway Id: {}", expEvent.getExperimentId(), expEvent.getGatewayId());
+			if (messageContext.isRedeliver()) {
 				ExperimentModel experimentModel = (ExperimentModel) experimentCatalog.
 						get(ExperimentCatalogModelType.EXPERIMENT, expEvent.getExperimentId());
+				MDC.put(MDCConstants.EXPERIMENT_NAME, experimentModel.getExperimentName());
 				if (experimentModel.getExperimentStatus().get(0).getState() == ExperimentState.CREATED) {
 					launchExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
 				}
@@ -636,11 +644,18 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 launchExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
             }
 		} catch (TException e) {
-            log.error("Experiment launch failed due to Thrift conversion error", e);
+			String logMessage =  expEvent.getExperimentId() != null && expEvent.getGatewayId() != null ?
+					String.format("Experiment launch failed due to Thrift conversion error, experimentId: %s, gatewayId: %s",
+					expEvent.getExperimentId(), expEvent.getGatewayId()): "Experiment launch failed due to Thrift conversion error";
+            log.error(logMessage,  e);
 		} catch (RegistryException e) {
-			log.error("Experiment launch failed due to registry access issue", e);
+			String logMessage =  expEvent.getExperimentId() != null && expEvent.getGatewayId() != null ?
+					String.format("Experiment launch failed due to registry access issue, experimentId: %s, gatewayId: %s",
+					expEvent.getExperimentId(), expEvent.getGatewayId()): "Experiment launch failed due to registry access issue";
+			log.error(logMessage, e);
 		}finally {
 			experimentSubscriber.sendAck(messageContext.getDeliveryTag());
+			MDC.clear();
 		}
 	}
 

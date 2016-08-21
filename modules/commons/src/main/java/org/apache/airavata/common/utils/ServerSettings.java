@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ServerSettings extends ApplicationSettings {
 
@@ -107,6 +109,15 @@ public class ServerSettings extends ApplicationSettings {
     private static final String EMAIL_BASED_MONITOR_FOLDER_NAME = "email.based.monitor.folder.name";
     private static final String EMAIL_BASED_MONITOR_STORE_PROTOCOL = "email.based.monitor.store.protocol";
     private static final String ENABLE_EMAIL_BASED_MONITORING = "enable.email.based.monitoring";
+
+    private static final String IS_RUNNING_ON_AWS = "isRunningOnAws";
+    private static final String ENABLE_KAFKA_LOGGING = "enable.kafka.logging";
+    private static final String KAFKA_BROKER_LIST = "kafka.broker.list";
+    private static final String KAFKA_TOPIC_PREFIX = "kafka.topic.prefix";
+    private static final String SERVER_ROLES = "server.roles";
+
+    // todo until AIRAVATA-2066 is finished, keep server side list configurations here.
+    private static Map<String, String[]> listConfigurations = new HashMap<>();
 
     private static boolean stopAllThreads = false;
     private static boolean emailBaseNotificationEnable;
@@ -404,5 +415,28 @@ public class ServerSettings extends ApplicationSettings {
 
     public static Boolean isEnableSharing() throws ApplicationSettingsException {
         return Boolean.parseBoolean(getSetting(ENABLE_SHARING));
+    }
+    public static boolean isRunningOnAws() {
+        return Boolean.valueOf(getSetting(IS_RUNNING_ON_AWS, "false"));
+    }
+
+    public static String getKafkaBrokerList() {
+        return getSetting(KAFKA_BROKER_LIST, null);
+    }
+
+    public static String getKafkaTopicPrefix() {
+        return getSetting(KAFKA_TOPIC_PREFIX, "all");
+    }
+
+    public static boolean isEnabledKafkaLogging() {
+        return Boolean.valueOf(getSetting(ENABLE_KAFKA_LOGGING, "false"));
+    }
+
+    public static void setServerRoles(String[] roles) {
+        listConfigurations.put(SERVER_ROLES, roles);
+    }
+
+    public static String[] getServerRoles() {
+        return listConfigurations.get(SERVER_ROLES);
     }
 }
