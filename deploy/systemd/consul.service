@@ -1,0 +1,8 @@
+[Unit]
+Description=Consul Service Discovery and DNS
+After=consul-download.service aws-metadata.service
+Requires=consul-download.service aws-metadata.service
+[Service]
+EnvironmentFile=/etc/environment
+Restart=on-failure
+ExecStart=/opt/bin/consul agent -server -data-dir /var/lib/consul -bind ${COREOS_PRIVATE_IPV4} -dc ${AWS_REGION} -config-file /etc/consul/config.json -ui -client 0.0.0.0

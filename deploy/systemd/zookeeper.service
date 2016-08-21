@@ -1,0 +1,14 @@
+[Unit]
+Description=Exhibitor and Zookeeper
+After=docker.service
+Requires=docker.service
+[Service]
+EnvironmentFile=/etc/environment
+TimeoutStartSec=60
+Restart=on-failure
+ExecStartPre=-/usr/bin/docker rm -f zookeeper
+ExecStartPre=-/usr/bin/docker pull scigap/exhibitor
+    ExecStart=/usr/bin/docker run --net=host --name zookeeper -v /var/lib/zookeeper/data:/zookeeper/data scigap/exhibitor --hostname ${COREOS_PRIVATE_IPV4} --port 8081
+ExecStop=/usr/bin/docker stop zookeeper
+[Install]
+WantedBy=multi-user.target

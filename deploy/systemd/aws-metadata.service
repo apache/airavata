@@ -1,0 +1,19 @@
+[Unit]
+Description=Loads AWS Metadata
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+EnvironmentFile=/etc/environment
+ExecStart=-/usr/bin/bash -c "systemctl set-environment AWS_REGION=$(curl -s http://[ip]/latest/meta-data/placement/availability-zone | sed -e 's/[a-z]$//')"
+ExecStart=-/usr/bin/bash -c "systemctl set-environment AWS_HOSTNAME=$(curl -s http://[ip]/latest/meta-data/local-hostname)"
+ExecStart=-/usr/bin/bash -c "systemctl set-environment AWS_ZONE=$(curl -s http://[ip]/latest/meta-data/placement/availability-zone)"
+ExecStart=-/usr/bin/bash -c "systemctl set-environment AWS_INSTANCE_TYPE=$(curl -s http://[ip]/latest/meta-data/instance-type)"
+ExecStart=-/usr/bin/bash -c "systemctl set-environment COREOS_PRIVATE_IPV4=${COREOS_PRIVATE_IPV4}"
+ExecStart=-/usr/bin/bash -c "systemctl set-environment COREOS_PUBLIC_IPV4=${COREOS_PUBLIC_IPV4}"
+ExecStart=-/usr/bin/bash -c "systemctl set-environment COREOS_FREE_DISK=$(df -l | awk '{ s+=$4 } END {print s}')"
+ExecStart=-/usr/bin/bash -c "systemctl set-environment COREOS_TOTAL_MEM=$(cat /proc/meminfo | grep MemTotal | awk '{print $2/1024+2048}')"
+ExecStart=-/usr/bin/bash -c "systemctl set-environment COREOS_TOTAL_CPUS=$(cat /proc/cpuinfo | grep processor | wc -l | awk  '{print $s*2}')"
+[Install]
+WantedBy=multi-user.target

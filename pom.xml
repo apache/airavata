@@ -571,8 +571,103 @@
 				<!--<module>modules/workflow</module>-->
 				<!--<module>modules/xbaya-gui</module>-->
                 		<module>modules/distribution</module>
-            </modules>
+            		</modules>
 		</profile>
+        <profile>
+            <id>jenkins</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-remote-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>process</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>2.5</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources</id>
+                                <!-- here the phase you need -->
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${basedir}/target/classes/META-INF</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${basedir}/src/main/assembly/dist</directory>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.1</version>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${surefire.version}</version>
+                        <configuration>
+                            <failIfNoTests>false</failIfNoTests>
+                            <skipTests>${skipTests}</skipTests>
+                            <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
+                            <!-- making sure that the sure-fire plugin doesn't run the integration
+                                tests -->
+                            <!-- Integration tests are run using the fail-safe plugin in the module
+                                pom -->
+                            <excludes>
+                                <exclude>**/IT.java</exclude>
+                                <exclude>**/*TestWithMyProxyAuth.java</exclude>
+                                <exclude>**/*TestWithSSHAuth.java</exclude>
+                                <exclude>**/*TestWithEC2Auth.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>modules/configuration</module>
+                <module>airavata-api</module>
+                <module>modules/commons</module>
+                <module>modules/messaging</module>
+                <module>modules/gfac</module>
+                <module>modules/registry</module>
+                <module>modules/security</module>
+                <module>modules/credential-store</module>
+                <module>modules/orchestrator</module>
+                <module>modules/monitoring</module>
+                <module>modules/user-profile</module>
+                <!--<module>modules/cloud</module>-->
+                <module>modules/server</module>
+                <module>modules/workflow</module>
+                <module>modules/test-suite</module>
+                <!-- Deprecated Modules-->
+                <!--<module>modules/integration-tests</module>-->
+                <!--<module>modules/workflow-model</module>-->
+                <!--<module>modules/workflow</module>-->
+                <!--<module>modules/xbaya-gui</module>-->
+            </modules>
+        </profile>
 		<profile>
 			<id>pedantic</id>
 			<build>

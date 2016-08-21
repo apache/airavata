@@ -1,0 +1,11 @@
+[Unit]
+Description=Downloads Consul
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=!/opt/consul/0.6.3/consul
+[Service]
+Type=oneshot
+Environment=CONSUL_VERSION=0.6.3
+ExecStartPre=/usr/bin/bash -c 'wget --progress=dot -e dotbytes=10M https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip -O /tmp/consul.zip'
+ExecStartPre=/usr/bin/bash -c "mkdir -p /opt/bin /opt/consul/${CONSUL_VERSION}"
+ExecStart=/usr/bin/bash -c "/usr/bin/unzip -o /tmp/consul.zip -d /opt/consul/${CONSUL_VERSION} && ln -sf /opt/consul/${CONSUL_VERSION}/consul /opt/bin/consul"
