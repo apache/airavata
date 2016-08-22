@@ -59,6 +59,16 @@
 #SBATCH -e <xsl:value-of select="ns:standardErrorFile"/>
     </xsl:when>
     </xsl:choose>
+    <xsl:choose>
+    <xsl:when test="ns:qualityOfService">
+#SBATCH --qos=<xsl:value-of select="ns:qualityOfService"/>
+    </xsl:when>
+    </xsl:choose>
+    <xsl:choose>
+    <xsl:when test="ns:reservation">
+#SBATCH --reservation=<xsl:value-of select="ns:reservation"/>
+    </xsl:when>
+    </xsl:choose>
     <xsl:text>&#xa;</xsl:text>
 <xsl:for-each select="ns:exports/ns:name">
    <xsl:value-of select="."/>=<xsl:value-of select="./@value"/><xsl:text>&#xa;</xsl:text>
