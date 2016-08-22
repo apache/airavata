@@ -29,7 +29,7 @@
   become: yes
 
 - name: Start Rabbitmq server
-  service: name=rabbitmq-server state=started
+  service: name=rabbitmq-server state=started enabled=yes
   become: yes
 
 - name: Enable rabbitmq management plugin

@@ -5,7 +5,7 @@ zookeeper_version: 3.4.8
 zookeeper_url: http://www.us.apache.org/dist/zookeeper/zookeeper-{{zookeeper_version}}/zookeeper-{{zookeeper_version}}.tar.gz
 
 apt_cache_timeout: 3600
-client_port: 2181
+client_port: "{{ zookeeper_client_port }}" 
 init_limit: 5
 sync_limit: 2
 tick_time: 2000

@@ -1,7 +1,7 @@
 ---
 # Rabbitmq related handlers
 - name: start rabbitmq
-  service: name=rabbitmq-server state=started
+  service: name=rabbitmq-server state=started enabled=yes
   become: yes
 
 - name: stop rabbitmq
@@ -9,5 +9,5 @@
   become: yes
 
 - name: restart rabbitmq
-  service: name=rabbitmq-server state=restarted
+  service: name=rabbitmq-server state=restarted enabled=yes
   become: yes

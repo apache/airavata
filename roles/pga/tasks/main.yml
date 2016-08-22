@@ -1,35 +1,44 @@
 ---
-# - name: Create a new user group "{{ pga_group }}"
-#   group: name={{ pga_group }}
-#   # tags: user
-#
-# - name: Create a new user "{{ pga_user }}"
-#   user: name={{ pga_user }} group={{ pga_group }}
-#   # tags: user
+- name: Create root directory
+  file: path="{{ doc_root_dir }}" state=directory
+  become: yes
 
 - name: Install pre-requireties
   yum: name="{{ item }}" state=latest update_cache=yes
   with_items:
     - git
     - httpd
-    - php-soap
     - php
-    - composer
+    - php-soap
     - php-mcrypt
-    - firewalld
+    - libselinux-python
+    - composer
+  become: yes
 
-# This doesn't work sometimes, make sure selinux is dissabled in remote machine
 # - name: Allow selinux outbound connection from web server
   # command: setsebool -P httpd_can_network_connect 1
 
-- name: Create root directory
-  file: path="{{ doc_root_dir }}" state=directory
+- name: install composer
+  yum: name=composer state=latest update_cache=yes
+  become: yes
 
 - name: Git clone php gateway
-  git: repo=https://github.com/apache/airavata-php-gateway.git dest="{{ doc_root_dir }}" version=master
+  git: repo=https://github.com/apache/airavata-php-gateway.git
+       dest="{{ doc_root_dir }}" version=master
+  become: yes
+
+  #Make sure selinux is dissabled in remote machine
+- name: Disable selinux
+  selinux: state=disabled
+  become: yes
 
 - name: Run composer update
-  command: composer update chdir="{{ doc_root_dir }}"
+  composer: command=update working_dir="{{ doc_root_dir }}"
+  become: yes
+
+# - name: Run composer update
+#   command: composer update chdir="{{ doc_root_dir }}"
+#   become: yes
 
 - name: Create user data dir {{ user_data_dir }}
   file: path="{{ user_data_dir }}" state=directory
@@ -38,6 +47,7 @@
 - name: Copy pga config file
   template: src=pga_config.php.j2 dest="{{ doc_root_dir }}/app/config/pga_config.php"
 
+
 # do we need to change permissions for root user?
 # - name: Change storage permissions  to g+rwx
 #   acl: name="{{ doc_root_dir }}/app/storage" entity="{{ pga_group }}" etype=group permissions="rwx" state=present
@@ -45,22 +55,22 @@
 # Ignored step 8,9 in doc by assuming selinux is dissabled in remote machine
 
 # TODO: stop iptables service, can't have both iptables and firewalld on same host
-- name: Stop iptables, ip6tables services
-  service: name="{{ item }}" state=stopped
-  with_items:
-    - iptables
-    - ip6tables
+# - name: Stop iptables, ip6tables services
+#   service: name="{{ item }}" state=stopped
+#   with_items:
+#     - iptables
+#     - ip6tables
 
 - name: Start firewalld service
   service: name=firewalld state=started
+  become: yes
 
 - name: Eanble https and http service on public zone
   firewalld: service="{{ item }}" permanent=true state=enabled zone=public immediate=True
   with_items:
     - http
     - https
+  become: yes
 
 - name: Edit file
   lineinfile: dest="{{ httpd_conf_file }}" regexp=^AllowOverride line="AllowOverride All"
-
-...

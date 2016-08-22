@@ -34,7 +34,7 @@
 #registry.jdbc.url=jdbc:derby://localhost:1527/experiment_catalog;create=true;user=airavata;password=airavata
 # MySql database configuration
 registry.jdbc.driver=com.mysql.jdbc.Driver
-registry.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ exp_catalog }}
+registry.jdbc.url=jdbc:mysql://{{ db_server }}:{{ db_server_port }}/{{ exp_catalog }}
 registry.jdbc.user={{ db_user }}
 registry.jdbc.password={{ db_password }}
 #FIXME: Probably the following property should be removed.
@@ -107,21 +107,16 @@ userprofile.mongodb.port=27017
 ###########################################################################
 #  API Server Configurations
 ###########################################################################
+apiserver=org.apache.airavata.api.server.AiravataAPIServer
 apiserver.name={{ api_server_name }}
 apiserver.host={{ api_server_host }}
 apiserver.port={{ api_server_port }}
 apiserver.min.threads=50
 
 ###########################################################################
-#  API Server SSL Configurations
-###########################################################################
-apiserver.tls.enabled=true
-apiserver.keystore={{ key_stores_location }}/{{ key_store }}
-apiserver.keystore.password=airavata
-
-###########################################################################
 #  Orchestrator Server Configurations
 ###########################################################################
+orchestrator=org.apache.airavata.orchestrator.server.OrchestratorServer
 orchestrator.server.name={{ orchestrator_name }}
 orchestrator.server.host={{ orchestrator_host }}
 orchestrator.server.port={{ orchestrator_port }}
@@ -137,6 +132,7 @@ enable.validation=true
 ###########################################################################
 #  GFac Server Configurations
 ###########################################################################
+gfac=org.apache.airavata.gfac.server.GfacServer
 gfac.server.name={{ gfac_name }}
 gfac.server.host={{ gfac_host }}
 gfac.server.port={{ gfac_port }}
@@ -171,15 +167,15 @@ job.notification.flags=abe
 ###########################################################################
 # Credential Store module Configuration
 ###########################################################################
-credential.store.keystore.url=/home/airavata/airavata_sym.jks
-credential.store.keystore.alias=airavata
-credential.store.keystore.password=airavata
+credential.store.keystore.url={{ keystores_location }}/{{ cred_keystore }}
+credential.store.keystore.alias={{ cred_keystore_alias }}
+credential.store.keystore.password={{ cred_keystore_passwd }}
 credential.store.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ credential_store }}
 credential.store.jdbc.user={{ db_user }}
 credential.store.jdbc.password={{ db_password }}
 credential.store.jdbc.driver=com.mysql.jdbc.Driver
 credential.store.server.host={{ cred_store_server_host }}
-credential.store.server.port=8960
+credential.store.server.port={{ cred_store_port }}
 credentialstore=org.apache.airavata.credential.store.server.CredentialStoreServer
 
 # these properties used by credential store email notifications
@@ -250,23 +246,23 @@ rabbitmq.exchange.name=airavata_rabbitmq_exchange
 # Zookeeper Server Configuration
 ###########################################################################
 embedded.zk=false
-zookeeper.server.connection=localhost:2181
+zookeeper.server.connection={{ zookeeper_url }}
 zookeeper.timeout=30000
 
 ########################################################################
 ## API Security Configuration
 ########################################################################
-api.secured=true
+api.secured={{ api_secured }}
 security.manager.class=org.apache.airavata.api.server.security.DefaultAiravataSecurityManager
 ### TLS related configuration ####
-TLS.enabled=true
-TLS.api.server.port=9930
+TLS.enabled={{ tls_enable }}
+TLS.api.server.port={{ api_server_tls_port }}
 TLS.client.timeout=10000
 #### keystore configuration ####
-keystore.path={{ key_stores_location }}/{{ key_store }}
-keystore.password=airavata
+keystore.path={{ keystores_location }}/{{ keystore }}
+keystore.password={{ keystore_passwd }}
 #### trust store configuration ####
-trust.store={{ key_stores_location }}/{{ cred_key_store }}
+trust.store={{ keystores_location }}/{{ client_truststore }}
 trust.store.password=airavata
 #### remote authorization server url ####
 remote.oauth.authorization.server=https://idp.scigap.org:9443/services/

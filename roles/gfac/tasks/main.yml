@@ -3,51 +3,61 @@
 ################################################################################
 # gfac deployments
 - name: Create Gfac deployment directory
-  file: path="{{ gfac_dir }}" state=directory owner="{{ user }}" group="{{ group }}"
+  file: path="{{ gfac_dir }}" state=directory owner={{ user }} group={{ group }}
   when: build|success
-  tags: deploy, update_gfac, update
 
 - name: Check previous deployments
   stat: path="{{ gfac_dir }}/{{ airavata_dist }}" get_md5=no get_checksum=no
-  register: p
-  tags: deploy, update_gfac, update
+  register: check
 
-- block:
-    - name: stop gfac
-      command: ./bin/airavata-server-stop.sh -f chdir="{{ gfac_dir }}/{{ airavata_dist }}/" removes="{{ gfac_dir }}/{{ airavata_dist }}/bin/server_start_*"
+- name: stop gfac
+  command: ./bin/airavata-server-stop.sh -f
+           chdir="{{ gfac_dir }}/{{ airavata_dist }}/"
+           removes="{{ gfac_dir }}/{{ airavata_dist }}/bin/server_start_*"
+  when: check.stat.exists == True
 
-    - name: Delete previous deployments
-      file: path="{{ gfac_dir }}/{{ airavata_dist }}" state=absent
-
-  when: p.stat.exists == True
-  tags: deploy, update_gfac, update
-
-# - block:
-#     - name: Remove pervious backup directory
-#       file: path="{{ gfac_dir }}/backup" state=absent
-#       notify:
-#         - stop gfac
-#
-#     - name: Backup previous deployment directory
-#       copy: src="{{ gfac_dir }}/{{ airavata_dist }}" dest="{{ gfac_dir }}/backup" copy=no
-#
-#   when: p.stat.exists == True
-#   tags: deploy, update_gfac, update
+- name: Delete previous deployments
+  file: path="{{ gfac_dir }}/{{ airavata_dist }}" state=absent
 
 - name: Copy distribution to gfac deployment directory
-  unarchive: src="{{ airavata_source_dir }}/distribution/target/{{ airavata_dist_name }}" dest="{{ gfac_dir }}/" copy=no
-  become: yes
-  become_user: "{{ user }}"
-  tags: deploy, update_gfac, update
+  unarchive: src="{{ airavata_source_dir }}/distribution/target/{{ airavata_dist_name }}"
+             dest="{{ gfac_dir }}/"
+             copy=no
 
 - name: Copy Airavata server properties file
-  template: src=airavata-server.properties.j2 dest="{{ gfac_dir }}/{{ airavata_dist }}/bin/airavata-server.properties" owner="{{ user }}" group="{{ group }}" mode="u=rw,g=r,o=r"
-  tags: deploy, update_gfac, update
+  template: src=airavata-server.properties.j2
+            dest="{{ gfac_dir }}/{{ airavata_dist }}/bin/airavata-server.properties"
+            owner={{ user }}
+            group={{ group }}
+            mode="u=rw,g=r,o=r"
 
 - name: Copy Gfac configuration file
-  template: src=gfac-config.yaml.j2 dest="{{ gfac_dir }}/{{ airavata_dist }}/bin/gfac-config.yaml" owner="{{ user }}" group="{{ group }}" mode="u=rw,g=r,o=r"
-  tags: deploy, update_gfac, update
+  template: src=gfac-config.yaml.j2
+            dest="{{ gfac_dir }}/{{ airavata_dist }}/bin/gfac-config.yaml"
+            owner={{ user }}
+            group={{ group }}
+            mode="u=rw,g=r,o=r"
 
 - name: Copy Mysql jar to lib
-  copy: src="{{ mysql_connector_jar }}" dest="{{ gfac_dir }}/{{ airavata_dist }}/lib/{{ mysql_connector_jar }}" owner="{{ user }}" group="{{ group }}"
-  tags: deploy, update_gfac, update
+  copy: src="{{ mysql_connector_jar }}"
+        dest="{{ gfac_dir }}/{{ airavata_dist }}/lib/{{ mysql_connector_jar }}"
+        owner={{ user }}
+        group={{ group }}
+
+
+- name: Open firwall ports
+  firewalld: port="{{ gfac_port }}/tcp" zone=public permanent=true state=enabled immediate=yes
+  become: yes
+
+- name: stop gfac
+  command: ./bin/airavata-server-stop.sh -f
+           chdir="{{ gfac_dir }}/{{ airavata_dist }}/"
+           removes="{{ gfac_dir }}/{{ airavata_dist }}/bin/server_start_*"
+
+- name: start gfac 
+  command: ./bin/airavata-server-start.sh gfac -d
+           chdir="{{ gfac_dir }}/{{ airavata_dist }}/"
+           creates="{{ gfac_dir }}/{{ airavata_dist }}/bin/server_start_*"
+
+
+...

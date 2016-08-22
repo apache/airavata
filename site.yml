@@ -13,25 +13,6 @@
     - env_setup
     - rabbitmq
 
-- hosts: gfac
-  tags: gfac, airavata
-  roles:
-    - env_setup
-    - common
-    - gfac
-
-- hosts: api-orch
-  tags: api-orch, airavata
-  roles:
-    - env_setup
-    - common
-    - api-orch
-
-- hosts: pga
-  tags: pga
-  roles:
-    - pga
-
 - hosts: database
   tags: mysql
   roles:
@@ -44,4 +25,27 @@
     - env_setup
     - java
     - wso2_is
+
+- hosts: gfac
+  tags: gfac, airavata
+  roles:
+    - env_setup
+    - java
+    - common
+    - gfac
+
+- hosts: api-orch
+  tags: api-orch, airavata
+  roles:
+    - env_setup
+    - java
+    - common
+    - api-orch
+
+- hosts: pga
+  tags: pga
+  roles:
+    - env_setup
+    - pga
+
 ...

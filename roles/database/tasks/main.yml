@@ -38,16 +38,25 @@
 - name: create databases
   mysql_db: name="{{ item }}" state=present
   with_items:
-    - "{{ app_catalog }}"
-    - "{{ exp_catalog }}"
-    - "{{ replica_catalog }}"
-    - "{{ workflow_catalog }}"
-    - "{{ credential_store }}"
+    - "{{ mysql_databases }}"
+
+- name: give access to {{ db_user }} from remote
+  mysql_user: name="{{ db_user }}" password="{{ db_password }}" host="{{ item }}"
+  with_items:
+    - "{{ groups['api-orch'] }}"
+    - "{{ groups['gfac'] }}"
+  tags: testdb
 
 - name: create new user {{ db_user }} with all privilege
-  mysql_user: name="{{ db_user }}" password="{{ db_password }}" priv=*.*:ALL state=present
+  mysql_user: name="{{ db_user }}"
+              password="{{ db_password }}"
+              append_privs=yes
+              host_all=yes
+              priv=*.*:ALL,GRANT state=present
+  tags: testdb
 
-- name: open database port
-  firewalld: port="{{ db_server_port }}/tcp" zone=public permanent=true state=enabled immediate=yes
+- name: open firewall port {{ db_server_port }}
+  firewalld: port="{{ db_server_port }}/tcp"
+             zone=public permanent=true state=enabled immediate=yes
   become: yes
 ...
