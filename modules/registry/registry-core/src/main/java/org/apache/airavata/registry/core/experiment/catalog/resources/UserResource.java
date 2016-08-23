@@ -141,6 +141,7 @@ public class UserResource extends AbstractExpCatResource {
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
             Users user = new Users();
+            user.setAiravataInternalUserId(userName+"@"+gatewayId);
             user.setUserName(userName);
             user.setGatewayId(gateway.getGatewayId());
             user.setGateway(gateway);

@@ -8,15 +8,14 @@
     ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under
     the License. -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata-api</artifactId>
-        <version>0.16-SNAPSHOT</version>
+        <version>0.17-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -49,12 +48,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-registry-core</artifactId>
+            <artifactId>airavata-credential-store-stubs</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-registry-cpi</artifactId>
+            <artifactId>registry-api-stubs</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -70,6 +69,11 @@
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-security</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>group-manager</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

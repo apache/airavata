@@ -27,7 +27,8 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  string getAPIVersion(AuthzToken authzToken)')
   print('  bool isUserExists(AuthzToken authzToken, string gatewayId, string userName)')
   print('  string addGateway(AuthzToken authzToken, Gateway gateway)')
-  print('  void updateGateway(AuthzToken authzToken, string gatewayId, Gateway updatedGateway)')
+  print('   getAllUsersInGateway(AuthzToken authzToken, string gatewayId)')
+  print('  bool updateGateway(AuthzToken authzToken, string gatewayId, Gateway updatedGateway)')
   print('  Gateway getGateway(AuthzToken authzToken, string gatewayId)')
   print('  bool deleteGateway(AuthzToken authzToken, string gatewayId)')
   print('   getAllGateways(AuthzToken authzToken)')
@@ -38,7 +39,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  Notification getNotification(AuthzToken authzToken, string gatewayId, string notificationId)')
   print('   getAllNotifications(AuthzToken authzToken, string gatewayId)')
   print('  string generateAndRegisterSSHKeys(AuthzToken authzToken, string gatewayId, string userName)')
-  print('  string registerPwdCredential(AuthzToken authzToken, string gatewayId, string portalUserName, string loginUserName, string password)')
+  print('  string registerPwdCredential(AuthzToken authzToken, string gatewayId, string portalUserName, string loginUserName, string password, string description)')
   print('  string getSSHPubKey(AuthzToken authzToken, string airavataCredStoreToken, string gatewayId)')
   print('   getAllGatewaySSHPubKeys(AuthzToken authzToken, string gatewayId)')
   print('   getAllGatewayPWDCredentials(AuthzToken authzToken, string gatewayId)')
@@ -49,13 +50,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  Project getProject(AuthzToken authzToken, string projectId)')
   print('  bool deleteProject(AuthzToken authzToken, string projectId)')
   print('   getUserProjects(AuthzToken authzToken, string gatewayId, string userName, i32 limit, i32 offset)')
-  print('   searchProjectsByProjectName(AuthzToken authzToken, string gatewayId, string userName, string projectName, i32 limit, i32 offset)')
-  print('   searchProjectsByProjectDesc(AuthzToken authzToken, string gatewayId, string userName, string description, i32 limit, i32 offset)')
-  print('   searchExperimentsByName(AuthzToken authzToken, string gatewayId, string userName, string expName, i32 limit, i32 offset)')
-  print('   searchExperimentsByDesc(AuthzToken authzToken, string gatewayId, string userName, string description, i32 limit, i32 offset)')
-  print('   searchExperimentsByApplication(AuthzToken authzToken, string gatewayId, string userName, string applicationId, i32 limit, i32 offset)')
-  print('   searchExperimentsByStatus(AuthzToken authzToken, string gatewayId, string userName, ExperimentState experimentState, i32 limit, i32 offset)')
-  print('   searchExperimentsByCreationTime(AuthzToken authzToken, string gatewayId, string userName, i64 fromTime, i64 toTime, i32 limit, i32 offset)')
+  print('   searchProjects(AuthzToken authzToken, string gatewayId, string userName,  filters, i32 limit, i32 offset)')
   print('   searchExperiments(AuthzToken authzToken, string gatewayId, string userName,  filters, i32 limit, i32 offset)')
   print('  ExperimentStatistics getExperimentStatistics(AuthzToken authzToken, string gatewayId, i64 fromTime, i64 toTime)')
   print('   getExperimentsInProject(AuthzToken authzToken, string projectId, i32 limit, i32 offset)')
@@ -170,6 +165,14 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  string registerReplicaLocation(AuthzToken authzToken, DataReplicaLocationModel replicaLocationModel)')
   print('  DataProductModel getParentDataProduct(AuthzToken authzToken, string productUri)')
   print('   getChildDataProducts(AuthzToken authzToken, string productUri)')
+  print('  bool shareResourceWithUsers(AuthzToken authzToken, string resourceId, ResourceType resourceType,  userPermissionList)')
+  print('  bool revokeSharingOfResourceFromUsers(AuthzToken authzToken, string resourceId, ResourceType resourceType,  userPermissionList)')
+  print('   getAllAccessibleUsers(AuthzToken authzToken, string resourceId, ResourceType resourceType, ResourcePermissionType permissionType)')
+  print('  bool createGroup(AuthzToken authzToken, GroupModel groupModel)')
+  print('  bool updateGroup(AuthzToken authzToken, GroupModel groupModel)')
+  print('  bool deleteGroup(AuthzToken authzToken, string groupId, string ownerId, string gatewayId)')
+  print('  GroupModel getGroup(AuthzToken authzToken, string groupId)')
+  print('   getAllGroupsUserBelongs(AuthzToken authzToken, string userName, string gatewayId)')
   print('')
   sys.exit(0)
 
@@ -244,6 +247,12 @@ elif cmd == 'addGateway':
     sys.exit(1)
   pp.pprint(client.addGateway(eval(args[0]),eval(args[1]),))
 
+elif cmd == 'getAllUsersInGateway':
+  if len(args) != 2:
+    print('getAllUsersInGateway requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.getAllUsersInGateway(eval(args[0]),args[1],))
+
 elif cmd == 'updateGateway':
   if len(args) != 3:
     print('updateGateway requires 3 args')
@@ -311,10 +320,10 @@ elif cmd == 'generateAndRegisterSSHKeys':
   pp.pprint(client.generateAndRegisterSSHKeys(eval(args[0]),args[1],args[2],))
 
 elif cmd == 'registerPwdCredential':
-  if len(args) != 5:
-    print('registerPwdCredential requires 5 args')
+  if len(args) != 6:
+    print('registerPwdCredential requires 6 args')
     sys.exit(1)
-  pp.pprint(client.registerPwdCredential(eval(args[0]),args[1],args[2],args[3],args[4],))
+  pp.pprint(client.registerPwdCredential(eval(args[0]),args[1],args[2],args[3],args[4],args[5],))
 
 elif cmd == 'getSSHPubKey':
   if len(args) != 3:
@@ -376,47 +385,11 @@ elif cmd == 'getUserProjects':
     sys.exit(1)
   pp.pprint(client.getUserProjects(eval(args[0]),args[1],args[2],eval(args[3]),eval(args[4]),))
 
-elif cmd == 'searchProjectsByProjectName':
+elif cmd == 'searchProjects':
   if len(args) != 6:
-    print('searchProjectsByProjectName requires 6 args')
+    print('searchProjects requires 6 args')
     sys.exit(1)
-  pp.pprint(client.searchProjectsByProjectName(eval(args[0]),args[1],args[2],args[3],eval(args[4]),eval(args[5]),))
-
-elif cmd == 'searchProjectsByProjectDesc':
-  if len(args) != 6:
-    print('searchProjectsByProjectDesc requires 6 args')
-    sys.exit(1)
-  pp.pprint(client.searchProjectsByProjectDesc(eval(args[0]),args[1],args[2],args[3],eval(args[4]),eval(args[5]),))
-
-elif cmd == 'searchExperimentsByName':
-  if len(args) != 6:
-    print('searchExperimentsByName requires 6 args')
-    sys.exit(1)
-  pp.pprint(client.searchExperimentsByName(eval(args[0]),args[1],args[2],args[3],eval(args[4]),eval(args[5]),))
-
-elif cmd == 'searchExperimentsByDesc':
-  if len(args) != 6:
-    print('searchExperimentsByDesc requires 6 args')
-    sys.exit(1)
-  pp.pprint(client.searchExperimentsByDesc(eval(args[0]),args[1],args[2],args[3],eval(args[4]),eval(args[5]),))
-
-elif cmd == 'searchExperimentsByApplication':
-  if len(args) != 6:
-    print('searchExperimentsByApplication requires 6 args')
-    sys.exit(1)
-  pp.pprint(client.searchExperimentsByApplication(eval(args[0]),args[1],args[2],args[3],eval(args[4]),eval(args[5]),))
-
-elif cmd == 'searchExperimentsByStatus':
-  if len(args) != 6:
-    print('searchExperimentsByStatus requires 6 args')
-    sys.exit(1)
-  pp.pprint(client.searchExperimentsByStatus(eval(args[0]),args[1],args[2],eval(args[3]),eval(args[4]),eval(args[5]),))
-
-elif cmd == 'searchExperimentsByCreationTime':
-  if len(args) != 7:
-    print('searchExperimentsByCreationTime requires 7 args')
-    sys.exit(1)
-  pp.pprint(client.searchExperimentsByCreationTime(eval(args[0]),args[1],args[2],eval(args[3]),eval(args[4]),eval(args[5]),eval(args[6]),))
+  pp.pprint(client.searchProjects(eval(args[0]),args[1],args[2],eval(args[3]),eval(args[4]),eval(args[5]),))
 
 elif cmd == 'searchExperiments':
   if len(args) != 6:
@@ -1101,6 +1074,54 @@ elif cmd == 'getChildDataProducts':
     print('getChildDataProducts requires 2 args')
     sys.exit(1)
   pp.pprint(client.getChildDataProducts(eval(args[0]),args[1],))
+
+elif cmd == 'shareResourceWithUsers':
+  if len(args) != 4:
+    print('shareResourceWithUsers requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.shareResourceWithUsers(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
+
+elif cmd == 'revokeSharingOfResourceFromUsers':
+  if len(args) != 4:
+    print('revokeSharingOfResourceFromUsers requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.revokeSharingOfResourceFromUsers(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
+
+elif cmd == 'getAllAccessibleUsers':
+  if len(args) != 4:
+    print('getAllAccessibleUsers requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.getAllAccessibleUsers(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
+
+elif cmd == 'createGroup':
+  if len(args) != 2:
+    print('createGroup requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.createGroup(eval(args[0]),eval(args[1]),))
+
+elif cmd == 'updateGroup':
+  if len(args) != 2:
+    print('updateGroup requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.updateGroup(eval(args[0]),eval(args[1]),))
+
+elif cmd == 'deleteGroup':
+  if len(args) != 4:
+    print('deleteGroup requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.deleteGroup(eval(args[0]),args[1],args[2],args[3],))
+
+elif cmd == 'getGroup':
+  if len(args) != 2:
+    print('getGroup requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.getGroup(eval(args[0]),args[1],))
+
+elif cmd == 'getAllGroupsUserBelongs':
+  if len(args) != 3:
+    print('getAllGroupsUserBelongs requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.getAllGroupsUserBelongs(eval(args[0]),args[1],args[2],))
 
 else:
   print('Unrecognized method %s' % cmd)

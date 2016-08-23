@@ -61,6 +61,10 @@ class ApplicationInterfaceDescription {
    * @var bool
    */
   public $archiveWorkingDirectory = false;
+  /**
+   * @var bool
+   */
+  public $hasOptionalFileInputs = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -107,6 +111,10 @@ class ApplicationInterfaceDescription {
           'var' => 'archiveWorkingDirectory',
           'type' => TType::BOOL,
           ),
+        8 => array(
+          'var' => 'hasOptionalFileInputs',
+          'type' => TType::BOOL,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -130,6 +138,9 @@ class ApplicationInterfaceDescription {
       }
       if (isset($vals['archiveWorkingDirectory'])) {
         $this->archiveWorkingDirectory = $vals['archiveWorkingDirectory'];
+      }
+      if (isset($vals['hasOptionalFileInputs'])) {
+        $this->hasOptionalFileInputs = $vals['hasOptionalFileInputs'];
       }
     }
   }
@@ -234,6 +245,13 @@ class ApplicationInterfaceDescription {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 8:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->hasOptionalFileInputs);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -316,6 +334,11 @@ class ApplicationInterfaceDescription {
     if ($this->archiveWorkingDirectory !== null) {
       $xfer += $output->writeFieldBegin('archiveWorkingDirectory', TType::BOOL, 7);
       $xfer += $output->writeBool($this->archiveWorkingDirectory);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->hasOptionalFileInputs !== null) {
+      $xfer += $output->writeFieldBegin('hasOptionalFileInputs', TType::BOOL, 8);
+      $xfer += $output->writeBool($this->hasOptionalFileInputs);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

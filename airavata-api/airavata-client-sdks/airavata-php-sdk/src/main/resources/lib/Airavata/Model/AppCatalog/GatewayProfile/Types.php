@@ -94,6 +94,22 @@ class ComputeResourcePreference {
    * @var string
    */
   public $usageReportingGatewayId = null;
+  /**
+   * @var string
+   */
+  public $qualityOfService = null;
+  /**
+   * @var string
+   */
+  public $reservation = null;
+  /**
+   * @var int
+   */
+  public $reservationStartTime = null;
+  /**
+   * @var int
+   */
+  public $reservationEndTime = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -138,6 +154,22 @@ class ComputeResourcePreference {
           'var' => 'usageReportingGatewayId',
           'type' => TType::STRING,
           ),
+        11 => array(
+          'var' => 'qualityOfService',
+          'type' => TType::STRING,
+          ),
+        12 => array(
+          'var' => 'reservation',
+          'type' => TType::STRING,
+          ),
+        13 => array(
+          'var' => 'reservationStartTime',
+          'type' => TType::I64,
+          ),
+        14 => array(
+          'var' => 'reservationEndTime',
+          'type' => TType::I64,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -170,6 +202,18 @@ class ComputeResourcePreference {
       }
       if (isset($vals['usageReportingGatewayId'])) {
         $this->usageReportingGatewayId = $vals['usageReportingGatewayId'];
+      }
+      if (isset($vals['qualityOfService'])) {
+        $this->qualityOfService = $vals['qualityOfService'];
+      }
+      if (isset($vals['reservation'])) {
+        $this->reservation = $vals['reservation'];
+      }
+      if (isset($vals['reservationStartTime'])) {
+        $this->reservationStartTime = $vals['reservationStartTime'];
+      }
+      if (isset($vals['reservationEndTime'])) {
+        $this->reservationEndTime = $vals['reservationEndTime'];
       }
     }
   }
@@ -263,6 +307,34 @@ class ComputeResourcePreference {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 11:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->qualityOfService);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 12:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->reservation);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 13:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->reservationStartTime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 14:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->reservationEndTime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -324,6 +396,26 @@ class ComputeResourcePreference {
     if ($this->usageReportingGatewayId !== null) {
       $xfer += $output->writeFieldBegin('usageReportingGatewayId', TType::STRING, 10);
       $xfer += $output->writeString($this->usageReportingGatewayId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->qualityOfService !== null) {
+      $xfer += $output->writeFieldBegin('qualityOfService', TType::STRING, 11);
+      $xfer += $output->writeString($this->qualityOfService);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->reservation !== null) {
+      $xfer += $output->writeFieldBegin('reservation', TType::STRING, 12);
+      $xfer += $output->writeString($this->reservation);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->reservationStartTime !== null) {
+      $xfer += $output->writeFieldBegin('reservationStartTime', TType::I64, 13);
+      $xfer += $output->writeI64($this->reservationStartTime);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->reservationEndTime !== null) {
+      $xfer += $output->writeFieldBegin('reservationEndTime', TType::I64, 14);
+      $xfer += $output->writeI64($this->reservationEndTime);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

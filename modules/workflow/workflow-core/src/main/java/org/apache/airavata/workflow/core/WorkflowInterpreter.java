@@ -22,8 +22,7 @@
 package org.apache.airavata.workflow.core;
 
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.messaging.core.impl.RabbitMQProcessLaunchPublisher;
-import org.apache.airavata.messaging.core.impl.RabbitMQStatusConsumer;
+import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.ComponentState;
 import org.apache.airavata.model.ComponentStatus;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -32,14 +31,27 @@ import org.apache.airavata.model.messaging.event.ProcessIdentifier;
 import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.*;
+import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
+import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.WorkflowCatalog;
+import org.apache.airavata.registry.cpi.WorkflowCatalogException;
 import org.apache.airavata.workflow.core.dag.edge.Edge;
-import org.apache.airavata.workflow.core.dag.nodes.*;
+import org.apache.airavata.workflow.core.dag.nodes.ApplicationNode;
+import org.apache.airavata.workflow.core.dag.nodes.InputNode;
+import org.apache.airavata.workflow.core.dag.nodes.OutputNode;
+import org.apache.airavata.workflow.core.dag.nodes.WorkflowNode;
 import org.apache.airavata.workflow.core.parser.WorkflowParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -63,19 +75,18 @@ class WorkflowInterpreter {
     private Map<String, WorkflowNode> completeList = new HashMap<>();
     private Registry registry;
     private List<OutputNode> completeWorkflowOutputs = new ArrayList<>();
-    private RabbitMQProcessLaunchPublisher publisher;
-    private RabbitMQStatusConsumer statusConsumer;
+    private Publisher publisher;
     private String consumerId;
     private boolean continueWorkflow = true;
 
-    public WorkflowInterpreter(String experimentId, String credentialToken, String gatewayName, RabbitMQProcessLaunchPublisher publisher) throws RegistryException {
+    public WorkflowInterpreter(String experimentId, String credentialToken, String gatewayName, Publisher publisher) throws RegistryException {
         this.gatewayName = gatewayName;
         setExperiment(experimentId);
         this.credentialToken = credentialToken;
         this.publisher = publisher;
     }
 
-    public WorkflowInterpreter(ExperimentModel experiment, String credentialStoreToken, String gatewayName, RabbitMQProcessLaunchPublisher publisher) {
+    public WorkflowInterpreter(ExperimentModel experiment, String credentialStoreToken, String gatewayName, Publisher publisher) {
         this.gatewayName = gatewayName;
         this.experiment = experiment;
         this.credentialToken = credentialStoreToken;

@@ -42,6 +42,7 @@ class ApplicationInterfaceDescription:
    - applicationInputs
    - applicationOutputs
    - archiveWorkingDirectory
+   - hasOptionalFileInputs
   """
 
   thrift_spec = (
@@ -53,9 +54,10 @@ class ApplicationInterfaceDescription:
     (5, TType.LIST, 'applicationInputs', (TType.STRUCT,(apache.airavata.model.application.io.ttypes.InputDataObjectType, apache.airavata.model.application.io.ttypes.InputDataObjectType.thrift_spec)), None, ), # 5
     (6, TType.LIST, 'applicationOutputs', (TType.STRUCT,(apache.airavata.model.application.io.ttypes.OutputDataObjectType, apache.airavata.model.application.io.ttypes.OutputDataObjectType.thrift_spec)), None, ), # 6
     (7, TType.BOOL, 'archiveWorkingDirectory', None, False, ), # 7
+    (8, TType.BOOL, 'hasOptionalFileInputs', None, None, ), # 8
   )
 
-  def __init__(self, applicationInterfaceId=thrift_spec[1][4], applicationName=None, applicationDescription=None, applicationModules=None, applicationInputs=None, applicationOutputs=None, archiveWorkingDirectory=thrift_spec[7][4],):
+  def __init__(self, applicationInterfaceId=thrift_spec[1][4], applicationName=None, applicationDescription=None, applicationModules=None, applicationInputs=None, applicationOutputs=None, archiveWorkingDirectory=thrift_spec[7][4], hasOptionalFileInputs=None,):
     self.applicationInterfaceId = applicationInterfaceId
     self.applicationName = applicationName
     self.applicationDescription = applicationDescription
@@ -63,6 +65,7 @@ class ApplicationInterfaceDescription:
     self.applicationInputs = applicationInputs
     self.applicationOutputs = applicationOutputs
     self.archiveWorkingDirectory = archiveWorkingDirectory
+    self.hasOptionalFileInputs = hasOptionalFileInputs
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -125,6 +128,11 @@ class ApplicationInterfaceDescription:
           self.archiveWorkingDirectory = iprot.readBool()
         else:
           iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.BOOL:
+          self.hasOptionalFileInputs = iprot.readBool()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -172,6 +180,10 @@ class ApplicationInterfaceDescription:
       oprot.writeFieldBegin('archiveWorkingDirectory', TType.BOOL, 7)
       oprot.writeBool(self.archiveWorkingDirectory)
       oprot.writeFieldEnd()
+    if self.hasOptionalFileInputs is not None:
+      oprot.writeFieldBegin('hasOptionalFileInputs', TType.BOOL, 8)
+      oprot.writeBool(self.hasOptionalFileInputs)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -192,6 +204,7 @@ class ApplicationInterfaceDescription:
     value = (value * 31) ^ hash(self.applicationInputs)
     value = (value * 31) ^ hash(self.applicationOutputs)
     value = (value * 31) ^ hash(self.archiveWorkingDirectory)
+    value = (value * 31) ^ hash(self.hasOptionalFileInputs)
     return value
 
   def __repr__(self):

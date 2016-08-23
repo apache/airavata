@@ -79,13 +79,18 @@ public class ServerSettings extends ApplicationSettings {
     private static final String MY_PROXY_USER = "myproxy.user";
     private static final String MY_PROXY_PASSWORD = "myproxy.password";
     private static final String MY_PROXY_LIFETIME = "myproxy.life";
-    private static final String STATUS_PUBLISHER = "status.publisher";
-    private static final String TASK_LAUNCH_PUBLISHER = "task.launch.publisher";
     public static final String JOB_NOTIFICATION_ENABLE = "job.notification.enable";
     public static final String JOB_NOTIFICATION_EMAILIDS = "job.notification.emailids";
     public static final String JOB_NOTIFICATION_FLAGS = "job.notification.flags";
-    public static final String LAUNCH_QUEUE_NAME = "launch.queue.name";
-    public static final String CANCEL_QUEUE_NAME = "cancel.queue.name";
+
+    public static final String RABBITMQ_BROKER_URL = "rabbitmq.broker.url";
+    public static final String RABBITMQ_STATUS_EXCHANGE_NAME = "rabbitmq.status.exchange.name";
+    public static final String RABBITMQ_PROCESS_EXCHANGE_NAME = "rabbitmq.process.exchange.name";
+    public static final String RABBITMQ_EXPERIMENT_EXCHANGE_NAME = "rabbitmq.experiment.exchange.name";
+    public static final String RABBITMQ_PROCESS_LAUNCH_QUEUE_NAME = "process.launch.queue.name";
+    public static final String RABBITMQ_EXPERIMENT_LAUNCH_QUEUE_NAME = "experiment.launch.queue.name";
+    public static final String RABBITMQ_DURABLE_QUEUE="durable.queue";
+    public static final String RABBITMQ_PREFETCH_COUNT="prefetch.count";
 
 
     //    Workflow Enactment Service component configuration.
@@ -110,13 +115,36 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(DEFAULT_USER);
     }
 
-    public static String getLaunchQueueName() {
-        return getSetting(LAUNCH_QUEUE_NAME, "launch.queue");
+    public static String getRabbitmqProcessLaunchQueueName() {
+        return getSetting(RABBITMQ_PROCESS_LAUNCH_QUEUE_NAME, "process.launch.queue");
     }
 
+    public static String getRabbitmqExperimentLaunchQueueName() {
+        return getSetting(RABBITMQ_EXPERIMENT_EXCHANGE_NAME, "experiment.launch.queue");
+    }
 
-    public static String getCancelQueueName() {
-        return getSetting(CANCEL_QUEUE_NAME, "cancel.queue");
+    public static String getRabbitmqBrokerUrl() {
+        return getSetting(RABBITMQ_BROKER_URL, "amqp://localhost:5672");
+    }
+
+    public static String getRabbitmqStatusExchangeName(){
+        return getSetting(RABBITMQ_STATUS_EXCHANGE_NAME, "status_exchange");
+    }
+
+    public static String getRabbitmqProcessExchangeName(){
+        return getSetting(RABBITMQ_PROCESS_EXCHANGE_NAME, "process_exchange");
+    }
+
+    public static String getRabbitmqExperimentExchangeName() {
+        return getSetting(RABBITMQ_EXPERIMENT_EXCHANGE_NAME, "experiment_exchange");
+    }
+
+    public static boolean getRabbitmqDurableQueue(){
+        return Boolean.valueOf(getSetting(RABBITMQ_DURABLE_QUEUE, "false"));
+    }
+
+    public static int getRabbitmqPrefetchCount(){
+        return Integer.valueOf(getSetting(RABBITMQ_PREFETCH_COUNT, "200"));
     }
 
     public static String getDefaultUserPassword() throws ApplicationSettingsException {
@@ -202,14 +230,6 @@ public class ServerSettings extends ApplicationSettings {
 
     public static int getMyProxyLifetime() throws ApplicationSettingsException {
         return Integer.parseInt(getSetting(MY_PROXY_LIFETIME));
-    }
-
-    public static String getStatusPublisher() throws ApplicationSettingsException {
-        return getSetting(STATUS_PUBLISHER);
-    }
-
-    public static String getTaskLaunchPublisher() throws ApplicationSettingsException {
-        return getSetting(TASK_LAUNCH_PUBLISHER);
     }
 
     public static boolean isEmbeddedZK() {

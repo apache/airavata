@@ -1,3 +1,22 @@
+/**
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 /*
  * XML Type:  pbsParams
  * Namespace: http://airavata.apache.org/gfac/core/2012/12
@@ -16,7 +35,7 @@ package org.apache.airavata.gfac.core.x2012.x12;
 public interface PbsParams extends org.apache.xmlbeans.XmlObject
 {
     public static final org.apache.xmlbeans.SchemaType type = (org.apache.xmlbeans.SchemaType)
-        org.apache.xmlbeans.XmlBeans.typeSystemForClassLoader(PbsParams.class.getClassLoader(), "schemaorg_apache_xmlbeans.system.sCF8C40CE6FDA0A41BEE004F5930560FF").resolveHandle("pbsparams7913type");
+        org.apache.xmlbeans.XmlBeans.typeSystemForClassLoader(PbsParams.class.getClassLoader(), "schemaorg_apache_xmlbeans.system.sD070E302A2FC7CFEA0F2B3EB44FAE57D").resolveHandle("pbsparams7913type");
     
     /**
      * Gets the "jobID" element
@@ -1342,6 +1361,66 @@ public interface PbsParams extends org.apache.xmlbeans.XmlObject
      * Unsets the "chassisName" element
      */
     void unsetChassisName();
+    
+    /**
+     * Gets the "qualityOfService" element
+     */
+    java.lang.String getQualityOfService();
+    
+    /**
+     * Gets (as xml) the "qualityOfService" element
+     */
+    org.apache.xmlbeans.XmlString xgetQualityOfService();
+    
+    /**
+     * True if has "qualityOfService" element
+     */
+    boolean isSetQualityOfService();
+    
+    /**
+     * Sets the "qualityOfService" element
+     */
+    void setQualityOfService(java.lang.String qualityOfService);
+    
+    /**
+     * Sets (as xml) the "qualityOfService" element
+     */
+    void xsetQualityOfService(org.apache.xmlbeans.XmlString qualityOfService);
+    
+    /**
+     * Unsets the "qualityOfService" element
+     */
+    void unsetQualityOfService();
+    
+    /**
+     * Gets the "reservation" element
+     */
+    java.lang.String getReservation();
+    
+    /**
+     * Gets (as xml) the "reservation" element
+     */
+    org.apache.xmlbeans.XmlString xgetReservation();
+    
+    /**
+     * True if has "reservation" element
+     */
+    boolean isSetReservation();
+    
+    /**
+     * Sets the "reservation" element
+     */
+    void setReservation(java.lang.String reservation);
+    
+    /**
+     * Sets (as xml) the "reservation" element
+     */
+    void xsetReservation(org.apache.xmlbeans.XmlString reservation);
+    
+    /**
+     * Unsets the "reservation" element
+     */
+    void unsetReservation();
     
     /**
      * A factory class with static methods for creating instances

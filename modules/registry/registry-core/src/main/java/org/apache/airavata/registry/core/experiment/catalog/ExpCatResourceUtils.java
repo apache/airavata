@@ -58,7 +58,6 @@ public class ExpCatResourceUtils {
 //            properties.put("openjpa.QueryCache","" + Utils.isCachingEnabled() + "(CacheSize=" + Utils.getJPACacheSize() + ", SoftReferenceSize=0)");
 //            properties.put("javax.persistence.sharedCache.mode","ALL");
             properties.put("openjpa.RemoteCommitProvider","sjvm");
-            properties.put("openjpa.Multithreaded", "true");
             properties.put("openjpa.Log","DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
             properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
             properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
@@ -371,5 +370,36 @@ public class ExpCatResourceUtils {
             }
         }
 
+    }
+
+    public static List<String> getAllUsersInGateway(String gatewayId) throws RegistryException {
+        EntityManager em = null;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            QueryGenerator generator = new QueryGenerator(AbstractExpCatResource.USERS);
+            generator.setParameter(AbstractExpCatResource.UserConstants.GATEWAY_ID, gatewayId);
+            Query q = generator.selectQuery(em);
+            List<Users> users = q.getResultList();
+            em.getTransaction().commit();
+            em.close();
+            ArrayList<String> usernameList = new ArrayList<>();
+            if(users != null) {
+                for (int i = 0; i<users.size(); i++){
+                    usernameList.add(users.get(i).getUserName());
+                }
+            }
+            return usernameList;
+        } catch (Exception e){
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        }finally {
+            if (em != null && em.isOpen()){
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
     }
 }

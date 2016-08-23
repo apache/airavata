@@ -29,8 +29,12 @@ import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
-import org.apache.airavata.messaging.core.*;
-import org.apache.airavata.messaging.core.impl.RabbitMQStatusConsumer;
+import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.MessageHandler;
+import org.apache.airavata.messaging.core.MessagingFactory;
+import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.Subscriber;
+import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
@@ -38,11 +42,13 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePrefer
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.data.replica.DataProductModel;
+import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.ExperimentSubmitEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.messaging.event.ProcessIdentifier;
 import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
@@ -58,7 +64,15 @@ import org.apache.airavata.orchestrator.util.OrchestratorUtils;
 import org.apache.airavata.registry.core.app.catalog.resources.AppCatAbstractResource;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
-import org.apache.airavata.registry.cpi.*;
+import org.apache.airavata.registry.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.ComputeResource;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
+import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.ReplicaCatalog;
+import org.apache.airavata.registry.cpi.ReplicaCatalogException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -70,7 +84,13 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiConsumer;
 
 public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	private static Logger log = LoggerFactory.getLogger(OrchestratorServerHandler.class);
@@ -81,7 +101,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	private String airavataUserName;
 	private String gatewayName;
 	private Publisher publisher;
-	private RabbitMQStatusConsumer statusConsumer;
+	private final Subscriber statusSubscribe;
+	private final Subscriber experimentSubscriber;
 	private CuratorFramework curatorClient;
 
     /**
@@ -93,8 +114,11 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
 	public OrchestratorServerHandler() throws OrchestratorException{
 		try {
-	        publisher = PublisherFactory.createActivityPublisher();
-            setAiravataUserName(ServerSettings.getDefaultUser());
+	        publisher = MessagingFactory.getPublisher(Type.STATUS);
+			List<String> routingKeys = new ArrayList<>();
+			routingKeys.add(ServerSettings.getRabbitmqExperimentLaunchQueueName());
+			experimentSubscriber = MessagingFactory.getSubscriber(new ExperimentHandler(), routingKeys, Type.EXPERIMENT_LAUNCH);
+			setAiravataUserName(ServerSettings.getDefaultUser());
 		} catch (AiravataException e) {
             log.error(e.getMessage(), e);
             throw new OrchestratorException("Error while initializing orchestrator service", e);
@@ -108,10 +132,11 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			appCatalog = RegistryFactory.getAppCatalog();
 			orchestrator.initialize();
 			orchestrator.getOrchestratorContext().setPublisher(this.publisher);
-			String brokerUrl = ServerSettings.getSetting(MessagingConstants.RABBITMQ_BROKER_URL);
-			String exchangeName = ServerSettings.getSetting(MessagingConstants.RABBITMQ_STATUS_EXCHANGE_NAME);
-			statusConsumer = new RabbitMQStatusConsumer(brokerUrl, exchangeName);
-			statusConsumer.listen(new ProcessStatusHandler());
+			List<String> routingKeys = new ArrayList<>();
+//			routingKeys.add("*"); // listen for gateway level messages
+//			routingKeys.add("*.*"); // listen for gateway/experiment level messages
+			routingKeys.add("*.*.*"); // listen for gateway/experiment/process level messages
+			statusSubscribe = MessagingFactory.getSubscriber(new ProcessStatusHandler(),routingKeys, Type.STATUS);
 			startCurator();
 		} catch (OrchestratorException | RegistryException | AppCatalogException | AiravataException e) {
 			log.error(e.getMessage(), e);
@@ -168,11 +193,39 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 						if (pi.getType().equals(DataType.URI) && pi.getValue().startsWith("airavata-dp://")) {
 							try {
 								DataProductModel dataProductModel = replicaCatalog.getDataProduct(pi.getValue());
-								dataProductModel.getReplicaLocations().stream().filter(rpModel -> rpModel.getReplicaLocationCategory()
-										.equals(ReplicaLocationCategory.GATEWAY_DATA_STORE)).forEach(rpModel -> {
-									pi.setValue(rpModel.getFilePath());
-									pi.setStorageResourceId(rpModel.getStorageResourceId());
-								});
+								Optional<DataReplicaLocationModel> rpLocation = dataProductModel.getReplicaLocations()
+										.stream().filter(rpModel -> rpModel.getReplicaLocationCategory().
+												equals(ReplicaLocationCategory.GATEWAY_DATA_STORE)).findFirst();
+								if (rpLocation.isPresent()) {
+									pi.setValue(rpLocation.get().getFilePath());
+									pi.setStorageResourceId(rpLocation.get().getStorageResourceId());
+								} else {
+									log.error("Could not find a replica for the URI " + pi.getValue());
+								}
+							} catch (ReplicaCatalogException e) {
+								log.error(e.getMessage(), e);
+							}
+						} else if (pi.getType().equals(DataType.URI_COLLECTION) && pi.getValue().contains("airavata-dp://")) {
+							try {
+								String[] uriList = pi.getValue().split(",");
+								final ArrayList<String> filePathList = new ArrayList<>();
+								for (String uri : uriList) {
+									if (uri.startsWith("airavata-dp://")) {
+										DataProductModel dataProductModel = replicaCatalog.getDataProduct(uri);
+										Optional<DataReplicaLocationModel> rpLocation = dataProductModel.getReplicaLocations()
+												.stream().filter(rpModel -> rpModel.getReplicaLocationCategory().
+														equals(ReplicaLocationCategory.GATEWAY_DATA_STORE)).findFirst();
+										if (rpLocation.isPresent()) {
+											filePathList.add(rpLocation.get().getFilePath());
+										} else {
+											log.error("Could not find a replica for the URI " + pi.getValue());
+										}
+									} else {
+										// uri is in file path format
+										filePathList.add(uri);
+									}
+								}
+								pi.setValue(StringUtils.join(filePathList, ','));
 							} catch (ReplicaCatalogException e) {
 								log.error(e.getMessage(), e);
 							}
@@ -451,18 +504,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     }
 
 	private class ProcessStatusHandler implements MessageHandler {
-
-		@Override
-		public Map<String, Object> getProperties() {
-			Map<String, Object> props = new HashMap<>();
-			List<String> routingKeys = new ArrayList<>();
-//			routingKeys.add("*"); // listen for gateway level messages
-//			routingKeys.add("*.*"); // listen for gateway/experiment level messages
-			routingKeys.add("*.*.*"); // listern for gateway/experiment/process level messages
-			props.put(MessagingConstants.RABBIT_ROUTING_KEY, routingKeys);
-			return props;
-		}
-
 		/**
 		 * This method only handle MessageType.PROCESS type messages.
 		 * @param message
@@ -566,4 +607,63 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			}
 		}
 	}
+
+
+	private class ExperimentHandler implements MessageHandler {
+
+		@Override
+		public void onMessage(MessageContext messageContext) {
+
+			switch (messageContext.getType()) {
+				case EXPERIMENT:
+					launchExperiment(messageContext);
+					break;
+				case EXPERIMENT_CANCEL:
+                    cancelExperiment(messageContext);
+					break;
+				default:
+					experimentSubscriber.sendAck(messageContext.getDeliveryTag());
+					log.error("Orchestrator got un-support message type : " + messageContext.getType());
+					break;
+			}
+		}
+
+		private void cancelExperiment(MessageContext messageContext) {
+			try {
+				byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
+				ExperimentSubmitEvent expEvent = new ExperimentSubmitEvent();
+				ThriftUtils.createThriftFromBytes(bytes, expEvent);
+				terminateExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
+			} catch (TException e) {
+				log.error("Experiment cancellation failed due to Thrift conversion error", e);
+			}finally {
+				experimentSubscriber.sendAck(messageContext.getDeliveryTag());
+			}
+
+		}
+	}
+
+	private void launchExperiment(MessageContext messageContext) {
+		try {
+            byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
+            ExperimentSubmitEvent expEvent = new ExperimentSubmitEvent();
+            ThriftUtils.createThriftFromBytes(bytes, expEvent);
+            if (messageContext.isRedeliver()) {
+				ExperimentModel experimentModel = (ExperimentModel) experimentCatalog.
+						get(ExperimentCatalogModelType.EXPERIMENT, expEvent.getExperimentId());
+				if (experimentModel.getExperimentStatus().getState() == ExperimentState.CREATED) {
+					launchExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
+				}
+            } else {
+                launchExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
+            }
+		} catch (TException e) {
+            log.error("Experiment launch failed due to Thrift conversion error", e);
+		} catch (RegistryException e) {
+			log.error("Experiment launch failed due to registry access issue", e);
+		}finally {
+			experimentSubscriber.sendAck(messageContext.getDeliveryTag());
+		}
+	}
+
 }

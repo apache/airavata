@@ -33,7 +33,7 @@ import java.util.List;
 public class UserProfileCPIImplTest {
     private final static Logger logger = LoggerFactory.getLogger(UserProfileCPIImplTest.class);
 
-    @Test
+  /*  @Test
     public void testUserProfileCPIImplementation(){
         UserProfile userProfile  = new UserProfile();
         userProfile.setUserName("jsfsjdfsdg" + System.currentTimeMillis());
@@ -64,5 +64,5 @@ public class UserProfileCPIImplTest {
             e.printStackTrace();
             Assert.fail();
         }
-    }
+    }*/
 }

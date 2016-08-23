@@ -66,6 +66,10 @@ class ComputeResourcePreference:
    - allocationProjectNumber
    - resourceSpecificCredentialStoreToken
    - usageReportingGatewayId
+   - qualityOfService
+   - reservation
+   - reservationStartTime
+   - reservationEndTime
   """
 
   thrift_spec = (
@@ -80,9 +84,13 @@ class ComputeResourcePreference:
     (8, TType.STRING, 'allocationProjectNumber', None, None, ), # 8
     (9, TType.STRING, 'resourceSpecificCredentialStoreToken', None, None, ), # 9
     (10, TType.STRING, 'usageReportingGatewayId', None, None, ), # 10
+    (11, TType.STRING, 'qualityOfService', None, None, ), # 11
+    (12, TType.STRING, 'reservation', None, None, ), # 12
+    (13, TType.I64, 'reservationStartTime', None, None, ), # 13
+    (14, TType.I64, 'reservationEndTime', None, None, ), # 14
   )
 
-  def __init__(self, computeResourceId=None, overridebyAiravata=thrift_spec[2][4], loginUserName=None, preferredJobSubmissionProtocol=None, preferredDataMovementProtocol=None, preferredBatchQueue=None, scratchLocation=None, allocationProjectNumber=None, resourceSpecificCredentialStoreToken=None, usageReportingGatewayId=None,):
+  def __init__(self, computeResourceId=None, overridebyAiravata=thrift_spec[2][4], loginUserName=None, preferredJobSubmissionProtocol=None, preferredDataMovementProtocol=None, preferredBatchQueue=None, scratchLocation=None, allocationProjectNumber=None, resourceSpecificCredentialStoreToken=None, usageReportingGatewayId=None, qualityOfService=None, reservation=None, reservationStartTime=None, reservationEndTime=None,):
     self.computeResourceId = computeResourceId
     self.overridebyAiravata = overridebyAiravata
     self.loginUserName = loginUserName
@@ -93,6 +101,10 @@ class ComputeResourcePreference:
     self.allocationProjectNumber = allocationProjectNumber
     self.resourceSpecificCredentialStoreToken = resourceSpecificCredentialStoreToken
     self.usageReportingGatewayId = usageReportingGatewayId
+    self.qualityOfService = qualityOfService
+    self.reservation = reservation
+    self.reservationStartTime = reservationStartTime
+    self.reservationEndTime = reservationEndTime
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -153,6 +165,26 @@ class ComputeResourcePreference:
           self.usageReportingGatewayId = iprot.readString()
         else:
           iprot.skip(ftype)
+      elif fid == 11:
+        if ftype == TType.STRING:
+          self.qualityOfService = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 12:
+        if ftype == TType.STRING:
+          self.reservation = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 13:
+        if ftype == TType.I64:
+          self.reservationStartTime = iprot.readI64()
+        else:
+          iprot.skip(ftype)
+      elif fid == 14:
+        if ftype == TType.I64:
+          self.reservationEndTime = iprot.readI64()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -203,6 +235,22 @@ class ComputeResourcePreference:
       oprot.writeFieldBegin('usageReportingGatewayId', TType.STRING, 10)
       oprot.writeString(self.usageReportingGatewayId)
       oprot.writeFieldEnd()
+    if self.qualityOfService is not None:
+      oprot.writeFieldBegin('qualityOfService', TType.STRING, 11)
+      oprot.writeString(self.qualityOfService)
+      oprot.writeFieldEnd()
+    if self.reservation is not None:
+      oprot.writeFieldBegin('reservation', TType.STRING, 12)
+      oprot.writeString(self.reservation)
+      oprot.writeFieldEnd()
+    if self.reservationStartTime is not None:
+      oprot.writeFieldBegin('reservationStartTime', TType.I64, 13)
+      oprot.writeI64(self.reservationStartTime)
+      oprot.writeFieldEnd()
+    if self.reservationEndTime is not None:
+      oprot.writeFieldBegin('reservationEndTime', TType.I64, 14)
+      oprot.writeI64(self.reservationEndTime)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -226,6 +274,10 @@ class ComputeResourcePreference:
     value = (value * 31) ^ hash(self.allocationProjectNumber)
     value = (value * 31) ^ hash(self.resourceSpecificCredentialStoreToken)
     value = (value * 31) ^ hash(self.usageReportingGatewayId)
+    value = (value * 31) ^ hash(self.qualityOfService)
+    value = (value * 31) ^ hash(self.reservation)
+    value = (value * 31) ^ hash(self.reservationStartTime)
+    value = (value * 31) ^ hash(self.reservationEndTime)
     return value
 
   def __repr__(self):

@@ -37,8 +37,9 @@ public enum DataType implements org.apache.thrift.TEnum {
   INTEGER(1),
   FLOAT(2),
   URI(3),
-  STDOUT(4),
-  STDERR(5);
+  URI_COLLECTION(4),
+  STDOUT(5),
+  STDERR(6);
 
   private final int value;
 
@@ -68,8 +69,10 @@ public enum DataType implements org.apache.thrift.TEnum {
       case 3:
         return URI;
       case 4:
-        return STDOUT;
+        return URI_COLLECTION;
       case 5:
+        return STDOUT;
+      case 6:
         return STDERR;
       default:
         return null;

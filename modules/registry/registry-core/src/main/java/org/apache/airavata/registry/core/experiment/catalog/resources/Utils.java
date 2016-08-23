@@ -346,6 +346,22 @@ public class Utils {
         gatewayResource.setGatewayId(o.getGatewayId());
         gatewayResource.setDomain(o.getDomain());
         gatewayResource.setEmailAddress(o.getEmailAddress());
+        gatewayResource.setGatewayApprovalStatus(o.getGatewayApprovalStatus());
+        gatewayResource.setGatewayAcronym(o.getGatewayAcronym());
+        gatewayResource.setGatewayUrl(o.getGatewayUrl());
+        gatewayResource.setGatewayPublicAbstract(o.getGatewayPublicAbstract());
+        gatewayResource.setReviewProposalDescription(o.getReviewProposalDescription());
+        gatewayResource.setGatewayAdminFirstName(o.getGatewayAdminFirstName());
+        gatewayResource.setGetGatewayAdminLastName(o.getGetGatewayAdminLastName());
+        gatewayResource.setGatewayAdminEmail(o.getGatewayAdminEmail());
+        gatewayResource.setIdentityServerUserName(o.getIdentityServerUserName());
+        gatewayResource.setIdentityServerPasswordToken(o.getIdentityServerPasswordToken());
+        gatewayResource.setDeclinedReason(o.getDeclinedReason());
+        gatewayResource.setOauthClientId(o.getOauthClientId());
+        gatewayResource.setRequestCreationTime(o.getRequestCreationTime());
+        gatewayResource.setRequesterUsername(o.getRequesterUsername());
+
+        gatewayResource.setOauthClientSecret(o.getGetOauthClientSecret());
         return gatewayResource;
     }
 

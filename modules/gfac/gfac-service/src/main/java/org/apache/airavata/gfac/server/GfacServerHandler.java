@@ -28,7 +28,6 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
-import org.apache.airavata.gfac.core.GFac;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.cpi.GfacService;
@@ -37,11 +36,15 @@ import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.gfac.impl.GFacWorker;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.airavata.messaging.core.MessagingConstants;
+import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.messaging.core.impl.RabbitMQProcessLaunchConsumer;
-import org.apache.airavata.messaging.core.impl.RabbitMQStatusPublisher;
-import org.apache.airavata.model.messaging.event.*;
+import org.apache.airavata.messaging.core.Subscriber;
+import org.apache.airavata.messaging.core.Type;
+import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.messaging.event.ProcessIdentifier;
+import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.ProcessSubmitEvent;
+import org.apache.airavata.model.messaging.event.TaskSubmitEvent;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.cpi.AppCatalog;
@@ -60,16 +63,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class GfacServerHandler implements GfacService.Iface {
     private final static Logger log = LoggerFactory.getLogger(GfacServerHandler.class);
-    private RabbitMQProcessLaunchConsumer rabbitMQProcessLaunchConsumer;
+    private Subscriber processLaunchSubscriber;
     private static int requestCount=0;
     private ExperimentCatalog experimentCatalog;
     private AppCatalog appCatalog;
@@ -88,7 +89,6 @@ public class GfacServerHandler implements GfacService.Iface {
             initZkDataStructure();
             initAMQPClient();
 	        executorService = Executors.newFixedThreadPool(ServerSettings.getGFacThreadPoolSize());
-            startStatusUpdators(experimentCatalog, curatorClient, statusPublisher, rabbitMQProcessLaunchConsumer);
         } catch (Exception e) {
             throw new AiravataStartupException("Gfac Server Initialization error ", e);
         }
@@ -96,10 +96,10 @@ public class GfacServerHandler implements GfacService.Iface {
 
     private void initAMQPClient() throws AiravataException {
 	    // init process consumer
-        rabbitMQProcessLaunchConsumer = Factory.getProcessLaunchConsumer();
-        rabbitMQProcessLaunchConsumer.listen(new ProcessLaunchMessageHandler());
-	    // init status publisher
-	    statusPublisher = new RabbitMQStatusPublisher();
+        Factory.initPrcessLaunchSubscriber(new ProcessLaunchMessageHandler());
+        processLaunchSubscriber = Factory.getProcessLaunchSubscriber();
+        // init status publisher
+	    statusPublisher = Factory.getStatusPublisher();
     }
 
     private void startCuratorClient() throws ApplicationSettingsException {
@@ -173,25 +173,6 @@ public class GfacServerHandler implements GfacService.Iface {
         return false;
     }
 
-    public static void startStatusUpdators(ExperimentCatalog experimentCatalog, CuratorFramework curatorClient, Publisher publisher,
-
-                                           RabbitMQProcessLaunchConsumer rabbitMQProcessLaunchConsumer) {
-       /* try {
-            String[] listenerClassList = ServerSettings.getActivityListeners();
-            Publisher rabbitMQPublisher = PublisherFactory.createActivityPublisher();
-            for (String listenerClass : listenerClassList) {
-                Class<? extends AbstractActivityListener> aClass = Class.forName(listenerClass).asSubclass(AbstractActivityListener.class);
-                AbstractActivityListener abstractActivityListener = aClass.newInstance();
-                activityListeners.add(abstractActivityListener);
-                abstractActivityListener.setup(statusPublisher, experimentCatalog, curatorClient, rabbitMQPublisher, rabbitMQTaskLaunchConsumer);
-                log.info("Registering listener: " + listenerClass);
-                statusPublisher.registerListener(abstractActivityListener);
-            }
-        } catch (Exception e) {
-            log.error("Error loading the listener classes configured in airavata-server.properties", e);
-        }*/
-    }
-
     private class ProcessLaunchMessageHandler implements MessageHandler {
         private String experimentNode;
         private String gfacServerName;
@@ -201,15 +182,6 @@ public class GfacServerHandler implements GfacService.Iface {
             gfacServerName = ServerSettings.getGFacServerName();
         }
 
-        public Map<String, Object> getProperties() {
-            Map<String, Object> props = new HashMap<String, Object>();
-            ArrayList<String> keys = new ArrayList<String>();
-            keys.add(ServerSettings.getLaunchQueueName());
-            keys.add(ServerSettings.getCancelQueueName());
-            props.put(MessagingConstants.RABBIT_ROUTING_KEY, keys);
-            props.put(MessagingConstants.RABBIT_QUEUE, ServerSettings.getLaunchQueueName());
-            return props;
-        }
 
         public void onMessage(MessageContext message) {
             log.info(" Message Received with message id '" + message.getMessageId()
@@ -232,7 +204,7 @@ public class GfacServerHandler implements GfacService.Iface {
 			                } catch (Exception e) {
 				                log.error("Error while updating delivery tag for redelivery message , messageId : " +
 						                message.getMessageId(), e);
-				                rabbitMQProcessLaunchConsumer.sendAck(message.getDeliveryTag());
+				                processLaunchSubscriber.sendAck(message.getDeliveryTag());
 			                }
 		                } else {
 			                // read process status from registry
@@ -264,7 +236,7 @@ public class GfacServerHandler implements GfacService.Iface {
                                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                                 Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
                                 publishProcessStatus(event, status);
-                                rabbitMQProcessLaunchConsumer.sendAck(message.getDeliveryTag());
+                                processLaunchSubscriber.sendAck(message.getDeliveryTag());
                                 return;
                             } else {
                                 setCancelData(event.getExperimentId(),event.getProcessId());
@@ -273,7 +245,7 @@ public class GfacServerHandler implements GfacService.Iface {
                         submitProcess(event.getProcessId(), event.getGatewayId(), event.getTokenId());
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
-                        rabbitMQProcessLaunchConsumer.sendAck(message.getDeliveryTag());
+                        processLaunchSubscriber.sendAck(message.getDeliveryTag());
                     }
                 } catch (TException e) {
                     log.error(e.getMessage(), e); //nobody is listening so nothing to throw
@@ -281,31 +253,6 @@ public class GfacServerHandler implements GfacService.Iface {
                     log.error("Error while updating experiment status", e);
                 } catch (AiravataException e) {
 	                log.error("Error while publishing process status", e);
-                }
-            }
-            // TODO - Now there is no process termination type messages, use zookeeper instead of rabbitmq to do that. it is safe to remove this else part.
-            else if (message.getType().equals(MessageType.TERMINATEPROCESS)) {
-                ProcessTerminateEvent event = new ProcessTerminateEvent();
-                TBase messageEvent = message.getEvent();
-                try {
-                    byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
-                    ThriftUtils.createThriftFromBytes(bytes, event);
-	                boolean success = GFacUtils.setExperimentCancelRequest(event.getProcessId(), curatorClient,
-			                message.getDeliveryTag());
-	                if (success) {
-		                log.info("processId:{} - Process cancel request save successfully", event.getProcessId());
-	                }
-                } catch (Exception e) {
-	                log.error("processId:" + event.getProcessId() + " - Process cancel reqeust failed", e);
-                }finally {
-	                try {
-		                if (!rabbitMQProcessLaunchConsumer.isOpen()) {
-			                rabbitMQProcessLaunchConsumer.reconnect();
-		                }
-		                rabbitMQProcessLaunchConsumer.sendAck(message.getDeliveryTag());
-	                } catch (AiravataException e) {
-		                log.error("processId: " + event.getProcessId() + " - Failed to send acknowledgement back to cancel request.", e);
-	                }
                 }
             }
         }

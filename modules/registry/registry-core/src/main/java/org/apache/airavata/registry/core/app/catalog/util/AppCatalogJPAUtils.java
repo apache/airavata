@@ -60,7 +60,6 @@ public class AppCatalogJPAUtils {
             properties.put("openjpa.ConnectionProperties", connectionProperties);
             properties.put("openjpa.DynamicEnhancementAgent", "true");
             properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
-            properties.put("openjpa.Multithreaded", "true");
             // For app catalog, we don't need caching
 //            properties.put("openjpa.DataCache","" + readServerProperties(JPA_CACHE_ENABLED) + "(CacheSize=" + Integer.valueOf(readServerProperties(JPA_CACHE_SIZE)) + ", SoftReferenceSize=0)");
 //            properties.put("openjpa.QueryCache","" + readServerProperties(JPA_CACHE_ENABLED) + "(CacheSize=" + Integer.valueOf(readServerProperties(JPA_CACHE_SIZE)) + ", SoftReferenceSize=0)");
@@ -787,6 +786,7 @@ public class AppCatalogJPAUtils {
             resource.setCreatedTime(o.getCreationTime());
             resource.setGatewayId(o.getGatewayId());
             resource.setArchiveWorkingDirectory(o.isArchiveWorkingDirectory());
+            resource.setHasOptionalFileInputs(o.isHasOptionalFileInputs());
             if (o.getUpdateTime() != null) {
                 resource.setUpdatedTime(o.getUpdateTime());
             }
@@ -873,6 +873,10 @@ public class AppCatalogJPAUtils {
             resource.setUsageReportingGatewayId(o.getUsageReportingGWId());
             resource.setComputeHostResource((ComputeResourceResource) createComputeResource(o.getComputeHostResource()));
             resource.setGatewayProfile((GatewayProfileResource) createGatewayProfile(o.getGatewayProfile()));
+            resource.setQualityOfService(o.getQualityOfService());
+            resource.setReservation(o.getReservation());
+            resource.setReservationStartTime(o.getReservationStartTime());
+            resource.setReservationEndTime(o.getReservationEndTime());
         }
         return resource;
     }

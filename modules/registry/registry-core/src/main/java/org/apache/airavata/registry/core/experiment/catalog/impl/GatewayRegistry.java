@@ -32,6 +32,7 @@ import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,9 +50,24 @@ public class GatewayRegistry {
     public String addGateway (Gateway gateway) throws RegistryException{
         try {
             GatewayResource resource = (GatewayResource) ExpCatResourceUtils.createGateway(gateway.getGatewayId());
+            resource.setGatewayApprovalStatus(gateway.getGatewayApprovalStatus().toString());
             resource.setGatewayName(gateway.getGatewayName());
             resource.setEmailAddress(gateway.getEmailAddress());
             resource.setDomain(gateway.getDomain());
+            resource.setGatewayAcronym(gateway.getGatewayAcronym());
+            resource.setGatewayUrl(gateway.getGatewayURL());
+            resource.setGatewayPublicAbstract(gateway.getGatewayPublicAbstract());
+            resource.setReviewProposalDescription(gateway.getReviewProposalDescription());
+            resource.setGatewayAdminFirstName(gateway.getGatewayAdminFirstName());
+            resource.setGetGatewayAdminLastName(gateway.getGatewayAdminLastName());
+            resource.setGatewayAdminEmail(gateway.getGatewayAdminEmail());
+            resource.setIdentityServerUserName(gateway.getIdentityServerUserName());
+            resource.setIdentityServerPasswordToken(gateway.getIdentityServerPasswordToken());
+            resource.setDeclinedReason(gateway.getDeclinedReason());
+            resource.setOauthClientId(gateway.getOauthClientId());
+            resource.setOauthClientSecret(gateway.getOauthClientSecret());
+            resource.setRequestCreationTime(new Timestamp(System.currentTimeMillis()));
+            resource.setRequesterUsername(gateway.getRequesterUsername());
             resource.save();
             return gateway.getGatewayId();
         }catch (RegistryException e){
@@ -63,9 +79,22 @@ public class GatewayRegistry {
     public void updateGateway (String gatewayId, Gateway updatedGateway) throws RegistryException{
         try {
             GatewayResource existingGateway = (GatewayResource) ExpCatResourceUtils.getGateway(gatewayId);
+            existingGateway.setGatewayApprovalStatus(updatedGateway.getGatewayApprovalStatus().toString());
             existingGateway.setGatewayName(updatedGateway.getGatewayName());
             existingGateway.setEmailAddress(updatedGateway.getEmailAddress());
             existingGateway.setDomain(updatedGateway.getDomain());
+            existingGateway.setGatewayAcronym(updatedGateway.getGatewayAcronym());
+            existingGateway.setGatewayUrl(updatedGateway.getGatewayURL());
+            existingGateway.setGatewayPublicAbstract(updatedGateway.getGatewayPublicAbstract());
+            existingGateway.setReviewProposalDescription(updatedGateway.getReviewProposalDescription());
+            existingGateway.setGatewayAdminFirstName(updatedGateway.getGatewayAdminFirstName());
+            existingGateway.setGetGatewayAdminLastName(updatedGateway.getGatewayAdminLastName());
+            existingGateway.setGatewayAdminEmail(updatedGateway.getGatewayAdminEmail());
+            existingGateway.setIdentityServerUserName(updatedGateway.getIdentityServerUserName());
+            existingGateway.setIdentityServerPasswordToken(updatedGateway.getIdentityServerPasswordToken());
+            existingGateway.setDeclinedReason(updatedGateway.getDeclinedReason());
+            existingGateway.setOauthClientId(updatedGateway.getOauthClientId());
+            existingGateway.setOauthClientSecret(updatedGateway.getOauthClientSecret());
             existingGateway.save();
         }catch (RegistryException e){
             logger.error("Error while updating gateway to registry", e);

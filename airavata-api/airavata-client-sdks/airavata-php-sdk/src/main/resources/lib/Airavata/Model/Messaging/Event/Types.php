@@ -32,20 +32,22 @@ final class MessageLevel {
 
 final class MessageType {
   const EXPERIMENT = 0;
-  const TASK = 1;
-  const PROCESS = 2;
-  const JOB = 3;
-  const LAUNCHPROCESS = 4;
-  const TERMINATEPROCESS = 5;
-  const PROCESSOUTPUT = 6;
+  const EXPERIMENT_CANCEL = 1;
+  const TASK = 2;
+  const PROCESS = 3;
+  const JOB = 4;
+  const LAUNCHPROCESS = 5;
+  const TERMINATEPROCESS = 6;
+  const PROCESSOUTPUT = 7;
   static public $__names = array(
     0 => 'EXPERIMENT',
-    1 => 'TASK',
-    2 => 'PROCESS',
-    3 => 'JOB',
-    4 => 'LAUNCHPROCESS',
-    5 => 'TERMINATEPROCESS',
-    6 => 'PROCESSOUTPUT',
+    1 => 'EXPERIMENT_CANCEL',
+    2 => 'TASK',
+    3 => 'PROCESS',
+    4 => 'JOB',
+    5 => 'LAUNCHPROCESS',
+    6 => 'TERMINATEPROCESS',
+    7 => 'PROCESSOUTPUT',
   );
 }
 
@@ -1135,6 +1137,104 @@ class JobIdentifier {
     }
     if ($this->gatewayId !== null) {
       $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 5);
+      $xfer += $output->writeString($this->gatewayId);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class ExperimentSubmitEvent {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $experimentId = null;
+  /**
+   * @var string
+   */
+  public $gatewayId = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'experimentId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'gatewayId',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['experimentId'])) {
+        $this->experimentId = $vals['experimentId'];
+      }
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'ExperimentSubmitEvent';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->experimentId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('ExperimentSubmitEvent');
+    if ($this->experimentId !== null) {
+      $xfer += $output->writeFieldBegin('experimentId', TType::STRING, 1);
+      $xfer += $output->writeString($this->experimentId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 2);
       $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }

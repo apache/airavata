@@ -51,31 +51,26 @@ public class OrchestratorServer implements IServer {
 
     public void StartOrchestratorServer(OrchestratorService.Processor<OrchestratorServerHandler> orchestratorServerHandlerProcessor)
             throws Exception {
-        try {
-            final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.ORCHESTRATOT_SERVER_PORT, "8940"));
-
+		final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.ORCHESTRATOT_SERVER_PORT, "8940"));
+		try {
             final String serverHost = ServerSettings.getSetting(Constants.ORCHESTRATOT_SERVER_HOST, null);
-            
 			TServerTransport serverTransport;
-			
 			if(serverHost == null){
 				serverTransport = new TServerSocket(serverPort);
 			}else{
 				InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
 				serverTransport = new TServerSocket(inetSocketAddress);
 			}
-			
             //server = new TSimpleServer(
               //      new TServer.Args(serverTransport).processor(orchestratorServerHandlerProcessor));
             TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
             options.minWorkerThreads = Integer.parseInt(ServerSettings.getSetting(Constants.ORCHESTRATOT_SERVER_MIN_THREADS, "30"));
             server = new TThreadPoolServer(options.processor(orchestratorServerHandlerProcessor));
-
             new Thread() {
 				public void run() {
 					server.serve();
-					setStatus(ServerStatus.STOPPED);
-					logger.info("Orchestrator Server Stopped.");
+					setStatus(ServerStatus.STARTING);
+					logger.info("Starting Orchestrator Server ... ");
 				}
 			}.start();
 			new Thread() {
@@ -89,15 +84,15 @@ public class OrchestratorServer implements IServer {
 					}
 					if (server.isServing()){
 						setStatus(ServerStatus.STARTED);
-			            logger.info("Starting Orchestrator Server on Port " + serverPort);
-			            logger.info("Listening to Orchestrator Clients ....");
+			            logger.info("Started Orchestrator Server on Port " + serverPort + " ...");
 					}
 				}
 			}.start();
         } catch (TTransportException e) {
             logger.error(e.getMessage());
             setStatus(ServerStatus.FAILED);
-        }
+			logger.error("Failed to start Orchestrator server on port " + serverPort + " ...");
+		}
     }
 
     public static void main(String[] args) {

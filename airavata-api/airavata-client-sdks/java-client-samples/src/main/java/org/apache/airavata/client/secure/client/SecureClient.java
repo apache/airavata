@@ -27,6 +27,7 @@ import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
@@ -222,7 +223,7 @@ public class SecureClient {
                 System.out.println("Enter the gateway id: ");
                 String gatewayId = scanner.next().trim();
 
-                Gateway gateway = new Gateway(gatewayId);
+                Gateway gateway = new Gateway(gatewayId, GatewayApprovalStatus.REQUESTED);
                 gateway.setDomain("airavata.org");
                 gateway.setEmailAddress("airavata@apache.org");
                 gateway.setGatewayName("airavataGW");

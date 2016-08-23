@@ -56,8 +56,7 @@ public class DataStageTask implements Task {
 					+ taskContext.getTaskModel().getTaskType().toString());
 		} else {
 			try {
-				DataStagingTaskModel subTaskModel = (DataStagingTaskModel) ThriftUtils.getSubTaskModel(taskContext
-						.getTaskModel());
+				DataStagingTaskModel subTaskModel = ((DataStagingTaskModel) taskContext.getSubTaskModel());
 				URI sourceURI = new URI(subTaskModel.getSource());
 				URI destinationURI = new URI(subTaskModel.getDestination());
 

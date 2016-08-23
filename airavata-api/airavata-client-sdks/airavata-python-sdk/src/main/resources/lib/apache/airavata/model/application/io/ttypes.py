@@ -27,16 +27,18 @@ class DataType:
   INTEGER = 1
   FLOAT = 2
   URI = 3
-  STDOUT = 4
-  STDERR = 5
+  URI_COLLECTION = 4
+  STDOUT = 5
+  STDERR = 6
 
   _VALUES_TO_NAMES = {
     0: "STRING",
     1: "INTEGER",
     2: "FLOAT",
     3: "URI",
-    4: "STDOUT",
-    5: "STDERR",
+    4: "URI_COLLECTION",
+    5: "STDOUT",
+    6: "STDERR",
   }
 
   _NAMES_TO_VALUES = {
@@ -44,8 +46,9 @@ class DataType:
     "INTEGER": 1,
     "FLOAT": 2,
     "URI": 3,
-    "STDOUT": 4,
-    "STDERR": 5,
+    "URI_COLLECTION": 4,
+    "STDOUT": 5,
+    "STDERR": 6,
   }
 
 

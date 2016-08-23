@@ -29,7 +29,7 @@
 	<artifactId>airavata</artifactId>
 	<packaging>pom</packaging>
 	<name>Airavata</name>
-	<version>0.16-SNAPSHOT</version>
+	<version>0.17-SNAPSHOT</version>
 
 	<url>http://airavata.apache.org/</url>
 	<inceptionYear>2011</inceptionYear>
@@ -99,6 +99,8 @@
 		<zk.version>3.4.0</zk.version>
 		<amqp.client.version>3.5.1</amqp.client.version>
         <snakeyaml.version>1.15</snakeyaml.version>
+		<maven.javadoc.failOnError>false</maven.javadoc.failOnError>
+		<maven.replacer.plugin.version>1.5.3</maven.replacer.plugin.version>
 	</properties>
 
 	<developers>
@@ -561,6 +563,7 @@
 				<module>modules/server</module>
 				<module>modules/workflow</module>
 				<module>modules/test-suite</module>
+				<module>modules/group-manager</module>
 				<!-- Deprecated Modules-->
 				<!--<module>modules/integration-tests</module>-->
 				<!--<module>modules/workflow-model</module>-->

@@ -64,14 +64,6 @@ public class AiravataAPIServer implements IServer{
 	
     public void startAiravataServer(Airavata.Processor<Airavata.Iface> airavataAPIServer) throws AiravataSystemException {
         try {
-            // creating experiment catalog db
-            ExperimentCatalogInitUtil.initializeDB();
-            // creating app catalog db
-            AppCatalogInitUtil.initializeDB();
-            // creating workflow catalog db
-            WorkflowCatalogInitUtil.initializeDB();
-            // creating credential store db
-            CredentialStoreInitUtil.initializeDB();
             final String serverHost = ServerSettings.getSetting(Constants.API_SERVER_HOST, null);
             if (!ServerSettings.isTLSEnabled()) {
                 final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_PORT, "8930"));
@@ -103,7 +95,6 @@ public class AiravataAPIServer implements IServer{
 				new Thread() {
 					public void run() {
                         server.serve();
-						ExperimentCatalogInitUtil.stopDerbyInServerMode();
 						setStatus(ServerStatus.STOPPED);
 						logger.info("Airavata API Server Stopped.");
 					}
@@ -124,10 +115,8 @@ public class AiravataAPIServer implements IServer{
 						}
 					}
 				}.start();
-			}
-//            storeServerConfig();
-            /**********start thrift server over TLS******************/
-            if (ServerSettings.isTLSEnabled()) {
+				logger.info("Started API Server ....");
+			} else { /**********start thrift server over TLS******************/
                 TSSLTransportFactory.TSSLTransportParameters TLSParams =
                         new TSSLTransportFactory.TSSLTransportParameters();
                 TLSParams.setKeyStore(ServerSettings.getKeyStorePath(), ServerSettings.getKeyStorePassword());
@@ -141,7 +130,6 @@ public class AiravataAPIServer implements IServer{
                 new Thread() {
                     public void run() {
                         TLSServer.serve();
-                        ExperimentCatalogInitUtil.stopDerbyInServerMode();
                         setStatus(ServerStatus.STOPPED);
                         logger.info("Airavata API Server over TLS Stopped.");
                     }
@@ -160,7 +148,7 @@ public class AiravataAPIServer implements IServer{
                         }
                     }
                 }.start();
-                logger.info("Airavata API server starter over TLS on Port: " + ServerSettings.getTLSServerPort());
+                logger.info("API server started over TLS on Port: " + ServerSettings.getTLSServerPort() + " ...");
             }
 
             /*perform any security related initialization at the server startup, according to the underlying security
@@ -171,8 +159,8 @@ public class AiravataAPIServer implements IServer{
         } catch (TTransportException e) {
             logger.error(e.getMessage());
             setStatus(ServerStatus.FAILED);
-            ExperimentCatalogInitUtil.stopDerbyInServerMode();
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+			logger.error("Failed to start API server ...");
+			throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);

@@ -26,6 +26,7 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.ZkConstants;
+import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -528,19 +529,31 @@ public class GFacEngineImpl implements GFacEngine {
         return false;
     }
 
-    private boolean inputDataStaging(TaskContext taskContext, boolean recover) throws GFacException {
+    private boolean inputDataStaging(TaskContext taskContext, boolean recover) throws GFacException, TException {
         TaskStatus taskStatus = new TaskStatus(TaskState.EXECUTING);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         taskContext.setTaskStatus(taskStatus);
         GFacUtils.saveAndPublishTaskStatus(taskContext);
 
         ProcessContext processContext = taskContext.getParentProcessContext();
+        // handle URI_COLLECTION input data type
         Task dMoveTask = Factory.getDataMovementTask(processContext.getDataMovementProtocol());
-        taskStatus = executeTask(taskContext, dMoveTask, false);
+        if (taskContext.getProcessInput().getType() == DataType.URI_COLLECTION) {
+            String values = taskContext.getProcessInput().getValue();
+            String[] multiple_inputs = values.split(GFacConstants.MULTIPLE_INPUTS_SPLITTER);
+            DataStagingTaskModel subTaskModel = (DataStagingTaskModel) taskContext.getSubTaskModel();
+            for (String input : multiple_inputs) {
+                taskContext.getProcessInput().setValue(input);
+                subTaskModel.setSource(input);
+                taskStatus = executeTask(taskContext, dMoveTask, false);
+            }
+            taskContext.getProcessInput().setValue(values);
+        } else {
+            taskStatus = executeTask(taskContext, dMoveTask, false);
+        }
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         taskContext.setTaskStatus(taskStatus);
         GFacUtils.saveAndPublishTaskStatus(taskContext);
-
         checkFailures(taskContext, taskStatus, dMoveTask);
         return false;
     }

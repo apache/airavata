@@ -608,6 +608,7 @@ public class AppCatalogThriftConversion {
         description.setApplicationName(resource.getAppName());
         description.setApplicationDescription(resource.getAppDescription());
         description.setArchiveWorkingDirectory(resource.isArchiveWorkingDirectory());
+        description.setHasOptionalFileInputs(resource.isHasOptionalFileInputs());
 
         AppModuleMappingAppCatalogResourceAppCat appModuleMappingResource = new AppModuleMappingAppCatalogResourceAppCat();
         List<AppCatalogResource> appModules = appModuleMappingResource.get(AppCatAbstractResource.AppModuleMappingConstants.INTERFACE_ID, resource.getInterfaceId());
@@ -831,6 +832,15 @@ public class AppCatalogThriftConversion {
         preference.setLoginUserName(resource.getLoginUserName());
         preference.setResourceSpecificCredentialStoreToken(resource.getResourceCSToken());
         preference.setUsageReportingGatewayId(resource.getGatewayId());
+        preference.setQualityOfService(resource.getQualityOfService());
+        preference.setReservation(resource.getReservation());
+        if (resource.getReservationStartTime() != null) {
+            preference.setReservationStartTime(resource.getReservationStartTime().getTime());
+        }
+
+        if (resource.getReservationEndTime() != null) {
+            preference.setReservationEndTime(resource.getReservationEndTime().getTime());
+        }
         return preference;
     }
 

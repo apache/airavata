@@ -35,10 +35,7 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.model.workspace.Notification;
-import org.apache.airavata.model.workspace.NotificationPriority;
-import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.model.workspace.*;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.resources.*;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -63,6 +60,7 @@ public class ThriftDataModelConversion {
 			}
 			project.setDescription(pr.getDescription());
             project.setOwner(pr.getWorker().getUser());
+            project.setGatewayId(pr.getGatewayId());
             List<ProjectUserResource> projectUserList = pr.getProjectUserList();
             List<String> sharedUsers = new ArrayList<String>();
             if (projectUserList != null && !projectUserList.isEmpty()){
@@ -79,9 +77,26 @@ public class ThriftDataModelConversion {
     public static Gateway getGateway (GatewayResource resource){
         Gateway gateway = new Gateway();
         gateway.setGatewayId(resource.getGatewayId());
+        gateway.setGatewayApprovalStatus(GatewayApprovalStatus.valueOf(resource.getGatewayApprovalStatus()));
         gateway.setGatewayName(resource.getGatewayName());
         gateway.setDomain(resource.getDomain());
         gateway.setEmailAddress(resource.getEmailAddress());
+        gateway.setGatewayAcronym(resource.getGatewayAcronym());
+        gateway.setGatewayURL(resource.getGatewayUrl());
+        gateway.setGatewayPublicAbstract(resource.getGatewayPublicAbstract());
+        gateway.setReviewProposalDescription(resource.getReviewProposalDescription());
+        gateway.setDeclinedReason(resource.getDeclinedReason());
+        gateway.setGatewayAdminFirstName(resource.getGatewayAdminFirstName());
+        gateway.setGatewayAdminLastName(resource.getGetGatewayAdminLastName());
+        gateway.setGatewayAdminEmail(resource.getGatewayAdminEmail());
+        gateway.setIdentityServerUserName(resource.getIdentityServerUserName());
+        gateway.setIdentityServerPasswordToken(resource.getIdentityServerPasswordToken());
+        gateway.setOauthClientId(resource.getOauthClientId());
+        gateway.setOauthClientSecret(resource.getOauthClientSecret());
+        if (resource.getRequestCreationTime() != null) {
+            gateway.setRequestCreationTime(resource.getRequestCreationTime().getTime());
+        }
+        gateway.setRequesterUsername(resource.getRequesterUsername());
         return gateway;
     }
 
