@@ -17,16 +17,20 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
-package org.airavata.xbaya;
+*/
+package org.airavata.xbaya.connectors.wso2is;
 
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+public class AuthenticationException extends Exception{
 
-public class App {
+    public AuthenticationException(String message) {
+        super (message);
+    }
 
+    public AuthenticationException(Throwable cause) {
+        super (cause);
+    }
 
+    public AuthenticationException(String message, Throwable cause) {
+        super (message, cause);
+    }
 }

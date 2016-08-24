@@ -16,4 +16,13 @@ public class HomeController {
         primaryStage.setScene(new Scene(root, 500, 350));
         primaryStage.show();
 	}
+	
+	
+	public void registry() throws IOException{
+		Stage primaryStage = new Stage();
+		Parent root = FXMLLoader.load(getClass().getResource("/views/registry.fxml"));    
+    	primaryStage.setTitle("Configure Airavata Thrift Service");
+        primaryStage.setScene(new Scene(root, 500, 300));
+        primaryStage.show();
+	}
 }

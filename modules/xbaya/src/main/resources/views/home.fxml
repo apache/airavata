@@ -107,7 +107,7 @@
                   </Menu>
                   <Menu mnemonicParsing="false" text="Registry">
                      <items>
-                        <MenuItem mnemonicParsing="false" text="Setup Airavata Registry...">
+                        <MenuItem mnemonicParsing="false" onAction="#registry" text="Setup Airavata Registry...">
                            <graphic>
                               <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -132,151 +132,6 @@
                         <SeparatorMenuItem mnemonicParsing="false" />
                      </items>
                   </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu disable="true" mnemonicParsing="false">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="Help">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
                </menus>
                <padding>
                   <Insets top="-5.0" />
@@ -284,7 +139,7 @@
             </MenuBar>
             <HBox>
                <children>
-                  <ToolBar prefHeight="20.0" prefWidth="1500.0">
+                  <ToolBar prefHeight="20.0" prefWidth="2500.0">
                      <items>
                         <ImageView fitHeight="15.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                            <image>

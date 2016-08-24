@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<StackPane prefWidth="231.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.seagrid.desktop.ui.login.controller.LoginController">
+  <children>
+    <StackPane>
+      <children>
+        <VBox spacing="10.0">
+          <children>
+            <GridPane id="loginGridPane" VBox.vgrow="ALWAYS">
+              <children>
+                <Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <TextField fx:id="usernameField" promptText="Username" text="" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                <PasswordField fx:id="passwordField" promptText="Password" text="" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+              </children>
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="148.0" minWidth="10.0" prefWidth="109.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="228.0" minWidth="10.0" prefWidth="189.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+            </GridPane>
+            <StackPane prefHeight="-1.0" prefWidth="-1.0">
+              <children>
+                <HBox alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="211.0" StackPane.alignment="CENTER_RIGHT">
+                  <children>
+                    <Hyperlink fx:id="dontHaveAccountLink" text="Don't have account?">
+                      <font>
+                        <Font size="10.0" />
+                      </font>
+                      <HBox.margin>
+                        <Insets right="5.0" fx:id="x1" />
+                      </HBox.margin>
+                    </Hyperlink>
+                    <Label fx:id="loginAuthFailed" text="" HBox.margin="$x1" />
+                    <Button fx:id="loginButton" alignment="CENTER" defaultButton="true" mnemonicParsing="false" text="Login" />
+                  </children>
+                </HBox>
+              </children>
+            </StackPane>
+          </children>
+        </VBox>
+      </children>
+    </StackPane>
+  </children>
+  <padding>
+    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+  </padding>
+</StackPane>
