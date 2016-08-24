@@ -659,13 +659,13 @@ public class GFacUtils {
         return inputValues;
     }
 
-    private static String getQoS(String qualityOfService, String preferredBatchQueue) {
+    static String getQoS(String qualityOfService, String preferredBatchQueue) {
         if(preferredBatchQueue == null  || preferredBatchQueue.isEmpty()
                 ||  qualityOfService == null  || qualityOfService.isEmpty()) return null;
         final String qos = "qos";
         Pattern pattern = Pattern.compile(preferredBatchQueue + "=(?<" + qos + ">[^,]*)");
         Matcher matcher = pattern.matcher(qualityOfService);
-        if (matcher.matches()) {
+        if (matcher.find()) {
             return matcher.group(qos);
         }
         return null;
