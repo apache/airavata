@@ -87,7 +87,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
   private static final org.apache.thrift.protocol.TField USER_CONFIGURATION_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("userConfigurationData", org.apache.thrift.protocol.TType.STRUCT, (short)14);
   private static final org.apache.thrift.protocol.TField EXPERIMENT_INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentInputs", org.apache.thrift.protocol.TType.LIST, (short)15);
   private static final org.apache.thrift.protocol.TField EXPERIMENT_OUTPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentOutputs", org.apache.thrift.protocol.TType.LIST, (short)16);
-  private static final org.apache.thrift.protocol.TField EXPERIMENT_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentStatus", org.apache.thrift.protocol.TType.STRUCT, (short)17);
+  private static final org.apache.thrift.protocol.TField EXPERIMENT_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentStatus", org.apache.thrift.protocol.TType.LIST, (short)17);
   private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)18);
   private static final org.apache.thrift.protocol.TField PROCESSES_FIELD_DESC = new org.apache.thrift.protocol.TField("processes", org.apache.thrift.protocol.TType.LIST, (short)19);
 
@@ -113,7 +113,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
   private UserConfigurationDataModel userConfigurationData; // optional
   private List<org.apache.airavata.model.application.io.InputDataObjectType> experimentInputs; // optional
   private List<org.apache.airavata.model.application.io.OutputDataObjectType> experimentOutputs; // optional
-  private org.apache.airavata.model.status.ExperimentStatus experimentStatus; // optional
+  private List<org.apache.airavata.model.status.ExperimentStatus> experimentStatus; // optional
   private List<org.apache.airavata.model.commons.ErrorModel> errors; // optional
   private List<org.apache.airavata.model.process.ProcessModel> processes; // optional
 
@@ -277,7 +277,8 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.application.io.OutputDataObjectType.class))));
     tmpMap.put(_Fields.EXPERIMENT_STATUS, new org.apache.thrift.meta_data.FieldMetaData("experimentStatus", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.status.ExperimentStatus.class)));
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.status.ExperimentStatus.class))));
     tmpMap.put(_Fields.ERRORS, new org.apache.thrift.meta_data.FieldMetaData("errors", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.commons.ErrorModel.class))));
@@ -371,7 +372,11 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       this.experimentOutputs = __this__experimentOutputs;
     }
     if (other.isSetExperimentStatus()) {
-      this.experimentStatus = new org.apache.airavata.model.status.ExperimentStatus(other.experimentStatus);
+      List<org.apache.airavata.model.status.ExperimentStatus> __this__experimentStatus = new ArrayList<org.apache.airavata.model.status.ExperimentStatus>(other.experimentStatus.size());
+      for (org.apache.airavata.model.status.ExperimentStatus other_element : other.experimentStatus) {
+        __this__experimentStatus.add(new org.apache.airavata.model.status.ExperimentStatus(other_element));
+      }
+      this.experimentStatus = __this__experimentStatus;
     }
     if (other.isSetErrors()) {
       List<org.apache.airavata.model.commons.ErrorModel> __this__errors = new ArrayList<org.apache.airavata.model.commons.ErrorModel>(other.errors.size());
@@ -839,11 +844,26 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     }
   }
 
-  public org.apache.airavata.model.status.ExperimentStatus getExperimentStatus() {
+  public int getExperimentStatusSize() {
+    return (this.experimentStatus == null) ? 0 : this.experimentStatus.size();
+  }
+
+  public java.util.Iterator<org.apache.airavata.model.status.ExperimentStatus> getExperimentStatusIterator() {
+    return (this.experimentStatus == null) ? null : this.experimentStatus.iterator();
+  }
+
+  public void addToExperimentStatus(org.apache.airavata.model.status.ExperimentStatus elem) {
+    if (this.experimentStatus == null) {
+      this.experimentStatus = new ArrayList<org.apache.airavata.model.status.ExperimentStatus>();
+    }
+    this.experimentStatus.add(elem);
+  }
+
+  public List<org.apache.airavata.model.status.ExperimentStatus> getExperimentStatus() {
     return this.experimentStatus;
   }
 
-  public void setExperimentStatus(org.apache.airavata.model.status.ExperimentStatus experimentStatus) {
+  public void setExperimentStatus(List<org.apache.airavata.model.status.ExperimentStatus> experimentStatus) {
     this.experimentStatus = experimentStatus;
   }
 
@@ -1072,7 +1092,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       if (value == null) {
         unsetExperimentStatus();
       } else {
-        setExperimentStatus((org.apache.airavata.model.status.ExperimentStatus)value);
+        setExperimentStatus((List<org.apache.airavata.model.status.ExperimentStatus>)value);
       }
       break;
 
@@ -1917,9 +1937,6 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     if (userConfigurationData != null) {
       userConfigurationData.validate();
     }
-    if (experimentStatus != null) {
-      experimentStatus.validate();
-    }
   }
 
   private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -2120,9 +2137,19 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
             }
             break;
           case 17: // EXPERIMENT_STATUS
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-              struct.experimentStatus = new org.apache.airavata.model.status.ExperimentStatus();
-              struct.experimentStatus.read(iprot);
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list9 = iprot.readListBegin();
+                struct.experimentStatus = new ArrayList<org.apache.airavata.model.status.ExperimentStatus>(_list9.size);
+                org.apache.airavata.model.status.ExperimentStatus _elem10;
+                for (int _i11 = 0; _i11 < _list9.size; ++_i11)
+                {
+                  _elem10 = new org.apache.airavata.model.status.ExperimentStatus();
+                  _elem10.read(iprot);
+                  struct.experimentStatus.add(_elem10);
+                }
+                iprot.readListEnd();
+              }
               struct.setExperimentStatusIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -2131,14 +2158,14 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
           case 18: // ERRORS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list9 = iprot.readListBegin();
-                struct.errors = new ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list9.size);
-                org.apache.airavata.model.commons.ErrorModel _elem10;
-                for (int _i11 = 0; _i11 < _list9.size; ++_i11)
+                org.apache.thrift.protocol.TList _list12 = iprot.readListBegin();
+                struct.errors = new ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list12.size);
+                org.apache.airavata.model.commons.ErrorModel _elem13;
+                for (int _i14 = 0; _i14 < _list12.size; ++_i14)
                 {
-                  _elem10 = new org.apache.airavata.model.commons.ErrorModel();
-                  _elem10.read(iprot);
-                  struct.errors.add(_elem10);
+                  _elem13 = new org.apache.airavata.model.commons.ErrorModel();
+                  _elem13.read(iprot);
+                  struct.errors.add(_elem13);
                 }
                 iprot.readListEnd();
               }
@@ -2150,14 +2177,14 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
           case 19: // PROCESSES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list12 = iprot.readListBegin();
-                struct.processes = new ArrayList<org.apache.airavata.model.process.ProcessModel>(_list12.size);
-                org.apache.airavata.model.process.ProcessModel _elem13;
-                for (int _i14 = 0; _i14 < _list12.size; ++_i14)
+                org.apache.thrift.protocol.TList _list15 = iprot.readListBegin();
+                struct.processes = new ArrayList<org.apache.airavata.model.process.ProcessModel>(_list15.size);
+                org.apache.airavata.model.process.ProcessModel _elem16;
+                for (int _i17 = 0; _i17 < _list15.size; ++_i17)
                 {
-                  _elem13 = new org.apache.airavata.model.process.ProcessModel();
-                  _elem13.read(iprot);
-                  struct.processes.add(_elem13);
+                  _elem16 = new org.apache.airavata.model.process.ProcessModel();
+                  _elem16.read(iprot);
+                  struct.processes.add(_elem16);
                 }
                 iprot.readListEnd();
               }
@@ -2252,9 +2279,9 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
           oprot.writeFieldBegin(EMAIL_ADDRESSES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.emailAddresses.size()));
-            for (String _iter15 : struct.emailAddresses)
+            for (String _iter18 : struct.emailAddresses)
             {
-              oprot.writeString(_iter15);
+              oprot.writeString(_iter18);
             }
             oprot.writeListEnd();
           }
@@ -2273,9 +2300,9 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
           oprot.writeFieldBegin(EXPERIMENT_INPUTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.experimentInputs.size()));
-            for (org.apache.airavata.model.application.io.InputDataObjectType _iter16 : struct.experimentInputs)
+            for (org.apache.airavata.model.application.io.InputDataObjectType _iter19 : struct.experimentInputs)
             {
-              _iter16.write(oprot);
+              _iter19.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -2287,9 +2314,9 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
           oprot.writeFieldBegin(EXPERIMENT_OUTPUTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.experimentOutputs.size()));
-            for (org.apache.airavata.model.application.io.OutputDataObjectType _iter17 : struct.experimentOutputs)
+            for (org.apache.airavata.model.application.io.OutputDataObjectType _iter20 : struct.experimentOutputs)
             {
-              _iter17.write(oprot);
+              _iter20.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -2299,7 +2326,14 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       if (struct.experimentStatus != null) {
         if (struct.isSetExperimentStatus()) {
           oprot.writeFieldBegin(EXPERIMENT_STATUS_FIELD_DESC);
-          struct.experimentStatus.write(oprot);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.experimentStatus.size()));
+            for (org.apache.airavata.model.status.ExperimentStatus _iter21 : struct.experimentStatus)
+            {
+              _iter21.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
           oprot.writeFieldEnd();
         }
       }
@@ -2308,9 +2342,9 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
           oprot.writeFieldBegin(ERRORS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.errors.size()));
-            for (org.apache.airavata.model.commons.ErrorModel _iter18 : struct.errors)
+            for (org.apache.airavata.model.commons.ErrorModel _iter22 : struct.errors)
             {
-              _iter18.write(oprot);
+              _iter22.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -2322,9 +2356,9 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
           oprot.writeFieldBegin(PROCESSES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.processes.size()));
-            for (org.apache.airavata.model.process.ProcessModel _iter19 : struct.processes)
+            for (org.apache.airavata.model.process.ProcessModel _iter23 : struct.processes)
             {
-              _iter19.write(oprot);
+              _iter23.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -2416,9 +2450,9 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       if (struct.isSetEmailAddresses()) {
         {
           oprot.writeI32(struct.emailAddresses.size());
-          for (String _iter20 : struct.emailAddresses)
+          for (String _iter24 : struct.emailAddresses)
           {
-            oprot.writeString(_iter20);
+            oprot.writeString(_iter24);
           }
         }
       }
@@ -2428,39 +2462,45 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       if (struct.isSetExperimentInputs()) {
         {
           oprot.writeI32(struct.experimentInputs.size());
-          for (org.apache.airavata.model.application.io.InputDataObjectType _iter21 : struct.experimentInputs)
+          for (org.apache.airavata.model.application.io.InputDataObjectType _iter25 : struct.experimentInputs)
           {
-            _iter21.write(oprot);
+            _iter25.write(oprot);
           }
         }
       }
       if (struct.isSetExperimentOutputs()) {
         {
           oprot.writeI32(struct.experimentOutputs.size());
-          for (org.apache.airavata.model.application.io.OutputDataObjectType _iter22 : struct.experimentOutputs)
+          for (org.apache.airavata.model.application.io.OutputDataObjectType _iter26 : struct.experimentOutputs)
           {
-            _iter22.write(oprot);
+            _iter26.write(oprot);
           }
         }
       }
       if (struct.isSetExperimentStatus()) {
-        struct.experimentStatus.write(oprot);
+        {
+          oprot.writeI32(struct.experimentStatus.size());
+          for (org.apache.airavata.model.status.ExperimentStatus _iter27 : struct.experimentStatus)
+          {
+            _iter27.write(oprot);
+          }
+        }
       }
       if (struct.isSetErrors()) {
         {
           oprot.writeI32(struct.errors.size());
-          for (org.apache.airavata.model.commons.ErrorModel _iter23 : struct.errors)
+          for (org.apache.airavata.model.commons.ErrorModel _iter28 : struct.errors)
           {
-            _iter23.write(oprot);
+            _iter28.write(oprot);
           }
         }
       }
       if (struct.isSetProcesses()) {
         {
           oprot.writeI32(struct.processes.size());
-          for (org.apache.airavata.model.process.ProcessModel _iter24 : struct.processes)
+          for (org.apache.airavata.model.process.ProcessModel _iter29 : struct.processes)
           {
-            _iter24.write(oprot);
+            _iter29.write(oprot);
           }
         }
       }
@@ -2508,13 +2548,13 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       }
       if (incoming.get(6)) {
         {
-          org.apache.thrift.protocol.TList _list25 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.emailAddresses = new ArrayList<String>(_list25.size);
-          String _elem26;
-          for (int _i27 = 0; _i27 < _list25.size; ++_i27)
+          org.apache.thrift.protocol.TList _list30 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.emailAddresses = new ArrayList<String>(_list30.size);
+          String _elem31;
+          for (int _i32 = 0; _i32 < _list30.size; ++_i32)
           {
-            _elem26 = iprot.readString();
-            struct.emailAddresses.add(_elem26);
+            _elem31 = iprot.readString();
+            struct.emailAddresses.add(_elem31);
           }
         }
         struct.setEmailAddressesIsSet(true);
@@ -2526,61 +2566,70 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       }
       if (incoming.get(8)) {
         {
-          org.apache.thrift.protocol.TList _list28 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.experimentInputs = new ArrayList<org.apache.airavata.model.application.io.InputDataObjectType>(_list28.size);
-          org.apache.airavata.model.application.io.InputDataObjectType _elem29;
-          for (int _i30 = 0; _i30 < _list28.size; ++_i30)
+          org.apache.thrift.protocol.TList _list33 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.experimentInputs = new ArrayList<org.apache.airavata.model.application.io.InputDataObjectType>(_list33.size);
+          org.apache.airavata.model.application.io.InputDataObjectType _elem34;
+          for (int _i35 = 0; _i35 < _list33.size; ++_i35)
           {
-            _elem29 = new org.apache.airavata.model.application.io.InputDataObjectType();
-            _elem29.read(iprot);
-            struct.experimentInputs.add(_elem29);
+            _elem34 = new org.apache.airavata.model.application.io.InputDataObjectType();
+            _elem34.read(iprot);
+            struct.experimentInputs.add(_elem34);
           }
         }
         struct.setExperimentInputsIsSet(true);
       }
       if (incoming.get(9)) {
         {
-          org.apache.thrift.protocol.TList _list31 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.experimentOutputs = new ArrayList<org.apache.airavata.model.application.io.OutputDataObjectType>(_list31.size);
-          org.apache.airavata.model.application.io.OutputDataObjectType _elem32;
-          for (int _i33 = 0; _i33 < _list31.size; ++_i33)
+          org.apache.thrift.protocol.TList _list36 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.experimentOutputs = new ArrayList<org.apache.airavata.model.application.io.OutputDataObjectType>(_list36.size);
+          org.apache.airavata.model.application.io.OutputDataObjectType _elem37;
+          for (int _i38 = 0; _i38 < _list36.size; ++_i38)
           {
-            _elem32 = new org.apache.airavata.model.application.io.OutputDataObjectType();
-            _elem32.read(iprot);
-            struct.experimentOutputs.add(_elem32);
+            _elem37 = new org.apache.airavata.model.application.io.OutputDataObjectType();
+            _elem37.read(iprot);
+            struct.experimentOutputs.add(_elem37);
           }
         }
         struct.setExperimentOutputsIsSet(true);
       }
       if (incoming.get(10)) {
-        struct.experimentStatus = new org.apache.airavata.model.status.ExperimentStatus();
-        struct.experimentStatus.read(iprot);
+        {
+          org.apache.thrift.protocol.TList _list39 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.experimentStatus = new ArrayList<org.apache.airavata.model.status.ExperimentStatus>(_list39.size);
+          org.apache.airavata.model.status.ExperimentStatus _elem40;
+          for (int _i41 = 0; _i41 < _list39.size; ++_i41)
+          {
+            _elem40 = new org.apache.airavata.model.status.ExperimentStatus();
+            _elem40.read(iprot);
+            struct.experimentStatus.add(_elem40);
+          }
+        }
         struct.setExperimentStatusIsSet(true);
       }
       if (incoming.get(11)) {
         {
-          org.apache.thrift.protocol.TList _list34 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.errors = new ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list34.size);
-          org.apache.airavata.model.commons.ErrorModel _elem35;
-          for (int _i36 = 0; _i36 < _list34.size; ++_i36)
+          org.apache.thrift.protocol.TList _list42 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.errors = new ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list42.size);
+          org.apache.airavata.model.commons.ErrorModel _elem43;
+          for (int _i44 = 0; _i44 < _list42.size; ++_i44)
           {
-            _elem35 = new org.apache.airavata.model.commons.ErrorModel();
-            _elem35.read(iprot);
-            struct.errors.add(_elem35);
+            _elem43 = new org.apache.airavata.model.commons.ErrorModel();
+            _elem43.read(iprot);
+            struct.errors.add(_elem43);
           }
         }
         struct.setErrorsIsSet(true);
       }
       if (incoming.get(12)) {
         {
-          org.apache.thrift.protocol.TList _list37 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.processes = new ArrayList<org.apache.airavata.model.process.ProcessModel>(_list37.size);
-          org.apache.airavata.model.process.ProcessModel _elem38;
-          for (int _i39 = 0; _i39 < _list37.size; ++_i39)
+          org.apache.thrift.protocol.TList _list45 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.processes = new ArrayList<org.apache.airavata.model.process.ProcessModel>(_list45.size);
+          org.apache.airavata.model.process.ProcessModel _elem46;
+          for (int _i47 = 0; _i47 < _list45.size; ++_i47)
           {
-            _elem38 = new org.apache.airavata.model.process.ProcessModel();
-            _elem38.read(iprot);
-            struct.processes.add(_elem38);
+            _elem46 = new org.apache.airavata.model.process.ProcessModel();
+            _elem46.read(iprot);
+            struct.processes.add(_elem46);
           }
         }
         struct.setProcessesIsSet(true);

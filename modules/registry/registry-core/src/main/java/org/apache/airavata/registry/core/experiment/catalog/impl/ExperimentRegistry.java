@@ -608,7 +608,7 @@ public class ExperimentRegistry {
             if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
                 updateExpOutputs(experimentOutputs, expId);
             }
-            ExperimentStatus experimentStatus = experiment.getExperimentStatus();
+            ExperimentStatus experimentStatus = experiment.getExperimentStatus().get(0);
             if (experimentStatus != null) {
                 updateExperimentStatus(experimentStatus, expId);
             }
