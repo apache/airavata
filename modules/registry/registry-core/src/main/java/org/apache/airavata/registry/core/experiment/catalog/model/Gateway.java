@@ -72,7 +72,7 @@ public class Gateway {
         this.gatewayName = gatewayName;
     }
 
-    @Column(name = "DOMAIN")
+    @Column(name = "GATEWAY_DOMAIN")
     public String getDomain() {
         return domain;
     }

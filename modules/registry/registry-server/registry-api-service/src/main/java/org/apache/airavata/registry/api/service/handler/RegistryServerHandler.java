@@ -508,7 +508,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             }
             ExperimentModel experimentModel = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
 
-            if(!(experimentModel.getExperimentStatus().getState() == ExperimentState.CREATED)){
+            if(!(experimentModel.getExperimentStatus().get(0).getState() == ExperimentState.CREATED)){
                 logger.error("Error while deleting the experiment");
                 throw new ExperimentCatalogException("Experiment is not in CREATED state. Hence cannot deleted. ID:"+ experimentId);
             }
