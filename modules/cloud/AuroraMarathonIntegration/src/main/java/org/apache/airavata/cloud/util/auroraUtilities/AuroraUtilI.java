@@ -1,4 +1,4 @@
-/**
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,28 +16,16 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
  */
-package org.apache.airavata.gfac.core.authentication;
 
-import org.ietf.jgss.GSSCredential;
+package org.apache.airavata.cloud.util.auroraUtilities;
 
-import java.util.Properties;
+import java.io.BufferedReader;
 
-/**
- * Authentication data. Could be MyProxy user name, password, could be GSSCredentials
- * or could be SSH keys.
- */
-public abstract class GSIAuthenticationInfo implements AuthenticationInfo {
+import org.apache.airavata.cloud.exceptions.auroraExceptions.AuroraException;
 
-    public Properties properties = new Properties();
-
-    public abstract GSSCredential getCredentials() throws SecurityException;
-
-    public Properties getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Properties propertiesIn) {
-        properties = propertiesIn;
-    }
+public interface AuroraUtilI{
+  public void printLog(BufferedReader stdout) throws AuroraException;
+  public BufferedReader executeProcess(String commandToRunProcess) throws AuroraException;
 }

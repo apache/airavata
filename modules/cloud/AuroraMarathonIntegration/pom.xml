@@ -1,0 +1,44 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.apache.airavata</groupId>
+		<artifactId>airavata-cloud</artifactId>
+		<version>0.17-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>AuroraMarathonIntegration</artifactId>
+  <groupId>org.apache.airavata.cloud.drivers.auroraDriver</groupId>
+	<packaging>jar</packaging>
+	<version>0.17-SNAPSHOT</version>
+	<name>Airavata Aurora Marathon Integration</name>
+	<url>http://airavata.apache.org/</url>
+
+
+	<build>
+		<directory>target</directory>
+		<outputDirectory>target/classes</outputDirectory>
+		<finalName>${project.artifactId}-${project.version}</finalName>
+		<sourceDirectory>src/main/java</sourceDirectory>
+		<plugins>
+			<plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+            <archive>
+                <manifest>
+                    <mainClass>org.apache.airavata.cloud.drivers.auroraDriver.AuroraAdminDriver</mainClass>
+                </manifest>
+            </archive>
+        </configuration>
+    </plugin>
+		</plugins>
+	</build>
+
+	<properties>
+			<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+			<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
+
+</project>
