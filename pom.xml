@@ -564,6 +564,7 @@
 				<module>modules/workflow</module>
 				<module>modules/test-suite</module>
 				<module>modules/group-manager</module>
+				<module>modules/registry-refactoring</module>
 				<!-- Deprecated Modules-->
 				<!--<module>modules/integration-tests</module>-->
 				<!--<module>modules/workflow-model</module>-->
