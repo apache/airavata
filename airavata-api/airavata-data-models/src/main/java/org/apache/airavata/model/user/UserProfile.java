@@ -23,32 +23,14 @@
  */
 package org.apache.airavata.model.user;
 
+import org.apache.thrift.protocol.TTupleProtocol;
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
 import org.apache.thrift.scheme.StandardScheme;
-
 import org.apache.thrift.scheme.TupleScheme;
-import org.apache.thrift.protocol.TTupleProtocol;
-import org.apache.thrift.protocol.TProtocolException;
-import org.apache.thrift.EncodingUtils;
-import org.apache.thrift.TException;
-import org.apache.thrift.async.AsyncMethodCallback;
-import org.apache.thrift.server.AbstractNonblockingServer.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.EnumMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.EnumSet;
-import java.util.Collections;
-import java.util.BitSet;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
+
 import javax.annotation.Generated;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.*;
 
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked"})
 /**
@@ -110,23 +92,24 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
   private static final org.apache.thrift.protocol.TField USER_MODEL_VERSION_FIELD_DESC = new org.apache.thrift.protocol.TField("userModelVersion", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField AIRAVATA_INTERNAL_USER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("airavataInternalUserId", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField USER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("userId", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField EMAILS_FIELD_DESC = new org.apache.thrift.protocol.TField("emails", org.apache.thrift.protocol.TType.LIST, (short)4);
-  private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)5);
-  private static final org.apache.thrift.protocol.TField ORCID_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("orcidId", org.apache.thrift.protocol.TType.STRING, (short)6);
-  private static final org.apache.thrift.protocol.TField PHONES_FIELD_DESC = new org.apache.thrift.protocol.TField("phones", org.apache.thrift.protocol.TType.LIST, (short)7);
-  private static final org.apache.thrift.protocol.TField COUNTRY_FIELD_DESC = new org.apache.thrift.protocol.TField("country", org.apache.thrift.protocol.TType.STRING, (short)8);
-  private static final org.apache.thrift.protocol.TField NATIONALITY_FIELD_DESC = new org.apache.thrift.protocol.TField("nationality", org.apache.thrift.protocol.TType.LIST, (short)9);
-  private static final org.apache.thrift.protocol.TField HOME_ORGANIZATION_FIELD_DESC = new org.apache.thrift.protocol.TField("homeOrganization", org.apache.thrift.protocol.TType.STRING, (short)10);
-  private static final org.apache.thrift.protocol.TField ORGINATION_AFFILIATION_FIELD_DESC = new org.apache.thrift.protocol.TField("orginationAffiliation", org.apache.thrift.protocol.TType.STRING, (short)11);
-  private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.STRING, (short)12);
-  private static final org.apache.thrift.protocol.TField LAST_ACCESS_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("lastAccessTime", org.apache.thrift.protocol.TType.STRING, (short)13);
-  private static final org.apache.thrift.protocol.TField VALID_UNTIL_FIELD_DESC = new org.apache.thrift.protocol.TField("validUntil", org.apache.thrift.protocol.TType.STRING, (short)14);
-  private static final org.apache.thrift.protocol.TField STATE_FIELD_DESC = new org.apache.thrift.protocol.TField("State", org.apache.thrift.protocol.TType.I32, (short)15);
-  private static final org.apache.thrift.protocol.TField COMMENTS_FIELD_DESC = new org.apache.thrift.protocol.TField("comments", org.apache.thrift.protocol.TType.STRING, (short)16);
-  private static final org.apache.thrift.protocol.TField LABELED_URI_FIELD_DESC = new org.apache.thrift.protocol.TField("labeledURI", org.apache.thrift.protocol.TType.LIST, (short)17);
-  private static final org.apache.thrift.protocol.TField GPG_KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("gpgKey", org.apache.thrift.protocol.TType.STRING, (short)18);
-  private static final org.apache.thrift.protocol.TField TIME_ZONE_FIELD_DESC = new org.apache.thrift.protocol.TField("timeZone", org.apache.thrift.protocol.TType.STRING, (short)19);
-  private static final org.apache.thrift.protocol.TField NSF_DEMOGRAPHICS_FIELD_DESC = new org.apache.thrift.protocol.TField("nsfDemographics", org.apache.thrift.protocol.TType.STRUCT, (short)20);
+  private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField EMAILS_FIELD_DESC = new org.apache.thrift.protocol.TField("emails", org.apache.thrift.protocol.TType.LIST, (short)5);
+  private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField ORCID_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("orcidId", org.apache.thrift.protocol.TType.STRING, (short)7);
+  private static final org.apache.thrift.protocol.TField PHONES_FIELD_DESC = new org.apache.thrift.protocol.TField("phones", org.apache.thrift.protocol.TType.LIST, (short)8);
+  private static final org.apache.thrift.protocol.TField COUNTRY_FIELD_DESC = new org.apache.thrift.protocol.TField("country", org.apache.thrift.protocol.TType.STRING, (short)9);
+  private static final org.apache.thrift.protocol.TField NATIONALITY_FIELD_DESC = new org.apache.thrift.protocol.TField("nationality", org.apache.thrift.protocol.TType.LIST, (short)10);
+  private static final org.apache.thrift.protocol.TField HOME_ORGANIZATION_FIELD_DESC = new org.apache.thrift.protocol.TField("homeOrganization", org.apache.thrift.protocol.TType.STRING, (short)11);
+  private static final org.apache.thrift.protocol.TField ORGINATION_AFFILIATION_FIELD_DESC = new org.apache.thrift.protocol.TField("orginationAffiliation", org.apache.thrift.protocol.TType.STRING, (short)12);
+  private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.STRING, (short)13);
+  private static final org.apache.thrift.protocol.TField LAST_ACCESS_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("lastAccessTime", org.apache.thrift.protocol.TType.STRING, (short)14);
+  private static final org.apache.thrift.protocol.TField VALID_UNTIL_FIELD_DESC = new org.apache.thrift.protocol.TField("validUntil", org.apache.thrift.protocol.TType.STRING, (short)15);
+  private static final org.apache.thrift.protocol.TField STATE_FIELD_DESC = new org.apache.thrift.protocol.TField("State", org.apache.thrift.protocol.TType.I32, (short)16);
+  private static final org.apache.thrift.protocol.TField COMMENTS_FIELD_DESC = new org.apache.thrift.protocol.TField("comments", org.apache.thrift.protocol.TType.STRING, (short)17);
+  private static final org.apache.thrift.protocol.TField LABELED_URI_FIELD_DESC = new org.apache.thrift.protocol.TField("labeledURI", org.apache.thrift.protocol.TType.LIST, (short)18);
+  private static final org.apache.thrift.protocol.TField GPG_KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("gpgKey", org.apache.thrift.protocol.TType.STRING, (short)19);
+  private static final org.apache.thrift.protocol.TField TIME_ZONE_FIELD_DESC = new org.apache.thrift.protocol.TField("timeZone", org.apache.thrift.protocol.TType.STRING, (short)20);
+  private static final org.apache.thrift.protocol.TField NSF_DEMOGRAPHICS_FIELD_DESC = new org.apache.thrift.protocol.TField("nsfDemographics", org.apache.thrift.protocol.TType.STRUCT, (short)21);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -137,6 +120,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
   private String userModelVersion; // required
   private String airavataInternalUserId; // required
   private String userId; // required
+  private String gatewayId; // required
   private List<String> emails; // required
   private String userName; // optional
   private String orcidId; // optional
@@ -160,27 +144,28 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
     USER_MODEL_VERSION((short)1, "userModelVersion"),
     AIRAVATA_INTERNAL_USER_ID((short)2, "airavataInternalUserId"),
     USER_ID((short)3, "userId"),
-    EMAILS((short)4, "emails"),
-    USER_NAME((short)5, "userName"),
-    ORCID_ID((short)6, "orcidId"),
-    PHONES((short)7, "phones"),
-    COUNTRY((short)8, "country"),
-    NATIONALITY((short)9, "nationality"),
-    HOME_ORGANIZATION((short)10, "homeOrganization"),
-    ORGINATION_AFFILIATION((short)11, "orginationAffiliation"),
-    CREATION_TIME((short)12, "creationTime"),
-    LAST_ACCESS_TIME((short)13, "lastAccessTime"),
-    VALID_UNTIL((short)14, "validUntil"),
+    GATEWAY_ID((short)4, "gatewayId"),
+    EMAILS((short)5, "emails"),
+    USER_NAME((short)6, "userName"),
+    ORCID_ID((short)7, "orcidId"),
+    PHONES((short)8, "phones"),
+    COUNTRY((short)9, "country"),
+    NATIONALITY((short)10, "nationality"),
+    HOME_ORGANIZATION((short)11, "homeOrganization"),
+    ORGINATION_AFFILIATION((short)12, "orginationAffiliation"),
+    CREATION_TIME((short)13, "creationTime"),
+    LAST_ACCESS_TIME((short)14, "lastAccessTime"),
+    VALID_UNTIL((short)15, "validUntil"),
     /**
      * 
      * @see Status
      */
-    STATE((short)15, "State"),
-    COMMENTS((short)16, "comments"),
-    LABELED_URI((short)17, "labeledURI"),
-    GPG_KEY((short)18, "gpgKey"),
-    TIME_ZONE((short)19, "timeZone"),
-    NSF_DEMOGRAPHICS((short)20, "nsfDemographics");
+    STATE((short)16, "State"),
+    COMMENTS((short)17, "comments"),
+    LABELED_URI((short)18, "labeledURI"),
+    GPG_KEY((short)19, "gpgKey"),
+    TIME_ZONE((short)20, "timeZone"),
+    NSF_DEMOGRAPHICS((short)21, "nsfDemographics");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -201,39 +186,41 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
           return AIRAVATA_INTERNAL_USER_ID;
         case 3: // USER_ID
           return USER_ID;
-        case 4: // EMAILS
+        case 4: // GATEWAY_ID
+          return GATEWAY_ID;
+        case 5: // EMAILS
           return EMAILS;
-        case 5: // USER_NAME
+        case 6: // USER_NAME
           return USER_NAME;
-        case 6: // ORCID_ID
+        case 7: // ORCID_ID
           return ORCID_ID;
-        case 7: // PHONES
+        case 8: // PHONES
           return PHONES;
-        case 8: // COUNTRY
+        case 9: // COUNTRY
           return COUNTRY;
-        case 9: // NATIONALITY
+        case 10: // NATIONALITY
           return NATIONALITY;
-        case 10: // HOME_ORGANIZATION
+        case 11: // HOME_ORGANIZATION
           return HOME_ORGANIZATION;
-        case 11: // ORGINATION_AFFILIATION
+        case 12: // ORGINATION_AFFILIATION
           return ORGINATION_AFFILIATION;
-        case 12: // CREATION_TIME
+        case 13: // CREATION_TIME
           return CREATION_TIME;
-        case 13: // LAST_ACCESS_TIME
+        case 14: // LAST_ACCESS_TIME
           return LAST_ACCESS_TIME;
-        case 14: // VALID_UNTIL
+        case 15: // VALID_UNTIL
           return VALID_UNTIL;
-        case 15: // STATE
+        case 16: // STATE
           return STATE;
-        case 16: // COMMENTS
+        case 17: // COMMENTS
           return COMMENTS;
-        case 17: // LABELED_URI
+        case 18: // LABELED_URI
           return LABELED_URI;
-        case 18: // GPG_KEY
+        case 19: // GPG_KEY
           return GPG_KEY;
-        case 19: // TIME_ZONE
+        case 20: // TIME_ZONE
           return TIME_ZONE;
-        case 20: // NSF_DEMOGRAPHICS
+        case 21: // NSF_DEMOGRAPHICS
           return NSF_DEMOGRAPHICS;
         default:
           return null;
@@ -284,6 +271,8 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
     tmpMap.put(_Fields.AIRAVATA_INTERNAL_USER_ID, new org.apache.thrift.meta_data.FieldMetaData("airavataInternalUserId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.USER_ID, new org.apache.thrift.meta_data.FieldMetaData("userId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.EMAILS, new org.apache.thrift.meta_data.FieldMetaData("emails", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
@@ -338,6 +327,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
     String userModelVersion,
     String airavataInternalUserId,
     String userId,
+    String gatewayId,
     List<String> emails,
     String creationTime,
     String lastAccessTime,
@@ -348,6 +338,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
     this.userModelVersion = userModelVersion;
     this.airavataInternalUserId = airavataInternalUserId;
     this.userId = userId;
+    this.gatewayId = gatewayId;
     this.emails = emails;
     this.creationTime = creationTime;
     this.lastAccessTime = lastAccessTime;
@@ -367,6 +358,9 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
     }
     if (other.isSetUserId()) {
       this.userId = other.userId;
+    }
+    if (other.isSetGatewayId()) {
+      this.gatewayId = other.gatewayId;
     }
     if (other.isSetEmails()) {
       List<String> __this__emails = new ArrayList<String>(other.emails);
@@ -436,6 +430,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
     this.airavataInternalUserId = "DO_NOT_SET_AT_CLIENTS";
 
     this.userId = null;
+    this.gatewayId = null;
     this.emails = null;
     this.userName = null;
     this.orcidId = null;
@@ -521,6 +516,29 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
   public void setUserIdIsSet(boolean value) {
     if (!value) {
       this.userId = null;
+    }
+  }
+
+  public String getGatewayId() {
+    return this.gatewayId;
+  }
+
+  public void setGatewayId(String gatewayId) {
+    this.gatewayId = gatewayId;
+  }
+
+  public void unsetGatewayId() {
+    this.gatewayId = null;
+  }
+
+  /** Returns true if field gatewayId is set (has been assigned a value) and false otherwise */
+  public boolean isSetGatewayId() {
+    return this.gatewayId != null;
+  }
+
+  public void setGatewayIdIsSet(boolean value) {
+    if (!value) {
+      this.gatewayId = null;
     }
   }
 
@@ -1009,6 +1027,14 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
       }
       break;
 
+    case GATEWAY_ID:
+      if (value == null) {
+        unsetGatewayId();
+      } else {
+        setGatewayId((String)value);
+      }
+      break;
+
     case EMAILS:
       if (value == null) {
         unsetEmails();
@@ -1159,6 +1185,9 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
     case USER_ID:
       return getUserId();
 
+    case GATEWAY_ID:
+      return getGatewayId();
+
     case EMAILS:
       return getEmails();
 
@@ -1227,6 +1256,8 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
       return isSetAiravataInternalUserId();
     case USER_ID:
       return isSetUserId();
+    case GATEWAY_ID:
+      return isSetGatewayId();
     case EMAILS:
       return isSetEmails();
     case USER_NAME:
@@ -1302,6 +1333,15 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
       if (!(this_present_userId && that_present_userId))
         return false;
       if (!this.userId.equals(that.userId))
+        return false;
+    }
+
+    boolean this_present_gatewayId = true && this.isSetGatewayId();
+    boolean that_present_gatewayId = true && that.isSetGatewayId();
+    if (this_present_gatewayId || that_present_gatewayId) {
+      if (!(this_present_gatewayId && that_present_gatewayId))
+        return false;
+      if (!this.gatewayId.equals(that.gatewayId))
         return false;
     }
 
@@ -1480,6 +1520,11 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
     if (present_userId)
       list.add(userId);
 
+    boolean present_gatewayId = true && (isSetGatewayId());
+    list.add(present_gatewayId);
+    if (present_gatewayId)
+      list.add(gatewayId);
+
     boolean present_emails = true && (isSetEmails());
     list.add(present_emails);
     if (present_emails)
@@ -1602,6 +1647,16 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
     }
     if (isSetUserId()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userId, other.userId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetGatewayId()).compareTo(other.isSetGatewayId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetGatewayId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1820,6 +1875,14 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
     }
     first = false;
     if (!first) sb.append(", ");
+    sb.append("gatewayId:");
+    if (this.gatewayId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.gatewayId);
+    }
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("emails:");
     if (this.emails == null) {
       sb.append("null");
@@ -1997,6 +2060,10 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'userId' is unset! Struct:" + toString());
     }
 
+    if (!isSetGatewayId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' is unset! Struct:" + toString());
+    }
+
     if (!isSetEmails()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'emails' is unset! Struct:" + toString());
     }
@@ -2081,7 +2148,15 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // EMAILS
+          case 4: // GATEWAY_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.gatewayId = iprot.readString();
+              struct.setGatewayIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 5: // EMAILS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list24 = iprot.readListBegin();
@@ -2099,7 +2174,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // USER_NAME
+          case 6: // USER_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.userName = iprot.readString();
               struct.setUserNameIsSet(true);
@@ -2107,7 +2182,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // ORCID_ID
+          case 7: // ORCID_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.orcidId = iprot.readString();
               struct.setOrcidIdIsSet(true);
@@ -2115,7 +2190,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // PHONES
+          case 8: // PHONES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list27 = iprot.readListBegin();
@@ -2133,7 +2208,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // COUNTRY
+          case 9: // COUNTRY
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.country = iprot.readString();
               struct.setCountryIsSet(true);
@@ -2141,7 +2216,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // NATIONALITY
+          case 10: // NATIONALITY
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list30 = iprot.readListBegin();
@@ -2159,7 +2234,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // HOME_ORGANIZATION
+          case 11: // HOME_ORGANIZATION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.homeOrganization = iprot.readString();
               struct.setHomeOrganizationIsSet(true);
@@ -2167,7 +2242,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 11: // ORGINATION_AFFILIATION
+          case 12: // ORGINATION_AFFILIATION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.orginationAffiliation = iprot.readString();
               struct.setOrginationAffiliationIsSet(true);
@@ -2175,7 +2250,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 12: // CREATION_TIME
+          case 13: // CREATION_TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.creationTime = iprot.readString();
               struct.setCreationTimeIsSet(true);
@@ -2183,7 +2258,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 13: // LAST_ACCESS_TIME
+          case 14: // LAST_ACCESS_TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.lastAccessTime = iprot.readString();
               struct.setLastAccessTimeIsSet(true);
@@ -2191,7 +2266,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 14: // VALID_UNTIL
+          case 15: // VALID_UNTIL
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.validUntil = iprot.readString();
               struct.setValidUntilIsSet(true);
@@ -2199,7 +2274,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 15: // STATE
+          case 16: // STATE
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.State = org.apache.airavata.model.user.Status.findByValue(iprot.readI32());
               struct.setStateIsSet(true);
@@ -2207,7 +2282,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 16: // COMMENTS
+          case 17: // COMMENTS
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.comments = iprot.readString();
               struct.setCommentsIsSet(true);
@@ -2215,7 +2290,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 17: // LABELED_URI
+          case 18: // LABELED_URI
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list33 = iprot.readListBegin();
@@ -2233,7 +2308,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 18: // GPG_KEY
+          case 19: // GPG_KEY
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.gpgKey = iprot.readString();
               struct.setGpgKeyIsSet(true);
@@ -2241,7 +2316,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 19: // TIME_ZONE
+          case 20: // TIME_ZONE
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.timeZone = iprot.readString();
               struct.setTimeZoneIsSet(true);
@@ -2249,7 +2324,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 20: // NSF_DEMOGRAPHICS
+          case 21: // NSF_DEMOGRAPHICS
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.nsfDemographics = new NSFDemographics();
               struct.nsfDemographics.read(iprot);
@@ -2284,6 +2359,11 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
       if (struct.userId != null) {
         oprot.writeFieldBegin(USER_ID_FIELD_DESC);
         oprot.writeString(struct.userId);
+        oprot.writeFieldEnd();
+      }
+      if (struct.gatewayId != null) {
+        oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
+        oprot.writeString(struct.gatewayId);
         oprot.writeFieldEnd();
       }
       if (struct.emails != null) {
@@ -2443,6 +2523,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
       oprot.writeString(struct.userModelVersion);
       oprot.writeString(struct.airavataInternalUserId);
       oprot.writeString(struct.userId);
+      oprot.writeString(struct.gatewayId);
       {
         oprot.writeI32(struct.emails.size());
         for (String _iter40 : struct.emails)
@@ -2557,6 +2638,8 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
       struct.setAiravataInternalUserIdIsSet(true);
       struct.userId = iprot.readString();
       struct.setUserIdIsSet(true);
+      struct.gatewayId = iprot.readString();
+      struct.setGatewayIdIsSet(true);
       {
         org.apache.thrift.protocol.TList _list44 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
         struct.emails = new ArrayList<String>(_list44.size);
