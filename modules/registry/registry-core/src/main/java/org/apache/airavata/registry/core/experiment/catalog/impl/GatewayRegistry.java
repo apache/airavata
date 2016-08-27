@@ -95,6 +95,7 @@ public class GatewayRegistry {
             existingGateway.setDeclinedReason(updatedGateway.getDeclinedReason());
             existingGateway.setOauthClientId(updatedGateway.getOauthClientId());
             existingGateway.setOauthClientSecret(updatedGateway.getOauthClientSecret());
+            existingGateway.setRequesterUsername(updatedGateway.getRequesterUsername());
             existingGateway.save();
         }catch (RegistryException e){
             logger.error("Error while updating gateway to registry", e);
