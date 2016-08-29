@@ -23,7 +23,7 @@ package org.apache.airavata.registry.core.entities.expcatalog;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PROCESS_INPUT")
+@Table(name = "EXPCAT_PROCESS_INPUT")
 @IdClass(ProcessInputPK.class)
 public class ProcessInputEntity {
     private String processId;

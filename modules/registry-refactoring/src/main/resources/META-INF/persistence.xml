@@ -40,6 +40,11 @@
         <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessOutputEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessResourceSchedulingEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessStatusEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.TaskEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.TaskErrorEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.TaskStatusEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.JobEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.JobStatusEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>

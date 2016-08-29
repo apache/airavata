@@ -23,7 +23,7 @@ package org.apache.airavata.registry.core.entities.expcatalog;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PROCESS_RESOURCE_SCHEDULING")
+@Table(name = "EXPCAT_PROCESS_RESOURCE_SCHEDULING")
 public class ProcessResourceSchedulingEntity {
     private String processId;
     private String resourceHostId;

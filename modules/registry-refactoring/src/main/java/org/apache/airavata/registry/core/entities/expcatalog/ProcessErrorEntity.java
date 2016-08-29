@@ -24,7 +24,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "PROCESS_ERROR")
+@Table(name = "EXPCAT_PROCESS_ERROR")
 @IdClass(ProcessErrorPK.class)
 public class ProcessErrorEntity {
     private String errorId;
@@ -96,7 +96,7 @@ public class ProcessErrorEntity {
 
 
     @ElementCollection
-    @CollectionTable(name="EXPERIMENT_ERROR_ROOT_CAUSE_ERROR_ID", joinColumns = @JoinColumn(name="ERROR_ID"))
+    @CollectionTable(name="EXPCAT_EXPERIMENT_ERROR_ROOT_CAUSE_ERROR_ID", joinColumns = @JoinColumn(name="ERROR_ID"))
     public List<String> getRootCauseErrorIdList() {
         return rootCauseErrorIdList;
     }

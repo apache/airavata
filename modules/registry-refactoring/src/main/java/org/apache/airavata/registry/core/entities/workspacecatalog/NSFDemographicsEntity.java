@@ -24,7 +24,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "NSF_DEMOGRAPHIC")
+@Table(name = "WORKSPACE_NSF_DEMOGRAPHIC")
 public class NSFDemographicsEntity {
     private String airavataInternalUserId;
     private String gender;

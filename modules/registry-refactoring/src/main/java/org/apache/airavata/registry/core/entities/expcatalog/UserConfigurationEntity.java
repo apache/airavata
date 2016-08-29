@@ -23,7 +23,7 @@ package org.apache.airavata.registry.core.entities.expcatalog;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "USER_CONFIGURATION")
+@Table(name = "EXPCAT_USER_CONFIGURATION")
 public class UserConfigurationEntity {
     private String experimentId;
     private boolean airavataAutoSchedule;

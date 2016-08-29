@@ -25,7 +25,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "PROCESS")
+@Table(name = "EXPCAT_PROCESS")
 public class ProcessEntity {
     private String processId;
     private String experimentId;
@@ -50,6 +50,7 @@ public class ProcessEntity {
     private List<ProcessInputEntity> processInputs;
     private List<ProcessOutputEntity> processOutputs;
     private ProcessResourceSchedulingEntity processResourceSchedule;
+    private List<TaskEntity> tasks;
 
     private ExperimentEntity experiment;
 
@@ -252,6 +253,15 @@ public class ProcessEntity {
 
     public void setProcessResourceSchedule(ProcessResourceSchedulingEntity proceeResourceSchedule) {
         this.processResourceSchedule = proceeResourceSchedule;
+    }
+
+    @OneToMany(targetEntity = TaskEntity.class, cascade = CascadeType.ALL, mappedBy = "process")
+    public List<TaskEntity> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<TaskEntity> tasks) {
+        this.tasks = tasks;
     }
 
     @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
