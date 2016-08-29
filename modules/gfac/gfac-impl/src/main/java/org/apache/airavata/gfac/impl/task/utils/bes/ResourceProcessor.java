@@ -37,7 +37,7 @@ public class ResourceProcessor {
         ProcessModel processModel = context.getProcessModel();
         if (processModel != null) {
             try {
-                ComputationalResourceSchedulingModel crs = processModel.getResourceSchedule();
+                ComputationalResourceSchedulingModel crs = processModel.getProcessResourceSchedule();
 
                 if (crs.getTotalPhysicalMemory() > 0) {
                     RangeValueType rangeType = new RangeValueType();

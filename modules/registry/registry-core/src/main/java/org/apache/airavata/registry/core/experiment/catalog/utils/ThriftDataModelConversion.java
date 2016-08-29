@@ -384,16 +384,20 @@ public class ThriftDataModelConversion {
 
             ErrorModel errorModel = getErrorModel(processResource.getProcessError());
             if (errorModel != null){
-                processModel.setProcessError(errorModel);
+                List<ErrorModel> errorModels = new ArrayList<>();
+                errorModels.add(errorModel);
+                processModel.setProcessError(errorModels);
             }
             ProcessStatus processStatus = getProcessStatus(processResource.getProcessStatus());
             if (processStatus != null){
-                processModel.setProcessStatus(processStatus);
+                List<ProcessStatus> statuses = new ArrayList<>();
+                statuses.add(processStatus);
+                processModel.setProcessStatus(statuses);
             }
 
             ComputationalResourceSchedulingModel schedule = getProcessResourceSchedule(processResource.getProcessResourceSchedule());
             if (schedule != null){
-                processModel.setResourceSchedule(schedule);
+                processModel.setProcessResourceSchedule(schedule);
             }
             processModel.setTasks(getTaskModelList(processResource.getTaskList()));
             processModel.setStorageResourceId(processResource.getStorageResourceId());

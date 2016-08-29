@@ -293,8 +293,8 @@ public class ExperimentRegistry {
 
             processResource.save();
 
-            if(process.getResourceSchedule() != null) {
-                addProcessResourceSchedule(process.getResourceSchedule(), process.getProcessId());
+            if(process.getProcessResourceSchedule() != null) {
+                addProcessResourceSchedule(process.getProcessResourceSchedule(), process.getProcessId());
             }
             if(process.getProcessInputs() !=  null && process.getProcessInputs().size() > 0) {
                 addProcessInputs(process.getProcessInputs(), process.getProcessId());
@@ -305,10 +305,12 @@ public class ExperimentRegistry {
 
             ProcessStatus processStatus = new ProcessStatus();
             processStatus.setState(ProcessState.CREATED);
-            addProcessStatus(processStatus, process.getProcessId());
+            List<ProcessStatus> processStatuses = new ArrayList<>();
+            processStatuses.add(processStatus);
+            addProcessStatus(processStatuses.get(0), process.getProcessId());
 
             if(process.getProcessError() != null) {
-                addProcessError(process.getProcessError(), process.getProcessId());
+                addProcessError(process.getProcessError().get(0), process.getProcessId());
             }
         } catch (Exception e) {
             logger.error(expId, "Error while adding process...", e);
@@ -391,27 +393,27 @@ public class ExperimentRegistry {
 
     public String addProcessStatus(ProcessStatus processStatus, String processID) throws RegistryException {
         try {
-            ProcessResource processResource = new ProcessResource();
-            processResource.setProcessId(processID);
-            ProcessStatusResource status = processResource.getProcessStatus();
-            ProcessState newState = processStatus.getState();
-            if (status == null) {
-                status = (ProcessStatusResource) processResource.create(ResourceType.PROCESS_STATUS);
-                status.setStatusId(getStatusID("PROCESS_STATE"));
-            }else {
-                String state = status.getState();
-                if (newState != null && !state.equals(newState.toString())){
+                ProcessResource processResource = new ProcessResource();
+                processResource.setProcessId(processID);
+                ProcessStatusResource status = processResource.getProcessStatus();
+                ProcessState newState = processStatus.getState();
+                if (status == null) {
+                    status = (ProcessStatusResource) processResource.create(ResourceType.PROCESS_STATUS);
                     status.setStatusId(getStatusID("PROCESS_STATE"));
+                }else {
+                    String state = status.getState();
+                    if (newState != null && !state.equals(newState.toString())){
+                        status.setStatusId(getStatusID("PROCESS_STATE"));
+                    }
                 }
-            }
-            status.setProcessId(processID);
-            status.setTimeOfStateChange(AiravataUtils.getTime(processStatus.getTimeOfStateChange()));
-            if (newState != null){
-                status.setState(newState.toString());
-            }
-            status.setReason(processStatus.getReason());
-            status.save();
-            logger.debug(processID, "Added process {} status to {}.", processID, processStatus.toString());
+                status.setProcessId(processID);
+                status.setTimeOfStateChange(AiravataUtils.getTime(processStatus.getTimeOfStateChange()));
+                if (newState != null){
+                    status.setState(newState.toString());
+                }
+                status.setReason(processStatus.getReason());
+                status.save();
+                logger.debug(processID, "Added process {} status to {}.", processID, processStatus.toString());
         } catch (Exception e) {
             logger.error(processID, "Error while adding process status...", e);
             throw new RegistryException(e);
@@ -752,8 +754,8 @@ public class ExperimentRegistry {
 
             processResource.save();
 
-            if(process.getResourceSchedule() != null) {
-                updateProcessResourceSchedule(process.getResourceSchedule(), process.getProcessId());
+            if(process.getProcessResourceSchedule() != null) {
+                updateProcessResourceSchedule(process.getProcessResourceSchedule(), process.getProcessId());
             }
             if(process.getProcessInputs() !=  null && process.getProcessInputs().size() > 0) {
                 updateProcessInputs(process.getProcessInputs(), process.getProcessId());
@@ -762,10 +764,10 @@ public class ExperimentRegistry {
                 updateProcessOutputs(process.getProcessOutputs(), process.getProcessId());
             }
             if(process.getProcessStatus() != null) {
-                updateProcessStatus(process.getProcessStatus(), process.getProcessId());
+                updateProcessStatus(process.getProcessStatus().get(0), process.getProcessId());
             }
             if(process.getProcessError() != null) {
-                updateProcessError(process.getProcessError(), process.getProcessId());
+                updateProcessError(process.getProcessError().get(0), process.getProcessId());
             }
             if(process.getTasks() != null && process.getTasks().size() > 0){
                 for(TaskModel task : process.getTasks()){
@@ -864,8 +866,8 @@ public class ExperimentRegistry {
         return addProcessStatus(processStatus, processID);
     }
 
-    public String updateProcessError(ErrorModel processError, String processID) throws RegistryException {
-        return addProcessError(processError, processID);
+    public String updateProcessError(ErrorModel processErrors, String processID) throws RegistryException {
+        return addProcessError(processErrors, processID);
     }
 
     public String updateTask(TaskModel task, String taskID) throws RegistryException {

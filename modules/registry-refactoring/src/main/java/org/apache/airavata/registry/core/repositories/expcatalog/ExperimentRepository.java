@@ -49,8 +49,11 @@ public class ExperimentRepository extends AbstractRepository<ExperimentModel, Ex
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ExperimentEntity entity = mapper.map(experiment, ExperimentEntity.class);
 
-        if(entity.getUserConfigurationData() != null)
+        if(entity.getUserConfigurationData() != null) {
             entity.getUserConfigurationData().setExperimentId(experimentId);
+            if (entity.getUserConfigurationData().getComputeResourceSchedulingEntity() != null)
+                entity.getUserConfigurationData().getComputeResourceSchedulingEntity().setExperimentId(experimentId);
+        }
         if(entity.getExperimentInputs() != null)
             entity.getExperimentInputs().forEach(expIn->expIn.setExperimentId(experimentId));
         if(entity.getExperimentOutputs() != null)
@@ -59,6 +62,23 @@ public class ExperimentRepository extends AbstractRepository<ExperimentModel, Ex
             entity.getExperimentErrors().forEach(expErr->expErr.setExperimentId(experimentId));
         if(entity.getExperimentStatuses() != null)
             entity.getExperimentStatuses().forEach(expStatus->expStatus.setExperimentId(experimentId));
+
+        if(entity.getProcesses() != null){
+            entity.getProcesses().forEach(process->{
+                process.setExperimentId(experimentId);
+                String processId = process.getProcessId();
+                if(process.getProcessResourceSchedule() != null)
+                    process.getProcessResourceSchedule().setProcessId(processId);
+                if(process.getProcessInputs() != null)
+                    process.getProcessInputs().forEach(proInput->proInput.setProceseId(processId));
+                if(process.getProcessOutputs() != null)
+                    process.getProcessOutputs().forEach(proOutput->proOutput.setProcessId(processId));
+                if(process.getProcessError() != null)
+                    process.getProcessError().forEach(processErr->processErr.setProcessId(processId));
+                if(process.getProcessStatus() != null)
+                    process.getProcessStatus().forEach(processStat->processStat.setProcessId(processId));
+            });
+        }
 
         ExperimentEntity persistedCopy = JPAUtils.execute(entityManager -> entityManager.merge(entity));
         return mapper.map(persistedCopy, ExperimentModel.class);
