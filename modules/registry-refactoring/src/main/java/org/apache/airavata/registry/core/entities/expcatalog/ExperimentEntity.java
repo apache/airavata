@@ -24,7 +24,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "EXPERIMENT")
+@Table(name = "EXPCAT_EXPERIMENT")
 public class ExperimentEntity {
     public String experimentId;
     public String projectId;
@@ -159,7 +159,7 @@ public class ExperimentEntity {
     }
 
     @ElementCollection
-    @CollectionTable(name="EXPERIMENT_EMAIL", joinColumns = @JoinColumn(name="EXPERIMENT_ID"))
+    @CollectionTable(name="EXPCAT_EXPERIMENT_EMAIL", joinColumns = @JoinColumn(name="EXPERIMENT_ID"))
     public List<String> getEmailAddresses() {
         return emailAddresses;
     }

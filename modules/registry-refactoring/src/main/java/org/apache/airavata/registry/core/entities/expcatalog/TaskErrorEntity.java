@@ -24,18 +24,18 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "EXPCAT_EXPERIMENT_ERROR")
-@IdClass(ExperimentErrorPK.class)
-public class ExperimentErrorEntity {
+@Table(name = "EXPCAT_TASK_ERROR")
+@IdClass(TaskErrorPK.class)
+public class TaskErrorEntity {
     private String errorId;
-    private String experimentId;
+    private String taskId;
     private long creationTime;
     private String actualErrorMessage;
     private String userFriendlyMessage;
     private boolean transientOrPersistent;
     private List<String> rootCauseErrorIdList;
 
-    private ExperimentEntity experiment;
+    private TaskEntity task;
 
     @Id
     @Column(name = "ERROR_ID")
@@ -48,13 +48,13 @@ public class ExperimentErrorEntity {
     }
 
     @Id
-    @Column(name = "EXPERIMENT_ID")
-    public String getExperimentId() {
-        return experimentId;
+    @Column(name = "TASK_ID")
+    public String getTaskId() {
+        return taskId;
     }
 
-    public void setExperimentId(String experimentId) {
-        this.experimentId = experimentId;
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     @Column(name = "CREATION_TIME")
@@ -96,7 +96,7 @@ public class ExperimentErrorEntity {
 
 
     @ElementCollection
-    @CollectionTable(name="EXPERIMENT_ERROR_ROOT_CAUSE_ERROR_ID", joinColumns = @JoinColumn(name="ERROR_ID"))
+    @CollectionTable(name="EXPCAT_EXPERIMENT_ERROR_ROOT_CAUSE_ERROR_ID", joinColumns = @JoinColumn(name="ERROR_ID"))
     public List<String> getRootCauseErrorIdList() {
         return rootCauseErrorIdList;
     }
@@ -106,13 +106,13 @@ public class ExperimentErrorEntity {
     }
 
 
-    @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
-    public ExperimentEntity getExperiment() {
-        return experiment;
+    @ManyToOne(targetEntity = TaskEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID")
+    public TaskEntity getTask() {
+        return task;
     }
 
-    public void setExperiment(ExperimentEntity experiment) {
-        this.experiment = experiment;
+    public void setTask(TaskEntity task) {
+        this.task = task;
     }
 }

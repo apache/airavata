@@ -23,24 +23,24 @@ package org.apache.airavata.registry.core.entities.expcatalog;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "EXPCAT_PROCESS_STATUS")
-@IdClass(ProcessStatusPK.class)
-public class ProcessStatusEntity {
-    private String processId;
+@Table(name = "EXPCAT_JOB_STATUS")
+@IdClass(JobStatusPK.class)
+public class JobStatusEntity {
+    private String jobId;
     private String state;
     private long timeOfStateChange;
     private String reason;
 
-    private ProcessEntity process;
+    private JobEntity job;
 
     @Id
-    @Column(name = "PROCESS_ID")
-    public String getProcessId() {
-        return processId;
+    @Column(name = "JOB_ID")
+    public String getJobId() {
+        return jobId;
     }
 
-    public void setProcessId(String processId) {
-        this.processId = processId;
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
     }
 
     @Id
@@ -71,13 +71,13 @@ public class ProcessStatusEntity {
         this.reason = reason;
     }
 
-    @ManyToOne(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID")
-    public ProcessEntity getProcess() {
-        return process;
+    @ManyToOne(targetEntity = JobEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "JOB_ID", referencedColumnName = "JOB_ID")
+    public JobEntity getJob() {
+        return job;
     }
 
-    public void setProcess(ProcessEntity process) {
-        this.process = process;
+    public void setJob(JobEntity job) {
+        this.job = job;
     }
 }

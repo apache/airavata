@@ -23,7 +23,7 @@ package org.apache.airavata.registry.core.entities.workspacecatalog;
 import javax.persistence.*;
 
 @Entity
-@Table(name="GATEWAY")
+@Table(name="WORKSPACE_GATEWAY")
 public class GatewayEntity {
     private String gatewayId;
     private String gatewayName;

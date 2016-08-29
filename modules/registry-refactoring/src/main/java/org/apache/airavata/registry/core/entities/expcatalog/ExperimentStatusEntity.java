@@ -23,7 +23,7 @@ package org.apache.airavata.registry.core.entities.expcatalog;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "EXPERIMENT_STATUS")
+@Table(name = "EXPCAT_EXPERIMENT_STATUS")
 @IdClass(ExperimentStatusPK.class)
 public class ExperimentStatusEntity {
     private String experimentId;
