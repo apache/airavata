@@ -309,8 +309,8 @@ public class ExperimentRegistry {
             processStatuses.add(processStatus);
             addProcessStatus(processStatuses.get(0), process.getProcessId());
 
-            if(process.getProcessError() != null) {
-                addProcessError(process.getProcessError().get(0), process.getProcessId());
+            if(process.getProcessErrors() != null) {
+                addProcessError(process.getProcessErrors().get(0), process.getProcessId());
             }
         } catch (Exception e) {
             logger.error(expId, "Error while adding process...", e);
@@ -463,8 +463,8 @@ public class ExperimentRegistry {
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 	        addTaskStatus(taskStatus, task.getTaskId());
 
-            if(task.getTaskError() != null) {
-                addTaskError(task.getTaskError(), task.getTaskId());
+            if(task.getTaskErrors() != null) {
+                addTaskError(task.getTaskErrors().get(0), task.getTaskId());
             }
         } catch (Exception e) {
             logger.error(processID, "Error while adding task...", e);
@@ -763,11 +763,11 @@ public class ExperimentRegistry {
             if(process.getProcessOutputs() != null && process.getProcessOutputs().size() > 0) {
                 updateProcessOutputs(process.getProcessOutputs(), process.getProcessId());
             }
-            if(process.getProcessStatus() != null) {
-                updateProcessStatus(process.getProcessStatus().get(0), process.getProcessId());
+            if(process.getProcessStatuses() != null) {
+                updateProcessStatus(process.getProcessStatuses().get(0), process.getProcessId());
             }
-            if(process.getProcessError() != null) {
-                updateProcessError(process.getProcessError().get(0), process.getProcessId());
+            if(process.getProcessErrors() != null) {
+                updateProcessError(process.getProcessErrors().get(0), process.getProcessId());
             }
             if(process.getTasks() != null && process.getTasks().size() > 0){
                 for(TaskModel task : process.getTasks()){
@@ -883,11 +883,11 @@ public class ExperimentRegistry {
             taskResource.setSubTaskModel(task.getSubTaskModel());
             taskResource.save();
 
-            if(task.getTaskError() != null) {
-                updateTaskError(task.getTaskError(), task.getTaskId());
+            if(task.getTaskErrors() != null) {
+                updateTaskError(task.getTaskErrors().get(0), task.getTaskId());
             }
-            if(task.getTaskError() != null) {
-                updateTaskError(task.getTaskError(), task.getTaskId());
+            if(task.getTaskErrors() != null) {
+                updateTaskError(task.getTaskErrors().get(0), task.getTaskId());
             }
         } catch (Exception e) {
             logger.error(taskID, "Error while adding task...", e);
@@ -1252,7 +1252,9 @@ public class ExperimentRegistry {
 	                if (latestSR != null) {
 		                JobStatus jobStatus = new JobStatus(JobState.valueOf(latestSR.getState()));
 		                jobStatus.setReason(latestSR.getReason());
-		                jobModel.setJobStatus(jobStatus);
+                        List<JobStatus> statuses = new ArrayList<>();
+                        statuses.add(jobStatus);
+		                jobModel.setJobStatuses(statuses);
 	                }
 	                jobs.add(jobModel);
                 }
@@ -1267,7 +1269,9 @@ public class ExperimentRegistry {
                     if (latestSR != null) {
                         JobStatus jobStatus = new JobStatus(JobState.valueOf(latestSR.getState()));
                         jobStatus.setReason(latestSR.getReason());
-                        jobModel.setJobStatus(jobStatus);
+                        List<JobStatus> statuses = new ArrayList<>();
+                        statuses.add(jobStatus);
+                        jobModel.setJobStatuses(statuses);
                     }
                     jobs.add(jobModel);
                 }

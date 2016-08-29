@@ -108,10 +108,10 @@ class TaskModel:
     (3, TType.STRING, 'parentProcessId', None, None, ), # 3
     (4, TType.I64, 'creationTime', None, None, ), # 4
     (5, TType.I64, 'lastUpdateTime', None, None, ), # 5
-    (6, TType.STRUCT, 'taskStatus', (apache.airavata.model.status.ttypes.TaskStatus, apache.airavata.model.status.ttypes.TaskStatus.thrift_spec), None, ), # 6
+    (6, TType.LIST, 'taskStatus', (TType.STRUCT,(apache.airavata.model.status.ttypes.TaskStatus, apache.airavata.model.status.ttypes.TaskStatus.thrift_spec)), None, ), # 6
     (7, TType.STRING, 'taskDetail', None, None, ), # 7
     (8, TType.STRING, 'subTaskModel', None, None, ), # 8
-    (9, TType.STRUCT, 'taskError', (apache.airavata.model.commons.ttypes.ErrorModel, apache.airavata.model.commons.ttypes.ErrorModel.thrift_spec), None, ), # 9
+    (9, TType.LIST, 'taskError', (TType.STRUCT,(apache.airavata.model.commons.ttypes.ErrorModel, apache.airavata.model.commons.ttypes.ErrorModel.thrift_spec)), None, ), # 9
     (10, TType.LIST, 'jobs', (TType.STRUCT,(apache.airavata.model.job.ttypes.JobModel, apache.airavata.model.job.ttypes.JobModel.thrift_spec)), None, ), # 10
   )
 
@@ -162,9 +162,14 @@ class TaskModel:
         else:
           iprot.skip(ftype)
       elif fid == 6:
-        if ftype == TType.STRUCT:
-          self.taskStatus = apache.airavata.model.status.ttypes.TaskStatus()
-          self.taskStatus.read(iprot)
+        if ftype == TType.LIST:
+          self.taskStatus = []
+          (_etype3, _size0) = iprot.readListBegin()
+          for _i4 in xrange(_size0):
+            _elem5 = apache.airavata.model.status.ttypes.TaskStatus()
+            _elem5.read(iprot)
+            self.taskStatus.append(_elem5)
+          iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 7:
@@ -178,19 +183,24 @@ class TaskModel:
         else:
           iprot.skip(ftype)
       elif fid == 9:
-        if ftype == TType.STRUCT:
-          self.taskError = apache.airavata.model.commons.ttypes.ErrorModel()
-          self.taskError.read(iprot)
+        if ftype == TType.LIST:
+          self.taskError = []
+          (_etype9, _size6) = iprot.readListBegin()
+          for _i10 in xrange(_size6):
+            _elem11 = apache.airavata.model.commons.ttypes.ErrorModel()
+            _elem11.read(iprot)
+            self.taskError.append(_elem11)
+          iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 10:
         if ftype == TType.LIST:
           self.jobs = []
-          (_etype3, _size0) = iprot.readListBegin()
-          for _i4 in xrange(_size0):
-            _elem5 = apache.airavata.model.job.ttypes.JobModel()
-            _elem5.read(iprot)
-            self.jobs.append(_elem5)
+          (_etype15, _size12) = iprot.readListBegin()
+          for _i16 in xrange(_size12):
+            _elem17 = apache.airavata.model.job.ttypes.JobModel()
+            _elem17.read(iprot)
+            self.jobs.append(_elem17)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -225,8 +235,11 @@ class TaskModel:
       oprot.writeI64(self.lastUpdateTime)
       oprot.writeFieldEnd()
     if self.taskStatus is not None:
-      oprot.writeFieldBegin('taskStatus', TType.STRUCT, 6)
-      self.taskStatus.write(oprot)
+      oprot.writeFieldBegin('taskStatus', TType.LIST, 6)
+      oprot.writeListBegin(TType.STRUCT, len(self.taskStatus))
+      for iter18 in self.taskStatus:
+        iter18.write(oprot)
+      oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.taskDetail is not None:
       oprot.writeFieldBegin('taskDetail', TType.STRING, 7)
@@ -237,14 +250,17 @@ class TaskModel:
       oprot.writeString(self.subTaskModel)
       oprot.writeFieldEnd()
     if self.taskError is not None:
-      oprot.writeFieldBegin('taskError', TType.STRUCT, 9)
-      self.taskError.write(oprot)
+      oprot.writeFieldBegin('taskError', TType.LIST, 9)
+      oprot.writeListBegin(TType.STRUCT, len(self.taskError))
+      for iter19 in self.taskError:
+        iter19.write(oprot)
+      oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.jobs is not None:
       oprot.writeFieldBegin('jobs', TType.LIST, 10)
       oprot.writeListBegin(TType.STRUCT, len(self.jobs))
-      for iter6 in self.jobs:
-        iter6.write(oprot)
+      for iter20 in self.jobs:
+        iter20.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
