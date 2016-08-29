@@ -43,8 +43,9 @@ public class ExperimentEntity {
     private List<ExperimentInputEntity> experimentInputs;
     private List<ExperimentOutputEntity> experimentOutputs;
     private List<ExperimentErrorEntity> experimentErrors;
+    private List<ExperimentStatusEntity> experimentStatuses;
 
-    private UserConfigurationEntity userConfiguration;
+    private UserConfigurationEntity userConfigurationData;
 
     @Id
     @Column(name = "EXPERIMENT_ID")
@@ -166,12 +167,12 @@ public class ExperimentEntity {
     }
 
     @OneToOne(targetEntity = UserConfigurationEntity.class, cascade = CascadeType.ALL, mappedBy = "experiment")
-    public UserConfigurationEntity getUserConfiguration() {
-        return userConfiguration;
+    public UserConfigurationEntity getUserConfigurationData() {
+        return userConfigurationData;
     }
 
-    public void setUserConfiguration(UserConfigurationEntity userConfiguration) {
-        this.userConfiguration = userConfiguration;
+    public void setUserConfigurationData(UserConfigurationEntity userConfiguration) {
+        this.userConfigurationData = userConfiguration;
     }
 
     @OneToMany(targetEntity = ExperimentInputEntity.class, cascade = CascadeType.ALL, mappedBy = "experiment")
@@ -199,5 +200,14 @@ public class ExperimentEntity {
 
     public void setExperimentErrors(List<ExperimentErrorEntity> experimentErrors) {
         this.experimentErrors = experimentErrors;
+    }
+
+    @OneToMany(targetEntity = ExperimentStatusEntity.class, cascade = CascadeType.ALL, mappedBy = "experiment")
+    public List<ExperimentStatusEntity> getExperimentStatuses() {
+        return experimentStatuses;
+    }
+
+    public void setExperimentStatuses(List<ExperimentStatusEntity> experimentStatuses) {
+        this.experimentStatuses = experimentStatuses;
     }
 }

@@ -440,6 +440,10 @@ class UserProfile {
    */
   public $userId = null;
   /**
+   * @var string
+   */
+  public $gatewayId = null;
+  /**
    * @var string[]
    */
   public $emails = null;
@@ -524,6 +528,10 @@ class UserProfile {
           'type' => TType::STRING,
           ),
         4 => array(
+          'var' => 'gatewayId',
+          'type' => TType::STRING,
+          ),
+        5 => array(
           'var' => 'emails',
           'type' => TType::LST,
           'etype' => TType::STRING,
@@ -531,15 +539,15 @@ class UserProfile {
             'type' => TType::STRING,
             ),
           ),
-        5 => array(
+        6 => array(
           'var' => 'userName',
           'type' => TType::STRING,
           ),
-        6 => array(
+        7 => array(
           'var' => 'orcidId',
           'type' => TType::STRING,
           ),
-        7 => array(
+        8 => array(
           'var' => 'phones',
           'type' => TType::LST,
           'etype' => TType::STRING,
@@ -547,11 +555,11 @@ class UserProfile {
             'type' => TType::STRING,
             ),
           ),
-        8 => array(
+        9 => array(
           'var' => 'country',
           'type' => TType::STRING,
           ),
-        9 => array(
+        10 => array(
           'var' => 'nationality',
           'type' => TType::LST,
           'etype' => TType::STRING,
@@ -559,35 +567,35 @@ class UserProfile {
             'type' => TType::STRING,
             ),
           ),
-        10 => array(
+        11 => array(
           'var' => 'homeOrganization',
           'type' => TType::STRING,
           ),
-        11 => array(
+        12 => array(
           'var' => 'orginationAffiliation',
           'type' => TType::STRING,
           ),
-        12 => array(
+        13 => array(
           'var' => 'creationTime',
           'type' => TType::STRING,
           ),
-        13 => array(
+        14 => array(
           'var' => 'lastAccessTime',
           'type' => TType::STRING,
           ),
-        14 => array(
+        15 => array(
           'var' => 'validUntil',
           'type' => TType::STRING,
           ),
-        15 => array(
+        16 => array(
           'var' => 'State',
           'type' => TType::I32,
           ),
-        16 => array(
+        17 => array(
           'var' => 'comments',
           'type' => TType::STRING,
           ),
-        17 => array(
+        18 => array(
           'var' => 'labeledURI',
           'type' => TType::LST,
           'etype' => TType::STRING,
@@ -595,15 +603,15 @@ class UserProfile {
             'type' => TType::STRING,
             ),
           ),
-        18 => array(
+        19 => array(
           'var' => 'gpgKey',
           'type' => TType::STRING,
           ),
-        19 => array(
+        20 => array(
           'var' => 'timeZone',
           'type' => TType::STRING,
           ),
-        20 => array(
+        21 => array(
           'var' => 'nsfDemographics',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\User\NSFDemographics',
@@ -619,6 +627,9 @@ class UserProfile {
       }
       if (isset($vals['userId'])) {
         $this->userId = $vals['userId'];
+      }
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
       }
       if (isset($vals['emails'])) {
         $this->emails = $vals['emails'];
@@ -715,6 +726,13 @@ class UserProfile {
           }
           break;
         case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
           if ($ftype == TType::LST) {
             $this->emails = array();
             $_size21 = 0;
@@ -731,21 +749,21 @@ class UserProfile {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 5:
+        case 6:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->userName);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 6:
+        case 7:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->orcidId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 7:
+        case 8:
           if ($ftype == TType::LST) {
             $this->phones = array();
             $_size27 = 0;
@@ -762,14 +780,14 @@ class UserProfile {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 8:
+        case 9:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->country);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 9:
+        case 10:
           if ($ftype == TType::LST) {
             $this->nationality = array();
             $_size33 = 0;
@@ -786,56 +804,56 @@ class UserProfile {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 10:
+        case 11:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->homeOrganization);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 11:
+        case 12:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->orginationAffiliation);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 12:
+        case 13:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->creationTime);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 13:
+        case 14:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->lastAccessTime);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 14:
+        case 15:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->validUntil);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 15:
+        case 16:
           if ($ftype == TType::I32) {
             $xfer += $input->readI32($this->State);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 16:
+        case 17:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->comments);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 17:
+        case 18:
           if ($ftype == TType::LST) {
             $this->labeledURI = array();
             $_size39 = 0;
@@ -852,21 +870,21 @@ class UserProfile {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 18:
+        case 19:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->gpgKey);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 19:
+        case 20:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->timeZone);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 20:
+        case 21:
           if ($ftype == TType::STRUCT) {
             $this->nsfDemographics = new \Airavata\Model\User\NSFDemographics();
             $xfer += $this->nsfDemographics->read($input);
@@ -902,11 +920,16 @@ class UserProfile {
       $xfer += $output->writeString($this->userId);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 4);
+      $xfer += $output->writeString($this->gatewayId);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->emails !== null) {
       if (!is_array($this->emails)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('emails', TType::LST, 4);
+      $xfer += $output->writeFieldBegin('emails', TType::LST, 5);
       {
         $output->writeListBegin(TType::STRING, count($this->emails));
         {
@@ -920,12 +943,12 @@ class UserProfile {
       $xfer += $output->writeFieldEnd();
     }
     if ($this->userName !== null) {
-      $xfer += $output->writeFieldBegin('userName', TType::STRING, 5);
+      $xfer += $output->writeFieldBegin('userName', TType::STRING, 6);
       $xfer += $output->writeString($this->userName);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->orcidId !== null) {
-      $xfer += $output->writeFieldBegin('orcidId', TType::STRING, 6);
+      $xfer += $output->writeFieldBegin('orcidId', TType::STRING, 7);
       $xfer += $output->writeString($this->orcidId);
       $xfer += $output->writeFieldEnd();
     }
@@ -933,7 +956,7 @@ class UserProfile {
       if (!is_array($this->phones)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('phones', TType::LST, 7);
+      $xfer += $output->writeFieldBegin('phones', TType::LST, 8);
       {
         $output->writeListBegin(TType::STRING, count($this->phones));
         {
@@ -947,7 +970,7 @@ class UserProfile {
       $xfer += $output->writeFieldEnd();
     }
     if ($this->country !== null) {
-      $xfer += $output->writeFieldBegin('country', TType::STRING, 8);
+      $xfer += $output->writeFieldBegin('country', TType::STRING, 9);
       $xfer += $output->writeString($this->country);
       $xfer += $output->writeFieldEnd();
     }
@@ -955,7 +978,7 @@ class UserProfile {
       if (!is_array($this->nationality)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('nationality', TType::LST, 9);
+      $xfer += $output->writeFieldBegin('nationality', TType::LST, 10);
       {
         $output->writeListBegin(TType::STRING, count($this->nationality));
         {
@@ -969,37 +992,37 @@ class UserProfile {
       $xfer += $output->writeFieldEnd();
     }
     if ($this->homeOrganization !== null) {
-      $xfer += $output->writeFieldBegin('homeOrganization', TType::STRING, 10);
+      $xfer += $output->writeFieldBegin('homeOrganization', TType::STRING, 11);
       $xfer += $output->writeString($this->homeOrganization);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->orginationAffiliation !== null) {
-      $xfer += $output->writeFieldBegin('orginationAffiliation', TType::STRING, 11);
+      $xfer += $output->writeFieldBegin('orginationAffiliation', TType::STRING, 12);
       $xfer += $output->writeString($this->orginationAffiliation);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->creationTime !== null) {
-      $xfer += $output->writeFieldBegin('creationTime', TType::STRING, 12);
+      $xfer += $output->writeFieldBegin('creationTime', TType::STRING, 13);
       $xfer += $output->writeString($this->creationTime);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->lastAccessTime !== null) {
-      $xfer += $output->writeFieldBegin('lastAccessTime', TType::STRING, 13);
+      $xfer += $output->writeFieldBegin('lastAccessTime', TType::STRING, 14);
       $xfer += $output->writeString($this->lastAccessTime);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->validUntil !== null) {
-      $xfer += $output->writeFieldBegin('validUntil', TType::STRING, 14);
+      $xfer += $output->writeFieldBegin('validUntil', TType::STRING, 15);
       $xfer += $output->writeString($this->validUntil);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->State !== null) {
-      $xfer += $output->writeFieldBegin('State', TType::I32, 15);
+      $xfer += $output->writeFieldBegin('State', TType::I32, 16);
       $xfer += $output->writeI32($this->State);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->comments !== null) {
-      $xfer += $output->writeFieldBegin('comments', TType::STRING, 16);
+      $xfer += $output->writeFieldBegin('comments', TType::STRING, 17);
       $xfer += $output->writeString($this->comments);
       $xfer += $output->writeFieldEnd();
     }
@@ -1007,7 +1030,7 @@ class UserProfile {
       if (!is_array($this->labeledURI)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('labeledURI', TType::LST, 17);
+      $xfer += $output->writeFieldBegin('labeledURI', TType::LST, 18);
       {
         $output->writeListBegin(TType::STRING, count($this->labeledURI));
         {
@@ -1021,12 +1044,12 @@ class UserProfile {
       $xfer += $output->writeFieldEnd();
     }
     if ($this->gpgKey !== null) {
-      $xfer += $output->writeFieldBegin('gpgKey', TType::STRING, 18);
+      $xfer += $output->writeFieldBegin('gpgKey', TType::STRING, 19);
       $xfer += $output->writeString($this->gpgKey);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->timeZone !== null) {
-      $xfer += $output->writeFieldBegin('timeZone', TType::STRING, 19);
+      $xfer += $output->writeFieldBegin('timeZone', TType::STRING, 20);
       $xfer += $output->writeString($this->timeZone);
       $xfer += $output->writeFieldEnd();
     }
@@ -1034,7 +1057,7 @@ class UserProfile {
       if (!is_object($this->nsfDemographics)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('nsfDemographics', TType::STRUCT, 20);
+      $xfer += $output->writeFieldBegin('nsfDemographics', TType::STRUCT, 21);
       $xfer += $this->nsfDemographics->write($output);
       $xfer += $output->writeFieldEnd();
     }
