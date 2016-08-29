@@ -38,7 +38,7 @@ public class JobEntity {
     private String stdErr;
     private int exitCode;
 
-    private List<JobStatusEntity> jobStatus;
+    private List<JobStatusEntity> jobStatuses;
 
     private TaskEntity task;
 
@@ -145,12 +145,12 @@ public class JobEntity {
     }
 
     @OneToMany(targetEntity = JobStatusEntity.class, cascade = CascadeType.ALL, mappedBy = "job")
-    public List<JobStatusEntity> getJobStatus() {
-        return jobStatus;
+    public List<JobStatusEntity> getJobStatuses() {
+        return jobStatuses;
     }
 
-    public void setJobStatus(List<JobStatusEntity> jobStatus) {
-        this.jobStatus = jobStatus;
+    public void setJobStatuses(List<JobStatusEntity> jobStatus) {
+        this.jobStatuses = jobStatus;
     }
 
     @ManyToOne(targetEntity = TaskEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)

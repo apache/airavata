@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Map;
 
 public class ArchiveTask implements Task {
@@ -89,7 +90,7 @@ public class ArchiveTask implements Task {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
             return status;
         }
 
@@ -159,7 +160,7 @@ public class ArchiveTask implements Task {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         }
         return status;
     }

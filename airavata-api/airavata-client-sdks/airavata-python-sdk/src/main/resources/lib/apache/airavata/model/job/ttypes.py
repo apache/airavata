@@ -43,7 +43,7 @@ class JobModel:
     (3, TType.STRING, 'processId', None, None, ), # 3
     (4, TType.STRING, 'jobDescription', None, None, ), # 4
     (5, TType.I64, 'creationTime', None, None, ), # 5
-    (6, TType.STRUCT, 'jobStatus', (apache.airavata.model.status.ttypes.JobStatus, apache.airavata.model.status.ttypes.JobStatus.thrift_spec), None, ), # 6
+    (6, TType.LIST, 'jobStatus', (TType.STRUCT,(apache.airavata.model.status.ttypes.JobStatus, apache.airavata.model.status.ttypes.JobStatus.thrift_spec)), None, ), # 6
     (7, TType.STRING, 'computeResourceConsumed', None, None, ), # 7
     (8, TType.STRING, 'jobName', None, None, ), # 8
     (9, TType.STRING, 'workingDir', None, None, ), # 9
@@ -101,9 +101,14 @@ class JobModel:
         else:
           iprot.skip(ftype)
       elif fid == 6:
-        if ftype == TType.STRUCT:
-          self.jobStatus = apache.airavata.model.status.ttypes.JobStatus()
-          self.jobStatus.read(iprot)
+        if ftype == TType.LIST:
+          self.jobStatus = []
+          (_etype3, _size0) = iprot.readListBegin()
+          for _i4 in xrange(_size0):
+            _elem5 = apache.airavata.model.status.ttypes.JobStatus()
+            _elem5.read(iprot)
+            self.jobStatus.append(_elem5)
+          iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 7:
@@ -167,8 +172,11 @@ class JobModel:
       oprot.writeI64(self.creationTime)
       oprot.writeFieldEnd()
     if self.jobStatus is not None:
-      oprot.writeFieldBegin('jobStatus', TType.STRUCT, 6)
-      self.jobStatus.write(oprot)
+      oprot.writeFieldBegin('jobStatus', TType.LIST, 6)
+      oprot.writeListBegin(TType.STRUCT, len(self.jobStatus))
+      for iter6 in self.jobStatus:
+        iter6.write(oprot)
+      oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.computeResourceConsumed is not None:
       oprot.writeFieldBegin('computeResourceConsumed', TType.STRING, 7)

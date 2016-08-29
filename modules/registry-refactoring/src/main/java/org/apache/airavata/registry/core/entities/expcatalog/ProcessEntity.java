@@ -45,8 +45,8 @@ public class ProcessEntity {
     private String experimentDataDir;
     private String userName;
 
-    private List<ProcessStatusEntity> processStatus;
-    private List<ProcessErrorEntity> processError;
+    private List<ProcessStatusEntity> processStatuses;
+    private List<ProcessErrorEntity> processErrors;
     private List<ProcessInputEntity> processInputs;
     private List<ProcessOutputEntity> processOutputs;
     private ProcessResourceSchedulingEntity processResourceSchedule;
@@ -211,21 +211,21 @@ public class ProcessEntity {
     }
 
     @OneToMany(targetEntity = ProcessStatusEntity.class, cascade = CascadeType.ALL, mappedBy = "process")
-    public List<ProcessStatusEntity> getProcessStatus() {
-        return processStatus;
+    public List<ProcessStatusEntity> getProcessStatuses() {
+        return processStatuses;
     }
 
-    public void setProcessStatus(List<ProcessStatusEntity> processStatus) {
-        this.processStatus = processStatus;
+    public void setProcessStatuses(List<ProcessStatusEntity> processStatus) {
+        this.processStatuses = processStatus;
     }
 
     @OneToMany(targetEntity = ProcessErrorEntity.class, cascade = CascadeType.ALL, mappedBy = "process")
-    public List<ProcessErrorEntity> getProcessError() {
-        return processError;
+    public List<ProcessErrorEntity> getProcessErrors() {
+        return processErrors;
     }
 
-    public void setProcessError(List<ProcessErrorEntity> processError) {
-        this.processError = processError;
+    public void setProcessErrors(List<ProcessErrorEntity> processError) {
+        this.processErrors = processError;
     }
 
     @OneToMany(targetEntity = ProcessInputEntity.class, cascade = CascadeType.ALL, mappedBy = "process")

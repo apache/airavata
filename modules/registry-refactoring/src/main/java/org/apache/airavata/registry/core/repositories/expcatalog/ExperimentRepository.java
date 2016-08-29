@@ -73,10 +73,10 @@ public class ExperimentRepository extends AbstractRepository<ExperimentModel, Ex
                     process.getProcessInputs().forEach(proInput->proInput.setProceseId(processId));
                 if(process.getProcessOutputs() != null)
                     process.getProcessOutputs().forEach(proOutput->proOutput.setProcessId(processId));
-                if(process.getProcessError() != null)
-                    process.getProcessError().forEach(processErr->processErr.setProcessId(processId));
-                if(process.getProcessStatus() != null)
-                    process.getProcessStatus().forEach(processStat->processStat.setProcessId(processId));
+                if(process.getProcessErrors() != null)
+                    process.getProcessErrors().forEach(processErr->processErr.setProcessId(processId));
+                if(process.getProcessStatuses() != null)
+                    process.getProcessStatuses().forEach(processStat->processStat.setProcessId(processId));
 
                 if(process.getTasks() != null){
                     process.getTasks().forEach(task->{

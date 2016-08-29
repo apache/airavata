@@ -37,8 +37,8 @@ public class TaskEntity {
     private String taskDetail;
     private ByteBuffer subTaskModel;
 
-    private List<TaskStatusEntity> taskStatus;
-    private List<TaskErrorEntity> taskError;
+    private List<TaskStatusEntity> taskStatuses;
+    private List<TaskErrorEntity> taskErrors;
     private List<JobEntity> jobs;
 
     private ProcessEntity process;
@@ -109,21 +109,21 @@ public class TaskEntity {
     }
 
     @OneToMany(targetEntity = TaskStatusEntity.class, cascade = CascadeType.ALL, mappedBy = "task")
-    public List<TaskStatusEntity> getTaskStatus() {
-        return taskStatus;
+    public List<TaskStatusEntity> getTaskStatuses() {
+        return taskStatuses;
     }
 
-    public void setTaskStatus(List<TaskStatusEntity> taskStatus) {
-        this.taskStatus = taskStatus;
+    public void setTaskStatuses(List<TaskStatusEntity> taskStatus) {
+        this.taskStatuses = taskStatus;
     }
 
     @OneToMany(targetEntity = TaskErrorEntity.class, cascade = CascadeType.ALL, mappedBy = "task")
-    public List<TaskErrorEntity> getTaskError() {
-        return taskError;
+    public List<TaskErrorEntity> getTaskErrors() {
+        return taskErrors;
     }
 
-    public void setTaskError(List<TaskErrorEntity> taskError) {
-        this.taskError = taskError;
+    public void setTaskErrors(List<TaskErrorEntity> taskError) {
+        this.taskErrors = taskError;
     }
 
     @OneToMany(targetEntity = JobEntity.class, cascade = CascadeType.ALL, mappedBy = "task")

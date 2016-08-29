@@ -362,8 +362,8 @@ public class ProcessContext {
 	}
 
 	public ProcessState getProcessState() {
-		if(processModel.getProcessStatus() != null && processModel.getProcessStatus().size() > 0)
-			return processModel.getProcessStatus().get(0).getState();
+		if(processModel.getProcessStatuses() != null && processModel.getProcessStatuses().size() > 0)
+			return processModel.getProcessStatuses().get(0).getState();
 		else
 			return null;
 	}
@@ -374,13 +374,13 @@ public class ProcessContext {
 					getProcessState().name(), status.getState().name());
 			List<ProcessStatus> processStatuses = new ArrayList<>();
 			processStatuses.add(status);
-			processModel.setProcessStatus(processStatuses);
+			processModel.setProcessStatuses(processStatuses);
 		}
 	}
 
 	public ProcessStatus getProcessStatus(){
-		if(processModel.getProcessStatus() != null)
-			return processModel.getProcessStatus().get(0);
+		if(processModel.getProcessStatuses() != null)
+			return processModel.getProcessStatuses().get(0);
 		else
 			return null;
 	}
