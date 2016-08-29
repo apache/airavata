@@ -34,6 +34,12 @@
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentOutputEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentStatusEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.UserConfigurationEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessErrorEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessInputEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessOutputEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessResourceSchedulingEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessStatusEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>

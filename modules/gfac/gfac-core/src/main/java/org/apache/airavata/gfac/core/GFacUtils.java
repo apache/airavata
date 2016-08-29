@@ -449,7 +449,7 @@ public class GFacUtils {
             log.error("Error while getting job submissiont sub task model", e);
         }
 
-        ComputationalResourceSchedulingModel scheduling = processModel.getResourceSchedule();
+        ComputationalResourceSchedulingModel scheduling = processModel.getProcessResourceSchedule();
         if (scheduling != null) {
             int totalNodeCount = scheduling.getNodeCount();
             int totalCPUCount = scheduling.getTotalCPUCount();

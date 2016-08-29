@@ -47,6 +47,8 @@ public class ExperimentEntity {
 
     private UserConfigurationEntity userConfigurationData;
 
+    private List<ProcessEntity> processes;
+
     @Id
     @Column(name = "EXPERIMENT_ID")
     public String getExperimentId() {
@@ -209,5 +211,14 @@ public class ExperimentEntity {
 
     public void setExperimentStatuses(List<ExperimentStatusEntity> experimentStatuses) {
         this.experimentStatuses = experimentStatuses;
+    }
+
+    @OneToMany(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL, mappedBy = "experiment")
+    public List<ProcessEntity> getProcesses() {
+        return processes;
+    }
+
+    public void setProcesses(List<ProcessEntity> processes) {
+        this.processes = processes;
     }
 }

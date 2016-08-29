@@ -275,7 +275,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         try {
             ExperimentCatalog experimentCatalog = orchestratorContext.getRegistry().getExperimentCatalog();
             AppCatalog appCatalog = orchestratorContext.getRegistry().getAppCatalog();
-            ComputationalResourceSchedulingModel resourceSchedule = processModel.getResourceSchedule();
+            ComputationalResourceSchedulingModel resourceSchedule = processModel.getProcessResourceSchedule();
             String userGivenQueueName = resourceSchedule.getQueueName();
             int userGivenWallTime = resourceSchedule.getWallTimeLimit();
             String resourceHostId = resourceSchedule.getResourceHostId();
