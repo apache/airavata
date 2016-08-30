@@ -1,0 +1,84 @@
+---
+- name: create group
+  group: name="{{group}}"
+  become: yes
+
+- name: create user
+  user: name="{{user}}"
+  become: yes
+
+# RedHat related things
+- name: install required packages
+  yum: name="{{item}}" state=latest
+  with_items:
+    - wget
+    - tar
+    - git
+    - epel-release
+    - firewalld
+  become: yes
+
+- name: updage systemd
+  yum: name=systemd state=latest enabled=yes
+  become: yes
+
+- name: install development tools
+  yum: name="@Development tools" state=latest
+  become: yes
+
+  # Install other Mesos dependencies.
+- name: install mesos dependencies
+  yum: name="{{item}}" state=latest
+  with_items:
+    - apache-maven
+    - python-devel
+    - java-1.8.0-openjdk-devel
+    - zlib-devel
+    - libcurl-devel
+    - openssl-devel
+    - cyrus-sasl-devel
+    - cyrus-sasl-md5
+    - apr-devel
+    - apr-util-devel
+    - subversion-devel
+
+- name: start firewall service
+  service: name=firewalld state=started enabled=yes
+  become: yes
+
+- name: download and unarchive mesos latest
+  unarchive:
+      src=http://www.apache.org/dist/mesos/1.0.1/mesos-1.0.1.tar.gz
+      dest="{{mesos_dir}}"
+      owner="{{user}}"
+      group="{{group}}"
+
+  # Bootstrap (Only required if building from git repository).
+  # $ ./bootstrap
+
+- name: make build dir
+  file: path="{{mesos_dir}}/build" state=directory user={{user}} group={{group}}
+
+- name: configure and build mesos
+  command: ../configure  chdir="{{mesos_build_dir}}"
+  register: build
+
+- name: run make
+  command: make chdir="{{mesos_build_dir}}"
+  when: build|success
+  register: make
+
+- name: run make tests
+  command: make check chdir="{{mesos_build_dir}}"
+  when: make|success
+
+- name: create working dir
+  file: path="{{mesos_work_dir}}" state=directory user={{user}} group={{group}}
+
+- name: start mesos master
+  command: ./bin/mesos-master.sh --ip={{inventory_hostname}} --work_dir={{mesos_work_dir}} &
+      chdir={{mesos_build_dir}}
+
+- name: start mesos agent
+  command: /bin/mesos-agent.sh --master={{inventory_hostname}}:5050 --work_dir={{mesos_work_dir}} &
+      chdir={{mesos_build_dir}}

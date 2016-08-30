@@ -1,0 +1,13 @@
+---
+
+user: centos
+group: centos
+user_home: "home/{{user}}"
+
+# Mesos related properties
+mesos_dir: "{{user_home}}/mesos"
+mesos_build_dir: "{{mesos_dir}}/build"
+
+
+#Zookeeper related properties
+zookeeper_client_port: 2181

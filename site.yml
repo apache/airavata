@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  tags: test
+  roles:
+    - test
+
+
+- hosts: mesos-master
+  tags: mesos-master
+  roles:
+    - mesos
