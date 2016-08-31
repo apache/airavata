@@ -461,7 +461,10 @@ public class GFacUtils {
                 jobDescriptor.setNodes(totalNodeCount);
             }
             // qos per queue
-            jobDescriptor.setQoS(getQoS(crp.getQualityOfService(), scheduling.getQueueName()));
+            String qoS = getQoS(crp.getQualityOfService(), scheduling.getQueueName());
+            if (qoS != null) {
+                jobDescriptor.setQoS(qoS);
+            }
             if (totalCPUCount > 0) {
                 int ppn = totalCPUCount / totalNodeCount;
                 jobDescriptor.setProcessesPerNode(ppn);
