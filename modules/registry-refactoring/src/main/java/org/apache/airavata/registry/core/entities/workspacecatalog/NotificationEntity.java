@@ -23,7 +23,7 @@ package org.apache.airavata.registry.core.entities.workspacecatalog;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "NOTIFICATION")
+@Table(name = "WORKSPACE_NOTIFICATION")
 public class NotificationEntity {
     private String notificationId;
     private String gatewayId;

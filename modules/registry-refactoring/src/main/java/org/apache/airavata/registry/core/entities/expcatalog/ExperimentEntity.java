@@ -24,7 +24,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "EXPERIMENT")
+@Table(name = "EXPCAT_EXPERIMENT")
 public class ExperimentEntity {
     public String experimentId;
     public String projectId;
@@ -43,8 +43,11 @@ public class ExperimentEntity {
     private List<ExperimentInputEntity> experimentInputs;
     private List<ExperimentOutputEntity> experimentOutputs;
     private List<ExperimentErrorEntity> experimentErrors;
+    private List<ExperimentStatusEntity> experimentStatuses;
 
-    private UserConfigurationEntity userConfiguration;
+    private UserConfigurationEntity userConfigurationData;
+
+    private List<ProcessEntity> processes;
 
     @Id
     @Column(name = "EXPERIMENT_ID")
@@ -156,7 +159,7 @@ public class ExperimentEntity {
     }
 
     @ElementCollection
-    @CollectionTable(name="EXPERIMENT_EMAIL", joinColumns = @JoinColumn(name="EXPERIMENT_ID"))
+    @CollectionTable(name="EXPCAT_EXPERIMENT_EMAIL", joinColumns = @JoinColumn(name="EXPERIMENT_ID"))
     public List<String> getEmailAddresses() {
         return emailAddresses;
     }
@@ -166,12 +169,12 @@ public class ExperimentEntity {
     }
 
     @OneToOne(targetEntity = UserConfigurationEntity.class, cascade = CascadeType.ALL, mappedBy = "experiment")
-    public UserConfigurationEntity getUserConfiguration() {
-        return userConfiguration;
+    public UserConfigurationEntity getUserConfigurationData() {
+        return userConfigurationData;
     }
 
-    public void setUserConfiguration(UserConfigurationEntity userConfiguration) {
-        this.userConfiguration = userConfiguration;
+    public void setUserConfigurationData(UserConfigurationEntity userConfiguration) {
+        this.userConfigurationData = userConfiguration;
     }
 
     @OneToMany(targetEntity = ExperimentInputEntity.class, cascade = CascadeType.ALL, mappedBy = "experiment")
@@ -199,5 +202,23 @@ public class ExperimentEntity {
 
     public void setExperimentErrors(List<ExperimentErrorEntity> experimentErrors) {
         this.experimentErrors = experimentErrors;
+    }
+
+    @OneToMany(targetEntity = ExperimentStatusEntity.class, cascade = CascadeType.ALL, mappedBy = "experiment")
+    public List<ExperimentStatusEntity> getExperimentStatuses() {
+        return experimentStatuses;
+    }
+
+    public void setExperimentStatuses(List<ExperimentStatusEntity> experimentStatuses) {
+        this.experimentStatuses = experimentStatuses;
+    }
+
+    @OneToMany(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL, mappedBy = "experiment")
+    public List<ProcessEntity> getProcesses() {
+        return processes;
+    }
+
+    public void setProcesses(List<ProcessEntity> processes) {
+        this.processes = processes;
     }
 }

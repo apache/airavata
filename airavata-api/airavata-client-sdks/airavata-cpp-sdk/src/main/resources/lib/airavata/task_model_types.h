@@ -97,10 +97,10 @@ class TaskModel {
   std::string parentProcessId;
   int64_t creationTime;
   int64_t lastUpdateTime;
-   ::apache::airavata::model::status::TaskStatus taskStatus;
+  std::vector< ::apache::airavata::model::status::TaskStatus>  taskStatus;
   std::string taskDetail;
   std::string subTaskModel;
-   ::apache::airavata::model::commons::ErrorModel taskError;
+  std::vector< ::apache::airavata::model::commons::ErrorModel>  taskError;
   std::vector< ::apache::airavata::model::job::JobModel>  jobs;
 
   _TaskModel__isset __isset;
@@ -115,13 +115,13 @@ class TaskModel {
 
   void __set_lastUpdateTime(const int64_t val);
 
-  void __set_taskStatus(const  ::apache::airavata::model::status::TaskStatus& val);
+  void __set_taskStatus(const std::vector< ::apache::airavata::model::status::TaskStatus> & val);
 
   void __set_taskDetail(const std::string& val);
 
   void __set_subTaskModel(const std::string& val);
 
-  void __set_taskError(const  ::apache::airavata::model::commons::ErrorModel& val);
+  void __set_taskError(const std::vector< ::apache::airavata::model::commons::ErrorModel> & val);
 
   void __set_jobs(const std::vector< ::apache::airavata::model::job::JobModel> & val);
 

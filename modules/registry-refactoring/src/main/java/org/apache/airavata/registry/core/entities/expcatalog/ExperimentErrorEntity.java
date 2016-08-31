@@ -24,7 +24,8 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "EXPERIMENT_ERROR")
+@Table(name = "EXPCAT_EXPERIMENT_ERROR")
+@IdClass(ExperimentErrorPK.class)
 public class ExperimentErrorEntity {
     private String errorId;
     private String experimentId;
@@ -46,6 +47,7 @@ public class ExperimentErrorEntity {
         this.errorId = errorId;
     }
 
+    @Id
     @Column(name = "EXPERIMENT_ID")
     public String getExperimentId() {
         return experimentId;

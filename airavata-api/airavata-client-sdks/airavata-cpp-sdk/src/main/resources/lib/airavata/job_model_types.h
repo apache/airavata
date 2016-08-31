@@ -65,7 +65,7 @@ class JobModel {
   std::string processId;
   std::string jobDescription;
   int64_t creationTime;
-   ::apache::airavata::model::status::JobStatus jobStatus;
+  std::vector< ::apache::airavata::model::status::JobStatus>  jobStatus;
   std::string computeResourceConsumed;
   std::string jobName;
   std::string workingDir;
@@ -85,7 +85,7 @@ class JobModel {
 
   void __set_creationTime(const int64_t val);
 
-  void __set_jobStatus(const  ::apache::airavata::model::status::JobStatus& val);
+  void __set_jobStatus(const std::vector< ::apache::airavata::model::status::JobStatus> & val);
 
   void __set_computeResourceConsumed(const std::string& val);
 

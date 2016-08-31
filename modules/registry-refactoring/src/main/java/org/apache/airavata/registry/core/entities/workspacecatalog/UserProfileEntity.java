@@ -24,7 +24,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name="USER_PROFILE")
+@Table(name="WORKSPACE_USER_PROFILE")
 public class UserProfileEntity {
     private String airavataInternalUserId;
     private String userId;

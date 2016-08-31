@@ -330,7 +330,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             ApplicationDeploymentDescription applicationDeploymentDescription = getAppDeployment(processModel, applicationId);
             processModel.setApplicationDeploymentId(applicationDeploymentDescription.getAppDeploymentId());
 			// set compute resource id to process model, default we set the same in the user preferred compute host id
-			processModel.setComputeResourceId(processModel.getResourceSchedule().getResourceHostId());
+			processModel.setComputeResourceId(processModel.getProcessResourceSchedule().getResourceHostId());
 			experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel,processModel.getProcessId());
 		    return orchestrator.launchProcess(processModel, airavataCredStoreToken);
 		} catch (Exception e) {
@@ -353,8 +353,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             IllegalAccessException {
         Map<String, String> moduleIdFilter = new HashMap<String, String>();
         moduleIdFilter.put(AppCatAbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, selectedModuleId);
-        if (processModel.getResourceSchedule() != null && processModel.getResourceSchedule().getResourceHostId() != null) {
-            moduleIdFilter.put(AppCatAbstractResource.ApplicationDeploymentConstants.COMPUTE_HOST_ID, processModel.getResourceSchedule().getResourceHostId());
+        if (processModel.getProcessResourceSchedule() != null && processModel.getProcessResourceSchedule().getResourceHostId() != null) {
+            moduleIdFilter.put(AppCatAbstractResource.ApplicationDeploymentConstants.COMPUTE_HOST_ID, processModel.getProcessResourceSchedule().getResourceHostId());
         }
         List<ApplicationDeploymentDescription> applicationDeployements = appCatalog.getApplicationDeployment().getApplicationDeployements(moduleIdFilter);
         Map<ComputeResourceDescription, ApplicationDeploymentDescription> deploymentMap = new HashMap<ComputeResourceDescription, ApplicationDeploymentDescription>();

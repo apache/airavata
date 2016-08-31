@@ -24,7 +24,6 @@ package org.apache.airavata.gfac.impl.task;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.gfac.core.*;
-import org.apache.airavata.gfac.core.cluster.CommandInfo;
 import org.apache.airavata.gfac.core.cluster.JobSubmissionOutput;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
@@ -49,6 +48,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class DefaultJobSubmissionTask implements JobSubmissionTask {
@@ -92,8 +94,10 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
                 if (exitCode != 0 || jobSubmissionOutput.isJobSubmissionFailed()) {
 					jobModel.setJobId(DEFAULT_JOB_ID);
 					if (jobSubmissionOutput.isJobSubmissionFailed()) {
-						jobModel.setJobStatus(new JobStatus(JobState.FAILED));
-						jobModel.getJobStatus().setReason(jobSubmissionOutput.getFailureReason());
+						List<JobStatus> statusList = new ArrayList<>();
+						statusList.add(new JobStatus(JobState.FAILED));
+						statusList.get(0).setReason(jobSubmissionOutput.getFailureReason());
+						jobModel.setJobStatuses(statusList);
 						GFacUtils.saveJobModel(processContext, jobModel);
 						log.error("expId: {}, processid: {}, taskId: {} :- Job submission failed for job name {}",
                                 experimentId, taskContext.getProcessId(), taskContext.getTaskId(), jobModel.getJobName());
@@ -150,13 +154,13 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
                             .getComputeResourceDescription();
                     jobStatus.setReason("Successfully Submitted to " + computeResourceDescription.getHostName());
                     jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-				    jobModel.setJobStatus(jobStatus);
+				    jobModel.setJobStatuses(Arrays.asList(jobStatus));
 				    GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
 				    if (verifyJobSubmissionByJobId(remoteCluster, jobId)) {
 					    jobStatus.setJobState(JobState.QUEUED);
 					    jobStatus.setReason("Verification step succeeded");
                         jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-					    jobModel.setJobStatus(jobStatus);
+					    jobModel.setJobStatuses(Arrays.asList(jobStatus));
 					    GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
 				    }
                     // doing gateway reporting
@@ -184,7 +188,7 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 							jobStatus.setJobState(JobState.QUEUED);
 							jobStatus.setReason("Verification step succeeded");
 							jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-							jobModel.setJobStatus(jobStatus);
+							jobModel.setJobStatuses(Arrays.asList(jobStatus));
 							GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
 							taskStatus.setState(TaskState.COMPLETED);
 							taskStatus.setReason("Submitted job to compute resource");
@@ -233,7 +237,7 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 		    ErrorModel errorModel = new ErrorModel();
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);
-		    taskContext.getTaskModel().setTaskError(errorModel);
+		    taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
 	    } catch (ApplicationSettingsException | GFacException e) {
 		    String msg = "Error occurred while creating job descriptor";
 		    log.error(msg, e);
@@ -243,7 +247,7 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 		    ErrorModel errorModel = new ErrorModel();
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);
-		    taskContext.getTaskModel().setTaskError(errorModel);
+		    taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
 	    } catch (SSHApiException e) {
 		    String msg = "Error occurred while submitting the job";
 		    log.error(msg, e);
@@ -253,7 +257,7 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 		    ErrorModel errorModel = new ErrorModel();
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);
-		    taskContext.getTaskModel().setTaskError(errorModel);
+		    taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
 	    } catch (IOException e) {
 		    String msg = "Error while reading the content of the job file";
 		    log.error(msg, e);
@@ -263,7 +267,7 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 		    ErrorModel errorModel = new ErrorModel();
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);
-		    taskContext.getTaskModel().setTaskError(errorModel);
+		    taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
 	    } catch (InterruptedException e) {
 		    String msg = "Error occurred while verifying the job submission";
 		    log.error(msg, e);
@@ -273,7 +277,7 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 		    ErrorModel errorModel = new ErrorModel();
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);
-		    taskContext.getTaskModel().setTaskError(errorModel);
+		    taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
 	    } catch (RegistryException e) {
             e.printStackTrace();
         }

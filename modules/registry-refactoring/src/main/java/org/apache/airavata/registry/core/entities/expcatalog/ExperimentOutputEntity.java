@@ -20,13 +20,11 @@
 */
 package org.apache.airavata.registry.core.entities.expcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
-@Table(name = "EXPERIMENT_OUTPUT")
+@Table(name = "EXPCAT_EXPERIMENT_OUTPUT")
+@IdClass(ExperimentOutputPK.class)
 public class ExperimentOutputEntity {
     private String experimentId;
     public String name;
@@ -41,6 +39,9 @@ public class ExperimentOutputEntity {
     public boolean outputStreaming;
     public String storageResourceId;
 
+    private ExperimentEntity experiment;
+
+
     @Id
     @Column(name = "EXPERIMENT_ID")
     public String getExperimentId() {
@@ -51,6 +52,7 @@ public class ExperimentOutputEntity {
         this.experimentId = experimentId;
     }
 
+    @Id
     @Column(name = "OUTPUT_NAME")
     public String getName() {
         return name;
@@ -92,7 +94,7 @@ public class ExperimentOutputEntity {
         return isRequired;
     }
 
-    public void setIsRequired(boolean isRequired) {
+    public void setRequired(boolean isRequired) {
         this.isRequired = isRequired;
     }
 
@@ -149,5 +151,15 @@ public class ExperimentOutputEntity {
 
     public void setStorageResourceId(String storageResourceId) {
         this.storageResourceId = storageResourceId;
+    }
+
+    @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
+    public ExperimentEntity getExperiment() {
+        return experiment;
+    }
+
+    public void setExperiment(ExperimentEntity experiment) {
+        this.experiment = experiment;
     }
 }
