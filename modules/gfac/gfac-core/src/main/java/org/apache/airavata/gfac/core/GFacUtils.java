@@ -210,9 +210,14 @@ public class GFacUtils {
 	public static void saveJobStatus(ProcessContext processContext, JobModel jobModel) throws GFacException {
 		try {
             // first we save job jobModel to the registry for sa and then save the job status.
-			JobStatus jobStatus = jobModel.getJobStatus();
+            JobStatus jobStatus = null;
+            if(jobModel.getJobStatuses() != null)
+			    jobStatus = jobModel.getJobStatuses().get(0);
+
             ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-            jobModel.setJobStatus(jobStatus);
+            List<JobStatus> statuses = new ArrayList<>();
+            statuses.add(jobStatus);
+            jobModel.setJobStatuses(statuses);
             if (jobStatus.getTimeOfStateChange() == 0 || jobStatus.getTimeOfStateChange() > 0 ){
                 jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             }else {
@@ -449,7 +454,7 @@ public class GFacUtils {
             log.error("Error while getting job submissiont sub task model", e);
         }
 
-        ComputationalResourceSchedulingModel scheduling = processModel.getResourceSchedule();
+        ComputationalResourceSchedulingModel scheduling = processModel.getProcessResourceSchedule();
         if (scheduling != null) {
             int totalNodeCount = scheduling.getNodeCount();
             int totalCPUCount = scheduling.getTotalCPUCount();

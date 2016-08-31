@@ -46,7 +46,7 @@ class ProcessModel {
    */
   public $lastUpdateTime = null;
   /**
-   * @var \Airavata\Model\Status\ProcessStatus
+   * @var \Airavata\Model\Status\ProcessStatus[]
    */
   public $processStatus = null;
   /**
@@ -76,7 +76,7 @@ class ProcessModel {
   /**
    * @var \Airavata\Model\Scheduling\ComputationalResourceSchedulingModel
    */
-  public $resourceSchedule = null;
+  public $processResourceSchedule = null;
   /**
    * @var \Airavata\Model\Task\TaskModel[]
    */
@@ -86,7 +86,7 @@ class ProcessModel {
    */
   public $taskDag = null;
   /**
-   * @var \Airavata\Model\Commons\ErrorModel
+   * @var \Airavata\Model\Commons\ErrorModel[]
    */
   public $processError = null;
   /**
@@ -143,8 +143,12 @@ class ProcessModel {
           ),
         5 => array(
           'var' => 'processStatus',
-          'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Status\ProcessStatus',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\Status\ProcessStatus',
+            ),
           ),
         6 => array(
           'var' => 'processDetail',
@@ -181,7 +185,7 @@ class ProcessModel {
             ),
           ),
         12 => array(
-          'var' => 'resourceSchedule',
+          'var' => 'processResourceSchedule',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Scheduling\ComputationalResourceSchedulingModel',
           ),
@@ -200,8 +204,12 @@ class ProcessModel {
           ),
         15 => array(
           'var' => 'processError',
-          'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Commons\ErrorModel',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\Commons\ErrorModel',
+            ),
           ),
         16 => array(
           'var' => 'gatewayExecutionId',
@@ -275,8 +283,8 @@ class ProcessModel {
       if (isset($vals['processOutputs'])) {
         $this->processOutputs = $vals['processOutputs'];
       }
-      if (isset($vals['resourceSchedule'])) {
-        $this->resourceSchedule = $vals['resourceSchedule'];
+      if (isset($vals['processResourceSchedule'])) {
+        $this->processResourceSchedule = $vals['processResourceSchedule'];
       }
       if (isset($vals['tasks'])) {
         $this->tasks = $vals['tasks'];
@@ -362,9 +370,19 @@ class ProcessModel {
           }
           break;
         case 5:
-          if ($ftype == TType::STRUCT) {
-            $this->processStatus = new \Airavata\Model\Status\ProcessStatus();
-            $xfer += $this->processStatus->read($input);
+          if ($ftype == TType::LST) {
+            $this->processStatus = array();
+            $_size0 = 0;
+            $_etype3 = 0;
+            $xfer += $input->readListBegin($_etype3, $_size0);
+            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            {
+              $elem5 = null;
+              $elem5 = new \Airavata\Model\Status\ProcessStatus();
+              $xfer += $elem5->read($input);
+              $this->processStatus []= $elem5;
+            }
+            $xfer += $input->readListEnd();
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -400,15 +418,15 @@ class ProcessModel {
         case 10:
           if ($ftype == TType::LST) {
             $this->processInputs = array();
-            $_size0 = 0;
-            $_etype3 = 0;
-            $xfer += $input->readListBegin($_etype3, $_size0);
-            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            $_size6 = 0;
+            $_etype9 = 0;
+            $xfer += $input->readListBegin($_etype9, $_size6);
+            for ($_i10 = 0; $_i10 < $_size6; ++$_i10)
             {
-              $elem5 = null;
-              $elem5 = new \Airavata\Model\Application\Io\InputDataObjectType();
-              $xfer += $elem5->read($input);
-              $this->processInputs []= $elem5;
+              $elem11 = null;
+              $elem11 = new \Airavata\Model\Application\Io\InputDataObjectType();
+              $xfer += $elem11->read($input);
+              $this->processInputs []= $elem11;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -418,15 +436,15 @@ class ProcessModel {
         case 11:
           if ($ftype == TType::LST) {
             $this->processOutputs = array();
-            $_size6 = 0;
-            $_etype9 = 0;
-            $xfer += $input->readListBegin($_etype9, $_size6);
-            for ($_i10 = 0; $_i10 < $_size6; ++$_i10)
+            $_size12 = 0;
+            $_etype15 = 0;
+            $xfer += $input->readListBegin($_etype15, $_size12);
+            for ($_i16 = 0; $_i16 < $_size12; ++$_i16)
             {
-              $elem11 = null;
-              $elem11 = new \Airavata\Model\Application\Io\OutputDataObjectType();
-              $xfer += $elem11->read($input);
-              $this->processOutputs []= $elem11;
+              $elem17 = null;
+              $elem17 = new \Airavata\Model\Application\Io\OutputDataObjectType();
+              $xfer += $elem17->read($input);
+              $this->processOutputs []= $elem17;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -435,8 +453,8 @@ class ProcessModel {
           break;
         case 12:
           if ($ftype == TType::STRUCT) {
-            $this->resourceSchedule = new \Airavata\Model\Scheduling\ComputationalResourceSchedulingModel();
-            $xfer += $this->resourceSchedule->read($input);
+            $this->processResourceSchedule = new \Airavata\Model\Scheduling\ComputationalResourceSchedulingModel();
+            $xfer += $this->processResourceSchedule->read($input);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -444,15 +462,15 @@ class ProcessModel {
         case 13:
           if ($ftype == TType::LST) {
             $this->tasks = array();
-            $_size12 = 0;
-            $_etype15 = 0;
-            $xfer += $input->readListBegin($_etype15, $_size12);
-            for ($_i16 = 0; $_i16 < $_size12; ++$_i16)
+            $_size18 = 0;
+            $_etype21 = 0;
+            $xfer += $input->readListBegin($_etype21, $_size18);
+            for ($_i22 = 0; $_i22 < $_size18; ++$_i22)
             {
-              $elem17 = null;
-              $elem17 = new \Airavata\Model\Task\TaskModel();
-              $xfer += $elem17->read($input);
-              $this->tasks []= $elem17;
+              $elem23 = null;
+              $elem23 = new \Airavata\Model\Task\TaskModel();
+              $xfer += $elem23->read($input);
+              $this->tasks []= $elem23;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -467,9 +485,19 @@ class ProcessModel {
           }
           break;
         case 15:
-          if ($ftype == TType::STRUCT) {
-            $this->processError = new \Airavata\Model\Commons\ErrorModel();
-            $xfer += $this->processError->read($input);
+          if ($ftype == TType::LST) {
+            $this->processError = array();
+            $_size24 = 0;
+            $_etype27 = 0;
+            $xfer += $input->readListBegin($_etype27, $_size24);
+            for ($_i28 = 0; $_i28 < $_size24; ++$_i28)
+            {
+              $elem29 = null;
+              $elem29 = new \Airavata\Model\Commons\ErrorModel();
+              $xfer += $elem29->read($input);
+              $this->processError []= $elem29;
+            }
+            $xfer += $input->readListEnd();
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -491,14 +519,14 @@ class ProcessModel {
         case 18:
           if ($ftype == TType::LST) {
             $this->emailAddresses = array();
-            $_size18 = 0;
-            $_etype21 = 0;
-            $xfer += $input->readListBegin($_etype21, $_size18);
-            for ($_i22 = 0; $_i22 < $_size18; ++$_i22)
+            $_size30 = 0;
+            $_etype33 = 0;
+            $xfer += $input->readListBegin($_etype33, $_size30);
+            for ($_i34 = 0; $_i34 < $_size30; ++$_i34)
             {
-              $elem23 = null;
-              $xfer += $input->readString($elem23);
-              $this->emailAddresses []= $elem23;
+              $elem35 = null;
+              $xfer += $input->readString($elem35);
+              $this->emailAddresses []= $elem35;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -574,11 +602,20 @@ class ProcessModel {
       $xfer += $output->writeFieldEnd();
     }
     if ($this->processStatus !== null) {
-      if (!is_object($this->processStatus)) {
+      if (!is_array($this->processStatus)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('processStatus', TType::STRUCT, 5);
-      $xfer += $this->processStatus->write($output);
+      $xfer += $output->writeFieldBegin('processStatus', TType::LST, 5);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->processStatus));
+        {
+          foreach ($this->processStatus as $iter36)
+          {
+            $xfer += $iter36->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
       $xfer += $output->writeFieldEnd();
     }
     if ($this->processDetail !== null) {
@@ -609,9 +646,9 @@ class ProcessModel {
       {
         $output->writeListBegin(TType::STRUCT, count($this->processInputs));
         {
-          foreach ($this->processInputs as $iter24)
+          foreach ($this->processInputs as $iter37)
           {
-            $xfer += $iter24->write($output);
+            $xfer += $iter37->write($output);
           }
         }
         $output->writeListEnd();
@@ -626,21 +663,21 @@ class ProcessModel {
       {
         $output->writeListBegin(TType::STRUCT, count($this->processOutputs));
         {
-          foreach ($this->processOutputs as $iter25)
+          foreach ($this->processOutputs as $iter38)
           {
-            $xfer += $iter25->write($output);
+            $xfer += $iter38->write($output);
           }
         }
         $output->writeListEnd();
       }
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->resourceSchedule !== null) {
-      if (!is_object($this->resourceSchedule)) {
+    if ($this->processResourceSchedule !== null) {
+      if (!is_object($this->processResourceSchedule)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('resourceSchedule', TType::STRUCT, 12);
-      $xfer += $this->resourceSchedule->write($output);
+      $xfer += $output->writeFieldBegin('processResourceSchedule', TType::STRUCT, 12);
+      $xfer += $this->processResourceSchedule->write($output);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->tasks !== null) {
@@ -651,9 +688,9 @@ class ProcessModel {
       {
         $output->writeListBegin(TType::STRUCT, count($this->tasks));
         {
-          foreach ($this->tasks as $iter26)
+          foreach ($this->tasks as $iter39)
           {
-            $xfer += $iter26->write($output);
+            $xfer += $iter39->write($output);
           }
         }
         $output->writeListEnd();
@@ -666,11 +703,20 @@ class ProcessModel {
       $xfer += $output->writeFieldEnd();
     }
     if ($this->processError !== null) {
-      if (!is_object($this->processError)) {
+      if (!is_array($this->processError)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('processError', TType::STRUCT, 15);
-      $xfer += $this->processError->write($output);
+      $xfer += $output->writeFieldBegin('processError', TType::LST, 15);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->processError));
+        {
+          foreach ($this->processError as $iter40)
+          {
+            $xfer += $iter40->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
       $xfer += $output->writeFieldEnd();
     }
     if ($this->gatewayExecutionId !== null) {
@@ -691,9 +737,9 @@ class ProcessModel {
       {
         $output->writeListBegin(TType::STRING, count($this->emailAddresses));
         {
-          foreach ($this->emailAddresses as $iter27)
+          foreach ($this->emailAddresses as $iter41)
           {
-            $xfer += $output->writeString($iter27);
+            $xfer += $output->writeString($iter41);
           }
         }
         $output->writeListEnd();

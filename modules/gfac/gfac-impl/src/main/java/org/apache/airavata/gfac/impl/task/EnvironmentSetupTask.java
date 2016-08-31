@@ -32,6 +32,7 @@ import org.apache.airavata.model.task.TaskTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Map;
 
 public class EnvironmentSetupTask implements Task {
@@ -57,7 +58,7 @@ public class EnvironmentSetupTask implements Task {
 			ErrorModel errorModel = new ErrorModel();
 			errorModel.setActualErrorMessage(e.getMessage());
 			errorModel.setUserFriendlyMessage(msg);
-			taskContext.getTaskModel().setTaskError(errorModel);
+			taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
 		}
 		return status;
 	}

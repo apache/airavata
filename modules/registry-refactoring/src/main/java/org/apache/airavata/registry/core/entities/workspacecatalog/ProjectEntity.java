@@ -26,7 +26,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "PROJECT")
+@Table(name = "WORKSPACE_PROJECT")
 public class ProjectEntity {
     private String projectID;
     private String owner;

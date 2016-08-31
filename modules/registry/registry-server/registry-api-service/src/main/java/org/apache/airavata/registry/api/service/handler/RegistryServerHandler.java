@@ -720,7 +720,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                                 for (Object jobObject : jobs) {
                                     JobModel jobModel = (JobModel) jobObject;
                                     String jobID = jobModel.getJobId();
-                                    JobStatus status = jobModel.getJobStatus();
+                                    JobStatus status = jobModel.getJobStatuses().get(0);
                                     if (status != null){
                                         jobStatus.put(jobID, status);
                                     }

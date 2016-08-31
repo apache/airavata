@@ -335,7 +335,7 @@ public abstract class Factory {
         try {
             ProcessModel processModel = processContext.getProcessModel();
             String loginUserName = null;
-            String overrideLoginUserName = processModel.getResourceSchedule().getOverrideLoginUserName();
+            String overrideLoginUserName = processModel.getProcessResourceSchedule().getOverrideLoginUserName();
             if (overrideLoginUserName != null && !overrideLoginUserName.equals("")) {
                 loginUserName = overrideLoginUserName;
             } else {
@@ -352,7 +352,7 @@ public abstract class Factory {
         try {
             ProcessModel processModel = processContext.getProcessModel();
             String scratchLocation = null;
-            String overrideScratchLocation = processModel.getResourceSchedule().getOverrideScratchLocation();
+            String overrideScratchLocation = processModel.getProcessResourceSchedule().getOverrideScratchLocation();
             if (overrideScratchLocation != null && !overrideScratchLocation.equals("")) {
                 scratchLocation = overrideScratchLocation;
             } else {
