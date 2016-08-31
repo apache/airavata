@@ -40,4 +40,10 @@ public class GFacUtilsTest {
     }
 
 
+    @Test
+    public void testGetQoS_3() throws Exception {
+        String qos = "shared=oneweek";
+        String shared = GFacUtils.getQoS(qos, "compute");
+        Assert.assertNull(shared);
+    }
 }
