@@ -23,7 +23,7 @@ package org.apache.airavata.registry.core.entities.expcatalog;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "COMPUTE_RESOURCE_SCHEDULING")
+@Table(name = "EXPCAT_COMPUTE_RESOURCE_SCHEDULING")
 public class ComputeResourceSchedulingEntity {
     private String experimentId;
     private String resourceHostId;

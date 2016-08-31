@@ -205,13 +205,14 @@ class UserProfile {
 
   UserProfile(const UserProfile&);
   UserProfile& operator=(const UserProfile&);
-  UserProfile() : userModelVersion("1.0"), airavataInternalUserId("DO_NOT_SET_AT_CLIENTS"), userId(), userName(), orcidId(), country(), homeOrganization(), orginationAffiliation(), creationTime(), lastAccessTime(), validUntil(), State((Status::type)0), comments(), gpgKey(), timeZone() {
+  UserProfile() : userModelVersion("1.0"), airavataInternalUserId("DO_NOT_SET_AT_CLIENTS"), userId(), gatewayId(), userName(), orcidId(), country(), homeOrganization(), orginationAffiliation(), creationTime(), lastAccessTime(), validUntil(), State((Status::type)0), comments(), gpgKey(), timeZone() {
   }
 
   virtual ~UserProfile() throw();
   std::string userModelVersion;
   std::string airavataInternalUserId;
   std::string userId;
+  std::string gatewayId;
   std::vector<std::string>  emails;
   std::string userName;
   std::string orcidId;
@@ -237,6 +238,8 @@ class UserProfile {
   void __set_airavataInternalUserId(const std::string& val);
 
   void __set_userId(const std::string& val);
+
+  void __set_gatewayId(const std::string& val);
 
   void __set_emails(const std::vector<std::string> & val);
 
@@ -279,6 +282,8 @@ class UserProfile {
     if (!(airavataInternalUserId == rhs.airavataInternalUserId))
       return false;
     if (!(userId == rhs.userId))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
       return false;
     if (!(emails == rhs.emails))
       return false;

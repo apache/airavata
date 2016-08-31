@@ -23,7 +23,8 @@ package org.apache.airavata.registry.core.entities.expcatalog;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "EXPERIMENT_INPUT")
+@Table(name = "EXPCAT_EXPERIMENT_INPUT")
+@IdClass(ExperimentInputPK.class)
 public class ExperimentInputEntity {
     private String experimentId;
     public String name;
@@ -51,6 +52,7 @@ public class ExperimentInputEntity {
         this.experimentId = experimentId;
     }
 
+    @Id
     @Column(name = "INPUT_NAME")
     public String getName() {
         return name;
@@ -105,6 +107,7 @@ public class ExperimentInputEntity {
         this.userFriendlyDescription = userFriendlyDescription;
     }
 
+    @Lob
     @Column(name = "METADATA")
     public String getMetaData() {
         return metaData;
@@ -128,7 +131,7 @@ public class ExperimentInputEntity {
         return isRequired;
     }
 
-    public void setIsRequired(boolean isRequired) {
+    public void setRequired(boolean isRequired) {
         this.isRequired = isRequired;
     }
 
