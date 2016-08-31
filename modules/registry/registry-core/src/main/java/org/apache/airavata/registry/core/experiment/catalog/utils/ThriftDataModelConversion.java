@@ -384,16 +384,20 @@ public class ThriftDataModelConversion {
 
             ErrorModel errorModel = getErrorModel(processResource.getProcessError());
             if (errorModel != null){
-                processModel.setProcessError(errorModel);
+                List<ErrorModel> errorModels = new ArrayList<>();
+                errorModels.add(errorModel);
+                processModel.setProcessErrors(errorModels);
             }
             ProcessStatus processStatus = getProcessStatus(processResource.getProcessStatus());
             if (processStatus != null){
-                processModel.setProcessStatus(processStatus);
+                List<ProcessStatus> statuses = new ArrayList<>();
+                statuses.add(processStatus);
+                processModel.setProcessStatuses(statuses);
             }
 
             ComputationalResourceSchedulingModel schedule = getProcessResourceSchedule(processResource.getProcessResourceSchedule());
             if (schedule != null){
-                processModel.setResourceSchedule(schedule);
+                processModel.setProcessResourceSchedule(schedule);
             }
             processModel.setTasks(getTaskModelList(processResource.getTaskList()));
             processModel.setStorageResourceId(processResource.getStorageResourceId());
@@ -427,11 +431,15 @@ public class ThriftDataModelConversion {
 
         TaskStatus taskStatus = getTaskStatus(taskResource.getTaskStatus());
         if (taskStatus != null){
-            model.setTaskStatus(taskStatus);
+            List<TaskStatus> taskStatuses = new ArrayList<>();
+            taskStatuses.add(taskStatus);
+            model.setTaskStatuses(taskStatuses);
         }
         ErrorModel errorModel = getErrorModel(taskResource.getTaskError());
         if (errorModel != null) {
-            model.setTaskError(errorModel);
+            List<ErrorModel> errors = new ArrayList<>();
+            errors.add(errorModel);
+            model.setTaskErrors(errors);
         }
 
         return model;
@@ -449,7 +457,9 @@ public class ThriftDataModelConversion {
         model.setWorkingDir(jobResource.getWorkingDir());
         JobStatus jobStatus = getJobStatus(jobResource.getJobStatus());
         if (jobStatus != null){
-            model.setJobStatus(jobStatus);
+            List<JobStatus> jobStatuses = new ArrayList<>();
+            jobStatuses.add(jobStatus);
+            model.setJobStatuses(jobStatuses);
         }
         model.setExitCode(jobResource.getExitCode());
         model.setStdOut(jobResource.getStdOut());

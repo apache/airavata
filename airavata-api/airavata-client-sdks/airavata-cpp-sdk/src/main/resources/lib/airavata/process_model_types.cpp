@@ -53,7 +53,7 @@ void ProcessModel::__set_lastUpdateTime(const int64_t val) {
 __isset.lastUpdateTime = true;
 }
 
-void ProcessModel::__set_processStatus(const  ::apache::airavata::model::status::ProcessStatus& val) {
+void ProcessModel::__set_processStatus(const std::vector< ::apache::airavata::model::status::ProcessStatus> & val) {
   this->processStatus = val;
 __isset.processStatus = true;
 }
@@ -88,9 +88,9 @@ void ProcessModel::__set_processOutputs(const std::vector< ::apache::airavata::m
 __isset.processOutputs = true;
 }
 
-void ProcessModel::__set_resourceSchedule(const  ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel& val) {
-  this->resourceSchedule = val;
-__isset.resourceSchedule = true;
+void ProcessModel::__set_processResourceSchedule(const  ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel& val) {
+  this->processResourceSchedule = val;
+__isset.processResourceSchedule = true;
 }
 
 void ProcessModel::__set_tasks(const std::vector< ::apache::airavata::model::task::TaskModel> & val) {
@@ -103,7 +103,7 @@ void ProcessModel::__set_taskDag(const std::string& val) {
 __isset.taskDag = true;
 }
 
-void ProcessModel::__set_processError(const  ::apache::airavata::model::commons::ErrorModel& val) {
+void ProcessModel::__set_processError(const std::vector< ::apache::airavata::model::commons::ErrorModel> & val) {
   this->processError = val;
 __isset.processError = true;
 }
@@ -204,8 +204,20 @@ uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 5:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->processStatus.read(iprot);
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->processStatus.clear();
+            uint32_t _size0;
+            ::apache::thrift::protocol::TType _etype3;
+            xfer += iprot->readListBegin(_etype3, _size0);
+            this->processStatus.resize(_size0);
+            uint32_t _i4;
+            for (_i4 = 0; _i4 < _size0; ++_i4)
+            {
+              xfer += this->processStatus[_i4].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
           this->__isset.processStatus = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -247,14 +259,14 @@ uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->processInputs.clear();
-            uint32_t _size0;
-            ::apache::thrift::protocol::TType _etype3;
-            xfer += iprot->readListBegin(_etype3, _size0);
-            this->processInputs.resize(_size0);
-            uint32_t _i4;
-            for (_i4 = 0; _i4 < _size0; ++_i4)
+            uint32_t _size5;
+            ::apache::thrift::protocol::TType _etype8;
+            xfer += iprot->readListBegin(_etype8, _size5);
+            this->processInputs.resize(_size5);
+            uint32_t _i9;
+            for (_i9 = 0; _i9 < _size5; ++_i9)
             {
-              xfer += this->processInputs[_i4].read(iprot);
+              xfer += this->processInputs[_i9].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -267,14 +279,14 @@ uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->processOutputs.clear();
-            uint32_t _size5;
-            ::apache::thrift::protocol::TType _etype8;
-            xfer += iprot->readListBegin(_etype8, _size5);
-            this->processOutputs.resize(_size5);
-            uint32_t _i9;
-            for (_i9 = 0; _i9 < _size5; ++_i9)
+            uint32_t _size10;
+            ::apache::thrift::protocol::TType _etype13;
+            xfer += iprot->readListBegin(_etype13, _size10);
+            this->processOutputs.resize(_size10);
+            uint32_t _i14;
+            for (_i14 = 0; _i14 < _size10; ++_i14)
             {
-              xfer += this->processOutputs[_i9].read(iprot);
+              xfer += this->processOutputs[_i14].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -285,8 +297,8 @@ uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 12:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->resourceSchedule.read(iprot);
-          this->__isset.resourceSchedule = true;
+          xfer += this->processResourceSchedule.read(iprot);
+          this->__isset.processResourceSchedule = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -295,14 +307,14 @@ uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->tasks.clear();
-            uint32_t _size10;
-            ::apache::thrift::protocol::TType _etype13;
-            xfer += iprot->readListBegin(_etype13, _size10);
-            this->tasks.resize(_size10);
-            uint32_t _i14;
-            for (_i14 = 0; _i14 < _size10; ++_i14)
+            uint32_t _size15;
+            ::apache::thrift::protocol::TType _etype18;
+            xfer += iprot->readListBegin(_etype18, _size15);
+            this->tasks.resize(_size15);
+            uint32_t _i19;
+            for (_i19 = 0; _i19 < _size15; ++_i19)
             {
-              xfer += this->tasks[_i14].read(iprot);
+              xfer += this->tasks[_i19].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -320,8 +332,20 @@ uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 15:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->processError.read(iprot);
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->processError.clear();
+            uint32_t _size20;
+            ::apache::thrift::protocol::TType _etype23;
+            xfer += iprot->readListBegin(_etype23, _size20);
+            this->processError.resize(_size20);
+            uint32_t _i24;
+            for (_i24 = 0; _i24 < _size20; ++_i24)
+            {
+              xfer += this->processError[_i24].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
           this->__isset.processError = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -347,14 +371,14 @@ uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->emailAddresses.clear();
-            uint32_t _size15;
-            ::apache::thrift::protocol::TType _etype18;
-            xfer += iprot->readListBegin(_etype18, _size15);
-            this->emailAddresses.resize(_size15);
-            uint32_t _i19;
-            for (_i19 = 0; _i19 < _size15; ++_i19)
+            uint32_t _size25;
+            ::apache::thrift::protocol::TType _etype28;
+            xfer += iprot->readListBegin(_etype28, _size25);
+            this->emailAddresses.resize(_size25);
+            uint32_t _i29;
+            for (_i29 = 0; _i29 < _size25; ++_i29)
             {
-              xfer += iprot->readString(this->emailAddresses[_i19]);
+              xfer += iprot->readString(this->emailAddresses[_i29]);
             }
             xfer += iprot->readListEnd();
           }
@@ -443,8 +467,16 @@ uint32_t ProcessModel::write(::apache::thrift::protocol::TProtocol* oprot) const
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.processStatus) {
-    xfer += oprot->writeFieldBegin("processStatus", ::apache::thrift::protocol::T_STRUCT, 5);
-    xfer += this->processStatus.write(oprot);
+    xfer += oprot->writeFieldBegin("processStatus", ::apache::thrift::protocol::T_LIST, 5);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->processStatus.size()));
+      std::vector< ::apache::airavata::model::status::ProcessStatus> ::const_iterator _iter30;
+      for (_iter30 = this->processStatus.begin(); _iter30 != this->processStatus.end(); ++_iter30)
+      {
+        xfer += (*_iter30).write(oprot);
+      }
+      xfer += oprot->writeListEnd();
+    }
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.processDetail) {
@@ -471,10 +503,10 @@ uint32_t ProcessModel::write(::apache::thrift::protocol::TProtocol* oprot) const
     xfer += oprot->writeFieldBegin("processInputs", ::apache::thrift::protocol::T_LIST, 10);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->processInputs.size()));
-      std::vector< ::apache::airavata::model::application::io::InputDataObjectType> ::const_iterator _iter20;
-      for (_iter20 = this->processInputs.begin(); _iter20 != this->processInputs.end(); ++_iter20)
+      std::vector< ::apache::airavata::model::application::io::InputDataObjectType> ::const_iterator _iter31;
+      for (_iter31 = this->processInputs.begin(); _iter31 != this->processInputs.end(); ++_iter31)
       {
-        xfer += (*_iter20).write(oprot);
+        xfer += (*_iter31).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -484,28 +516,28 @@ uint32_t ProcessModel::write(::apache::thrift::protocol::TProtocol* oprot) const
     xfer += oprot->writeFieldBegin("processOutputs", ::apache::thrift::protocol::T_LIST, 11);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->processOutputs.size()));
-      std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> ::const_iterator _iter21;
-      for (_iter21 = this->processOutputs.begin(); _iter21 != this->processOutputs.end(); ++_iter21)
+      std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> ::const_iterator _iter32;
+      for (_iter32 = this->processOutputs.begin(); _iter32 != this->processOutputs.end(); ++_iter32)
       {
-        xfer += (*_iter21).write(oprot);
+        xfer += (*_iter32).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.resourceSchedule) {
-    xfer += oprot->writeFieldBegin("resourceSchedule", ::apache::thrift::protocol::T_STRUCT, 12);
-    xfer += this->resourceSchedule.write(oprot);
+  if (this->__isset.processResourceSchedule) {
+    xfer += oprot->writeFieldBegin("processResourceSchedule", ::apache::thrift::protocol::T_STRUCT, 12);
+    xfer += this->processResourceSchedule.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.tasks) {
     xfer += oprot->writeFieldBegin("tasks", ::apache::thrift::protocol::T_LIST, 13);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->tasks.size()));
-      std::vector< ::apache::airavata::model::task::TaskModel> ::const_iterator _iter22;
-      for (_iter22 = this->tasks.begin(); _iter22 != this->tasks.end(); ++_iter22)
+      std::vector< ::apache::airavata::model::task::TaskModel> ::const_iterator _iter33;
+      for (_iter33 = this->tasks.begin(); _iter33 != this->tasks.end(); ++_iter33)
       {
-        xfer += (*_iter22).write(oprot);
+        xfer += (*_iter33).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -517,8 +549,16 @@ uint32_t ProcessModel::write(::apache::thrift::protocol::TProtocol* oprot) const
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.processError) {
-    xfer += oprot->writeFieldBegin("processError", ::apache::thrift::protocol::T_STRUCT, 15);
-    xfer += this->processError.write(oprot);
+    xfer += oprot->writeFieldBegin("processError", ::apache::thrift::protocol::T_LIST, 15);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->processError.size()));
+      std::vector< ::apache::airavata::model::commons::ErrorModel> ::const_iterator _iter34;
+      for (_iter34 = this->processError.begin(); _iter34 != this->processError.end(); ++_iter34)
+      {
+        xfer += (*_iter34).write(oprot);
+      }
+      xfer += oprot->writeListEnd();
+    }
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.gatewayExecutionId) {
@@ -535,10 +575,10 @@ uint32_t ProcessModel::write(::apache::thrift::protocol::TProtocol* oprot) const
     xfer += oprot->writeFieldBegin("emailAddresses", ::apache::thrift::protocol::T_LIST, 18);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->emailAddresses.size()));
-      std::vector<std::string> ::const_iterator _iter23;
-      for (_iter23 = this->emailAddresses.begin(); _iter23 != this->emailAddresses.end(); ++_iter23)
+      std::vector<std::string> ::const_iterator _iter35;
+      for (_iter35 = this->emailAddresses.begin(); _iter35 != this->emailAddresses.end(); ++_iter35)
       {
-        xfer += oprot->writeString((*_iter23));
+        xfer += oprot->writeString((*_iter35));
       }
       xfer += oprot->writeListEnd();
     }
@@ -587,7 +627,7 @@ void swap(ProcessModel &a, ProcessModel &b) {
   swap(a.computeResourceId, b.computeResourceId);
   swap(a.processInputs, b.processInputs);
   swap(a.processOutputs, b.processOutputs);
-  swap(a.resourceSchedule, b.resourceSchedule);
+  swap(a.processResourceSchedule, b.processResourceSchedule);
   swap(a.tasks, b.tasks);
   swap(a.taskDag, b.taskDag);
   swap(a.processError, b.processError);
@@ -602,57 +642,57 @@ void swap(ProcessModel &a, ProcessModel &b) {
   swap(a.__isset, b.__isset);
 }
 
-ProcessModel::ProcessModel(const ProcessModel& other24) {
-  processId = other24.processId;
-  experimentId = other24.experimentId;
-  creationTime = other24.creationTime;
-  lastUpdateTime = other24.lastUpdateTime;
-  processStatus = other24.processStatus;
-  processDetail = other24.processDetail;
-  applicationInterfaceId = other24.applicationInterfaceId;
-  applicationDeploymentId = other24.applicationDeploymentId;
-  computeResourceId = other24.computeResourceId;
-  processInputs = other24.processInputs;
-  processOutputs = other24.processOutputs;
-  resourceSchedule = other24.resourceSchedule;
-  tasks = other24.tasks;
-  taskDag = other24.taskDag;
-  processError = other24.processError;
-  gatewayExecutionId = other24.gatewayExecutionId;
-  enableEmailNotification = other24.enableEmailNotification;
-  emailAddresses = other24.emailAddresses;
-  storageResourceId = other24.storageResourceId;
-  userDn = other24.userDn;
-  generateCert = other24.generateCert;
-  experimentDataDir = other24.experimentDataDir;
-  userName = other24.userName;
-  __isset = other24.__isset;
+ProcessModel::ProcessModel(const ProcessModel& other36) {
+  processId = other36.processId;
+  experimentId = other36.experimentId;
+  creationTime = other36.creationTime;
+  lastUpdateTime = other36.lastUpdateTime;
+  processStatus = other36.processStatus;
+  processDetail = other36.processDetail;
+  applicationInterfaceId = other36.applicationInterfaceId;
+  applicationDeploymentId = other36.applicationDeploymentId;
+  computeResourceId = other36.computeResourceId;
+  processInputs = other36.processInputs;
+  processOutputs = other36.processOutputs;
+  processResourceSchedule = other36.processResourceSchedule;
+  tasks = other36.tasks;
+  taskDag = other36.taskDag;
+  processError = other36.processError;
+  gatewayExecutionId = other36.gatewayExecutionId;
+  enableEmailNotification = other36.enableEmailNotification;
+  emailAddresses = other36.emailAddresses;
+  storageResourceId = other36.storageResourceId;
+  userDn = other36.userDn;
+  generateCert = other36.generateCert;
+  experimentDataDir = other36.experimentDataDir;
+  userName = other36.userName;
+  __isset = other36.__isset;
 }
-ProcessModel& ProcessModel::operator=(const ProcessModel& other25) {
-  processId = other25.processId;
-  experimentId = other25.experimentId;
-  creationTime = other25.creationTime;
-  lastUpdateTime = other25.lastUpdateTime;
-  processStatus = other25.processStatus;
-  processDetail = other25.processDetail;
-  applicationInterfaceId = other25.applicationInterfaceId;
-  applicationDeploymentId = other25.applicationDeploymentId;
-  computeResourceId = other25.computeResourceId;
-  processInputs = other25.processInputs;
-  processOutputs = other25.processOutputs;
-  resourceSchedule = other25.resourceSchedule;
-  tasks = other25.tasks;
-  taskDag = other25.taskDag;
-  processError = other25.processError;
-  gatewayExecutionId = other25.gatewayExecutionId;
-  enableEmailNotification = other25.enableEmailNotification;
-  emailAddresses = other25.emailAddresses;
-  storageResourceId = other25.storageResourceId;
-  userDn = other25.userDn;
-  generateCert = other25.generateCert;
-  experimentDataDir = other25.experimentDataDir;
-  userName = other25.userName;
-  __isset = other25.__isset;
+ProcessModel& ProcessModel::operator=(const ProcessModel& other37) {
+  processId = other37.processId;
+  experimentId = other37.experimentId;
+  creationTime = other37.creationTime;
+  lastUpdateTime = other37.lastUpdateTime;
+  processStatus = other37.processStatus;
+  processDetail = other37.processDetail;
+  applicationInterfaceId = other37.applicationInterfaceId;
+  applicationDeploymentId = other37.applicationDeploymentId;
+  computeResourceId = other37.computeResourceId;
+  processInputs = other37.processInputs;
+  processOutputs = other37.processOutputs;
+  processResourceSchedule = other37.processResourceSchedule;
+  tasks = other37.tasks;
+  taskDag = other37.taskDag;
+  processError = other37.processError;
+  gatewayExecutionId = other37.gatewayExecutionId;
+  enableEmailNotification = other37.enableEmailNotification;
+  emailAddresses = other37.emailAddresses;
+  storageResourceId = other37.storageResourceId;
+  userDn = other37.userDn;
+  generateCert = other37.generateCert;
+  experimentDataDir = other37.experimentDataDir;
+  userName = other37.userName;
+  __isset = other37.__isset;
   return *this;
 }
 void ProcessModel::printTo(std::ostream& out) const {
@@ -669,7 +709,7 @@ void ProcessModel::printTo(std::ostream& out) const {
   out << ", " << "computeResourceId="; (__isset.computeResourceId ? (out << to_string(computeResourceId)) : (out << "<null>"));
   out << ", " << "processInputs="; (__isset.processInputs ? (out << to_string(processInputs)) : (out << "<null>"));
   out << ", " << "processOutputs="; (__isset.processOutputs ? (out << to_string(processOutputs)) : (out << "<null>"));
-  out << ", " << "resourceSchedule="; (__isset.resourceSchedule ? (out << to_string(resourceSchedule)) : (out << "<null>"));
+  out << ", " << "processResourceSchedule="; (__isset.processResourceSchedule ? (out << to_string(processResourceSchedule)) : (out << "<null>"));
   out << ", " << "tasks="; (__isset.tasks ? (out << to_string(tasks)) : (out << "<null>"));
   out << ", " << "taskDag="; (__isset.taskDag ? (out << to_string(taskDag)) : (out << "<null>"));
   out << ", " << "processError="; (__isset.processError ? (out << to_string(processError)) : (out << "<null>"));

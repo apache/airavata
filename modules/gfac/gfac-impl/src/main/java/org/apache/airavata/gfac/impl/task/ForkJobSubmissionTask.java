@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 
 public class ForkJobSubmissionTask implements JobSubmissionTask {
@@ -87,7 +88,7 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
                     jobStatus.setReason("Successfully Submitted to " + taskContext.getParentProcessContext()
                             .getComputeResourceDescription().getHostName());
                     jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                    jobModel.setJobStatus(jobStatus);
+                    jobModel.setJobStatuses(Arrays.asList(jobStatus));
                     GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
                     taskStatus = new TaskStatus(TaskState.COMPLETED);
                     taskStatus.setReason("Submitted job to compute resource");
@@ -124,7 +125,7 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (AppCatalogException e) {
             String msg = "Error while instantiating app catalog";
             log.error(msg, e);
@@ -133,7 +134,7 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (GFacException e) {
             String msg = "Error occurred while creating job descriptor";
             log.error(msg, e);
@@ -142,7 +143,7 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (SSHApiException e) {
             String msg = "Error occurred while submitting the job";
             log.error(msg, e);
@@ -151,7 +152,7 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (IOException e) {
             String msg = "Error while reading the content of the job file";
             log.error(msg, e);
@@ -160,7 +161,7 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         }
         return taskStatus;
     }
