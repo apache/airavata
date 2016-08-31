@@ -1,0 +1,15 @@
+[Unit]
+Description=kafka-manager
+After=docker.service
+Requires=docker.service
+[Service]
+EnvironmentFile=/etc/environment
+TimeoutStartSec=60
+Restart=on-failure
+ExecStartPre=-/usr/bin/docker rm -f kafka-manager
+ExecStartPre=-/usr/bin/docker pull sheepkiller/kafka-manager
+ExecStart=/usr/bin/docker run --name kafka-manager -p 9000:9000 -e ZK_HOSTS=localhost:2181 -e APPLICATION_SECRET=face2face sheepkiller/kafka-manager
+ExecStop=/usr/bin/docker stop kafka-manager
+[Install]
+WantedBy=multi-user.target
+

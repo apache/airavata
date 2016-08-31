@@ -1,6 +1,6 @@
-FROM logstash:2
+FROM logstash:2.1.1
 
 COPY *.gem /tmp/
-RUN logstash-plugin install /tmp/*.gem && rm -f /tmp/*.gem
-RUN logstash-plugin install logstash-codec-avro logstash-codec-cloudtrail logstash-input-journald
+RUN /opt/logstash/bin/plugin install logstash-output-amazon_es 
+RUN /opt/logstash/bin/plugin install logstash-codec-avro logstash-codec-cloudtrail logstash-input-journald
 ENTRYPOINT []
