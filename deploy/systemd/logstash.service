@@ -1,0 +1,16 @@
+[Unit]
+Description=logstash
+Requires=docker.service
+After=docker.service
+[Service]
+EnvironmentFile=/etc/os-release
+LimitNOFILE=infinity
+TimeoutStartSec=90
+Restart=on-failure
+ExecStartPre=-/usr/bin/docker rm -f logstash
+ExecStartPre=-/usr/bin/docker pull scigap/logstash
+ExecStart=/usr/bin/docker run --name logstash -e ENV_NAME=local -e OS_NAME=${NAME} -e OS_VERSION=${VERSION} \
+    -e KAFKA_ZK="localhost:2181/kafka" -e ES_ENDPOINT="search-scigap-62tebdueebw5dfyn7bfyn63rru.us-east-1.es.amazonaws.com" \
+    -v /etc/logstash:/config -v /var/log/journal:/var/log/journal -v /var/lib/logstash:/var/lib/logstash \
+    scigap/logstash logstash -f /config/logstash.conf
+ExecStop=/usr/bin/docker stop logstash

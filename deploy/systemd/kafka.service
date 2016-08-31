@@ -7,7 +7,7 @@ TimeoutStartSec=60
 Restart=on-failure
 ExecStartPre=-/usr/bin/docker rm -f kafka
 ExecStartPre=-/usr/bin/docker pull scigap/kafka
-ExecStart=/usr/bin/docker run --net=host --name kafka -e ADVERTISED_HOST_NAME=${COREOS_PRIVATE_IPV4} -v /var/lib/kafka:/var/lib/kafka scigap/kafka
+ExecStart=/usr/bin/docker run --net=host --name kafka -e ADVERTISED_HOST_NAME=54.163.192.179 -v /var/lib/kafka:/var/lib/kafka scigap/kafka
 ExecStop=/usr/bin/docker stop kafka
 [Install]
 WantedBy=multi-user.target
