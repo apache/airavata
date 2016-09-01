@@ -14,8 +14,9 @@ oauth_client_key: "5_GFR88Nzd4XvGthSMF1fnOJPuMa"
 oauth_client_secret: "KNTf_LPLuGBDbRVZwkrP_fF5z2Ea"
 
 ## Airavata Client related variables
-airavata_server: "tls://gw77.iu.xsede.org"
-airavata_port: "9930"
+#airavata_server: "tls://gw77.iu.xsede.org"
+airavata_server: "http://{{ groups['api-orch'][0] }}"
+airavata_port: "8930"
 gateway_id: "default"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}"
