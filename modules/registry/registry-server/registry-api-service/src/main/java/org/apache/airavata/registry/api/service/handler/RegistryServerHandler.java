@@ -21,6 +21,7 @@
 package org.apache.airavata.registry.api.service.handler;
 
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.WorkflowModel;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
@@ -3291,10 +3292,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 }
             }
 
-            if(accessibleExpIds.size() == 0)
-                return new ArrayList<>();
-
-            if(accessibleExpIds.size() == 0){
+            if(accessibleExpIds.size() == 0 && !ServerSettings.isEnableSharing()){
                 if(!regFilters.containsKey(AbstractExpCatResource.ExperimentConstants.USER_NAME)){
                     regFilters.put(AbstractExpCatResource.ExperimentConstants.USER_NAME, userName);
                 }
@@ -3361,10 +3359,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 }
             }
 
-            if(accessibleProjIds.size() == 0)
-                return new ArrayList<>();
-
-            if(accessibleProjIds.size() == 0){
+            if(accessibleProjIds.size() == 0 && !ServerSettings.isEnableSharing()){
                 if(!regFilters.containsKey(AbstractExpCatResource.ProjectConstants.USERNAME)){
                     regFilters.put(AbstractExpCatResource.ProjectConstants.USERNAME, userName);
                 }
