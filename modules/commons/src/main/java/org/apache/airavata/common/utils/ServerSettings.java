@@ -35,6 +35,7 @@ public class ServerSettings extends ApplicationSettings {
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_USER_PASSWORD = "default.registry.password";
     private static final String DEFAULT_USER_GATEWAY = "default.registry.gateway";
+    private static final String ENABLE_SHARING = "enable.sharing";
 
     public static final String IP = "ip";
 
@@ -399,5 +400,9 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String getLocalDataLocation() {
         return System.getProperty("java.io.tmpdir");
+    }
+
+    public static Boolean isEnableSharing() throws ApplicationSettingsException {
+        return Boolean.parseBoolean(getSetting(ENABLE_SHARING));
     }
 }

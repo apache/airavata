@@ -523,7 +523,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             RegistryService.Client regClient = getRegistryServiceClient();
             Project existingProject = regClient.getProject(projectId);
-            if(!authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(existingProject.getOwner())
+            if(ServerSettings.isEnableSharing() && !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(existingProject.getOwner())
                     || !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID).equals(existingProject.getGatewayId())){
                 try {
                     if(!hasPermission(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME)
@@ -553,7 +553,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             RegistryService.Client regClient = getRegistryServiceClient();
             Project existingProject = regClient.getProject(projectId);
-            if(!authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(existingProject.getOwner())
+            if(ServerSettings.isEnableSharing() && !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(existingProject.getOwner())
                     || !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID).equals(existingProject.getGatewayId())){
                 try {
                     if(!hasPermission(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME)
@@ -598,7 +598,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             if(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(project.getOwner())
                     && authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID).equals(project.getGatewayId())){
                 return project;
-            }else{
+            }else if (ServerSettings.isEnableSharing()){
                 try {
                     if(hasPermission(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME)
                                     +"@"+authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID),
@@ -610,7 +610,8 @@ public class AiravataServerHandler implements Airavata.Iface {
                 } catch (Exception e) {
                     throw new AuthorizationException("User does not have permission to access this resource");
                 }
-            }
+            }else
+                return null;
         } catch (ApplicationSettingsException | RegistryServiceException e) {
             logger.error("Error while retrieving the project", e);
             ProjectNotFoundException exception = new ProjectNotFoundException();
@@ -676,7 +677,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             String> filters, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             List<String> accessibleProjIds  = new ArrayList<>();
-            accessibleProjIds.addAll(getAllAccessibleResourcesForUser(userName+"@"+gatewayId, ResourceType.PROJECT, ResourcePermissionType.READ));
+
+            if(ServerSettings.isEnableSharing())
+                accessibleProjIds.addAll(getAllAccessibleResourcesForUser(userName+"@"+gatewayId, ResourceType.PROJECT, ResourcePermissionType.READ));
 
             return getRegistryServiceClient().searchProjects(gatewayId, userName, accessibleProjIds, filters, limit, offset);
         }catch (Exception e) {
@@ -711,7 +714,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             List<String> accessibleExpIds = new ArrayList<>();
-            accessibleExpIds.addAll(getAllAccessibleResourcesForUser(userName + "@" + gatewayId, ResourceType.EXPERIMENT, ResourcePermissionType.READ));
+            if(ServerSettings.isEnableSharing())
+                accessibleExpIds.addAll(getAllAccessibleResourcesForUser(userName + "@" + gatewayId, ResourceType.EXPERIMENT, ResourcePermissionType.READ));
             return getRegistryServiceClient().searchExperiments(gatewayId, userName, accessibleExpIds, filters, limit, offset);
         }catch (Exception e) {
             logger.error("Error while retrieving experiments", e);
@@ -770,7 +774,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             RegistryService.Client regClient  = getRegistryServiceClient();
             Project project = regClient.getProject(projectId);
 
-            if(!authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(project.getOwner())
+            if(ServerSettings.isEnableSharing() && !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(project.getOwner())
                     || !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID).equals(project.getGatewayId())){
                 try {
                     if(!hasPermission(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME)
@@ -849,13 +853,17 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             String experimentId = getRegistryServiceClient().createExperiment(gatewayId, experiment);
-            GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
             Resource expResource = new Resource(experimentId, org.apache.airavata.grouper.resource.ResourceType.EXPERIMENT);
             expResource.setOwnerId(experiment.getUserName()+"@"+experiment.getGatewayId());
             expResource.setParentResourceId(experiment.getProjectId());
             expResource.setName(experiment.getExperimentName());
             expResource.setDescription(experiment.getDescription());
-            groupManager.createResource(expResource);
+
+            if(ServerSettings.isEnableSharing()) {
+                GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
+                groupManager.createResource(expResource);
+            }
+
             ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.CREATED,
                     experimentId,
                     gatewayId);
@@ -894,7 +902,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             RegistryService.Client regClient  = getRegistryServiceClient();
             ExperimentModel experimentModel = regClient.getExperiment(experimentId);
 
-            if(!authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(experimentModel.getUserName())
+            if(ServerSettings.isEnableSharing() && !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(experimentModel.getUserName())
                     || !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID).equals(experimentModel.getGatewayId())){
                 try {
                     if(! hasPermission(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME)
@@ -950,28 +958,30 @@ public class AiravataServerHandler implements Airavata.Iface {
         ExperimentModel experimentModel = null;
         try {
             experimentModel = getRegistryServiceClient().getExperiment(airavataExperimentId);
+            if(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(experimentModel.getUserName())
+                    && authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID).equals(experimentModel.getGatewayId())){
+                return experimentModel;
+            }else if(ServerSettings.isEnableSharing()){
+                try {
+                    if(hasPermission(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME)
+                                    +"@"+authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID),
+                            experimentModel.getExperimentId(), ResourceType.EXPERIMENT, ResourcePermissionType.READ)){
+                        return experimentModel;
+                    }else {
+                        throw new AuthorizationException("User does not have permission to access this resource");
+                    }
+                } catch (Exception e) {
+                    throw new AuthorizationException("User does not have permission to access this resource");
+                }
+            }else{
+                return null;
+            }
         } catch (ApplicationSettingsException e) {
             logger.error("Error while getting the experiment", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while getting the experiment. More info : " + e.getMessage());
             throw exception;
-        }
-        if(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(experimentModel.getUserName())
-                && authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID).equals(experimentModel.getGatewayId())){
-            return experimentModel;
-        }else{
-            try {
-                if(hasPermission(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME)
-                                +"@"+authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID),
-                        experimentModel.getExperimentId(), ResourceType.EXPERIMENT, ResourcePermissionType.READ)){
-                    return experimentModel;
-                }else {
-                    throw new AuthorizationException("User does not have permission to access this resource");
-                }
-            } catch (Exception e) {
-                throw new AuthorizationException("User does not have permission to access this resource");
-            }
         }
     }
 
@@ -1045,7 +1055,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             RegistryService.Client regClient = getRegistryServiceClient();
             ExperimentModel experimentModel = regClient.getExperiment(airavataExperimentId);
-            if(!authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(experimentModel.getUserName())
+            if(ServerSettings.isEnableSharing() && !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(experimentModel.getUserName())
                 || !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID).equals(experimentModel.getGatewayId())){
                 try {
                     if(! hasPermission(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME)
@@ -1381,10 +1391,14 @@ public class AiravataServerHandler implements Airavata.Iface {
             String expId = regClient.createExperiment(gatewayId, existingExperiment);
 
             String projectId = existingExperiment.getProjectId();
-            if(!isResourceExistsInGrouper(projectId, ResourceType.PROJECT)){
-                initializeResourceWithGrouper(projectId, ResourceType.PROJECT);
+
+            if(ServerSettings.isEnableSharing()){
+                if(!isResourceExistsInGrouper(projectId, ResourceType.PROJECT)){
+                    initializeResourceWithGrouper(projectId, ResourceType.PROJECT);
+                }
+                initializeResourceWithGrouper(expId, ResourceType.EXPERIMENT);
             }
-            initializeResourceWithGrouper(expId, ResourceType.EXPERIMENT);
+
             return expId;
         } catch (Exception e) {
             logger.error(existingExperimentID, "Error while cloning the experiment with existing configuration...", e);
