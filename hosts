@@ -1,8 +1,9 @@
 ---
-[localhost]
-127.0.0.1
+# inventory fie: production
+#[localhost]
+#127.0.0.1
 
 [mesos-master]
+52.91.222.138
 
-
-[mesos-agent]
+#[mesos-agent]

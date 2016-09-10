@@ -1,4 +1,9 @@
 ---
+
+- name: wait untill instance is up and running
+  local_action: wait_for port=22
+                host="{{ ansible_ssh_host | default(inventory_hostname) }}"
+                search_regex=OpenSSH delay=10
 - name: create group
   group: name="{{group}}"
   become: yes
@@ -19,14 +24,26 @@
   become: yes
 
 - name: updage systemd
-  yum: name=systemd state=latest enabled=yes
+  yum: name=systemd state=latest
+  become: yes
+
+- name: get apache maven
+  get_url:
+    url: http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo
+    dest: /etc/yum.repos.d/epel-apache-maven.repo
+  become: yes
+
+- name: copy svn repo file
+  copy:
+    src: wandisco-svn.repo
+    dest: /etc/yum.repos.d/wandisco-svn.repo
   become: yes
 
 - name: install development tools
-  yum: name="@Development tools" state=latest
+  yum: name="@Development tools" state=present
   become: yes
 
-  # Install other Mesos dependencies.
+#Install other Mesos dependencies.
 - name: install mesos dependencies
   yum: name="{{item}}" state=latest
   with_items:
@@ -41,6 +58,7 @@
     - apr-devel
     - apr-util-devel
     - subversion-devel
+  become: yes
 
 - name: start firewall service
   service: name=firewalld state=started enabled=yes
@@ -48,8 +66,11 @@
 
 - name: download and unarchive mesos latest
   unarchive:
-      src=http://www.apache.org/dist/mesos/1.0.1/mesos-1.0.1.tar.gz
-      dest="{{mesos_dir}}"
+      src="{{mesos_url}}"
+      dest="{{user_home}}"
+      remote_src=yes
+      copy=no
+      creates="{{mesos_deploy_dir}}/configure"
       owner="{{user}}"
       group="{{group}}"
 
@@ -57,7 +78,15 @@
   # $ ./bootstrap
 
 - name: make build dir
-  file: path="{{mesos_dir}}/build" state=directory user={{user}} group={{group}}
+  file: path="{{mesos_build_dir}}" state=directory owner={{user}} group={{group}}
+
+# - name: create simlink to configure script
+#   file: src="{{mesos_deploy_dir}}/configure"
+#         dest="{{mesos_build_dir}}/configure"
+#         state=link
+#         owner={{user}}
+#         group={{group}}
+#   tags: test
 
 - name: configure and build mesos
   command: ../configure  chdir="{{mesos_build_dir}}"
@@ -68,9 +97,13 @@
   when: build|success
   register: make
 
-- name: run make tests
-  command: make check chdir="{{mesos_build_dir}}"
-  when: make|success
+# - name: run make tests
+#   command: make check chdir="{{mesos_build_dir}}"
+#   when: make|success
+
+- name: open firewall port
+  firewalld: port=5050/tcp zone=public permanent=true state=enabled immediate=yes
+  become: yes
 
 - name: create working dir
   file: path="{{mesos_work_dir}}" state=directory user={{user}} group={{group}}

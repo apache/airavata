@@ -1,0 +1,101 @@
+---
+# reference: https://open.mesosphere.com/getting-started/install/
+- name: install firewalld
+  yum:
+    name: firewalld
+    state: latest
+  become: yes
+
+- name: start firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+  become: yes
+
+- name: open ports
+  firewalld:
+    port: "{{ item }}"
+    zone: public
+    permanent: true
+    state: enabled
+    immediate: yes
+  with_items:
+    - "{{ zk_client_port }}/tcp"
+    - "2888/tcp"
+    - "3888/tcp"
+    - "5050/tcp"
+    # - "marathon/tcp"
+  become: yes
+
+# Setup repository
+- name: add mesosphere rpm
+  yum:
+    name: http://repos.mesosphere.com/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpm
+    state: present
+  become: yes
+
+- name: install mesos , marathon and mesosphere-zookeeper
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - mesos
+    - marathon
+    - mesosphere-zookeeper
+  become: yes
+
+# configurations
+#setting ID
+- name: copy myid file
+  template:
+    src: myid.j2
+    dest: /var/lib/zookeeper/myid
+    force: yes
+  become: yes
+
+- name: append zookeeper ring ips
+  template:
+    src: zoo.cfg.j2
+    dest: /etc/zookeeper/conf/zoo.cfg
+    force: yes
+  become: yes
+
+- name: start Zookeeper
+  service:
+    name: zookeeper
+    state: started
+  become: yes
+
+- name: set zk file for mesos master and marathon
+  template:
+    src: zk.j2
+    dest: /etc/mesos/zk
+    force: yes
+  become: yes
+
+- name: set zookeeper quorum
+  template:
+    src: quorum.j2
+    dest: /etc/mesos-master/quorum
+    force: yes
+  become: yes
+
+- name: stop and disable mesos slave
+  service:
+    name: mesos-slave
+    enabled: no
+    state: stopped
+  become: yes
+
+- name: restart mesos master
+  service:
+    name: mesos-master
+    state: restarted
+  become: yes
+
+- name: restart marathon
+  service:
+    name: marathon
+    state: restarted
+  become: yes

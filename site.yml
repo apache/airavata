@@ -4,8 +4,14 @@
   roles:
     - test
 
-
 - hosts: mesos-master
-  tags: mesos-master
+  tags: mesos
   roles:
     - mesos
+
+- hosts: mesos-master
+  tags: mesosyum
+  roles:
+    - mesos-yum
+
+...
