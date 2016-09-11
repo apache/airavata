@@ -23,10 +23,10 @@ initLimit=10
 # sending a request and getting an acknowledgement
 syncLimit=5
 # the directory where the snapshot is stored.
-dataDir=/var/lib/zookeeper
+dataDir={{zookeeper_datastore_dir}}
 # the port at which the clients will connect
-clientPort={{ zk_client_port }}
+clientPort={{zookeeper_client_port}}
 
-server.1={{zk_1}}:2888:3888
-server.2={{zk_2}}:2888:3888
-server.3={{zk_3}}:2888:3888
+{% for server in zookeeper_servers %}
+server.{{ server.id }}={{ server.ip }}:2888:3888
+{% endfor %}

@@ -1,17 +1,19 @@
 ---
 - hosts: localhost
-  tags: test
+  tags: ec2
   roles:
-    - test
+    - ec2
 
 - hosts: mesos-master
-  tags: mesos
+  tags: mesos, mesos-master
   roles:
-    - mesos
+    - java
+    - zookeeper
+    - mesos-master
 
-- hosts: mesos-master
-  tags: mesosyum
+- hosts: mesos-slave
+  tags: mesos, mesos-slave
   roles:
-    - mesos-yum
+    - mesos-slave
 
 ...

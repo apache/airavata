@@ -21,11 +21,19 @@
     state: enabled
     immediate: yes
   with_items:
-    - "{{ zk_client_port }}/tcp"
-    - "2888/tcp"
-    - "3888/tcp"
+    # - "{{ zk_client_port }}/tcp"
+    # - "2888/tcp"
+    # - "3888/tcp"
     - "5050/tcp"
     # - "marathon/tcp"
+  become: yes
+
+- name: install utility - TODO delete this
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - vim
   become: yes
 
 # Setup repository
@@ -35,37 +43,17 @@
     state: present
   become: yes
 
-- name: install mesos , marathon and mesosphere-zookeeper
+- name: install mesos and marathon
   yum:
     name: "{{ item }}"
     state: latest
   with_items:
     - mesos
     - marathon
-    - mesosphere-zookeeper
+    # - mesosphere-zookeeper
   become: yes
 
 # configurations
-#setting ID
-- name: copy myid file
-  template:
-    src: myid.j2
-    dest: /var/lib/zookeeper/myid
-    force: yes
-  become: yes
-
-- name: append zookeeper ring ips
-  template:
-    src: zoo.cfg.j2
-    dest: /etc/zookeeper/conf/zoo.cfg
-    force: yes
-  become: yes
-
-- name: start Zookeeper
-  service:
-    name: zookeeper
-    state: started
-  become: yes
 
 - name: set zk file for mesos master and marathon
   template:

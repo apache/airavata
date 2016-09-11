@@ -19,7 +19,7 @@ user_home: "/home/{{user}}"
 
 
 #Zookeeper related properties
-zk_client_port: 2181
+zookeeper_client_port: 2181
 # zookeeper_servers:
 #   - { index: 1, ip: "", ports: "2888:3888"}
 #   - { index: 2, ip: "", ports: "2888:3888"}
