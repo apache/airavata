@@ -1,22 +1,10 @@
 ---
 ansible_connection: ssh
-#ansible_ssh_user: root
 ansible_ssh_user: centos
-#ansible_ssh_private_key_file: /Users/syodage/Projects/mesos-deployment/jetcloud.key
 ansible_ssh_private_key_file: /Users/syodage/Projects/airavata-ansible/shameera-aws.pem.txt
 
 user: centos
 group: centos
-user_home: "/home/{{user}}"
-
-# Mesos related properties
-#mesos_version: "1.0.1"
-# mesos_version: "0.28.2"
-# mesos_name: "mesos"
-# mesos_url: "http://www.apache.org/dist/mesos/{{mesos_version}}/{{mesos_name}}-{{mesos_version}}.tar.gz"
-# mesos_deploy_dir: "{{user_home}}/{{mesos_name}}-{{mesos_version}}"
-# mesos_build_dir: "{{mesos_deploy_dir}}/build"
-
 
 #Zookeeper related properties
 zookeeper_client_port: 2181

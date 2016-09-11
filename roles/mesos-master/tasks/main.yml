@@ -21,11 +21,8 @@
     state: enabled
     immediate: yes
   with_items:
-    # - "{{ zk_client_port }}/tcp"
-    # - "2888/tcp"
-    # - "3888/tcp"
     - "5050/tcp"
-    # - "marathon/tcp"
+    - "8080/tcp"
   become: yes
 
 - name: install utility - TODO delete this
