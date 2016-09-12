@@ -891,6 +891,7 @@ public class GFacEngineImpl implements GFacEngine {
         errorModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
         try {
             GFacUtils.saveProcessError(pc, errorModel);
+            GFacUtils.saveExperimentError(pc, errorModel);
         } catch (GFacException e1) {
             log.error("Error while updating error model for process:" + pc.getProcessId());
         }
