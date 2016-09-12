@@ -39,18 +39,25 @@ rabbitmq_broker_url: "amqp://{{ rabbitmq_user }}:{{ rabbitmq_password }}@{{ rabb
 # Zoookeeper related variables
 zookeeper_client_port: 2181
 zookeeper_url: "{{ groups['zookeeper'][0] }}:{{ zookeeper_client_port }}"
-# API Server and Orchestrator related variables
+# API Server related variables
 api_server_name: "apiserver-node0"
-api_server_host: "{{ ansible_fqdn }}"
+api_server_host: "{{ansible_fqdn}}"
 api_server_port: "8930"
 api_secured: "true"
 tls_enable: "false"
 api_server_tls_port: "9930"
 
+# Orchestrator  related variables
 orchestrator_name: "orchestrator-node0"
-orchestrator_host: "{{ ansible_fqdn }}"
+orchestrator_host: "{{ansible_fqdn}}"
 orchestrator_port: "8940"
 api_orch_dir: "{{ deployment_dir }}/api-orchestrator"
+
+# registry related variables
+registry_name: regserver-node0
+registry_host: "{{groups['registry'][0]}}"
+registry_port: 8970
+registry_dir: "{{ deployment_dir }}/registry"
 
 # Credential and keystore related variables
 #authorization_server: "https://{{ groups['wso2is'][0]}}:9443/services/"
@@ -63,7 +70,7 @@ client_truststore_passwd: "airavata"
 cred_keystore: "airavata_sym.jks"
 cred_keystore_passwd: "airavata"
 cred_keystore_alias: "airavata"
-cred_store_server_host: "{{ ansible_fqdn }}"
+cred_store_server_host: "{{ groups['database'][0] }}"
 cred_store_port: "8960"
 keystores_location: "{{ deployment_dir }}/keystores"
 
