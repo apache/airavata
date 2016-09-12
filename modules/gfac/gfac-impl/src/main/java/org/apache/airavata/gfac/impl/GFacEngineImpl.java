@@ -89,8 +89,8 @@ public class GFacEngineImpl implements GFacEngine {
     @Override
     public ProcessContext populateProcessContext(String processId, String gatewayId, String
             tokenId) throws GFacException {
+        ProcessContext processContext = new ProcessContext(processId, gatewayId, tokenId);
         try {
-            ProcessContext processContext = new ProcessContext(processId, gatewayId, tokenId);
             AppCatalog appCatalog = Factory.getDefaultAppCatalog();
             processContext.setAppCatalog(appCatalog);
             ExperimentCatalog expCatalog = Factory.getDefaultExpCatalog();
@@ -206,12 +206,19 @@ public class GFacEngineImpl implements GFacEngine {
             }
             return processContext;
         } catch (AppCatalogException e) {
-            throw new GFacException("App catalog access exception ", e);
+            String msg = "App catalog access exception ";
+            updateProcessFailure(processContext, msg);
+            throw new GFacException(msg, e);
         } catch (RegistryException e) {
-            throw new GFacException("Registry access exception", e);
+            String msg = "Registry access exception";
+            updateProcessFailure(processContext, msg);
+            throw new GFacException(msg, e);
         } catch (AiravataException e) {
-            throw new GFacException("Remote cluster initialization error", e);
+            String msg = "Remote cluster initialization error";
+            updateProcessFailure(processContext, msg);
+            throw new GFacException(msg, e);
         }
+
     }
 
     private void checkRecoveryWithCancel(ProcessContext processContext) throws Exception {
@@ -857,6 +864,17 @@ public class GFacEngineImpl implements GFacEngine {
                 return inputDT_1.getInputOrder() - inputDT_2.getInputOrder();
             }
         });
+    }
+
+    private void updateProcessFailure(ProcessContext pc, String reason){
+        ProcessStatus status = new ProcessStatus(ProcessState.FAILED);
+        status.setReason(reason);
+        pc.setProcessStatus(status);
+        try {
+            GFacUtils.saveAndPublishProcessStatus(pc);
+        } catch (GFacException e) {
+            log.error("Error while save and publishing process failed status event");
+        }
     }
 
     public static ResourceJobManager getResourceJobManager(ProcessContext processCtx) throws AppCatalogException, GFacException {
