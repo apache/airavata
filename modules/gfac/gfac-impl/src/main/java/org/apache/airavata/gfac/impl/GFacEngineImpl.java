@@ -74,6 +74,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -207,14 +209,17 @@ public class GFacEngineImpl implements GFacEngine {
             return processContext;
         } catch (AppCatalogException e) {
             String msg = "App catalog access exception ";
+            saveErrorModel(processContext, e, msg);
             updateProcessFailure(processContext, msg);
             throw new GFacException(msg, e);
         } catch (RegistryException e) {
             String msg = "Registry access exception";
+            saveErrorModel(processContext, e, msg);
             updateProcessFailure(processContext, msg);
             throw new GFacException(msg, e);
         } catch (AiravataException e) {
             String msg = "Remote cluster initialization error";
+            saveErrorModel(processContext, e, msg);
             updateProcessFailure(processContext, msg);
             throw new GFacException(msg, e);
         }
@@ -874,6 +879,20 @@ public class GFacEngineImpl implements GFacEngine {
             GFacUtils.saveAndPublishProcessStatus(pc);
         } catch (GFacException e) {
             log.error("Error while save and publishing process failed status event");
+        }
+    }
+
+    private void saveErrorModel(ProcessContext pc, Exception e, String userFriendlyMsg){
+        StringWriter errors = new StringWriter();
+        e.printStackTrace(new PrintWriter(errors));
+        ErrorModel errorModel = new ErrorModel();
+        errorModel.setUserFriendlyMessage(userFriendlyMsg);
+        errorModel.setActualErrorMessage(errors.toString());
+        errorModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
+        try {
+            GFacUtils.saveProcessError(pc, errorModel);
+        } catch (GFacException e1) {
+            log.error("Error while updating error model for process:" + pc.getProcessId());
         }
     }
 
