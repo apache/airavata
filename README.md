@@ -1,6 +1,7 @@
 # mesos-deployment
 This project setup Apache Mesos master and slave clusters on Cloud Infrastructures using Anisble
 
+If you are working with new set of hosts which you haven't ssh login to those host from the machine you are suppose to run your Ansible play. It will prompt you to get permission to add to known_hosts list, if you wan't remove this prompt and you know the consequences of disabling this feature and you want tor remove this prompt behavior run this on your terminal  `export ANSIBLE_HOST_KEY_CHECKING=False`
 
 ## Configurations
 
