@@ -161,6 +161,7 @@ public class GfacServerHandler implements GfacService.Iface {
 	        executorService.execute(new GFacWorker(processId, gatewayId, tokenId));
         } catch (GFacException e) {
             log.error("Failed to submit process", e);
+
             return false;
         } catch (Exception e) {
 	        log.error("Error creating zookeeper nodes");
