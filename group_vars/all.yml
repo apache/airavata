@@ -1,7 +1,8 @@
 ---
 ansible_connection: ssh
 ansible_ssh_user: centos
-#ansible_ssh_private_key_file: /Users/syodage/Projects/scigap/JetCloud/jetcloud.key
+# ansible_ssh_user: root
+# ansible_ssh_private_key_file: /Users/syodage/Projects/scigap/JetCloud/jetcloud.key
 ansible_ssh_private_key_file: /Users/syodage/Projects/airavata-ansible/shameera-aws.pem.txt
 
 user: centos
@@ -9,11 +10,11 @@ group: centos
 user_home: "/home/{{ user }}"
 
 # deployment related variables
-deployment_dir: "{{ user_home }}/master-deployment"
+deployment_dir: "{{ user_home }}/dev-deployment"
 airavata_source_dir: "{{ user_home }}/source"
 airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
 airavata_dist_name: "{{ airavata_dist }}-bin.tar.gz"
-git_branch: master
+git_branch: develop
 
 # Database related variables
 db_server: "{{ groups['database'][0] }}"
@@ -30,7 +31,7 @@ mysql_connector_jar: "mysql-connector-java-5.1.37-bin.jar"
 
 # Rabbitmq related vareables
 rabbitmq_server: "{{ groups['rabbitmq'][0] }}"
-rabbitmq_vhost: "master"
+rabbitmq_vhost: "develop"
 rabbitmq_user: "airavata"
 rabbitmq_password: "airavata"
 rabbitmq_port: "5672"

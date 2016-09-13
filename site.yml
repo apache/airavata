@@ -42,6 +42,14 @@
     - common
     - api-orch
 
+- hosts: registry
+  tags: registry, airavata
+  roles:
+    - env_setup
+    - java
+    - common
+    - registry
+
 - hosts: pga
   tags: pga
   roles:
