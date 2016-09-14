@@ -1,9 +1,9 @@
 ---
 ansible_connection: ssh
-ansible_ssh_user: centos
-# ansible_ssh_user: root
-# ansible_ssh_private_key_file: /Users/syodage/Projects/scigap/JetCloud/jetcloud.key
-ansible_ssh_private_key_file: /Users/syodage/Projects/airavata-ansible/shameera-aws.pem.txt
+# ansible_ssh_user: centos
+ansible_ssh_user: root
+ansible_ssh_private_key_file: /Users/syodage/Projects/airavata-ansible/shameera-jetstream.pem
+# ansible_ssh_private_key_file: /Users/syodage/Projects/airavata-ansible/shameera-aws.pem.txt
 
 user: centos
 group: centos
@@ -71,7 +71,7 @@ client_truststore_passwd: "airavata"
 cred_keystore: "airavata_sym.jks"
 cred_keystore_passwd: "airavata"
 cred_keystore_alias: "airavata"
-cred_store_server_host: "{{ groups['database'][0] }}"
+cred_store_server_host: "{{ ansible_fqdn }}"
 cred_store_port: "8960"
 keystores_location: "{{ deployment_dir }}/keystores"
 

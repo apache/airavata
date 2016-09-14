@@ -19,9 +19,16 @@
   file: path="{{ api_orch_dir }}/{{ airavata_dist }}" state=absent
 
 - name: Copy distribution to api-orcheatrator deployment directory
-  unarchive: src="{{ airavata_source_dir }}/distribution/target/{{ airavata_dist_name }}"
+  unarchive: src="{{ airavata_source_dir }}/modules/distribution/target/{{ airavata_dist_name }}"
              dest="{{ api_orch_dir }}/"
              copy=no
+
+- name: set api-orch private ip
+  set_fact:
+    api_server_host: "{{ ansible_eth0.ipv4.address }}"
+    orchestrator_host: "{{ ansible_eth0.ipv4.address }}"
+    cred_store_server_host: "{{ ansible_eth0.ipv4.address }}"
+
 
 - name: Copy Airavata server properties file
   template: src=airavata-server.properties.j2
@@ -49,7 +56,7 @@
     - "{{ api_server_port }}/tcp"
     - "{{ orchestrator_port }}/tcp"
     - "{{ cred_store_port }}/tcp"
-  become: yes
+  become_user: root
 
 - name: stop api-orch
   command: ./bin/airavata-server-stop.sh -f

@@ -14,41 +14,58 @@
     - rabbitmq
 
 - hosts: database
-  tags: mysql
+  tags: mysql , airavata
   roles:
     - env_setup
-    - database
+    - role: database
+      become: yes
+      become_user: "{{user}}"
 
 - hosts: wso2is
   tags: wso2is
   roles:
     - env_setup
     - java
-    - wso2_is
+    - role: wso2_is
+      become: yes
+      become_user: "{{user}}"
+
 
 - hosts: gfac
   tags: gfac, airavata
   roles:
     - env_setup
     - java
-    - common
-    - gfac
+    - role: common
+      become: yes
+      become_user: "{{user}}"
+    - role: gfac
+      become: yes
+      become_user: "{{user}}"
 
 - hosts: api-orch
   tags: api-orch, airavata
   roles:
     - env_setup
     - java
-    - common
-    - api-orch
+    - role: common
+      become: yes
+      become_user: "{{user}}"
+    - role: api-orch
+      become: yes
+      become_user: "{{user}}"
 
 - hosts: registry
   tags: registry, airavata
   roles:
     - env_setup
     - java
-    - common
-    - registry
+    - role: common
+      become: yes
+      become_user: "{{user}}"
+    - role: registry
+      become: yes
+      become_user: "{{user}}"
 
 - hosts: pga
   tags: pga

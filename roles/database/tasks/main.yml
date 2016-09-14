@@ -5,15 +5,15 @@
 # Install Mysql
 - name: install epel release
   yum: name=epel-release state=present
-  become: yes
+  become_user: root
 
 - name: install pip
   yum: name=python-pip state=latest update_cache=yes
-  become: yes
+  become_user: root
 
 - name: install pexpect
   pip: name=pexpect
-  become: yes
+  become_user: root
 
 # - name: Adds Python MySQL support on Debian/Ubuntu
 #   apt: pkg="python-mysqldb" state=present
@@ -21,17 +21,17 @@
 
 - name: Adds Python MySQL support on RedHat/CentOS
   yum: name=MySQL-python state=present
-  become: yes
+  become_user: root
   # when: ansible_os_family == 'RedHat'
 
 - name: install mariadb
   yum: name="{{ item }}" state=latest update_cache=yes
   with_items: "{{ mysql_packages }}"
-  become: yes
+  become_user: root
 
 - name: start mariadb
   service: name=mariadb state=started enabled=yes
-  become: yes
+  become_user: root
 
 - include: secure_install.yml
 
@@ -57,5 +57,4 @@
 - name: open firewall port {{ db_server_port }}
   firewalld: port="{{ db_server_port }}/tcp"
              zone=public permanent=true state=enabled immediate=yes
-  become: yes
-...
+  become_user: root

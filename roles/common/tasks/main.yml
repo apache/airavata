@@ -4,7 +4,7 @@
   with_items:
     - git
     - maven
-  become: yes
+  become_user: root
 
 # Setup airavata source
 - name: Create deployment directory {{ deployment_dir }}
@@ -27,7 +27,7 @@
 - name: Run maven build
   command: mvn clean install -Dmaven.test.skip=true chdir="{{ airavata_source_dir }}/"
   environment:
-      MAVEN_OPTS: "-Xmx1024m"
+      MAVEN_OPTS: "-Xmx2048m"
   register: build
   tags: update
   # when: (checkout|success) and (checkout.changed == true)
