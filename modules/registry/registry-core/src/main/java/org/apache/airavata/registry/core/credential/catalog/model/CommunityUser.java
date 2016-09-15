@@ -24,7 +24,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name ="COMMUNITY_USER")
-@IdClass(CommunityUser_PK.class)
+@IdClass(CommunityUser_Pk.class)
 public class CommunityUser {
     private String gatewayId;
     private String communityUserName;
