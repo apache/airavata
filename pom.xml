@@ -18,6 +18,9 @@
 	<prerequisites>
 		<maven>3.0</maven>
 	</prerequisites>
+	<modules>
+		<module>modules/cluster-monitoring</module>
+	</modules>
 
 	<parent>
 		<groupId>org.apache</groupId>
@@ -564,6 +567,7 @@
 				<module>modules/workflow</module>
 				<module>modules/test-suite</module>
 				<module>modules/group-manager</module>
+				<module>modules/cluster-monitoring</module>
 				<!-- Deprecated Modules-->
 				<!--<module>modules/integration-tests</module>-->
 				<!--<module>modules/workflow-model</module>-->
