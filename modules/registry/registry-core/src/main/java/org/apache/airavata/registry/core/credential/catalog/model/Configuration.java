@@ -18,7 +18,7 @@
 * under the License.
 *
 */
-package org.apache.airavata.registry.core.replica.catalog.model;
+package org.apache.airavata.registry.core.credential.catalog.model;
 
 
 import javax.persistence.*;
