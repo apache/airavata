@@ -22,7 +22,7 @@ package org.apache.airavata.registry.core.credential.catalog.model;
 
 import java.io.Serializable;
 
-public class CommunityUser_PK implements Serializable{
+public class CommunityUser_Pk implements Serializable{
     private String gatewayId;
     private String communityUserName;
     private String tokenId;
