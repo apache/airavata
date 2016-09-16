@@ -115,11 +115,4 @@
         <class>org.apache.airavata.registry.core.workflow.catalog.model.WorkflowStatus</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
-    <persistence-unit name="credentialcatalog_data">
-        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-        <class>org.apache.airavata.registry.core.credential.catalog.model.CommunityUser</class>
-        <class>org.apache.airavata.registry.core.credential.catalog.model.Configuration</class>
-        <class>org.apache.airavata.registry.core.credential.catalog.model.Credential</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-    </persistence-unit>
 </persistence>

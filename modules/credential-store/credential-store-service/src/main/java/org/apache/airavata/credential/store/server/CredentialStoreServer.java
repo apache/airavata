@@ -24,7 +24,6 @@ package org.apache.airavata.credential.store.server;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.registry.core.credential.catalog.util.CredentialCatalogJPAUtils;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
@@ -108,9 +107,6 @@ public class CredentialStoreServer  implements IServer {
 
     public static void main(String[] args) {
         try {
-            //Initializing the database;
-            CredentialCatalogJPAUtils.getEntityManager();
-
             new CredentialStoreServer().start();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
