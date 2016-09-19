@@ -11,17 +11,17 @@ return array(
         /**
          * Admin Role Name
          */
-        'admin-role-name' => 'Internal/everyone',
+        'admin-role-name' => 'admin',
 
         /**
          * Read only Admin Role Name
          */
-        'read-only-admin-role-name' => 'Internal/everyone',
+        'read-only-admin-role-name' => 'admin-read-only',
 
         /**
          * Gateway user role
          */
-        'user-role-name' => 'Internal/everyone',
+        'user-role-name' => 'gateway-user',
 
         /**
          * Tenant Domain
@@ -47,6 +47,11 @@ return array(
          * OAuth client secret
          */
         'oauth-client-secret' => '{{ oauth_client_secret }}',
+
+        /**
+         * OAuth Grant Type (password or authorization_code)
+         */
+        'oauth-grant-type' => 'password',
 
         /**
          * Identity server domain
@@ -151,7 +156,12 @@ return array(
          /**
          * Gateway data store resource id
          */
-         'gateway-data-store-resource-id' => '{{ gateway_data_store_resource_id }}'
+         'gateway-data-store-resource-id' => '{{ gateway_data_store_resource_id }}',
+
+         /**
+          * Data Sharing enabled
+          */
+          'data-sharing-enabled' => false
     ],
 
     /**

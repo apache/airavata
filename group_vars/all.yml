@@ -2,7 +2,7 @@
 ansible_connection: ssh
 # ansible_ssh_user: centos
 ansible_ssh_user: root
-ansible_ssh_private_key_file: /Users/syodage/Projects/airavata-ansible/shameera-jetstream.pem
+ansible_ssh_private_key_file: /Users/syodage/Projects/airavata-ansible/dev-deployment-key.pem
 # ansible_ssh_private_key_file: /Users/syodage/Projects/airavata-ansible/shameera-aws.pem.txt
 
 user: centos
@@ -44,9 +44,10 @@ zookeeper_url: "{{ groups['zookeeper'][0] }}:{{ zookeeper_client_port }}"
 api_server_name: "apiserver-node0"
 api_server_host: "{{ansible_fqdn}}"
 api_server_port: "8930"
-api_secured: "true"
+api_secured: "false"
 tls_enable: "false"
 api_server_tls_port: "9930"
+enable_sharing: false
 
 # Orchestrator  related variables
 orchestrator_name: "orchestrator-node0"

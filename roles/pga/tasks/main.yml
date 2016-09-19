@@ -32,6 +32,13 @@
   yum: name=php-mcrypt state=latest update_cache=yes
   become: yes
 
+# - name: Check previous deployments
+#   stat: path="{{ doc_root_dir }}" get_md5=no get_checksum=no
+#   register: check
+
+- name: delete previous deployments
+  file: path="{{ doc_root_dir }}" state=absent
+
 - name: Git clone php gateway
   git: repo=https://github.com/apache/airavata-php-gateway.git
        dest="{{ doc_root_dir }}" version=master
