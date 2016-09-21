@@ -38,6 +38,7 @@ import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
@@ -65,6 +66,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
             if (!ExpCatResourceUtils.isGatewayExist(ServerSettings.getDefaultUserGateway())){
                 gatewayResource = (GatewayResource) ExpCatResourceUtils.createGateway(ServerSettings.getDefaultUserGateway());
                 gatewayResource.setGatewayName(ServerSettings.getDefaultUserGateway());
+                gatewayResource.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED.toString());
                 gatewayResource.save();
             }else {
                 gatewayResource = (GatewayResource) ExpCatResourceUtils.getGateway(ServerSettings.getDefaultUserGateway());
