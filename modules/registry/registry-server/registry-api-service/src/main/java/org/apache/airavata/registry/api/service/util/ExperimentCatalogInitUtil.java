@@ -23,6 +23,7 @@ package org.apache.airavata.registry.api.service.util;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.resources.GatewayResource;
@@ -87,6 +88,7 @@ public class ExperimentCatalogInitUtil {
                 GatewayResource gateway;
                 if (!ExpCatResourceUtils.isGatewayExist(ServerSettings.getDefaultUserGateway())){
                     gateway = (GatewayResource)ExpCatResourceUtils.createGateway(ServerSettings.getDefaultUserGateway());
+                    gateway.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED.toString());
                     gateway.save();
                 }else {
                     gateway = (GatewayResource)ExpCatResourceUtils.getGateway(ServerSettings.getDefaultUserGateway());
