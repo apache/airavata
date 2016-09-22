@@ -499,12 +499,16 @@ public class AiravataServerHandler implements Airavata.Iface {
 
         try {
             String projectId = getRegistryServiceClient().createProject(gatewayId, project);
-            GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
             Resource projResource = new Resource(projectId, org.apache.airavata.grouper.resource.ResourceType.PROJECT);
             projResource.setOwnerId(project.getOwner() + "@" + project.getGatewayId());
             projResource.setName(project.getName());
             projResource.setDescription(project.getDescription());
-            groupManager.createResource(projResource);
+
+            if(ServerSettings.isEnableSharing()){
+                GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
+                groupManager.createResource(projResource);
+            }
+
             logger.debug("Airavata created project with project Id : " + projectId + " for gateway Id : " + gatewayId);
             return projectId;
         } catch (Exception e) {
