@@ -20,7 +20,6 @@
 */
 package org.apache.airavata.registry.core.experiment.catalog.resources;
 
-import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
@@ -461,9 +460,6 @@ public class GatewayResource extends AbstractExpCatResource {
             em = ExpCatResourceUtils.getEntityManager();
             Gateway existingGateway = em.find(Gateway.class, gatewayId);
             em.close();
-
-            if(gatewayApprovalStatus == null || gatewayApprovalStatus.isEmpty())
-                gatewayApprovalStatus = GatewayApprovalStatus.APPROVED.toString();
 
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
