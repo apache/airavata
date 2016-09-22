@@ -91,6 +91,8 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
     public ExperimentCatalogImpl(String gateway, String username, String password) throws RegistryException{
         if (!ExpCatResourceUtils.isGatewayExist(gateway)){
             gatewayResource = (GatewayResource) ExpCatResourceUtils.createGateway(gateway);
+            gatewayResource.setGatewayName(gateway);
+            gatewayResource.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED.toString());
             gatewayResource.save();
         }else {
             gatewayResource = (GatewayResource) ExpCatResourceUtils.getGateway(gateway);
