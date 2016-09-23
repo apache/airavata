@@ -47,7 +47,7 @@ api_server_port: "8930"
 api_secured: "false"
 tls_enable: "false"
 api_server_tls_port: "9930"
-enable_sharing: false
+enable_sharing: "false"
 
 # Orchestrator  related variables
 orchestrator_name: "orchestrator-node0"
@@ -60,6 +60,7 @@ registry_name: regserver-node0
 registry_host: "{{groups['registry'][0]}}"
 registry_port: 8970
 registry_dir: "{{ deployment_dir }}/registry"
+default_gateway: "php_reference_gateway"
 
 # Credential and keystore related variables
 #authorization_server: "https://{{ groups['wso2is'][0]}}:9443/services/"
