@@ -4,6 +4,8 @@
 
 - name: create a aws instace/s
   ec2:
+    aws_access_key: "{{aws_access_key}}"
+    aws_secret_key: "{{aws_secret_key}}"
     key_name: "{{ key_name }}"
     region: us-east-1
     instance_type: t2.small
@@ -23,8 +25,8 @@
         delete_on_termination: true
     wait: yes
   with_items:
-    - Mesos-master-1
-    - Mesos-master-2
-    - Mesos-master-3
-    - Mesos-slave-1
+    - mesos-master-1
+    - mesos-master-2
+    - mesos-master-3
+    - mesos-slave-1
   register: ec2

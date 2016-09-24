@@ -4,6 +4,11 @@
   roles:
     - ec2
 
+- hosts: localhost
+  tags: openstack
+  roles:
+    - openstack
+
 - hosts: mesos-master
   tags: mesos, mesos-master
   roles:
