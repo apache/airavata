@@ -1,0 +1,19 @@
+---
+- hosts: localhost
+  tags: ec2
+  roles:
+    - ec2
+
+- hosts: mesos-master
+  tags: mesos, mesos-master
+  roles:
+    - java
+    - zookeeper
+    - mesos-master
+
+- hosts: mesos-slave
+  tags: mesos, mesos-slave
+  roles:
+    - mesos-slave
+
+...
