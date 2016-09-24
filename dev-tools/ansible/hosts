@@ -1,0 +1,26 @@
+---
+# inventory file : production
+
+[zookeeper]
+54.221.13.4
+
+[rabbitmq]
+54.221.13.4
+
+[database]
+54.196.189.115
+
+[wso2is]
+#52.87.209.219
+
+[registry]
+54.89.119.195
+
+[api-orch]
+54.89.119.195
+
+[gfac]
+54.165.169.111
+
+[pga]
+#54.237.220.234
