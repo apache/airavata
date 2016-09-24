@@ -1,0 +1,60 @@
+---
+# - name: yum update
+#   yum: name=* state=latest
+
+# Install Mysql
+- name: install epel release
+  yum: name=epel-release state=present
+  become_user: root
+
+- name: install pip
+  yum: name=python-pip state=latest update_cache=yes
+  become_user: root
+
+- name: install pexpect
+  pip: name=pexpect
+  become_user: root
+
+# - name: Adds Python MySQL support on Debian/Ubuntu
+#   apt: pkg="python-mysqldb" state=present
+#   when: ansible_os_family == 'Debian'
+
+- name: Adds Python MySQL support on RedHat/CentOS
+  yum: name=MySQL-python state=present
+  become_user: root
+  # when: ansible_os_family == 'RedHat'
+
+- name: install mariadb
+  yum: name="{{ item }}" state=latest update_cache=yes
+  with_items: "{{ mysql_packages }}"
+  become_user: root
+
+- name: start mariadb
+  service: name=mariadb state=started enabled=yes
+  become_user: root
+
+- include: secure_install.yml
+
+- name: create databases
+  mysql_db: name="{{ item }}" state=present
+  with_items:
+    - "{{ mysql_databases }}"
+
+- name: give access to {{ db_user }} from remote
+  mysql_user: name="{{ db_user }}" password="{{ db_password }}" host="{{ item }}"
+  with_items:
+    - "{{ groups['api-orch'] }}"
+    - "{{ groups['gfac'] }}"
+    - "{{ groups['registry'] }}"
+
+- name: create new user {{ db_user }} with all privilege
+  mysql_user: name="{{ db_user }}"
+              password="{{ db_password }}"
+              append_privs=yes
+              host_all=yes
+              priv=*.*:ALL,GRANT state=present
+
+- name: open firewall port {{ db_server_port }}
+  firewalld: port="{{ db_server_port }}/tcp"
+             zone=public permanent=true state=enabled immediate=yes
+  become_user: root
