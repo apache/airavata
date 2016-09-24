@@ -1,0 +1,15 @@
+# {{ansible_managed}}
+
+[Unit]
+Description=ZooKeeper
+
+
+[Service]
+Type=forking
+ExecStart={{zookeeper_dir}}/bin/zkServer.sh start
+ExecStop={{ zookeeper_dir }}/bin/zkServer.sh stop
+Restart=always
+TimeoutSec=300
+
+[Install]
+WantedBy=multi-user.target

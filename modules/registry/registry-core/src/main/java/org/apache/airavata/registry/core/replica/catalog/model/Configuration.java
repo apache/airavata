@@ -20,7 +20,6 @@
 */
 package org.apache.airavata.registry.core.replica.catalog.model;
 
-import org.apache.airavata.registry.core.app.catalog.model.Configuration_PK;
 
 import javax.persistence.*;
 import java.io.Serializable;

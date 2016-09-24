@@ -1,0 +1,21 @@
+---
+mysql_packages:
+  - mariadb-server
+  - mariadb
+mysql_root_password: "admin"
+
+mysql_databases:
+    - "{{ app_catalog }}"
+    - "{{ exp_catalog }}"
+    - "{{ replica_catalog }}"
+    - "{{ workflow_catalog }}"
+    - "{{ credential_store }}"
+
+mysql_privs:
+    - "{{ app_catalog }}.*:ALL"
+    - "{{ exp_catalog }}.*:ALL"
+    - "{{ replica_catalog }}.*:ALL"
+    - "{{ workflow_catalog }}.*:ALL"
+    - "{{ credential_store }}.*:ALL"
+
+...

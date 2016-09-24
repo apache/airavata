@@ -34,6 +34,7 @@ import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.credential.store.store.impl.CertificateCredentialWriter;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.credential.store.store.impl.SSHCredentialWriter;
+import org.apache.airavata.credential.store.store.impl.util.CredentialStoreInitUtil;
 import org.apache.airavata.credential.store.util.TokenGenerator;
 import org.apache.airavata.credential.store.util.Utility;
 import org.apache.commons.codec.binary.Base64;
@@ -43,8 +44,10 @@ import org.slf4j.LoggerFactory;
 import sun.security.provider.X509Factory;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,13 +60,16 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
     private CertificateCredentialWriter certificateCredentialWriter;
     private CredentialReaderImpl credentialReader;
 
-    public CredentialStoreServerHandler() throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+    public CredentialStoreServerHandler() throws ApplicationSettingsException, IllegalAccessException,
+            ClassNotFoundException, InstantiationException, SQLException, IOException {
         String jdbcUrl = ServerSettings.getCredentialStoreDBURL();
         String userName = ServerSettings.getCredentialStoreDBUser();
         String password = ServerSettings.getCredentialStoreDBPassword();
         String driverName = ServerSettings.getCredentialStoreDBDriver();
 
         log.debug("Starting credential store, connecting to database - " + jdbcUrl + " DB user - " + userName + " driver name - " + driverName);
+        CredentialStoreInitUtil.initializeDB();
+
         dbUtil = new DBUtil(jdbcUrl, userName, password, driverName);
         sshCredentialWriter = new SSHCredentialWriter(dbUtil);
         certificateCredentialWriter = new CertificateCredentialWriter(dbUtil);

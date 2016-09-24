@@ -1,0 +1,86 @@
+---
+# reference: https://open.mesosphere.com/getting-started/install/
+- name: install firewalld
+  yum:
+    name: firewalld
+    state: latest
+  become: yes
+
+- name: start firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+  become: yes
+
+- name: open ports
+  firewalld:
+    port: "{{ item }}"
+    zone: public
+    permanent: true
+    state: enabled
+    immediate: yes
+  with_items:
+    - "5050/tcp"
+    - "8080/tcp"
+  become: yes
+
+- name: install utility - TODO delete this
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - vim
+  become: yes
+
+# Setup repository
+- name: add mesosphere rpm
+  yum:
+    name: http://repos.mesosphere.com/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpm
+    state: present
+  become: yes
+
+- name: install mesos and marathon
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - mesos
+    - marathon
+    # - mesosphere-zookeeper
+  become: yes
+
+# configurations
+
+- name: set zk file for mesos master and marathon
+  template:
+    src: zk.j2
+    dest: /etc/mesos/zk
+    force: yes
+  become: yes
+
+- name: set zookeeper quorum
+  template:
+    src: quorum.j2
+    dest: /etc/mesos-master/quorum
+    force: yes
+  become: yes
+
+- name: stop and disable mesos slave
+  service:
+    name: mesos-slave
+    enabled: no
+    state: stopped
+  become: yes
+
+- name: restart mesos master
+  service:
+    name: mesos-master
+    state: restarted
+  become: yes
+
+- name: restart marathon
+  service:
+    name: marathon
+    state: restarted
+  become: yes
