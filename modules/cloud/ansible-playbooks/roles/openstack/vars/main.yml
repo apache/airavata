@@ -1,0 +1,10 @@
+---
+
+key_name: gourav-mac-key
+centos7_gc_image: 1790e5c8-315a-4b9b-8b1f-46e47330d3cc
+flavor_id: 1
+
+security_group: Airavata
+
+network_name: airavata
+floating_ip_pool: public 
