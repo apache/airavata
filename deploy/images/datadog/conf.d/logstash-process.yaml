@@ -1,0 +1,8 @@
+init_config:
+  pid_cache_duration: 30
+  procfs_path: /host/proc
+
+instances:
+  - name: logstash
+    search_string: ['logstash']
+    exact_match: false

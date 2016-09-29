@@ -1,0 +1,6 @@
+init_config:
+
+instances:
+  - url: http://localhost:9200
+    cluster_stats: false
+    pshard_stats: true
