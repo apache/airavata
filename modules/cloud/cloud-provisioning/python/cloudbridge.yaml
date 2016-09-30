@@ -1,0 +1,34 @@
+cloudbridge:
+    meta:
+        version: 0.1.1
+    clouds:
+        aws:
+            credentials:
+                aws_access_key: xxxxx
+                aws_secret_key: xxxxx
+                ec2_region_name: us-east-1
+            compute:
+                ec2_keypair_name: cloudbridge_test
+                ec2_secgroup_name: cloudbridge_test
+                ec2_flavor_name: t2.small
+                ec2_image_id: ami-2d39xxx
+
+        jetstream:
+            credentials:
+                OS_PROJECT_DOMAIN_NAME: scigap
+                OS_USER_DOMAIN_NAME: tacc
+                OS_PROJECT_NAME: scigap
+                OS_TENANT_NAME: scigap
+                OS_USERNAME: scigap
+                OS_PASSWORD: xxxxxxxx
+                OS_AUTH_URL: https://jblb.jetstream-cloud.org:35357/v3
+                OS_IDENTITY_API_VERSION: 3
+            network:
+                OS_FLOATING_IP_POOL: public
+                OS_NETWORK_NAME: airavata
+            compute:
+                jetstream_imageId: 7048bb41-bbbbb-4caa-9370-xxxxxxxxxxx
+                jetstream_flavorId: 3
+
+
+
