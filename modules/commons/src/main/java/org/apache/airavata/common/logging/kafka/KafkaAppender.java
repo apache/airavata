@@ -84,12 +84,12 @@ public class KafkaAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
                 !event.getLevel().equals(Level.OFF)) {
             final IThrowableProxy throwableProxy = event.getThrowableProxy();
             final LogEntry entry = throwableProxy != null ?
-                    new LogEntry(serverId, event.getMessage(), Instant.ofEpochMilli(event.getTimeStamp()).toString(),
+                    new LogEntry(serverId, event.getFormattedMessage(), Instant.ofEpochMilli(event.getTimeStamp()).toString(),
                             event.getLevel().toString(), event.getLoggerName(), event.getMDCPropertyMap(),
                             event.getThreadName() != null ? event.getThreadName() : null,
                             new Exception(throwableProxy.getMessage(), toStringArray(throwableProxy.getStackTraceElementProxyArray())
                             , throwableProxy.getClassName()))
-                    : new LogEntry(serverId, event.getMessage(), Instant.ofEpochMilli(event.getTimeStamp()).toString(),
+                    : new LogEntry(serverId, event.getFormattedMessage(), Instant.ofEpochMilli(event.getTimeStamp()).toString(),
                     event.getLevel().toString(), event.getLoggerName(), event.getMDCPropertyMap(),
                     event.getThreadName() != null ? event.getThreadName() : null);
             producer.send(new ProducerRecord<>(kafkaTopic, new Gson().toJson(entry)));
