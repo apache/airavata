@@ -38,7 +38,6 @@ import javax.xml.namespace.QName;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.workflow.model.exceptions.UtilsException;
 import org.apache.airavata.common.utils.JSONUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.Component;

@@ -196,21 +196,20 @@ public abstract class Factory {
 		}
 
 		switch (resourceJobManager.getResourceJobManagerType()) {
-
 			case PBS:
-				return new PBSJobConfiguration("PBSTemplate.xslt", ".pbs", resourceJobManager.getJobManagerBinPath(),
+				return new PBSJobConfiguration("PBS_Groovy.template", ".pbs", resourceJobManager.getJobManagerBinPath(),
 						resourceJobManager.getJobManagerCommands(), outputParser);
 			case SLURM:
-				return new SlurmJobConfiguration("SLURMTemplate.xslt", ".slurm", resourceJobManager
+				return new SlurmJobConfiguration("SLURM_Groovy.template", ".slurm", resourceJobManager
 						.getJobManagerBinPath(), resourceJobManager.getJobManagerCommands(), outputParser);
 			case LSF:
-				return new LSFJobConfiguration("LSFTemplate.xslt", ".lsf", resourceJobManager.getJobManagerBinPath(),
+				return new LSFJobConfiguration("LSF_Groovy.template", ".lsf", resourceJobManager.getJobManagerBinPath(),
 						resourceJobManager.getJobManagerCommands(), outputParser);
 			case UGE:
-				return new UGEJobConfiguration("UGETemplate.xslt", ".pbs", resourceJobManager.getJobManagerBinPath(),
+				return new UGEJobConfiguration("UGE_Groovy.template", ".pbs", resourceJobManager.getJobManagerBinPath(),
 						resourceJobManager.getJobManagerCommands(), outputParser);
             case FORK:
-                return new ForkJobConfiguration("ForkTemplate.xslt", ".sh", resourceJobManager.getJobManagerBinPath(),
+                return new ForkJobConfiguration("FORK_Groovy.template", ".sh", resourceJobManager.getJobManagerBinPath(),
                         resourceJobManager.getJobManagerCommands(), outputParser);
 			default:
 				return null;

@@ -36,7 +36,6 @@ import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ProcessState;
-import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
