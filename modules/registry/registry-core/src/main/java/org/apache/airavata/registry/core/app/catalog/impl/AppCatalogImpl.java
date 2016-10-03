@@ -56,4 +56,9 @@ public class AppCatalogImpl implements AppCatalog {
     public WorkflowCatalog getWorkflowCatalog() throws AppCatalogException {
         return new WorkflowCatalogImpl();
     }
+
+    @Override
+    public UsrResourceProfile getUserResourceProfile() throws AppCatalogException {
+        return new UsrResourceProfileImpl();
+    }
 }
