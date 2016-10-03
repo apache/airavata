@@ -3262,7 +3262,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
         try {
-            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
+                if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
                 logger.error("User does not exist in the system. Please provide a valid user..");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);

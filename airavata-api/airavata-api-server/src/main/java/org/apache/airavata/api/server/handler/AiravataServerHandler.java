@@ -49,10 +49,13 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentD
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
@@ -3127,6 +3130,277 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw exception;
         }
     }
+
+    /**
+     * Register a User Resource Profile.
+     *
+     * @param UserResourceProfile User Resource Profile Object.
+     *   The userId should be obtained from Airavata user profile registration and passed to register a corresponding
+     *      resource profile.
+     * @return status.
+     * Returns a success/failure of the registration.
+     */
+    @Override
+    @SecurityCheck
+    public String registerUserResourceProfile(AuthzToken authzToken, UserResourceProfile userResourceProfile)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return getRegistryServiceClient().registerUserResourceProfile(userResourceProfile);
+        } catch (ApplicationSettingsException | RegistryServiceException e) {
+            logger.error("Error while registering user resource profile...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while registering user resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Fetch the given User Resource Profile.
+     *
+     * @param userId The identifier for the requested User resource
+     *
+     * @param gatewayID The identifier to link a gateway for the requested User resource
+     *
+     * @return userResourceProfile
+     * User Resource Profile Object.
+     */
+    @Override
+    @SecurityCheck
+    public UserResourceProfile getUserResourceProfile(AuthzToken authzToken, String userId, String gatewayID) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return getRegistryServiceClient().getUserResourceProfile(userId, gatewayID);
+        } catch (ApplicationSettingsException | RegistryServiceException e) {
+            logger.error(userId, "Error while retrieving user resource profile...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Update a User Resource Profile.
+     *
+     * @param userId : The identifier for the requested user resource profile to be updated.
+     * @param gatewayID The identifier to link a gateway for the requested User resource
+     * @param userResourceProfile User Resource Profile Object.
+     * @return status
+     * Returns a success/failure of the update.
+     */
+    @Override
+    @SecurityCheck
+    public boolean updateUserResourceProfile(AuthzToken authzToken,
+                                             String userId,
+                                             String gatewayID,
+                                             UserResourceProfile userResourceProfile) throws TException {
+        try {
+            return getRegistryServiceClient().updateUserResourceProfile(userId, gatewayID, userResourceProfile);
+        } catch (ApplicationSettingsException | RegistryServiceException e) {
+            logger.error(userId, "Error while updating user resource profile...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating user resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Delete the given User Resource Profile.
+     *
+     * @param userId  : The identifier for the requested userId resource to be deleted.
+     * @param gatewayID The identifier to link a gateway for the requested User resource
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    @SecurityCheck
+    public boolean deleteUserResourceProfile(AuthzToken authzToken, String userId, String gatewayID) throws TException {
+        try {
+            return getRegistryServiceClient().deleteUserResourceProfile(userId, gatewayID);
+        } catch (ApplicationSettingsException | RegistryServiceException e) {
+            logger.error(userId, "Error while removing user resource profile...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while removing user resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Add a Compute Resource Preference to a registered User Resource profile.
+     *
+     * @param userId                 The identifier for the User Resource profile to be added.
+     * @param gatewayID The identifier to link a gateway for the requested User resource
+     * @param userComputeResourceId         Preferences related to a particular compute resource
+     * @param userComputeResourcePreference The ComputeResourcePreference object to be added to the resource profile.
+     * @return status
+     * Returns a success/failure of the addition. If a profile already exists, this operation will fail.
+     * Instead an update should be used.
+     */
+    @Override
+    @SecurityCheck
+    public boolean addUserComputeResourcePreference(AuthzToken authzToken, String userId, String gatewayID, String userComputeResourceId,
+                                                    UserComputeResourcePreference userComputeResourcePreference) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return getRegistryServiceClient().addUserComputeResourcePreference(userId, gatewayID, userComputeResourceId, userComputeResourcePreference);
+        } catch (ApplicationSettingsException | RegistryServiceException e) {
+            logger.error(userId, "Error while registering user resource profile preference...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while registering user resource profile preference. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public boolean addUserStoragePreference(AuthzToken authzToken, String userId, String gatewayID, String userStorageResourceId, UserStoragePreference dataStoragePreference)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return getRegistryServiceClient().addUserStoragePreference(userId, gatewayID, userStorageResourceId, dataStoragePreference);
+        } catch (ApplicationSettingsException | RegistryServiceException e) {
+            logger.error(userId, "Error while registering user storage preference...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while registering user storage preference. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Fetch a Compute Resource Preference of a registered User Resource profile.
+     *
+     * @param userId : The identifier for the User Resource profile to be requested
+     * @param gatewayID The identifier to link a gateway for the requested User resource
+     * @param userComputeResourceId Preferences related to a particular compute resource
+     * @return computeResourcePreference
+     * Returns the ComputeResourcePreference object.
+     */
+    @Override
+    @SecurityCheck
+    public ComputeResourcePreference getUserComputeResourcePreference(AuthzToken authzToken, String userId, String gatewayID, String userComputeResourceId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return getRegistryServiceClient().getUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
+        } catch (ApplicationSettingsException | RegistryServiceException e) {
+            logger.error(userId, "Error while reading user compute resource preference...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while reading user compute resource preference. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public StoragePreference getUserStoragePreference(AuthzToken authzToken, String userId, String gatewayID, String userStorageId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return getRegistryServiceClient().getUserStoragePreference(userId, gatewayID, userStorageId);
+        } catch (ApplicationSettingsException | RegistryServiceException e) {
+            logger.error(userId, "Error while reading user data storage preference...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while reading user data storage preference. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public List<UserResourceProfile> getAllUserResourceProfiles(AuthzToken authzToken) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return getRegistryServiceClient().getAllUserResourceProfiles();
+        } catch (ApplicationSettingsException | RegistryServiceException e) {
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while reading retrieving all user resource profiles. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Update a Compute Resource Preference to a registered User Resource profile.
+     *
+     * @param userId : The identifier for the User Resource profile to be updated.
+     * @param gatewayID The identifier to link a gateway for the requested User resource
+     * @param userComputeResourceId         Preferences related to a particular compute resource
+     * @param userComputeResourcePreference The ComputeResourcePreference object to be updated to the resource profile.
+     * @return status
+     * Returns a success/failure of the updation.
+     */
+    @Override
+    @SecurityCheck
+    public boolean updateUserComputeResourcePreference(AuthzToken authzToken, String userId, String gatewayID, String userComputeResourceId,
+                                                       UserComputeResourcePreference userComputeResourcePreference)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return getRegistryServiceClient().updateUserComputeResourcePreference(userId, gatewayID, userComputeResourceId, userComputeResourcePreference);
+        } catch (ApplicationSettingsException | RegistryServiceException e) {
+            logger.error(userId, "Error while reading user compute resource preference...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating user compute resource preference. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public boolean updateUserStoragePreference(AuthzToken authzToken, String userId, String gatewayID, String userStorageId, UserStoragePreference dataStoragePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return getRegistryServiceClient().updateUserStoragePreference(userId, gatewayID, userStorageId, dataStoragePreference);
+        } catch (ApplicationSettingsException | RegistryServiceException e) {
+            logger.error(userId, "Error while reading user data storage preference...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating user data storage preference. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Delete the Compute Resource Preference of a registered User Resource profile.
+     *
+     * @param userId         The identifier for the User profile to be deleted.
+     * @param gatewayID The identifier to link a gateway for the requested User resource
+     * @param userComputeResourceId Preferences related to a particular compute resource
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    @SecurityCheck
+    public boolean deleteUserComputeResourcePreference(AuthzToken authzToken, String userId,String gatewayID, String userComputeResourceId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return getRegistryServiceClient().deleteUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
+        } catch (ApplicationSettingsException | RegistryServiceException e) {
+            logger.error(userId, "Error while reading user compute resource preference...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating user compute resource preference. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public boolean deleteUserStoragePreference(AuthzToken authzToken, String userId, String gatewayID, String userStorageId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return getRegistryServiceClient().deleteUserStoragePreference(userId, gatewayID, userStorageId);
+        } catch (ApplicationSettingsException | RegistryServiceException e) {
+            logger.error(userId, "Error while reading user data storage preference...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating user data storage preference. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+
 
     @Override
     @SecurityCheck
