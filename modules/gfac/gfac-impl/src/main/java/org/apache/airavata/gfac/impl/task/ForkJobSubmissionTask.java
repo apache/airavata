@@ -64,15 +64,15 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
             JobModel jobModel = processContext.getJobModel();
             jobModel.setTaskId(taskContext.getTaskId());
             RemoteCluster remoteCluster = processContext.getJobSubmissionRemoteCluster();
-            JobDescriptor jobDescriptor = GFacUtils.createJobDescriptor(processContext, taskContext);
-            jobModel.setJobName(jobDescriptor.getJobName());
+            GroovyMap groovyMap = GFacUtils.creatGroovyMap(processContext, taskContext);
+            jobModel.setJobName(groovyMap.get(Script.JOB_NAME).toString());
             ResourceJobManager resourceJobManager = GFacUtils.getResourceJobManager(processContext);
             JobManagerConfiguration jConfig = null;
             if (resourceJobManager != null) {
                 jConfig = Factory.getJobManagerConfiguration(resourceJobManager);
             }
             JobStatus jobStatus = new JobStatus();
-	        File jobFile = GFacUtils.createJobFile(taskContext, jobDescriptor, jConfig);
+	        File jobFile = GFacUtils.createJobFile(groovyMap, taskContext, jConfig);
 	        if (jobFile != null && jobFile.exists()) {
                 jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
 	            JobSubmissionOutput jobSubmissionOutput = remoteCluster.submitBatchJob(jobFile.getPath(),
