@@ -398,6 +398,7 @@ public class AppCatalogJPAUtils {
             localSubmissionResource.setResourceJobManagerResource((ResourceJobManagerResource) createResourceJobManager(o.getResourceJobManager()));
             localSubmissionResource.setJobSubmissionInterfaceId(o.getJobSubmissionInterfaceId());
             localSubmissionResource.setCreatedTime(o.getCreationTime());
+            localSubmissionResource.setSecurityProtocol(o.getSecurityProtocol());
             if (o.getUpdateTime() != null) {
                 localSubmissionResource.setUpdatedTime(o.getUpdateTime());
             }

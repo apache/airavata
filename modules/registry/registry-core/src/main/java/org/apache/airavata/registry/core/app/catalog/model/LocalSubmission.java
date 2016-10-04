@@ -47,6 +47,9 @@ public class LocalSubmission implements Serializable {
 	@Column(name = "JOB_SUBMISSION_INTERFACE_ID")
 	private String jobSubmissionInterfaceId;
 
+	@Column(name = "SECURITY_PROTOCOL")
+	private String securityProtocol;
+
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
 
@@ -91,5 +94,13 @@ public class LocalSubmission implements Serializable {
 	
 	public void setJobSubmissionInterfaceId(String jobSubmissionInterfaceId) {
 		this.jobSubmissionInterfaceId=jobSubmissionInterfaceId;
+	}
+
+	public String getSecurityProtocol() {
+		return securityProtocol;
+	}
+
+	public void setSecurityProtocol(String securityProtocol) {
+		this.securityProtocol=securityProtocol;
 	}
 }
