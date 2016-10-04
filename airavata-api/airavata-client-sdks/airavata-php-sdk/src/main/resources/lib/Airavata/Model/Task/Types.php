@@ -91,7 +91,7 @@ class TaskModel {
   /**
    * @var \Airavata\Model\Status\TaskStatus[]
    */
-  public $taskStatus = null;
+  public $taskStatuses = null;
   /**
    * @var string
    */
@@ -103,7 +103,7 @@ class TaskModel {
   /**
    * @var \Airavata\Model\Commons\ErrorModel[]
    */
-  public $taskError = null;
+  public $taskErrors = null;
   /**
    * @var \Airavata\Model\Job\JobModel[]
    */
@@ -133,7 +133,7 @@ class TaskModel {
           'type' => TType::I64,
           ),
         6 => array(
-          'var' => 'taskStatus',
+          'var' => 'taskStatuses',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
           'elem' => array(
@@ -150,7 +150,7 @@ class TaskModel {
           'type' => TType::STRING,
           ),
         9 => array(
-          'var' => 'taskError',
+          'var' => 'taskErrors',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
           'elem' => array(
@@ -185,8 +185,8 @@ class TaskModel {
       if (isset($vals['lastUpdateTime'])) {
         $this->lastUpdateTime = $vals['lastUpdateTime'];
       }
-      if (isset($vals['taskStatus'])) {
-        $this->taskStatus = $vals['taskStatus'];
+      if (isset($vals['taskStatuses'])) {
+        $this->taskStatuses = $vals['taskStatuses'];
       }
       if (isset($vals['taskDetail'])) {
         $this->taskDetail = $vals['taskDetail'];
@@ -194,8 +194,8 @@ class TaskModel {
       if (isset($vals['subTaskModel'])) {
         $this->subTaskModel = $vals['subTaskModel'];
       }
-      if (isset($vals['taskError'])) {
-        $this->taskError = $vals['taskError'];
+      if (isset($vals['taskErrors'])) {
+        $this->taskErrors = $vals['taskErrors'];
       }
       if (isset($vals['jobs'])) {
         $this->jobs = $vals['jobs'];
@@ -259,7 +259,7 @@ class TaskModel {
           break;
         case 6:
           if ($ftype == TType::LST) {
-            $this->taskStatus = array();
+            $this->taskStatuses = array();
             $_size0 = 0;
             $_etype3 = 0;
             $xfer += $input->readListBegin($_etype3, $_size0);
@@ -268,7 +268,7 @@ class TaskModel {
               $elem5 = null;
               $elem5 = new \Airavata\Model\Status\TaskStatus();
               $xfer += $elem5->read($input);
-              $this->taskStatus []= $elem5;
+              $this->taskStatuses []= $elem5;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -291,7 +291,7 @@ class TaskModel {
           break;
         case 9:
           if ($ftype == TType::LST) {
-            $this->taskError = array();
+            $this->taskErrors = array();
             $_size6 = 0;
             $_etype9 = 0;
             $xfer += $input->readListBegin($_etype9, $_size6);
@@ -300,7 +300,7 @@ class TaskModel {
               $elem11 = null;
               $elem11 = new \Airavata\Model\Commons\ErrorModel();
               $xfer += $elem11->read($input);
-              $this->taskError []= $elem11;
+              $this->taskErrors []= $elem11;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -363,15 +363,15 @@ class TaskModel {
       $xfer += $output->writeI64($this->lastUpdateTime);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->taskStatus !== null) {
-      if (!is_array($this->taskStatus)) {
+    if ($this->taskStatuses !== null) {
+      if (!is_array($this->taskStatuses)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('taskStatus', TType::LST, 6);
+      $xfer += $output->writeFieldBegin('taskStatuses', TType::LST, 6);
       {
-        $output->writeListBegin(TType::STRUCT, count($this->taskStatus));
+        $output->writeListBegin(TType::STRUCT, count($this->taskStatuses));
         {
-          foreach ($this->taskStatus as $iter18)
+          foreach ($this->taskStatuses as $iter18)
           {
             $xfer += $iter18->write($output);
           }
@@ -390,15 +390,15 @@ class TaskModel {
       $xfer += $output->writeString($this->subTaskModel);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->taskError !== null) {
-      if (!is_array($this->taskError)) {
+    if ($this->taskErrors !== null) {
+      if (!is_array($this->taskErrors)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('taskError', TType::LST, 9);
+      $xfer += $output->writeFieldBegin('taskErrors', TType::LST, 9);
       {
-        $output->writeListBegin(TType::STRUCT, count($this->taskError));
+        $output->writeListBegin(TType::STRUCT, count($this->taskErrors));
         {
-          foreach ($this->taskError as $iter19)
+          foreach ($this->taskErrors as $iter19)
           {
             $xfer += $iter19->write($output);
           }
