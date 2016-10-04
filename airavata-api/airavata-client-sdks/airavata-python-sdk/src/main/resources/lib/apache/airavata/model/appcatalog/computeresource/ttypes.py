@@ -213,12 +213,14 @@ class MonitorMode:
   JOB_EMAIL_NOTIFICATION_MONITOR = 1
   XSEDE_AMQP_SUBSCRIBE = 2
   FORK = 3
+  LOCAL = 4
 
   _VALUES_TO_NAMES = {
     0: "POLL_JOB_MANAGER",
     1: "JOB_EMAIL_NOTIFICATION_MONITOR",
     2: "XSEDE_AMQP_SUBSCRIBE",
     3: "FORK",
+    4: "LOCAL",
   }
 
   _NAMES_TO_VALUES = {
@@ -226,6 +228,7 @@ class MonitorMode:
     "JOB_EMAIL_NOTIFICATION_MONITOR": 1,
     "XSEDE_AMQP_SUBSCRIBE": 2,
     "FORK": 3,
+    "LOCAL": 4,
   }
 
 class DMType:
@@ -667,6 +670,8 @@ class LOCALSubmission:
       raise TProtocol.TProtocolException(message='Required field jobSubmissionInterfaceId is unset!')
     if self.resourceJobManager is None:
       raise TProtocol.TProtocolException(message='Required field resourceJobManager is unset!')
+    if self.securityProtocol is None:
+      raise TProtocol.TProtocolException(message='Required field securityProtocol is unset!')
     return
 
 

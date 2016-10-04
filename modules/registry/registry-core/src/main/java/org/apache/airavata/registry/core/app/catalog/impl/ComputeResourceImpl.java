@@ -927,6 +927,7 @@ public class ComputeResourceImpl implements ComputeResource {
 		LocalSubmissionResource localJobSubmission = AppCatalogThriftConversion.getLocalJobSubmission(localSubmission);
 		localJobSubmission.setResourceJobManagerId(resourceJobManagerId);
 		localJobSubmission.getResourceJobManagerResource().setResourceJobManagerId(resourceJobManagerId);
+        localJobSubmission.setSecurityProtocol(localSubmission.getSecurityProtocol().toString());
     	localJobSubmission.save();
     	return localJobSubmission.getJobSubmissionInterfaceId();
 	}
