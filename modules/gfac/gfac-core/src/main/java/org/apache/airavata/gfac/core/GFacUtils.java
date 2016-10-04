@@ -432,7 +432,7 @@ public class GFacUtils {
         groovyMap.add(Script.STANDARD_ERROR_FILE, processContext.getStderrLocation());
 
         ComputeResourcePreference crp = getComputeResourcePreference(processContext);
-        if (crp.getAllocationProjectNumber() != null) {
+        if (isValid(crp.getAllocationProjectNumber())) {
             groovyMap.add(Script.ACCOUNT_STRING, crp.getAllocationProjectNumber());
         }
         groovyMap.add(Script.RESERVATION, getReservation(crp));
@@ -458,12 +458,13 @@ public class GFacUtils {
             log.error("Error while getting job submissiont sub task model", e);
         }
 
+        // NOTE: Give precedence to data comes with experiment
         ComputationalResourceSchedulingModel scheduling = processModel.getProcessResourceSchedule();
         if (scheduling != null) {
             int totalNodeCount = scheduling.getNodeCount();
             int totalCPUCount = scheduling.getTotalCPUCount();
 
-            if (scheduling.getQueueName() != null) {
+            if (isValid(scheduling.getQueueName())) {
                 groovyMap.add(Script.QUEUE_NAME, scheduling.getQueueName());
             }
             if (totalNodeCount > 0) {
@@ -492,7 +493,16 @@ public class GFacUtils {
                 }
             }
             if (scheduling.getTotalPhysicalMemory() > 0) {
-                groovyMap.add(Script.USED_MEM, scheduling.getTotalPhysicalMemory() + "");
+                groovyMap.add(Script.USED_MEM, scheduling.getTotalPhysicalMemory());
+            }
+            if (isValid(scheduling.getOverrideLoginUserName())) {
+                groovyMap.add(Script.USER_NAME, scheduling.getOverrideLoginUserName());
+            }
+            if (isValid(scheduling.getOverrideAllocationProjectNumber())) {
+                groovyMap.add(Script.ACCOUNT_STRING, scheduling.getOverrideAllocationProjectNumber());
+            }
+            if (isValid(scheduling.getStaticWorkingDir())) {
+                groovyMap.add(Script.WORKING_DIR, scheduling.getStaticWorkingDir());
             }
         } else {
             log.error("Task scheduling cannot be null at this point..");
@@ -543,6 +553,9 @@ public class GFacUtils {
         return groovyMap;
     }
 
+    private static boolean isValid(String str) {
+        return str != null && !str.isEmpty();
+    }
     private static void setMailAddresses(ProcessContext processContext, GroovyMap groovyMap)
             throws GFacException, AppCatalogException, ApplicationSettingsException {
 
