@@ -85,8 +85,8 @@ void TaskModel::__set_lastUpdateTime(const int64_t val) {
   this->lastUpdateTime = val;
 }
 
-void TaskModel::__set_taskStatus(const std::vector< ::apache::airavata::model::status::TaskStatus> & val) {
-  this->taskStatus = val;
+void TaskModel::__set_taskStatuses(const std::vector< ::apache::airavata::model::status::TaskStatus> & val) {
+  this->taskStatuses = val;
 }
 
 void TaskModel::__set_taskDetail(const std::string& val) {
@@ -99,9 +99,9 @@ void TaskModel::__set_subTaskModel(const std::string& val) {
 __isset.subTaskModel = true;
 }
 
-void TaskModel::__set_taskError(const std::vector< ::apache::airavata::model::commons::ErrorModel> & val) {
-  this->taskError = val;
-__isset.taskError = true;
+void TaskModel::__set_taskErrors(const std::vector< ::apache::airavata::model::commons::ErrorModel> & val) {
+  this->taskErrors = val;
+__isset.taskErrors = true;
 }
 
 void TaskModel::__set_jobs(const std::vector< ::apache::airavata::model::job::JobModel> & val) {
@@ -126,7 +126,7 @@ uint32_t TaskModel::read(::apache::thrift::protocol::TProtocol* iprot) {
   bool isset_parentProcessId = false;
   bool isset_creationTime = false;
   bool isset_lastUpdateTime = false;
-  bool isset_taskStatus = false;
+  bool isset_taskStatuses = false;
 
   while (true)
   {
@@ -181,19 +181,19 @@ uint32_t TaskModel::read(::apache::thrift::protocol::TProtocol* iprot) {
       case 6:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
-            this->taskStatus.clear();
+            this->taskStatuses.clear();
             uint32_t _size1;
             ::apache::thrift::protocol::TType _etype4;
             xfer += iprot->readListBegin(_etype4, _size1);
-            this->taskStatus.resize(_size1);
+            this->taskStatuses.resize(_size1);
             uint32_t _i5;
             for (_i5 = 0; _i5 < _size1; ++_i5)
             {
-              xfer += this->taskStatus[_i5].read(iprot);
+              xfer += this->taskStatuses[_i5].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
-          isset_taskStatus = true;
+          isset_taskStatuses = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -217,19 +217,19 @@ uint32_t TaskModel::read(::apache::thrift::protocol::TProtocol* iprot) {
       case 9:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
-            this->taskError.clear();
+            this->taskErrors.clear();
             uint32_t _size6;
             ::apache::thrift::protocol::TType _etype9;
             xfer += iprot->readListBegin(_etype9, _size6);
-            this->taskError.resize(_size6);
+            this->taskErrors.resize(_size6);
             uint32_t _i10;
             for (_i10 = 0; _i10 < _size6; ++_i10)
             {
-              xfer += this->taskError[_i10].read(iprot);
+              xfer += this->taskErrors[_i10].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
-          this->__isset.taskError = true;
+          this->__isset.taskErrors = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -273,7 +273,7 @@ uint32_t TaskModel::read(::apache::thrift::protocol::TProtocol* iprot) {
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_lastUpdateTime)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_taskStatus)
+  if (!isset_taskStatuses)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -303,11 +303,11 @@ uint32_t TaskModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
   xfer += oprot->writeI64(this->lastUpdateTime);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("taskStatus", ::apache::thrift::protocol::T_LIST, 6);
+  xfer += oprot->writeFieldBegin("taskStatuses", ::apache::thrift::protocol::T_LIST, 6);
   {
-    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->taskStatus.size()));
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->taskStatuses.size()));
     std::vector< ::apache::airavata::model::status::TaskStatus> ::const_iterator _iter16;
-    for (_iter16 = this->taskStatus.begin(); _iter16 != this->taskStatus.end(); ++_iter16)
+    for (_iter16 = this->taskStatuses.begin(); _iter16 != this->taskStatuses.end(); ++_iter16)
     {
       xfer += (*_iter16).write(oprot);
     }
@@ -325,12 +325,12 @@ uint32_t TaskModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeBinary(this->subTaskModel);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.taskError) {
-    xfer += oprot->writeFieldBegin("taskError", ::apache::thrift::protocol::T_LIST, 9);
+  if (this->__isset.taskErrors) {
+    xfer += oprot->writeFieldBegin("taskErrors", ::apache::thrift::protocol::T_LIST, 9);
     {
-      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->taskError.size()));
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->taskErrors.size()));
       std::vector< ::apache::airavata::model::commons::ErrorModel> ::const_iterator _iter17;
-      for (_iter17 = this->taskError.begin(); _iter17 != this->taskError.end(); ++_iter17)
+      for (_iter17 = this->taskErrors.begin(); _iter17 != this->taskErrors.end(); ++_iter17)
       {
         xfer += (*_iter17).write(oprot);
       }
@@ -363,10 +363,10 @@ void swap(TaskModel &a, TaskModel &b) {
   swap(a.parentProcessId, b.parentProcessId);
   swap(a.creationTime, b.creationTime);
   swap(a.lastUpdateTime, b.lastUpdateTime);
-  swap(a.taskStatus, b.taskStatus);
+  swap(a.taskStatuses, b.taskStatuses);
   swap(a.taskDetail, b.taskDetail);
   swap(a.subTaskModel, b.subTaskModel);
-  swap(a.taskError, b.taskError);
+  swap(a.taskErrors, b.taskErrors);
   swap(a.jobs, b.jobs);
   swap(a.__isset, b.__isset);
 }
@@ -377,10 +377,10 @@ TaskModel::TaskModel(const TaskModel& other19) {
   parentProcessId = other19.parentProcessId;
   creationTime = other19.creationTime;
   lastUpdateTime = other19.lastUpdateTime;
-  taskStatus = other19.taskStatus;
+  taskStatuses = other19.taskStatuses;
   taskDetail = other19.taskDetail;
   subTaskModel = other19.subTaskModel;
-  taskError = other19.taskError;
+  taskErrors = other19.taskErrors;
   jobs = other19.jobs;
   __isset = other19.__isset;
 }
@@ -390,10 +390,10 @@ TaskModel& TaskModel::operator=(const TaskModel& other20) {
   parentProcessId = other20.parentProcessId;
   creationTime = other20.creationTime;
   lastUpdateTime = other20.lastUpdateTime;
-  taskStatus = other20.taskStatus;
+  taskStatuses = other20.taskStatuses;
   taskDetail = other20.taskDetail;
   subTaskModel = other20.subTaskModel;
-  taskError = other20.taskError;
+  taskErrors = other20.taskErrors;
   jobs = other20.jobs;
   __isset = other20.__isset;
   return *this;
@@ -406,10 +406,10 @@ void TaskModel::printTo(std::ostream& out) const {
   out << ", " << "parentProcessId=" << to_string(parentProcessId);
   out << ", " << "creationTime=" << to_string(creationTime);
   out << ", " << "lastUpdateTime=" << to_string(lastUpdateTime);
-  out << ", " << "taskStatus=" << to_string(taskStatus);
+  out << ", " << "taskStatuses=" << to_string(taskStatuses);
   out << ", " << "taskDetail="; (__isset.taskDetail ? (out << to_string(taskDetail)) : (out << "<null>"));
   out << ", " << "subTaskModel="; (__isset.subTaskModel ? (out << to_string(subTaskModel)) : (out << "<null>"));
-  out << ", " << "taskError="; (__isset.taskError ? (out << to_string(taskError)) : (out << "<null>"));
+  out << ", " << "taskErrors="; (__isset.taskErrors ? (out << to_string(taskErrors)) : (out << "<null>"));
   out << ", " << "jobs="; (__isset.jobs ? (out << to_string(jobs)) : (out << "<null>"));
   out << ")";
 }

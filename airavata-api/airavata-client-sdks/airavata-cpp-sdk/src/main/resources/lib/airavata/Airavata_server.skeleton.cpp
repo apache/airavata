@@ -2964,6 +2964,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllGroupsUserBelongs\n");
   }
 
+  bool isDataSharingEnabled() {
+    // Your implementation goes here
+    printf("isDataSharingEnabled\n");
+  }
+
 };
 
 int main(int argc, char **argv) {
