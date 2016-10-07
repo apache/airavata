@@ -3853,6 +3853,17 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    @Override
+    public boolean isDataSharingEnabled() throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return ServerSettings.isEnableSharing();
+        } catch (ApplicationSettingsException e) {
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage( e.getMessage());
+            throw exception;
+        }
+    }
+
     private void initializeResourceWithGrouper(String resourceId, ResourceType resourceType) throws RegistryServiceException, GroupManagerException, TException, ApplicationSettingsException {
         GroupManagerCPI groupManager = GroupManagerFactory.getGroupManager();
         if(resourceType.equals(ResourceType.PROJECT)){

@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.common.utils;
+package org.apache.airavata.workflow.core;
 
 import org.junit.Test;
 import org.slf4j.Logger;

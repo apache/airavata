@@ -22,7 +22,6 @@
 package org.apache.airavata.gfac.impl.job;
 
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.gfac.core.JobDescriptor;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.cluster.OutputParser;
 import org.apache.airavata.model.status.JobStatus;
@@ -33,10 +32,6 @@ import java.util.Map;
 
 public class ForkOutputParser implements OutputParser {
     private static final Logger log = LoggerFactory.getLogger(ForkOutputParser.class);
-    @Override
-    public void parseSingleJob(JobDescriptor descriptor, String rawOutput) throws SSHApiException {
-        log.info(rawOutput);
-    }
 
     @Override
     public String parseJobSubmission(String rawOutput) throws SSHApiException {

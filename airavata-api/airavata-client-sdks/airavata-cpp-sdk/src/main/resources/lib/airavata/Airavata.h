@@ -2722,6 +2722,7 @@ class AiravataIf {
   virtual bool deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId, const std::string& gatewayId) = 0;
   virtual void getGroup( ::apache::airavata::model::group::GroupModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId) = 0;
   virtual void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId) = 0;
+  virtual bool isDataSharingEnabled() = 0;
 };
 
 class AiravataIfFactory {
@@ -3296,6 +3297,10 @@ class AiravataNull : virtual public AiravataIf {
   }
   void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* userName */, const std::string& /* gatewayId */) {
     return;
+  }
+  bool isDataSharingEnabled() {
+    bool _return = false;
+    return _return;
   }
 };
 
@@ -26039,6 +26044,130 @@ class Airavata_getAllGroupsUserBelongs_presult {
 
 };
 
+
+class Airavata_isDataSharingEnabled_args {
+ public:
+
+  Airavata_isDataSharingEnabled_args(const Airavata_isDataSharingEnabled_args&);
+  Airavata_isDataSharingEnabled_args& operator=(const Airavata_isDataSharingEnabled_args&);
+  Airavata_isDataSharingEnabled_args() {
+  }
+
+  virtual ~Airavata_isDataSharingEnabled_args() throw();
+
+  bool operator == (const Airavata_isDataSharingEnabled_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const Airavata_isDataSharingEnabled_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_isDataSharingEnabled_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_isDataSharingEnabled_pargs {
+ public:
+
+
+  virtual ~Airavata_isDataSharingEnabled_pargs() throw();
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_isDataSharingEnabled_result__isset {
+  _Airavata_isDataSharingEnabled_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_isDataSharingEnabled_result__isset;
+
+class Airavata_isDataSharingEnabled_result {
+ public:
+
+  Airavata_isDataSharingEnabled_result(const Airavata_isDataSharingEnabled_result&);
+  Airavata_isDataSharingEnabled_result& operator=(const Airavata_isDataSharingEnabled_result&);
+  Airavata_isDataSharingEnabled_result() : success(0) {
+  }
+
+  virtual ~Airavata_isDataSharingEnabled_result() throw();
+  bool success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_isDataSharingEnabled_result__isset __isset;
+
+  void __set_success(const bool val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_isDataSharingEnabled_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_isDataSharingEnabled_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_isDataSharingEnabled_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_isDataSharingEnabled_presult__isset {
+  _Airavata_isDataSharingEnabled_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_isDataSharingEnabled_presult__isset;
+
+class Airavata_isDataSharingEnabled_presult {
+ public:
+
+
+  virtual ~Airavata_isDataSharingEnabled_presult() throw();
+  bool* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_isDataSharingEnabled_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class AiravataClient : virtual public AiravataIf {
  public:
   AiravataClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) {
@@ -26550,6 +26679,9 @@ class AiravataClient : virtual public AiravataIf {
   void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId);
   void send_getAllGroupsUserBelongs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId);
   void recv_getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return);
+  bool isDataSharingEnabled();
+  void send_isDataSharingEnabled();
+  bool recv_isDataSharingEnabled();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -26727,6 +26859,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_deleteGroup(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getGroup(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllGroupsUserBelongs(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_isDataSharingEnabled(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   AiravataProcessor(boost::shared_ptr<AiravataIf> iface) :
     iface_(iface) {
@@ -26892,6 +27025,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["deleteGroup"] = &AiravataProcessor::process_deleteGroup;
     processMap_["getGroup"] = &AiravataProcessor::process_getGroup;
     processMap_["getAllGroupsUserBelongs"] = &AiravataProcessor::process_getAllGroupsUserBelongs;
+    processMap_["isDataSharingEnabled"] = &AiravataProcessor::process_isDataSharingEnabled;
   }
 
   virtual ~AiravataProcessor() {}
@@ -28472,6 +28606,15 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
+  bool isDataSharingEnabled() {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->isDataSharingEnabled();
+    }
+    return ifaces_[i]->isDataSharingEnabled();
+  }
+
 };
 
 // The 'concurrent' client is a thread safe client that correctly handles
@@ -28988,6 +29131,9 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId);
   int32_t send_getAllGroupsUserBelongs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId);
   void recv_getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const int32_t seqid);
+  bool isDataSharingEnabled();
+  int32_t send_isDataSharingEnabled();
+  bool recv_isDataSharingEnabled(const int32_t seqid);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;

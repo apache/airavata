@@ -1,0 +1,28 @@
+#!${shellName}
+# Grid Engine batch job script built by Apache Airavata
+
+<%
+   if(shellName != null && shellName != "") out.print '#$ -S ' + shellName + '\n'
+   if (queueName != null && queueName != "") out.print '#$ -q ' + queueName + '\n'
+   if (jobName != null && jobName != "") out.print '#$ -N ' + jobName + '\n'
+   if (mailAddress != null && mailAddress != "") out.print '#$ -M ' + mailAddress + '\n'
+   if (accountString != null && accountString != "") out.print '#$ -A ' + accountString + '\n'
+   if (maxWallTime != null && maxWallTime != "") out.print '#$ -l h_rt=' + maxWallTime + '\n'
+   if (standardOutFile != null && standardOutFile != "") out.print '#$ -o ' + standardOutFile + '\n'
+   if (standardErrorFile != null && standardErrorFile != "") out.print '#$ -e ' + standardErrorFile + '\n'
+   if (nodes != null && nodes != "" && processPerNode != null && processPerNode != "")
+        out.print '#$ -pe ' + processPerNode + 'way' + (12 * nodes)
+%>
+#\$ -V
+#\$ -m beas
+
+<% if (exports != null) for(com in exports)  out.print 'export ' + com +'\n'
+   if (moduleCommands != null) for(mc in moduleCommands)  out.print mc +'\n'
+   if (workingDirectory != null && workingDirectory != "")  out.print 'cd ' + workingDirectory +'\n'
+   if (preJobCommands != null) for(pjc in preJobCommands)  out.print pjc +'\n'
+   if (jobSubmitterCommand != null && jobSubmitterCommand != "")  out.print jobSubmitterCommand + ' '
+   if (executablePath != null && executablePath != "")  out.print  executablePath + ' '
+   if (inputs != null) for(input in inputs)  out.print input + ' '
+   out.print '\n'
+   if (postJobCommands != null) for(pjc in postJobCommands)  out.print pjc +'\n'
+%>
