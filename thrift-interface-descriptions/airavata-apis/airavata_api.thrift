@@ -2979,6 +2979,53 @@ service Airavata {
 
 
     /**
+       *
+       * Fetch all Compute Resource Preferences of a registered gateway profile.
+       *
+       * @param userId
+       *   The identifier of the user resource profile to request to fetch the particular storage resource preference.
+       *
+       * @param gatewayID
+       *   The identifier for the gateway profile to be requested
+       *
+       * @return computeResourcePreference
+       *   Returns the ComputeResourcePreference object.
+       *
+      */
+      list<user_resource_profile_model.UserComputeResourcePreference>
+                getAllUserComputeResourcePreferences(1: required security_model.AuthzToken authzToken,
+                2: required string userId,
+                3: required string gatewayID)
+      	throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.AiravataClientException ace,
+                3: airavata_errors.AiravataSystemException ase,
+                4: airavata_errors.AuthorizationException ae)
+
+      /**
+      * Fetch all User Storage Resource Preferences of a registered user profile.
+      *
+      * @param userId
+      *   The identifier of the user resource profile to request to fetch the particular storage resource preference.
+      *
+      * @param gatewayID
+      *   The identifier for the gateway profile to be requested
+      *
+      * @return StoragePreference
+      *   Returns the StoragePreference object.
+      *
+     */
+
+      list<user_resource_profile_model.UserStoragePreference>
+                  getAllUserStoragePreferences(1: required security_model.AuthzToken authzToken,
+                  2: required string userId,
+                  3: required string gatewayID)
+        	throws (1: airavata_errors.InvalidRequestException ire,
+                  2: airavata_errors.AiravataClientException ace,
+                  3: airavata_errors.AiravataSystemException ase,
+                  4: airavata_errors.AuthorizationException ae)
+
+
+    /**
     *
     * Fetch all user resources Profiles registered
     *

@@ -23,13 +23,14 @@ package org.apache.airavata.registry.core.app.catalog.resources;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.registry.core.app.catalog.model.ComputeResource;
-import org.apache.airavata.registry.core.app.catalog.model.UserResourceProfile;
 import org.apache.airavata.registry.core.app.catalog.model.UserComputeResourcePreference;
 import org.apache.airavata.registry.core.app.catalog.model.UserComputeResourcePreferencePK;
+import org.apache.airavata.registry.core.app.catalog.model.UserResourceProfile;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogJPAUtils;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogQueryGenerator;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogResourceType;
 import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,13 +38,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(UserComputeHostPreferenceResource.class);
-    private String gatewayId;
+    private String gatewayID;
     private String resourceId;
     private String userId;
     private String batchQueue;
@@ -76,11 +75,11 @@ public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
     }
 
     public String getGatewayId() {
-        return gatewayId;
+        return gatewayID;
     }
 
-    public void setGatewayId(String gatewayId) {
-        this.gatewayId = gatewayId;
+    public void setGatewayId(String gatewayID) {
+        this.gatewayID = gatewayID;
     }
 
     public String getResourceId() {
@@ -174,12 +173,12 @@ public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
 
     @Override
     public void remove(Object identifier) throws AppCatalogException {
-        HashMap<String, String> ids;
-        if (identifier instanceof Map) {
-            ids = (HashMap) identifier;
+        CompositeIdentifier ids;
+        if (identifier instanceof CompositeIdentifier) {
+            ids = (CompositeIdentifier) identifier;
         } else {
-            logger.error("Identifier should be a map with the field name and it's value");
-            throw new AppCatalogException("Identifier should be a map with the field name and it's value");
+            logger.error("Identifier should be a instance of CompositeIdentifier class");
+            throw new AppCatalogException("Identifier should be a instance of CompositeIdentifier class");
         }
 
         EntityManager em = null;
@@ -187,8 +186,8 @@ public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(USER_COMPUTE_RESOURCE_PREFERENCE);
-            generator.setParameter(UserComputeResourcePreferenceConstants.RESOURCE_ID, ids.get(UserComputeResourcePreferenceConstants.RESOURCE_ID));
-            generator.setParameter(UserComputeResourcePreferenceConstants.USER_ID, ids.get(UserComputeResourcePreferenceConstants.USER_ID));
+            generator.setParameter(UserComputeResourcePreferenceConstants.RESOURCE_ID, ids.getTopLevelIdentifier().toString());
+            generator.setParameter(UserComputeResourcePreferenceConstants.USER_ID, ids.getSecondLevelIdentifier().toString());
 
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
@@ -214,12 +213,12 @@ public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
 
     @Override
     public AppCatalogResource get(Object identifier) throws AppCatalogException {
-        HashMap<String, String> ids;
-        if (identifier instanceof Map) {
-            ids = (HashMap) identifier;
+        CompositeIdentifier ids;
+        if (identifier instanceof CompositeIdentifier) {
+            ids = (CompositeIdentifier) identifier;
         } else {
-            logger.error("Identifier should be a map with the field name and it's value");
-            throw new AppCatalogException("Identifier should be a map with the field name and it's value");
+            logger.error("Identifier should be a instance of CompositeIdentifier class");
+            throw new AppCatalogException("Identifier should be a instance of CompositeIdentifier class");
         }
 
         EntityManager em = null;
@@ -227,8 +226,8 @@ public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(USER_COMPUTE_RESOURCE_PREFERENCE);
-            generator.setParameter(UserComputeResourcePreferenceConstants.RESOURCE_ID, ids.get(UserComputeResourcePreferenceConstants.RESOURCE_ID));
-            generator.setParameter(UserComputeResourcePreferenceConstants.USER_ID, ids.get(UserComputeResourcePreferenceConstants.USER_ID));
+            generator.setParameter(UserComputeResourcePreferenceConstants.RESOURCE_ID, ids.getTopLevelIdentifier().toString());
+            generator.setParameter(UserComputeResourcePreferenceConstants.USER_ID, ids.getSecondLevelIdentifier().toString());
             Query q = generator.selectQuery(em);
             UserComputeResourcePreference preference = (UserComputeResourcePreference) q.getSingleResult();
             UserComputeHostPreferenceResource preferenceResource =
@@ -281,7 +280,15 @@ public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
                     }
                 }
             } else if (fieldName.equals(UserComputeResourcePreferenceConstants.USER_ID)) {
-                generator.setParameter(UserComputeResourcePreferenceConstants.USER_ID, value);
+                CompositeIdentifier ids;
+                if (value instanceof CompositeIdentifier) {
+                    ids = (CompositeIdentifier) value;
+                } else {
+                    logger.error("Identifier should be a instance of CompositeIdentifier class");
+                    throw new AppCatalogException("Identifier should be a instance of CompositeIdentifier class");
+                }
+                generator.setParameter(UserComputeResourcePreferenceConstants.USER_ID, ids.getTopLevelIdentifier().toString());
+                generator.setParameter(UserComputeResourcePreferenceConstants.GATEWAY_ID, ids.getSecondLevelIdentifier().toString());
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
@@ -347,7 +354,7 @@ public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            UserComputeResourcePreference existingPreference = em.find(UserComputeResourcePreference.class, new UserComputeResourcePreferencePK(userId, gatewayId, resourceId));
+            UserComputeResourcePreference existingPreference = em.find(UserComputeResourcePreference.class, new UserComputeResourcePreferencePK(userId, resourceId));
             if (em.isOpen()) {
                 if (em.getTransaction().isActive()){
                     em.getTransaction().rollback();
@@ -361,8 +368,8 @@ public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
             UserResourceProfile userResourceProfile = em.find(UserResourceProfile.class, userId);
             if (existingPreference != null) {
                 existingPreference.setResourceId(resourceId);
-                existingPreference.setGatewayId(userId);
-                existingPreference.setGatewayId(gatewayId);
+                existingPreference.setUserId(userId);
+                existingPreference.setGatewayID(gatewayID);
                 existingPreference.setComputeHostResource(computeResource);
                 existingPreference.setUserResouceProfile(userResourceProfile);
                 existingPreference.setScratchLocation(scratchLocation);
@@ -378,8 +385,8 @@ public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
             } else {
                 UserComputeResourcePreference resourcePreference = new UserComputeResourcePreference();
                 resourcePreference.setResourceId(resourceId);
-                resourcePreference.setGatewayId(gatewayId);
-                resourcePreference.setGatewayId(userId);
+                resourcePreference.setGatewayID(gatewayID);
+                resourcePreference.setUserId(userId);
                 resourcePreference.setComputeHostResource(computeResource);
                 resourcePreference.setScratchLocation(scratchLocation);
                 resourcePreference.setProjectNumber(projectNumber);
@@ -414,21 +421,20 @@ public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
 
     @Override
     public boolean isExists(Object identifier) throws AppCatalogException {
-        HashMap<String, String> ids;
-        if (identifier instanceof Map) {
-            ids = (HashMap) identifier;
+        CompositeIdentifier ids;
+        if (identifier instanceof CompositeIdentifier) {
+            ids = (CompositeIdentifier) identifier;
         } else {
-            logger.error("Identifier should be a map with the field name and it's value");
-            throw new AppCatalogException("Identifier should be a map with the field name and it's value");
+            logger.error("Identifier should be a instance of CompositeIdentifier class");
+            throw new AppCatalogException("Identifier should be a instance of CompositeIdentifier class");
         }
 
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             UserComputeResourcePreference existingPreference = em.find(UserComputeResourcePreference.class,
-                    new UserComputeResourcePreferencePK(ids.get(UserComputeResourcePreferenceConstants.USER_ID),
-                            ids.get(UserComputeResourcePreferenceConstants.GATEWAY_ID),
-                            ids.get(UserComputeResourcePreferenceConstants.RESOURCE_ID)));
+                    new UserComputeResourcePreferencePK(ids.getTopLevelIdentifier().toString(),
+                            ids.getSecondLevelIdentifier().toString()));
             if (em.isOpen()) {
                 if (em.getTransaction().isActive()){
                     em.getTransaction().rollback();

@@ -3281,7 +3281,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public ComputeResourcePreference getUserComputeResourcePreference(AuthzToken authzToken, String userId, String gatewayID, String userComputeResourceId)
+    public UserComputeResourcePreference getUserComputeResourcePreference(AuthzToken authzToken, String userId, String gatewayID, String userComputeResourceId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             return getRegistryServiceClient().getUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
@@ -3296,7 +3296,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public StoragePreference getUserStoragePreference(AuthzToken authzToken, String userId, String gatewayID, String userStorageId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public UserStoragePreference getUserStoragePreference(AuthzToken authzToken, String userId, String gatewayID, String userStorageId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             return getRegistryServiceClient().getUserStoragePreference(userId, gatewayID, userStorageId);
         } catch (ApplicationSettingsException | RegistryServiceException e) {
@@ -3304,6 +3304,43 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while reading user data storage preference. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Fetch all User Compute Resource Preferences of a registered gateway profile.
+     *
+     * @param userId
+     * @param gatewayID The identifier for the gateway profile to be requested
+     * @return computeResourcePreference
+     * Returns the ComputeResourcePreference object.
+     */
+    @Override
+    @SecurityCheck
+    public List<UserComputeResourcePreference> getAllUserComputeResourcePreferences(AuthzToken authzToken, String userId, String gatewayID)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return getRegistryServiceClient().getAllUserComputeResourcePreferences(userId, gatewayID);
+        } catch (ApplicationSettingsException | RegistryServiceException e) {
+            logger.error(userId, "Error while reading User compute resource preferences...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while reading User compute resource preferences. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public List<UserStoragePreference> getAllUserStoragePreferences(AuthzToken authzToken, String userId, String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return getRegistryServiceClient().getAllUserStoragePreferences(userId, gatewayID);
+        } catch (ApplicationSettingsException | RegistryServiceException e) {
+            logger.error(userId, "Error while reading User data storage preferences...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while reading User data storage preferences. More info : " + e.getMessage());
             throw exception;
         }
     }

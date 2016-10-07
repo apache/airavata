@@ -272,6 +272,13 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a GatewayProfile.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GatewayProfile.");
                 }
+            case USER_RESOURCE_PROFILE:
+                if (o instanceof UserResourceProfile) {
+                    return createUserResourceProfile((UserResourceProfile) o);
+                } else {
+                    logger.error("Object should be a UserResourceProfile.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a UserResourceProfile.");
+                }
             case COMPUTE_RESOURCE_PREFERENCE:
                 if (o instanceof ComputeResourcePreference) {
                     return createComputeResourcePref((ComputeResourcePreference) o);
@@ -279,12 +286,26 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a Compute Resource Preference.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Compute Resource Preference.");
                 }
+            case USER_COMPUTE_RESOURCE_PREFERENCE:
+                if (o instanceof UserComputeResourcePreference) {
+                    return createUserComputeResourcePref((UserComputeResourcePreference) o);
+                } else {
+                    logger.error("Object should be a User Compute Resource Preference.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a User Compute Resource Preference.");
+                }
             case STORAGE_PREFERENCE:
                 if (o instanceof StoragePreference) {
                     return createStoragePref((StoragePreference) o);
                 } else {
                     logger.error("Object should be a data storage Preference.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a data storage Preference.");
+                }
+            case USER_STORAGE_PREFERENCE:
+                if (o instanceof UserStoragePreference) {
+                    return createUserStoragePref((UserStoragePreference) o);
+                } else {
+                    logger.error("Object should be a User data storage Preference.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a User data storage Preference.");
                 }
             case STORAGE_RESOURCE:
                 if (o instanceof StorageResource) {
@@ -857,6 +878,22 @@ public class AppCatalogJPAUtils {
         return resource;
     }
 
+    private static AppCatalogResource createUserResourceProfile(UserResourceProfile o) {
+        UserResourceProfileResource resource = new UserResourceProfileResource();
+        if (o != null) {
+            resource.setGatewayID(o.getGatewayID());
+            resource.setUserId(o.getUserID());
+            resource.setCreatedTime(o.getCreationTime());
+            resource.setCredentialStoreToken(o.getCredentialStoreToken());
+            resource.setIdentityServerTenant(o.getIdentityServerTenant());
+            resource.setIdentityServerPwdCredToken(o.getIdentityServerPwdCredToken());
+            if (o.getUpdateTime() != null) {
+                resource.setUpdatedTime(o.getUpdateTime());
+            }
+        }
+        return resource;
+    }
+
     private static AppCatalogResource createComputeResourcePref(ComputeResourcePreference o) {
         ComputeHostPreferenceResource resource = new ComputeHostPreferenceResource();
         if (o != null) {
@@ -881,6 +918,27 @@ public class AppCatalogJPAUtils {
         return resource;
     }
 
+    private static AppCatalogResource createUserComputeResourcePref(UserComputeResourcePreference o) {
+        UserComputeHostPreferenceResource resource = new UserComputeHostPreferenceResource();
+        if (o != null) {
+            resource.setGatewayId(o.getGatewayID());
+            resource.setUserId(o.getUserId());
+            resource.setResourceId(o.getResourceId());
+            resource.setBatchQueue(o.getBatchQueue());
+            resource.setScratchLocation(o.getScratchLocation());
+            resource.setProjectNumber(o.getProjectNumber());
+            resource.setLoginUserName(o.getLoginUserName());
+            resource.setResourceCSToken(o.getComputeResourceCSToken());
+            resource.setComputeHostResource((ComputeResourceResource) createComputeResource(o.getComputeHostResource()));
+            resource.setUserResourceProfileResource((UserResourceProfileResource) createUserResourceProfile(o.getUserResouceProfile()));
+            resource.setQualityOfService(o.getQualityOfService());
+            resource.setReservation(o.getReservation());
+            resource.setReservationStartTime(o.getReservationStartTime());
+            resource.setReservationEndTime(o.getReservationEndTime());
+        }
+        return resource;
+    }
+
     private static AppCatalogResource createStoragePref(StoragePreference o) {
         StoragePreferenceResource resource = new StoragePreferenceResource();
         if (o != null) {
@@ -890,6 +948,20 @@ public class AppCatalogJPAUtils {
             resource.setResourceCSToken(o.getComputeResourceCSToken());
             resource.setFsRootLocation(o.getFsRootLocation());
             resource.setGatewayProfile((GatewayProfileResource) createGatewayProfile(o.getGatewayProfile()));
+        }
+        return resource;
+    }
+
+    private static AppCatalogResource createUserStoragePref(UserStoragePreference o) {
+        UserStoragePreferenceResource resource = new UserStoragePreferenceResource();
+        if (o != null) {
+            resource.setGatewayId(o.getGatewayID());
+            resource.setUserId(o.getUserId());
+            resource.setStorageResourceId(o.getStorageResourceId());
+            resource.setLoginUserName(o.getLoginUserName());
+            resource.setResourceCSToken(o.getComputeResourceCSToken());
+            resource.setFsRootLocation(o.getFsRootLocation());
+            resource.setUserResourceProfileResource((UserResourceProfileResource) createUserResourceProfile(o.getUserResourceProfile()));
         }
         return resource;
     }

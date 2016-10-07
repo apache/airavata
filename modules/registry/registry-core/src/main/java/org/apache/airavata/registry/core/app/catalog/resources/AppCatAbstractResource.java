@@ -54,7 +54,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
     public static final String APPLICATION_OUTPUT = "ApplicationIntOutput";
     public static final String WORKFLOW_OUTPUT = "WorkflowOutput";
     public static final String GATEWAY_PROFILE = "GatewayProfile";
-    public static final String USER_RESOURCE_PROFILE = "userResourceProfile";
+    public static final String USER_RESOURCE_PROFILE = "UserResourceProfile";
     public static final String COMPUTE_RESOURCE_PREFERENCE = "ComputeResourcePreference";
     public static final String USER_COMPUTE_RESOURCE_PREFERENCE = "UserComputeResourcePreference";
     public static final String STORAGE_PREFERENCE = "StoragePreference";
@@ -89,7 +89,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
     public final class GatewayClientCredentialConstants {
         public static final String CLIENT_KEY = "clientKey";
         public static final String CLIENT_SECRET = "clientSecret";
-        public static final String GATEWAY_ID = "gatewayId";
+        public static final String GATEWAY_ID = "gatewayID";
     }
 
 
@@ -201,7 +201,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
 
     public final class ApplicationModuleConstants {
         public static final String MODULE_ID = "moduleID";
-        public static final String GATEWAY_ID = "gatewayId";
+        public static final String GATEWAY_ID = "gatewayID";
         public static final String MODULE_NAME = "moduleName";
         public static final String MODULE_VERSION = "moduleVersion";
         public static final String MODULE_DESC = "moduleDesc";
@@ -211,7 +211,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
         public static final String APP_MODULE_ID = "appModuleID";
         public static final String DEPLOYMENT_ID = "deploymentID";
         public static final String COMPUTE_HOST_ID = "hostID";
-        public static final String GATEWAY_ID = "gatewayId";
+        public static final String GATEWAY_ID = "gatewayID";
         public static final String EXECUTABLE_PATH = "executablePath";
         public static final String APPLICATION_DESC = "applicationDesc";
         public static final String ENV_MODULE_LOAD_CMD = "envModuleLoaString";
@@ -239,7 +239,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
     public final class ApplicationInterfaceConstants {
         public static final String INTERFACE_ID = "interfaceID";
         public static final String APPLICATION_NAME = "appName";
-        public static final String GATEWAY_ID = "gatewayId";
+        public static final String GATEWAY_ID = "gatewayID";
     }
 
     public final class AppModuleMappingConstants {
@@ -295,7 +295,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
     }
 
     public final class ComputeResourcePreferenceConstants {
-        public static final String GATEWAY_ID = "gatewayId";
+        public static final String GATEWAY_ID = "gatewayID";
         public static final String RESOURCE_ID = "resourceId";
         public static final String OVERRIDE_BY_AIRAVATA = "overrideByAiravata";
         public static final String PREFERED_JOB_SUB_PROTOCOL = "preferedJobSubmissionProtocol";
@@ -306,7 +306,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
     }
 
     public final class UserComputeResourcePreferenceConstants {
-        public static final String GATEWAY_ID = "gatewayId";
+        public static final String GATEWAY_ID = "gatewayID";
         public static final String USER_ID = "userId";
         public static final String RESOURCE_ID = "resourceId";
         public static final String PREFERED_BATCH_QUEUE = "batchQueue";
@@ -356,12 +356,12 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
     }
 
     public final class StoragePreferenceConstants {
-        public static final String GATEWAY_ID = "gatewayId";
+        public static final String GATEWAY_ID = "gatewayID";
         public static final String STORAGE_ID = "storageResourceId";
     }
 
     public final class UserStoragePreferenceConstants {
-        public static final String GATEWAY_ID = "gatewayId";
+        public static final String GATEWAY_ID = "gatewayID";
         public static final String USER_ID = "userId";
         public static final String STORAGE_ID = "storageResourceId";
     }
@@ -438,6 +438,6 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
         public static final String CREATED_USER = "createdUser";
         public static final String GRAPH = "graph";
         public static final String WF_TEMPLATE_ID = "wfTemplateId";
-        public static final String GATEWAY_ID = "gatewayId";
+        public static final String GATEWAY_ID = "gatewayID";
     }
 }
