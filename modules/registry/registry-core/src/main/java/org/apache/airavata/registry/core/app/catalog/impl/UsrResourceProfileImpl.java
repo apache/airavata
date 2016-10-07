@@ -28,14 +28,13 @@ import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePrefe
 import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.UsrResourceProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class UsrResourceProfileImpl implements UsrResourceProfile {
     private final static Logger logger = LoggerFactory.getLogger(UsrResourceProfileImpl.class);
@@ -44,6 +43,9 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
     public String addUserResourceProfile(org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile userResourceProfile) throws AppCatalogException {
         try {
             UserResourceProfileResource profileResource = new UserResourceProfileResource();
+            if (!userResourceProfile.getUserId().equals("")){
+                profileResource.setUserId(userResourceProfile.getUserId());
+            }
             if (!userResourceProfile.getGatewayID().equals("")){
                 profileResource.setGatewayID(userResourceProfile.getGatewayID());
             }
@@ -56,6 +58,7 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
             if (userResourceProfile.getIdentityServerPwdCredToken() != null){
                 profileResource.setIdentityServerPwdCredToken(userResourceProfile.getIdentityServerPwdCredToken());
             }
+            profileResource.setUserId(userResourceProfile.getUserId());
             profileResource.setGatewayID(userResourceProfile.getGatewayID());
             profileResource.save();
             List<UserComputeResourcePreference> userComputeResourcePreferences = userResourceProfile.getUserComputeResourcePreferences();
@@ -91,6 +94,7 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
                     UserStoragePreferenceResource resource = new UserStoragePreferenceResource();
                     resource.setStorageResourceId(storagePreference.getStorageResourceId());
                     resource.setGatewayId(profileResource.getGatewayID());
+                    resource.setUserId(profileResource.getUserId());
                     resource.setFsRootLocation(storagePreference.getFileSystemRootLocation());
                     resource.setLoginUserName(storagePreference.getLoginUserName());
                     resource.setResourceCSToken(storagePreference.getResourceSpecificCredentialStoreToken());
@@ -109,7 +113,8 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
     public void updateUserResourceProfile(String userId, String gatewayId, org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile updatedProfile) throws AppCatalogException {
         try {
             UserResourceProfileResource profileResource = new UserResourceProfileResource();
-            UserResourceProfileResource existingUP = (UserResourceProfileResource)profileResource.get(userId);
+            CompositeIdentifier ids = new CompositeIdentifier(userId,gatewayId);
+            UserResourceProfileResource existingUP = (UserResourceProfileResource)profileResource.get(ids);
             existingUP.setCredentialStoreToken(updatedProfile.getCredentialStoreToken());
             existingUP.setIdentityServerTenant(updatedProfile.getIdentityServerTenant());
             existingUP.setIdentityServerPwdCredToken(updatedProfile.getIdentityServerPwdCredToken());
@@ -166,14 +171,15 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
     public UserResourceProfile getUserResourceProfile(String userId, String gatewayId) throws AppCatalogException {
         try {
             UserResourceProfileResource resource = new UserResourceProfileResource();
-            UserResourceProfileResource uResource = (UserResourceProfileResource)resource.get(userId);
+            CompositeIdentifier ids = new CompositeIdentifier(userId,gatewayId);
+            UserResourceProfileResource uResource = (UserResourceProfileResource)resource.get(ids);
             UserComputeHostPreferenceResource prefResource = new UserComputeHostPreferenceResource();
-            List<AppCatalogResource> usercomputePrefList = prefResource.get(AppCatAbstractResource.UserComputeResourcePreferenceConstants.USER_ID, userId);
+            List<AppCatalogResource> usercomputePrefList = prefResource.get(AppCatAbstractResource.UserComputeResourcePreferenceConstants.USER_ID, ids);
             List<UserComputeResourcePreference> userComputeResourcePreferences = AppCatalogThriftConversion.getUserComputeResourcePreferences(usercomputePrefList);
-            List<UserStoragePreference> dataStoragePreferences = getAllStoragePreferences(gatewayId);
+            List<UserStoragePreference> dataStoragePreferences = getAllUserStoragePreferences(userId,gatewayId);
             return AppCatalogThriftConversion.getUserResourceProfile(uResource, userComputeResourcePreferences, dataStoragePreferences);
         }catch (Exception e) {
-            logger.error("Error while retrieving gateway profile...", e);
+            logger.error("Error while retrieving user resource profile...", e);
             throw new AppCatalogException(e);
         }
     }
@@ -182,7 +188,8 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
     public boolean removeUserResourceProfile(String userId, String gatewayId) throws AppCatalogException {
        try {
            UserResourceProfileResource resource = new UserResourceProfileResource();
-           resource.remove(userId);
+           CompositeIdentifier ids = new CompositeIdentifier(userId,gatewayId);
+           resource.remove(ids);
            return true;
        }catch (Exception e) {
            logger.error("Error while deleting user resource profile...", e);
@@ -194,9 +201,7 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
     public boolean removeUserComputeResourcePreferenceFromGateway(String userId, String gatewayId, String preferenceId) throws AppCatalogException {
         try {
             UserComputeHostPreferenceResource resource = new UserComputeHostPreferenceResource();
-            Map<String, String> ids = new HashMap<String, String>();
-            ids.put(AppCatAbstractResource.UserComputeResourcePreferenceConstants.USER_ID, userId);
-            ids.put(AppCatAbstractResource.UserComputeResourcePreferenceConstants.RESOURCE_ID, preferenceId);
+            CompositeIdentifier ids = new CompositeIdentifier(userId,gatewayId);
             resource.remove(ids);
             return true;
         }catch (Exception e) {
@@ -209,9 +214,7 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
     public boolean removeUserDataStoragePreferenceFromGateway(String userId, String gatewayId, String preferenceId) throws AppCatalogException {
         try {
             UserStoragePreferenceResource resource = new UserStoragePreferenceResource();
-            Map<String, String> ids = new HashMap<String, String>();
-            ids.put(AppCatAbstractResource.UserStoragePreferenceConstants.USER_ID, userId);
-            ids.put(AppCatAbstractResource.UserStoragePreferenceConstants.STORAGE_ID, preferenceId);
+            CompositeIdentifier ids = new CompositeIdentifier(userId,gatewayId);
             resource.remove(ids);
             return true;
         }catch (Exception e) {
@@ -224,7 +227,8 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
     public boolean isUserResourceProfileExists(String userId, String gatewayId) throws AppCatalogException {
         try {
             UserResourceProfileResource resource = new UserResourceProfileResource();
-            return resource.isExists(userId);
+            CompositeIdentifier ids = new CompositeIdentifier(userId, gatewayId);
+            return resource.isExists(ids);
         }catch (Exception e) {
             logger.error("Error while retrieving user resource profile...", e);
             throw new AppCatalogException(e);
@@ -240,7 +244,8 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
     public UserComputeResourcePreference getUserComputeResourcePreference(String userId, String gatewayId, String hostId) throws AppCatalogException {
         try {
             UserComputeHostPreferenceResource prefResource = new UserComputeHostPreferenceResource();
-            List<AppCatalogResource> computePrefList = prefResource.get(AppCatAbstractResource.UserComputeResourcePreferenceConstants.USER_ID, userId);
+            CompositeIdentifier ids = new CompositeIdentifier(userId, gatewayId);
+            List<AppCatalogResource> computePrefList = prefResource.get(AppCatAbstractResource.UserComputeResourcePreferenceConstants.USER_ID, ids);
             for (AppCatalogResource resource : computePrefList){
                 UserComputeHostPreferenceResource cmP = (UserComputeHostPreferenceResource) resource;
                 if (cmP.getResourceId() != null && !cmP.getResourceId().equals("")){
@@ -260,7 +265,8 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
     public UserStoragePreference getUserStoragePreference(String userId, String gatewayId, String storageId) throws AppCatalogException {
         try {
             UserStoragePreferenceResource prefResource = new UserStoragePreferenceResource();
-            List<AppCatalogResource> computePrefList = prefResource.get(AppCatAbstractResource.UserComputeResourcePreferenceConstants.USER_ID, userId);
+            CompositeIdentifier ids = new CompositeIdentifier(userId, gatewayId);
+            List<AppCatalogResource> computePrefList = prefResource.get(AppCatAbstractResource.UserComputeResourcePreferenceConstants.USER_ID, ids);
             for (AppCatalogResource resource : computePrefList){
                 UserStoragePreferenceResource dsP = (UserStoragePreferenceResource) resource;
                 if (dsP.getStorageResourceId() != null && !dsP.getStorageResourceId().equals("")){
@@ -280,11 +286,12 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
      * @param userId
      * @return
      */
-
-    public List<UserComputeResourcePreference> getAllUserComputeResourcePreferences(String userId) throws AppCatalogException {
+    @Override
+    public List<UserComputeResourcePreference> getAllUserComputeResourcePreferences(String userId, String gatewayID) throws AppCatalogException {
         try {
-            ComputeHostPreferenceResource prefResource = new ComputeHostPreferenceResource();
-            List<AppCatalogResource> computePrefList = prefResource.get(AppCatAbstractResource.UserComputeResourcePreferenceConstants.USER_ID, userId);
+            UserComputeHostPreferenceResource prefResource = new UserComputeHostPreferenceResource();
+            CompositeIdentifier ids = new CompositeIdentifier(userId, gatewayID);
+            List<AppCatalogResource> computePrefList = prefResource.get(AppCatAbstractResource.UserComputeResourcePreferenceConstants.USER_ID, ids);
             return AppCatalogThriftConversion.getUserComputeResourcePreferences(computePrefList);
         }catch (Exception e) {
             logger.error("Error while retrieving compute resource preference...", e);
@@ -292,11 +299,12 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
         }
     }
 
-
-    public List<UserStoragePreference> getAllStoragePreferences(String userId) throws AppCatalogException {
+    @Override
+    public List<UserStoragePreference> getAllUserStoragePreferences(String userId, String gatewayID) throws AppCatalogException {
         try {
             UserStoragePreferenceResource prefResource = new UserStoragePreferenceResource();
-            List<AppCatalogResource> dataStoragePrefList = prefResource.get(AppCatAbstractResource.UserStoragePreferenceConstants.USER_ID, userId);
+            CompositeIdentifier ids = new CompositeIdentifier(userId, gatewayID);
+            List<AppCatalogResource> dataStoragePrefList = prefResource.get(AppCatAbstractResource.UserStoragePreferenceConstants.USER_ID, ids);
             return AppCatalogThriftConversion.getUserDataStoragePreferences(dataStoragePrefList);
         }catch (Exception e) {
             logger.error("Error while retrieving data storage preference...", e);
@@ -324,9 +332,10 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
 
     @Override
     public String getUserNamefromID(String userId, String gatewayID) throws AppCatalogException {
-//        This method implementation is critical
+//        Implementation not need, username and ID are some.
         return null;
     }
+
 
     @Override
     public List<UserResourceProfile> getAllUserResourceProfiles() throws AppCatalogException {
@@ -337,15 +346,15 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
             if (resourceList != null && !resourceList.isEmpty()){
                 for (AppCatalogResource resource : resourceList){
                     UserResourceProfileResource userProfileResource = (UserResourceProfileResource)resource;
-                    List<UserComputeResourcePreference> computeResourcePreferences = getAllUserComputeResourcePreferences(userProfileResource.getUserId());
-                    List<UserStoragePreference> dataStoragePreferences = getAllStoragePreferences(userProfileResource.getUserId());
+                    List<UserComputeResourcePreference> computeResourcePreferences = getAllUserComputeResourcePreferences(userProfileResource.getUserId(),userProfileResource.getGatewayID());
+                    List<UserStoragePreference> dataStoragePreferences = getAllUserStoragePreferences(userProfileResource.getUserId(), userProfileResource.getGatewayID());
                     UserResourceProfile gatewayResourceProfile = AppCatalogThriftConversion.getUserResourceProfile(userProfileResource, computeResourcePreferences, dataStoragePreferences);
                     gatewayResourceProfileList.add(gatewayResourceProfile);
                 }
             }
             return gatewayResourceProfileList;
         }catch (Exception e) {
-            logger.error("Error while retrieving gateway ids...", e);
+            logger.error("Error while retrieving user resource profiles...", e);
             throw new AppCatalogException(e);
         }
     }

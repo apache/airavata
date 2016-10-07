@@ -129,7 +129,7 @@ public class ExpCatResourceUtils {
         resource.save();
     }
 
-    public static boolean isUserExist (String username, String gatewayId) throws RegistryException{
+    public static boolean isUserExist (String username, String gatewayId) throws RegistryException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -141,13 +141,13 @@ public class ExpCatResourceUtils {
             int size = q.getResultList().size();
             em.getTransaction().commit();
             em.close();
-            return size>0;
-        } catch (Exception e){
+            return size > 0;
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
-        }finally {
-            if (em != null && em.isOpen()){
-                if (em.getTransaction().isActive()){
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
                 em.close();

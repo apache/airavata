@@ -27,17 +27,16 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "USER_COMPUTE_RESOURCE_PREFERENCE")
-@IdClass(ComputeResourcePreferencePK.class)
+@IdClass(UserComputeResourcePreferencePK.class)
 public class UserComputeResourcePreference {
-    @Id
-    @Column(name = "GATEWAY_ID")
-    private String gatewayId;
     @Id
     @Column(name = "USER_ID")
     private String userId;
     @Id
     @Column(name = "RESOURCE_ID")
     private String resourceId;
+    @Column(name = "GATEWAY_ID")
+    private String gatewayID;
     @Column(name = "PREFERED_BATCH_QUEUE")
     private String batchQueue;
     @Column(name = "SCRATCH_LOCATION")
@@ -64,7 +63,7 @@ public class UserComputeResourcePreference {
 
 
     @ManyToOne(cascade= CascadeType.MERGE)
-    @JoinColumn(name = "GATEWAY_ID")
+    @JoinColumn(name = "USER_ID")
     private UserResourceProfile userResouceProfile;
 
     /*User Id should be linked to user profile table once it is finalized and created*/
@@ -77,12 +76,12 @@ public class UserComputeResourcePreference {
         this.userId = userId;
     }
 
-    public String getGatewayId() {
-        return gatewayId;
+    public String getGatewayID() {
+        return gatewayID;
     }
 
-    public void setGatewayId(String gatewayId) {
-        this.gatewayId = gatewayId;
+    public void setGatewayID(String gatewayID) {
+        this.gatewayID = gatewayID;
     }
 
     public String getResourceId() {

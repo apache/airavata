@@ -153,6 +153,19 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  bool updateGatewayStoragePreference(AuthzToken authzToken, string gatewayID, string storageId, StoragePreference storagePreference)')
   print('  bool deleteGatewayComputeResourcePreference(AuthzToken authzToken, string gatewayID, string computeResourceId)')
   print('  bool deleteGatewayStoragePreference(AuthzToken authzToken, string gatewayID, string storageId)')
+  print('  string registerUserResourceProfile(AuthzToken authzToken, UserResourceProfile userResourceProfile)')
+  print('  UserResourceProfile getUserResourceProfile(AuthzToken authzToken, string userId)')
+  print('  bool updateUserResourceProfile(AuthzToken authzToken, string userId, UserResourceProfile userResourceProfile)')
+  print('  bool deleteUserResourceProfile(AuthzToken authzToken, string userId)')
+  print('  bool addUserComputeResourcePreference(AuthzToken authzToken, string userId, string computeResourceId, ComputeResourcePreference computeResourcePreference)')
+  print('  bool addUserStoragePreference(AuthzToken authzToken, string userId, string storageResourceId, StoragePreference storagePreference)')
+  print('  ComputeResourcePreference getUserComputeResourcePreference(AuthzToken authzToken, string userId, string computeResourceId)')
+  print('  StoragePreference getUserStoragePreference(AuthzToken authzToken, string userId, string storageResourceId)')
+  print('   getAllUserResourceProfiles(AuthzToken authzToken)')
+  print('  bool updateUserComputeResourcePreference(AuthzToken authzToken, string userId, string computeResourceId, ComputeResourcePreference computeResourcePreference)')
+  print('  bool updateUserStoragePreference(AuthzToken authzToken, string userId, string storageId, StoragePreference storagePreference)')
+  print('  bool deleteUserComputeResourcePreference(AuthzToken authzToken, string userId, string computeResourceId)')
+  print('  bool deleteUserStoragePreference(AuthzToken authzToken, string userId, string storageId)')
   print('   getAllWorkflows(AuthzToken authzToken, string gatewayId)')
   print('  WorkflowModel getWorkflow(AuthzToken authzToken, string workflowTemplateId)')
   print('  void deleteWorkflow(AuthzToken authzToken, string workflowTemplateId)')
@@ -1002,6 +1015,84 @@ elif cmd == 'deleteGatewayStoragePreference':
     print('deleteGatewayStoragePreference requires 3 args')
     sys.exit(1)
   pp.pprint(client.deleteGatewayStoragePreference(eval(args[0]),args[1],args[2],))
+
+elif cmd == 'registerUserResourceProfile':
+  if len(args) != 2:
+    print('registerUserResourceProfile requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.registerUserResourceProfile(eval(args[0]),eval(args[1]),))
+
+elif cmd == 'getUserResourceProfile':
+  if len(args) != 2:
+    print('getUserResourceProfile requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.getUserResourceProfile(eval(args[0]),args[1],))
+
+elif cmd == 'updateUserResourceProfile':
+  if len(args) != 3:
+    print('updateUserResourceProfile requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.updateUserResourceProfile(eval(args[0]),args[1],eval(args[2]),))
+
+elif cmd == 'deleteUserResourceProfile':
+  if len(args) != 2:
+    print('deleteUserResourceProfile requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.deleteUserResourceProfile(eval(args[0]),args[1],))
+
+elif cmd == 'addUserComputeResourcePreference':
+  if len(args) != 4:
+    print('addUserComputeResourcePreference requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.addUserComputeResourcePreference(eval(args[0]),args[1],args[2],eval(args[3]),))
+
+elif cmd == 'addUserStoragePreference':
+  if len(args) != 4:
+    print('addUserStoragePreference requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.addUserStoragePreference(eval(args[0]),args[1],args[2],eval(args[3]),))
+
+elif cmd == 'getUserComputeResourcePreference':
+  if len(args) != 3:
+    print('getUserComputeResourcePreference requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.getUserComputeResourcePreference(eval(args[0]),args[1],args[2],))
+
+elif cmd == 'getUserStoragePreference':
+  if len(args) != 3:
+    print('getUserStoragePreference requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.getUserStoragePreference(eval(args[0]),args[1],args[2],))
+
+elif cmd == 'getAllUserResourceProfiles':
+  if len(args) != 1:
+    print('getAllUserResourceProfiles requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.getAllUserResourceProfiles(eval(args[0]),))
+
+elif cmd == 'updateUserComputeResourcePreference':
+  if len(args) != 4:
+    print('updateUserComputeResourcePreference requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.updateUserComputeResourcePreference(eval(args[0]),args[1],args[2],eval(args[3]),))
+
+elif cmd == 'updateUserStoragePreference':
+  if len(args) != 4:
+    print('updateUserStoragePreference requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.updateUserStoragePreference(eval(args[0]),args[1],args[2],eval(args[3]),))
+
+elif cmd == 'deleteUserComputeResourcePreference':
+  if len(args) != 3:
+    print('deleteUserComputeResourcePreference requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.deleteUserComputeResourcePreference(eval(args[0]),args[1],args[2],))
+
+elif cmd == 'deleteUserStoragePreference':
+  if len(args) != 3:
+    print('deleteUserStoragePreference requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.deleteUserStoragePreference(eval(args[0]),args[1],args[2],))
 
 elif cmd == 'getAllWorkflows':
   if len(args) != 2:

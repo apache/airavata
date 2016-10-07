@@ -31,11 +31,12 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "USER_RESOURCE_PROFILE")
 public class UserResourceProfile implements Serializable {
+
     @Id
     @Column(name = "USER_ID")
     private String userId;
 
-    @Id
+
     @Column(name = "GATEWAY_ID")
     private String gatewayID;
 
@@ -77,6 +78,10 @@ public class UserResourceProfile implements Serializable {
 
     public String getUserID() {
         return gatewayID;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public void setGatewayID(String gatewayID) {

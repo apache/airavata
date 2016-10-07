@@ -26,14 +26,13 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "USER_STORAGE_PREFERENCE")
-@IdClass(StoragePreferencePK.class)
+@IdClass(UserStoragePreferencePK.class)
 public class UserStoragePreference {
     @Id
     @Column(name = "USER_ID")
     private String userId;
-    @Id
     @Column(name = "GATEWAY_ID")
-    private String gatewayId;
+    private String gatewayID;
     @Id
     @Column(name = "STORAGE_RESOURCE_ID")
     private String storageResourceId;
@@ -45,7 +44,7 @@ public class UserStoragePreference {
     private String computeResourceCSToken;
 
     @ManyToOne(cascade= CascadeType.MERGE)
-    @JoinColumn(name = "GATEWAY_ID")
+    @JoinColumn(name = "USER_ID")
     private UserResourceProfile userResourceProfile;
 
     public String getUserId() {
@@ -56,12 +55,12 @@ public class UserStoragePreference {
         this.userId = userId;
     }
 
-    public String getGatewayId() {
-        return gatewayId;
+    public String getGatewayID() {
+        return gatewayID;
     }
 
-    public void setGatewayId(String gatewayId) {
-        this.gatewayId = gatewayId;
+    public void setGatewayID(String gatewayID) {
+        this.gatewayID = gatewayID;
     }
 
     public UserResourceProfile getUserResourceProfile() {

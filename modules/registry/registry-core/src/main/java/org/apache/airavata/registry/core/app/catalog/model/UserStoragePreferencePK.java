@@ -26,7 +26,6 @@ import java.io.Serializable;
 public class UserStoragePreferencePK implements Serializable {
 
     private String userId;
-    private String gatewayId;
     private String storageResourceId;
 
     public UserStoragePreferencePK(String userId, String storageResourceId) {
@@ -53,14 +52,6 @@ public class UserStoragePreferencePK implements Serializable {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public String getGatewayId() {
-        return gatewayId;
-    }
-
-    public void setGatewayId(String gatewayId) {
-        this.gatewayId = gatewayId;
     }
 
     public String getStorageResourceId() {

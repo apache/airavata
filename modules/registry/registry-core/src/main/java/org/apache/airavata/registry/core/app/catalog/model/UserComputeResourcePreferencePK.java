@@ -24,13 +24,11 @@ package org.apache.airavata.registry.core.app.catalog.model;
 import java.io.Serializable;
 
 public class UserComputeResourcePreferencePK implements Serializable {
-    private String gatewayId;
     private String resourceId;
     private String userId;
 
-    public UserComputeResourcePreferencePK(String userId, String gatewayId, String resourceId) {
+    public UserComputeResourcePreferencePK(String userId, String resourceId) {
         this.userId = userId;
-        this.gatewayId = gatewayId;
         this.resourceId = resourceId;
     }
 
@@ -53,14 +51,6 @@ public class UserComputeResourcePreferencePK implements Serializable {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public String getGatewayId() {
-        return gatewayId;
-    }
-
-    public void setGatewayId(String gatewayId) {
-        this.gatewayId = gatewayId;
     }
 
     public String getResourceId() {

@@ -29,19 +29,18 @@ import org.apache.airavata.registry.core.app.catalog.util.AppCatalogJPAUtils;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogQueryGenerator;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogResourceType;
 import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class UserStoragePreferenceResource extends AppCatAbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(UserStoragePreferenceResource.class);
-    private String gatewayId;
+    private String gatewayID;
     private String userId;
     private String storageResourceId;
     private String loginUserName;
@@ -68,11 +67,11 @@ public class UserStoragePreferenceResource extends AppCatAbstractResource {
     }
 
     public String getGatewayId() {
-        return gatewayId;
+        return gatewayID;
     }
 
-    public void setGatewayId(String gatewayId) {
-        this.gatewayId = gatewayId;
+    public void setGatewayId(String gatewayID) {
+        this.gatewayID = gatewayID;
     }
 
     public UserResourceProfileResource getUserResourceProfileResource() {
@@ -109,12 +108,12 @@ public class UserStoragePreferenceResource extends AppCatAbstractResource {
 
     @Override
     public void remove(Object identifier) throws AppCatalogException {
-        HashMap<String, String> ids;
-        if (identifier instanceof Map) {
-            ids = (HashMap) identifier;
+        CompositeIdentifier ids;
+        if (identifier instanceof CompositeIdentifier) {
+            ids = (CompositeIdentifier) identifier;
         } else {
-            logger.error("Identifier should be a map with the field name and it's value");
-            throw new AppCatalogException("Identifier should be a map with the field name and it's value");
+            logger.error("Identifier should be a instance of CompositeIdentifier class");
+            throw new AppCatalogException("Identifier should be a instance of CompositeIdentifier class");
         }
 
         EntityManager em = null;
@@ -122,8 +121,8 @@ public class UserStoragePreferenceResource extends AppCatAbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(USER_STORAGE_PREFERENCE);
-            generator.setParameter(UserStoragePreferenceConstants.STORAGE_ID, ids.get(UserStoragePreferenceConstants.STORAGE_ID));
-            generator.setParameter(UserStoragePreferenceConstants.USER_ID, ids.get(UserStoragePreferenceConstants.USER_ID));
+            generator.setParameter(UserStoragePreferenceConstants.STORAGE_ID, ids.getTopLevelIdentifier().toString());
+            generator.setParameter(UserStoragePreferenceConstants.USER_ID, ids.getSecondLevelIdentifier().toString());
 
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
@@ -149,12 +148,12 @@ public class UserStoragePreferenceResource extends AppCatAbstractResource {
 
     @Override
     public AppCatalogResource get(Object identifier) throws AppCatalogException {
-        HashMap<String, String> ids;
-        if (identifier instanceof Map) {
-            ids = (HashMap) identifier;
+        CompositeIdentifier ids;
+        if (identifier instanceof CompositeIdentifier) {
+            ids = (CompositeIdentifier) identifier;
         } else {
-            logger.error("Identifier should be a map with the field name and it's value");
-            throw new AppCatalogException("Identifier should be a map with the field name and it's value");
+            logger.error("Identifier should be a instance of CompositeIdentifier class");
+            throw new AppCatalogException("Identifier should be a instance of CompositeIdentifier class");
         }
 
         EntityManager em = null;
@@ -162,8 +161,8 @@ public class UserStoragePreferenceResource extends AppCatAbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(USER_STORAGE_PREFERENCE);
-            generator.setParameter(UserStoragePreferenceConstants.USER_ID, ids.get(UserStoragePreferenceConstants.USER_ID));
-            generator.setParameter(UserStoragePreferenceConstants.STORAGE_ID, ids.get(UserStoragePreferenceConstants.STORAGE_ID));
+            generator.setParameter(UserStoragePreferenceConstants.USER_ID, ids.getTopLevelIdentifier().toString());
+            generator.setParameter(UserStoragePreferenceConstants.STORAGE_ID, ids.getSecondLevelIdentifier().toString());
             Query q = generator.selectQuery(em);
             UserStoragePreference preference = (UserStoragePreference) q.getSingleResult();
             UserStoragePreferenceResource preferenceResource =
@@ -216,7 +215,15 @@ public class UserStoragePreferenceResource extends AppCatAbstractResource {
                     }
                 }
             } else if (fieldName.equals(UserStoragePreferenceConstants.USER_ID)) {
-                generator.setParameter(UserStoragePreferenceConstants.USER_ID, value);
+                CompositeIdentifier ids;
+                if (value instanceof CompositeIdentifier) {
+                    ids = (CompositeIdentifier) value;
+                } else {
+                    logger.error("Identifier should be a instance of CompositeIdentifier class");
+                    throw new AppCatalogException("Identifier should be a instance of CompositeIdentifier class");
+                }
+                generator.setParameter(UserStoragePreferenceConstants.USER_ID, ids.getTopLevelIdentifier().toString());
+                generator.setParameter(UserStoragePreferenceConstants.GATEWAY_ID, ids.getSecondLevelIdentifier().toString());
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
@@ -295,8 +302,8 @@ public class UserStoragePreferenceResource extends AppCatAbstractResource {
             UserResourceProfile userResourceProfile = em.find(UserResourceProfile.class, userId);
             if (existingPreference != null) {
                 existingPreference.setStorageResourceId(storageResourceId);
-                existingPreference.setGatewayId(userId);
-                existingPreference.setGatewayId(gatewayId);
+                existingPreference.setGatewayID(userId);
+                existingPreference.setGatewayID(gatewayID);
                 existingPreference.setUserResourceProfile(userResourceProfile);
                 existingPreference.setLoginUserName(loginUserName);
                 existingPreference.setComputeResourceCSToken(resourceCSToken);
@@ -305,8 +312,8 @@ public class UserStoragePreferenceResource extends AppCatAbstractResource {
             } else {
                 UserStoragePreference resourcePreference = new UserStoragePreference();
                 resourcePreference.setStorageResourceId(storageResourceId);
-                resourcePreference.setGatewayId(gatewayId);
-                resourcePreference.setGatewayId(userId);
+                resourcePreference.setGatewayID(gatewayID);
+                resourcePreference.setGatewayID(userId);
                 resourcePreference.setUserResourceProfile(userResourceProfile);
                 resourcePreference.setLoginUserName(loginUserName);
                 resourcePreference.setComputeResourceCSToken(resourceCSToken);
@@ -335,20 +342,20 @@ public class UserStoragePreferenceResource extends AppCatAbstractResource {
 
     @Override
     public boolean isExists(Object identifier) throws AppCatalogException {
-        HashMap<String, String> ids;
-        if (identifier instanceof Map) {
-            ids = (HashMap) identifier;
+        CompositeIdentifier ids;
+        if (identifier instanceof CompositeIdentifier) {
+            ids = (CompositeIdentifier) identifier;
         } else {
-            logger.error("Identifier should be a map with the field name and it's value");
-            throw new AppCatalogException("Identifier should be a map with the field name and it's value");
+            logger.error("Identifier should be a instance of CompositeIdentifier class");
+            throw new AppCatalogException("Identifier should be a instance of CompositeIdentifier class");
         }
 
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             UserStoragePreference existingPreference = em.find(UserStoragePreference.class,
-                    new UserStoragePreferencePK(ids.get(UserStoragePreferenceConstants.USER_ID),
-                            ids.get(UserStoragePreferenceConstants.STORAGE_ID)));
+                    new UserStoragePreferencePK(ids.getTopLevelIdentifier().toString(),
+                            ids.getSecondLevelIdentifier().toString()));
             if (em.isOpen()) {
                 if (em.getTransaction().isActive()){
                     em.getTransaction().rollback();

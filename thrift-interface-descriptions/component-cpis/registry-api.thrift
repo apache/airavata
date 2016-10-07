@@ -2194,6 +2194,40 @@ service RegistryService {
                            3: required string userStorageResourceId)
                      throws (1: registry_api_errors.RegistryServiceException rse)
 
+                            /**
+                              *
+                              * Fetch all User Compute Resource Preferences of a registered user resource profile.
+                              *
+                              * @param userId
+                              *
+                              * @param gatewayID
+                              *   The identifier for the gateway profile to be requested
+                              *
+                              * @return computeResourcePreference
+                              *   Returns the ComputeResourcePreference object.
+                              *
+                             */
+                             list<user_resource_profile_model.UserComputeResourcePreference>
+                                       getAllUserComputeResourcePreferences(1: required string userId,
+                                       2: required string gatewayID)
+                               throws (1: registry_api_errors.RegistryServiceException rse)
+
+                             /**
+                             * Fetch all User Storage Resource Preferences of a registered user resource profile.
+                             *
+                             * @param gatewayID
+                             *   The identifier for the gateway profile to be requested
+                             *
+                             * @return StoragePreference
+                             *   Returns the StoragePreference object.
+                             *
+                            */
+
+                             list<user_resource_profile_model.UserStoragePreference>
+                                         getAllUserStoragePreferences(1: required string userId,
+                                         2: required string gatewayID)
+                                   throws (1: registry_api_errors.RegistryServiceException rse)
+
 
                /**
                *

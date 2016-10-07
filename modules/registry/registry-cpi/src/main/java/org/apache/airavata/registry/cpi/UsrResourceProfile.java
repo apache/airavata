@@ -83,5 +83,8 @@ public interface UsrResourceProfile {
      */
     String getUserNamefromID(String userId, String gatewayID) throws AppCatalogException;
 
+    List<UserComputeResourcePreference> getAllUserComputeResourcePreferences (String userId, String gatewayId) throws AppCatalogException;
+    List<UserStoragePreference> getAllUserStoragePreferences(String userId, String gatewayId) throws AppCatalogException;
+
     List<UserResourceProfile> getAllUserResourceProfiles() throws AppCatalogException;
 }

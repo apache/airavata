@@ -2825,10 +2825,278 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Delete the Storage Resource Preference of a registered gateway profile.
+   * Register User Resource Profile.
    * 
-   * @param gatewayID
-   *   The identifier of the gateway profile to be deleted.
+   * @param UserResourceProfile
+   *    User Resource Profile Object.
+   *    The userId should be obtained from Airavata user profile data model and passed to register a corresponding
+   *      resource profile.
+   * 
+   * @return status
+   *   Returns a success/failure of the update.
+   * 
+   * 
+   * @param authzToken
+   * @param userResourceProfile
+   */
+  void registerUserResourceProfile(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::userresourceprofile::UserResourceProfile& userResourceProfile) {
+    // Your implementation goes here
+    printf("registerUserResourceProfile\n");
+  }
+
+  /**
+   * Fetch the given User Resource Profile.
+   * 
+   * @param userId
+   *   The identifier for the requested user resource profile.
+   * 
+   * @return UserResourceProfile
+   *    User Resource Profile Object.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   */
+  void getUserResourceProfile( ::apache::airavata::model::appcatalog::userresourceprofile::UserResourceProfile& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId) {
+    // Your implementation goes here
+    printf("getUserResourceProfile\n");
+  }
+
+  /**
+   * Update a User Resource Profile.
+   * 
+   * @param userId
+   *   The identifier for the requested user resource to be updated.
+   * 
+   * @param UserResourceProfile
+   *    User Resource Profile Object.
+   * 
+   * @return status
+   *   Returns a success/failure of the update.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param userResourceProfile
+   */
+  bool updateUserResourceProfile(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const  ::apache::airavata::model::appcatalog::userresourceprofile::UserResourceProfile& userResourceProfile) {
+    // Your implementation goes here
+    printf("updateUserResourceProfile\n");
+  }
+
+  /**
+   * Delete the given User Resource Profile.
+   * 
+   * @param userId
+   *   The identifier for the requested user resource to be deleted.
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   */
+  bool deleteUserResourceProfile(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId) {
+    // Your implementation goes here
+    printf("deleteUserResourceProfile\n");
+  }
+
+  /**
+   * Add a Compute Resource Preference to a registered User profile.
+   * 
+   * @param userId
+   *   The identifier for the User resource profile to be added.
+   * 
+   * @param computeResourceId
+   *   Preferences related to a particular compute resource
+   * 
+   * @param computeResourcePreference
+   *   The ComputeResourcePreference object to be added to the resource profile.
+   * 
+   * @return status
+   *   Returns a success/failure of the addition. If a profile already exists, this operation will fail.
+   *    Instead an update should be used.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param computeResourceId
+   * @param computeResourcePreference
+   */
+  bool addUserComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::userresourceprofile::ComputeResourcePreference& computeResourcePreference) {
+    // Your implementation goes here
+    printf("addUserComputeResourcePreference\n");
+  }
+
+  /**
+   * Add a Storage Resource Preference to a registered user resource profile.
+   * 
+   * @param userId
+   *   The identifier of the user resource profile to be added.
+   * 
+   * @param storageResourceId
+   *   Preferences related to a particular compute resource
+   * 
+   * @param computeResourcePreference
+   *   The ComputeResourcePreference object to be added to the resource profile.
+   * 
+   * @return status
+   *   Returns a success/failure of the addition. If a profile already exists, this operation will fail.
+   *    Instead an update should be used.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param storageResourceId
+   * @param storagePreference
+   */
+  bool addUserStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& storageResourceId, const  ::apache::airavata::model::appcatalog::userresourceprofile::StoragePreference& storagePreference) {
+    // Your implementation goes here
+    printf("addUserStoragePreference\n");
+  }
+
+  /**
+   * 
+   * Fetch a Compute Resource Preference of a registered user resource profile.
+   * 
+   * @param userId
+   *   The identifier for the user profile to be requested
+   * 
+   * @param computeResourceId
+   *   Preferences related to a particular compute resource
+   * 
+   * @return computeResourcePreference
+   *   Returns the ComputeResourcePreference object.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param computeResourceId
+   */
+  void getUserComputeResourcePreference( ::apache::airavata::model::appcatalog::userresourceprofile::ComputeResourcePreference& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& computeResourceId) {
+    // Your implementation goes here
+    printf("getUserComputeResourcePreference\n");
+  }
+
+  /**
+   * 
+   * Fetch a Storage Resource Preference of a registered user resource profile.
+   * 
+   * @param userId
+   *   The identifier of the user resource profile to request to fetch the particular storage resource preference.
+   * 
+   * @param storageResourceId
+   *   Identifier of the Stprage Preference required to be fetched.
+   * 
+   * @return StoragePreference
+   *   Returns the StoragePreference object.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param storageResourceId
+   */
+  void getUserStoragePreference( ::apache::airavata::model::appcatalog::userresourceprofile::StoragePreference& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& storageResourceId) {
+    // Your implementation goes here
+    printf("getUserStoragePreference\n");
+  }
+
+  /**
+   * 
+   * Fetch all user resources Profiles registered
+   * 
+   * @return UserResourceProfile
+   *   Returns all the UserResourcePrifle list object.
+   * 
+   * 
+   * 
+   * @param authzToken
+   */
+  void getAllUserResourceProfiles(std::vector< ::apache::airavata::model::appcatalog::userresourceprofile::UserResourceProfile> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
+    // Your implementation goes here
+    printf("getAllUserResourceProfiles\n");
+  }
+
+  /**
+   * Update a Compute Resource Preference to a registered user resource profile.
+   * 
+   * @param userId
+   *   The identifier for the user profile to be updated.
+   * 
+   * @param computeResourceId
+   *   Preferences related to a particular compute resource
+   * 
+   * @param computeResourcePreference
+   *   The ComputeResourcePreference object to be updated to the resource profile.
+   * 
+   * @return status
+   *   Returns a success/failure of the updation.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param computeResourceId
+   * @param computeResourcePreference
+   */
+  bool updateUserComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::userresourceprofile::ComputeResourcePreference& computeResourcePreference) {
+    // Your implementation goes here
+    printf("updateUserComputeResourcePreference\n");
+  }
+
+  /**
+   * Update a Storage Resource Preference of a registered user resource profile.
+   * 
+   * @param userId
+   *   The identifier of the user resource profile to be updated.
+   * 
+   * @param storageId
+   *   The Storage resource identifier of the one that you want to update
+   * 
+   * @param storagePreference
+   *   The storagePreference object to be updated to the resource profile.
+   * 
+   * @return status
+   *   Returns a success/failure of the updation.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param storageId
+   * @param storagePreference
+   */
+  bool updateUserStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& storageId, const  ::apache::airavata::model::appcatalog::userresourceprofile::StoragePreference& storagePreference) {
+    // Your implementation goes here
+    printf("updateUserStoragePreference\n");
+  }
+
+  /**
+   * Delete the Compute Resource Preference of a registered user resource profile.
+   * 
+   * @param userId
+   *   The identifier for the user resource profile to be deleted.
+   * 
+   * @param computeResourceId
+   *   Preferences related to a particular compute resource
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param computeResourceId
+   */
+  bool deleteUserComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& computeResourceId) {
+    // Your implementation goes here
+    printf("deleteUserComputeResourcePreference\n");
+  }
+
+  /**
+   * Delete the Storage Resource Preference of a registered user resource profile.
+   * 
+   * @param userId
+   *   The identifier of the user profile to be deleted.
    * 
    * @param storageId
    *   ID of the storage preference you want to delete.
@@ -2838,8 +3106,14 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * 
    * @param authzToken
-   * @param gatewayId
+   * @param userId
+   * @param storageId
    */
+  bool deleteUserStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& storageId) {
+    // Your implementation goes here
+    printf("deleteUserStoragePreference\n");
+  }
+
   void getAllWorkflows(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllWorkflows\n");

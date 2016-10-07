@@ -26,6 +26,7 @@ import org.apache.airavata.registry.core.app.catalog.util.AppCatalogJPAUtils;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogQueryGenerator;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogResourceType;
 import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,12 +107,19 @@ public class UserResourceProfileResource extends AppCatAbstractResource {
 
     public void remove(Object identifier) throws AppCatalogException {
         EntityManager em = null;
+        CompositeIdentifier ids;
+        if (identifier instanceof CompositeIdentifier) {
+            ids = (CompositeIdentifier) identifier;
+        } else {
+            logger.error("Identifier should be a instance of CompositeIdentifier class");
+            throw new AppCatalogException("Identifier should be a instance of CompositeIdentifier class");
+        }
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(USER_RESOURCE_PROFILE);
-            generator.setParameter(UserResourceProfileConstants.GATEWAY_ID, identifier);
-            generator.setParameter(UserResourceProfileConstants.USER_ID, identifier);
+            generator.setParameter(UserResourceProfileConstants.GATEWAY_ID, ids.getSecondLevelIdentifier().toString());
+            generator.setParameter(UserResourceProfileConstants.USER_ID, ids.getTopLevelIdentifier().toString());
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
@@ -136,11 +144,20 @@ public class UserResourceProfileResource extends AppCatAbstractResource {
 
     public AppCatalogResource get(Object identifier) throws AppCatalogException {
         EntityManager em = null;
+        CompositeIdentifier ids;
+        if (identifier instanceof CompositeIdentifier) {
+            ids = (CompositeIdentifier) identifier;
+        } else {
+            logger.error("Identifier should be a instance of CompositeIdentifier class");
+            throw new AppCatalogException("Identifier should be a instance of CompositeIdentifier class");
+        }
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(USER_RESOURCE_PROFILE);
-            generator.setParameter(UserResourceProfileConstants.USER_ID, identifier);
+            logger.info(userId,"retrieved userId at UserREsourceProfileREsource : " + ids.getTopLevelIdentifier());
+            generator.setParameter(UserResourceProfileConstants.USER_ID, ids.getTopLevelIdentifier().toString());
+            generator.setParameter(UserResourceProfileConstants.GATEWAY_ID, ids.getSecondLevelIdentifier().toString());
             Query q = generator.selectQuery(em);
             UserResourceProfile userResourceProfile = (UserResourceProfile) q.getSingleResult();
             UserResourceProfileResource userResourceProfileResource =
@@ -167,15 +184,15 @@ public class UserResourceProfileResource extends AppCatAbstractResource {
         }
     }
 
-    public List<AppCatalogResource> get(String userId, Object value) throws AppCatalogException {
+    public List<AppCatalogResource> get(String fieldName, Object value) throws AppCatalogException {
         List<AppCatalogResource> userResourceProfileResources = new ArrayList<AppCatalogResource>();
         EntityManager em = null;
-        HashMap<String, String> ids;
-        if (value instanceof Map) {
-            ids = (HashMap) value;
+        CompositeIdentifier ids;
+        if (value instanceof CompositeIdentifier) {
+            ids = (CompositeIdentifier) value;
         } else {
-            logger.error("Identifier should be a map with the field name and it's value");
-            throw new AppCatalogException("Identifier should be a map with the field name and it's value");
+            logger.error("Identifier should be a instance of CompositeIdentifier class");
+            throw new AppCatalogException("Identifier should be a instance of CompositeIdentifier class");
         }
         try {
             em = AppCatalogJPAUtils.getEntityManager();
@@ -183,8 +200,9 @@ public class UserResourceProfileResource extends AppCatAbstractResource {
             Query q;
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(USER_RESOURCE_PROFILE);
             List results;
-            if (userId.equals(UserResourceProfileConstants.USER_ID)) {
-                generator.setParameter(UserResourceProfileConstants.USER_ID, ids.get(UserResourceProfileConstants.USER_ID));
+            if (fieldName.equals(UserResourceProfileConstants.USER_ID)) {
+                generator.setParameter(UserStoragePreferenceConstants.USER_ID, ids.getTopLevelIdentifier().toString());
+                generator.setParameter(UserStoragePreferenceConstants.GATEWAY_ID, ids.getSecondLevelIdentifier().toString());
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
@@ -358,7 +376,7 @@ public class UserResourceProfileResource extends AppCatAbstractResource {
             } else {
                 UserResourceProfile userResourceProfile = new UserResourceProfile();
                 userResourceProfile.setGatewayID(gatewayID);
-                userResourceProfile.setGatewayID(userId);
+                userResourceProfile.setUserId(userId);
                 userResourceProfile.setCreationTime(AiravataUtils.getCurrentTimestamp());
                 if (credentialStoreToken != null){
                     userResourceProfile.setCredentialStoreToken(credentialStoreToken);
@@ -393,23 +411,30 @@ public class UserResourceProfileResource extends AppCatAbstractResource {
 
     public boolean isExists(Object identifier) throws AppCatalogException {
         EntityManager em = null;
-        HashMap<String, String> ids;
-        if (identifier instanceof Map) {
-            ids = (HashMap) identifier;
+        CompositeIdentifier ids;
+        if (identifier instanceof CompositeIdentifier) {
+            ids = (CompositeIdentifier) identifier;
         } else {
-            logger.error("Identifier should be a map with the field name and it's value");
-            throw new AppCatalogException("Identifier should be a map with the field name and it's value");
+            logger.error("Identifier should be a instance of CompositeIdentifier class");
+            throw new AppCatalogException("Identifier should be a instance of CompositeIdentifier class");
         }
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            UserResourceProfile userResourceProfile = em.find(UserResourceProfile.class, ids.get(UserResourceProfileConstants.USER_ID));
+            em.getTransaction().begin();
+            Query q;
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(USER_RESOURCE_PROFILE);
+            List results;
+            generator.setParameter(UserStoragePreferenceConstants.USER_ID, ids.getTopLevelIdentifier().toString());
+            generator.setParameter(UserStoragePreferenceConstants.GATEWAY_ID, ids.getSecondLevelIdentifier().toString());
+            q = generator.selectQuery(em);
+            results = q.getResultList();
             if (em.isOpen()) {
                 if (em.getTransaction().isActive()){
                     em.getTransaction().rollback();
                 }
                 em.close();
             }
-            return userResourceProfile != null;
+            return results != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
