@@ -155,7 +155,6 @@ public class UserResourceProfileResource extends AppCatAbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(USER_RESOURCE_PROFILE);
-            logger.info(userId,"retrieved userId at UserREsourceProfileREsource : " + ids.getTopLevelIdentifier());
             generator.setParameter(UserResourceProfileConstants.USER_ID, ids.getTopLevelIdentifier().toString());
             generator.setParameter(UserResourceProfileConstants.GATEWAY_ID, ids.getSecondLevelIdentifier().toString());
             Query q = generator.selectQuery(em);
@@ -170,6 +169,7 @@ public class UserResourceProfileResource extends AppCatAbstractResource {
                 }
                 em.close();
             }
+            userResourceProfileResource.setUserId(ids.getTopLevelIdentifier().toString());
             return userResourceProfileResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);

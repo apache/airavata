@@ -211,7 +211,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
         public static final String APP_MODULE_ID = "appModuleID";
         public static final String DEPLOYMENT_ID = "deploymentID";
         public static final String COMPUTE_HOST_ID = "hostID";
-        public static final String GATEWAY_ID = "gatewayID";
+        public static final String GATEWAY_ID = "gatewayId";
         public static final String EXECUTABLE_PATH = "executablePath";
         public static final String APPLICATION_DESC = "applicationDesc";
         public static final String ENV_MODULE_LOAD_CMD = "envModuleLoaString";
@@ -239,7 +239,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
     public final class ApplicationInterfaceConstants {
         public static final String INTERFACE_ID = "interfaceID";
         public static final String APPLICATION_NAME = "appName";
-        public static final String GATEWAY_ID = "gatewayID";
+        public static final String GATEWAY_ID = "gatewayId";
     }
 
     public final class AppModuleMappingConstants {
@@ -295,7 +295,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
     }
 
     public final class ComputeResourcePreferenceConstants {
-        public static final String GATEWAY_ID = "gatewayID";
+        public static final String GATEWAY_ID = "gatewayId";
         public static final String RESOURCE_ID = "resourceId";
         public static final String OVERRIDE_BY_AIRAVATA = "overrideByAiravata";
         public static final String PREFERED_JOB_SUB_PROTOCOL = "preferedJobSubmissionProtocol";
@@ -356,7 +356,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
     }
 
     public final class StoragePreferenceConstants {
-        public static final String GATEWAY_ID = "gatewayID";
+        public static final String GATEWAY_ID = "gatewayId";
         public static final String STORAGE_ID = "storageResourceId";
     }
 

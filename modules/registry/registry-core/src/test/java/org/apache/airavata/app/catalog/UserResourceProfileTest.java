@@ -95,13 +95,13 @@ public class UserResourceProfileTest {
         list.add(preference2);
         System.out.println("input list size : " + list.size());
         uf.setUserComputeResourcePreferences(list);
-        uf.setGatewayID("testGateway");
-        uf.setUserId("testUser");
+        uf.setGatewayID("airavataPGA");
+        uf.setUserId("Anuj");
 
         String gwId = userProfile.addUserResourceProfile(uf);
         UserResourceProfile retrievedProfile = null;
-        if (userProfile.isUserResourceProfileExists("testUser","testGateway")){
-            retrievedProfile = userProfile.getUserResourceProfile("testUser","testGateway");
+        if (userProfile.isUserResourceProfileExists(uf.getUserId(),uf.getGatewayID())){
+            retrievedProfile = userProfile.getUserResourceProfile(uf.getUserId(),uf.getGatewayID());
             System.out.println("gateway ID :" + retrievedProfile.getGatewayID());
             System.out.println("user ID : " + retrievedProfile.getUserId());
             System.out.println("compute resource size : " + retrievedProfile.getUserComputeResourcePreferencesSize());
