@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.common.utils;
+package org.apache.airavata.workflow.core;
 
 import java.io.IOException;
 import java.io.StringReader;

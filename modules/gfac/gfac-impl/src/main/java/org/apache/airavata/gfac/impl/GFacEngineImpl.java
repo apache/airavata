@@ -80,6 +80,8 @@ public class GFacEngineImpl implements GFacEngine {
     @Override
     public ProcessContext populateProcessContext(String processId, String gatewayId, String
             tokenId) throws GFacException {
+
+        // NOTE: Process context gives precedence to data come with process Computer resources;
         ProcessContext processContext = new ProcessContext(processId, gatewayId, tokenId);
         try {
             AppCatalog appCatalog = Factory.getDefaultAppCatalog();
@@ -195,6 +197,9 @@ public class GFacEngineImpl implements GFacEngine {
                 }
                 processContext.setJobModel(((JobModel) jobModels.get(0)));
             }
+
+
+
             return processContext;
         } catch (AppCatalogException e) {
             String msg = "App catalog access exception ";

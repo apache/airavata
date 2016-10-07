@@ -186,6 +186,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  bool deleteGroup(AuthzToken authzToken, string groupId, string ownerId, string gatewayId)')
   print('  GroupModel getGroup(AuthzToken authzToken, string groupId)')
   print('   getAllGroupsUserBelongs(AuthzToken authzToken, string userName, string gatewayId)')
+  print('  bool isDataSharingEnabled()')
   print('')
   sys.exit(0)
 
@@ -1213,6 +1214,12 @@ elif cmd == 'getAllGroupsUserBelongs':
     print('getAllGroupsUserBelongs requires 3 args')
     sys.exit(1)
   pp.pprint(client.getAllGroupsUserBelongs(eval(args[0]),args[1],args[2],))
+
+elif cmd == 'isDataSharingEnabled':
+  if len(args) != 0:
+    print('isDataSharingEnabled requires 0 args')
+    sys.exit(1)
+  pp.pprint(client.isDataSharingEnabled())
 
 else:
   print('Unrecognized method %s' % cmd)

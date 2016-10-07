@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.common.utils;
+package org.apache.airavata.workflow.core;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,6 +39,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.utils.IOUtil;
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;

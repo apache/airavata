@@ -3187,6 +3187,9 @@ class Iface:
     """
     pass
 
+  def isDataSharingEnabled(self):
+    pass
+
 
 class Client(Iface):
   def __init__(self, iprot, oprot=None):
@@ -11344,6 +11347,7 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getDataProduct failed: unknown result")
 
+<<<<<<< HEAD
   def registerReplicaLocation(self, authzToken, replicaLocationModel):
     """
     Parameters:
@@ -11361,6 +11365,197 @@ class Client(Iface):
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
+=======
+  def isDataSharingEnabled(self):
+    self.send_isDataSharingEnabled()
+    return self.recv_isDataSharingEnabled()
+
+  def send_isDataSharingEnabled(self):
+    self._oprot.writeMessageBegin('isDataSharingEnabled', TMessageType.CALL, self._seqid)
+    args = isDataSharingEnabled_args()
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_isDataSharingEnabled(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = isDataSharingEnabled_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "isDataSharingEnabled failed: unknown result")
+
+
+class Processor(Iface, TProcessor):
+  def __init__(self, handler):
+    self._handler = handler
+    self._processMap = {}
+    self._processMap["getAPIVersion"] = Processor.process_getAPIVersion
+    self._processMap["isUserExists"] = Processor.process_isUserExists
+    self._processMap["addGateway"] = Processor.process_addGateway
+    self._processMap["getAllUsersInGateway"] = Processor.process_getAllUsersInGateway
+    self._processMap["updateGateway"] = Processor.process_updateGateway
+    self._processMap["getGateway"] = Processor.process_getGateway
+    self._processMap["deleteGateway"] = Processor.process_deleteGateway
+    self._processMap["getAllGateways"] = Processor.process_getAllGateways
+    self._processMap["isGatewayExist"] = Processor.process_isGatewayExist
+    self._processMap["createNotification"] = Processor.process_createNotification
+    self._processMap["updateNotification"] = Processor.process_updateNotification
+    self._processMap["deleteNotification"] = Processor.process_deleteNotification
+    self._processMap["getNotification"] = Processor.process_getNotification
+    self._processMap["getAllNotifications"] = Processor.process_getAllNotifications
+    self._processMap["generateAndRegisterSSHKeys"] = Processor.process_generateAndRegisterSSHKeys
+    self._processMap["registerPwdCredential"] = Processor.process_registerPwdCredential
+    self._processMap["getSSHPubKey"] = Processor.process_getSSHPubKey
+    self._processMap["getAllGatewaySSHPubKeys"] = Processor.process_getAllGatewaySSHPubKeys
+    self._processMap["getAllGatewayPWDCredentials"] = Processor.process_getAllGatewayPWDCredentials
+    self._processMap["deleteSSHPubKey"] = Processor.process_deleteSSHPubKey
+    self._processMap["deletePWDCredential"] = Processor.process_deletePWDCredential
+    self._processMap["createProject"] = Processor.process_createProject
+    self._processMap["updateProject"] = Processor.process_updateProject
+    self._processMap["getProject"] = Processor.process_getProject
+    self._processMap["deleteProject"] = Processor.process_deleteProject
+    self._processMap["getUserProjects"] = Processor.process_getUserProjects
+    self._processMap["searchProjects"] = Processor.process_searchProjects
+    self._processMap["searchExperiments"] = Processor.process_searchExperiments
+    self._processMap["getExperimentStatistics"] = Processor.process_getExperimentStatistics
+    self._processMap["getExperimentsInProject"] = Processor.process_getExperimentsInProject
+    self._processMap["getUserExperiments"] = Processor.process_getUserExperiments
+    self._processMap["createExperiment"] = Processor.process_createExperiment
+    self._processMap["deleteExperiment"] = Processor.process_deleteExperiment
+    self._processMap["getExperiment"] = Processor.process_getExperiment
+    self._processMap["getDetailedExperimentTree"] = Processor.process_getDetailedExperimentTree
+    self._processMap["updateExperiment"] = Processor.process_updateExperiment
+    self._processMap["updateExperimentConfiguration"] = Processor.process_updateExperimentConfiguration
+    self._processMap["updateResourceScheduleing"] = Processor.process_updateResourceScheduleing
+    self._processMap["validateExperiment"] = Processor.process_validateExperiment
+    self._processMap["launchExperiment"] = Processor.process_launchExperiment
+    self._processMap["getExperimentStatus"] = Processor.process_getExperimentStatus
+    self._processMap["getExperimentOutputs"] = Processor.process_getExperimentOutputs
+    self._processMap["getIntermediateOutputs"] = Processor.process_getIntermediateOutputs
+    self._processMap["getJobStatuses"] = Processor.process_getJobStatuses
+    self._processMap["getJobDetails"] = Processor.process_getJobDetails
+    self._processMap["cloneExperiment"] = Processor.process_cloneExperiment
+    self._processMap["terminateExperiment"] = Processor.process_terminateExperiment
+    self._processMap["registerApplicationModule"] = Processor.process_registerApplicationModule
+    self._processMap["getApplicationModule"] = Processor.process_getApplicationModule
+    self._processMap["updateApplicationModule"] = Processor.process_updateApplicationModule
+    self._processMap["getAllAppModules"] = Processor.process_getAllAppModules
+    self._processMap["deleteApplicationModule"] = Processor.process_deleteApplicationModule
+    self._processMap["registerApplicationDeployment"] = Processor.process_registerApplicationDeployment
+    self._processMap["getApplicationDeployment"] = Processor.process_getApplicationDeployment
+    self._processMap["updateApplicationDeployment"] = Processor.process_updateApplicationDeployment
+    self._processMap["deleteApplicationDeployment"] = Processor.process_deleteApplicationDeployment
+    self._processMap["getAllApplicationDeployments"] = Processor.process_getAllApplicationDeployments
+    self._processMap["getAppModuleDeployedResources"] = Processor.process_getAppModuleDeployedResources
+    self._processMap["registerApplicationInterface"] = Processor.process_registerApplicationInterface
+    self._processMap["cloneApplicationInterface"] = Processor.process_cloneApplicationInterface
+    self._processMap["getApplicationInterface"] = Processor.process_getApplicationInterface
+    self._processMap["updateApplicationInterface"] = Processor.process_updateApplicationInterface
+    self._processMap["deleteApplicationInterface"] = Processor.process_deleteApplicationInterface
+    self._processMap["getAllApplicationInterfaceNames"] = Processor.process_getAllApplicationInterfaceNames
+    self._processMap["getAllApplicationInterfaces"] = Processor.process_getAllApplicationInterfaces
+    self._processMap["getApplicationInputs"] = Processor.process_getApplicationInputs
+    self._processMap["getApplicationOutputs"] = Processor.process_getApplicationOutputs
+    self._processMap["getAvailableAppInterfaceComputeResources"] = Processor.process_getAvailableAppInterfaceComputeResources
+    self._processMap["registerComputeResource"] = Processor.process_registerComputeResource
+    self._processMap["getComputeResource"] = Processor.process_getComputeResource
+    self._processMap["getAllComputeResourceNames"] = Processor.process_getAllComputeResourceNames
+    self._processMap["updateComputeResource"] = Processor.process_updateComputeResource
+    self._processMap["deleteComputeResource"] = Processor.process_deleteComputeResource
+    self._processMap["registerStorageResource"] = Processor.process_registerStorageResource
+    self._processMap["getStorageResource"] = Processor.process_getStorageResource
+    self._processMap["getAllStorageResourceNames"] = Processor.process_getAllStorageResourceNames
+    self._processMap["updateStorageResource"] = Processor.process_updateStorageResource
+    self._processMap["deleteStorageResource"] = Processor.process_deleteStorageResource
+    self._processMap["addLocalSubmissionDetails"] = Processor.process_addLocalSubmissionDetails
+    self._processMap["updateLocalSubmissionDetails"] = Processor.process_updateLocalSubmissionDetails
+    self._processMap["getLocalJobSubmission"] = Processor.process_getLocalJobSubmission
+    self._processMap["addSSHJobSubmissionDetails"] = Processor.process_addSSHJobSubmissionDetails
+    self._processMap["addSSHForkJobSubmissionDetails"] = Processor.process_addSSHForkJobSubmissionDetails
+    self._processMap["getSSHJobSubmission"] = Processor.process_getSSHJobSubmission
+    self._processMap["addUNICOREJobSubmissionDetails"] = Processor.process_addUNICOREJobSubmissionDetails
+    self._processMap["getUnicoreJobSubmission"] = Processor.process_getUnicoreJobSubmission
+    self._processMap["addCloudJobSubmissionDetails"] = Processor.process_addCloudJobSubmissionDetails
+    self._processMap["getCloudJobSubmission"] = Processor.process_getCloudJobSubmission
+    self._processMap["updateSSHJobSubmissionDetails"] = Processor.process_updateSSHJobSubmissionDetails
+    self._processMap["updateCloudJobSubmissionDetails"] = Processor.process_updateCloudJobSubmissionDetails
+    self._processMap["updateUnicoreJobSubmissionDetails"] = Processor.process_updateUnicoreJobSubmissionDetails
+    self._processMap["addLocalDataMovementDetails"] = Processor.process_addLocalDataMovementDetails
+    self._processMap["updateLocalDataMovementDetails"] = Processor.process_updateLocalDataMovementDetails
+    self._processMap["getLocalDataMovement"] = Processor.process_getLocalDataMovement
+    self._processMap["addSCPDataMovementDetails"] = Processor.process_addSCPDataMovementDetails
+    self._processMap["updateSCPDataMovementDetails"] = Processor.process_updateSCPDataMovementDetails
+    self._processMap["getSCPDataMovement"] = Processor.process_getSCPDataMovement
+    self._processMap["addUnicoreDataMovementDetails"] = Processor.process_addUnicoreDataMovementDetails
+    self._processMap["updateUnicoreDataMovementDetails"] = Processor.process_updateUnicoreDataMovementDetails
+    self._processMap["getUnicoreDataMovement"] = Processor.process_getUnicoreDataMovement
+    self._processMap["addGridFTPDataMovementDetails"] = Processor.process_addGridFTPDataMovementDetails
+    self._processMap["updateGridFTPDataMovementDetails"] = Processor.process_updateGridFTPDataMovementDetails
+    self._processMap["getGridFTPDataMovement"] = Processor.process_getGridFTPDataMovement
+    self._processMap["changeJobSubmissionPriority"] = Processor.process_changeJobSubmissionPriority
+    self._processMap["changeDataMovementPriority"] = Processor.process_changeDataMovementPriority
+    self._processMap["changeJobSubmissionPriorities"] = Processor.process_changeJobSubmissionPriorities
+    self._processMap["changeDataMovementPriorities"] = Processor.process_changeDataMovementPriorities
+    self._processMap["deleteJobSubmissionInterface"] = Processor.process_deleteJobSubmissionInterface
+    self._processMap["deleteDataMovementInterface"] = Processor.process_deleteDataMovementInterface
+    self._processMap["registerResourceJobManager"] = Processor.process_registerResourceJobManager
+    self._processMap["updateResourceJobManager"] = Processor.process_updateResourceJobManager
+    self._processMap["getResourceJobManager"] = Processor.process_getResourceJobManager
+    self._processMap["deleteResourceJobManager"] = Processor.process_deleteResourceJobManager
+    self._processMap["deleteBatchQueue"] = Processor.process_deleteBatchQueue
+    self._processMap["registerGatewayResourceProfile"] = Processor.process_registerGatewayResourceProfile
+    self._processMap["getGatewayResourceProfile"] = Processor.process_getGatewayResourceProfile
+    self._processMap["updateGatewayResourceProfile"] = Processor.process_updateGatewayResourceProfile
+    self._processMap["deleteGatewayResourceProfile"] = Processor.process_deleteGatewayResourceProfile
+    self._processMap["addGatewayComputeResourcePreference"] = Processor.process_addGatewayComputeResourcePreference
+    self._processMap["addGatewayStoragePreference"] = Processor.process_addGatewayStoragePreference
+    self._processMap["getGatewayComputeResourcePreference"] = Processor.process_getGatewayComputeResourcePreference
+    self._processMap["getGatewayStoragePreference"] = Processor.process_getGatewayStoragePreference
+    self._processMap["getAllGatewayComputeResourcePreferences"] = Processor.process_getAllGatewayComputeResourcePreferences
+    self._processMap["getAllGatewayStoragePreferences"] = Processor.process_getAllGatewayStoragePreferences
+    self._processMap["getAllGatewayResourceProfiles"] = Processor.process_getAllGatewayResourceProfiles
+    self._processMap["updateGatewayComputeResourcePreference"] = Processor.process_updateGatewayComputeResourcePreference
+    self._processMap["updateGatewayStoragePreference"] = Processor.process_updateGatewayStoragePreference
+    self._processMap["deleteGatewayComputeResourcePreference"] = Processor.process_deleteGatewayComputeResourcePreference
+    self._processMap["deleteGatewayStoragePreference"] = Processor.process_deleteGatewayStoragePreference
+    self._processMap["getAllWorkflows"] = Processor.process_getAllWorkflows
+    self._processMap["getWorkflow"] = Processor.process_getWorkflow
+    self._processMap["deleteWorkflow"] = Processor.process_deleteWorkflow
+    self._processMap["registerWorkflow"] = Processor.process_registerWorkflow
+    self._processMap["updateWorkflow"] = Processor.process_updateWorkflow
+    self._processMap["getWorkflowTemplateId"] = Processor.process_getWorkflowTemplateId
+    self._processMap["isWorkflowExistWithName"] = Processor.process_isWorkflowExistWithName
+    self._processMap["registerDataProduct"] = Processor.process_registerDataProduct
+    self._processMap["getDataProduct"] = Processor.process_getDataProduct
+    self._processMap["registerReplicaLocation"] = Processor.process_registerReplicaLocation
+    self._processMap["getParentDataProduct"] = Processor.process_getParentDataProduct
+    self._processMap["getChildDataProducts"] = Processor.process_getChildDataProducts
+    self._processMap["shareResourceWithUsers"] = Processor.process_shareResourceWithUsers
+    self._processMap["revokeSharingOfResourceFromUsers"] = Processor.process_revokeSharingOfResourceFromUsers
+    self._processMap["getAllAccessibleUsers"] = Processor.process_getAllAccessibleUsers
+    self._processMap["createGroup"] = Processor.process_createGroup
+    self._processMap["updateGroup"] = Processor.process_updateGroup
+    self._processMap["deleteGroup"] = Processor.process_deleteGroup
+    self._processMap["getGroup"] = Processor.process_getGroup
+    self._processMap["getAllGroupsUserBelongs"] = Processor.process_getAllGroupsUserBelongs
+    self._processMap["isDataSharingEnabled"] = Processor.process_isDataSharingEnabled
+>>>>>>> upstream/develop
 
   def recv_registerReplicaLocation(self):
     iprot = self._iprot
@@ -18869,10 +19064,44 @@ class isGatewayExist_result:
     value = (value * 31) ^ hash(self.ae)
     return value
 
+<<<<<<< HEAD
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+=======
+  def process_isDataSharingEnabled(self, seqid, iprot, oprot):
+    args = isDataSharingEnabled_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = isDataSharingEnabled_result()
+    try:
+      result.success = self._handler.isDataSharingEnabled()
+      msg_type = TMessageType.REPLY
+    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+      raise
+    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
+      msg_type = TMessageType.REPLY
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
+      msg_type = TMessageType.REPLY
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
+      msg_type = TMessageType.REPLY
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException as ae:
+      msg_type = TMessageType.REPLY
+      result.ae = ae
+    except Exception as ex:
+      msg_type = TMessageType.EXCEPTION
+      logging.exception(ex)
+      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+    oprot.writeMessageBegin("isDataSharingEnabled", msg_type, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+>>>>>>> upstream/develop
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -51994,6 +52223,172 @@ class getAllGroupsUserBelongs_result:
       for iter291 in self.success:
         iter291.write(oprot)
       oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class isDataSharingEnabled_args:
+
+  thrift_spec = (
+  )
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('isDataSharingEnabled_args')
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class isDataSharingEnabled_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.BOOL, 'success', None, None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.BOOL:
+          self.success = iprot.readBool()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('isDataSharingEnabled_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.BOOL, 0)
+      oprot.writeBool(self.success)
       oprot.writeFieldEnd()
     if self.ire is not None:
       oprot.writeFieldBegin('ire', TType.STRUCT, 1)

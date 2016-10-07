@@ -20,9 +20,8 @@
 */
 package org.apache.airavata.gfac.impl.job;
 
-import org.apache.airavata.gfac.core.JobDescriptor;
-import org.apache.airavata.gfac.core.cluster.OutputParser;
 import org.apache.airavata.gfac.core.SSHApiException;
+import org.apache.airavata.gfac.core.cluster.OutputParser;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.slf4j.Logger;
@@ -37,13 +36,6 @@ import java.util.regex.Pattern;
 
 public class LSFOutputParser implements OutputParser {
     private final static Logger logger = LoggerFactory.getLogger(LSFOutputParser.class);
-
-    @Override
-    public void parseSingleJob(JobDescriptor jobDescriptor, String rawOutput) throws SSHApiException {
-        logger.debug(rawOutput);
-        //todo we need to implement this but we are not using it airavata runtime
-        // if someone is using the gsissh as a tool this will be useful to get a descriptive information about a single job
-    }
 
     @Override
     public String parseJobSubmission(String rawOutput) throws SSHApiException {

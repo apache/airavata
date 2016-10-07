@@ -26,7 +26,6 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.workflow.model.exceptions.UtilsException;
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
