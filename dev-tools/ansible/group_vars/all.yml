@@ -2,7 +2,7 @@
 ansible_connection: ssh
 # ansible_ssh_user: centos
 ansible_ssh_user: root
-ansible_ssh_private_key_file: /Users/syodage/Projects/airavata-ansible/dev-deployment-key.pem
+ansible_ssh_private_key_file: /Users/supun/Desktop/shameera-key.pem
 # ansible_ssh_private_key_file: /Users/syodage/Projects/airavata-ansible/shameera-aws.pem.txt
 
 user: centos
@@ -14,7 +14,8 @@ deployment_dir: "{{ user_home }}/dev-deployment"
 airavata_source_dir: "{{ user_home }}/source"
 airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
 airavata_dist_name: "{{ airavata_dist }}-bin.tar.gz"
-git_branch: develop
+git_branch: airavata-gov-registry
+#git_branch: develop
 
 # Database related variables
 db_server: "{{ groups['database'][0] }}"
@@ -24,6 +25,7 @@ db_password: "airavata"
 app_catalog: "app_catalog"
 exp_catalog: "exp_catalog"
 replica_catalog: "replica_catalog"
+sharing_catalog: "sharing_catalog"
 workflow_catalog: "wf_catalog"
 credential_store: "credential_store"
 
@@ -47,7 +49,7 @@ api_server_port: "8930"
 api_secured: "false"
 tls_enable: "false"
 api_server_tls_port: "9930"
-enable_sharing: "false"
+enable_sharing: "true"
 
 # Orchestrator  related variables
 orchestrator_name: "orchestrator-node0"

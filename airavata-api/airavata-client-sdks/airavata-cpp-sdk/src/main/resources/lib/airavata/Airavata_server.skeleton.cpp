@@ -2850,14 +2850,18 @@ class AiravataHandler : virtual public AiravataIf {
    * @param userId
    *   The identifier for the requested user resource profile.
    * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
    * @return UserResourceProfile
    *    User Resource Profile Object.
    * 
    * 
    * @param authzToken
    * @param userId
+   * @param gatewayID
    */
-  void getUserResourceProfile( ::apache::airavata::model::appcatalog::userresourceprofile::UserResourceProfile& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId) {
+  void getUserResourceProfile( ::apache::airavata::model::appcatalog::userresourceprofile::UserResourceProfile& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID) {
     // Your implementation goes here
     printf("getUserResourceProfile\n");
   }
@@ -2868,6 +2872,9 @@ class AiravataHandler : virtual public AiravataIf {
    * @param userId
    *   The identifier for the requested user resource to be updated.
    * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
    * @param UserResourceProfile
    *    User Resource Profile Object.
    * 
@@ -2877,9 +2884,10 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * @param authzToken
    * @param userId
+   * @param gatewayID
    * @param userResourceProfile
    */
-  bool updateUserResourceProfile(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const  ::apache::airavata::model::appcatalog::userresourceprofile::UserResourceProfile& userResourceProfile) {
+  bool updateUserResourceProfile(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID, const  ::apache::airavata::model::appcatalog::userresourceprofile::UserResourceProfile& userResourceProfile) {
     // Your implementation goes here
     printf("updateUserResourceProfile\n");
   }
@@ -2890,14 +2898,18 @@ class AiravataHandler : virtual public AiravataIf {
    * @param userId
    *   The identifier for the requested user resource to be deleted.
    * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
    * @return status
    *   Returns a success/failure of the deletion.
    * 
    * 
    * @param authzToken
    * @param userId
+   * @param gatewayID
    */
-  bool deleteUserResourceProfile(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId) {
+  bool deleteUserResourceProfile(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID) {
     // Your implementation goes here
     printf("deleteUserResourceProfile\n");
   }
@@ -2908,6 +2920,9 @@ class AiravataHandler : virtual public AiravataIf {
    * @param userId
    *   The identifier for the User resource profile to be added.
    * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
    * @param computeResourceId
    *   Preferences related to a particular compute resource
    * 
@@ -2921,10 +2936,11 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * @param authzToken
    * @param userId
-   * @param computeResourceId
-   * @param computeResourcePreference
+   * @param gatewayID
+   * @param userComputeResourceId
+   * @param userComputeResourcePreference
    */
-  bool addUserComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::userresourceprofile::ComputeResourcePreference& computeResourcePreference) {
+  bool addUserComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID, const std::string& userComputeResourceId, const  ::apache::airavata::model::appcatalog::userresourceprofile::UserComputeResourcePreference& userComputeResourcePreference) {
     // Your implementation goes here
     printf("addUserComputeResourcePreference\n");
   }
@@ -2935,6 +2951,9 @@ class AiravataHandler : virtual public AiravataIf {
    * @param userId
    *   The identifier of the user resource profile to be added.
    * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
    * @param storageResourceId
    *   Preferences related to a particular compute resource
    * 
@@ -2948,10 +2967,11 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * @param authzToken
    * @param userId
-   * @param storageResourceId
-   * @param storagePreference
+   * @param gatewayID
+   * @param userStorageResourceId
+   * @param userStoragePreference
    */
-  bool addUserStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& storageResourceId, const  ::apache::airavata::model::appcatalog::userresourceprofile::StoragePreference& storagePreference) {
+  bool addUserStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID, const std::string& userStorageResourceId, const  ::apache::airavata::model::appcatalog::userresourceprofile::UserStoragePreference& userStoragePreference) {
     // Your implementation goes here
     printf("addUserStoragePreference\n");
   }
@@ -2963,7 +2983,10 @@ class AiravataHandler : virtual public AiravataIf {
    * @param userId
    *   The identifier for the user profile to be requested
    * 
-   * @param computeResourceId
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param userComputeResourceId
    *   Preferences related to a particular compute resource
    * 
    * @return computeResourcePreference
@@ -2972,9 +2995,10 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * @param authzToken
    * @param userId
-   * @param computeResourceId
+   * @param gatewayID
+   * @param userComputeResourceId
    */
-  void getUserComputeResourcePreference( ::apache::airavata::model::appcatalog::userresourceprofile::ComputeResourcePreference& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& computeResourceId) {
+  void getUserComputeResourcePreference( ::apache::airavata::model::appcatalog::userresourceprofile::UserComputeResourcePreference& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID, const std::string& userComputeResourceId) {
     // Your implementation goes here
     printf("getUserComputeResourcePreference\n");
   }
@@ -2986,8 +3010,57 @@ class AiravataHandler : virtual public AiravataIf {
    * @param userId
    *   The identifier of the user resource profile to request to fetch the particular storage resource preference.
    * 
-   * @param storageResourceId
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param userStorageResourceId
    *   Identifier of the Stprage Preference required to be fetched.
+   * 
+   * @return UserStoragePreference
+   *   Returns the StoragePreference object.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param gatewayID
+   * @param userStorageResourceId
+   */
+  void getUserStoragePreference( ::apache::airavata::model::appcatalog::userresourceprofile::UserStoragePreference& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID, const std::string& userStorageResourceId) {
+    // Your implementation goes here
+    printf("getUserStoragePreference\n");
+  }
+
+  /**
+   * 
+   * Fetch all Compute Resource Preferences of a registered gateway profile.
+   * 
+   * @param userId
+   *   The identifier of the user resource profile to request to fetch the particular storage resource preference.
+   * 
+   * @param gatewayID
+   *   The identifier for the gateway profile to be requested
+   * 
+   * @return computeResourcePreference
+   *   Returns the ComputeResourcePreference object.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param gatewayID
+   */
+  void getAllUserComputeResourcePreferences(std::vector< ::apache::airavata::model::appcatalog::userresourceprofile::UserComputeResourcePreference> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID) {
+    // Your implementation goes here
+    printf("getAllUserComputeResourcePreferences\n");
+  }
+
+  /**
+   * Fetch all User Storage Resource Preferences of a registered user profile.
+   * 
+   * @param userId
+   *   The identifier of the user resource profile to request to fetch the particular storage resource preference.
+   * 
+   * @param gatewayID
+   *   The identifier for the gateway profile to be requested
    * 
    * @return StoragePreference
    *   Returns the StoragePreference object.
@@ -2995,11 +3068,11 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * @param authzToken
    * @param userId
-   * @param storageResourceId
+   * @param gatewayID
    */
-  void getUserStoragePreference( ::apache::airavata::model::appcatalog::userresourceprofile::StoragePreference& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& storageResourceId) {
+  void getAllUserStoragePreferences(std::vector< ::apache::airavata::model::appcatalog::userresourceprofile::UserStoragePreference> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID) {
     // Your implementation goes here
-    printf("getUserStoragePreference\n");
+    printf("getAllUserStoragePreferences\n");
   }
 
   /**
@@ -3024,10 +3097,13 @@ class AiravataHandler : virtual public AiravataIf {
    * @param userId
    *   The identifier for the user profile to be updated.
    * 
-   * @param computeResourceId
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param userComputeResourceId
    *   Preferences related to a particular compute resource
    * 
-   * @param computeResourcePreference
+   * @param userComputeResourcePreference
    *   The ComputeResourcePreference object to be updated to the resource profile.
    * 
    * @return status
@@ -3036,10 +3112,11 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * @param authzToken
    * @param userId
-   * @param computeResourceId
-   * @param computeResourcePreference
+   * @param gatewayID
+   * @param userComputeResourceId
+   * @param userComputeResourcePreference
    */
-  bool updateUserComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::userresourceprofile::ComputeResourcePreference& computeResourcePreference) {
+  bool updateUserComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID, const std::string& userComputeResourceId, const  ::apache::airavata::model::appcatalog::userresourceprofile::UserComputeResourcePreference& userComputeResourcePreference) {
     // Your implementation goes here
     printf("updateUserComputeResourcePreference\n");
   }
@@ -3050,10 +3127,13 @@ class AiravataHandler : virtual public AiravataIf {
    * @param userId
    *   The identifier of the user resource profile to be updated.
    * 
-   * @param storageId
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param userStorageId
    *   The Storage resource identifier of the one that you want to update
    * 
-   * @param storagePreference
+   * @param userStoragePreference
    *   The storagePreference object to be updated to the resource profile.
    * 
    * @return status
@@ -3062,10 +3142,11 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * @param authzToken
    * @param userId
-   * @param storageId
-   * @param storagePreference
+   * @param gatewayID
+   * @param userStorageId
+   * @param userStoragePreference
    */
-  bool updateUserStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& storageId, const  ::apache::airavata::model::appcatalog::userresourceprofile::StoragePreference& storagePreference) {
+  bool updateUserStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID, const std::string& userStorageId, const  ::apache::airavata::model::appcatalog::userresourceprofile::UserStoragePreference& userStoragePreference) {
     // Your implementation goes here
     printf("updateUserStoragePreference\n");
   }
@@ -3076,7 +3157,10 @@ class AiravataHandler : virtual public AiravataIf {
    * @param userId
    *   The identifier for the user resource profile to be deleted.
    * 
-   * @param computeResourceId
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param userComputeResourceId
    *   Preferences related to a particular compute resource
    * 
    * @return status
@@ -3085,9 +3169,10 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * @param authzToken
    * @param userId
-   * @param computeResourceId
+   * @param gatewayID
+   * @param userComputeResourceId
    */
-  bool deleteUserComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& computeResourceId) {
+  bool deleteUserComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID, const std::string& userComputeResourceId) {
     // Your implementation goes here
     printf("deleteUserComputeResourcePreference\n");
   }
@@ -3098,7 +3183,10 @@ class AiravataHandler : virtual public AiravataIf {
    * @param userId
    *   The identifier of the user profile to be deleted.
    * 
-   * @param storageId
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param userStorageId
    *   ID of the storage preference you want to delete.
    * 
    * @return status
@@ -3107,9 +3195,10 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * @param authzToken
    * @param userId
-   * @param storageId
+   * @param gatewayID
+   * @param userStorageId
    */
-  bool deleteUserStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& storageId) {
+  bool deleteUserStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID, const std::string& userStorageId) {
     // Your implementation goes here
     printf("deleteUserStoragePreference\n");
   }
@@ -3236,11 +3325,6 @@ class AiravataHandler : virtual public AiravataIf {
   void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllGroupsUserBelongs\n");
-  }
-
-  bool isDataSharingEnabled() {
-    // Your implementation goes here
-    printf("isDataSharingEnabled\n");
   }
 
 };
