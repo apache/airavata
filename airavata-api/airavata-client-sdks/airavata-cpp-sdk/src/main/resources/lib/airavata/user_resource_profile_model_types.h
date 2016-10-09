@@ -39,14 +39,14 @@
 
 namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace userresourceprofile {
 
-class ComputeResourcePreference;
+class UserComputeResourcePreference;
 
-class StoragePreference;
+class UserStoragePreference;
 
 class UserResourceProfile;
 
-typedef struct _ComputeResourcePreference__isset {
-  _ComputeResourcePreference__isset() : loginUserName(false), preferredBatchQueue(false), scratchLocation(false), allocationProjectNumber(false), resourceSpecificCredentialStoreToken(false), qualityOfService(false), reservation(false), reservationStartTime(false), reservationEndTime(false) {}
+typedef struct _UserComputeResourcePreference__isset {
+  _UserComputeResourcePreference__isset() : loginUserName(false), preferredBatchQueue(false), scratchLocation(false), allocationProjectNumber(false), resourceSpecificCredentialStoreToken(false), qualityOfService(false), reservation(false), reservationStartTime(false), reservationEndTime(false) {}
   bool loginUserName :1;
   bool preferredBatchQueue :1;
   bool scratchLocation :1;
@@ -56,17 +56,17 @@ typedef struct _ComputeResourcePreference__isset {
   bool reservation :1;
   bool reservationStartTime :1;
   bool reservationEndTime :1;
-} _ComputeResourcePreference__isset;
+} _UserComputeResourcePreference__isset;
 
-class ComputeResourcePreference {
+class UserComputeResourcePreference {
  public:
 
-  ComputeResourcePreference(const ComputeResourcePreference&);
-  ComputeResourcePreference& operator=(const ComputeResourcePreference&);
-  ComputeResourcePreference() : computeResourceId(), loginUserName(), preferredBatchQueue(), scratchLocation(), allocationProjectNumber(), resourceSpecificCredentialStoreToken(), qualityOfService(), reservation(), reservationStartTime(0), reservationEndTime(0) {
+  UserComputeResourcePreference(const UserComputeResourcePreference&);
+  UserComputeResourcePreference& operator=(const UserComputeResourcePreference&);
+  UserComputeResourcePreference() : computeResourceId(), loginUserName(), preferredBatchQueue(), scratchLocation(), allocationProjectNumber(), resourceSpecificCredentialStoreToken(), qualityOfService(), reservation(), reservationStartTime(0), reservationEndTime(0) {
   }
 
-  virtual ~ComputeResourcePreference() throw();
+  virtual ~UserComputeResourcePreference() throw();
   std::string computeResourceId;
   std::string loginUserName;
   std::string preferredBatchQueue;
@@ -78,7 +78,7 @@ class ComputeResourcePreference {
   int64_t reservationStartTime;
   int64_t reservationEndTime;
 
-  _ComputeResourcePreference__isset __isset;
+  _UserComputeResourcePreference__isset __isset;
 
   void __set_computeResourceId(const std::string& val);
 
@@ -100,7 +100,7 @@ class ComputeResourcePreference {
 
   void __set_reservationEndTime(const int64_t val);
 
-  bool operator == (const ComputeResourcePreference & rhs) const
+  bool operator == (const UserComputeResourcePreference & rhs) const
   {
     if (!(computeResourceId == rhs.computeResourceId))
       return false;
@@ -142,11 +142,11 @@ class ComputeResourcePreference {
       return false;
     return true;
   }
-  bool operator != (const ComputeResourcePreference &rhs) const {
+  bool operator != (const UserComputeResourcePreference &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const ComputeResourcePreference & ) const;
+  bool operator < (const UserComputeResourcePreference & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -154,36 +154,36 @@ class ComputeResourcePreference {
   virtual void printTo(std::ostream& out) const;
 };
 
-void swap(ComputeResourcePreference &a, ComputeResourcePreference &b);
+void swap(UserComputeResourcePreference &a, UserComputeResourcePreference &b);
 
-inline std::ostream& operator<<(std::ostream& out, const ComputeResourcePreference& obj)
+inline std::ostream& operator<<(std::ostream& out, const UserComputeResourcePreference& obj)
 {
   obj.printTo(out);
   return out;
 }
 
-typedef struct _StoragePreference__isset {
-  _StoragePreference__isset() : loginUserName(false), fileSystemRootLocation(false), resourceSpecificCredentialStoreToken(false) {}
+typedef struct _UserStoragePreference__isset {
+  _UserStoragePreference__isset() : loginUserName(false), fileSystemRootLocation(false), resourceSpecificCredentialStoreToken(false) {}
   bool loginUserName :1;
   bool fileSystemRootLocation :1;
   bool resourceSpecificCredentialStoreToken :1;
-} _StoragePreference__isset;
+} _UserStoragePreference__isset;
 
-class StoragePreference {
+class UserStoragePreference {
  public:
 
-  StoragePreference(const StoragePreference&);
-  StoragePreference& operator=(const StoragePreference&);
-  StoragePreference() : storageResourceId(), loginUserName(), fileSystemRootLocation(), resourceSpecificCredentialStoreToken() {
+  UserStoragePreference(const UserStoragePreference&);
+  UserStoragePreference& operator=(const UserStoragePreference&);
+  UserStoragePreference() : storageResourceId(), loginUserName(), fileSystemRootLocation(), resourceSpecificCredentialStoreToken() {
   }
 
-  virtual ~StoragePreference() throw();
+  virtual ~UserStoragePreference() throw();
   std::string storageResourceId;
   std::string loginUserName;
   std::string fileSystemRootLocation;
   std::string resourceSpecificCredentialStoreToken;
 
-  _StoragePreference__isset __isset;
+  _UserStoragePreference__isset __isset;
 
   void __set_storageResourceId(const std::string& val);
 
@@ -193,7 +193,7 @@ class StoragePreference {
 
   void __set_resourceSpecificCredentialStoreToken(const std::string& val);
 
-  bool operator == (const StoragePreference & rhs) const
+  bool operator == (const UserStoragePreference & rhs) const
   {
     if (!(storageResourceId == rhs.storageResourceId))
       return false;
@@ -211,11 +211,11 @@ class StoragePreference {
       return false;
     return true;
   }
-  bool operator != (const StoragePreference &rhs) const {
+  bool operator != (const UserStoragePreference &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const StoragePreference & ) const;
+  bool operator < (const UserStoragePreference & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -223,19 +223,19 @@ class StoragePreference {
   virtual void printTo(std::ostream& out) const;
 };
 
-void swap(StoragePreference &a, StoragePreference &b);
+void swap(UserStoragePreference &a, UserStoragePreference &b);
 
-inline std::ostream& operator<<(std::ostream& out, const StoragePreference& obj)
+inline std::ostream& operator<<(std::ostream& out, const UserStoragePreference& obj)
 {
   obj.printTo(out);
   return out;
 }
 
 typedef struct _UserResourceProfile__isset {
-  _UserResourceProfile__isset() : credentialStoreToken(false), computeResourcePreferences(false), storagePreferences(false), identityServerTenant(false), identityServerPwdCredToken(false) {}
+  _UserResourceProfile__isset() : credentialStoreToken(false), userComputeResourcePreferences(false), userStoragePreferences(false), identityServerTenant(false), identityServerPwdCredToken(false) {}
   bool credentialStoreToken :1;
-  bool computeResourcePreferences :1;
-  bool storagePreferences :1;
+  bool userComputeResourcePreferences :1;
+  bool userStoragePreferences :1;
   bool identityServerTenant :1;
   bool identityServerPwdCredToken :1;
 } _UserResourceProfile__isset;
@@ -245,14 +245,15 @@ class UserResourceProfile {
 
   UserResourceProfile(const UserResourceProfile&);
   UserResourceProfile& operator=(const UserResourceProfile&);
-  UserResourceProfile() : userId(), credentialStoreToken(), identityServerTenant(), identityServerPwdCredToken() {
+  UserResourceProfile() : userId(), gatewayID(), credentialStoreToken(), identityServerTenant(), identityServerPwdCredToken() {
   }
 
   virtual ~UserResourceProfile() throw();
   std::string userId;
+  std::string gatewayID;
   std::string credentialStoreToken;
-  std::vector<ComputeResourcePreference>  computeResourcePreferences;
-  std::vector<StoragePreference>  storagePreferences;
+  std::vector<UserComputeResourcePreference>  userComputeResourcePreferences;
+  std::vector<UserStoragePreference>  userStoragePreferences;
   std::string identityServerTenant;
   std::string identityServerPwdCredToken;
 
@@ -260,11 +261,13 @@ class UserResourceProfile {
 
   void __set_userId(const std::string& val);
 
+  void __set_gatewayID(const std::string& val);
+
   void __set_credentialStoreToken(const std::string& val);
 
-  void __set_computeResourcePreferences(const std::vector<ComputeResourcePreference> & val);
+  void __set_userComputeResourcePreferences(const std::vector<UserComputeResourcePreference> & val);
 
-  void __set_storagePreferences(const std::vector<StoragePreference> & val);
+  void __set_userStoragePreferences(const std::vector<UserStoragePreference> & val);
 
   void __set_identityServerTenant(const std::string& val);
 
@@ -274,17 +277,19 @@ class UserResourceProfile {
   {
     if (!(userId == rhs.userId))
       return false;
+    if (!(gatewayID == rhs.gatewayID))
+      return false;
     if (__isset.credentialStoreToken != rhs.__isset.credentialStoreToken)
       return false;
     else if (__isset.credentialStoreToken && !(credentialStoreToken == rhs.credentialStoreToken))
       return false;
-    if (__isset.computeResourcePreferences != rhs.__isset.computeResourcePreferences)
+    if (__isset.userComputeResourcePreferences != rhs.__isset.userComputeResourcePreferences)
       return false;
-    else if (__isset.computeResourcePreferences && !(computeResourcePreferences == rhs.computeResourcePreferences))
+    else if (__isset.userComputeResourcePreferences && !(userComputeResourcePreferences == rhs.userComputeResourcePreferences))
       return false;
-    if (__isset.storagePreferences != rhs.__isset.storagePreferences)
+    if (__isset.userStoragePreferences != rhs.__isset.userStoragePreferences)
       return false;
-    else if (__isset.storagePreferences && !(storagePreferences == rhs.storagePreferences))
+    else if (__isset.userStoragePreferences && !(userStoragePreferences == rhs.userStoragePreferences))
       return false;
     if (__isset.identityServerTenant != rhs.__isset.identityServerTenant)
       return false;

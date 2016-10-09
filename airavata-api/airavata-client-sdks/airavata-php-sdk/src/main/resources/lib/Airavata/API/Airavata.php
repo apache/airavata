@@ -3255,13 +3255,20 @@ interface AiravataIf {
    * @param userId
    *   The identifier for the requested user resource profile.
    * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
    * @return UserResourceProfile
    *    User Resource Profile Object.
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $userId
-   * @return \Airavata\Model\AppCatalog\UserResourceProfile\UserResourceProfile Gateway Resource Profile
+   * @param string $gatewayID
+   * @return \Airavata\Model\AppCatalog\UserResourceProfile\UserResourceProfile User Resource Profile
+   * 
+   * userId:
+   * Unique identifier used to link user to corresponding user data model
    * 
    * gatewayID:
    *  Unique identifier for the gateway assigned by Airavata. Corelate this to Airavata Admin API Gateway Registration.
@@ -3282,12 +3289,15 @@ interface AiravataIf {
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function getUserResourceProfile(\Airavata\Model\Security\AuthzToken $authzToken, $userId);
+  public function getUserResourceProfile(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID);
   /**
    * Update a User Resource Profile.
    * 
    * @param userId
    *   The identifier for the requested user resource to be updated.
+   * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
    * 
    * @param UserResourceProfile
    *    User Resource Profile Object.
@@ -3298,6 +3308,7 @@ interface AiravataIf {
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $userId
+   * @param string $gatewayID
    * @param \Airavata\Model\AppCatalog\UserResourceProfile\UserResourceProfile $userResourceProfile
    * @return bool
    * @throws \Airavata\API\Error\InvalidRequestException
@@ -3305,12 +3316,15 @@ interface AiravataIf {
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function updateUserResourceProfile(\Airavata\Model\Security\AuthzToken $authzToken, $userId, \Airavata\Model\AppCatalog\UserResourceProfile\UserResourceProfile $userResourceProfile);
+  public function updateUserResourceProfile(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, \Airavata\Model\AppCatalog\UserResourceProfile\UserResourceProfile $userResourceProfile);
   /**
    * Delete the given User Resource Profile.
    * 
    * @param userId
    *   The identifier for the requested user resource to be deleted.
+   * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
    * 
    * @return status
    *   Returns a success/failure of the deletion.
@@ -3318,18 +3332,22 @@ interface AiravataIf {
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $userId
+   * @param string $gatewayID
    * @return bool
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function deleteUserResourceProfile(\Airavata\Model\Security\AuthzToken $authzToken, $userId);
+  public function deleteUserResourceProfile(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID);
   /**
    * Add a Compute Resource Preference to a registered User profile.
    * 
    * @param userId
    *   The identifier for the User resource profile to be added.
+   * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
    * 
    * @param computeResourceId
    *   Preferences related to a particular compute resource
@@ -3344,20 +3362,24 @@ interface AiravataIf {
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $userId
-   * @param string $computeResourceId
-   * @param \Airavata\Model\AppCatalog\UserResourceProfile\ComputeResourcePreference $computeResourcePreference
+   * @param string $gatewayID
+   * @param string $userComputeResourceId
+   * @param \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference $userComputeResourcePreference
    * @return bool
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function addUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $computeResourceId, \Airavata\Model\AppCatalog\UserResourceProfile\ComputeResourcePreference $computeResourcePreference);
+  public function addUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userComputeResourceId, \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference $userComputeResourcePreference);
   /**
    * Add a Storage Resource Preference to a registered user resource profile.
    * 
    * @param userId
    *   The identifier of the user resource profile to be added.
+   * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
    * 
    * @param storageResourceId
    *   Preferences related to a particular compute resource
@@ -3372,15 +3394,16 @@ interface AiravataIf {
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $userId
-   * @param string $storageResourceId
-   * @param \Airavata\Model\AppCatalog\UserResourceProfile\StoragePreference $storagePreference
+   * @param string $gatewayID
+   * @param string $userStorageResourceId
+   * @param \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference $userStoragePreference
    * @return bool
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function addUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $storageResourceId, \Airavata\Model\AppCatalog\UserResourceProfile\StoragePreference $storagePreference);
+  public function addUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userStorageResourceId, \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference $userStoragePreference);
   /**
    * 
    * Fetch a Compute Resource Preference of a registered user resource profile.
@@ -3388,7 +3411,10 @@ interface AiravataIf {
    * @param userId
    *   The identifier for the user profile to be requested
    * 
-   * @param computeResourceId
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param userComputeResourceId
    *   Preferences related to a particular compute resource
    * 
    * @return computeResourcePreference
@@ -3397,8 +3423,9 @@ interface AiravataIf {
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $userId
-   * @param string $computeResourceId
-   * @return \Airavata\Model\AppCatalog\UserResourceProfile\ComputeResourcePreference Gateway specific preferences for a Computer Resource
+   * @param string $gatewayID
+   * @param string $userComputeResourceId
+   * @return \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference User specific preferences for a Computer Resource
    * 
    * computeResourceId:
    *   Corelate the preference to a compute resource.
@@ -3429,7 +3456,7 @@ interface AiravataIf {
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function getUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $computeResourceId);
+  public function getUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userComputeResourceId);
   /**
    * 
    * Fetch a Storage Resource Preference of a registered user resource profile.
@@ -3437,8 +3464,59 @@ interface AiravataIf {
    * @param userId
    *   The identifier of the user resource profile to request to fetch the particular storage resource preference.
    * 
-   * @param storageResourceId
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param userStorageResourceId
    *   Identifier of the Stprage Preference required to be fetched.
+   * 
+   * @return UserStoragePreference
+   *   Returns the StoragePreference object.
+   * 
+   * 
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @param string $userId
+   * @param string $gatewayID
+   * @param string $userStorageResourceId
+   * @return \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference
+   * @throws \Airavata\API\Error\InvalidRequestException
+   * @throws \Airavata\API\Error\AiravataClientException
+   * @throws \Airavata\API\Error\AiravataSystemException
+   * @throws \Airavata\API\Error\AuthorizationException
+   */
+  public function getUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userStorageResourceId);
+  /**
+   * 
+   * Fetch all Compute Resource Preferences of a registered gateway profile.
+   * 
+   * @param userId
+   *   The identifier of the user resource profile to request to fetch the particular storage resource preference.
+   * 
+   * @param gatewayID
+   *   The identifier for the gateway profile to be requested
+   * 
+   * @return computeResourcePreference
+   *   Returns the ComputeResourcePreference object.
+   * 
+   * 
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @param string $userId
+   * @param string $gatewayID
+   * @return \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference[]
+   * @throws \Airavata\API\Error\InvalidRequestException
+   * @throws \Airavata\API\Error\AiravataClientException
+   * @throws \Airavata\API\Error\AiravataSystemException
+   * @throws \Airavata\API\Error\AuthorizationException
+   */
+  public function getAllUserComputeResourcePreferences(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID);
+  /**
+   * Fetch all User Storage Resource Preferences of a registered user profile.
+   * 
+   * @param userId
+   *   The identifier of the user resource profile to request to fetch the particular storage resource preference.
+   * 
+   * @param gatewayID
+   *   The identifier for the gateway profile to be requested
    * 
    * @return StoragePreference
    *   Returns the StoragePreference object.
@@ -3446,14 +3524,14 @@ interface AiravataIf {
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $userId
-   * @param string $storageResourceId
-   * @return \Airavata\Model\AppCatalog\UserResourceProfile\StoragePreference
+   * @param string $gatewayID
+   * @return \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference[]
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function getUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $storageResourceId);
+  public function getAllUserStoragePreferences(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID);
   /**
    * 
    * Fetch all user resources Profiles registered
@@ -3477,10 +3555,13 @@ interface AiravataIf {
    * @param userId
    *   The identifier for the user profile to be updated.
    * 
-   * @param computeResourceId
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param userComputeResourceId
    *   Preferences related to a particular compute resource
    * 
-   * @param computeResourcePreference
+   * @param userComputeResourcePreference
    *   The ComputeResourcePreference object to be updated to the resource profile.
    * 
    * @return status
@@ -3489,25 +3570,29 @@ interface AiravataIf {
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $userId
-   * @param string $computeResourceId
-   * @param \Airavata\Model\AppCatalog\UserResourceProfile\ComputeResourcePreference $computeResourcePreference
+   * @param string $gatewayID
+   * @param string $userComputeResourceId
+   * @param \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference $userComputeResourcePreference
    * @return bool
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function updateUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $computeResourceId, \Airavata\Model\AppCatalog\UserResourceProfile\ComputeResourcePreference $computeResourcePreference);
+  public function updateUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userComputeResourceId, \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference $userComputeResourcePreference);
   /**
    * Update a Storage Resource Preference of a registered user resource profile.
    * 
    * @param userId
    *   The identifier of the user resource profile to be updated.
    * 
-   * @param storageId
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param userStorageId
    *   The Storage resource identifier of the one that you want to update
    * 
-   * @param storagePreference
+   * @param userStoragePreference
    *   The storagePreference object to be updated to the resource profile.
    * 
    * @return status
@@ -3516,22 +3601,26 @@ interface AiravataIf {
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $userId
-   * @param string $storageId
-   * @param \Airavata\Model\AppCatalog\UserResourceProfile\StoragePreference $storagePreference
+   * @param string $gatewayID
+   * @param string $userStorageId
+   * @param \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference $userStoragePreference
    * @return bool
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function updateUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $storageId, \Airavata\Model\AppCatalog\UserResourceProfile\StoragePreference $storagePreference);
+  public function updateUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userStorageId, \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference $userStoragePreference);
   /**
    * Delete the Compute Resource Preference of a registered user resource profile.
    * 
    * @param userId
    *   The identifier for the user resource profile to be deleted.
    * 
-   * @param computeResourceId
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param userComputeResourceId
    *   Preferences related to a particular compute resource
    * 
    * @return status
@@ -3540,21 +3629,25 @@ interface AiravataIf {
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $userId
-   * @param string $computeResourceId
+   * @param string $gatewayID
+   * @param string $userComputeResourceId
    * @return bool
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function deleteUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $computeResourceId);
+  public function deleteUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userComputeResourceId);
   /**
    * Delete the Storage Resource Preference of a registered user resource profile.
    * 
    * @param userId
    *   The identifier of the user profile to be deleted.
    * 
-   * @param storageId
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param userStorageId
    *   ID of the storage preference you want to delete.
    * 
    * @return status
@@ -3563,14 +3656,15 @@ interface AiravataIf {
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $userId
-   * @param string $storageId
+   * @param string $gatewayID
+   * @param string $userStorageId
    * @return bool
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function deleteUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $storageId);
+  public function deleteUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userStorageId);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayId
@@ -3790,14 +3884,6 @@ interface AiravataIf {
    * @throws \Airavata\API\Error\AuthorizationException
    */
   public function getAllGroupsUserBelongs(\Airavata\Model\Security\AuthzToken $authzToken, $userName, $gatewayId);
-  /**
-   * @return bool
-   * @throws \Airavata\API\Error\InvalidRequestException
-   * @throws \Airavata\API\Error\AiravataClientException
-   * @throws \Airavata\API\Error\AiravataSystemException
-   * @throws \Airavata\API\Error\AuthorizationException
-   */
-  public function isDataSharingEnabled();
 }
 
 class AiravataClient implements \Airavata\API\AiravataIf {
@@ -12216,17 +12302,18 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("registerUserResourceProfile failed: unknown result");
   }
 
-  public function getUserResourceProfile(\Airavata\Model\Security\AuthzToken $authzToken, $userId)
+  public function getUserResourceProfile(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID)
   {
-    $this->send_getUserResourceProfile($authzToken, $userId);
+    $this->send_getUserResourceProfile($authzToken, $userId, $gatewayID);
     return $this->recv_getUserResourceProfile();
   }
 
-  public function send_getUserResourceProfile(\Airavata\Model\Security\AuthzToken $authzToken, $userId)
+  public function send_getUserResourceProfile(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID)
   {
     $args = new \Airavata\API\Airavata_getUserResourceProfile_args();
     $args->authzToken = $authzToken;
     $args->userId = $userId;
+    $args->gatewayID = $gatewayID;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -12280,17 +12367,18 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getUserResourceProfile failed: unknown result");
   }
 
-  public function updateUserResourceProfile(\Airavata\Model\Security\AuthzToken $authzToken, $userId, \Airavata\Model\AppCatalog\UserResourceProfile\UserResourceProfile $userResourceProfile)
+  public function updateUserResourceProfile(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, \Airavata\Model\AppCatalog\UserResourceProfile\UserResourceProfile $userResourceProfile)
   {
-    $this->send_updateUserResourceProfile($authzToken, $userId, $userResourceProfile);
+    $this->send_updateUserResourceProfile($authzToken, $userId, $gatewayID, $userResourceProfile);
     return $this->recv_updateUserResourceProfile();
   }
 
-  public function send_updateUserResourceProfile(\Airavata\Model\Security\AuthzToken $authzToken, $userId, \Airavata\Model\AppCatalog\UserResourceProfile\UserResourceProfile $userResourceProfile)
+  public function send_updateUserResourceProfile(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, \Airavata\Model\AppCatalog\UserResourceProfile\UserResourceProfile $userResourceProfile)
   {
     $args = new \Airavata\API\Airavata_updateUserResourceProfile_args();
     $args->authzToken = $authzToken;
     $args->userId = $userId;
+    $args->gatewayID = $gatewayID;
     $args->userResourceProfile = $userResourceProfile;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -12345,17 +12433,18 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("updateUserResourceProfile failed: unknown result");
   }
 
-  public function deleteUserResourceProfile(\Airavata\Model\Security\AuthzToken $authzToken, $userId)
+  public function deleteUserResourceProfile(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID)
   {
-    $this->send_deleteUserResourceProfile($authzToken, $userId);
+    $this->send_deleteUserResourceProfile($authzToken, $userId, $gatewayID);
     return $this->recv_deleteUserResourceProfile();
   }
 
-  public function send_deleteUserResourceProfile(\Airavata\Model\Security\AuthzToken $authzToken, $userId)
+  public function send_deleteUserResourceProfile(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID)
   {
     $args = new \Airavata\API\Airavata_deleteUserResourceProfile_args();
     $args->authzToken = $authzToken;
     $args->userId = $userId;
+    $args->gatewayID = $gatewayID;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -12409,19 +12498,20 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("deleteUserResourceProfile failed: unknown result");
   }
 
-  public function addUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $computeResourceId, \Airavata\Model\AppCatalog\UserResourceProfile\ComputeResourcePreference $computeResourcePreference)
+  public function addUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userComputeResourceId, \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference $userComputeResourcePreference)
   {
-    $this->send_addUserComputeResourcePreference($authzToken, $userId, $computeResourceId, $computeResourcePreference);
+    $this->send_addUserComputeResourcePreference($authzToken, $userId, $gatewayID, $userComputeResourceId, $userComputeResourcePreference);
     return $this->recv_addUserComputeResourcePreference();
   }
 
-  public function send_addUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $computeResourceId, \Airavata\Model\AppCatalog\UserResourceProfile\ComputeResourcePreference $computeResourcePreference)
+  public function send_addUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userComputeResourceId, \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference $userComputeResourcePreference)
   {
     $args = new \Airavata\API\Airavata_addUserComputeResourcePreference_args();
     $args->authzToken = $authzToken;
     $args->userId = $userId;
-    $args->computeResourceId = $computeResourceId;
-    $args->computeResourcePreference = $computeResourcePreference;
+    $args->gatewayID = $gatewayID;
+    $args->userComputeResourceId = $userComputeResourceId;
+    $args->userComputeResourcePreference = $userComputeResourcePreference;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -12475,19 +12565,20 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("addUserComputeResourcePreference failed: unknown result");
   }
 
-  public function addUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $storageResourceId, \Airavata\Model\AppCatalog\UserResourceProfile\StoragePreference $storagePreference)
+  public function addUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userStorageResourceId, \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference $userStoragePreference)
   {
-    $this->send_addUserStoragePreference($authzToken, $userId, $storageResourceId, $storagePreference);
+    $this->send_addUserStoragePreference($authzToken, $userId, $gatewayID, $userStorageResourceId, $userStoragePreference);
     return $this->recv_addUserStoragePreference();
   }
 
-  public function send_addUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $storageResourceId, \Airavata\Model\AppCatalog\UserResourceProfile\StoragePreference $storagePreference)
+  public function send_addUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userStorageResourceId, \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference $userStoragePreference)
   {
     $args = new \Airavata\API\Airavata_addUserStoragePreference_args();
     $args->authzToken = $authzToken;
     $args->userId = $userId;
-    $args->storageResourceId = $storageResourceId;
-    $args->storagePreference = $storagePreference;
+    $args->gatewayID = $gatewayID;
+    $args->userStorageResourceId = $userStorageResourceId;
+    $args->userStoragePreference = $userStoragePreference;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -12541,18 +12632,19 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("addUserStoragePreference failed: unknown result");
   }
 
-  public function getUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $computeResourceId)
+  public function getUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userComputeResourceId)
   {
-    $this->send_getUserComputeResourcePreference($authzToken, $userId, $computeResourceId);
+    $this->send_getUserComputeResourcePreference($authzToken, $userId, $gatewayID, $userComputeResourceId);
     return $this->recv_getUserComputeResourcePreference();
   }
 
-  public function send_getUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $computeResourceId)
+  public function send_getUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userComputeResourceId)
   {
     $args = new \Airavata\API\Airavata_getUserComputeResourcePreference_args();
     $args->authzToken = $authzToken;
     $args->userId = $userId;
-    $args->computeResourceId = $computeResourceId;
+    $args->gatewayID = $gatewayID;
+    $args->userComputeResourceId = $userComputeResourceId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -12606,18 +12698,19 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getUserComputeResourcePreference failed: unknown result");
   }
 
-  public function getUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $storageResourceId)
+  public function getUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userStorageResourceId)
   {
-    $this->send_getUserStoragePreference($authzToken, $userId, $storageResourceId);
+    $this->send_getUserStoragePreference($authzToken, $userId, $gatewayID, $userStorageResourceId);
     return $this->recv_getUserStoragePreference();
   }
 
-  public function send_getUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $storageResourceId)
+  public function send_getUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userStorageResourceId)
   {
     $args = new \Airavata\API\Airavata_getUserStoragePreference_args();
     $args->authzToken = $authzToken;
     $args->userId = $userId;
-    $args->storageResourceId = $storageResourceId;
+    $args->gatewayID = $gatewayID;
+    $args->userStorageResourceId = $userStorageResourceId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -12669,6 +12762,136 @@ class AiravataClient implements \Airavata\API\AiravataIf {
       throw $result->ae;
     }
     throw new \Exception("getUserStoragePreference failed: unknown result");
+  }
+
+  public function getAllUserComputeResourcePreferences(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID)
+  {
+    $this->send_getAllUserComputeResourcePreferences($authzToken, $userId, $gatewayID);
+    return $this->recv_getAllUserComputeResourcePreferences();
+  }
+
+  public function send_getAllUserComputeResourcePreferences(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID)
+  {
+    $args = new \Airavata\API\Airavata_getAllUserComputeResourcePreferences_args();
+    $args->authzToken = $authzToken;
+    $args->userId = $userId;
+    $args->gatewayID = $gatewayID;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'getAllUserComputeResourcePreferences', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('getAllUserComputeResourcePreferences', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_getAllUserComputeResourcePreferences()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_getAllUserComputeResourcePreferences_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_getAllUserComputeResourcePreferences_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    if ($result->ae !== null) {
+      throw $result->ae;
+    }
+    throw new \Exception("getAllUserComputeResourcePreferences failed: unknown result");
+  }
+
+  public function getAllUserStoragePreferences(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID)
+  {
+    $this->send_getAllUserStoragePreferences($authzToken, $userId, $gatewayID);
+    return $this->recv_getAllUserStoragePreferences();
+  }
+
+  public function send_getAllUserStoragePreferences(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID)
+  {
+    $args = new \Airavata\API\Airavata_getAllUserStoragePreferences_args();
+    $args->authzToken = $authzToken;
+    $args->userId = $userId;
+    $args->gatewayID = $gatewayID;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'getAllUserStoragePreferences', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('getAllUserStoragePreferences', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_getAllUserStoragePreferences()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_getAllUserStoragePreferences_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_getAllUserStoragePreferences_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    if ($result->ae !== null) {
+      throw $result->ae;
+    }
+    throw new \Exception("getAllUserStoragePreferences failed: unknown result");
   }
 
   public function getAllUserResourceProfiles(\Airavata\Model\Security\AuthzToken $authzToken)
@@ -12734,19 +12957,20 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getAllUserResourceProfiles failed: unknown result");
   }
 
-  public function updateUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $computeResourceId, \Airavata\Model\AppCatalog\UserResourceProfile\ComputeResourcePreference $computeResourcePreference)
+  public function updateUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userComputeResourceId, \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference $userComputeResourcePreference)
   {
-    $this->send_updateUserComputeResourcePreference($authzToken, $userId, $computeResourceId, $computeResourcePreference);
+    $this->send_updateUserComputeResourcePreference($authzToken, $userId, $gatewayID, $userComputeResourceId, $userComputeResourcePreference);
     return $this->recv_updateUserComputeResourcePreference();
   }
 
-  public function send_updateUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $computeResourceId, \Airavata\Model\AppCatalog\UserResourceProfile\ComputeResourcePreference $computeResourcePreference)
+  public function send_updateUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userComputeResourceId, \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference $userComputeResourcePreference)
   {
     $args = new \Airavata\API\Airavata_updateUserComputeResourcePreference_args();
     $args->authzToken = $authzToken;
     $args->userId = $userId;
-    $args->computeResourceId = $computeResourceId;
-    $args->computeResourcePreference = $computeResourcePreference;
+    $args->gatewayID = $gatewayID;
+    $args->userComputeResourceId = $userComputeResourceId;
+    $args->userComputeResourcePreference = $userComputeResourcePreference;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -12800,19 +13024,20 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("updateUserComputeResourcePreference failed: unknown result");
   }
 
-  public function updateUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $storageId, \Airavata\Model\AppCatalog\UserResourceProfile\StoragePreference $storagePreference)
+  public function updateUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userStorageId, \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference $userStoragePreference)
   {
-    $this->send_updateUserStoragePreference($authzToken, $userId, $storageId, $storagePreference);
+    $this->send_updateUserStoragePreference($authzToken, $userId, $gatewayID, $userStorageId, $userStoragePreference);
     return $this->recv_updateUserStoragePreference();
   }
 
-  public function send_updateUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $storageId, \Airavata\Model\AppCatalog\UserResourceProfile\StoragePreference $storagePreference)
+  public function send_updateUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userStorageId, \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference $userStoragePreference)
   {
     $args = new \Airavata\API\Airavata_updateUserStoragePreference_args();
     $args->authzToken = $authzToken;
     $args->userId = $userId;
-    $args->storageId = $storageId;
-    $args->storagePreference = $storagePreference;
+    $args->gatewayID = $gatewayID;
+    $args->userStorageId = $userStorageId;
+    $args->userStoragePreference = $userStoragePreference;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -12866,18 +13091,19 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("updateUserStoragePreference failed: unknown result");
   }
 
-  public function deleteUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $computeResourceId)
+  public function deleteUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userComputeResourceId)
   {
-    $this->send_deleteUserComputeResourcePreference($authzToken, $userId, $computeResourceId);
+    $this->send_deleteUserComputeResourcePreference($authzToken, $userId, $gatewayID, $userComputeResourceId);
     return $this->recv_deleteUserComputeResourcePreference();
   }
 
-  public function send_deleteUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $computeResourceId)
+  public function send_deleteUserComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userComputeResourceId)
   {
     $args = new \Airavata\API\Airavata_deleteUserComputeResourcePreference_args();
     $args->authzToken = $authzToken;
     $args->userId = $userId;
-    $args->computeResourceId = $computeResourceId;
+    $args->gatewayID = $gatewayID;
+    $args->userComputeResourceId = $userComputeResourceId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -12931,18 +13157,19 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("deleteUserComputeResourcePreference failed: unknown result");
   }
 
-  public function deleteUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $storageId)
+  public function deleteUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userStorageId)
   {
-    $this->send_deleteUserStoragePreference($authzToken, $userId, $storageId);
+    $this->send_deleteUserStoragePreference($authzToken, $userId, $gatewayID, $userStorageId);
     return $this->recv_deleteUserStoragePreference();
   }
 
-  public function send_deleteUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $storageId)
+  public function send_deleteUserStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $userId, $gatewayID, $userStorageId)
   {
     $args = new \Airavata\API\Airavata_deleteUserStoragePreference_args();
     $args->authzToken = $authzToken;
     $args->userId = $userId;
-    $args->storageId = $storageId;
+    $args->gatewayID = $gatewayID;
+    $args->userStorageId = $userStorageId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -13440,79 +13667,11 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("isWorkflowExistWithName failed: unknown result");
   }
 
-<<<<<<< HEAD
   public function registerDataProduct(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Replica\DataProductModel $dataProductModel)
   {
     $this->send_registerDataProduct($authzToken, $dataProductModel);
     return $this->recv_registerDataProduct();
   }
-=======
-  public function isDataSharingEnabled()
-  {
-    $this->send_isDataSharingEnabled();
-    return $this->recv_isDataSharingEnabled();
-  }
-
-  public function send_isDataSharingEnabled()
-  {
-    $args = new \Airavata\API\Airavata_isDataSharingEnabled_args();
-    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
-    if ($bin_accel)
-    {
-      thrift_protocol_write_binary($this->output_, 'isDataSharingEnabled', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
-    }
-    else
-    {
-      $this->output_->writeMessageBegin('isDataSharingEnabled', TMessageType::CALL, $this->seqid_);
-      $args->write($this->output_);
-      $this->output_->writeMessageEnd();
-      $this->output_->getTransport()->flush();
-    }
-  }
-
-  public function recv_isDataSharingEnabled()
-  {
-    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
-    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_isDataSharingEnabled_result', $this->input_->isStrictRead());
-    else
-    {
-      $rseqid = 0;
-      $fname = null;
-      $mtype = 0;
-
-      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
-      if ($mtype == TMessageType::EXCEPTION) {
-        $x = new TApplicationException();
-        $x->read($this->input_);
-        $this->input_->readMessageEnd();
-        throw $x;
-      }
-      $result = new \Airavata\API\Airavata_isDataSharingEnabled_result();
-      $result->read($this->input_);
-      $this->input_->readMessageEnd();
-    }
-    if ($result->success !== null) {
-      return $result->success;
-    }
-    if ($result->ire !== null) {
-      throw $result->ire;
-    }
-    if ($result->ace !== null) {
-      throw $result->ace;
-    }
-    if ($result->ase !== null) {
-      throw $result->ase;
-    }
-    if ($result->ae !== null) {
-      throw $result->ae;
-    }
-    throw new \Exception("isDataSharingEnabled failed: unknown result");
-  }
-
-}
-
-// HELPER FUNCTIONS AND STRUCTURES
->>>>>>> upstream/develop
 
   public function send_registerDataProduct(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Data\Replica\DataProductModel $dataProductModel)
   {
@@ -53885,6 +54044,10 @@ class Airavata_getUserResourceProfile_args {
    * @var string
    */
   public $userId = null;
+  /**
+   * @var string
+   */
+  public $gatewayID = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -53898,6 +54061,10 @@ class Airavata_getUserResourceProfile_args {
           'var' => 'userId',
           'type' => TType::STRING,
           ),
+        3 => array(
+          'var' => 'gatewayID',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -53906,6 +54073,9 @@ class Airavata_getUserResourceProfile_args {
       }
       if (isset($vals['userId'])) {
         $this->userId = $vals['userId'];
+      }
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
       }
     }
   }
@@ -53944,6 +54114,13 @@ class Airavata_getUserResourceProfile_args {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -53968,6 +54145,11 @@ class Airavata_getUserResourceProfile_args {
     if ($this->userId !== null) {
       $xfer += $output->writeFieldBegin('userId', TType::STRING, 2);
       $xfer += $output->writeString($this->userId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayID);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -54169,6 +54351,10 @@ class Airavata_updateUserResourceProfile_args {
    */
   public $userId = null;
   /**
+   * @var string
+   */
+  public $gatewayID = null;
+  /**
    * @var \Airavata\Model\AppCatalog\UserResourceProfile\UserResourceProfile
    */
   public $userResourceProfile = null;
@@ -54186,6 +54372,10 @@ class Airavata_updateUserResourceProfile_args {
           'type' => TType::STRING,
           ),
         3 => array(
+          'var' => 'gatewayID',
+          'type' => TType::STRING,
+          ),
+        4 => array(
           'var' => 'userResourceProfile',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\AppCatalog\UserResourceProfile\UserResourceProfile',
@@ -54198,6 +54388,9 @@ class Airavata_updateUserResourceProfile_args {
       }
       if (isset($vals['userId'])) {
         $this->userId = $vals['userId'];
+      }
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
       }
       if (isset($vals['userResourceProfile'])) {
         $this->userResourceProfile = $vals['userResourceProfile'];
@@ -54240,6 +54433,13 @@ class Airavata_updateUserResourceProfile_args {
           }
           break;
         case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
           if ($ftype == TType::STRUCT) {
             $this->userResourceProfile = new \Airavata\Model\AppCatalog\UserResourceProfile\UserResourceProfile();
             $xfer += $this->userResourceProfile->read($input);
@@ -54273,11 +54473,16 @@ class Airavata_updateUserResourceProfile_args {
       $xfer += $output->writeString($this->userId);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayID);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->userResourceProfile !== null) {
       if (!is_object($this->userResourceProfile)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('userResourceProfile', TType::STRUCT, 3);
+      $xfer += $output->writeFieldBegin('userResourceProfile', TType::STRUCT, 4);
       $xfer += $this->userResourceProfile->write($output);
       $xfer += $output->writeFieldEnd();
     }
@@ -54474,6 +54679,10 @@ class Airavata_deleteUserResourceProfile_args {
    * @var string
    */
   public $userId = null;
+  /**
+   * @var string
+   */
+  public $gatewayID = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -54487,6 +54696,10 @@ class Airavata_deleteUserResourceProfile_args {
           'var' => 'userId',
           'type' => TType::STRING,
           ),
+        3 => array(
+          'var' => 'gatewayID',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -54495,6 +54708,9 @@ class Airavata_deleteUserResourceProfile_args {
       }
       if (isset($vals['userId'])) {
         $this->userId = $vals['userId'];
+      }
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
       }
     }
   }
@@ -54533,6 +54749,13 @@ class Airavata_deleteUserResourceProfile_args {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -54557,6 +54780,11 @@ class Airavata_deleteUserResourceProfile_args {
     if ($this->userId !== null) {
       $xfer += $output->writeFieldBegin('userId', TType::STRING, 2);
       $xfer += $output->writeString($this->userId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayID);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -54755,11 +54983,15 @@ class Airavata_addUserComputeResourcePreference_args {
   /**
    * @var string
    */
-  public $computeResourceId = null;
+  public $gatewayID = null;
   /**
-   * @var \Airavata\Model\AppCatalog\UserResourceProfile\ComputeResourcePreference
+   * @var string
    */
-  public $computeResourcePreference = null;
+  public $userComputeResourceId = null;
+  /**
+   * @var \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference
+   */
+  public $userComputeResourcePreference = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -54774,13 +55006,17 @@ class Airavata_addUserComputeResourcePreference_args {
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'computeResourceId',
+          'var' => 'gatewayID',
           'type' => TType::STRING,
           ),
         4 => array(
-          'var' => 'computeResourcePreference',
+          'var' => 'userComputeResourceId',
+          'type' => TType::STRING,
+          ),
+        5 => array(
+          'var' => 'userComputeResourcePreference',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\AppCatalog\UserResourceProfile\ComputeResourcePreference',
+          'class' => '\Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference',
           ),
         );
     }
@@ -54791,11 +55027,14 @@ class Airavata_addUserComputeResourcePreference_args {
       if (isset($vals['userId'])) {
         $this->userId = $vals['userId'];
       }
-      if (isset($vals['computeResourceId'])) {
-        $this->computeResourceId = $vals['computeResourceId'];
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
       }
-      if (isset($vals['computeResourcePreference'])) {
-        $this->computeResourcePreference = $vals['computeResourcePreference'];
+      if (isset($vals['userComputeResourceId'])) {
+        $this->userComputeResourceId = $vals['userComputeResourceId'];
+      }
+      if (isset($vals['userComputeResourcePreference'])) {
+        $this->userComputeResourcePreference = $vals['userComputeResourcePreference'];
       }
     }
   }
@@ -54836,15 +55075,22 @@ class Airavata_addUserComputeResourcePreference_args {
           break;
         case 3:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->computeResourceId);
+            $xfer += $input->readString($this->gatewayID);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userComputeResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
           if ($ftype == TType::STRUCT) {
-            $this->computeResourcePreference = new \Airavata\Model\AppCatalog\UserResourceProfile\ComputeResourcePreference();
-            $xfer += $this->computeResourcePreference->read($input);
+            $this->userComputeResourcePreference = new \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference();
+            $xfer += $this->userComputeResourcePreference->read($input);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -54875,17 +55121,22 @@ class Airavata_addUserComputeResourcePreference_args {
       $xfer += $output->writeString($this->userId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->computeResourceId !== null) {
-      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 3);
-      $xfer += $output->writeString($this->computeResourceId);
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayID);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->computeResourcePreference !== null) {
-      if (!is_object($this->computeResourcePreference)) {
+    if ($this->userComputeResourceId !== null) {
+      $xfer += $output->writeFieldBegin('userComputeResourceId', TType::STRING, 4);
+      $xfer += $output->writeString($this->userComputeResourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userComputeResourcePreference !== null) {
+      if (!is_object($this->userComputeResourcePreference)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('computeResourcePreference', TType::STRUCT, 4);
-      $xfer += $this->computeResourcePreference->write($output);
+      $xfer += $output->writeFieldBegin('userComputeResourcePreference', TType::STRUCT, 5);
+      $xfer += $this->userComputeResourcePreference->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -55084,11 +55335,15 @@ class Airavata_addUserStoragePreference_args {
   /**
    * @var string
    */
-  public $storageResourceId = null;
+  public $gatewayID = null;
   /**
-   * @var \Airavata\Model\AppCatalog\UserResourceProfile\StoragePreference
+   * @var string
    */
-  public $storagePreference = null;
+  public $userStorageResourceId = null;
+  /**
+   * @var \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference
+   */
+  public $userStoragePreference = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -55103,13 +55358,17 @@ class Airavata_addUserStoragePreference_args {
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'storageResourceId',
+          'var' => 'gatewayID',
           'type' => TType::STRING,
           ),
         4 => array(
-          'var' => 'storagePreference',
+          'var' => 'userStorageResourceId',
+          'type' => TType::STRING,
+          ),
+        5 => array(
+          'var' => 'userStoragePreference',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\AppCatalog\UserResourceProfile\StoragePreference',
+          'class' => '\Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference',
           ),
         );
     }
@@ -55120,11 +55379,14 @@ class Airavata_addUserStoragePreference_args {
       if (isset($vals['userId'])) {
         $this->userId = $vals['userId'];
       }
-      if (isset($vals['storageResourceId'])) {
-        $this->storageResourceId = $vals['storageResourceId'];
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
       }
-      if (isset($vals['storagePreference'])) {
-        $this->storagePreference = $vals['storagePreference'];
+      if (isset($vals['userStorageResourceId'])) {
+        $this->userStorageResourceId = $vals['userStorageResourceId'];
+      }
+      if (isset($vals['userStoragePreference'])) {
+        $this->userStoragePreference = $vals['userStoragePreference'];
       }
     }
   }
@@ -55165,15 +55427,22 @@ class Airavata_addUserStoragePreference_args {
           break;
         case 3:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->storageResourceId);
+            $xfer += $input->readString($this->gatewayID);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userStorageResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
           if ($ftype == TType::STRUCT) {
-            $this->storagePreference = new \Airavata\Model\AppCatalog\UserResourceProfile\StoragePreference();
-            $xfer += $this->storagePreference->read($input);
+            $this->userStoragePreference = new \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference();
+            $xfer += $this->userStoragePreference->read($input);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -55204,17 +55473,22 @@ class Airavata_addUserStoragePreference_args {
       $xfer += $output->writeString($this->userId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->storageResourceId !== null) {
-      $xfer += $output->writeFieldBegin('storageResourceId', TType::STRING, 3);
-      $xfer += $output->writeString($this->storageResourceId);
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayID);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->storagePreference !== null) {
-      if (!is_object($this->storagePreference)) {
+    if ($this->userStorageResourceId !== null) {
+      $xfer += $output->writeFieldBegin('userStorageResourceId', TType::STRING, 4);
+      $xfer += $output->writeString($this->userStorageResourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userStoragePreference !== null) {
+      if (!is_object($this->userStoragePreference)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('storagePreference', TType::STRUCT, 4);
-      $xfer += $this->storagePreference->write($output);
+      $xfer += $output->writeFieldBegin('userStoragePreference', TType::STRUCT, 5);
+      $xfer += $this->userStoragePreference->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -55413,7 +55687,11 @@ class Airavata_getUserComputeResourcePreference_args {
   /**
    * @var string
    */
-  public $computeResourceId = null;
+  public $gatewayID = null;
+  /**
+   * @var string
+   */
+  public $userComputeResourceId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -55428,7 +55706,11 @@ class Airavata_getUserComputeResourcePreference_args {
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'computeResourceId',
+          'var' => 'gatewayID',
+          'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'userComputeResourceId',
           'type' => TType::STRING,
           ),
         );
@@ -55440,8 +55722,11 @@ class Airavata_getUserComputeResourcePreference_args {
       if (isset($vals['userId'])) {
         $this->userId = $vals['userId'];
       }
-      if (isset($vals['computeResourceId'])) {
-        $this->computeResourceId = $vals['computeResourceId'];
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
+      }
+      if (isset($vals['userComputeResourceId'])) {
+        $this->userComputeResourceId = $vals['userComputeResourceId'];
       }
     }
   }
@@ -55482,7 +55767,14 @@ class Airavata_getUserComputeResourcePreference_args {
           break;
         case 3:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->computeResourceId);
+            $xfer += $input->readString($this->gatewayID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userComputeResourceId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -55513,9 +55805,14 @@ class Airavata_getUserComputeResourcePreference_args {
       $xfer += $output->writeString($this->userId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->computeResourceId !== null) {
-      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 3);
-      $xfer += $output->writeString($this->computeResourceId);
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayID);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userComputeResourceId !== null) {
+      $xfer += $output->writeFieldBegin('userComputeResourceId', TType::STRING, 4);
+      $xfer += $output->writeString($this->userComputeResourceId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -55529,7 +55826,7 @@ class Airavata_getUserComputeResourcePreference_result {
   static $_TSPEC;
 
   /**
-   * @var \Airavata\Model\AppCatalog\UserResourceProfile\ComputeResourcePreference
+   * @var \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference
    */
   public $success = null;
   /**
@@ -55555,7 +55852,7 @@ class Airavata_getUserComputeResourcePreference_result {
         0 => array(
           'var' => 'success',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\AppCatalog\UserResourceProfile\ComputeResourcePreference',
+          'class' => '\Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference',
           ),
         1 => array(
           'var' => 'ire',
@@ -55619,7 +55916,7 @@ class Airavata_getUserComputeResourcePreference_result {
       {
         case 0:
           if ($ftype == TType::STRUCT) {
-            $this->success = new \Airavata\Model\AppCatalog\UserResourceProfile\ComputeResourcePreference();
+            $this->success = new \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference();
             $xfer += $this->success->read($input);
           } else {
             $xfer += $input->skip($ftype);
@@ -55719,7 +56016,11 @@ class Airavata_getUserStoragePreference_args {
   /**
    * @var string
    */
-  public $storageResourceId = null;
+  public $gatewayID = null;
+  /**
+   * @var string
+   */
+  public $userStorageResourceId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -55734,7 +56035,11 @@ class Airavata_getUserStoragePreference_args {
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'storageResourceId',
+          'var' => 'gatewayID',
+          'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'userStorageResourceId',
           'type' => TType::STRING,
           ),
         );
@@ -55746,8 +56051,11 @@ class Airavata_getUserStoragePreference_args {
       if (isset($vals['userId'])) {
         $this->userId = $vals['userId'];
       }
-      if (isset($vals['storageResourceId'])) {
-        $this->storageResourceId = $vals['storageResourceId'];
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
+      }
+      if (isset($vals['userStorageResourceId'])) {
+        $this->userStorageResourceId = $vals['userStorageResourceId'];
       }
     }
   }
@@ -55788,7 +56096,14 @@ class Airavata_getUserStoragePreference_args {
           break;
         case 3:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->storageResourceId);
+            $xfer += $input->readString($this->gatewayID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userStorageResourceId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -55819,9 +56134,14 @@ class Airavata_getUserStoragePreference_args {
       $xfer += $output->writeString($this->userId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->storageResourceId !== null) {
-      $xfer += $output->writeFieldBegin('storageResourceId', TType::STRING, 3);
-      $xfer += $output->writeString($this->storageResourceId);
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayID);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userStorageResourceId !== null) {
+      $xfer += $output->writeFieldBegin('userStorageResourceId', TType::STRING, 4);
+      $xfer += $output->writeString($this->userStorageResourceId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -55835,7 +56155,7 @@ class Airavata_getUserStoragePreference_result {
   static $_TSPEC;
 
   /**
-   * @var \Airavata\Model\AppCatalog\UserResourceProfile\StoragePreference
+   * @var \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference
    */
   public $success = null;
   /**
@@ -55861,7 +56181,7 @@ class Airavata_getUserStoragePreference_result {
         0 => array(
           'var' => 'success',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\AppCatalog\UserResourceProfile\StoragePreference',
+          'class' => '\Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference',
           ),
         1 => array(
           'var' => 'ire',
@@ -55925,7 +56245,7 @@ class Airavata_getUserStoragePreference_result {
       {
         case 0:
           if ($ftype == TType::STRUCT) {
-            $this->success = new \Airavata\Model\AppCatalog\UserResourceProfile\StoragePreference();
+            $this->success = new \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference();
             $xfer += $this->success->read($input);
           } else {
             $xfer += $input->skip($ftype);
@@ -55982,6 +56302,664 @@ class Airavata_getUserStoragePreference_result {
       }
       $xfer += $output->writeFieldBegin('success', TType::STRUCT, 0);
       $xfer += $this->success->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ae !== null) {
+      $xfer += $output->writeFieldBegin('ae', TType::STRUCT, 4);
+      $xfer += $this->ae->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_getAllUserComputeResourcePreferences_args {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+  /**
+   * @var string
+   */
+  public $userId = null;
+  /**
+   * @var string
+   */
+  public $gatewayID = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        2 => array(
+          'var' => 'userId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'gatewayID',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
+      if (isset($vals['userId'])) {
+        $this->userId = $vals['userId'];
+      }
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_getAllUserComputeResourcePreferences_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_getAllUserComputeResourcePreferences_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userId !== null) {
+      $xfer += $output->writeFieldBegin('userId', TType::STRING, 2);
+      $xfer += $output->writeString($this->userId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayID);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_getAllUserComputeResourcePreferences_result {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference[]
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\API\Error\InvalidRequestException
+   */
+  public $ire = null;
+  /**
+   * @var \Airavata\API\Error\AiravataClientException
+   */
+  public $ace = null;
+  /**
+   * @var \Airavata\API\Error\AiravataSystemException
+   */
+  public $ase = null;
+  /**
+   * @var \Airavata\API\Error\AuthorizationException
+   */
+  public $ae = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference',
+            ),
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        4 => array(
+          'var' => 'ae',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AuthorizationException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+      if (isset($vals['ae'])) {
+        $this->ae = $vals['ae'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_getAllUserComputeResourcePreferences_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::LST) {
+            $this->success = array();
+            $_size239 = 0;
+            $_etype242 = 0;
+            $xfer += $input->readListBegin($_etype242, $_size239);
+            for ($_i243 = 0; $_i243 < $_size239; ++$_i243)
+            {
+              $elem244 = null;
+              $elem244 = new \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference();
+              $xfer += $elem244->read($input);
+              $this->success []= $elem244;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRUCT) {
+            $this->ae = new \Airavata\API\Error\AuthorizationException();
+            $xfer += $this->ae->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_getAllUserComputeResourcePreferences_result');
+    if ($this->success !== null) {
+      if (!is_array($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::LST, 0);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->success));
+        {
+          foreach ($this->success as $iter245)
+          {
+            $xfer += $iter245->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ae !== null) {
+      $xfer += $output->writeFieldBegin('ae', TType::STRUCT, 4);
+      $xfer += $this->ae->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_getAllUserStoragePreferences_args {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+  /**
+   * @var string
+   */
+  public $userId = null;
+  /**
+   * @var string
+   */
+  public $gatewayID = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        2 => array(
+          'var' => 'userId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'gatewayID',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
+      if (isset($vals['userId'])) {
+        $this->userId = $vals['userId'];
+      }
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_getAllUserStoragePreferences_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_getAllUserStoragePreferences_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userId !== null) {
+      $xfer += $output->writeFieldBegin('userId', TType::STRING, 2);
+      $xfer += $output->writeString($this->userId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayID);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_getAllUserStoragePreferences_result {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference[]
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\API\Error\InvalidRequestException
+   */
+  public $ire = null;
+  /**
+   * @var \Airavata\API\Error\AiravataClientException
+   */
+  public $ace = null;
+  /**
+   * @var \Airavata\API\Error\AiravataSystemException
+   */
+  public $ase = null;
+  /**
+   * @var \Airavata\API\Error\AuthorizationException
+   */
+  public $ae = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference',
+            ),
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        4 => array(
+          'var' => 'ae',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AuthorizationException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+      if (isset($vals['ae'])) {
+        $this->ae = $vals['ae'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_getAllUserStoragePreferences_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::LST) {
+            $this->success = array();
+            $_size246 = 0;
+            $_etype249 = 0;
+            $xfer += $input->readListBegin($_etype249, $_size246);
+            for ($_i250 = 0; $_i250 < $_size246; ++$_i250)
+            {
+              $elem251 = null;
+              $elem251 = new \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference();
+              $xfer += $elem251->read($input);
+              $this->success []= $elem251;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRUCT) {
+            $this->ae = new \Airavata\API\Error\AuthorizationException();
+            $xfer += $this->ae->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_getAllUserStoragePreferences_result');
+    if ($this->success !== null) {
+      if (!is_array($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::LST, 0);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->success));
+        {
+          foreach ($this->success as $iter252)
+          {
+            $xfer += $iter252->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
       $xfer += $output->writeFieldEnd();
     }
     if ($this->ire !== null) {
@@ -56190,15 +57168,15 @@ class Airavata_getAllUserResourceProfiles_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size239 = 0;
-            $_etype242 = 0;
-            $xfer += $input->readListBegin($_etype242, $_size239);
-            for ($_i243 = 0; $_i243 < $_size239; ++$_i243)
+            $_size253 = 0;
+            $_etype256 = 0;
+            $xfer += $input->readListBegin($_etype256, $_size253);
+            for ($_i257 = 0; $_i257 < $_size253; ++$_i257)
             {
-              $elem244 = null;
-              $elem244 = new \Airavata\Model\AppCatalog\UserResourceProfile\UserResourceProfile();
-              $xfer += $elem244->read($input);
-              $this->success []= $elem244;
+              $elem258 = null;
+              $elem258 = new \Airavata\Model\AppCatalog\UserResourceProfile\UserResourceProfile();
+              $xfer += $elem258->read($input);
+              $this->success []= $elem258;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -56258,9 +57236,9 @@ class Airavata_getAllUserResourceProfiles_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter245)
+          foreach ($this->success as $iter259)
           {
-            $xfer += $iter245->write($output);
+            $xfer += $iter259->write($output);
           }
         }
         $output->writeListEnd();
@@ -56308,11 +57286,15 @@ class Airavata_updateUserComputeResourcePreference_args {
   /**
    * @var string
    */
-  public $computeResourceId = null;
+  public $gatewayID = null;
   /**
-   * @var \Airavata\Model\AppCatalog\UserResourceProfile\ComputeResourcePreference
+   * @var string
    */
-  public $computeResourcePreference = null;
+  public $userComputeResourceId = null;
+  /**
+   * @var \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference
+   */
+  public $userComputeResourcePreference = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -56327,13 +57309,17 @@ class Airavata_updateUserComputeResourcePreference_args {
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'computeResourceId',
+          'var' => 'gatewayID',
           'type' => TType::STRING,
           ),
         4 => array(
-          'var' => 'computeResourcePreference',
+          'var' => 'userComputeResourceId',
+          'type' => TType::STRING,
+          ),
+        5 => array(
+          'var' => 'userComputeResourcePreference',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\AppCatalog\UserResourceProfile\ComputeResourcePreference',
+          'class' => '\Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference',
           ),
         );
     }
@@ -56344,11 +57330,14 @@ class Airavata_updateUserComputeResourcePreference_args {
       if (isset($vals['userId'])) {
         $this->userId = $vals['userId'];
       }
-      if (isset($vals['computeResourceId'])) {
-        $this->computeResourceId = $vals['computeResourceId'];
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
       }
-      if (isset($vals['computeResourcePreference'])) {
-        $this->computeResourcePreference = $vals['computeResourcePreference'];
+      if (isset($vals['userComputeResourceId'])) {
+        $this->userComputeResourceId = $vals['userComputeResourceId'];
+      }
+      if (isset($vals['userComputeResourcePreference'])) {
+        $this->userComputeResourcePreference = $vals['userComputeResourcePreference'];
       }
     }
   }
@@ -56389,15 +57378,22 @@ class Airavata_updateUserComputeResourcePreference_args {
           break;
         case 3:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->computeResourceId);
+            $xfer += $input->readString($this->gatewayID);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userComputeResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
           if ($ftype == TType::STRUCT) {
-            $this->computeResourcePreference = new \Airavata\Model\AppCatalog\UserResourceProfile\ComputeResourcePreference();
-            $xfer += $this->computeResourcePreference->read($input);
+            $this->userComputeResourcePreference = new \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference();
+            $xfer += $this->userComputeResourcePreference->read($input);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -56428,17 +57424,22 @@ class Airavata_updateUserComputeResourcePreference_args {
       $xfer += $output->writeString($this->userId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->computeResourceId !== null) {
-      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 3);
-      $xfer += $output->writeString($this->computeResourceId);
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayID);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->computeResourcePreference !== null) {
-      if (!is_object($this->computeResourcePreference)) {
+    if ($this->userComputeResourceId !== null) {
+      $xfer += $output->writeFieldBegin('userComputeResourceId', TType::STRING, 4);
+      $xfer += $output->writeString($this->userComputeResourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userComputeResourcePreference !== null) {
+      if (!is_object($this->userComputeResourcePreference)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('computeResourcePreference', TType::STRUCT, 4);
-      $xfer += $this->computeResourcePreference->write($output);
+      $xfer += $output->writeFieldBegin('userComputeResourcePreference', TType::STRUCT, 5);
+      $xfer += $this->userComputeResourcePreference->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -56637,11 +57638,15 @@ class Airavata_updateUserStoragePreference_args {
   /**
    * @var string
    */
-  public $storageId = null;
+  public $gatewayID = null;
   /**
-   * @var \Airavata\Model\AppCatalog\UserResourceProfile\StoragePreference
+   * @var string
    */
-  public $storagePreference = null;
+  public $userStorageId = null;
+  /**
+   * @var \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference
+   */
+  public $userStoragePreference = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -56656,13 +57661,17 @@ class Airavata_updateUserStoragePreference_args {
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'storageId',
+          'var' => 'gatewayID',
           'type' => TType::STRING,
           ),
         4 => array(
-          'var' => 'storagePreference',
+          'var' => 'userStorageId',
+          'type' => TType::STRING,
+          ),
+        5 => array(
+          'var' => 'userStoragePreference',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\AppCatalog\UserResourceProfile\StoragePreference',
+          'class' => '\Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference',
           ),
         );
     }
@@ -56673,11 +57682,14 @@ class Airavata_updateUserStoragePreference_args {
       if (isset($vals['userId'])) {
         $this->userId = $vals['userId'];
       }
-      if (isset($vals['storageId'])) {
-        $this->storageId = $vals['storageId'];
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
       }
-      if (isset($vals['storagePreference'])) {
-        $this->storagePreference = $vals['storagePreference'];
+      if (isset($vals['userStorageId'])) {
+        $this->userStorageId = $vals['userStorageId'];
+      }
+      if (isset($vals['userStoragePreference'])) {
+        $this->userStoragePreference = $vals['userStoragePreference'];
       }
     }
   }
@@ -56718,15 +57730,22 @@ class Airavata_updateUserStoragePreference_args {
           break;
         case 3:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->storageId);
+            $xfer += $input->readString($this->gatewayID);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userStorageId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
           if ($ftype == TType::STRUCT) {
-            $this->storagePreference = new \Airavata\Model\AppCatalog\UserResourceProfile\StoragePreference();
-            $xfer += $this->storagePreference->read($input);
+            $this->userStoragePreference = new \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference();
+            $xfer += $this->userStoragePreference->read($input);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -56757,17 +57776,22 @@ class Airavata_updateUserStoragePreference_args {
       $xfer += $output->writeString($this->userId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->storageId !== null) {
-      $xfer += $output->writeFieldBegin('storageId', TType::STRING, 3);
-      $xfer += $output->writeString($this->storageId);
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayID);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->storagePreference !== null) {
-      if (!is_object($this->storagePreference)) {
+    if ($this->userStorageId !== null) {
+      $xfer += $output->writeFieldBegin('userStorageId', TType::STRING, 4);
+      $xfer += $output->writeString($this->userStorageId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userStoragePreference !== null) {
+      if (!is_object($this->userStoragePreference)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('storagePreference', TType::STRUCT, 4);
-      $xfer += $this->storagePreference->write($output);
+      $xfer += $output->writeFieldBegin('userStoragePreference', TType::STRUCT, 5);
+      $xfer += $this->userStoragePreference->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -56966,7 +57990,11 @@ class Airavata_deleteUserComputeResourcePreference_args {
   /**
    * @var string
    */
-  public $computeResourceId = null;
+  public $gatewayID = null;
+  /**
+   * @var string
+   */
+  public $userComputeResourceId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -56981,7 +58009,11 @@ class Airavata_deleteUserComputeResourcePreference_args {
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'computeResourceId',
+          'var' => 'gatewayID',
+          'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'userComputeResourceId',
           'type' => TType::STRING,
           ),
         );
@@ -56993,8 +58025,11 @@ class Airavata_deleteUserComputeResourcePreference_args {
       if (isset($vals['userId'])) {
         $this->userId = $vals['userId'];
       }
-      if (isset($vals['computeResourceId'])) {
-        $this->computeResourceId = $vals['computeResourceId'];
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
+      }
+      if (isset($vals['userComputeResourceId'])) {
+        $this->userComputeResourceId = $vals['userComputeResourceId'];
       }
     }
   }
@@ -57035,7 +58070,14 @@ class Airavata_deleteUserComputeResourcePreference_args {
           break;
         case 3:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->computeResourceId);
+            $xfer += $input->readString($this->gatewayID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userComputeResourceId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -57066,9 +58108,14 @@ class Airavata_deleteUserComputeResourcePreference_args {
       $xfer += $output->writeString($this->userId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->computeResourceId !== null) {
-      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 3);
-      $xfer += $output->writeString($this->computeResourceId);
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayID);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userComputeResourceId !== null) {
+      $xfer += $output->writeFieldBegin('userComputeResourceId', TType::STRING, 4);
+      $xfer += $output->writeString($this->userComputeResourceId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -57267,7 +58314,11 @@ class Airavata_deleteUserStoragePreference_args {
   /**
    * @var string
    */
-  public $storageId = null;
+  public $gatewayID = null;
+  /**
+   * @var string
+   */
+  public $userStorageId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -57282,7 +58333,11 @@ class Airavata_deleteUserStoragePreference_args {
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'storageId',
+          'var' => 'gatewayID',
+          'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'userStorageId',
           'type' => TType::STRING,
           ),
         );
@@ -57294,8 +58349,11 @@ class Airavata_deleteUserStoragePreference_args {
       if (isset($vals['userId'])) {
         $this->userId = $vals['userId'];
       }
-      if (isset($vals['storageId'])) {
-        $this->storageId = $vals['storageId'];
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
+      }
+      if (isset($vals['userStorageId'])) {
+        $this->userStorageId = $vals['userStorageId'];
       }
     }
   }
@@ -57336,7 +58394,14 @@ class Airavata_deleteUserStoragePreference_args {
           break;
         case 3:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->storageId);
+            $xfer += $input->readString($this->gatewayID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userStorageId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -57367,9 +58432,14 @@ class Airavata_deleteUserStoragePreference_args {
       $xfer += $output->writeString($this->userId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->storageId !== null) {
-      $xfer += $output->writeFieldBegin('storageId', TType::STRING, 3);
-      $xfer += $output->writeString($this->storageId);
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayID);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userStorageId !== null) {
+      $xfer += $output->writeFieldBegin('userStorageId', TType::STRING, 4);
+      $xfer += $output->writeString($this->userStorageId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -57755,14 +58825,14 @@ class Airavata_getAllWorkflows_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size246 = 0;
-            $_etype249 = 0;
-            $xfer += $input->readListBegin($_etype249, $_size246);
-            for ($_i250 = 0; $_i250 < $_size246; ++$_i250)
+            $_size260 = 0;
+            $_etype263 = 0;
+            $xfer += $input->readListBegin($_etype263, $_size260);
+            for ($_i264 = 0; $_i264 < $_size260; ++$_i264)
             {
-              $elem251 = null;
-              $xfer += $input->readString($elem251);
-              $this->success []= $elem251;
+              $elem265 = null;
+              $xfer += $input->readString($elem265);
+              $this->success []= $elem265;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -57822,9 +58892,9 @@ class Airavata_getAllWorkflows_result {
       {
         $output->writeListBegin(TType::STRING, count($this->success));
         {
-          foreach ($this->success as $iter252)
+          foreach ($this->success as $iter266)
           {
-            $xfer += $output->writeString($iter252);
+            $xfer += $output->writeString($iter266);
           }
         }
         $output->writeListEnd();
@@ -60875,15 +61945,15 @@ class Airavata_getChildDataProducts_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size253 = 0;
-            $_etype256 = 0;
-            $xfer += $input->readListBegin($_etype256, $_size253);
-            for ($_i257 = 0; $_i257 < $_size253; ++$_i257)
+            $_size267 = 0;
+            $_etype270 = 0;
+            $xfer += $input->readListBegin($_etype270, $_size267);
+            for ($_i271 = 0; $_i271 < $_size267; ++$_i271)
             {
-              $elem258 = null;
-              $elem258 = new \Airavata\Model\Data\Replica\DataProductModel();
-              $xfer += $elem258->read($input);
-              $this->success []= $elem258;
+              $elem272 = null;
+              $elem272 = new \Airavata\Model\Data\Replica\DataProductModel();
+              $xfer += $elem272->read($input);
+              $this->success []= $elem272;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -60943,9 +62013,9 @@ class Airavata_getChildDataProducts_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter259)
+          foreach ($this->success as $iter273)
           {
-            $xfer += $iter259->write($output);
+            $xfer += $iter273->write($output);
           }
         }
         $output->writeListEnd();
@@ -61089,17 +62159,17 @@ class Airavata_shareResourceWithUsers_args {
         case 4:
           if ($ftype == TType::MAP) {
             $this->userPermissionList = array();
-            $_size260 = 0;
-            $_ktype261 = 0;
-            $_vtype262 = 0;
-            $xfer += $input->readMapBegin($_ktype261, $_vtype262, $_size260);
-            for ($_i264 = 0; $_i264 < $_size260; ++$_i264)
+            $_size274 = 0;
+            $_ktype275 = 0;
+            $_vtype276 = 0;
+            $xfer += $input->readMapBegin($_ktype275, $_vtype276, $_size274);
+            for ($_i278 = 0; $_i278 < $_size274; ++$_i278)
             {
-              $key265 = '';
-              $val266 = 0;
-              $xfer += $input->readString($key265);
-              $xfer += $input->readI32($val266);
-              $this->userPermissionList[$key265] = $val266;
+              $key279 = '';
+              $val280 = 0;
+              $xfer += $input->readString($key279);
+              $xfer += $input->readI32($val280);
+              $this->userPermissionList[$key279] = $val280;
             }
             $xfer += $input->readMapEnd();
           } else {
@@ -61145,10 +62215,10 @@ class Airavata_shareResourceWithUsers_args {
       {
         $output->writeMapBegin(TType::STRING, TType::I32, count($this->userPermissionList));
         {
-          foreach ($this->userPermissionList as $kiter267 => $viter268)
+          foreach ($this->userPermissionList as $kiter281 => $viter282)
           {
-            $xfer += $output->writeString($kiter267);
-            $xfer += $output->writeI32($viter268);
+            $xfer += $output->writeString($kiter281);
+            $xfer += $output->writeI32($viter282);
           }
         }
         $output->writeMapEnd();
@@ -61447,17 +62517,17 @@ class Airavata_revokeSharingOfResourceFromUsers_args {
         case 4:
           if ($ftype == TType::MAP) {
             $this->userPermissionList = array();
-            $_size269 = 0;
-            $_ktype270 = 0;
-            $_vtype271 = 0;
-            $xfer += $input->readMapBegin($_ktype270, $_vtype271, $_size269);
-            for ($_i273 = 0; $_i273 < $_size269; ++$_i273)
+            $_size283 = 0;
+            $_ktype284 = 0;
+            $_vtype285 = 0;
+            $xfer += $input->readMapBegin($_ktype284, $_vtype285, $_size283);
+            for ($_i287 = 0; $_i287 < $_size283; ++$_i287)
             {
-              $key274 = '';
-              $val275 = 0;
-              $xfer += $input->readString($key274);
-              $xfer += $input->readI32($val275);
-              $this->userPermissionList[$key274] = $val275;
+              $key288 = '';
+              $val289 = 0;
+              $xfer += $input->readString($key288);
+              $xfer += $input->readI32($val289);
+              $this->userPermissionList[$key288] = $val289;
             }
             $xfer += $input->readMapEnd();
           } else {
@@ -61503,10 +62573,10 @@ class Airavata_revokeSharingOfResourceFromUsers_args {
       {
         $output->writeMapBegin(TType::STRING, TType::I32, count($this->userPermissionList));
         {
-          foreach ($this->userPermissionList as $kiter276 => $viter277)
+          foreach ($this->userPermissionList as $kiter290 => $viter291)
           {
-            $xfer += $output->writeString($kiter276);
-            $xfer += $output->writeI32($viter277);
+            $xfer += $output->writeString($kiter290);
+            $xfer += $output->writeI32($viter291);
           }
         }
         $output->writeMapEnd();
@@ -61942,14 +63012,14 @@ class Airavata_getAllAccessibleUsers_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size278 = 0;
-            $_etype281 = 0;
-            $xfer += $input->readListBegin($_etype281, $_size278);
-            for ($_i282 = 0; $_i282 < $_size278; ++$_i282)
+            $_size292 = 0;
+            $_etype295 = 0;
+            $xfer += $input->readListBegin($_etype295, $_size292);
+            for ($_i296 = 0; $_i296 < $_size292; ++$_i296)
             {
-              $elem283 = null;
-              $xfer += $input->readString($elem283);
-              $this->success []= $elem283;
+              $elem297 = null;
+              $xfer += $input->readString($elem297);
+              $this->success []= $elem297;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -62009,9 +63079,9 @@ class Airavata_getAllAccessibleUsers_result {
       {
         $output->writeListBegin(TType::STRING, count($this->success));
         {
-          foreach ($this->success as $iter284)
+          foreach ($this->success as $iter298)
           {
-            $xfer += $output->writeString($iter284);
+            $xfer += $output->writeString($iter298);
           }
         }
         $output->writeListEnd();
@@ -63443,15 +64513,15 @@ class Airavata_getAllGroupsUserBelongs_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size285 = 0;
-            $_etype288 = 0;
-            $xfer += $input->readListBegin($_etype288, $_size285);
-            for ($_i289 = 0; $_i289 < $_size285; ++$_i289)
+            $_size299 = 0;
+            $_etype302 = 0;
+            $xfer += $input->readListBegin($_etype302, $_size299);
+            for ($_i303 = 0; $_i303 < $_size299; ++$_i303)
             {
-              $elem290 = null;
-              $elem290 = new \Airavata\Model\Group\GroupModel();
-              $xfer += $elem290->read($input);
-              $this->success []= $elem290;
+              $elem304 = null;
+              $elem304 = new \Airavata\Model\Group\GroupModel();
+              $xfer += $elem304->read($input);
+              $this->success []= $elem304;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -63511,238 +64581,13 @@ class Airavata_getAllGroupsUserBelongs_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter291)
+          foreach ($this->success as $iter305)
           {
-            $xfer += $iter291->write($output);
+            $xfer += $iter305->write($output);
           }
         }
         $output->writeListEnd();
       }
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->ire !== null) {
-      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
-      $xfer += $this->ire->write($output);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->ace !== null) {
-      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
-      $xfer += $this->ace->write($output);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->ase !== null) {
-      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
-      $xfer += $this->ase->write($output);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->ae !== null) {
-      $xfer += $output->writeFieldBegin('ae', TType::STRUCT, 4);
-      $xfer += $this->ae->write($output);
-      $xfer += $output->writeFieldEnd();
-    }
-    $xfer += $output->writeFieldStop();
-    $xfer += $output->writeStructEnd();
-    return $xfer;
-  }
-
-}
-
-class Airavata_isDataSharingEnabled_args {
-  static $_TSPEC;
-
-
-  public function __construct() {
-    if (!isset(self::$_TSPEC)) {
-      self::$_TSPEC = array(
-        );
-    }
-  }
-
-  public function getName() {
-    return 'Airavata_isDataSharingEnabled_args';
-  }
-
-  public function read($input)
-  {
-    $xfer = 0;
-    $fname = null;
-    $ftype = 0;
-    $fid = 0;
-    $xfer += $input->readStructBegin($fname);
-    while (true)
-    {
-      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
-      if ($ftype == TType::STOP) {
-        break;
-      }
-      switch ($fid)
-      {
-        default:
-          $xfer += $input->skip($ftype);
-          break;
-      }
-      $xfer += $input->readFieldEnd();
-    }
-    $xfer += $input->readStructEnd();
-    return $xfer;
-  }
-
-  public function write($output) {
-    $xfer = 0;
-    $xfer += $output->writeStructBegin('Airavata_isDataSharingEnabled_args');
-    $xfer += $output->writeFieldStop();
-    $xfer += $output->writeStructEnd();
-    return $xfer;
-  }
-
-}
-
-class Airavata_isDataSharingEnabled_result {
-  static $_TSPEC;
-
-  /**
-   * @var bool
-   */
-  public $success = null;
-  /**
-   * @var \Airavata\API\Error\InvalidRequestException
-   */
-  public $ire = null;
-  /**
-   * @var \Airavata\API\Error\AiravataClientException
-   */
-  public $ace = null;
-  /**
-   * @var \Airavata\API\Error\AiravataSystemException
-   */
-  public $ase = null;
-  /**
-   * @var \Airavata\API\Error\AuthorizationException
-   */
-  public $ae = null;
-
-  public function __construct($vals=null) {
-    if (!isset(self::$_TSPEC)) {
-      self::$_TSPEC = array(
-        0 => array(
-          'var' => 'success',
-          'type' => TType::BOOL,
-          ),
-        1 => array(
-          'var' => 'ire',
-          'type' => TType::STRUCT,
-          'class' => '\Airavata\API\Error\InvalidRequestException',
-          ),
-        2 => array(
-          'var' => 'ace',
-          'type' => TType::STRUCT,
-          'class' => '\Airavata\API\Error\AiravataClientException',
-          ),
-        3 => array(
-          'var' => 'ase',
-          'type' => TType::STRUCT,
-          'class' => '\Airavata\API\Error\AiravataSystemException',
-          ),
-        4 => array(
-          'var' => 'ae',
-          'type' => TType::STRUCT,
-          'class' => '\Airavata\API\Error\AuthorizationException',
-          ),
-        );
-    }
-    if (is_array($vals)) {
-      if (isset($vals['success'])) {
-        $this->success = $vals['success'];
-      }
-      if (isset($vals['ire'])) {
-        $this->ire = $vals['ire'];
-      }
-      if (isset($vals['ace'])) {
-        $this->ace = $vals['ace'];
-      }
-      if (isset($vals['ase'])) {
-        $this->ase = $vals['ase'];
-      }
-      if (isset($vals['ae'])) {
-        $this->ae = $vals['ae'];
-      }
-    }
-  }
-
-  public function getName() {
-    return 'Airavata_isDataSharingEnabled_result';
-  }
-
-  public function read($input)
-  {
-    $xfer = 0;
-    $fname = null;
-    $ftype = 0;
-    $fid = 0;
-    $xfer += $input->readStructBegin($fname);
-    while (true)
-    {
-      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
-      if ($ftype == TType::STOP) {
-        break;
-      }
-      switch ($fid)
-      {
-        case 0:
-          if ($ftype == TType::BOOL) {
-            $xfer += $input->readBool($this->success);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 1:
-          if ($ftype == TType::STRUCT) {
-            $this->ire = new \Airavata\API\Error\InvalidRequestException();
-            $xfer += $this->ire->read($input);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 2:
-          if ($ftype == TType::STRUCT) {
-            $this->ace = new \Airavata\API\Error\AiravataClientException();
-            $xfer += $this->ace->read($input);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 3:
-          if ($ftype == TType::STRUCT) {
-            $this->ase = new \Airavata\API\Error\AiravataSystemException();
-            $xfer += $this->ase->read($input);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 4:
-          if ($ftype == TType::STRUCT) {
-            $this->ae = new \Airavata\API\Error\AuthorizationException();
-            $xfer += $this->ae->read($input);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        default:
-          $xfer += $input->skip($ftype);
-          break;
-      }
-      $xfer += $input->readFieldEnd();
-    }
-    $xfer += $input->readStructEnd();
-    return $xfer;
-  }
-
-  public function write($output) {
-    $xfer = 0;
-    $xfer += $output->writeStructBegin('Airavata_isDataSharingEnabled_result');
-    if ($this->success !== null) {
-      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
-      $xfer += $output->writeBool($this->success);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->ire !== null) {

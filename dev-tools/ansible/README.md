@@ -14,7 +14,7 @@ Ansible script to deploy Apache Airavata
 - **common** :- Checkout Airavata source from git and run maven build. Move keystore files.
 - **gfac** :- Setup Gfac deployment and Change configurations.
 - **api-orch** :- Setup Api-Orch deployment and Change configurations.
-- **pga** :- Deploy Airavata PHP Gateway._(Under development)_
+- **pga** :- Deploy Airavata PHP Gateway.
 
 ## Useful commands
 

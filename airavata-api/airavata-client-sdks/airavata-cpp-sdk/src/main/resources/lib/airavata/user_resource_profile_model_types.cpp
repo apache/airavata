@@ -31,60 +31,60 @@
 namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace userresourceprofile {
 
 
-ComputeResourcePreference::~ComputeResourcePreference() throw() {
+UserComputeResourcePreference::~UserComputeResourcePreference() throw() {
 }
 
 
-void ComputeResourcePreference::__set_computeResourceId(const std::string& val) {
+void UserComputeResourcePreference::__set_computeResourceId(const std::string& val) {
   this->computeResourceId = val;
 }
 
-void ComputeResourcePreference::__set_loginUserName(const std::string& val) {
+void UserComputeResourcePreference::__set_loginUserName(const std::string& val) {
   this->loginUserName = val;
 __isset.loginUserName = true;
 }
 
-void ComputeResourcePreference::__set_preferredBatchQueue(const std::string& val) {
+void UserComputeResourcePreference::__set_preferredBatchQueue(const std::string& val) {
   this->preferredBatchQueue = val;
 __isset.preferredBatchQueue = true;
 }
 
-void ComputeResourcePreference::__set_scratchLocation(const std::string& val) {
+void UserComputeResourcePreference::__set_scratchLocation(const std::string& val) {
   this->scratchLocation = val;
 __isset.scratchLocation = true;
 }
 
-void ComputeResourcePreference::__set_allocationProjectNumber(const std::string& val) {
+void UserComputeResourcePreference::__set_allocationProjectNumber(const std::string& val) {
   this->allocationProjectNumber = val;
 __isset.allocationProjectNumber = true;
 }
 
-void ComputeResourcePreference::__set_resourceSpecificCredentialStoreToken(const std::string& val) {
+void UserComputeResourcePreference::__set_resourceSpecificCredentialStoreToken(const std::string& val) {
   this->resourceSpecificCredentialStoreToken = val;
 __isset.resourceSpecificCredentialStoreToken = true;
 }
 
-void ComputeResourcePreference::__set_qualityOfService(const std::string& val) {
+void UserComputeResourcePreference::__set_qualityOfService(const std::string& val) {
   this->qualityOfService = val;
 __isset.qualityOfService = true;
 }
 
-void ComputeResourcePreference::__set_reservation(const std::string& val) {
+void UserComputeResourcePreference::__set_reservation(const std::string& val) {
   this->reservation = val;
 __isset.reservation = true;
 }
 
-void ComputeResourcePreference::__set_reservationStartTime(const int64_t val) {
+void UserComputeResourcePreference::__set_reservationStartTime(const int64_t val) {
   this->reservationStartTime = val;
 __isset.reservationStartTime = true;
 }
 
-void ComputeResourcePreference::__set_reservationEndTime(const int64_t val) {
+void UserComputeResourcePreference::__set_reservationEndTime(const int64_t val) {
   this->reservationEndTime = val;
 __isset.reservationEndTime = true;
 }
 
-uint32_t ComputeResourcePreference::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t UserComputeResourcePreference::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
   uint32_t xfer = 0;
@@ -200,10 +200,10 @@ uint32_t ComputeResourcePreference::read(::apache::thrift::protocol::TProtocol* 
   return xfer;
 }
 
-uint32_t ComputeResourcePreference::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t UserComputeResourcePreference::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("ComputeResourcePreference");
+  xfer += oprot->writeStructBegin("UserComputeResourcePreference");
 
   xfer += oprot->writeFieldBegin("computeResourceId", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->computeResourceId);
@@ -259,7 +259,7 @@ uint32_t ComputeResourcePreference::write(::apache::thrift::protocol::TProtocol*
   return xfer;
 }
 
-void swap(ComputeResourcePreference &a, ComputeResourcePreference &b) {
+void swap(UserComputeResourcePreference &a, UserComputeResourcePreference &b) {
   using ::std::swap;
   swap(a.computeResourceId, b.computeResourceId);
   swap(a.loginUserName, b.loginUserName);
@@ -274,7 +274,7 @@ void swap(ComputeResourcePreference &a, ComputeResourcePreference &b) {
   swap(a.__isset, b.__isset);
 }
 
-ComputeResourcePreference::ComputeResourcePreference(const ComputeResourcePreference& other0) {
+UserComputeResourcePreference::UserComputeResourcePreference(const UserComputeResourcePreference& other0) {
   computeResourceId = other0.computeResourceId;
   loginUserName = other0.loginUserName;
   preferredBatchQueue = other0.preferredBatchQueue;
@@ -287,7 +287,7 @@ ComputeResourcePreference::ComputeResourcePreference(const ComputeResourcePrefer
   reservationEndTime = other0.reservationEndTime;
   __isset = other0.__isset;
 }
-ComputeResourcePreference& ComputeResourcePreference::operator=(const ComputeResourcePreference& other1) {
+UserComputeResourcePreference& UserComputeResourcePreference::operator=(const UserComputeResourcePreference& other1) {
   computeResourceId = other1.computeResourceId;
   loginUserName = other1.loginUserName;
   preferredBatchQueue = other1.preferredBatchQueue;
@@ -301,9 +301,9 @@ ComputeResourcePreference& ComputeResourcePreference::operator=(const ComputeRes
   __isset = other1.__isset;
   return *this;
 }
-void ComputeResourcePreference::printTo(std::ostream& out) const {
+void UserComputeResourcePreference::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
-  out << "ComputeResourcePreference(";
+  out << "UserComputeResourcePreference(";
   out << "computeResourceId=" << to_string(computeResourceId);
   out << ", " << "loginUserName="; (__isset.loginUserName ? (out << to_string(loginUserName)) : (out << "<null>"));
   out << ", " << "preferredBatchQueue="; (__isset.preferredBatchQueue ? (out << to_string(preferredBatchQueue)) : (out << "<null>"));
@@ -318,30 +318,30 @@ void ComputeResourcePreference::printTo(std::ostream& out) const {
 }
 
 
-StoragePreference::~StoragePreference() throw() {
+UserStoragePreference::~UserStoragePreference() throw() {
 }
 
 
-void StoragePreference::__set_storageResourceId(const std::string& val) {
+void UserStoragePreference::__set_storageResourceId(const std::string& val) {
   this->storageResourceId = val;
 }
 
-void StoragePreference::__set_loginUserName(const std::string& val) {
+void UserStoragePreference::__set_loginUserName(const std::string& val) {
   this->loginUserName = val;
 __isset.loginUserName = true;
 }
 
-void StoragePreference::__set_fileSystemRootLocation(const std::string& val) {
+void UserStoragePreference::__set_fileSystemRootLocation(const std::string& val) {
   this->fileSystemRootLocation = val;
 __isset.fileSystemRootLocation = true;
 }
 
-void StoragePreference::__set_resourceSpecificCredentialStoreToken(const std::string& val) {
+void UserStoragePreference::__set_resourceSpecificCredentialStoreToken(const std::string& val) {
   this->resourceSpecificCredentialStoreToken = val;
 __isset.resourceSpecificCredentialStoreToken = true;
 }
 
-uint32_t StoragePreference::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t UserStoragePreference::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
   uint32_t xfer = 0;
@@ -409,10 +409,10 @@ uint32_t StoragePreference::read(::apache::thrift::protocol::TProtocol* iprot) {
   return xfer;
 }
 
-uint32_t StoragePreference::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t UserStoragePreference::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("StoragePreference");
+  xfer += oprot->writeStructBegin("UserStoragePreference");
 
   xfer += oprot->writeFieldBegin("storageResourceId", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->storageResourceId);
@@ -438,7 +438,7 @@ uint32_t StoragePreference::write(::apache::thrift::protocol::TProtocol* oprot) 
   return xfer;
 }
 
-void swap(StoragePreference &a, StoragePreference &b) {
+void swap(UserStoragePreference &a, UserStoragePreference &b) {
   using ::std::swap;
   swap(a.storageResourceId, b.storageResourceId);
   swap(a.loginUserName, b.loginUserName);
@@ -447,14 +447,14 @@ void swap(StoragePreference &a, StoragePreference &b) {
   swap(a.__isset, b.__isset);
 }
 
-StoragePreference::StoragePreference(const StoragePreference& other2) {
+UserStoragePreference::UserStoragePreference(const UserStoragePreference& other2) {
   storageResourceId = other2.storageResourceId;
   loginUserName = other2.loginUserName;
   fileSystemRootLocation = other2.fileSystemRootLocation;
   resourceSpecificCredentialStoreToken = other2.resourceSpecificCredentialStoreToken;
   __isset = other2.__isset;
 }
-StoragePreference& StoragePreference::operator=(const StoragePreference& other3) {
+UserStoragePreference& UserStoragePreference::operator=(const UserStoragePreference& other3) {
   storageResourceId = other3.storageResourceId;
   loginUserName = other3.loginUserName;
   fileSystemRootLocation = other3.fileSystemRootLocation;
@@ -462,9 +462,9 @@ StoragePreference& StoragePreference::operator=(const StoragePreference& other3)
   __isset = other3.__isset;
   return *this;
 }
-void StoragePreference::printTo(std::ostream& out) const {
+void UserStoragePreference::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
-  out << "StoragePreference(";
+  out << "UserStoragePreference(";
   out << "storageResourceId=" << to_string(storageResourceId);
   out << ", " << "loginUserName="; (__isset.loginUserName ? (out << to_string(loginUserName)) : (out << "<null>"));
   out << ", " << "fileSystemRootLocation="; (__isset.fileSystemRootLocation ? (out << to_string(fileSystemRootLocation)) : (out << "<null>"));
@@ -481,19 +481,23 @@ void UserResourceProfile::__set_userId(const std::string& val) {
   this->userId = val;
 }
 
+void UserResourceProfile::__set_gatewayID(const std::string& val) {
+  this->gatewayID = val;
+}
+
 void UserResourceProfile::__set_credentialStoreToken(const std::string& val) {
   this->credentialStoreToken = val;
 __isset.credentialStoreToken = true;
 }
 
-void UserResourceProfile::__set_computeResourcePreferences(const std::vector<ComputeResourcePreference> & val) {
-  this->computeResourcePreferences = val;
-__isset.computeResourcePreferences = true;
+void UserResourceProfile::__set_userComputeResourcePreferences(const std::vector<UserComputeResourcePreference> & val) {
+  this->userComputeResourcePreferences = val;
+__isset.userComputeResourcePreferences = true;
 }
 
-void UserResourceProfile::__set_storagePreferences(const std::vector<StoragePreference> & val) {
-  this->storagePreferences = val;
-__isset.storagePreferences = true;
+void UserResourceProfile::__set_userStoragePreferences(const std::vector<UserStoragePreference> & val) {
+  this->userStoragePreferences = val;
+__isset.userStoragePreferences = true;
 }
 
 void UserResourceProfile::__set_identityServerTenant(const std::string& val) {
@@ -519,6 +523,7 @@ uint32_t UserResourceProfile::read(::apache::thrift::protocol::TProtocol* iprot)
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_userId = false;
+  bool isset_gatewayID = false;
 
   while (true)
   {
@@ -538,28 +543,16 @@ uint32_t UserResourceProfile::read(::apache::thrift::protocol::TProtocol* iprot)
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->credentialStoreToken);
-          this->__isset.credentialStoreToken = true;
+          xfer += iprot->readString(this->gatewayID);
+          isset_gatewayID = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 3:
-        if (ftype == ::apache::thrift::protocol::T_LIST) {
-          {
-            this->computeResourcePreferences.clear();
-            uint32_t _size4;
-            ::apache::thrift::protocol::TType _etype7;
-            xfer += iprot->readListBegin(_etype7, _size4);
-            this->computeResourcePreferences.resize(_size4);
-            uint32_t _i8;
-            for (_i8 = 0; _i8 < _size4; ++_i8)
-            {
-              xfer += this->computeResourcePreferences[_i8].read(iprot);
-            }
-            xfer += iprot->readListEnd();
-          }
-          this->__isset.computeResourcePreferences = true;
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->credentialStoreToken);
+          this->__isset.credentialStoreToken = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -567,24 +560,44 @@ uint32_t UserResourceProfile::read(::apache::thrift::protocol::TProtocol* iprot)
       case 4:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
-            this->storagePreferences.clear();
-            uint32_t _size9;
-            ::apache::thrift::protocol::TType _etype12;
-            xfer += iprot->readListBegin(_etype12, _size9);
-            this->storagePreferences.resize(_size9);
-            uint32_t _i13;
-            for (_i13 = 0; _i13 < _size9; ++_i13)
+            this->userComputeResourcePreferences.clear();
+            uint32_t _size4;
+            ::apache::thrift::protocol::TType _etype7;
+            xfer += iprot->readListBegin(_etype7, _size4);
+            this->userComputeResourcePreferences.resize(_size4);
+            uint32_t _i8;
+            for (_i8 = 0; _i8 < _size4; ++_i8)
             {
-              xfer += this->storagePreferences[_i13].read(iprot);
+              xfer += this->userComputeResourcePreferences[_i8].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
-          this->__isset.storagePreferences = true;
+          this->__isset.userComputeResourcePreferences = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 5:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->userStoragePreferences.clear();
+            uint32_t _size9;
+            ::apache::thrift::protocol::TType _etype12;
+            xfer += iprot->readListBegin(_etype12, _size9);
+            this->userStoragePreferences.resize(_size9);
+            uint32_t _i13;
+            for (_i13 = 0; _i13 < _size9; ++_i13)
+            {
+              xfer += this->userStoragePreferences[_i13].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.userStoragePreferences = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 6:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->identityServerTenant);
           this->__isset.identityServerTenant = true;
@@ -592,7 +605,7 @@ uint32_t UserResourceProfile::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 6:
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->identityServerPwdCredToken);
           this->__isset.identityServerPwdCredToken = true;
@@ -611,6 +624,8 @@ uint32_t UserResourceProfile::read(::apache::thrift::protocol::TProtocol* iprot)
 
   if (!isset_userId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_gatewayID)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
@@ -623,17 +638,21 @@ uint32_t UserResourceProfile::write(::apache::thrift::protocol::TProtocol* oprot
   xfer += oprot->writeString(this->userId);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("gatewayID", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->gatewayID);
+  xfer += oprot->writeFieldEnd();
+
   if (this->__isset.credentialStoreToken) {
-    xfer += oprot->writeFieldBegin("credentialStoreToken", ::apache::thrift::protocol::T_STRING, 2);
+    xfer += oprot->writeFieldBegin("credentialStoreToken", ::apache::thrift::protocol::T_STRING, 3);
     xfer += oprot->writeString(this->credentialStoreToken);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.computeResourcePreferences) {
-    xfer += oprot->writeFieldBegin("computeResourcePreferences", ::apache::thrift::protocol::T_LIST, 3);
+  if (this->__isset.userComputeResourcePreferences) {
+    xfer += oprot->writeFieldBegin("userComputeResourcePreferences", ::apache::thrift::protocol::T_LIST, 4);
     {
-      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->computeResourcePreferences.size()));
-      std::vector<ComputeResourcePreference> ::const_iterator _iter14;
-      for (_iter14 = this->computeResourcePreferences.begin(); _iter14 != this->computeResourcePreferences.end(); ++_iter14)
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->userComputeResourcePreferences.size()));
+      std::vector<UserComputeResourcePreference> ::const_iterator _iter14;
+      for (_iter14 = this->userComputeResourcePreferences.begin(); _iter14 != this->userComputeResourcePreferences.end(); ++_iter14)
       {
         xfer += (*_iter14).write(oprot);
       }
@@ -641,12 +660,12 @@ uint32_t UserResourceProfile::write(::apache::thrift::protocol::TProtocol* oprot
     }
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.storagePreferences) {
-    xfer += oprot->writeFieldBegin("storagePreferences", ::apache::thrift::protocol::T_LIST, 4);
+  if (this->__isset.userStoragePreferences) {
+    xfer += oprot->writeFieldBegin("userStoragePreferences", ::apache::thrift::protocol::T_LIST, 5);
     {
-      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->storagePreferences.size()));
-      std::vector<StoragePreference> ::const_iterator _iter15;
-      for (_iter15 = this->storagePreferences.begin(); _iter15 != this->storagePreferences.end(); ++_iter15)
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->userStoragePreferences.size()));
+      std::vector<UserStoragePreference> ::const_iterator _iter15;
+      for (_iter15 = this->userStoragePreferences.begin(); _iter15 != this->userStoragePreferences.end(); ++_iter15)
       {
         xfer += (*_iter15).write(oprot);
       }
@@ -655,12 +674,12 @@ uint32_t UserResourceProfile::write(::apache::thrift::protocol::TProtocol* oprot
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.identityServerTenant) {
-    xfer += oprot->writeFieldBegin("identityServerTenant", ::apache::thrift::protocol::T_STRING, 5);
+    xfer += oprot->writeFieldBegin("identityServerTenant", ::apache::thrift::protocol::T_STRING, 6);
     xfer += oprot->writeString(this->identityServerTenant);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.identityServerPwdCredToken) {
-    xfer += oprot->writeFieldBegin("identityServerPwdCredToken", ::apache::thrift::protocol::T_STRING, 6);
+    xfer += oprot->writeFieldBegin("identityServerPwdCredToken", ::apache::thrift::protocol::T_STRING, 7);
     xfer += oprot->writeString(this->identityServerPwdCredToken);
     xfer += oprot->writeFieldEnd();
   }
@@ -672,9 +691,10 @@ uint32_t UserResourceProfile::write(::apache::thrift::protocol::TProtocol* oprot
 void swap(UserResourceProfile &a, UserResourceProfile &b) {
   using ::std::swap;
   swap(a.userId, b.userId);
+  swap(a.gatewayID, b.gatewayID);
   swap(a.credentialStoreToken, b.credentialStoreToken);
-  swap(a.computeResourcePreferences, b.computeResourcePreferences);
-  swap(a.storagePreferences, b.storagePreferences);
+  swap(a.userComputeResourcePreferences, b.userComputeResourcePreferences);
+  swap(a.userStoragePreferences, b.userStoragePreferences);
   swap(a.identityServerTenant, b.identityServerTenant);
   swap(a.identityServerPwdCredToken, b.identityServerPwdCredToken);
   swap(a.__isset, b.__isset);
@@ -682,18 +702,20 @@ void swap(UserResourceProfile &a, UserResourceProfile &b) {
 
 UserResourceProfile::UserResourceProfile(const UserResourceProfile& other16) {
   userId = other16.userId;
+  gatewayID = other16.gatewayID;
   credentialStoreToken = other16.credentialStoreToken;
-  computeResourcePreferences = other16.computeResourcePreferences;
-  storagePreferences = other16.storagePreferences;
+  userComputeResourcePreferences = other16.userComputeResourcePreferences;
+  userStoragePreferences = other16.userStoragePreferences;
   identityServerTenant = other16.identityServerTenant;
   identityServerPwdCredToken = other16.identityServerPwdCredToken;
   __isset = other16.__isset;
 }
 UserResourceProfile& UserResourceProfile::operator=(const UserResourceProfile& other17) {
   userId = other17.userId;
+  gatewayID = other17.gatewayID;
   credentialStoreToken = other17.credentialStoreToken;
-  computeResourcePreferences = other17.computeResourcePreferences;
-  storagePreferences = other17.storagePreferences;
+  userComputeResourcePreferences = other17.userComputeResourcePreferences;
+  userStoragePreferences = other17.userStoragePreferences;
   identityServerTenant = other17.identityServerTenant;
   identityServerPwdCredToken = other17.identityServerPwdCredToken;
   __isset = other17.__isset;
@@ -703,9 +725,10 @@ void UserResourceProfile::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
   out << "UserResourceProfile(";
   out << "userId=" << to_string(userId);
+  out << ", " << "gatewayID=" << to_string(gatewayID);
   out << ", " << "credentialStoreToken="; (__isset.credentialStoreToken ? (out << to_string(credentialStoreToken)) : (out << "<null>"));
-  out << ", " << "computeResourcePreferences="; (__isset.computeResourcePreferences ? (out << to_string(computeResourcePreferences)) : (out << "<null>"));
-  out << ", " << "storagePreferences="; (__isset.storagePreferences ? (out << to_string(storagePreferences)) : (out << "<null>"));
+  out << ", " << "userComputeResourcePreferences="; (__isset.userComputeResourcePreferences ? (out << to_string(userComputeResourcePreferences)) : (out << "<null>"));
+  out << ", " << "userStoragePreferences="; (__isset.userStoragePreferences ? (out << to_string(userStoragePreferences)) : (out << "<null>"));
   out << ", " << "identityServerTenant="; (__isset.identityServerTenant ? (out << to_string(identityServerTenant)) : (out << "<null>"));
   out << ", " << "identityServerPwdCredToken="; (__isset.identityServerPwdCredToken ? (out << to_string(identityServerPwdCredToken)) : (out << "<null>"));
   out << ")";
