@@ -30,6 +30,7 @@ import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.datamodel.CertificateCredential;
 import org.apache.airavata.credential.store.datamodel.PasswordCredential;
 import org.apache.airavata.credential.store.datamodel.SSHCredential;
+import org.apache.airavata.credential.store.datamodel.SSHCredentialSummary;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.credential.store.store.impl.CertificateCredentialWriter;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
@@ -183,6 +184,30 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
         } catch (CredentialStoreException e) {
             log.error("Error occurred while retrieving SSH credentialfor token - " +  tokenId + " and gateway id - " + gatewayId, e);
             throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while retrieving SSH credential for token - " +  tokenId + " and gateway id - " + gatewayId);
+        }
+    }
+
+    @Override
+    public SSHCredentialSummary getSSHCredentialSummary(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
+        try {
+            Credential credential = credentialReader.getCredential(gatewayId, tokenId);
+            if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) {
+                org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential credential1 = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
+                SSHCredentialSummary sshCredentialSummary = new SSHCredentialSummary();
+                sshCredentialSummary.setUsername(credential1.getPortalUserName());
+                sshCredentialSummary.setGatewayId(credential1.getGateway());
+                sshCredentialSummary.setPublicKey(new String(credential1.getPublicKey()));
+                sshCredentialSummary.setToken(credential1.getToken());
+                sshCredentialSummary.setPersistedTime(credential1.getCertificateRequestedTime().getTime());
+                return sshCredentialSummary;
+            } else {
+                log.info("Could not find SSH credential for token - " + tokenId + " and "
+                        + "gateway id - " + gatewayId);
+                return null;
+            }
+        } catch (CredentialStoreException e) {
+            log.error("Error occurred while retrieving SSH credential Summary for token - " +  tokenId + " and gateway id - " + gatewayId, e);
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while retrieving SSH credential Summary for token - " +  tokenId + " and gateway id - " + gatewayId);
         }
     }
 
