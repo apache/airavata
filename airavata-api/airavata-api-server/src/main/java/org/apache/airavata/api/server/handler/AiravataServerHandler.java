@@ -77,7 +77,10 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.sharing.registry.models.Domain;
 import org.apache.airavata.sharing.registry.models.Entity;
+import org.apache.airavata.sharing.registry.models.EntityType;
+import org.apache.airavata.sharing.registry.models.PermissionType;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -146,7 +149,51 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String addGateway(AuthzToken authzToken, Gateway gateway) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
-            return getRegistryServiceClient().addGateway(gateway);
+            String gatewayId = getRegistryServiceClient().addGateway(gateway);
+            Domain domain = new Domain();
+            domain.setDomainId(gateway.getGatewayId());
+            domain.setName(gateway.getGatewayName());
+            domain.setDescription("Domain entry for " + domain.name);
+            sharingRegistryServerHandler.createDomain(domain);
+
+            //Creating Entity Types for each domain
+            EntityType entityType = new EntityType();
+            entityType.setEntityTypeId(domain.domainId+":PROJECT");
+            entityType.setDomainId(domain.domainId);
+            entityType.setName("PROJECT");
+            entityType.setDescription("Project entity type");
+            sharingRegistryServerHandler.createEntityType(entityType);
+
+            entityType = new EntityType();
+            entityType.setEntityTypeId(domain.domainId+":EXPERIMENT");
+            entityType.setDomainId(domain.domainId);
+            entityType.setName("EXPERIMENT");
+            entityType.setDescription("Experiment entity type");
+            sharingRegistryServerHandler.createEntityType(entityType);
+
+            entityType = new EntityType();
+            entityType.setEntityTypeId(domain.domainId+":FILE");
+            entityType.setDomainId(domain.domainId);
+            entityType.setName("FILE");
+            entityType.setDescription("File entity type");
+            sharingRegistryServerHandler.createEntityType(entityType);
+
+            //Creating Permission Types for each domain
+            PermissionType permissionType = new PermissionType();
+            permissionType.setPermissionTypeId(domain.domainId+":READ");
+            permissionType.setDomainId(domain.domainId);
+            permissionType.setName("READ");
+            permissionType.setDescription("Read permission type");
+            sharingRegistryServerHandler.createPermissionType(permissionType);
+
+            permissionType = new PermissionType();
+            permissionType.setPermissionTypeId(domain.domainId+":WRITE");
+            permissionType.setDomainId(domain.domainId);
+            permissionType.setName("WRITE");
+            permissionType.setDescription("Write permission type");
+            sharingRegistryServerHandler.createPermissionType(permissionType);
+
+            return gatewayId;
         } catch (ApplicationSettingsException | RegistryServiceException e) {
             logger.error("Error while adding gateway", e);
             AiravataSystemException exception = new AiravataSystemException();
