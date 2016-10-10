@@ -3664,7 +3664,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "WRITE", true);
                 else
                     sharingRegistryServerHandler.shareEntityWithUsers(resourceId,
-                            Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get("GatewatId") + ":" + "READ", true);
+                            Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ", true);
             }
             return true;
         } catch (Exception e) {
