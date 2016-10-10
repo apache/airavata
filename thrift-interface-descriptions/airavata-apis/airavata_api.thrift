@@ -36,6 +36,7 @@ include "../data-models/app-catalog-models/application_io_models.thrift"
 include "../data-models/app-catalog-models/application_deployment_model.thrift"
 include "../data-models/app-catalog-models/application_interface_model.thrift"
 include "../data-models/resource-catalog-models/compute_resource_model.thrift"
+include "../data-models/resource-catalog-models/credential_summary.thrift"
 include "../data-models/resource-catalog-models/storage_resource_model.thrift"
 include "../data-models/resource-catalog-models/gateway_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/user_resource_profile_model.thrift"
@@ -344,6 +345,25 @@ service Airavata {
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
+
+    /**
+       *
+       * Get all Public Keys of the Gateway
+       *
+       * @param CredStoreToken
+       *    Credential Store Token which you want to find the Public Key for.
+       *
+       * @param gatewayId
+       *    This is the unique identifier of your gateway where the token and public key was generated from.
+       *
+       * @return publicKey
+       *
+       **/
+  list<credential_summary.CredentialSummary> getAllGatewaySSHPubKeysSummary (1: required security_model.AuthzToken authzToken,
+                                                   2: required string gatewayId)
+                 throws (1: airavata_errors.InvalidRequestException ire,
+                         2: airavata_errors.AiravataClientException ace,
+                         3: airavata_errors.AiravataSystemException ase)
 
 
   map<string, string> getAllGatewayPWDCredentials (1: required security_model.AuthzToken authzToken,
