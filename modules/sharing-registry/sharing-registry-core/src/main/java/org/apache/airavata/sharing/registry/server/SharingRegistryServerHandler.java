@@ -22,7 +22,6 @@ package org.apache.airavata.sharing.registry.server;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.sharing.registry.db.entities.GroupMembershipEntityPK;
 import org.apache.airavata.sharing.registry.db.entities.SharingEntityPK;
 import org.apache.airavata.sharing.registry.db.repositories.*;
@@ -427,16 +426,6 @@ public class SharingRegistryServerHandler implements GovRegistryService.Iface{
             user.setUserName(user.userId.split("@")[0]);
 
             createUser(user);
-
-            UserGroup userGroup = new UserGroup();
-            userGroup.setGroupId(user.userId);
-            userGroup.setDomainId(user.domainId);
-            userGroup.setOwnerId(user.userId);
-            userGroup.setName(user.userName);
-            userGroup.setDescription("Single user group for " + user.userName);
-            userGroup.setGroupType(GroupType.SINGLE_USER);
-
-            createGroup(userGroup);
         }
 
         entity.setCreatedTime(System.currentTimeMillis());
