@@ -34,6 +34,17 @@ public abstract class Credential implements Serializable {
     private Date persistedTime;
     private String token;
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    private String description;
+
+
     public String getToken() {
         return token;
     }
