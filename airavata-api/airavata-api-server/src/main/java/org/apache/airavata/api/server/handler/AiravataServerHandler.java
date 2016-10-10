@@ -704,7 +704,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             if (ServerSettings.isEnableSharing()){
                 // user projects + user accessible projects
                 List<String> accessibleProjectIds = new ArrayList<>();
-                sharingRegistryServerHandler.searchEntities(userName+"@"+gatewayId , gatewayId+":READ",
+                sharingRegistryServerHandler.searchEntities(userName+"@"+gatewayId , gatewayId+":PROJECT",
                         new HashMap<>(), offset, limit).stream().forEach(p->accessibleProjectIds.add(p.entityId));
                 return getRegistryServiceClient().searchProjects(gatewayId, userName, accessibleProjectIds, new HashMap<>(), limit, offset);
             }else{
