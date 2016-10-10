@@ -40,7 +40,7 @@ struct SSHCredentialSummary {
     2: required string username,
     3: optional string publicKey,
     4: optional i64 persistedTime,
-    5: optional string token,
+    5: required string token,
     6: optional string description
 }
 
