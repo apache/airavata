@@ -20,15 +20,32 @@
 */
 package org.apache.airavata.sharing.registry.db.repositories;
 
+import org.apache.airavata.sharing.registry.db.entities.SharingEntity;
 import org.apache.airavata.sharing.registry.db.entities.UserGroupEntity;
+import org.apache.airavata.sharing.registry.db.utils.DBConstants;
+import org.apache.airavata.sharing.registry.models.GroupType;
+import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.models.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class UserGroupRepository extends AbstractRepository<UserGroup, UserGroupEntity, String> {
     private final static Logger logger = LoggerFactory.getLogger(UserGroupRepository.class);
 
     public UserGroupRepository() {
         super(UserGroup.class, UserGroupEntity.class);
+    }
+
+    public List<UserGroup> getAccessibleGroups(String entityId, String permissionTypeId) throws SharingRegistryException {
+        String query = "SELECT g from " + UserGroupEntity.class.getSimpleName() + " g, " + SharingEntity.class.getSimpleName() + " s";
+        query += " WHERE ";
+        query += "g." + DBConstants.UserGroupTable.GROUP_ID + " = s." + DBConstants.SharingTable.GROUP_ID + " AND ";
+        query += "s." + DBConstants.SharingTable.ENTITY_ID + " = '" + entityId + "' AND ";
+        query += "s." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " = '" + permissionTypeId + "' AND ";
+        query += "g." + DBConstants.UserGroupTable.GROUP_TYPE + " = '" + GroupType.MULTI_USER.toString() + "'";
+        query += " ORDER BY s.createdTime DESC";
+        return select(query, 0, -1);
     }
 }
