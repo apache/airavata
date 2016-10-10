@@ -22,6 +22,7 @@ package org.apache.airavata.sharing.registry.server;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.sharing.registry.db.entities.GroupMembershipEntityPK;
 import org.apache.airavata.sharing.registry.db.entities.SharingEntityPK;
 import org.apache.airavata.sharing.registry.db.repositories.*;
