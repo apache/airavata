@@ -71,7 +71,7 @@ public class SSHCredentialSummary implements org.apache.thrift.TBase<SSHCredenti
   public String username; // required
   public String publicKey; // optional
   public long persistedTime; // optional
-  public String token; // optional
+  public String token; // required
   public String description; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -150,7 +150,7 @@ public class SSHCredentialSummary implements org.apache.thrift.TBase<SSHCredenti
   // isset id assignments
   private static final int __PERSISTEDTIME_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.PUBLIC_KEY,_Fields.PERSISTED_TIME,_Fields.TOKEN,_Fields.DESCRIPTION};
+  private static final _Fields optionals[] = {_Fields.PUBLIC_KEY,_Fields.PERSISTED_TIME,_Fields.DESCRIPTION};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -162,7 +162,7 @@ public class SSHCredentialSummary implements org.apache.thrift.TBase<SSHCredenti
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.PERSISTED_TIME, new org.apache.thrift.meta_data.FieldMetaData("persistedTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
-    tmpMap.put(_Fields.TOKEN, new org.apache.thrift.meta_data.FieldMetaData("token", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.TOKEN, new org.apache.thrift.meta_data.FieldMetaData("token", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("description", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
@@ -175,11 +175,13 @@ public class SSHCredentialSummary implements org.apache.thrift.TBase<SSHCredenti
 
   public SSHCredentialSummary(
     String gatewayId,
-    String username)
+    String username,
+    String token)
   {
     this();
     this.gatewayId = gatewayId;
     this.username = username;
+    this.token = token;
   }
 
   /**
@@ -689,16 +691,14 @@ public class SSHCredentialSummary implements org.apache.thrift.TBase<SSHCredenti
       sb.append(this.persistedTime);
       first = false;
     }
-    if (isSetToken()) {
-      if (!first) sb.append(", ");
-      sb.append("token:");
-      if (this.token == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.token);
-      }
-      first = false;
+    if (!first) sb.append(", ");
+    sb.append("token:");
+    if (this.token == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.token);
     }
+    first = false;
     if (isSetDescription()) {
       if (!first) sb.append(", ");
       sb.append("description:");
@@ -720,6 +720,9 @@ public class SSHCredentialSummary implements org.apache.thrift.TBase<SSHCredenti
     }
     if (username == null) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'username' was not present! Struct: " + toString());
+    }
+    if (token == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'token' was not present! Struct: " + toString());
     }
     // check for sub-struct validity
   }
@@ -846,11 +849,9 @@ public class SSHCredentialSummary implements org.apache.thrift.TBase<SSHCredenti
         oprot.writeFieldEnd();
       }
       if (struct.token != null) {
-        if (struct.isSetToken()) {
-          oprot.writeFieldBegin(TOKEN_FIELD_DESC);
-          oprot.writeString(struct.token);
-          oprot.writeFieldEnd();
-        }
+        oprot.writeFieldBegin(TOKEN_FIELD_DESC);
+        oprot.writeString(struct.token);
+        oprot.writeFieldEnd();
       }
       if (struct.description != null) {
         if (struct.isSetDescription()) {
@@ -878,6 +879,7 @@ public class SSHCredentialSummary implements org.apache.thrift.TBase<SSHCredenti
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.gatewayId);
       oprot.writeString(struct.username);
+      oprot.writeString(struct.token);
       BitSet optionals = new BitSet();
       if (struct.isSetPublicKey()) {
         optionals.set(0);
@@ -885,21 +887,15 @@ public class SSHCredentialSummary implements org.apache.thrift.TBase<SSHCredenti
       if (struct.isSetPersistedTime()) {
         optionals.set(1);
       }
-      if (struct.isSetToken()) {
+      if (struct.isSetDescription()) {
         optionals.set(2);
       }
-      if (struct.isSetDescription()) {
-        optionals.set(3);
-      }
-      oprot.writeBitSet(optionals, 4);
+      oprot.writeBitSet(optionals, 3);
       if (struct.isSetPublicKey()) {
         oprot.writeString(struct.publicKey);
       }
       if (struct.isSetPersistedTime()) {
         oprot.writeI64(struct.persistedTime);
-      }
-      if (struct.isSetToken()) {
-        oprot.writeString(struct.token);
       }
       if (struct.isSetDescription()) {
         oprot.writeString(struct.description);
@@ -913,7 +909,9 @@ public class SSHCredentialSummary implements org.apache.thrift.TBase<SSHCredenti
       struct.setGatewayIdIsSet(true);
       struct.username = iprot.readString();
       struct.setUsernameIsSet(true);
-      BitSet incoming = iprot.readBitSet(4);
+      struct.token = iprot.readString();
+      struct.setTokenIsSet(true);
+      BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
         struct.publicKey = iprot.readString();
         struct.setPublicKeyIsSet(true);
@@ -923,10 +921,6 @@ public class SSHCredentialSummary implements org.apache.thrift.TBase<SSHCredenti
         struct.setPersistedTimeIsSet(true);
       }
       if (incoming.get(2)) {
-        struct.token = iprot.readString();
-        struct.setTokenIsSet(true);
-      }
-      if (incoming.get(3)) {
         struct.description = iprot.readString();
         struct.setDescriptionIsSet(true);
       }
