@@ -31,7 +31,17 @@ struct SSHCredential {
     4: optional string publicKey,
     5: optional string privateKey,
     6: optional i64 persistedTime,
-    7: optional string token
+    7: optional string token,
+    8: optional string description
+}
+
+struct SSHCredentialSummary {
+    1: required string gatewayId,
+    2: required string username,
+    3: optional string publicKey,
+    4: optional i64 persistedTime,
+    5: optional string token,
+    6: optional string description
 }
 
 struct CommunityUser {

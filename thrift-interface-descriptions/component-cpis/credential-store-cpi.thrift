@@ -41,6 +41,9 @@ service CredentialStoreService {
   string addSSHCredential (1: required credential_store_data_models.SSHCredential sshCredential)
                         throws (1:credential_store_errors.CredentialStoreException csException);
 
+  string addSSHCredentialSummary (1: required credential_store_data_models.SSHCredentialSummary sshCredentialSummary)
+                          throws (1:credential_store_errors.CredentialStoreException csException);
+
   string addCertificateCredential (1: required credential_store_data_models.CertificateCredential certificateCredential)
                         throws (1:credential_store_errors.CredentialStoreException csException);
 
@@ -49,6 +52,9 @@ service CredentialStoreService {
 
   credential_store_data_models.SSHCredential getSSHCredential (1: required string tokenId, 2: required string gatewayId)
                         throws (1:credential_store_errors.CredentialStoreException csException);
+
+  credential_store_data_models.SSHCredentialSummary getSSHCredentialSummary (1: required string tokenId, 2: required string gatewayId)
+                          throws (1:credential_store_errors.CredentialStoreException csException);
 
   credential_store_data_models.CertificateCredential getCertificateCredential (1: required string tokenId, 2: required string gatewayId)
                         throws (1:credential_store_errors.CredentialStoreException csException);
@@ -63,6 +69,8 @@ service CredentialStoreService {
   map<string,string> getAllPWDCredentialsForGateway (1: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
 
   bool deleteSSHCredential(1: required string tokenId, 2: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
+
+  bool deleteSSHCredentialSummary(1: required string tokenId, 2: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
 
   bool deletePWDCredential(1: required string tokenId, 2: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
 
