@@ -701,7 +701,16 @@ public class AiravataServerHandler implements Airavata.Iface {
                                                           int limit, int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
-            return getRegistryServiceClient().getUserProjects(gatewayId, userName, limit, offset);
+            if (ServerSettings.isEnableSharing()){
+                // user projects + user accessible projects
+                List<String> accessibleProjectIds = new ArrayList<>();
+                sharingRegistryServerHandler.searchEntities(userName+"@"+gatewayId , gatewayId+":READ",
+                        new HashMap<>(), offset, limit).stream().forEach(p->accessibleProjectIds.add(p.entityId));
+                return getRegistryServiceClient().searchProjects(gatewayId, userName, accessibleProjectIds, new HashMap<>(), limit, offset);
+            }else{
+                return getRegistryServiceClient().getUserProjects(gatewayId, userName, limit, offset);
+            }
+
         } catch (ApplicationSettingsException | RegistryServiceException e) {
             logger.error("Error while retrieving projects", e);
             AiravataSystemException exception = new AiravataSystemException();
