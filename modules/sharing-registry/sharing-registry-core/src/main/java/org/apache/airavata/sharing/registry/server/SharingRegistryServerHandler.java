@@ -21,10 +21,12 @@
 package org.apache.airavata.sharing.registry.server;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.sharing.registry.db.entities.GroupMembershipEntityPK;
 import org.apache.airavata.sharing.registry.db.entities.SharingEntityPK;
 import org.apache.airavata.sharing.registry.db.repositories.*;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
+import org.apache.airavata.sharing.registry.db.utils.JPAUtils;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.service.cpi.GovRegistryService;
 import org.apache.thrift.TException;
@@ -49,8 +51,8 @@ public class SharingRegistryServerHandler implements GovRegistryService.Iface{
     private SharingRepository sharingRepository;
 
     public SharingRegistryServerHandler() throws ApplicationSettingsException, TException {
-//        JPAUtils.initializeDB();
-//
+        JPAUtils.initializeDB();
+
         this.domainRepository = new DomainRepository();
         this.userRepository = new UserRepository();
         this.userGroupRepository = new UserGroupRepository();
@@ -59,58 +61,58 @@ public class SharingRegistryServerHandler implements GovRegistryService.Iface{
         this.permissionTypeRepository = new PermissionTypeRepository();
         this.entityRepository = new EntityRepository();
         this.sharingRepository = new SharingRepository();
-//
-//        if(!domainRepository.isExists(ServerSettings.getDefaultUserGateway())){
-//            Domain domain = new Domain();
-//            domain.setDomainId(ServerSettings.getDefaultUserGateway());
-//            domain.setName(ServerSettings.getDefaultUserGateway());
-//            domain.setDescription("Domain entry for " + domain.name);
-//            createDomain(domain);
-//
-//            User user = new User();
-//            user.setDomainId(domain.domainId);
-//            user.setUserId(ServerSettings.getDefaultUser()+"@"+ServerSettings.getDefaultUserGateway());
-//            user.setUserName(ServerSettings.getDefaultUser());
-//            createUser(user);
-//
-//            //Creating Entity Types for each domain
-//            EntityType entityType = new EntityType();
-//            entityType.setEntityTypeId(domain.domainId+":PROJECT");
-//            entityType.setDomainId(domain.domainId);
-//            entityType.setName("PROJECT");
-//            entityType.setDescription("Project entity type");
-//            createEntityType(entityType);
-//
-//            entityType = new EntityType();
-//            entityType.setEntityTypeId(domain.domainId+":EXPERIMENT");
-//            entityType.setDomainId(domain.domainId);
-//            entityType.setName("EXPERIMENT");
-//            entityType.setDescription("Experiment entity type");
-//            createEntityType(entityType);
-//
-//            entityType = new EntityType();
-//            entityType.setEntityTypeId(domain.domainId+":FILE");
-//            entityType.setDomainId(domain.domainId);
-//            entityType.setName("FILE");
-//            entityType.setDescription("File entity type");
-//            createEntityType(entityType);
-//
-//            //Creating Permission Types for each domain
-//            PermissionType permissionType = new PermissionType();
-//            permissionType.setPermissionTypeId(domain.domainId+":READ");
-//            permissionType.setDomainId(domain.domainId);
-//            permissionType.setName("READ");
-//            permissionType.setDescription("Read permission type");
-//            createPermissionType(permissionType);
-//
-//            permissionType = new PermissionType();
-//            permissionType.setPermissionTypeId(domain.domainId+":WRITE");
-//            permissionType.setDomainId(domain.domainId);
-//            permissionType.setName("WRITE");
-//            permissionType.setDescription("Write permission type");
-//            createPermissionType(permissionType);
-//
-//        }
+
+        if(!domainRepository.isExists(ServerSettings.getDefaultUserGateway())){
+            Domain domain = new Domain();
+            domain.setDomainId(ServerSettings.getDefaultUserGateway());
+            domain.setName(ServerSettings.getDefaultUserGateway());
+            domain.setDescription("Domain entry for " + domain.name);
+            createDomain(domain);
+
+            User user = new User();
+            user.setDomainId(domain.domainId);
+            user.setUserId(ServerSettings.getDefaultUser()+"@"+ServerSettings.getDefaultUserGateway());
+            user.setUserName(ServerSettings.getDefaultUser());
+            createUser(user);
+
+            //Creating Entity Types for each domain
+            EntityType entityType = new EntityType();
+            entityType.setEntityTypeId(domain.domainId+":PROJECT");
+            entityType.setDomainId(domain.domainId);
+            entityType.setName("PROJECT");
+            entityType.setDescription("Project entity type");
+            createEntityType(entityType);
+
+            entityType = new EntityType();
+            entityType.setEntityTypeId(domain.domainId+":EXPERIMENT");
+            entityType.setDomainId(domain.domainId);
+            entityType.setName("EXPERIMENT");
+            entityType.setDescription("Experiment entity type");
+            createEntityType(entityType);
+
+            entityType = new EntityType();
+            entityType.setEntityTypeId(domain.domainId+":FILE");
+            entityType.setDomainId(domain.domainId);
+            entityType.setName("FILE");
+            entityType.setDescription("File entity type");
+            createEntityType(entityType);
+
+            //Creating Permission Types for each domain
+            PermissionType permissionType = new PermissionType();
+            permissionType.setPermissionTypeId(domain.domainId+":READ");
+            permissionType.setDomainId(domain.domainId);
+            permissionType.setName("READ");
+            permissionType.setDescription("Read permission type");
+            createPermissionType(permissionType);
+
+            permissionType = new PermissionType();
+            permissionType.setPermissionTypeId(domain.domainId+":WRITE");
+            permissionType.setDomainId(domain.domainId);
+            permissionType.setName("WRITE");
+            permissionType.setDescription("Write permission type");
+            createPermissionType(permissionType);
+
+        }
     }
 
     /**
