@@ -89,8 +89,8 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
     public final class GatewayClientCredentialConstants {
         public static final String CLIENT_KEY = "clientKey";
         public static final String CLIENT_SECRET = "clientSecret";
-        public static final String GATEWAY_ID = "gatewayID";
-    }
+        public static final String GATEWAY_ID = "gatewayId";
+}
 
 
     // Host Alias Table
@@ -201,7 +201,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
 
     public final class ApplicationModuleConstants {
         public static final String MODULE_ID = "moduleID";
-        public static final String GATEWAY_ID = "gatewayID";
+        public static final String GATEWAY_ID = "gatewayId";
         public static final String MODULE_NAME = "moduleName";
         public static final String MODULE_VERSION = "moduleVersion";
         public static final String MODULE_DESC = "moduleDesc";
@@ -438,6 +438,6 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
         public static final String CREATED_USER = "createdUser";
         public static final String GRAPH = "graph";
         public static final String WF_TEMPLATE_ID = "wfTemplateId";
-        public static final String GATEWAY_ID = "gatewayID";
+        public static final String GATEWAY_ID = "gatewayId";
     }
 }
