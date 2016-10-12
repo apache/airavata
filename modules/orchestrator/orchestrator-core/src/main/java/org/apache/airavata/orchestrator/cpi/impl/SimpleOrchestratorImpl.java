@@ -406,15 +406,13 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 DataType type = processOutput.getType();
                 switch (type) {
                     case STDOUT :
-                        if(null == processOutput.getValue() ||
-                                (null != processOutput.getValue() && processOutput.getValue().trim().isEmpty())){
+                        if(null == processOutput.getValue() || processOutput.getValue().trim().isEmpty()){
                             processOutput.setValue(appName + ".stdout");
                         }
                         createOutputDataSatagingTasks(processModel, gatewayId, dataStagingTaskIds, processOutput);
                         break;
                     case STDERR:
-                        if(null == processOutput.getValue() ||
-                                (null != processOutput.getValue() && processOutput.getValue().trim().isEmpty())){
+                        if(null == processOutput.getValue() || processOutput.getValue().trim().isEmpty()){
                             processOutput.setValue(appName + ".stderr");
                         }
                         createOutputDataSatagingTasks(processModel, gatewayId, dataStagingTaskIds, processOutput);
