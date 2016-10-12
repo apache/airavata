@@ -23,7 +23,7 @@
  *
 */
 
-include "credential_store_data_models.thrift"
+include "../data-models/credential-store-models/credential_store_data_models.thrift"
 include "credential_store_errors.thrift"
 
 namespace java org.apache.airavata.credential.store.cpi
