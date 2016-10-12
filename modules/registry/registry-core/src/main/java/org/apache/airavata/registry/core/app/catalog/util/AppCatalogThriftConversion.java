@@ -370,6 +370,7 @@ public class AppCatalogThriftConversion {
     	LOCALSubmission submission = new LOCALSubmission();
     	submission.setJobSubmissionInterfaceId(localSubmission.getJobSubmissionInterfaceId());
     	submission.setResourceJobManager(getResourceJobManager(localSubmission.getResourceJobManagerResource()));
+        submission.setSecurityProtocol(SecurityProtocol.valueOf(localSubmission.getSecurityProtocol()));
     	return submission;
     }
     
