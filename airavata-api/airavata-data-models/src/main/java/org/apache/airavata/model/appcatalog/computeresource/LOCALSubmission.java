@@ -76,7 +76,7 @@ public class LOCALSubmission implements org.apache.thrift.TBase<LOCALSubmission,
 
   private String jobSubmissionInterfaceId; // required
   private ResourceJobManager resourceJobManager; // required
-  private org.apache.airavata.model.data.movement.SecurityProtocol securityProtocol; // optional
+  private org.apache.airavata.model.data.movement.SecurityProtocol securityProtocol; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -147,7 +147,6 @@ public class LOCALSubmission implements org.apache.thrift.TBase<LOCALSubmission,
   }
 
   // isset id assignments
-  private static final _Fields optionals[] = {_Fields.SECURITY_PROTOCOL};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -155,7 +154,7 @@ public class LOCALSubmission implements org.apache.thrift.TBase<LOCALSubmission,
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.RESOURCE_JOB_MANAGER, new org.apache.thrift.meta_data.FieldMetaData("resourceJobManager", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ResourceJobManager.class)));
-    tmpMap.put(_Fields.SECURITY_PROTOCOL, new org.apache.thrift.meta_data.FieldMetaData("securityProtocol", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.SECURITY_PROTOCOL, new org.apache.thrift.meta_data.FieldMetaData("securityProtocol", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, org.apache.airavata.model.data.movement.SecurityProtocol.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(LOCALSubmission.class, metaDataMap);
@@ -168,11 +167,13 @@ public class LOCALSubmission implements org.apache.thrift.TBase<LOCALSubmission,
 
   public LOCALSubmission(
     String jobSubmissionInterfaceId,
-    ResourceJobManager resourceJobManager)
+    ResourceJobManager resourceJobManager,
+    org.apache.airavata.model.data.movement.SecurityProtocol securityProtocol)
   {
     this();
     this.jobSubmissionInterfaceId = jobSubmissionInterfaceId;
     this.resourceJobManager = resourceJobManager;
+    this.securityProtocol = securityProtocol;
   }
 
   /**
@@ -478,16 +479,14 @@ public class LOCALSubmission implements org.apache.thrift.TBase<LOCALSubmission,
       sb.append(this.resourceJobManager);
     }
     first = false;
-    if (isSetSecurityProtocol()) {
-      if (!first) sb.append(", ");
-      sb.append("securityProtocol:");
-      if (this.securityProtocol == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.securityProtocol);
-      }
-      first = false;
+    if (!first) sb.append(", ");
+    sb.append("securityProtocol:");
+    if (this.securityProtocol == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.securityProtocol);
     }
+    first = false;
     sb.append(")");
     return sb.toString();
   }
@@ -500,6 +499,10 @@ public class LOCALSubmission implements org.apache.thrift.TBase<LOCALSubmission,
 
     if (!isSetResourceJobManager()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'resourceJobManager' is unset! Struct:" + toString());
+    }
+
+    if (!isSetSecurityProtocol()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'securityProtocol' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -591,11 +594,9 @@ public class LOCALSubmission implements org.apache.thrift.TBase<LOCALSubmission,
         oprot.writeFieldEnd();
       }
       if (struct.securityProtocol != null) {
-        if (struct.isSetSecurityProtocol()) {
-          oprot.writeFieldBegin(SECURITY_PROTOCOL_FIELD_DESC);
-          oprot.writeI32(struct.securityProtocol.getValue());
-          oprot.writeFieldEnd();
-        }
+        oprot.writeFieldBegin(SECURITY_PROTOCOL_FIELD_DESC);
+        oprot.writeI32(struct.securityProtocol.getValue());
+        oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
@@ -616,14 +617,7 @@ public class LOCALSubmission implements org.apache.thrift.TBase<LOCALSubmission,
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.jobSubmissionInterfaceId);
       struct.resourceJobManager.write(oprot);
-      BitSet optionals = new BitSet();
-      if (struct.isSetSecurityProtocol()) {
-        optionals.set(0);
-      }
-      oprot.writeBitSet(optionals, 1);
-      if (struct.isSetSecurityProtocol()) {
-        oprot.writeI32(struct.securityProtocol.getValue());
-      }
+      oprot.writeI32(struct.securityProtocol.getValue());
     }
 
     @Override
@@ -634,11 +628,8 @@ public class LOCALSubmission implements org.apache.thrift.TBase<LOCALSubmission,
       struct.resourceJobManager = new ResourceJobManager();
       struct.resourceJobManager.read(iprot);
       struct.setResourceJobManagerIsSet(true);
-      BitSet incoming = iprot.readBitSet(1);
-      if (incoming.get(0)) {
-        struct.securityProtocol = org.apache.airavata.model.data.movement.SecurityProtocol.findByValue(iprot.readI32());
-        struct.setSecurityProtocolIsSet(true);
-      }
+      struct.securityProtocol = org.apache.airavata.model.data.movement.SecurityProtocol.findByValue(iprot.readI32());
+      struct.setSecurityProtocolIsSet(true);
     }
   }
 
