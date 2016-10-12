@@ -516,6 +516,34 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    public List<CredentialSummary> getAllSSHPubKeysSummaryForUserInGateway(AuthzToken authzToken, String gatewayId, String userId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            List<CredentialSummary> allCredentialSummaries =  new ArrayList<>();
+            if (csClient == null){
+                csClient = getCredentialStoreServiceClient();
+            }
+            List<SSHCredentialSummary> sshSummaryListForUser = csClient.getAllSSHCredentialSummaryForUserInGateway(gatewayId,userId);
+            for(SSHCredentialSummary key : sshSummaryListForUser){
+                CredentialSummary userPubKeySummary = new CredentialSummary();
+                userPubKeySummary.setGatewayId(key.getGatewayId());
+                userPubKeySummary.setUsername(key.getUsername());
+                userPubKeySummary.setPublicKey(key.getPublicKey());
+                userPubKeySummary.setDescription(key.getDescription());
+                userPubKeySummary.setPersistedTime(key.getPersistedTime());
+                allCredentialSummaries.add(userPubKeySummary);
+            }
+            logger.debug("Airavata retrieved all SSH pub keys summaries for gateway Id : " + gatewayId + " & user ID : " +userId);
+            return allCredentialSummaries;
+        }catch (Exception e){
+            logger.error("Error occurred while retrieving SSH public keys summaries for user : " + userId , e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while retrieving SSH public keys summaries for user : " + userId + ". More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
     @SecurityCheck
     public Map<String, String> getAllGatewayPWDCredentials(AuthzToken authzToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
