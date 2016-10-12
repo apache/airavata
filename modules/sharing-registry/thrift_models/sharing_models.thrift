@@ -78,12 +78,27 @@ struct EntityType {
     6: optional i64 updatedTime
 }
 
-enum EntitySearchFields {
+enum EntitySearchField {
     NAME,
     DESCRIPTION,
-    FULL_TEXT
+    FULL_TEXT,
+    PRRENT_ENTITY_ID,
+    CREATED_TIME,
+    UPDATED_TIME
 }
 
+enum SearchCondition {
+    EQUAL,
+    LIKE,
+    GTE,
+    LTE
+}
+
+struct SearchCriteria {
+    1: optional EntitySearchField searchField,
+    2: optional string value,
+    3: optional SearchCondition searchCondition
+}
 
 struct Entity {
     1: optional string entityId = DO_NOT_SET_AT_CLIENTS_ID,

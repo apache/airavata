@@ -23,15 +23,12 @@ package org.apache.airavata.sharing.registry.db.repositories;
 import org.apache.airavata.sharing.registry.db.entities.EntityEntity;
 import org.apache.airavata.sharing.registry.db.entities.SharingEntity;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
-import org.apache.airavata.sharing.registry.models.Entity;
-import org.apache.airavata.sharing.registry.models.EntitySearchFields;
-import org.apache.airavata.sharing.registry.models.SharingRegistryException;
+import org.apache.airavata.sharing.registry.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class EntityRepository extends AbstractRepository<Entity, EntityEntity, String> {
     private final static Logger logger = LoggerFactory.getLogger(EntityRepository.class);
@@ -46,7 +43,7 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, S
         return select(filters, 0, -1);
     }
 
-    public List<Entity> searchEntities(List<String> groupIds, String entityTypeId, Map<EntitySearchFields, String> filters,
+    public List<Entity> searchEntities(List<String> groupIds, String entityTypeId, List<SearchCriteria> filters,
                                        int offset, int limit) throws SharingRegistryException {
         String groupIdString = "'";
         for(String groupId : groupIds)
@@ -58,13 +55,27 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, S
                 "S." + DBConstants.SharingTable.GROUP_ID + " IN(" + groupIdString + ") AND E." + DBConstants.EntityTable.ENTITY_TYPE_ID + "='" +
                 entityTypeId + "' AND ";
 
-        for(Map.Entry<EntitySearchFields, String> mapEntry : filters.entrySet()){
-            if(mapEntry.getKey().equals(EntitySearchFields.NAME)){
-                query += "E." + DBConstants.EntityTable.NAME + " LIKE '%" + mapEntry.getValue() + "%' AND ";
-            }else if(mapEntry.getKey().equals(EntitySearchFields.DESCRIPTION)){
-                query += "E." + DBConstants.EntityTable.DESCRIPTION + " LIKE '%" + mapEntry.getValue() + "%' AND ";
-            }else if(mapEntry.getKey().equals(EntitySearchFields.FULL_TEXT)){
-                query += "E." + DBConstants.EntityTable.FULL_TEXT + " LIKE '%" + mapEntry.getValue() + "%' AND ";
+        for(SearchCriteria searchCriteria : filters){
+            if(searchCriteria.getSearchField().equals(EntitySearchField.NAME)){
+                query += "E." + DBConstants.EntityTable.NAME + " LIKE '%" + searchCriteria.getValue() + "%' AND ";
+            }else if(searchCriteria.getSearchField().equals(EntitySearchField.DESCRIPTION)){
+                query += "E." + DBConstants.EntityTable.DESCRIPTION + " LIKE '%" + searchCriteria.getValue() + "%' AND ";
+            }else if(searchCriteria.getSearchField().equals(EntitySearchField.FULL_TEXT)){
+                query += "E." + DBConstants.EntityTable.FULL_TEXT + " LIKE '%" + searchCriteria.getValue() + "%' AND ";
+            }else if(searchCriteria.getSearchField().equals(EntitySearchField.PRRENT_ENTITY_ID)){
+                query += "E." + DBConstants.EntityTable.PARENT_ENTITY_ID + " = '" + searchCriteria.getValue() + "' AND ";
+            }else if(searchCriteria.getSearchField().equals(EntitySearchField.CREATED_TIME)){
+                if(searchCriteria.getSearchCondition().equals(SearchCondition.GTE)){
+                    query += "E." + DBConstants.EntityTable.CREATED_TIME + " >= " + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
+                }else{
+                    query += "E." + DBConstants.EntityTable.CREATED_TIME + " <= " + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
+                }
+            }else if(searchCriteria.getSearchField().equals(EntitySearchField.UPDATED_TIME)){
+                if(searchCriteria.getSearchCondition().equals(SearchCondition.GTE)){
+                    query += "E." + DBConstants.EntityTable.UPDATED_TIME + " >= " + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
+                }else{
+                    query += "E." + DBConstants.EntityTable.UPDATED_TIME + " <= " + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
+                }
             }
         }
 

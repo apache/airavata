@@ -7,18 +7,17 @@
 package org.apache.airavata.sharing.registry.models;
 
 
-import java.util.Map;
-import java.util.HashMap;
-import org.apache.thrift.TEnum;
-
-public enum EntitySearchFields implements org.apache.thrift.TEnum {
+public enum EntitySearchField implements org.apache.thrift.TEnum {
   NAME(0),
   DESCRIPTION(1),
-  FULL_TEXT(2);
+  FULL_TEXT(2),
+  PRRENT_ENTITY_ID(3),
+  CREATED_TIME(4),
+  UPDATED_TIME(5);
 
   private final int value;
 
-  private EntitySearchFields(int value) {
+  private EntitySearchField(int value) {
     this.value = value;
   }
 
@@ -33,7 +32,7 @@ public enum EntitySearchFields implements org.apache.thrift.TEnum {
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static EntitySearchFields findByValue(int value) { 
+  public static EntitySearchField findByValue(int value) { 
     switch (value) {
       case 0:
         return NAME;
@@ -41,6 +40,12 @@ public enum EntitySearchFields implements org.apache.thrift.TEnum {
         return DESCRIPTION;
       case 2:
         return FULL_TEXT;
+      case 3:
+        return PRRENT_ENTITY_ID;
+      case 4:
+        return CREATED_TIME;
+      case 5:
+        return UPDATED_TIME;
       default:
         return null;
     }
