@@ -365,6 +365,29 @@ service Airavata {
                          2: airavata_errors.AiravataClientException ace,
                          3: airavata_errors.AiravataSystemException ase)
 
+  /**
+         *
+         * Get all Public Key summaries for user in a Gateway
+         *
+         * @param CredStoreToken
+         *    Credential Store Token which you want to find the Public Key for.
+         *
+         * @param gatewayId
+         *    This is the unique identifier of your gateway where the token and public key was generated from.
+         *
+         * @param userId
+         *    This is the unique identifier of user whose public keys are to be fetched.
+         *
+         * @return CredentialSummary
+         *
+         **/
+    list<credential_summary.CredentialSummary> getAllSSHPubKeysSummaryForUserInGateway (1: required security_model.AuthzToken authzToken,
+                                                     2: required string gatewayId,
+                                                     3: required string userId)
+                   throws (1: airavata_errors.InvalidRequestException ire,
+                           2: airavata_errors.AiravataClientException ace,
+                           3: airavata_errors.AiravataSystemException ase)
+
 
   map<string, string> getAllGatewayPWDCredentials (1: required security_model.AuthzToken authzToken,
                                                  2: required string gatewayId)
