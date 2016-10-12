@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -272,8 +273,12 @@ public class SharingRegistryServerHandlerTest {
         Assert.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId1, entityId4, permissionTypeId1));
         Assert.assertFalse(sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId1, permissionTypeId1));
 
-        HashMap<EntitySearchFields, String> filters = new HashMap<>();
-        filters.put(EntitySearchFields.NAME, "Input");
+        ArrayList<SearchCriteria> filters = new ArrayList<>();
+        SearchCriteria searchCriteria = new SearchCriteria();
+        searchCriteria.setSearchCondition(SearchCondition.LIKE);
+        searchCriteria.setValue("Input");
+        searchCriteria.setSearchField(EntitySearchField.NAME);
+        filters.add(searchCriteria);
         Assert.assertTrue(sharingRegistryServerHandler.searchEntities(userId1, entityTypeId3, filters, 0, -1).size() > 0);
 
         Assert.assertNotNull(sharingRegistryServerHandler.getListOfSharedUsers(entityId1, permissionTypeId1));

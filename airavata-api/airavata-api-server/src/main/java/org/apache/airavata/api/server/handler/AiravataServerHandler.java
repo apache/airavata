@@ -756,7 +756,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 // user projects + user accessible projects
                 List<String> accessibleProjectIds = new ArrayList<>();
                 sharingRegistryServerHandler.searchEntities(userName+"@"+gatewayId , gatewayId+":PROJECT",
-                        new HashMap<>(), offset, limit).stream().forEach(p->accessibleProjectIds.add(p.entityId));
+                        new ArrayList<>(), offset, limit).stream().forEach(p->accessibleProjectIds.add(p.entityId));
                 return getRegistryServiceClient().searchProjects(gatewayId, userName, accessibleProjectIds, new HashMap<>(), limit, offset);
             }else{
                 return getRegistryServiceClient().getUserProjects(gatewayId, userName, limit, offset);
@@ -801,7 +801,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
             if(ServerSettings.isEnableSharing())
                 sharingRegistryServerHandler.searchEntities(userName+"@"+gatewayId, gatewayId+":PROJECT",
-                        new HashMap<>(), 0, -1).stream().forEach(e->accessibleProjIds.add(e.entityId));
+                        new ArrayList<>(), 0, -1).stream().forEach(e->accessibleProjIds.add(e.entityId));
 
             return getRegistryServiceClient().searchProjects(gatewayId, userName, accessibleProjIds, filters, limit, offset);
         }catch (Exception e) {
@@ -838,7 +838,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             List<String> accessibleExpIds = new ArrayList<>();
             if(ServerSettings.isEnableSharing())
                 sharingRegistryServerHandler.searchEntities(userName+"@"+gatewayId, gatewayId+":EXPERIMENT",
-                        new HashMap<>(), 0, -1).forEach(e->accessibleExpIds.add(e.entityId));
+                        new ArrayList<>(), 0, -1).forEach(e->accessibleExpIds.add(e.entityId));
             return getRegistryServiceClient().searchExperiments(gatewayId, userName, accessibleExpIds, filters, limit, offset);
         }catch (Exception e) {
             logger.error("Error while retrieving experiments", e);

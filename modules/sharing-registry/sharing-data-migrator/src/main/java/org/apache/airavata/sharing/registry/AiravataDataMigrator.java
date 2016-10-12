@@ -34,8 +34,8 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DataMigrator {
-    private final static Logger logger = LoggerFactory.getLogger(DataMigrator.class);
+public class AiravataDataMigrator {
+    private final static Logger logger = LoggerFactory.getLogger(AiravataDataMigrator.class);
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException, TException, ApplicationSettingsException {
         Connection expCatConnection = ConnectionFactory.getInstance().getExpCatConnection();

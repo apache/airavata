@@ -435,7 +435,7 @@ public class SharingRegistryServerHandler implements GovRegistryService.Iface{
     }
 
     @Override
-    public List<Entity> searchEntities(String userId, String entityTypeId, Map<EntitySearchFields, String> filters,
+    public List<Entity> searchEntities(String userId, String entityTypeId, List<SearchCriteria> filters,
                                        int offset, int limit) throws SharingRegistryException, TException {
         List<String> groupIds = new ArrayList<>();
         groupIds.add(userId);
