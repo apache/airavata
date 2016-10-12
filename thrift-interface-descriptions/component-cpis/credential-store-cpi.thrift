@@ -65,6 +65,8 @@ service CredentialStoreService {
 
   list<credential_store_data_models.SSHCredentialSummary> getAllGatewaySSHCredentialSummary (1: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
 
+  list<credential_store_data_models.SSHCredentialSummary> getAllSSHCredentialSummaryForUserInGateway (1: required string gatewayId, 2: required string userId) throws (1:credential_store_errors.CredentialStoreException csException);
+
   map<string,string> getAllPWDCredentialsForGateway (1: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
 
   bool deleteSSHCredential(1: required string tokenId, 2: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);

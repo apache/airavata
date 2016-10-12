@@ -340,7 +340,42 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                         sshCredentialSummary.setUsername(sshCredential.getPortalUserName());
                         sshCredentialSummary.setGatewayId(sshCredential.getGateway());
                         sshCredentialSummary.setDescription(sshCredential.getDescription());
+                        sshCredentialSummary.setPublicKey(new String(sshCredential.getPublicKey()));
                         summaryList.add(sshCredentialSummary);
+                    }
+                }
+            }
+        } catch (CredentialStoreException e) {
+            log.error("Error occurred while retrieving credential Summary", e);
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while retrieving credential Summary");
+        }
+        return summaryList;
+    }
+
+    @Override
+    public List<SSHCredentialSummary> getAllSSHCredentialSummaryForUserInGateway(String gatewayId, String userId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
+        Map<String, String> sshKeyMap = new HashMap<>();
+        List<SSHCredentialSummary> summaryList = new ArrayList<>();
+        try {
+            List<Credential> allCredentials = credentialReader.getAllCredentials();
+            if (allCredentials != null && !allCredentials.isEmpty()){
+                for (Credential credential : allCredentials) {
+                    if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) {
+                        org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
+                        String portalUserName = sshCredential.getPortalUserName();
+                        String gateway = sshCredential.getGateway();
+                        if (portalUserName != null && gateway != null){
+                            if (portalUserName.equals(userId) && gateway.equals(gatewayId)) {
+                                org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredentialKey = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
+                                SSHCredentialSummary sshCredentialSummary = new SSHCredentialSummary();
+                                sshCredentialSummary.setToken(sshCredentialKey.getToken());
+                                sshCredentialSummary.setUsername(sshCredentialKey.getPortalUserName());
+                                sshCredentialSummary.setGatewayId(sshCredentialKey.getGateway());
+                                sshCredentialSummary.setDescription(sshCredentialKey.getDescription());
+                                sshCredentialSummary.setPublicKey(new String(sshCredentialKey.getPublicKey()));
+                                summaryList.add(sshCredentialSummary);
+                            }
+                        }
                     }
                 }
             }
