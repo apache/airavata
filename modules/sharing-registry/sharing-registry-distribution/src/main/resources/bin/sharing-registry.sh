@@ -18,16 +18,22 @@
 # under the License.
 
 . `dirname $0`/setenv.sh
-cd $SHARING_REGISTRY_HOME
+cd $SHARING_REGISTRY_HOME/bin
 
 IS_DAEMON_MODE=false
 SHARING_REGISTRY_COMMAND=""
 STOP=false
 FORCE=false
+JAVA_OPTS=""
 
 for var in "$@"
 do
     case $var in
+    -xdebug)
+        	AIRAVATA_COMMAND="${AIRAVATA_COMMAND}"
+            JAVA_OPTS="$JAVA_OPTS -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=8000"
+            shift
+        ;;
 	start)
 	    IS_DAEMON_MODE=true
             shift
@@ -43,6 +49,7 @@ do
             echo "command options:"
 	    echo "  start              Start server in daemon mode"
 	    echo "  stop               Stop server."
+	    echo "  -xdebug			   Start Sharing Registry Server under JPDA debugger"
 	    echo "  -h                 Display this help and exit"
 	        shift
             exit 0
@@ -74,14 +81,11 @@ then
 		fi
 	done
 else
+	echo $SHARING_REGISTRY_CLASSPATH
 	if $IS_DAEMON_MODE ; then
 		echo "Starting Sharing Registry Server in daemon mode..."
-		cd "$SHARING_REGISTRY_HOME"/lib
-		nohup $JAVA_HOME/bin/java -jar "$SHARING_REGISTRY_HOME"/lib/airavata-sharing-registry-server-0.17-SNAPSHOT.jar > ../sharing-registry.out & echo $! > "../sharing-registry-start_$!"
-		cd ..
+		nohup $JAVA_HOME/bin/java ${JAVA_OPTS} -classpath "$SHARING_REGISTRY_CLASSPATH"  org.apache.airavata.sharing.registry.server.SharingRegistryServer > ../sharing-registry.out & echo $! > "../sharing-registry-start_$!"
 	else
-        cd "$SHARING_REGISTRY_HOME"/lib
-		$JAVA_HOME/bin/java -jar "$SHARING_REGISTRY_HOME"/lib/airavata-sharing-registry-server-0.17-SNAPSHOT.jar
-		cd ..
+		$JAVA_HOME/bin/java ${JAVA_OPTS} -classpath "$SHARING_REGISTRY_CLASSPATH"  org.apache.airavata.sharing.registry.server.SharingRegistryServer
 	fi
 fi
