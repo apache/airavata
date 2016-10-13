@@ -108,14 +108,6 @@ public class SharingRegistryServer implements IServer {
         }
     }
 
-    public static void main(String[] args) {
-        try {
-            new SharingRegistryServer().start();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
     @Override
     public void stop() throws Exception {
         if (server!=null && server.isServing()){

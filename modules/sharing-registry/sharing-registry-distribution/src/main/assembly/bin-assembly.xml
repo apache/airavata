@@ -43,6 +43,7 @@
             <outputDirectory>bin</outputDirectory>
             <includes>
                 <include>airavata-server.properties</include>
+                <include>log4j.properties</include>
             </includes>
         </fileSet>
 

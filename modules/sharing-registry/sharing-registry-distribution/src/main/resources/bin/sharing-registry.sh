@@ -62,10 +62,10 @@ done
 
 if $STOP;
 then
-	for f in `find . -name "*-start_*"`; do
+	for f in `find . -name "server_start_*"`; do
 		IFS='_' read -a f_split <<< "$f"
 		echo "Found process file : $f"
-		echo -n "    Sending kill signals to process ${f_split[1]}..."
+		echo -n "    Sending kill signals to process ${f_split[2]}..."
 		out=`kill -9 ${f_split[1]} 2>&1`
 		if [ -z "$out" ]; then
 		    echo "done"
@@ -83,8 +83,8 @@ then
 else
 	if $IS_DAEMON_MODE ; then
 		echo "Starting Sharing Registry Server in daemon mode..."
-		nohup $JAVA_HOME/bin/java ${JAVA_OPTS} -classpath "$SHARING_REGISTRY_CLASSPATH"  org.apache.airavata.sharing.registry.server.SharingRegistryServer > ../sharing-registry.out & echo $! > "../sharing-registry-start_$!"
+		$JAVA_HOME/bin/java ${JAVA_OPTS} -classpath "$SHARING_REGISTRY_CLASSPATH"  org.apache.airavata.sharing.registry.server.ServerMain $* > /dev/null 2>&1 &
 	else
-		$JAVA_HOME/bin/java ${JAVA_OPTS} -classpath "$SHARING_REGISTRY_CLASSPATH"  org.apache.airavata.sharing.registry.server.SharingRegistryServer
+		$JAVA_HOME/bin/java ${JAVA_OPTS} -classpath "$SHARING_REGISTRY_CLASSPATH"  org.apache.airavata.sharing.registry.server.ServerMain $*
 	fi
 fi
