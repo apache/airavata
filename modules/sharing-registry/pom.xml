@@ -11,18 +11,21 @@
         <version>0.17-SNAPSHOT</version>
     </parent>
 
+    <properties>
+        <global.version>0.17-SNAPSHOT</global.version>
+    </properties>
+
     <groupId>org.apache.airavata</groupId>
     <artifactId>airavata-sharing-registry</artifactId>
     <packaging>pom</packaging>
     <version>${global.version}</version>
 
-    <properties>
-        <global.version>0.17-SNAPSHOT</global.version>
-    </properties>
+
 
     <modules>
         <module>sharing-registry-stubs</module>
-        <module>sharing-registry-core</module>
+        <module>sharing-registry-server</module>
         <module>sharing-data-migrator</module>
+        <module>sharing-registry-distribution</module>
     </modules>
 </project>
