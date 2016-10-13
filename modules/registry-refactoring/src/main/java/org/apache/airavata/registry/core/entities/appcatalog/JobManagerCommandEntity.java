@@ -8,8 +8,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "job_manager_command")
-@NamedQuery(name = "JobManagerCommand.findAll", query = "SELECT j FROM JobManagerCommand j")
-public class JobManagerCommand implements Serializable {
+public class JobManagerCommandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
@@ -18,7 +17,7 @@ public class JobManagerCommand implements Serializable {
     @Column(name = "COMMAND")
     private String command;
 
-    public JobManagerCommand() {
+    public JobManagerCommandEntity() {
     }
 
     public JobManagerCommandPK getId() {

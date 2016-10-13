@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!--*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+* -->
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+    <persistence-unit name="airavata_catalog">
+        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+        <class>org.apache.airavata.registry.core.entities.workspacecatalog.GatewayEntity</class>
+        <class>org.apache.airavata.registry.core.entities.workspacecatalog.UserProfileEntity</class>
+        <class>org.apache.airavata.registry.core.entities.workspacecatalog.NSFDemographicsEntity</class>
+        <class>org.apache.airavata.registry.core.entities.workspacecatalog.NotificationEntity</class>
+        <class>org.apache.airavata.registry.core.entities.workspacecatalog.ProjectEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ComputeResourceSchedulingEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentErrorEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentInputEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentOutputEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentStatusEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.UserConfigurationEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessErrorEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessInputEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessOutputEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessResourceSchedulingEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessStatusEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.TaskEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.TaskErrorEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.TaskStatusEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.JobEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.JobStatusEntity</class>
+
+        <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowEntity</class>
+        <class>org.apache.airavata.registry.core.entities.workflowcatalog.EdgeEntity</class>
+        <class>org.apache.airavata.registry.core.entities.workflowcatalog.ComponentStatusEntity</class>
+        <class>org.apache.airavata.registry.core.entities.workflowcatalog.NodeEntity</class>
+        <class>org.apache.airavata.registry.core.entities.workflowcatalog.PortEntity</class>
+        <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowInputEntity</class>
+        <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowOutputEntity</class>
+        <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowStatusEntity</class>
+
+
+
+
+
+
+
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
+</persistence>

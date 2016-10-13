@@ -9,7 +9,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "library_apend_path")
-public class LibraryApendPath implements Serializable {
+public class LibraryApendPathEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -23,7 +23,7 @@ public class LibraryApendPath implements Serializable {
     private String name;
 
 
-    public LibraryApendPath() {
+    public LibraryApendPathEntity() {
     }
 
     public String getDeploymentId() {

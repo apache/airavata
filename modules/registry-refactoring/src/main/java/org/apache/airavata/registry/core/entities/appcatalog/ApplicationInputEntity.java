@@ -9,7 +9,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "application_input")
-public class ApplicationInput implements Serializable {
+public class ApplicationInputEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@EmbeddedId
@@ -45,7 +45,7 @@ public class ApplicationInput implements Serializable {
 	@Column(name = "USER_FRIENDLY_DESC")
 	private String userFriendlyDesc;
 
-	public ApplicationInput() {
+	public ApplicationInputEntity() {
 	}
 
 	public ApplicationInputPK getId() {

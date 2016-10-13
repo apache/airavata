@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Entity
 @Table(name="application_interface")
-public class ApplicationInterface implements Serializable {
+public class ApplicationInterfaceEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -38,7 +38,7 @@ public class ApplicationInterface implements Serializable {
 	private Timestamp updateTime;
 
 	
-	public ApplicationInterface() {
+	public ApplicationInterfaceEntity() {
 	}
 
 	public String getInterfaceId() {

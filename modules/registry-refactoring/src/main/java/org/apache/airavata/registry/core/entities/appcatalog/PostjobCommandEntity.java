@@ -9,14 +9,14 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "postjob_command")
-public class PostjobCommand implements Serializable {
+public class PostjobCommandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
     private PostjobCommandPK id;
 
 
-    public PostjobCommand() {
+    public PostjobCommandEntity() {
     }
 
     public PostjobCommandPK getId() {

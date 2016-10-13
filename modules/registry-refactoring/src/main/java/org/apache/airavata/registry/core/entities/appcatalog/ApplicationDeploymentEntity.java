@@ -10,7 +10,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "application_deployment")
-public class ApplicationDeployment implements Serializable {
+public class ApplicationDeploymentEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -44,7 +44,7 @@ public class ApplicationDeployment implements Serializable {
     @Column(name = "APP_MODULE_ID")
     private String applicationModuleId;
 
-    public ApplicationDeployment() {
+    public ApplicationDeploymentEntity() {
     }
 
     public String getDeploymentId() {

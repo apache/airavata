@@ -10,7 +10,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "compute_resource")
-public class ComputeResource implements Serializable {
+public class ComputeResourceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -43,7 +43,7 @@ public class ComputeResource implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
-    public ComputeResource() {
+    public ComputeResourceEntity() {
     }
 
     public String getResourceId() {
