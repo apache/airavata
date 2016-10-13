@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "gridftp_data_movement")
-public class GridftpDataMovement implements Serializable {
+public class GridftpDataMovementEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -28,7 +28,7 @@ public class GridftpDataMovement implements Serializable {
     private Timestamp updateTime;
 
 
-    public GridftpDataMovement() {
+    public GridftpDataMovementEntity() {
     }
 
     public String getDataMovementInterfaceId() {

@@ -10,7 +10,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "storage_resource")
-public class StorageResource implements Serializable {
+public class StorageResourceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -30,7 +30,7 @@ public class StorageResource implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
-    public StorageResource() {
+    public StorageResourceEntity() {
     }
 
     public String getStorageResourceId() {

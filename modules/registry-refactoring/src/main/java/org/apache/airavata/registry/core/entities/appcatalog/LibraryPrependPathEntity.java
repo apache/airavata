@@ -10,7 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="library_prepand_path")
-public class LibraryPrependPath implements Serializable {
+public class LibraryPrependPathEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -25,7 +25,7 @@ public class LibraryPrependPath implements Serializable {
 
 	
 
-	public LibraryPrependPath() {
+	public LibraryPrependPathEntity() {
 	}
 
 	public String getDeploymentId() {

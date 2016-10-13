@@ -1,4 +1,4 @@
-package appcatlog;
+package org.apache.airavata.registry.core.entities.appcatalog;
 
 import java.io.Serializable;
 import javax.persistence.*;
@@ -20,15 +20,19 @@ public class StorageInterfacePK implements Serializable {
 
 	public StorageInterfacePK() {
 	}
+
 	public String getStorageResourceId() {
-		return this.storageResourceId;
+		return storageResourceId;
 	}
+
 	public void setStorageResourceId(String storageResourceId) {
 		this.storageResourceId = storageResourceId;
 	}
+
 	public String getDataMovementInterfaceId() {
-		return this.dataMovementInterfaceId;
+		return dataMovementInterfaceId;
 	}
+
 	public void setDataMovementInterfaceId(String dataMovementInterfaceId) {
 		this.dataMovementInterfaceId = dataMovementInterfaceId;
 	}

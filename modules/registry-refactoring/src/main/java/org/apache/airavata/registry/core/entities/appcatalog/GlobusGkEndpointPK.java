@@ -1,4 +1,4 @@
-package appcatlog;
+package org.apache.airavata.registry.core.entities.appcatalog;
 
 import java.io.Serializable;
 import javax.persistence.*;
@@ -20,15 +20,19 @@ public class GlobusGkEndpointPK implements Serializable {
 
 	public GlobusGkEndpointPK() {
 	}
+
 	public String getSubmissionId() {
-		return this.submissionId;
+		return submissionId;
 	}
+
 	public void setSubmissionId(String submissionId) {
 		this.submissionId = submissionId;
 	}
+
 	public String getEndpoint() {
-		return this.endpoint;
+		return endpoint;
 	}
+
 	public void setEndpoint(String endpoint) {
 		this.endpoint = endpoint;
 	}

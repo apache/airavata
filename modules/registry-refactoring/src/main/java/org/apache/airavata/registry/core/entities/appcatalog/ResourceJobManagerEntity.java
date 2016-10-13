@@ -10,7 +10,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "resource_job_manager")
-public class ResourceJobManager implements Serializable {
+public class ResourceJobManagerEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -32,7 +32,7 @@ public class ResourceJobManager implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
-    public ResourceJobManager() {
+    public ResourceJobManagerEntity() {
     }
 
     public String getResourceJobManagerId() {
