@@ -34,8 +34,11 @@ struct Domain {
      1: optional string userId = DO_NOT_SET_AT_CLIENTS_ID,
      2: optional string domainId,
      3: optional string userName,
-     4: optional i64 createdTime,
-     5: optional i64 updatedTime
+     4: optional string firstName,
+     5: optional string lastName,
+     6: optional binary icon,
+     7: optional i64 createdTime,
+     8: optional i64 updatedTime
  }
 
 enum GroupType {

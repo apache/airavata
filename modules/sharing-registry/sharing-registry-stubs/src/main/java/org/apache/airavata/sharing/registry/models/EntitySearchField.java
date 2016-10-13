@@ -7,6 +7,10 @@
 package org.apache.airavata.sharing.registry.models;
 
 
+import java.util.Map;
+import java.util.HashMap;
+import org.apache.thrift.TEnum;
+
 public enum EntitySearchField implements org.apache.thrift.TEnum {
   NAME(0),
   DESCRIPTION(1),

@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
+import java.nio.ByteBuffer;
 
 @Entity
 @Table(name = "SHARING_USER", schema = "")
@@ -32,6 +33,9 @@ public class SharingUserEntity {
     private String userId;
     private String domainId;
     private String userName;
+    private String firstName;
+    private String lastName;
+    private ByteBuffer icon;
     private Long createdTime;
     private Long updatedTime;
 
@@ -63,6 +67,36 @@ public class SharingUserEntity {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    @Basic
+    @Column(name = "FIRST_NAME")
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    @Basic
+    @Column(name = "LAST_NAME")
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    @Lob
+    @Column(name = "ICON")
+    public ByteBuffer getIcon() {
+        return icon;
+    }
+
+    public void setIcon(ByteBuffer icon) {
+        this.icon = icon;
     }
 
     @Basic
