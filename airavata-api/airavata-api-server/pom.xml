@@ -73,7 +73,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-sharing-registry-core</artifactId>
+            <artifactId>airavata-sharing-registry-server</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!--<dependency>-->
