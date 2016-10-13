@@ -22,7 +22,7 @@ namespace java org.apache.airavata.sharing.registry.service.cpi
 
 include "./sharing_models.thrift"
 
-service GovRegistryService {
+service SharingRegistryService {
 
     /**
      * Domain Operations

@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.sharing.registry;
+package org.apache.airavata.sharing.registry.migrator.airavata;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.sharing.registry.models.*;
