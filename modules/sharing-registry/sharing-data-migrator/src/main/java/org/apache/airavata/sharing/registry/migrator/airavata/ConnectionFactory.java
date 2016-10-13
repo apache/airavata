@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.sharing.registry;
+package org.apache.airavata.sharing.registry.migrator.airavata;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -75,9 +75,9 @@ then
 	done
 else
 	if $IS_DAEMON_MODE ; then
-		echo "Starting Sharing Catalog in daemon mode..."
+		echo "Starting Sharing Registry Server in daemon mode..."
 		cd "$SHARING_REGISTRY_HOME"/lib
-		nohup $JAVA_HOME/bin/java -jar "$SHARING_REGISTRY_HOME"/lib/airavata-sharing-registry-server-0.7-SNAPSHOT.jar > ../sharing-registry.out & echo $! > "../sharing-registry-start_$!"
+		nohup $JAVA_HOME/bin/java -jar "$SHARING_REGISTRY_HOME"/lib/airavata-sharing-registry-server-0.17-SNAPSHOT.jar > ../sharing-registry.out & echo $! > "../sharing-registry-start_$!"
 		cd ..
 	else
         cd "$SHARING_REGISTRY_HOME"/lib

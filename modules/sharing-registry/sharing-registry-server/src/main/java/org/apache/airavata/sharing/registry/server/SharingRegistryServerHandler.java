@@ -27,7 +27,7 @@ import org.apache.airavata.sharing.registry.db.repositories.*;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
 import org.apache.airavata.sharing.registry.db.utils.JPAUtils;
 import org.apache.airavata.sharing.registry.models.*;
-import org.apache.airavata.sharing.registry.service.cpi.GovRegistryService;
+import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class SharingRegistryServerHandler implements GovRegistryService.Iface{
+public class SharingRegistryServerHandler implements SharingRegistryService.Iface{
     private final static Logger logger = LoggerFactory.getLogger(SharingRegistryServerHandler.class);
 
     public static String GLOBAL_PERMISSION_NAME = "OWNER";
