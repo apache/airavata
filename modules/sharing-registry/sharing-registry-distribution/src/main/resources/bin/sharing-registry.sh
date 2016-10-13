@@ -81,7 +81,6 @@ then
 		fi
 	done
 else
-	echo $SHARING_REGISTRY_CLASSPATH
 	if $IS_DAEMON_MODE ; then
 		echo "Starting Sharing Registry Server in daemon mode..."
 		nohup $JAVA_HOME/bin/java ${JAVA_OPTS} -classpath "$SHARING_REGISTRY_CLASSPATH"  org.apache.airavata.sharing.registry.server.SharingRegistryServer > ../sharing-registry.out & echo $! > "../sharing-registry-start_$!"
