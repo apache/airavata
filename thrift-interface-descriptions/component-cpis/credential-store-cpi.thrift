@@ -23,7 +23,7 @@
  *
 */
 
-include "credential_store_data_models.thrift"
+include "../data-models/credential-store-models/credential_store_data_models.thrift"
 include "credential_store_errors.thrift"
 
 namespace java org.apache.airavata.credential.store.cpi
@@ -50,6 +50,9 @@ service CredentialStoreService {
   credential_store_data_models.SSHCredential getSSHCredential (1: required string tokenId, 2: required string gatewayId)
                         throws (1:credential_store_errors.CredentialStoreException csException);
 
+  credential_store_data_models.SSHCredentialSummary getSSHCredentialSummary (1: required string tokenId, 2: required string gatewayId)
+                          throws (1:credential_store_errors.CredentialStoreException csException);
+
   credential_store_data_models.CertificateCredential getCertificateCredential (1: required string tokenId, 2: required string gatewayId)
                         throws (1:credential_store_errors.CredentialStoreException csException);
 
@@ -59,6 +62,10 @@ service CredentialStoreService {
   map<string,string> getAllSSHKeysForUser (1: required string username) throws (1:credential_store_errors.CredentialStoreException csException);
 
   map<string,string> getAllSSHKeysForGateway (1: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
+
+  list<credential_store_data_models.SSHCredentialSummary> getAllGatewaySSHCredentialSummary (1: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
+
+  list<credential_store_data_models.SSHCredentialSummary> getAllSSHCredentialSummaryForUserInGateway (1: required string gatewayId, 2: required string userId) throws (1:credential_store_errors.CredentialStoreException csException);
 
   map<string,string> getAllPWDCredentialsForGateway (1: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
 

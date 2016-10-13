@@ -18,8 +18,15 @@
  *
  */
 
-include "compute_resource_model.thrift"
-include "storage_resource_model.thrift"
-include "gateway_resource_profile_model.thrift"
-include "user_resource_profile_model.thrift"
-include "credential_summary.thrift"
+namespace java org.apache.airavata.model.appcatalog.credentialsummary
+namespace php Airavata.Model.AppCatalog.CredetialSummary
+namespace cpp apache.airavata.model.appcatalog.credentialsummary
+namespace py apache.airavata.model.appcatalog.credentialsummary
+
+struct CredentialSummary {
+    1: required string gatewayId,
+    2: required string username,
+    3: optional string publicKey,
+    4: optional i64 persistedTime,
+    5: optional string description
+}

@@ -33,6 +33,7 @@ import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.datamodel.PasswordCredential;
 import org.apache.airavata.credential.store.datamodel.SSHCredential;
+import org.apache.airavata.credential.store.datamodel.SSHCredentialSummary;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
@@ -50,6 +51,7 @@ import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescr
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
+import org.apache.airavata.model.appcatalog.credentialsummary.CredentialSummary;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
@@ -531,6 +533,63 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error occurred while retrieving SSH public keys for gateway : " + gatewayId + ". More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public List<CredentialSummary> getAllGatewaySSHPubKeysSummary(AuthzToken authzToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            List<CredentialSummary> allCredentialSummaries =  new ArrayList<>();
+            if (csClient == null){
+                csClient = getCredentialStoreServiceClient();
+            }
+            List<SSHCredentialSummary> sshSummaryList = csClient.getAllGatewaySSHCredentialSummary(gatewayId);
+            for(SSHCredentialSummary key : sshSummaryList){
+                CredentialSummary summary = new CredentialSummary();
+                summary.setGatewayId(key.getGatewayId());
+                summary.setUsername(key.getUsername());
+                summary.setPublicKey(key.getPublicKey());
+                summary.setDescription(key.getDescription());
+                summary.setPersistedTime(key.getPersistedTime());
+                allCredentialSummaries.add(summary);
+            }
+            logger.debug("Airavata retrieved all SSH pub keys summaries for gateway Id : " + gatewayId);
+            return allCredentialSummaries;
+        }catch (Exception e){
+            logger.error("Error occurred while retrieving SSH public keys summaries for gateway : " + gatewayId , e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while retrieving SSH public keys summaries for gateway : " + gatewayId + ". More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public List<CredentialSummary> getAllSSHPubKeysSummaryForUserInGateway(AuthzToken authzToken, String gatewayId, String userId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            List<CredentialSummary> allCredentialSummaries =  new ArrayList<>();
+            if (csClient == null){
+                csClient = getCredentialStoreServiceClient();
+            }
+            List<SSHCredentialSummary> sshSummaryListForUser = csClient.getAllSSHCredentialSummaryForUserInGateway(gatewayId,userId);
+            for(SSHCredentialSummary key : sshSummaryListForUser){
+                CredentialSummary userPubKeySummary = new CredentialSummary();
+                userPubKeySummary.setGatewayId(key.getGatewayId());
+                userPubKeySummary.setUsername(key.getUsername());
+                userPubKeySummary.setPublicKey(key.getPublicKey());
+                userPubKeySummary.setDescription(key.getDescription());
+                userPubKeySummary.setPersistedTime(key.getPersistedTime());
+                allCredentialSummaries.add(userPubKeySummary);
+            }
+            logger.debug("Airavata retrieved all SSH pub keys summaries for gateway Id : " + gatewayId + " & user ID : " +userId);
+            return allCredentialSummaries;
+        }catch (Exception e){
+            logger.error("Error occurred while retrieving SSH public keys summaries for user : " + userId , e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while retrieving SSH public keys summaries for user : " + userId + ". More info : " + e.getMessage());
             throw exception;
         }
     }
