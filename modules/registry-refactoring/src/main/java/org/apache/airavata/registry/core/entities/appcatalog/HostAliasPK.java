@@ -8,16 +8,17 @@ import javax.persistence.*;
  * 
  */
 @Embeddable
-public class HostAliaPK implements Serializable {
+public class HostAliasPK implements Serializable {
 	//default serial version id, required for serializable classes.
 	private static final long serialVersionUID = 1L;
 
 	@Column(name="RESOURCE_ID", insertable=false, updatable=false)
 	private String resourceId;
 
+	@Column(name = "ALIAS")
 	private String alias;
 
-	public HostAliaPK() {
+	public HostAliasPK() {
 	}
 
 	public String getResourceId() {
@@ -40,10 +41,10 @@ public class HostAliaPK implements Serializable {
 		if (this == other) {
 			return true;
 		}
-		if (!(other instanceof HostAliaPK)) {
+		if (!(other instanceof HostAliasPK)) {
 			return false;
 		}
-		HostAliaPK castOther = (HostAliaPK)other;
+		HostAliasPK castOther = (HostAliasPK)other;
 		return 
 			this.resourceId.equals(castOther.resourceId)
 			&& this.alias.equals(castOther.alias);

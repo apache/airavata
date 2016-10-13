@@ -10,7 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="globus_gk_endpoint")
-public class GlobusGkEndpoint implements Serializable {
+public class GlobusGkEndpointEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@EmbeddedId
@@ -18,7 +18,7 @@ public class GlobusGkEndpoint implements Serializable {
 
 	
 
-	public GlobusGkEndpoint() {
+	public GlobusGkEndpointEntity() {
 	}
 
 	public GlobusGkEndpointPK getId() {

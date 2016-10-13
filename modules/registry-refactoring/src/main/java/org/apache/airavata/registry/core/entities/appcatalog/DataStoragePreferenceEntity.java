@@ -8,7 +8,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "data_storage_preference")
-public class DataStoragePreference implements Serializable {
+public class DataStoragePreferenceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
@@ -23,7 +23,7 @@ public class DataStoragePreference implements Serializable {
     @Column(name = "RESOURCE_CS_TOKEN")
     private String resourceCsToken;
 
-    public DataStoragePreference() {
+    public DataStoragePreferenceEntity() {
     }
 
     public DataStoragePreferencePK getId() {

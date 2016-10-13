@@ -9,14 +9,14 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "gsissh_prejobcommand")
-public class GsisshPrejobcommand implements Serializable {
+public class GsisshPrejobcommandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
     private GsisshPrejobcommandPK id;
 
 
-    public GsisshPrejobcommand() {
+    public GsisshPrejobcommandEntity() {
     }
 
     public GsisshPrejobcommandPK getId() {

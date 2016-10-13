@@ -11,7 +11,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name="ssh_job_submission")
-public class SshJobSubmission implements Serializable {
+public class SshJobSubmissionEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -39,7 +39,7 @@ public class SshJobSubmission implements Serializable {
 	@Column(name="RESOURCE_JOB_MANAGER_ID")
 	private String resourceJobManagerId;
 
-	public SshJobSubmission() {
+	public SshJobSubmissionEntity() {
 	}
 
 	public String getJobSubmissionInterfaceId() {
