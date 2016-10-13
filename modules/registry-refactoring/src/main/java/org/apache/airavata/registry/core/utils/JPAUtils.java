@@ -41,7 +41,7 @@ public class JPAUtils {
             String connectionProperties = "DriverClassName=com.mysql.jdbc.Driver," +
                     "Url=jdbc:mysql://localhost:3306/airavata_catalog," +
                     "Username=root," +
-                    "Password=";
+                    "Password=root";
             logger.info(connectionProperties);
             Map<String, String> properties = new HashMap<String, String>();
             properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");

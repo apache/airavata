@@ -8,7 +8,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "app_environment")
-public class AppEnvironment implements Serializable {
+public class AppEnvironmentEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -21,7 +21,7 @@ public class AppEnvironment implements Serializable {
     @Column(name = "name")
     private String name;
 
-    public AppEnvironment() {
+    public AppEnvironmentEntity() {
     }
 
     public String getDeploymentId() {

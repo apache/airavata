@@ -9,8 +9,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "job_submission_interface")
-@NamedQuery(name = "JobSubmissionInterface.findAll", query = "SELECT j FROM JobSubmissionInterface j")
-public class JobSubmissionInterface implements Serializable {
+public class JobSubmissionInterfaceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
@@ -28,7 +27,7 @@ public class JobSubmissionInterface implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
-    public JobSubmissionInterface() {
+    public JobSubmissionInterfaceEntity() {
     }
 
     public JobSubmissionInterfacePK getId() {

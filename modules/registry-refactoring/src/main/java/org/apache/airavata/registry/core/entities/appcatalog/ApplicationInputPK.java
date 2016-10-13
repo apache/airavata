@@ -1,4 +1,4 @@
-package appcatlog;
+package org.apache.airavata.registry.core.entities.appcatalog;
 
 import java.io.Serializable;
 import javax.persistence.*;
@@ -20,15 +20,19 @@ public class ApplicationInputPK implements Serializable {
 
 	public ApplicationInputPK() {
 	}
+
 	public String getInterfaceId() {
-		return this.interfaceId;
+		return interfaceId;
 	}
+
 	public void setInterfaceId(String interfaceId) {
 		this.interfaceId = interfaceId;
 	}
+
 	public String getInputKey() {
-		return this.inputKey;
+		return inputKey;
 	}
+
 	public void setInputKey(String inputKey) {
 		this.inputKey = inputKey;
 	}

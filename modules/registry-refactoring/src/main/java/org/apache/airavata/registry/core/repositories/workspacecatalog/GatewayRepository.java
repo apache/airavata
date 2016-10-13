@@ -31,5 +31,6 @@ public class GatewayRepository extends AbstractRepository<Gateway, GatewayEntity
 
     public GatewayRepository(Class<Gateway> thriftGenericClass, Class<GatewayEntity> dbEntityGenericClass) {
         super(thriftGenericClass, dbEntityGenericClass);
+
     }
 }

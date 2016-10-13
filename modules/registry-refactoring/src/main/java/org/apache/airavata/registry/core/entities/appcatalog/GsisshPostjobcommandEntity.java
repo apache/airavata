@@ -9,13 +9,13 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "gsissh_postjobcommand")
-public class GsisshPostjobcommand implements Serializable {
+public class GsisshPostjobcommandEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@EmbeddedId
 	private GsisshPostjobcommandPK id;
 
-	public GsisshPostjobcommand() {
+	public GsisshPostjobcommandEntity() {
 	}
 
 	public GsisshPostjobcommandPK getId() {

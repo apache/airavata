@@ -8,7 +8,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "batch_queue")
-public class BatchQueue implements Serializable {
+public class BatchQueueEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
@@ -32,7 +32,7 @@ public class BatchQueue implements Serializable {
     @Column(name = "QUEUE_DESCRIPTION")
     private String queueDescription;
 
-    public BatchQueue() {
+    public BatchQueueEntity() {
     }
 
     public BatchQueuePK getId() {

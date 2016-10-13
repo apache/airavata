@@ -11,8 +11,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "application_module")
-@NamedQuery(name = "ApplicationModule.findAll", query = "SELECT a FROM ApplicationModule a")
-public class ApplicationModule implements Serializable {
+public class ApplicationModuleEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -37,7 +36,7 @@ public class ApplicationModule implements Serializable {
 	@Column(name = "UPDATE_TIME")
 	private Timestamp updateTime;
 
-	public ApplicationModule() {
+	public ApplicationModuleEntity() {
 	}
 
 	public String getModuleId() {

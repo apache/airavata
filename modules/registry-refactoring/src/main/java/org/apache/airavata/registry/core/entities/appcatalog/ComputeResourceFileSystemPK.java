@@ -1,4 +1,4 @@
-package appcatlog;
+package org.apache.airavata.registry.core.entities.appcatalog;
 
 import java.io.Serializable;
 import javax.persistence.*;
@@ -20,15 +20,19 @@ public class ComputeResourceFileSystemPK implements Serializable {
 
 	public ComputeResourceFileSystemPK() {
 	}
+
 	public String getComputeResourceId() {
-		return this.computeResourceId;
+		return computeResourceId;
 	}
+
 	public void setComputeResourceId(String computeResourceId) {
 		this.computeResourceId = computeResourceId;
 	}
+
 	public String getFileSystem() {
-		return this.fileSystem;
+		return fileSystem;
 	}
+
 	public void setFileSystem(String fileSystem) {
 		this.fileSystem = fileSystem;
 	}

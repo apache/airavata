@@ -10,8 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="compute_resource_file_system")
-@NamedQuery(name="ComputeResourceFileSystem.findAll", query="SELECT c FROM ComputeResourceFileSystem c")
-public class ComputeResourceFileSystem implements Serializable {
+public class ComputeResourceFileSystemEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@EmbeddedId
@@ -21,7 +20,7 @@ public class ComputeResourceFileSystem implements Serializable {
 	private String path;
 
 
-	public ComputeResourceFileSystem() {
+	public ComputeResourceFileSystemEntity() {
 	}
 
 	public ComputeResourceFileSystemPK getId() {

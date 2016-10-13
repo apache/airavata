@@ -1,4 +1,4 @@
-package appcatlog;
+package org.apache.airavata.registry.core.entities.appcatalog;
 
 import java.io.Serializable;
 import javax.persistence.*;
@@ -22,7 +22,7 @@ public class GsisshPostjobcommandPK implements Serializable {
 	}
 
 	public String getSubmissionId() {
-		return this.submissionId;
+		return submissionId;
 	}
 
 	public void setSubmissionId(String submissionId) {
@@ -30,7 +30,7 @@ public class GsisshPostjobcommandPK implements Serializable {
 	}
 
 	public String getCommand() {
-		return this.command;
+		return command;
 	}
 
 	public void setCommand(String command) {

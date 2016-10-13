@@ -9,7 +9,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "local_submission")
-public class LocalSubmission implements Serializable {
+public class LocalSubmissionEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -25,7 +25,7 @@ public class LocalSubmission implements Serializable {
     @Column(name = "RESOURCE_JOB_MANAGER_ID")
     private String resourceJobManagerId;
 
-    public LocalSubmission() {
+    public LocalSubmissionEntity() {
     }
 
     public String getJobSubmissionInterfaceId() {

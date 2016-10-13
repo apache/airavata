@@ -10,7 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="unicore_datamovement")
-public class UnicoreDatamovement implements Serializable {
+public class UnicoreDatamovementEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -23,7 +23,7 @@ public class UnicoreDatamovement implements Serializable {
 	@Column(name="UNICORE_ENDPOINT_URL")
 	private String unicoreEndpointUrl;
 
-	public UnicoreDatamovement() {
+	public UnicoreDatamovementEntity() {
 	}
 
 	public String getDatamovementId() {

@@ -68,7 +68,7 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public List<T> select(String query, int limit, int offset){
-        List resultSet = JPAUtils.execute(entityManager -> entityManager.createQuery(query).setFirstResult(offset)
+        List resultSet = (List) JPAUtils.execute(entityManager -> entityManager.createQuery(query).setFirstResult(offset)
                 .setMaxResults(offset).getResultList());
         Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> gatewayList = new ArrayList<>();

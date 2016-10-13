@@ -9,7 +9,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "data_movement_interface")
-public class DataMovementInterface implements Serializable {
+public class DataMovementInterfaceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
@@ -27,7 +27,7 @@ public class DataMovementInterface implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
-    public DataMovementInterface() {
+    public DataMovementInterfaceEntity() {
     }
 
     public DataMovementInterfacePK getId() {

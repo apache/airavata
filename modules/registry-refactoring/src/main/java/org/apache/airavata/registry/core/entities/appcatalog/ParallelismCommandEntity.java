@@ -8,7 +8,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "parallelism_command")
-public class ParallelismCommand implements Serializable {
+public class ParallelismCommandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
@@ -17,7 +17,7 @@ public class ParallelismCommand implements Serializable {
     @Column(name = "COMMAND")
     private String command;
 
-    public ParallelismCommand() {
+    public ParallelismCommandEntity() {
     }
 
     public ParallelismCommandPK getId() {

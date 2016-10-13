@@ -10,6 +10,7 @@ import java.util.List;
  * The persistent class for the workflow database table.
  */
 @Entity
+@Table(name="workflow")
 public class WorkflowEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -20,7 +21,8 @@ public class WorkflowEntity implements Serializable {
     @Column(name = "CREATED_USER")
     private String createdUser;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", insertable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Timestamp creationTime;
 
     @Column(name = "GATEWAY_ID")
@@ -30,14 +32,13 @@ public class WorkflowEntity implements Serializable {
     private String graph;
 
     @Column(name = "IMAGE")
-    @Lob
     private byte[] image;
 
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
     @Column(name = "WORKFLOW_NAME")
-    private String workflowName;
+    private String name;
 
 
     public WorkflowEntity() {
@@ -113,15 +114,11 @@ public class WorkflowEntity implements Serializable {
         this.updateTime = updateTime;
     }
 
-    public String getWorkflowName() {
-
-        return this.workflowName;
+    public String getName() {
+        return name;
     }
 
-    public void setWorkflowName(String workflowName) {
-
-        this.workflowName = workflowName;
+    public void setName(String name) {
+        this.name = name;
     }
-
-
 }

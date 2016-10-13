@@ -10,7 +10,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "compute_resource_preference")
-public class ComputeResourcePreference implements Serializable {
+public class ComputeResourcePreferenceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
@@ -54,7 +54,7 @@ public class ComputeResourcePreference implements Serializable {
     @Column(name = "USAGE_REPORTING_GATEWAY_ID")
     private String usageReportingGatewayId;
 
-    public ComputeResourcePreference() {
+    public ComputeResourcePreferenceEntity() {
     }
 
     public ComputeResourcePreferencePK getId() {

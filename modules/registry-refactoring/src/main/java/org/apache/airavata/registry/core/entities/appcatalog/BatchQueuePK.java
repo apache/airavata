@@ -1,4 +1,4 @@
-package appcatlog;
+package org.apache.airavata.registry.core.entities.appcatalog;
 
 import java.io.Serializable;
 import javax.persistence.*;
@@ -20,15 +20,19 @@ public class BatchQueuePK implements Serializable {
 
 	public BatchQueuePK() {
 	}
+
 	public String getComputeResourceId() {
-		return this.computeResourceId;
+		return computeResourceId;
 	}
+
 	public void setComputeResourceId(String computeResourceId) {
 		this.computeResourceId = computeResourceId;
 	}
+
 	public String getQueueName() {
-		return this.queueName;
+		return queueName;
 	}
+
 	public void setQueueName(String queueName) {
 		this.queueName = queueName;
 	}

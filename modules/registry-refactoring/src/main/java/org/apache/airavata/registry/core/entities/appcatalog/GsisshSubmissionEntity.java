@@ -10,7 +10,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "gsissh_submission")
-public class GsisshSubmission implements Serializable {
+public class GsisshSubmissionEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -29,7 +29,7 @@ public class GsisshSubmission implements Serializable {
 	@Column(name = "SSH_PORT")
 	private int sshPort;
 
-	public GsisshSubmission() {
+	public GsisshSubmissionEntity() {
 	}
 
 	public String getSubmissionId() {

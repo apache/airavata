@@ -10,7 +10,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "scp_data_movement")
-public class ScpDataMovement implements Serializable {
+public class ScpDataMovementEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -35,7 +35,7 @@ public class ScpDataMovement implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
-    public ScpDataMovement() {
+    public ScpDataMovementEntity() {
     }
 
     public String getDataMovementInterfaceId() {

@@ -9,15 +9,14 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "prejob_command")
-@NamedQuery(name = "PrejobCommand.findAll", query = "SELECT p FROM PrejobCommand p")
-public class PrejobCommand implements Serializable {
+public class PrejobCommandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
     private PrejobCommandPK id;
 
 
-    public PrejobCommand() {
+    public PrejobCommandEntity() {
     }
 
     public PrejobCommandPK getId() {

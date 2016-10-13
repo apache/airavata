@@ -10,7 +10,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "globus_submission")
-public class GlobusSubmission implements Serializable {
+public class GlobusSubmissionEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -23,7 +23,7 @@ public class GlobusSubmission implements Serializable {
 	@Column(name = "SECURITY_PROTOCAL")
 	private String securityProtocal;
 
-	public GlobusSubmission() {
+	public GlobusSubmissionEntity() {
 	}
 
 	public String getSubmissionId() {

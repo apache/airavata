@@ -10,7 +10,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "gridftp_endpoint")
-public class GridftpEndpoint implements Serializable {
+public class GridftpEndpointEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
@@ -23,7 +23,7 @@ public class GridftpEndpoint implements Serializable {
     private Timestamp updateTime;
 
 
-    public GridftpEndpoint() {
+    public GridftpEndpointEntity() {
     }
 
     public GridftpEndpointPK getId() {

@@ -9,7 +9,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "host_alias")
-public class HostAlias implements Serializable {
+public class HostAliasEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@EmbeddedId
@@ -18,7 +18,7 @@ public class HostAlias implements Serializable {
 	@Column(name = "RESOURCE_ID")
 	private String resourceId;
 
-	public HostAlias() {
+	public HostAliasEntity() {
 	}
 
 	public HostAliasPK getId() {

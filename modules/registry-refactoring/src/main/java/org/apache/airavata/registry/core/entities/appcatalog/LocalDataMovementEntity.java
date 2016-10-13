@@ -9,14 +9,14 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "local_data_movement")
-public class LocalDataMovement implements Serializable {
+public class LocalDataMovementEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "DATA_MOVEMENT_INTERFACE_ID")
     private String dataMovementInterfaceId;
 
-    public LocalDataMovement() {
+    public LocalDataMovementEntity() {
     }
 
     public String getDataMovementInterfaceId() {

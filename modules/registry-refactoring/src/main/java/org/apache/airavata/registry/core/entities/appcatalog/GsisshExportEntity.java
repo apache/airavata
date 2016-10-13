@@ -9,13 +9,13 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "gsissh_export")
-public class GsisshExport implements Serializable {
+public class GsisshExportEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
     private GsisshExportPK id;
 
-    public GsisshExport() {
+    public GsisshExportEntity() {
     }
 
     public GsisshExportPK getId() {

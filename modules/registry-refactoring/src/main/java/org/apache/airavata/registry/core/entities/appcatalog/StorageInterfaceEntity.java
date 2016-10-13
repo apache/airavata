@@ -9,8 +9,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "storage_interface")
-@NamedQuery(name = "StorageInterface.findAll", query = "SELECT s FROM StorageInterface s")
-public class StorageInterface implements Serializable {
+public class StorageInterfaceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
@@ -28,7 +27,7 @@ public class StorageInterface implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
-    public StorageInterface() {
+    public StorageInterfaceEntity() {
     }
 
     public StorageInterfacePK getId() {

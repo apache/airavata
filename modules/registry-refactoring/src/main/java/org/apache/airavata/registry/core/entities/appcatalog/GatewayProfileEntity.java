@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "gateway_profile")
-public class GatewayProfile implements Serializable {
+public class GatewayProfileEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -34,7 +34,7 @@ public class GatewayProfile implements Serializable {
     private Timestamp updateTime;
 
 
-    public GatewayProfile() {
+    public GatewayProfileEntity() {
     }
 
     public String getGatewayId() {

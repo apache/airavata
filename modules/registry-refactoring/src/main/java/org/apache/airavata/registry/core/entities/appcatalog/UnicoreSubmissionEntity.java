@@ -10,7 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="unicore_submission")
-public class UnicoreSubmission implements Serializable {
+public class UnicoreSubmissionEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -23,7 +23,7 @@ public class UnicoreSubmission implements Serializable {
 	@Column(name="UNICORE_ENDPOINT_URL")
 	private String unicoreEndpointUrl;
 
-	public UnicoreSubmission() {
+	public UnicoreSubmissionEntity() {
 	}
 
 	public String getSubmissionId() {

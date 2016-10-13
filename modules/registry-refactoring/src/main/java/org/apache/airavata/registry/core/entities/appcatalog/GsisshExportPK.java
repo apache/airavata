@@ -1,4 +1,4 @@
-package appcatlog;
+package org.apache.airavata.registry.core.entities.appcatalog;
 
 import java.io.Serializable;
 import javax.persistence.*;
@@ -20,15 +20,19 @@ public class GsisshExportPK implements Serializable {
 
 	public GsisshExportPK() {
 	}
+
 	public String getSubmissionId() {
-		return this.submissionId;
+		return submissionId;
 	}
+
 	public void setSubmissionId(String submissionId) {
 		this.submissionId = submissionId;
 	}
+
 	public String getExport() {
-		return this.export;
+		return export;
 	}
+
 	public void setExport(String export) {
 		this.export = export;
 	}

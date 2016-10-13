@@ -10,13 +10,13 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="app_module_mapping")
-public class AppModuleMapping implements Serializable {
+public class AppModuleMappingEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@EmbeddedId
 	private AppModuleMappingPK id;
 
-	public AppModuleMapping() {
+	public AppModuleMappingEntity() {
 	}
 
 	public AppModuleMappingPK getId() {

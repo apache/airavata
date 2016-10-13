@@ -1,4 +1,4 @@
-package appcatlog;
+package org.apache.airavata.registry.core.entities.appcatalog;
 
 import java.io.Serializable;
 import javax.persistence.*;
@@ -15,19 +15,24 @@ public class PrejobCommandPK implements Serializable {
 	@Column(name="APPDEPLOYMENT_ID", insertable=false, updatable=false)
 	private String appdeploymentId;
 
+	@Column(name="COMMAND")
 	private String command;
 
 	public PrejobCommandPK() {
 	}
+
 	public String getAppdeploymentId() {
-		return this.appdeploymentId;
+		return appdeploymentId;
 	}
+
 	public void setAppdeploymentId(String appdeploymentId) {
 		this.appdeploymentId = appdeploymentId;
 	}
+
 	public String getCommand() {
-		return this.command;
+		return command;
 	}
+
 	public void setCommand(String command) {
 		this.command = command;
 	}

@@ -8,7 +8,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "application_output")
-public class ApplicationOutput implements Serializable {
+public class ApplicationOutputEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
@@ -41,7 +41,7 @@ public class ApplicationOutput implements Serializable {
     @Column(name = "SEARCH_QUERY")
     private String searchQuery;
 
-    public ApplicationOutput() {
+    public ApplicationOutputEntity() {
     }
 
     public ApplicationOutputPK getId() {
