@@ -41,11 +41,11 @@ public class PermissionTypeRepository extends AbstractRepository<PermissionType,
     public String getGlobalPermissionTypeIdForDomain(String domainId) throws SharingRegistryException {
         HashMap<String, String> filters = new HashMap<>();
         filters.put(DBConstants.PermissionTypeTable.DOMAIN_ID, domainId);
-        filters.put(DBConstants.PermissionTypeTable.NAME, SharingRegistryServerHandler.GLOBAL_PERMISSION_NAME);
+        filters.put(DBConstants.PermissionTypeTable.NAME, SharingRegistryServerHandler.OWNER_PERMISSION_NAME);
         List<PermissionType> permissionTypeList = select(filters, 0, -1);
         if(permissionTypeList.size() != 1){
             throw new SharingRegistryException("GLOBAL Permission inconsistency. Found " + permissionTypeList.size()
-                    + " records with " + SharingRegistryServerHandler.GLOBAL_PERMISSION_NAME + " name");
+                    + " records with " + SharingRegistryServerHandler.OWNER_PERMISSION_NAME + " name");
         }
         return permissionTypeList.get(0).getPermissionTypeId();
     }

@@ -3825,11 +3825,12 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             for(Map.Entry<String, ResourcePermissionType> userPermission : userPermissionList.entrySet()){
+                String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                 if(userPermission.getValue().equals(ResourcePermissionType.WRITE))
-                    sharingRegistryServerHandler.shareEntityWithUsers(resourceId,
+                    sharingRegistryServerHandler.shareEntityWithUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "WRITE", true);
                 else
-                    sharingRegistryServerHandler.shareEntityWithUsers(resourceId,
+                    sharingRegistryServerHandler.shareEntityWithUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ", true);
             }
             return true;
@@ -3848,11 +3849,12 @@ public class AiravataServerHandler implements Airavata.Iface {
                                                     Map<String, ResourcePermissionType> userPermissionList) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             for(Map.Entry<String, ResourcePermissionType> userPermission : userPermissionList.entrySet()){
+                String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                 if(userPermission.getValue().equals(ResourcePermissionType.WRITE))
-                    sharingRegistryServerHandler.revokeEntitySharingFromUsers(resourceId,
+                    sharingRegistryServerHandler.revokeEntitySharingFromUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "WRITE");
                 else
-                    sharingRegistryServerHandler.revokeEntitySharingFromUsers(resourceId,
+                    sharingRegistryServerHandler.revokeEntitySharingFromUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ");
             }
             return true;
