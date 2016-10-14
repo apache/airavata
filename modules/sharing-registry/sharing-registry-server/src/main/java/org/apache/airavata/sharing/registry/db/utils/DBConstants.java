@@ -51,6 +51,7 @@ public class DBConstants {
         public static String DESCRIPTION = "description";
         public static String OWNER_ID = "ownerId";
         public static String GROUP_TYPE = "groupType";
+        public static String GROUP_CARDINALITY = "groupCardinality";
         public static final String CREATED_TIME = "createdTime";
         public static final String UPDATED_TIME = "updatedTime";
     }

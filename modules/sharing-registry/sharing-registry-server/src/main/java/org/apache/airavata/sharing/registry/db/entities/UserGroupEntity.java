@@ -35,6 +35,7 @@ public class UserGroupEntity {
     private String description;
     private String ownerId;
     private String groupType;
+    private String groupCardinality;
     private Long createdTime;
     private Long updatedTime;
 
@@ -86,6 +87,16 @@ public class UserGroupEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Basic
+    @Column(name = "GROUP_CARDINALITY")
+    public String getGroupCardinality() {
+        return groupCardinality;
+    }
+
+    public void setGroupCardinality(String groupCardinality) {
+        this.groupCardinality = groupCardinality;
     }
 
     @Basic

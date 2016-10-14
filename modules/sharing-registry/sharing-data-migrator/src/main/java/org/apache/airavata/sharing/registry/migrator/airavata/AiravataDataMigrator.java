@@ -106,7 +106,7 @@ public class AiravataDataMigrator {
             user.setDomainId(rs.getString("GATEWAY_ID"));
             user.setUserName(rs.getString("USER_NAME"));
 
-            govRegistryServerHandler.createUser(user);
+            govRegistryServerHandler.registerUser(user);
         }
 
         //Creating project entries
@@ -128,7 +128,7 @@ public class AiravataDataMigrator {
             Map<String, String> metadata = new HashMap<>();
             metadata.put("CREATION_TIME", rs.getDate("CREATION_TIME").toString());
 
-            govRegistryServerHandler.createEntity(entity);
+            govRegistryServerHandler.registerEntity(entity);
         }
 
         //Creating experiment entries
@@ -158,7 +158,7 @@ public class AiravataDataMigrator {
             metadata.put("GATEWAY_INSTANCE_ID", rs.getString("GATEWAY_INSTANCE_ID"));
             metadata.put("ARCHIVE", rs.getString("ARCHIVE"));
 
-            govRegistryServerHandler.createEntity(entity);
+            govRegistryServerHandler.registerEntity(entity);
         }
 
         expCatConnection.close();

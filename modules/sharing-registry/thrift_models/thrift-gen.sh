@@ -20,4 +20,3 @@ thrift --gen html sharing_cpi.thrift
 
 rm -r ../api-docs
 mv gen-html ../api-docs
-rm -r gen-html

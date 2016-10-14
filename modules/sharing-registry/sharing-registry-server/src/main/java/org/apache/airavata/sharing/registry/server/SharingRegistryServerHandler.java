@@ -119,7 +119,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      * *
      */
     @Override
-    public String createUser(User user) throws SharingRegistryException, TException {
+    public String registerUser(User user) throws SharingRegistryException, TException {
         if(userRepository.get(user.userId) != null)
             throw new SharingRegistryException("There exist user with given user id");
 
@@ -133,7 +133,8 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
         userGroup.setName(user.userName);
         userGroup.setDescription("user " + user.userName + " group");
         userGroup.setOwnerId(user.userId);
-        userGroup.setGroupType(GroupType.SINGLE_USER);
+        userGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
+        userGroup.setGroupCardinality(GroupCardinality.SINGLE_USER);
         createGroup(userGroup);
 
         return user.userId;
@@ -242,25 +243,29 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     @Override
-    public Map<String, GroupChildType> getGroupMembers(String groupId, int offset, int limit) throws SharingRegistryException, TException {
-        HashMap<String, GroupChildType> groupMembers = new HashMap<>();
-        HashMap<String, String> filters = new HashMap<>();
-        filters.put(DBConstants.GroupMembershipTable.PARENT_ID, groupId);
-        List<GroupMembership> groupMembershipList = groupMembershipRepository.select(filters, 0, -1);
-        groupMembershipList.stream().forEach(gm->{groupMembers.put(gm.getChildId(), gm.getChildType());});
-        return groupMembers;
+    public List<User> getGroupMembersOfTypeUser(String groupId, int offset, int limit) throws SharingRegistryException, TException {
+        List<User> groupMemberUsers = groupMembershipRepository.getAllChildUsers(groupId);
+        return groupMemberUsers;
     }
 
     @Override
-    public boolean addChildGroupToParentGroup(String childId, String groupId) throws SharingRegistryException, TException {
-        //Todo check for cyclic dependencies
-        GroupMembership groupMembership = new GroupMembership();
-        groupMembership.setParentId(groupId);
-        groupMembership.setChildId(childId);
-        groupMembership.setChildType(GroupChildType.GROUP);
-        groupMembership.setCreatedTime(System.currentTimeMillis());
-        groupMembership.setUpdatedTime(System.currentTimeMillis());
-        groupMembershipRepository.create(groupMembership);
+    public List<UserGroup> getGroupMembersOfTypeGroup(String groupId, int offset, int limit) throws SharingRegistryException, TException {
+        List<UserGroup> groupMemberGroups = groupMembershipRepository.getAllChildGroups(groupId);
+        return groupMemberGroups;
+    }
+
+    @Override
+    public boolean addChildGroupsToParentGroup(List<String> childIds, String groupId) throws SharingRegistryException, TException {
+        for(String childId : childIds) {
+            //Todo check for cyclic dependencies
+            GroupMembership groupMembership = new GroupMembership();
+            groupMembership.setParentId(groupId);
+            groupMembership.setChildId(childId);
+            groupMembership.setChildType(GroupChildType.GROUP);
+            groupMembership.setCreatedTime(System.currentTimeMillis());
+            groupMembership.setUpdatedTime(System.currentTimeMillis());
+            groupMembershipRepository.create(groupMembership);
+        }
         return true;
     }
 
@@ -362,7 +367,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      * *
      */
     @Override
-    public String createEntity(Entity entity) throws SharingRegistryException, TException {
+    public String registerEntity(Entity entity) throws SharingRegistryException, TException {
         if(entityRepository.get(entity.entityId) != null)
             throw new SharingRegistryException("There exist Entity with given Entity id");
 
@@ -372,7 +377,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             user.setDomainId(entity.domainId);
             user.setUserName(user.userId.split("@")[0]);
 
-            createUser(user);
+            registerUser(user);
         }
 
         entity.setCreatedTime(System.currentTimeMillis());
@@ -463,15 +468,15 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      */
     @Override
     public boolean shareEntityWithUsers(String domainId, String entityId, List<String> userList, String permissionTypeId, boolean cascadePermission) throws SharingRegistryException, TException {
-        return shareEntity(domainId, entityId, userList, permissionTypeId, GroupType.SINGLE_USER, cascadePermission);
+        return shareEntity(domainId, entityId, userList, permissionTypeId, cascadePermission);
     }
 
     @Override
     public boolean shareEntityWithGroups(String domainId, String entityId, List<String> groupList, String permissionTypeId, boolean cascadePermission) throws SharingRegistryException, TException {
-        return shareEntity(domainId, entityId, groupList, permissionTypeId, GroupType.MULTI_USER, cascadePermission);
+        return shareEntity(domainId, entityId, groupList, permissionTypeId, cascadePermission);
     }
 
-    private boolean shareEntity(String domainId, String entityId, List<String> groupOrUserList, String permissionTypeId, GroupType groupType, boolean cascadePermission)  throws SharingRegistryException, TException {
+    private boolean shareEntity(String domainId, String entityId, List<String> groupOrUserList, String permissionTypeId, boolean cascadePermission)  throws SharingRegistryException, TException {
         if(permissionTypeId.equals(permissionTypeRepository.getGlobalPermissionTypeIdForDomain(domainId))){
             throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be assigned");
         }

@@ -35,6 +35,7 @@ public class SharingUserEntity {
     private String userName;
     private String firstName;
     private String lastName;
+    private String email;
     private ByteBuffer icon;
     private Long createdTime;
     private Long updatedTime;
@@ -87,6 +88,16 @@ public class SharingUserEntity {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    @Basic
+    @Column(name = "EMAIL")
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Lob

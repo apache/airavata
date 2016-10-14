@@ -73,7 +73,7 @@ public class SharingRegistryServerHandlerTest {
         user1.setCreatedTime(System.currentTimeMillis());
         user1.setUpdatedTime(System.currentTimeMillis());
 
-        Assert.assertNotNull(sharingRegistryServerHandler.createUser(user1));
+        Assert.assertNotNull(sharingRegistryServerHandler.registerUser(user1));
 
         User user2 = new User();
         String userName2 = "test-user-2." + System.currentTimeMillis();
@@ -84,7 +84,7 @@ public class SharingRegistryServerHandlerTest {
         user2.setCreatedTime(System.currentTimeMillis());
         user2.setUpdatedTime(System.currentTimeMillis());
 
-        Assert.assertNotNull(sharingRegistryServerHandler.createUser(user2));
+        Assert.assertNotNull(sharingRegistryServerHandler.registerUser(user2));
 
         User user3 = new User();
         String userName3 = "test-user-3." + System.currentTimeMillis();
@@ -95,7 +95,7 @@ public class SharingRegistryServerHandlerTest {
         user3.setCreatedTime(System.currentTimeMillis());
         user3.setUpdatedTime(System.currentTimeMillis());
 
-        Assert.assertNotNull(sharingRegistryServerHandler.createUser(user3));
+        Assert.assertNotNull(sharingRegistryServerHandler.registerUser(user3));
 
         Assert.assertTrue(sharingRegistryServerHandler.getUsers(domainId, 0, 10).size() > 0);
 
@@ -108,7 +108,8 @@ public class SharingRegistryServerHandlerTest {
         userGroup1.setName(groupName1);
         userGroup1.setDescription("test group description");
         userGroup1.setOwnerId(userId1);
-        userGroup1.setGroupType(GroupType.MULTI_USER);
+        userGroup1.setGroupType(GroupType.USER_LEVEL_GROUP);
+        userGroup1.setGroupCardinality(GroupCardinality.MULTI_USER);
         userGroup1.setCreatedTime(System.currentTimeMillis());
         userGroup1.setUpdatedTime(System.currentTimeMillis());
 
@@ -122,7 +123,8 @@ public class SharingRegistryServerHandlerTest {
         userGroup2.setName(groupName2);
         userGroup2.setDescription("test group description");
         userGroup2.setOwnerId(userId2);
-        userGroup2.setGroupType(GroupType.MULTI_USER);
+        userGroup2.setGroupType(GroupType.USER_LEVEL_GROUP);
+        userGroup2.setGroupCardinality(GroupCardinality.MULTI_USER);
         userGroup2.setCreatedTime(System.currentTimeMillis());
         userGroup2.setUpdatedTime(System.currentTimeMillis());
 
@@ -130,10 +132,10 @@ public class SharingRegistryServerHandlerTest {
 
         sharingRegistryServerHandler.addUsersToGroup(Arrays.asList(userId1), groupId1);
         sharingRegistryServerHandler.addUsersToGroup(Arrays.asList(userId2, userId3), groupId2);
-        sharingRegistryServerHandler.addChildGroupToParentGroup(groupId2, groupId1);
+        sharingRegistryServerHandler.addChildGroupsToParentGroup(Arrays.asList(groupId2), groupId1);
 
-        Assert.assertTrue(sharingRegistryServerHandler.getGroupMembers(groupId1, 0, 10).size() == 2);
-        Assert.assertTrue(sharingRegistryServerHandler.getGroupMembers(groupId2, 0, 10).size() == 2);
+        Assert.assertTrue(sharingRegistryServerHandler.getGroupMembersOfTypeGroup(groupId1, 0, 10).size() == 1);
+        Assert.assertTrue(sharingRegistryServerHandler.getGroupMembersOfTypeUser(groupId2, 0, 10).size() == 2);
 
 
         //Creating permission types
@@ -208,7 +210,7 @@ public class SharingRegistryServerHandlerTest {
         entity1.setCreatedTime(System.currentTimeMillis());
         entity1.setUpdatedTime(System.currentTimeMillis());
 
-        String entityId1 = sharingRegistryServerHandler.createEntity(entity1);
+        String entityId1 = sharingRegistryServerHandler.registerEntity(entity1);
         Assert.assertNotNull(entityId1);
 
         Entity entity2 = new Entity();
@@ -226,7 +228,7 @@ public class SharingRegistryServerHandlerTest {
         entity2.setCreatedTime(System.currentTimeMillis());
         entity2.setUpdatedTime(System.currentTimeMillis());
 
-        String entityId2 = sharingRegistryServerHandler.createEntity(entity2);
+        String entityId2 = sharingRegistryServerHandler.registerEntity(entity2);
         Assert.assertNotNull(entityId2);
 
         Entity entity3 = new Entity();
@@ -244,7 +246,7 @@ public class SharingRegistryServerHandlerTest {
         entity3.setCreatedTime(System.currentTimeMillis());
         entity3.setUpdatedTime(System.currentTimeMillis());
 
-        String entityId3 = sharingRegistryServerHandler.createEntity(entity3);
+        String entityId3 = sharingRegistryServerHandler.registerEntity(entity3);
         Assert.assertNotNull(entityId3);
 
         sharingRegistryServerHandler.shareEntityWithUsers(domainId, entityId1, Arrays.asList(userId2), permissionTypeId1, true);
@@ -265,7 +267,7 @@ public class SharingRegistryServerHandlerTest {
         entity4.setCreatedTime(System.currentTimeMillis());
         entity4.setUpdatedTime(System.currentTimeMillis());
 
-        String entityId4 = sharingRegistryServerHandler.createEntity(entity4);
+        String entityId4 = sharingRegistryServerHandler.registerEntity(entity4);
         Assert.assertNotNull(entityId4);
 
         Assert.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId4, permissionTypeId1));

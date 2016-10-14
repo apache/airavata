@@ -11,6 +11,16 @@ import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
+/**
+ * <p>This list of fields that can be used to search entities</p>
+ * <li>NAME : Name of the entity</li>
+ * <li>DESCRIPTION : Description of the entity</li>
+ * <li>FULL_TEXT : Full text field of the entity</li>
+ * <li>PARENT_ENTITY_ID : Parent entity id of the entity</li>
+ * <li>CREATED_TIME : Created time of the entity</li>
+ * <li>UPDATED_TIME : Updated time of the entity</li>
+ * 
+ */
 public enum EntitySearchField implements org.apache.thrift.TEnum {
   NAME(0),
   DESCRIPTION(1),
