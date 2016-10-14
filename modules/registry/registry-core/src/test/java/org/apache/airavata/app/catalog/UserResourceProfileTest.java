@@ -100,21 +100,25 @@ public class UserResourceProfileTest {
 
         String gwId = userProfile.addUserResourceProfile(uf);
         UserResourceProfile retrievedProfile = null;
+        //retrievedProfile = userProfile.getUserResourceProfile("hello",uf.getGatewayID());
         if (userProfile.isUserResourceProfileExists(uf.getUserId(),uf.getGatewayID())){
             retrievedProfile = userProfile.getUserResourceProfile(uf.getUserId(),uf.getGatewayID());
             System.out.println("gateway ID :" + retrievedProfile.getGatewayID());
             System.out.println("user ID : " + retrievedProfile.getUserId());
             System.out.println("compute resource size : " + retrievedProfile.getUserComputeResourcePreferencesSize());
         }
-        List<UserComputeResourcePreference> preferences = userProfile.getAllUserComputeResourcePreferences(retrievedProfile.getUserId(),retrievedProfile.getGatewayID());
-        System.out.println("compute preferences size : " + preferences.size());
-        if (preferences != null && !preferences.isEmpty()){
-            for (UserComputeResourcePreference cm : preferences){
-                System.out.println("******** host id ********* : " + cm.getComputeResourceId());
-                System.out.println(cm.getPreferredBatchQueue());
+        if(retrievedProfile != null){
+            List<UserComputeResourcePreference> preferences = userProfile.getAllUserComputeResourcePreferences(retrievedProfile.getUserId(),retrievedProfile.getGatewayID());
+            System.out.println("compute preferences size : " + preferences.size());
+            if (preferences != null && !preferences.isEmpty()){
+                for (UserComputeResourcePreference cm : preferences){
+                    System.out.println("******** host id ********* : " + cm.getComputeResourceId());
+                    System.out.println(cm.getPreferredBatchQueue());
+                }
             }
+        }else{
+            System.out.println("User resource profile is null");
         }
-
         assertTrue("App interface saved successfully", retrievedProfile != null);
     }
 

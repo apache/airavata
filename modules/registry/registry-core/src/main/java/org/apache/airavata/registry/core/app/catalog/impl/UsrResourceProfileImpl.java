@@ -177,7 +177,11 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
             List<AppCatalogResource> usercomputePrefList = prefResource.get(AppCatAbstractResource.UserComputeResourcePreferenceConstants.USER_ID, ids);
             List<UserComputeResourcePreference> userComputeResourcePreferences = AppCatalogThriftConversion.getUserComputeResourcePreferences(usercomputePrefList);
             List<UserStoragePreference> dataStoragePreferences = getAllUserStoragePreferences(userId,gatewayId);
-            return AppCatalogThriftConversion.getUserResourceProfile(uResource, userComputeResourcePreferences, dataStoragePreferences);
+            if(uResource != null){
+                return AppCatalogThriftConversion.getUserResourceProfile(uResource, userComputeResourcePreferences, dataStoragePreferences);
+            }else{
+                return null;
+            }
         }catch (Exception e) {
             logger.error("Error while retrieving user resource profile...", e);
             throw new AppCatalogException(e);

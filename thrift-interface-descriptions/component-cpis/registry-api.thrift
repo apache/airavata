@@ -2054,7 +2054,7 @@ service RegistryService {
                 * @param gatewayID
                 *   The identifier to link gateway for the requested User Resource resource.
                 *
-                * @return userResourceProfile
+                * @return userResourceProfile or null if not found
                 *    User Resource Profile Object.
                 *
                */
