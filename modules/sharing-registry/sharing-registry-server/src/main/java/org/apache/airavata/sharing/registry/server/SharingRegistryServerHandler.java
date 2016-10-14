@@ -38,7 +38,7 @@ import java.util.*;
 public class SharingRegistryServerHandler implements SharingRegistryService.Iface{
     private final static Logger logger = LoggerFactory.getLogger(SharingRegistryServerHandler.class);
 
-    public static String GLOBAL_PERMISSION_NAME = "OWNER";
+    public static String OWNER_PERMISSION_NAME = "OWNER";
 
     private DomainRepository domainRepository;
     private UserRepository userRepository;
@@ -77,9 +77,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
         //create the global permission for the domain
         PermissionType permissionType = new PermissionType();
-        permissionType.setPermissionTypeId(domain.domainId+":"+GLOBAL_PERMISSION_NAME);
+        permissionType.setPermissionTypeId(domain.domainId+":"+ OWNER_PERMISSION_NAME);
         permissionType.setDomainId(domain.domainId);
-        permissionType.setName(GLOBAL_PERMISSION_NAME);
+        permissionType.setName(OWNER_PERMISSION_NAME);
         permissionType.setDescription("GLOBAL permission to " + domain.domainId);
         permissionType.setCreatedTime(System.currentTimeMillis());
         permissionType.setUpdatedTime(System.currentTimeMillis());
@@ -462,16 +462,20 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      * @param permissionType
      */
     @Override
-    public boolean shareEntityWithUsers(String entityId, List<String> userList, String permissionTypeId, boolean cascadePermission) throws SharingRegistryException, TException {
-        return shareEntity(entityId, userList, permissionTypeId, GroupType.SINGLE_USER, cascadePermission);
+    public boolean shareEntityWithUsers(String domainId, String entityId, List<String> userList, String permissionTypeId, boolean cascadePermission) throws SharingRegistryException, TException {
+        return shareEntity(domainId, entityId, userList, permissionTypeId, GroupType.SINGLE_USER, cascadePermission);
     }
 
     @Override
-    public boolean shareEntityWithGroups(String entityId, List<String> groupList, String permissionTypeId, boolean cascadePermission) throws SharingRegistryException, TException {
-        return shareEntity(entityId, groupList, permissionTypeId, GroupType.MULTI_USER, cascadePermission);
+    public boolean shareEntityWithGroups(String domainId, String entityId, List<String> groupList, String permissionTypeId, boolean cascadePermission) throws SharingRegistryException, TException {
+        return shareEntity(domainId, entityId, groupList, permissionTypeId, GroupType.MULTI_USER, cascadePermission);
     }
 
-    private boolean shareEntity(String entityId, List<String> groupOrUserList, String permissionTypeId, GroupType groupType, boolean cascadePermission)  throws SharingRegistryException, TException {
+    private boolean shareEntity(String domainId, String entityId, List<String> groupOrUserList, String permissionTypeId, GroupType groupType, boolean cascadePermission)  throws SharingRegistryException, TException {
+        if(permissionTypeId.equals(permissionTypeRepository.getGlobalPermissionTypeIdForDomain(domainId))){
+            throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be assigned");
+        }
+
         //Adding permission for the specified users/groups for the specified entity
         LinkedList<Entity> temp = new LinkedList<>();
         for(String userId : groupOrUserList){
@@ -516,14 +520,14 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     @Override
-    public boolean revokeEntitySharingFromUsers(String entityId, List<String> userList, String permissionTypeId) throws SharingRegistryException, TException {
-        return revokeEntitySharing(entityId, userList, permissionTypeId);
+    public boolean revokeEntitySharingFromUsers(String domainId, String entityId, List<String> userList, String permissionTypeId) throws SharingRegistryException, TException {
+        return revokeEntitySharing(domainId, entityId, userList, permissionTypeId);
     }
 
 
     @Override
-    public boolean revokeEntitySharingFromGroups(String entityId, List<String> groupList, String permissionTypeId) throws SharingRegistryException, TException {
-        return revokeEntitySharing(entityId, groupList, permissionTypeId);
+    public boolean revokeEntitySharingFromGroups(String domainId, String entityId, List<String> groupList, String permissionTypeId) throws SharingRegistryException, TException {
+        return revokeEntitySharing(domainId, entityId, groupList, permissionTypeId);
     }
 
     @Override
@@ -537,7 +541,11 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                 permissionTypeRepository.getGlobalPermissionTypeIdForDomain(domainId)));
     }
 
-    public boolean revokeEntitySharing(String entityId, List<String> groupOrUserList, String permissionTypeId) throws SharingRegistryException {
+    public boolean revokeEntitySharing(String domainId, String entityId, List<String> groupOrUserList, String permissionTypeId) throws SharingRegistryException {
+        if(permissionTypeId.equals(permissionTypeRepository.getGlobalPermissionTypeIdForDomain(domainId))){
+            throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be removed");
+        }
+
         //revoking permission for the entity
         for(String groupId : groupOrUserList){
             SharingEntityPK sharingEntityPK = new SharingEntityPK();
