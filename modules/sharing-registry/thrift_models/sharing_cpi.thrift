@@ -25,23 +25,23 @@ include "./sharing_models.thrift"
 service SharingRegistryService {
 
     /**
-      <p>API method to create a new domainId.</p>
+      <p>API method to create a new domain</p>
     */
     string createDomain(1: required sharing_models.Domain domainId) throws (1: sharing_models.SharingRegistryException sre)
     /**
-     <p>API method to update a domainId.</p>
+     <p>API method to update a domain</p>
     */
     bool updateDomain(1: required sharing_models.Domain domainId) throws (1: sharing_models.SharingRegistryException sre)
     /**
-     <p>API method to delete domainId.</p>
+     <p>API method to delete domain</p>
     */
     bool deleteDomain(1: required string domainId) throws (1: sharing_models.SharingRegistryException sre)
     /**
-     <p>API method to retrieve a domainId.</p>
+     <p>API method to retrieve a domain</p>
     */
     sharing_models.Domain getDomain(1: required string domainId) throws (1: sharing_models.SharingRegistryException sre)
     /**
-     <p>API method to get all domainIds.</p>
+     <p>API method to get all domain.</p>
     */
     list<sharing_models.Domain> getDomains(1: required i32 offset, 2: required i32 limit) throws (1: sharing_models.SharingRegistryException sre);
 
@@ -62,7 +62,7 @@ service SharingRegistryService {
     */
     sharing_models.User getUser(1: required string userId) throws (1: sharing_models.SharingRegistryException sre)
     /**
-     <p>API method to get a list of users in a specific domainId. Users will be reverse sorted based on the created time.</p>
+     <p>API method to get a list of users in a specific domain Users will be reverse sorted based on the created time.</p>
      <li>domainId : Domain id</li>
      <li>offset : Starting result number</li>
      <li>limit : Number of max results to be sent</li>

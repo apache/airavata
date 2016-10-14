@@ -64,24 +64,24 @@
 <div class="definition"><h4 id="Fn_SharingRegistryService_createDomain">Function: SharingRegistryService.createDomain</h4>
 <pre><code>string</code> createDomain(<code><a href="sharing_models.html#Struct_Domain">sharing_models.Domain</a></code> domainId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
-</pre><p>API method to create a new domainId.</p>
+</pre><p>API method to create a new domain</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_updateDomain">Function: SharingRegistryService.updateDomain</h4>
 <pre><code>bool</code> updateDomain(<code><a href="sharing_models.html#Struct_Domain">sharing_models.Domain</a></code> domainId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
-</pre><p>API method to update a domainId.</p>
+</pre><p>API method to update a domain</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_deleteDomain">Function: SharingRegistryService.deleteDomain</h4>
 <pre><code>bool</code> deleteDomain(<code>string</code> domainId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
-</pre><p>API method to delete domainId.</p>
+</pre><p>API method to delete domain</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getDomain">Function: SharingRegistryService.getDomain</h4>
 <pre><code><a href="sharing_models.html#Struct_Domain">sharing_models.Domain</a></code> getDomain(<code>string</code> domainId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
-</pre><p>API method to retrieve a domainId.</p>
+</pre><p>API method to retrieve a domain</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getDomains">Function: SharingRegistryService.getDomains</h4>
 <pre><code>list&lt;<code><a href="sharing_models.html#Struct_Domain">sharing_models.Domain</a></code>&gt;</code> getDomains(<code>i32</code> offset,
                                        <code>i32</code> limit)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
-</pre><p>API method to get all domainIds.</p>
+</pre><p>API method to get all domain.</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_registerUser">Function: SharingRegistryService.registerUser</h4>
 <pre><code>string</code> registerUser(<code><a href="sharing_models.html#Struct_User">sharing_models.User</a></code> user)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
@@ -103,7 +103,7 @@
                                    <code>i32</code> offset,
                                    <code>i32</code> limit)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
-</pre><p>API method to get a list of users in a specific domainId. Users will be reverse sorted based on the created time.</p>
+</pre><p>API method to get a list of users in a specific domain Users will be reverse sorted based on the created time.</p>
 <li>domainId : Domain id</li>
 <li>offset : Starting result number</li>
 <li>limit : Number of max results to be sent</li>
