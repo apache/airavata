@@ -205,7 +205,7 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
     public boolean removeUserComputeResourcePreferenceFromGateway(String userId, String gatewayId, String preferenceId) throws AppCatalogException {
         try {
             UserComputeHostPreferenceResource resource = new UserComputeHostPreferenceResource();
-            CompositeIdentifier ids = new CompositeIdentifier(userId,gatewayId);
+            CompositeIdentifier ids = new CompositeIdentifier(preferenceId, userId);
             resource.remove(ids);
             return true;
         }catch (Exception e) {

@@ -114,8 +114,12 @@ public class UserResourceProfileTest {
                 for (UserComputeResourcePreference cm : preferences){
                     System.out.println("******** host id ********* : " + cm.getComputeResourceId());
                     System.out.println(cm.getPreferredBatchQueue());
+                    // this statement will remove all the compute resources created
+                    System.out.println("Compute Preference removed : " + userProfile.removeUserComputeResourcePreferenceFromGateway(retrievedProfile.getUserId(),retrievedProfile.getGatewayID(),cm.getComputeResourceId()));
                 }
             }
+            //remove the user resource profile created.
+            System.out.println("User Resource profile removed : " + userProfile.removeUserResourceProfile(retrievedProfile.getUserId(),retrievedProfile.getGatewayID()));
         }else{
             System.out.println("User resource profile is null");
         }
