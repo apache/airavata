@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="style.css" rel="stylesheet" type="text/css"/>
+<title>Thrift module: sharing_models</title></head><body>
+<div class="container-fluid">
+<h1>Thrift module: sharing_models</h1>
+<table class="table-bordered table-striped table-condensed"><thead><th>Module</th><th>Services</th><th>Data types</th><th>Constants</th></thead>
+<tr>
+<td>sharing_models</td><td></td>
+<td><a href="#Struct_Domain">Domain</a><br/>
+<a href="#Struct_Entity">Entity</a><br/>
+<a href="#Enum_EntitySearchField">EntitySearchField</a><br/>
+<a href="#Struct_EntityType">EntityType</a><br/>
+<a href="#Enum_GroupChildType">GroupChildType</a><br/>
+<a href="#Struct_GroupMembership">GroupMembership</a><br/>
+<a href="#Enum_GroupType">GroupType</a><br/>
+<a href="#Struct_PermissionType">PermissionType</a><br/>
+<a href="#Enum_SearchCondition">SearchCondition</a><br/>
+<a href="#Struct_SearchCriteria">SearchCriteria</a><br/>
+<a href="#Struct_Sharing">Sharing</a><br/>
+<a href="#Struct_SharingRegistryException">SharingRegistryException</a><br/>
+<a href="#Enum_SharingType">SharingType</a><br/>
+<a href="#Struct_User">User</a><br/>
+<a href="#Struct_UserGroup">UserGroup</a><br/>
+</td>
+<td><code><a href="#Const_DO_NOT_SET_AT_CLIENTS_ID">DO_NOT_SET_AT_CLIENTS_ID</a></code><br/>
+</code></td>
+</tr></table>
+<hr/><h2 id="Constants">Constants</h2>
+<table class="table-bordered table-striped table-condensed"><thead><th>Constant</th><th>Type</th><th>Value</th></thead>
+<tr id="Const_DO_NOT_SET_AT_CLIENTS_ID"><td><code>DO_NOT_SET_AT_CLIENTS_ID</code></td><td><code>string</code></td><td><code>"DO_NOT_SET_AT_CLIENTS_ID"</code></td></tr></table><hr/><h2 id="Enumerations">Enumerations</h2>
+<div class="definition"><h3 id="Enum_GroupType">Enumeration: GroupType</h3>
+<br/><table class="table-bordered table-striped table-condensed">
+<tr><td><code>SINGLE_USER</code></td><td><code>0</code></td><td>
+</td></tr>
+<tr><td><code>MULTI_USER</code></td><td><code>1</code></td><td>
+</td></tr>
+</table></div>
+<div class="definition"><h3 id="Enum_GroupChildType">Enumeration: GroupChildType</h3>
+<br/><table class="table-bordered table-striped table-condensed">
+<tr><td><code>USER</code></td><td><code>0</code></td><td>
+</td></tr>
+<tr><td><code>GROUP</code></td><td><code>1</code></td><td>
+</td></tr>
+</table></div>
+<div class="definition"><h3 id="Enum_EntitySearchField">Enumeration: EntitySearchField</h3>
+<br/><table class="table-bordered table-striped table-condensed">
+<tr><td><code>NAME</code></td><td><code>0</code></td><td>
+</td></tr>
+<tr><td><code>DESCRIPTION</code></td><td><code>1</code></td><td>
+</td></tr>
+<tr><td><code>FULL_TEXT</code></td><td><code>2</code></td><td>
+</td></tr>
+<tr><td><code>PRRENT_ENTITY_ID</code></td><td><code>3</code></td><td>
+</td></tr>
+<tr><td><code>CREATED_TIME</code></td><td><code>4</code></td><td>
+</td></tr>
+<tr><td><code>UPDATED_TIME</code></td><td><code>5</code></td><td>
+</td></tr>
+</table></div>
+<div class="definition"><h3 id="Enum_SearchCondition">Enumeration: SearchCondition</h3>
+<br/><table class="table-bordered table-striped table-condensed">
+<tr><td><code>EQUAL</code></td><td><code>0</code></td><td>
+</td></tr>
+<tr><td><code>LIKE</code></td><td><code>1</code></td><td>
+</td></tr>
+<tr><td><code>GTE</code></td><td><code>2</code></td><td>
+</td></tr>
+<tr><td><code>LTE</code></td><td><code>3</code></td><td>
+</td></tr>
+</table></div>
+<div class="definition"><h3 id="Enum_SharingType">Enumeration: SharingType</h3>
+<br/><table class="table-bordered table-striped table-condensed">
+<tr><td><code>DIRECT_NON_CASCADING</code></td><td><code>0</code></td><td>
+</td></tr>
+<tr><td><code>DIRECT_CASCADING</code></td><td><code>1</code></td><td>
+</td></tr>
+<tr><td><code>INDIRECT_CASCADING</code></td><td><code>2</code></td><td>
+</td></tr>
+</table></div>
+<hr/><h2 id="Structs">Data structures</h2>
+<div class="definition"><h3 id="Struct_Domain">Struct: Domain</h3>
+<table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
+<tr><td>1</td><td>domainId</td><td><code>string</code></td><td></td><td>optional</td><td><code>"DO_NOT_SET_AT_CLIENTS_ID"</code></td></tr>
+<tr><td>2</td><td>name</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>3</td><td>description</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>4</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>5</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+</table><br/></div><div class="definition"><h3 id="Struct_User">Struct: User</h3>
+<table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
+<tr><td>1</td><td>userId</td><td><code>string</code></td><td></td><td>optional</td><td><code>"DO_NOT_SET_AT_CLIENTS_ID"</code></td></tr>
+<tr><td>2</td><td>domainId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>3</td><td>userName</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>4</td><td>firstName</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>5</td><td>lastName</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>6</td><td>icon</td><td><code>binary</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>7</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>8</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+</table><br/></div><div class="definition"><h3 id="Struct_UserGroup">Struct: UserGroup</h3>
+<table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
+<tr><td>1</td><td>groupId</td><td><code>string</code></td><td></td><td>optional</td><td><code>"DO_NOT_SET_AT_CLIENTS_ID"</code></td></tr>
+<tr><td>2</td><td>domainId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>3</td><td>name</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>6</td><td>description</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>7</td><td>ownerId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>8</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>9</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>10</td><td>groupType</td><td><code><a href="#Enum_GroupType">GroupType</a></code></td><td></td><td>optional</td><td></td></tr>
+</table><br/></div><div class="definition"><h3 id="Struct_GroupMembership">Struct: GroupMembership</h3>
+<table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
+<tr><td>1</td><td>parentId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>2</td><td>childId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>3</td><td>childType</td><td><code><a href="#Enum_GroupChildType">GroupChildType</a></code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>4</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>5</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+</table><br/></div><div class="definition"><h3 id="Struct_EntityType">Struct: EntityType</h3>
+<table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
+<tr><td>1</td><td>entityTypeId</td><td><code>string</code></td><td></td><td>optional</td><td><code>"DO_NOT_SET_AT_CLIENTS_ID"</code></td></tr>
+<tr><td>2</td><td>domainId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>3</td><td>name</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>4</td><td>description</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>5</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>6</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+</table><br/></div><div class="definition"><h3 id="Struct_SearchCriteria">Struct: SearchCriteria</h3>
+<table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
+<tr><td>1</td><td>searchField</td><td><code><a href="#Enum_EntitySearchField">EntitySearchField</a></code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>2</td><td>value</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>3</td><td>searchCondition</td><td><code><a href="#Enum_SearchCondition">SearchCondition</a></code></td><td></td><td>optional</td><td></td></tr>
+</table><br/></div><div class="definition"><h3 id="Struct_Entity">Struct: Entity</h3>
+<table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
+<tr><td>1</td><td>entityId</td><td><code>string</code></td><td></td><td>optional</td><td><code>"DO_NOT_SET_AT_CLIENTS_ID"</code></td></tr>
+<tr><td>2</td><td>domainId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>3</td><td>entityTypeId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>4</td><td>ownerId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>5</td><td>parentEntityId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>6</td><td>name</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>7</td><td>description</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>8</td><td>metadata</td><td><code>map&lt;<code>string</code>, <code>string</code>&gt;</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>9</td><td>fullText</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>10</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>11</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+</table><br/></div><div class="definition"><h3 id="Struct_PermissionType">Struct: PermissionType</h3>
+<table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
+<tr><td>1</td><td>permissionTypeId</td><td><code>string</code></td><td></td><td>optional</td><td><code>"DO_NOT_SET_AT_CLIENTS_ID"</code></td></tr>
+<tr><td>2</td><td>domainId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>3</td><td>name</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>4</td><td>description</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>5</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>6</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+</table><br/></div><div class="definition"><h3 id="Struct_Sharing">Struct: Sharing</h3>
+<table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
+<tr><td>1</td><td>permissionTypeId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>2</td><td>entityId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>3</td><td>groupId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>4</td><td>sharingType</td><td><code><a href="#Enum_SharingType">SharingType</a></code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>5</td><td>inheritedParentId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>6</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>7</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+</table><br/></div><div class="definition"><h3 id="Struct_SharingRegistryException">Exception: SharingRegistryException</h3>
+<table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
+<tr><td>1</td><td>message</td><td><code>string</code></td><td></td><td>required</td><td></td></tr>
+</table><br/></div></div></body></html>
