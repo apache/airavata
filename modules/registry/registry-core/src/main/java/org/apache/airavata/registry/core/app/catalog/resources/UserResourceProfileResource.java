@@ -158,19 +158,23 @@ public class UserResourceProfileResource extends AppCatAbstractResource {
             generator.setParameter(UserResourceProfileConstants.USER_ID, ids.getTopLevelIdentifier().toString());
             generator.setParameter(UserResourceProfileConstants.GATEWAY_ID, ids.getSecondLevelIdentifier().toString());
             Query q = generator.selectQuery(em);
-            UserResourceProfile userResourceProfile = (UserResourceProfile) q.getSingleResult();
-            UserResourceProfileResource userResourceProfileResource =
-                    (UserResourceProfileResource) AppCatalogJPAUtils.getResource(
-                            AppCatalogResourceType.USER_RESOURCE_PROFILE, userResourceProfile);
-            em.getTransaction().commit();
-            if (em.isOpen()) {
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
+            if(q.getResultList().size() != 0){
+                UserResourceProfile userResourceProfile = (UserResourceProfile) q.getSingleResult();
+                UserResourceProfileResource userResourceProfileResource =
+                        (UserResourceProfileResource) AppCatalogJPAUtils.getResource(
+                                AppCatalogResourceType.USER_RESOURCE_PROFILE, userResourceProfile);
+                em.getTransaction().commit();
+                if (em.isOpen()) {
+                    if (em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                    em.close();
                 }
-                em.close();
+                userResourceProfileResource.setUserId(ids.getTopLevelIdentifier().toString());
+                return userResourceProfileResource;
+            }else{
+                return null;
             }
-            userResourceProfileResource.setUserId(ids.getTopLevelIdentifier().toString());
-            return userResourceProfileResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -424,8 +428,8 @@ public class UserResourceProfileResource extends AppCatAbstractResource {
             Query q;
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(USER_RESOURCE_PROFILE);
             List results;
-            generator.setParameter(UserStoragePreferenceConstants.USER_ID, ids.getTopLevelIdentifier().toString());
-            generator.setParameter(UserStoragePreferenceConstants.GATEWAY_ID, ids.getSecondLevelIdentifier().toString());
+            generator.setParameter(UserResourceProfileConstants.USER_ID, ids.getTopLevelIdentifier().toString());
+            generator.setParameter(UserResourceProfileConstants.GATEWAY_ID, ids.getSecondLevelIdentifier().toString());
             q = generator.selectQuery(em);
             results = q.getResultList();
             if (em.isOpen()) {
