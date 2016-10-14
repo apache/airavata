@@ -247,8 +247,8 @@ public class SharingRegistryServerHandlerTest {
         String entityId3 = sharingRegistryServerHandler.createEntity(entity3);
         Assert.assertNotNull(entityId3);
 
-        sharingRegistryServerHandler.shareEntityWithUsers(entityId1, Arrays.asList(userId2), permissionTypeId1, true);
-        sharingRegistryServerHandler.shareEntityWithGroups(entityId3, Arrays.asList(groupId2), permissionTypeId1, true);
+        sharingRegistryServerHandler.shareEntityWithUsers(domainId, entityId1, Arrays.asList(userId2), permissionTypeId1, true);
+        sharingRegistryServerHandler.shareEntityWithGroups(domainId, entityId3, Arrays.asList(groupId2), permissionTypeId1, true);
 
         Entity entity4 = new Entity();
         entity4.setEntityId(domainId+":Entity4");

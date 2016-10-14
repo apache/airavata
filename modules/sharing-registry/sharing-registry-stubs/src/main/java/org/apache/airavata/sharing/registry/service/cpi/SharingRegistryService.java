@@ -153,18 +153,19 @@ public class SharingRegistryService {
      *  * Sharing Entity with Users and Groups
      * *
      * 
+     * @param domainId
      * @param entityId
      * @param userList
      * @param perssionTypeId
      * @param cascadePermission
      */
-    public boolean shareEntityWithUsers(String entityId, List<String> userList, String perssionTypeId, boolean cascadePermission) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+    public boolean shareEntityWithUsers(String domainId, String entityId, List<String> userList, String perssionTypeId, boolean cascadePermission) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
-    public boolean revokeEntitySharingFromUsers(String entityId, List<String> userList, String perssionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+    public boolean revokeEntitySharingFromUsers(String domainId, String entityId, List<String> userList, String perssionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
-    public boolean shareEntityWithGroups(String entityId, List<String> groupList, String perssionTypeId, boolean cascadePermission) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+    public boolean shareEntityWithGroups(String domainId, String entityId, List<String> groupList, String perssionTypeId, boolean cascadePermission) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
-    public boolean revokeEntitySharingFromGroups(String entityId, List<String> groupList, String perssionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+    public boolean revokeEntitySharingFromGroups(String domainId, String entityId, List<String> groupList, String perssionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
     public boolean userHasAccess(String domainId, String userId, String entityId, String permissionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
@@ -246,13 +247,13 @@ public class SharingRegistryService {
 
     public void getPermissionTypes(String domain, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void shareEntityWithUsers(String entityId, List<String> userList, String perssionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void shareEntityWithUsers(String domainId, String entityId, List<String> userList, String perssionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void revokeEntitySharingFromUsers(String entityId, List<String> userList, String perssionTypeId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void revokeEntitySharingFromUsers(String domainId, String entityId, List<String> userList, String perssionTypeId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void shareEntityWithGroups(String entityId, List<String> groupList, String perssionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void shareEntityWithGroups(String domainId, String entityId, List<String> groupList, String perssionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void revokeEntitySharingFromGroups(String entityId, List<String> groupList, String perssionTypeId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void revokeEntitySharingFromGroups(String domainId, String entityId, List<String> groupList, String perssionTypeId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void userHasAccess(String domainId, String userId, String entityId, String permissionTypeId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -1258,15 +1259,16 @@ public class SharingRegistryService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getPermissionTypes failed: unknown result");
     }
 
-    public boolean shareEntityWithUsers(String entityId, List<String> userList, String perssionTypeId, boolean cascadePermission) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public boolean shareEntityWithUsers(String domainId, String entityId, List<String> userList, String perssionTypeId, boolean cascadePermission) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
     {
-      send_shareEntityWithUsers(entityId, userList, perssionTypeId, cascadePermission);
+      send_shareEntityWithUsers(domainId, entityId, userList, perssionTypeId, cascadePermission);
       return recv_shareEntityWithUsers();
     }
 
-    public void send_shareEntityWithUsers(String entityId, List<String> userList, String perssionTypeId, boolean cascadePermission) throws org.apache.thrift.TException
+    public void send_shareEntityWithUsers(String domainId, String entityId, List<String> userList, String perssionTypeId, boolean cascadePermission) throws org.apache.thrift.TException
     {
       shareEntityWithUsers_args args = new shareEntityWithUsers_args();
+      args.setDomainId(domainId);
       args.setEntityId(entityId);
       args.setUserList(userList);
       args.setPerssionTypeId(perssionTypeId);
@@ -1287,15 +1289,16 @@ public class SharingRegistryService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "shareEntityWithUsers failed: unknown result");
     }
 
-    public boolean revokeEntitySharingFromUsers(String entityId, List<String> userList, String perssionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public boolean revokeEntitySharingFromUsers(String domainId, String entityId, List<String> userList, String perssionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
     {
-      send_revokeEntitySharingFromUsers(entityId, userList, perssionTypeId);
+      send_revokeEntitySharingFromUsers(domainId, entityId, userList, perssionTypeId);
       return recv_revokeEntitySharingFromUsers();
     }
 
-    public void send_revokeEntitySharingFromUsers(String entityId, List<String> userList, String perssionTypeId) throws org.apache.thrift.TException
+    public void send_revokeEntitySharingFromUsers(String domainId, String entityId, List<String> userList, String perssionTypeId) throws org.apache.thrift.TException
     {
       revokeEntitySharingFromUsers_args args = new revokeEntitySharingFromUsers_args();
+      args.setDomainId(domainId);
       args.setEntityId(entityId);
       args.setUserList(userList);
       args.setPerssionTypeId(perssionTypeId);
@@ -1315,15 +1318,16 @@ public class SharingRegistryService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "revokeEntitySharingFromUsers failed: unknown result");
     }
 
-    public boolean shareEntityWithGroups(String entityId, List<String> groupList, String perssionTypeId, boolean cascadePermission) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public boolean shareEntityWithGroups(String domainId, String entityId, List<String> groupList, String perssionTypeId, boolean cascadePermission) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
     {
-      send_shareEntityWithGroups(entityId, groupList, perssionTypeId, cascadePermission);
+      send_shareEntityWithGroups(domainId, entityId, groupList, perssionTypeId, cascadePermission);
       return recv_shareEntityWithGroups();
     }
 
-    public void send_shareEntityWithGroups(String entityId, List<String> groupList, String perssionTypeId, boolean cascadePermission) throws org.apache.thrift.TException
+    public void send_shareEntityWithGroups(String domainId, String entityId, List<String> groupList, String perssionTypeId, boolean cascadePermission) throws org.apache.thrift.TException
     {
       shareEntityWithGroups_args args = new shareEntityWithGroups_args();
+      args.setDomainId(domainId);
       args.setEntityId(entityId);
       args.setGroupList(groupList);
       args.setPerssionTypeId(perssionTypeId);
@@ -1344,15 +1348,16 @@ public class SharingRegistryService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "shareEntityWithGroups failed: unknown result");
     }
 
-    public boolean revokeEntitySharingFromGroups(String entityId, List<String> groupList, String perssionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public boolean revokeEntitySharingFromGroups(String domainId, String entityId, List<String> groupList, String perssionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
     {
-      send_revokeEntitySharingFromGroups(entityId, groupList, perssionTypeId);
+      send_revokeEntitySharingFromGroups(domainId, entityId, groupList, perssionTypeId);
       return recv_revokeEntitySharingFromGroups();
     }
 
-    public void send_revokeEntitySharingFromGroups(String entityId, List<String> groupList, String perssionTypeId) throws org.apache.thrift.TException
+    public void send_revokeEntitySharingFromGroups(String domainId, String entityId, List<String> groupList, String perssionTypeId) throws org.apache.thrift.TException
     {
       revokeEntitySharingFromGroups_args args = new revokeEntitySharingFromGroups_args();
+      args.setDomainId(domainId);
       args.setEntityId(entityId);
       args.setGroupList(groupList);
       args.setPerssionTypeId(perssionTypeId);
@@ -2666,20 +2671,22 @@ public class SharingRegistryService {
       }
     }
 
-    public void shareEntityWithUsers(String entityId, List<String> userList, String perssionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void shareEntityWithUsers(String domainId, String entityId, List<String> userList, String perssionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      shareEntityWithUsers_call method_call = new shareEntityWithUsers_call(entityId, userList, perssionTypeId, cascadePermission, resultHandler, this, ___protocolFactory, ___transport);
+      shareEntityWithUsers_call method_call = new shareEntityWithUsers_call(domainId, entityId, userList, perssionTypeId, cascadePermission, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class shareEntityWithUsers_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String domainId;
       private String entityId;
       private List<String> userList;
       private String perssionTypeId;
       private boolean cascadePermission;
-      public shareEntityWithUsers_call(String entityId, List<String> userList, String perssionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public shareEntityWithUsers_call(String domainId, String entityId, List<String> userList, String perssionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
+        this.domainId = domainId;
         this.entityId = entityId;
         this.userList = userList;
         this.perssionTypeId = perssionTypeId;
@@ -2689,6 +2696,7 @@ public class SharingRegistryService {
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("shareEntityWithUsers", org.apache.thrift.protocol.TMessageType.CALL, 0));
         shareEntityWithUsers_args args = new shareEntityWithUsers_args();
+        args.setDomainId(domainId);
         args.setEntityId(entityId);
         args.setUserList(userList);
         args.setPerssionTypeId(perssionTypeId);
@@ -2707,19 +2715,21 @@ public class SharingRegistryService {
       }
     }
 
-    public void revokeEntitySharingFromUsers(String entityId, List<String> userList, String perssionTypeId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void revokeEntitySharingFromUsers(String domainId, String entityId, List<String> userList, String perssionTypeId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      revokeEntitySharingFromUsers_call method_call = new revokeEntitySharingFromUsers_call(entityId, userList, perssionTypeId, resultHandler, this, ___protocolFactory, ___transport);
+      revokeEntitySharingFromUsers_call method_call = new revokeEntitySharingFromUsers_call(domainId, entityId, userList, perssionTypeId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class revokeEntitySharingFromUsers_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String domainId;
       private String entityId;
       private List<String> userList;
       private String perssionTypeId;
-      public revokeEntitySharingFromUsers_call(String entityId, List<String> userList, String perssionTypeId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public revokeEntitySharingFromUsers_call(String domainId, String entityId, List<String> userList, String perssionTypeId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
+        this.domainId = domainId;
         this.entityId = entityId;
         this.userList = userList;
         this.perssionTypeId = perssionTypeId;
@@ -2728,6 +2738,7 @@ public class SharingRegistryService {
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("revokeEntitySharingFromUsers", org.apache.thrift.protocol.TMessageType.CALL, 0));
         revokeEntitySharingFromUsers_args args = new revokeEntitySharingFromUsers_args();
+        args.setDomainId(domainId);
         args.setEntityId(entityId);
         args.setUserList(userList);
         args.setPerssionTypeId(perssionTypeId);
@@ -2745,20 +2756,22 @@ public class SharingRegistryService {
       }
     }
 
-    public void shareEntityWithGroups(String entityId, List<String> groupList, String perssionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void shareEntityWithGroups(String domainId, String entityId, List<String> groupList, String perssionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      shareEntityWithGroups_call method_call = new shareEntityWithGroups_call(entityId, groupList, perssionTypeId, cascadePermission, resultHandler, this, ___protocolFactory, ___transport);
+      shareEntityWithGroups_call method_call = new shareEntityWithGroups_call(domainId, entityId, groupList, perssionTypeId, cascadePermission, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class shareEntityWithGroups_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String domainId;
       private String entityId;
       private List<String> groupList;
       private String perssionTypeId;
       private boolean cascadePermission;
-      public shareEntityWithGroups_call(String entityId, List<String> groupList, String perssionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public shareEntityWithGroups_call(String domainId, String entityId, List<String> groupList, String perssionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
+        this.domainId = domainId;
         this.entityId = entityId;
         this.groupList = groupList;
         this.perssionTypeId = perssionTypeId;
@@ -2768,6 +2781,7 @@ public class SharingRegistryService {
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("shareEntityWithGroups", org.apache.thrift.protocol.TMessageType.CALL, 0));
         shareEntityWithGroups_args args = new shareEntityWithGroups_args();
+        args.setDomainId(domainId);
         args.setEntityId(entityId);
         args.setGroupList(groupList);
         args.setPerssionTypeId(perssionTypeId);
@@ -2786,19 +2800,21 @@ public class SharingRegistryService {
       }
     }
 
-    public void revokeEntitySharingFromGroups(String entityId, List<String> groupList, String perssionTypeId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void revokeEntitySharingFromGroups(String domainId, String entityId, List<String> groupList, String perssionTypeId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      revokeEntitySharingFromGroups_call method_call = new revokeEntitySharingFromGroups_call(entityId, groupList, perssionTypeId, resultHandler, this, ___protocolFactory, ___transport);
+      revokeEntitySharingFromGroups_call method_call = new revokeEntitySharingFromGroups_call(domainId, entityId, groupList, perssionTypeId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class revokeEntitySharingFromGroups_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String domainId;
       private String entityId;
       private List<String> groupList;
       private String perssionTypeId;
-      public revokeEntitySharingFromGroups_call(String entityId, List<String> groupList, String perssionTypeId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public revokeEntitySharingFromGroups_call(String domainId, String entityId, List<String> groupList, String perssionTypeId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
+        this.domainId = domainId;
         this.entityId = entityId;
         this.groupList = groupList;
         this.perssionTypeId = perssionTypeId;
@@ -2807,6 +2823,7 @@ public class SharingRegistryService {
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("revokeEntitySharingFromGroups", org.apache.thrift.protocol.TMessageType.CALL, 0));
         revokeEntitySharingFromGroups_args args = new revokeEntitySharingFromGroups_args();
+        args.setDomainId(domainId);
         args.setEntityId(entityId);
         args.setGroupList(groupList);
         args.setPerssionTypeId(perssionTypeId);
@@ -3839,7 +3856,7 @@ public class SharingRegistryService {
       public shareEntityWithUsers_result getResult(I iface, shareEntityWithUsers_args args) throws org.apache.thrift.TException {
         shareEntityWithUsers_result result = new shareEntityWithUsers_result();
         try {
-          result.success = iface.shareEntityWithUsers(args.entityId, args.userList, args.perssionTypeId, args.cascadePermission);
+          result.success = iface.shareEntityWithUsers(args.domainId, args.entityId, args.userList, args.perssionTypeId, args.cascadePermission);
           result.setSuccessIsSet(true);
         } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException gre) {
           result.gre = gre;
@@ -3864,7 +3881,7 @@ public class SharingRegistryService {
       public revokeEntitySharingFromUsers_result getResult(I iface, revokeEntitySharingFromUsers_args args) throws org.apache.thrift.TException {
         revokeEntitySharingFromUsers_result result = new revokeEntitySharingFromUsers_result();
         try {
-          result.success = iface.revokeEntitySharingFromUsers(args.entityId, args.userList, args.perssionTypeId);
+          result.success = iface.revokeEntitySharingFromUsers(args.domainId, args.entityId, args.userList, args.perssionTypeId);
           result.setSuccessIsSet(true);
         } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException gre) {
           result.gre = gre;
@@ -3889,7 +3906,7 @@ public class SharingRegistryService {
       public shareEntityWithGroups_result getResult(I iface, shareEntityWithGroups_args args) throws org.apache.thrift.TException {
         shareEntityWithGroups_result result = new shareEntityWithGroups_result();
         try {
-          result.success = iface.shareEntityWithGroups(args.entityId, args.groupList, args.perssionTypeId, args.cascadePermission);
+          result.success = iface.shareEntityWithGroups(args.domainId, args.entityId, args.groupList, args.perssionTypeId, args.cascadePermission);
           result.setSuccessIsSet(true);
         } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException gre) {
           result.gre = gre;
@@ -3914,7 +3931,7 @@ public class SharingRegistryService {
       public revokeEntitySharingFromGroups_result getResult(I iface, revokeEntitySharingFromGroups_args args) throws org.apache.thrift.TException {
         revokeEntitySharingFromGroups_result result = new revokeEntitySharingFromGroups_result();
         try {
-          result.success = iface.revokeEntitySharingFromGroups(args.entityId, args.groupList, args.perssionTypeId);
+          result.success = iface.revokeEntitySharingFromGroups(args.domainId, args.entityId, args.groupList, args.perssionTypeId);
           result.setSuccessIsSet(true);
         } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException gre) {
           result.gre = gre;
@@ -6179,7 +6196,7 @@ public class SharingRegistryService {
       }
 
       public void start(I iface, shareEntityWithUsers_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
-        iface.shareEntityWithUsers(args.entityId, args.userList, args.perssionTypeId, args.cascadePermission,resultHandler);
+        iface.shareEntityWithUsers(args.domainId, args.entityId, args.userList, args.perssionTypeId, args.cascadePermission,resultHandler);
       }
     }
 
@@ -6237,7 +6254,7 @@ public class SharingRegistryService {
       }
 
       public void start(I iface, revokeEntitySharingFromUsers_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
-        iface.revokeEntitySharingFromUsers(args.entityId, args.userList, args.perssionTypeId,resultHandler);
+        iface.revokeEntitySharingFromUsers(args.domainId, args.entityId, args.userList, args.perssionTypeId,resultHandler);
       }
     }
 
@@ -6295,7 +6312,7 @@ public class SharingRegistryService {
       }
 
       public void start(I iface, shareEntityWithGroups_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
-        iface.shareEntityWithGroups(args.entityId, args.groupList, args.perssionTypeId, args.cascadePermission,resultHandler);
+        iface.shareEntityWithGroups(args.domainId, args.entityId, args.groupList, args.perssionTypeId, args.cascadePermission,resultHandler);
       }
     }
 
@@ -6353,7 +6370,7 @@ public class SharingRegistryService {
       }
 
       public void start(I iface, revokeEntitySharingFromGroups_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
-        iface.revokeEntitySharingFromGroups(args.entityId, args.groupList, args.perssionTypeId,resultHandler);
+        iface.revokeEntitySharingFromGroups(args.domainId, args.entityId, args.groupList, args.perssionTypeId,resultHandler);
       }
     }
 
@@ -39543,10 +39560,11 @@ public class SharingRegistryService {
   public static class shareEntityWithUsers_args implements org.apache.thrift.TBase<shareEntityWithUsers_args, shareEntityWithUsers_args._Fields>, java.io.Serializable, Cloneable, Comparable<shareEntityWithUsers_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("shareEntityWithUsers_args");
 
-    private static final org.apache.thrift.protocol.TField ENTITY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("entityId", org.apache.thrift.protocol.TType.STRING, (short)1);
-    private static final org.apache.thrift.protocol.TField USER_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("userList", org.apache.thrift.protocol.TType.LIST, (short)2);
-    private static final org.apache.thrift.protocol.TField PERSSION_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("perssionTypeId", org.apache.thrift.protocol.TType.STRING, (short)3);
-    private static final org.apache.thrift.protocol.TField CASCADE_PERMISSION_FIELD_DESC = new org.apache.thrift.protocol.TField("cascadePermission", org.apache.thrift.protocol.TType.BOOL, (short)4);
+    private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField ENTITY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("entityId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField USER_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("userList", org.apache.thrift.protocol.TType.LIST, (short)3);
+    private static final org.apache.thrift.protocol.TField PERSSION_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("perssionTypeId", org.apache.thrift.protocol.TType.STRING, (short)4);
+    private static final org.apache.thrift.protocol.TField CASCADE_PERMISSION_FIELD_DESC = new org.apache.thrift.protocol.TField("cascadePermission", org.apache.thrift.protocol.TType.BOOL, (short)5);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -39554,6 +39572,7 @@ public class SharingRegistryService {
       schemes.put(TupleScheme.class, new shareEntityWithUsers_argsTupleSchemeFactory());
     }
 
+    public String domainId; // required
     public String entityId; // required
     public List<String> userList; // required
     public String perssionTypeId; // required
@@ -39561,10 +39580,11 @@ public class SharingRegistryService {
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      ENTITY_ID((short)1, "entityId"),
-      USER_LIST((short)2, "userList"),
-      PERSSION_TYPE_ID((short)3, "perssionTypeId"),
-      CASCADE_PERMISSION((short)4, "cascadePermission");
+      DOMAIN_ID((short)1, "domainId"),
+      ENTITY_ID((short)2, "entityId"),
+      USER_LIST((short)3, "userList"),
+      PERSSION_TYPE_ID((short)4, "perssionTypeId"),
+      CASCADE_PERMISSION((short)5, "cascadePermission");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -39579,13 +39599,15 @@ public class SharingRegistryService {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // ENTITY_ID
+          case 1: // DOMAIN_ID
+            return DOMAIN_ID;
+          case 2: // ENTITY_ID
             return ENTITY_ID;
-          case 2: // USER_LIST
+          case 3: // USER_LIST
             return USER_LIST;
-          case 3: // PERSSION_TYPE_ID
+          case 4: // PERSSION_TYPE_ID
             return PERSSION_TYPE_ID;
-          case 4: // CASCADE_PERMISSION
+          case 5: // CASCADE_PERMISSION
             return CASCADE_PERMISSION;
           default:
             return null;
@@ -39632,6 +39654,8 @@ public class SharingRegistryService {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.DOMAIN_ID, new org.apache.thrift.meta_data.FieldMetaData("domainId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.ENTITY_ID, new org.apache.thrift.meta_data.FieldMetaData("entityId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.USER_LIST, new org.apache.thrift.meta_data.FieldMetaData("userList", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -39649,12 +39673,14 @@ public class SharingRegistryService {
     }
 
     public shareEntityWithUsers_args(
+      String domainId,
       String entityId,
       List<String> userList,
       String perssionTypeId,
       boolean cascadePermission)
     {
       this();
+      this.domainId = domainId;
       this.entityId = entityId;
       this.userList = userList;
       this.perssionTypeId = perssionTypeId;
@@ -39667,6 +39693,9 @@ public class SharingRegistryService {
      */
     public shareEntityWithUsers_args(shareEntityWithUsers_args other) {
       __isset_bitfield = other.__isset_bitfield;
+      if (other.isSetDomainId()) {
+        this.domainId = other.domainId;
+      }
       if (other.isSetEntityId()) {
         this.entityId = other.entityId;
       }
@@ -39686,11 +39715,36 @@ public class SharingRegistryService {
 
     @Override
     public void clear() {
+      this.domainId = null;
       this.entityId = null;
       this.userList = null;
       this.perssionTypeId = null;
       setCascadePermissionIsSet(false);
       this.cascadePermission = false;
+    }
+
+    public String getDomainId() {
+      return this.domainId;
+    }
+
+    public shareEntityWithUsers_args setDomainId(String domainId) {
+      this.domainId = domainId;
+      return this;
+    }
+
+    public void unsetDomainId() {
+      this.domainId = null;
+    }
+
+    /** Returns true if field domainId is set (has been assigned a value) and false otherwise */
+    public boolean isSetDomainId() {
+      return this.domainId != null;
+    }
+
+    public void setDomainIdIsSet(boolean value) {
+      if (!value) {
+        this.domainId = null;
+      }
     }
 
     public String getEntityId() {
@@ -39805,6 +39859,14 @@ public class SharingRegistryService {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case DOMAIN_ID:
+        if (value == null) {
+          unsetDomainId();
+        } else {
+          setDomainId((String)value);
+        }
+        break;
+
       case ENTITY_ID:
         if (value == null) {
           unsetEntityId();
@@ -39842,6 +39904,9 @@ public class SharingRegistryService {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case DOMAIN_ID:
+        return getDomainId();
+
       case ENTITY_ID:
         return getEntityId();
 
@@ -39865,6 +39930,8 @@ public class SharingRegistryService {
       }
 
       switch (field) {
+      case DOMAIN_ID:
+        return isSetDomainId();
       case ENTITY_ID:
         return isSetEntityId();
       case USER_LIST:
@@ -39889,6 +39956,15 @@ public class SharingRegistryService {
     public boolean equals(shareEntityWithUsers_args that) {
       if (that == null)
         return false;
+
+      boolean this_present_domainId = true && this.isSetDomainId();
+      boolean that_present_domainId = true && that.isSetDomainId();
+      if (this_present_domainId || that_present_domainId) {
+        if (!(this_present_domainId && that_present_domainId))
+          return false;
+        if (!this.domainId.equals(that.domainId))
+          return false;
+      }
 
       boolean this_present_entityId = true && this.isSetEntityId();
       boolean that_present_entityId = true && that.isSetEntityId();
@@ -39933,6 +40009,11 @@ public class SharingRegistryService {
     public int hashCode() {
       List<Object> list = new ArrayList<Object>();
 
+      boolean present_domainId = true && (isSetDomainId());
+      list.add(present_domainId);
+      if (present_domainId)
+        list.add(domainId);
+
       boolean present_entityId = true && (isSetEntityId());
       list.add(present_entityId);
       if (present_entityId)
@@ -39964,6 +40045,16 @@ public class SharingRegistryService {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetDomainId()).compareTo(other.isSetDomainId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetDomainId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.domainId, other.domainId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetEntityId()).compareTo(other.isSetEntityId());
       if (lastComparison != 0) {
         return lastComparison;
@@ -40024,6 +40115,14 @@ public class SharingRegistryService {
       StringBuilder sb = new StringBuilder("shareEntityWithUsers_args(");
       boolean first = true;
 
+      sb.append("domainId:");
+      if (this.domainId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.domainId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("entityId:");
       if (this.entityId == null) {
         sb.append("null");
@@ -40057,6 +40156,9 @@ public class SharingRegistryService {
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
+      if (domainId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'domainId' was not present! Struct: " + toString());
+      }
       if (entityId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'entityId' was not present! Struct: " + toString());
       }
@@ -40106,7 +40208,15 @@ public class SharingRegistryService {
             break;
           }
           switch (schemeField.id) {
-            case 1: // ENTITY_ID
+            case 1: // DOMAIN_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.domainId = iprot.readString();
+                struct.setDomainIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ENTITY_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.entityId = iprot.readString();
                 struct.setEntityIdIsSet(true);
@@ -40114,7 +40224,7 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // USER_LIST
+            case 3: // USER_LIST
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
                   org.apache.thrift.protocol.TList _list98 = iprot.readListBegin();
@@ -40132,7 +40242,7 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 3: // PERSSION_TYPE_ID
+            case 4: // PERSSION_TYPE_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.perssionTypeId = iprot.readString();
                 struct.setPerssionTypeIdIsSet(true);
@@ -40140,7 +40250,7 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 4: // CASCADE_PERMISSION
+            case 5: // CASCADE_PERMISSION
               if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
                 struct.cascadePermission = iprot.readBool();
                 struct.setCascadePermissionIsSet(true);
@@ -40166,6 +40276,11 @@ public class SharingRegistryService {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.domainId != null) {
+          oprot.writeFieldBegin(DOMAIN_ID_FIELD_DESC);
+          oprot.writeString(struct.domainId);
+          oprot.writeFieldEnd();
+        }
         if (struct.entityId != null) {
           oprot.writeFieldBegin(ENTITY_ID_FIELD_DESC);
           oprot.writeString(struct.entityId);
@@ -40208,6 +40323,7 @@ public class SharingRegistryService {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, shareEntityWithUsers_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
+        oprot.writeString(struct.domainId);
         oprot.writeString(struct.entityId);
         {
           oprot.writeI32(struct.userList.size());
@@ -40223,6 +40339,8 @@ public class SharingRegistryService {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, shareEntityWithUsers_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.domainId = iprot.readString();
+        struct.setDomainIdIsSet(true);
         struct.entityId = iprot.readString();
         struct.setEntityIdIsSet(true);
         {
@@ -40716,9 +40834,10 @@ public class SharingRegistryService {
   public static class revokeEntitySharingFromUsers_args implements org.apache.thrift.TBase<revokeEntitySharingFromUsers_args, revokeEntitySharingFromUsers_args._Fields>, java.io.Serializable, Cloneable, Comparable<revokeEntitySharingFromUsers_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("revokeEntitySharingFromUsers_args");
 
-    private static final org.apache.thrift.protocol.TField ENTITY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("entityId", org.apache.thrift.protocol.TType.STRING, (short)1);
-    private static final org.apache.thrift.protocol.TField USER_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("userList", org.apache.thrift.protocol.TType.LIST, (short)2);
-    private static final org.apache.thrift.protocol.TField PERSSION_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("perssionTypeId", org.apache.thrift.protocol.TType.STRING, (short)3);
+    private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField ENTITY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("entityId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField USER_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("userList", org.apache.thrift.protocol.TType.LIST, (short)3);
+    private static final org.apache.thrift.protocol.TField PERSSION_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("perssionTypeId", org.apache.thrift.protocol.TType.STRING, (short)4);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -40726,15 +40845,17 @@ public class SharingRegistryService {
       schemes.put(TupleScheme.class, new revokeEntitySharingFromUsers_argsTupleSchemeFactory());
     }
 
+    public String domainId; // required
     public String entityId; // required
     public List<String> userList; // required
     public String perssionTypeId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      ENTITY_ID((short)1, "entityId"),
-      USER_LIST((short)2, "userList"),
-      PERSSION_TYPE_ID((short)3, "perssionTypeId");
+      DOMAIN_ID((short)1, "domainId"),
+      ENTITY_ID((short)2, "entityId"),
+      USER_LIST((short)3, "userList"),
+      PERSSION_TYPE_ID((short)4, "perssionTypeId");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -40749,11 +40870,13 @@ public class SharingRegistryService {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // ENTITY_ID
+          case 1: // DOMAIN_ID
+            return DOMAIN_ID;
+          case 2: // ENTITY_ID
             return ENTITY_ID;
-          case 2: // USER_LIST
+          case 3: // USER_LIST
             return USER_LIST;
-          case 3: // PERSSION_TYPE_ID
+          case 4: // PERSSION_TYPE_ID
             return PERSSION_TYPE_ID;
           default:
             return null;
@@ -40798,6 +40921,8 @@ public class SharingRegistryService {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.DOMAIN_ID, new org.apache.thrift.meta_data.FieldMetaData("domainId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.ENTITY_ID, new org.apache.thrift.meta_data.FieldMetaData("entityId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.USER_LIST, new org.apache.thrift.meta_data.FieldMetaData("userList", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -40813,11 +40938,13 @@ public class SharingRegistryService {
     }
 
     public revokeEntitySharingFromUsers_args(
+      String domainId,
       String entityId,
       List<String> userList,
       String perssionTypeId)
     {
       this();
+      this.domainId = domainId;
       this.entityId = entityId;
       this.userList = userList;
       this.perssionTypeId = perssionTypeId;
@@ -40827,6 +40954,9 @@ public class SharingRegistryService {
      * Performs a deep copy on <i>other</i>.
      */
     public revokeEntitySharingFromUsers_args(revokeEntitySharingFromUsers_args other) {
+      if (other.isSetDomainId()) {
+        this.domainId = other.domainId;
+      }
       if (other.isSetEntityId()) {
         this.entityId = other.entityId;
       }
@@ -40845,9 +40975,34 @@ public class SharingRegistryService {
 
     @Override
     public void clear() {
+      this.domainId = null;
       this.entityId = null;
       this.userList = null;
       this.perssionTypeId = null;
+    }
+
+    public String getDomainId() {
+      return this.domainId;
+    }
+
+    public revokeEntitySharingFromUsers_args setDomainId(String domainId) {
+      this.domainId = domainId;
+      return this;
+    }
+
+    public void unsetDomainId() {
+      this.domainId = null;
+    }
+
+    /** Returns true if field domainId is set (has been assigned a value) and false otherwise */
+    public boolean isSetDomainId() {
+      return this.domainId != null;
+    }
+
+    public void setDomainIdIsSet(boolean value) {
+      if (!value) {
+        this.domainId = null;
+      }
     }
 
     public String getEntityId() {
@@ -40939,6 +41094,14 @@ public class SharingRegistryService {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case DOMAIN_ID:
+        if (value == null) {
+          unsetDomainId();
+        } else {
+          setDomainId((String)value);
+        }
+        break;
+
       case ENTITY_ID:
         if (value == null) {
           unsetEntityId();
@@ -40968,6 +41131,9 @@ public class SharingRegistryService {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case DOMAIN_ID:
+        return getDomainId();
+
       case ENTITY_ID:
         return getEntityId();
 
@@ -40988,6 +41154,8 @@ public class SharingRegistryService {
       }
 
       switch (field) {
+      case DOMAIN_ID:
+        return isSetDomainId();
       case ENTITY_ID:
         return isSetEntityId();
       case USER_LIST:
@@ -41010,6 +41178,15 @@ public class SharingRegistryService {
     public boolean equals(revokeEntitySharingFromUsers_args that) {
       if (that == null)
         return false;
+
+      boolean this_present_domainId = true && this.isSetDomainId();
+      boolean that_present_domainId = true && that.isSetDomainId();
+      if (this_present_domainId || that_present_domainId) {
+        if (!(this_present_domainId && that_present_domainId))
+          return false;
+        if (!this.domainId.equals(that.domainId))
+          return false;
+      }
 
       boolean this_present_entityId = true && this.isSetEntityId();
       boolean that_present_entityId = true && that.isSetEntityId();
@@ -41045,6 +41222,11 @@ public class SharingRegistryService {
     public int hashCode() {
       List<Object> list = new ArrayList<Object>();
 
+      boolean present_domainId = true && (isSetDomainId());
+      list.add(present_domainId);
+      if (present_domainId)
+        list.add(domainId);
+
       boolean present_entityId = true && (isSetEntityId());
       list.add(present_entityId);
       if (present_entityId)
@@ -41071,6 +41253,16 @@ public class SharingRegistryService {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetDomainId()).compareTo(other.isSetDomainId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetDomainId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.domainId, other.domainId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetEntityId()).compareTo(other.isSetEntityId());
       if (lastComparison != 0) {
         return lastComparison;
@@ -41121,6 +41313,14 @@ public class SharingRegistryService {
       StringBuilder sb = new StringBuilder("revokeEntitySharingFromUsers_args(");
       boolean first = true;
 
+      sb.append("domainId:");
+      if (this.domainId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.domainId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("entityId:");
       if (this.entityId == null) {
         sb.append("null");
@@ -41150,6 +41350,9 @@ public class SharingRegistryService {
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
+      if (domainId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'domainId' was not present! Struct: " + toString());
+      }
       if (entityId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'entityId' was not present! Struct: " + toString());
       }
@@ -41196,7 +41399,15 @@ public class SharingRegistryService {
             break;
           }
           switch (schemeField.id) {
-            case 1: // ENTITY_ID
+            case 1: // DOMAIN_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.domainId = iprot.readString();
+                struct.setDomainIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ENTITY_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.entityId = iprot.readString();
                 struct.setEntityIdIsSet(true);
@@ -41204,7 +41415,7 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // USER_LIST
+            case 3: // USER_LIST
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
                   org.apache.thrift.protocol.TList _list106 = iprot.readListBegin();
@@ -41222,7 +41433,7 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 3: // PERSSION_TYPE_ID
+            case 4: // PERSSION_TYPE_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.perssionTypeId = iprot.readString();
                 struct.setPerssionTypeIdIsSet(true);
@@ -41245,6 +41456,11 @@ public class SharingRegistryService {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.domainId != null) {
+          oprot.writeFieldBegin(DOMAIN_ID_FIELD_DESC);
+          oprot.writeString(struct.domainId);
+          oprot.writeFieldEnd();
+        }
         if (struct.entityId != null) {
           oprot.writeFieldBegin(ENTITY_ID_FIELD_DESC);
           oprot.writeString(struct.entityId);
@@ -41284,6 +41500,7 @@ public class SharingRegistryService {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, revokeEntitySharingFromUsers_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
+        oprot.writeString(struct.domainId);
         oprot.writeString(struct.entityId);
         {
           oprot.writeI32(struct.userList.size());
@@ -41298,6 +41515,8 @@ public class SharingRegistryService {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, revokeEntitySharingFromUsers_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.domainId = iprot.readString();
+        struct.setDomainIdIsSet(true);
         struct.entityId = iprot.readString();
         struct.setEntityIdIsSet(true);
         {
@@ -41789,10 +42008,11 @@ public class SharingRegistryService {
   public static class shareEntityWithGroups_args implements org.apache.thrift.TBase<shareEntityWithGroups_args, shareEntityWithGroups_args._Fields>, java.io.Serializable, Cloneable, Comparable<shareEntityWithGroups_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("shareEntityWithGroups_args");
 
-    private static final org.apache.thrift.protocol.TField ENTITY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("entityId", org.apache.thrift.protocol.TType.STRING, (short)1);
-    private static final org.apache.thrift.protocol.TField GROUP_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("groupList", org.apache.thrift.protocol.TType.LIST, (short)2);
-    private static final org.apache.thrift.protocol.TField PERSSION_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("perssionTypeId", org.apache.thrift.protocol.TType.STRING, (short)3);
-    private static final org.apache.thrift.protocol.TField CASCADE_PERMISSION_FIELD_DESC = new org.apache.thrift.protocol.TField("cascadePermission", org.apache.thrift.protocol.TType.BOOL, (short)4);
+    private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField ENTITY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("entityId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField GROUP_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("groupList", org.apache.thrift.protocol.TType.LIST, (short)3);
+    private static final org.apache.thrift.protocol.TField PERSSION_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("perssionTypeId", org.apache.thrift.protocol.TType.STRING, (short)4);
+    private static final org.apache.thrift.protocol.TField CASCADE_PERMISSION_FIELD_DESC = new org.apache.thrift.protocol.TField("cascadePermission", org.apache.thrift.protocol.TType.BOOL, (short)5);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -41800,6 +42020,7 @@ public class SharingRegistryService {
       schemes.put(TupleScheme.class, new shareEntityWithGroups_argsTupleSchemeFactory());
     }
 
+    public String domainId; // required
     public String entityId; // required
     public List<String> groupList; // required
     public String perssionTypeId; // required
@@ -41807,10 +42028,11 @@ public class SharingRegistryService {
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      ENTITY_ID((short)1, "entityId"),
-      GROUP_LIST((short)2, "groupList"),
-      PERSSION_TYPE_ID((short)3, "perssionTypeId"),
-      CASCADE_PERMISSION((short)4, "cascadePermission");
+      DOMAIN_ID((short)1, "domainId"),
+      ENTITY_ID((short)2, "entityId"),
+      GROUP_LIST((short)3, "groupList"),
+      PERSSION_TYPE_ID((short)4, "perssionTypeId"),
+      CASCADE_PERMISSION((short)5, "cascadePermission");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -41825,13 +42047,15 @@ public class SharingRegistryService {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // ENTITY_ID
+          case 1: // DOMAIN_ID
+            return DOMAIN_ID;
+          case 2: // ENTITY_ID
             return ENTITY_ID;
-          case 2: // GROUP_LIST
+          case 3: // GROUP_LIST
             return GROUP_LIST;
-          case 3: // PERSSION_TYPE_ID
+          case 4: // PERSSION_TYPE_ID
             return PERSSION_TYPE_ID;
-          case 4: // CASCADE_PERMISSION
+          case 5: // CASCADE_PERMISSION
             return CASCADE_PERMISSION;
           default:
             return null;
@@ -41878,6 +42102,8 @@ public class SharingRegistryService {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.DOMAIN_ID, new org.apache.thrift.meta_data.FieldMetaData("domainId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.ENTITY_ID, new org.apache.thrift.meta_data.FieldMetaData("entityId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.GROUP_LIST, new org.apache.thrift.meta_data.FieldMetaData("groupList", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -41895,12 +42121,14 @@ public class SharingRegistryService {
     }
 
     public shareEntityWithGroups_args(
+      String domainId,
       String entityId,
       List<String> groupList,
       String perssionTypeId,
       boolean cascadePermission)
     {
       this();
+      this.domainId = domainId;
       this.entityId = entityId;
       this.groupList = groupList;
       this.perssionTypeId = perssionTypeId;
@@ -41913,6 +42141,9 @@ public class SharingRegistryService {
      */
     public shareEntityWithGroups_args(shareEntityWithGroups_args other) {
       __isset_bitfield = other.__isset_bitfield;
+      if (other.isSetDomainId()) {
+        this.domainId = other.domainId;
+      }
       if (other.isSetEntityId()) {
         this.entityId = other.entityId;
       }
@@ -41932,11 +42163,36 @@ public class SharingRegistryService {
 
     @Override
     public void clear() {
+      this.domainId = null;
       this.entityId = null;
       this.groupList = null;
       this.perssionTypeId = null;
       setCascadePermissionIsSet(false);
       this.cascadePermission = false;
+    }
+
+    public String getDomainId() {
+      return this.domainId;
+    }
+
+    public shareEntityWithGroups_args setDomainId(String domainId) {
+      this.domainId = domainId;
+      return this;
+    }
+
+    public void unsetDomainId() {
+      this.domainId = null;
+    }
+
+    /** Returns true if field domainId is set (has been assigned a value) and false otherwise */
+    public boolean isSetDomainId() {
+      return this.domainId != null;
+    }
+
+    public void setDomainIdIsSet(boolean value) {
+      if (!value) {
+        this.domainId = null;
+      }
     }
 
     public String getEntityId() {
@@ -42051,6 +42307,14 @@ public class SharingRegistryService {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case DOMAIN_ID:
+        if (value == null) {
+          unsetDomainId();
+        } else {
+          setDomainId((String)value);
+        }
+        break;
+
       case ENTITY_ID:
         if (value == null) {
           unsetEntityId();
@@ -42088,6 +42352,9 @@ public class SharingRegistryService {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case DOMAIN_ID:
+        return getDomainId();
+
       case ENTITY_ID:
         return getEntityId();
 
@@ -42111,6 +42378,8 @@ public class SharingRegistryService {
       }
 
       switch (field) {
+      case DOMAIN_ID:
+        return isSetDomainId();
       case ENTITY_ID:
         return isSetEntityId();
       case GROUP_LIST:
@@ -42135,6 +42404,15 @@ public class SharingRegistryService {
     public boolean equals(shareEntityWithGroups_args that) {
       if (that == null)
         return false;
+
+      boolean this_present_domainId = true && this.isSetDomainId();
+      boolean that_present_domainId = true && that.isSetDomainId();
+      if (this_present_domainId || that_present_domainId) {
+        if (!(this_present_domainId && that_present_domainId))
+          return false;
+        if (!this.domainId.equals(that.domainId))
+          return false;
+      }
 
       boolean this_present_entityId = true && this.isSetEntityId();
       boolean that_present_entityId = true && that.isSetEntityId();
@@ -42179,6 +42457,11 @@ public class SharingRegistryService {
     public int hashCode() {
       List<Object> list = new ArrayList<Object>();
 
+      boolean present_domainId = true && (isSetDomainId());
+      list.add(present_domainId);
+      if (present_domainId)
+        list.add(domainId);
+
       boolean present_entityId = true && (isSetEntityId());
       list.add(present_entityId);
       if (present_entityId)
@@ -42210,6 +42493,16 @@ public class SharingRegistryService {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetDomainId()).compareTo(other.isSetDomainId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetDomainId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.domainId, other.domainId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetEntityId()).compareTo(other.isSetEntityId());
       if (lastComparison != 0) {
         return lastComparison;
@@ -42270,6 +42563,14 @@ public class SharingRegistryService {
       StringBuilder sb = new StringBuilder("shareEntityWithGroups_args(");
       boolean first = true;
 
+      sb.append("domainId:");
+      if (this.domainId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.domainId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("entityId:");
       if (this.entityId == null) {
         sb.append("null");
@@ -42303,6 +42604,9 @@ public class SharingRegistryService {
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
+      if (domainId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'domainId' was not present! Struct: " + toString());
+      }
       if (entityId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'entityId' was not present! Struct: " + toString());
       }
@@ -42352,7 +42656,15 @@ public class SharingRegistryService {
             break;
           }
           switch (schemeField.id) {
-            case 1: // ENTITY_ID
+            case 1: // DOMAIN_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.domainId = iprot.readString();
+                struct.setDomainIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ENTITY_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.entityId = iprot.readString();
                 struct.setEntityIdIsSet(true);
@@ -42360,7 +42672,7 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // GROUP_LIST
+            case 3: // GROUP_LIST
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
                   org.apache.thrift.protocol.TList _list114 = iprot.readListBegin();
@@ -42378,7 +42690,7 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 3: // PERSSION_TYPE_ID
+            case 4: // PERSSION_TYPE_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.perssionTypeId = iprot.readString();
                 struct.setPerssionTypeIdIsSet(true);
@@ -42386,7 +42698,7 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 4: // CASCADE_PERMISSION
+            case 5: // CASCADE_PERMISSION
               if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
                 struct.cascadePermission = iprot.readBool();
                 struct.setCascadePermissionIsSet(true);
@@ -42412,6 +42724,11 @@ public class SharingRegistryService {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.domainId != null) {
+          oprot.writeFieldBegin(DOMAIN_ID_FIELD_DESC);
+          oprot.writeString(struct.domainId);
+          oprot.writeFieldEnd();
+        }
         if (struct.entityId != null) {
           oprot.writeFieldBegin(ENTITY_ID_FIELD_DESC);
           oprot.writeString(struct.entityId);
@@ -42454,6 +42771,7 @@ public class SharingRegistryService {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, shareEntityWithGroups_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
+        oprot.writeString(struct.domainId);
         oprot.writeString(struct.entityId);
         {
           oprot.writeI32(struct.groupList.size());
@@ -42469,6 +42787,8 @@ public class SharingRegistryService {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, shareEntityWithGroups_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.domainId = iprot.readString();
+        struct.setDomainIdIsSet(true);
         struct.entityId = iprot.readString();
         struct.setEntityIdIsSet(true);
         {
@@ -42962,9 +43282,10 @@ public class SharingRegistryService {
   public static class revokeEntitySharingFromGroups_args implements org.apache.thrift.TBase<revokeEntitySharingFromGroups_args, revokeEntitySharingFromGroups_args._Fields>, java.io.Serializable, Cloneable, Comparable<revokeEntitySharingFromGroups_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("revokeEntitySharingFromGroups_args");
 
-    private static final org.apache.thrift.protocol.TField ENTITY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("entityId", org.apache.thrift.protocol.TType.STRING, (short)1);
-    private static final org.apache.thrift.protocol.TField GROUP_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("groupList", org.apache.thrift.protocol.TType.LIST, (short)2);
-    private static final org.apache.thrift.protocol.TField PERSSION_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("perssionTypeId", org.apache.thrift.protocol.TType.STRING, (short)3);
+    private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField ENTITY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("entityId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField GROUP_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("groupList", org.apache.thrift.protocol.TType.LIST, (short)3);
+    private static final org.apache.thrift.protocol.TField PERSSION_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("perssionTypeId", org.apache.thrift.protocol.TType.STRING, (short)4);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -42972,15 +43293,17 @@ public class SharingRegistryService {
       schemes.put(TupleScheme.class, new revokeEntitySharingFromGroups_argsTupleSchemeFactory());
     }
 
+    public String domainId; // required
     public String entityId; // required
     public List<String> groupList; // required
     public String perssionTypeId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      ENTITY_ID((short)1, "entityId"),
-      GROUP_LIST((short)2, "groupList"),
-      PERSSION_TYPE_ID((short)3, "perssionTypeId");
+      DOMAIN_ID((short)1, "domainId"),
+      ENTITY_ID((short)2, "entityId"),
+      GROUP_LIST((short)3, "groupList"),
+      PERSSION_TYPE_ID((short)4, "perssionTypeId");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -42995,11 +43318,13 @@ public class SharingRegistryService {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // ENTITY_ID
+          case 1: // DOMAIN_ID
+            return DOMAIN_ID;
+          case 2: // ENTITY_ID
             return ENTITY_ID;
-          case 2: // GROUP_LIST
+          case 3: // GROUP_LIST
             return GROUP_LIST;
-          case 3: // PERSSION_TYPE_ID
+          case 4: // PERSSION_TYPE_ID
             return PERSSION_TYPE_ID;
           default:
             return null;
@@ -43044,6 +43369,8 @@ public class SharingRegistryService {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.DOMAIN_ID, new org.apache.thrift.meta_data.FieldMetaData("domainId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.ENTITY_ID, new org.apache.thrift.meta_data.FieldMetaData("entityId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.GROUP_LIST, new org.apache.thrift.meta_data.FieldMetaData("groupList", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -43059,11 +43386,13 @@ public class SharingRegistryService {
     }
 
     public revokeEntitySharingFromGroups_args(
+      String domainId,
       String entityId,
       List<String> groupList,
       String perssionTypeId)
     {
       this();
+      this.domainId = domainId;
       this.entityId = entityId;
       this.groupList = groupList;
       this.perssionTypeId = perssionTypeId;
@@ -43073,6 +43402,9 @@ public class SharingRegistryService {
      * Performs a deep copy on <i>other</i>.
      */
     public revokeEntitySharingFromGroups_args(revokeEntitySharingFromGroups_args other) {
+      if (other.isSetDomainId()) {
+        this.domainId = other.domainId;
+      }
       if (other.isSetEntityId()) {
         this.entityId = other.entityId;
       }
@@ -43091,9 +43423,34 @@ public class SharingRegistryService {
 
     @Override
     public void clear() {
+      this.domainId = null;
       this.entityId = null;
       this.groupList = null;
       this.perssionTypeId = null;
+    }
+
+    public String getDomainId() {
+      return this.domainId;
+    }
+
+    public revokeEntitySharingFromGroups_args setDomainId(String domainId) {
+      this.domainId = domainId;
+      return this;
+    }
+
+    public void unsetDomainId() {
+      this.domainId = null;
+    }
+
+    /** Returns true if field domainId is set (has been assigned a value) and false otherwise */
+    public boolean isSetDomainId() {
+      return this.domainId != null;
+    }
+
+    public void setDomainIdIsSet(boolean value) {
+      if (!value) {
+        this.domainId = null;
+      }
     }
 
     public String getEntityId() {
@@ -43185,6 +43542,14 @@ public class SharingRegistryService {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case DOMAIN_ID:
+        if (value == null) {
+          unsetDomainId();
+        } else {
+          setDomainId((String)value);
+        }
+        break;
+
       case ENTITY_ID:
         if (value == null) {
           unsetEntityId();
@@ -43214,6 +43579,9 @@ public class SharingRegistryService {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case DOMAIN_ID:
+        return getDomainId();
+
       case ENTITY_ID:
         return getEntityId();
 
@@ -43234,6 +43602,8 @@ public class SharingRegistryService {
       }
 
       switch (field) {
+      case DOMAIN_ID:
+        return isSetDomainId();
       case ENTITY_ID:
         return isSetEntityId();
       case GROUP_LIST:
@@ -43256,6 +43626,15 @@ public class SharingRegistryService {
     public boolean equals(revokeEntitySharingFromGroups_args that) {
       if (that == null)
         return false;
+
+      boolean this_present_domainId = true && this.isSetDomainId();
+      boolean that_present_domainId = true && that.isSetDomainId();
+      if (this_present_domainId || that_present_domainId) {
+        if (!(this_present_domainId && that_present_domainId))
+          return false;
+        if (!this.domainId.equals(that.domainId))
+          return false;
+      }
 
       boolean this_present_entityId = true && this.isSetEntityId();
       boolean that_present_entityId = true && that.isSetEntityId();
@@ -43291,6 +43670,11 @@ public class SharingRegistryService {
     public int hashCode() {
       List<Object> list = new ArrayList<Object>();
 
+      boolean present_domainId = true && (isSetDomainId());
+      list.add(present_domainId);
+      if (present_domainId)
+        list.add(domainId);
+
       boolean present_entityId = true && (isSetEntityId());
       list.add(present_entityId);
       if (present_entityId)
@@ -43317,6 +43701,16 @@ public class SharingRegistryService {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetDomainId()).compareTo(other.isSetDomainId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetDomainId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.domainId, other.domainId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetEntityId()).compareTo(other.isSetEntityId());
       if (lastComparison != 0) {
         return lastComparison;
@@ -43367,6 +43761,14 @@ public class SharingRegistryService {
       StringBuilder sb = new StringBuilder("revokeEntitySharingFromGroups_args(");
       boolean first = true;
 
+      sb.append("domainId:");
+      if (this.domainId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.domainId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("entityId:");
       if (this.entityId == null) {
         sb.append("null");
@@ -43396,6 +43798,9 @@ public class SharingRegistryService {
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
+      if (domainId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'domainId' was not present! Struct: " + toString());
+      }
       if (entityId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'entityId' was not present! Struct: " + toString());
       }
@@ -43442,7 +43847,15 @@ public class SharingRegistryService {
             break;
           }
           switch (schemeField.id) {
-            case 1: // ENTITY_ID
+            case 1: // DOMAIN_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.domainId = iprot.readString();
+                struct.setDomainIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ENTITY_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.entityId = iprot.readString();
                 struct.setEntityIdIsSet(true);
@@ -43450,7 +43863,7 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // GROUP_LIST
+            case 3: // GROUP_LIST
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
                   org.apache.thrift.protocol.TList _list122 = iprot.readListBegin();
@@ -43468,7 +43881,7 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 3: // PERSSION_TYPE_ID
+            case 4: // PERSSION_TYPE_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.perssionTypeId = iprot.readString();
                 struct.setPerssionTypeIdIsSet(true);
@@ -43491,6 +43904,11 @@ public class SharingRegistryService {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.domainId != null) {
+          oprot.writeFieldBegin(DOMAIN_ID_FIELD_DESC);
+          oprot.writeString(struct.domainId);
+          oprot.writeFieldEnd();
+        }
         if (struct.entityId != null) {
           oprot.writeFieldBegin(ENTITY_ID_FIELD_DESC);
           oprot.writeString(struct.entityId);
@@ -43530,6 +43948,7 @@ public class SharingRegistryService {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, revokeEntitySharingFromGroups_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
+        oprot.writeString(struct.domainId);
         oprot.writeString(struct.entityId);
         {
           oprot.writeI32(struct.groupList.size());
@@ -43544,6 +43963,8 @@ public class SharingRegistryService {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, revokeEntitySharingFromGroups_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.domainId = iprot.readString();
+        struct.setDomainIdIsSet(true);
         struct.entityId = iprot.readString();
         struct.setEntityIdIsSet(true);
         {
