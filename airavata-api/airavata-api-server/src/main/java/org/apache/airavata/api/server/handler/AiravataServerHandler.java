@@ -123,7 +123,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             user.setDomainId(domain.domainId);
             user.setUserId(ServerSettings.getDefaultUser()+"@"+ServerSettings.getDefaultUserGateway());
             user.setUserName(ServerSettings.getDefaultUser());
-            sharingRegistryServerHandler.createUser(user);
+            sharingRegistryServerHandler.registerUser(user);
 
             //Creating Entity Types for each domain
             EntityType entityType = new EntityType();
@@ -671,7 +671,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 entity.setName(project.getName());
                 entity.setDescription(project.getDescription());
 
-                sharingRegistryServerHandler.createEntity(entity);
+                sharingRegistryServerHandler.registerEntity(entity);
             }
 
             logger.debug("Airavata created project with project Id : " + projectId + " for gateway Id : " + gatewayId);
@@ -1046,7 +1046,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 entity.setName(experiment.getExperimentName());
                 entity.setDescription(experiment.getDescription());
 
-                sharingRegistryServerHandler.createEntity(entity);
+                sharingRegistryServerHandler.registerEntity(entity);
             }
 
             ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.CREATED,
@@ -1586,7 +1586,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 entity.setName(existingExperiment.getExperimentName());
                 entity.setDescription(existingExperiment.getDescription());
 
-                sharingRegistryServerHandler.createEntity(entity);
+                sharingRegistryServerHandler.registerEntity(entity);
             }
 
             return expId;

@@ -11,9 +11,13 @@ import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
+/**
+ * <p>Group types can be either user level or domain level groups.</p>
+ * 
+ */
 public enum GroupType implements org.apache.thrift.TEnum {
-  SINGLE_USER(0),
-  MULTI_USER(1);
+  DOMAIN_LEVEL_GROUP(0),
+  USER_LEVEL_GROUP(1);
 
   private final int value;
 
@@ -35,9 +39,9 @@ public enum GroupType implements org.apache.thrift.TEnum {
   public static GroupType findByValue(int value) { 
     switch (value) {
       case 0:
-        return SINGLE_USER;
+        return DOMAIN_LEVEL_GROUP;
       case 1:
-        return MULTI_USER;
+        return USER_LEVEL_GROUP;
       default:
         return null;
     }

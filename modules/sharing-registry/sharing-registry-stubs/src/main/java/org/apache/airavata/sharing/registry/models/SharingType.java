@@ -11,6 +11,10 @@ import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
+/**
+ * <p>This is an internal enum type for managing sharings</p>
+ * 
+ */
 public enum SharingType implements org.apache.thrift.TEnum {
   DIRECT_NON_CASCADING(0),
   DIRECT_CASCADING(1),

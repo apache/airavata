@@ -23,7 +23,7 @@ package org.apache.airavata.sharing.registry.db.repositories;
 import org.apache.airavata.sharing.registry.db.entities.SharingEntity;
 import org.apache.airavata.sharing.registry.db.entities.UserGroupEntity;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
-import org.apache.airavata.sharing.registry.models.GroupType;
+import org.apache.airavata.sharing.registry.models.GroupCardinality;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.models.UserGroup;
 import org.slf4j.Logger;
@@ -44,7 +44,7 @@ public class UserGroupRepository extends AbstractRepository<UserGroup, UserGroup
         query += "g." + DBConstants.UserGroupTable.GROUP_ID + " = s." + DBConstants.SharingTable.GROUP_ID + " AND ";
         query += "s." + DBConstants.SharingTable.ENTITY_ID + " = '" + entityId + "' AND ";
         query += "s." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " = '" + permissionTypeId + "' AND ";
-        query += "g." + DBConstants.UserGroupTable.GROUP_TYPE + " = '" + GroupType.MULTI_USER.toString() + "'";
+        query += "g." + DBConstants.UserGroupTable.GROUP_CARDINALITY + " = '" + GroupCardinality.MULTI_USER.toString() + "'";
         query += " ORDER BY s.createdTime DESC";
         return select(query, 0, -1);
     }
