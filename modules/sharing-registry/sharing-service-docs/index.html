@@ -1,0 +1,93 @@
+<html>
+<head>
+    <title>Airavata Sharing Registry Service</title>
+    <link href="style.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div class="container-fluid">
+    <h2>Welcome to Airavata Sharing Registry Service Documentation</h2>
+
+    <p>Airavata Data Sharing Registry Service is a general purpose data sharing and access controlling service.</p>
+
+    <div>
+        <ul><a href="#getting-started">Getting Started</a></ul>
+        <ul><a href="./api-docs/index.html" target="_blank">API Docs</a></ul>
+    </div>
+    <div id="#getting-started">
+        <h3>Getting started with Java client</h3>
+
+        <div class="definition">
+            <h4>0. Required maven dependencies</h4>
+            <pre>
+                &lt;dependency&gt;
+                    &lt;groupId>org.apache.airavata&lt;/groupId&gt;
+                    &lt;artifactId>airavata-sharing-registry-stubs&lt;/artifactId&gt;
+                    &lt;version>0.17-SNAPSHOT&lt;/version&gt;
+                &lt;/dependency&gt;
+
+                &lt;dependency&gt;
+                    &lt;groupId>org.apache.thrift&lt;/groupId&gt;
+                    &lt;artifactId>libthrift&lt;/artifactId&gt;
+                    &lt;version>0.9.3&lt;/version&gt;
+                &lt;/dependency&gt;
+            </pre>
+        </div>
+
+        <div class="definition">
+            <h4>1. Creating the thrift client</h4>
+            <pre>
+                //should use the correct host name and port here
+                String serverHost = "gw56.iu.xsede.org";
+                int serverPort = 7878;
+
+                TTransport transport = new TSocket(serverHost, serverPort);
+                transport.open();
+                TProtocol protocol = new TBinaryProtocol(transport);
+                SharingRegistryService.Client sharingServiceClient = new SharingRegistryService.Client(protocol);
+            </pre>
+        </div>
+
+        <div class="definition">
+            <h4>2. Create a domain</h4>
+            <pre>
+                Domain domain = new Domain();
+                //has to be one word
+                domain.setName("test-domain");
+                //optional
+                domain.setDescription("test domain description");
+
+                //domain id will be same as domain name
+                String domainId = sharingServiceClient.createDomain(domain);
+            </pre>
+        </div>
+
+        <div class="definition">
+            <h4>2. Create User</h4>
+            <pre>
+                User user = new User();
+                //required
+                user.setUserName("test-user");
+                //required
+                user.setDomainId(domainId);
+                //required
+                user.setFirstName("John");
+                //required
+                user.setLastName("Doe");
+                //required
+                user.setEmail("john.doe@abc.com");
+                //optional - this should be bytes of the users image icon
+                byte[] icon = new byte[10];
+                user.setIcon(icon);
+
+                //can be manually set. otherwise will be set to the current time by the system
+                user.setCreatedTime(System.currentTimeMillis());
+                user.setUpdatedTime(System.currentTimeMillis());
+
+                //will be of form &lt;domainId&gt;:&lt;userName&gt;
+                String userId = sharingServiceClient.createUser(user);
+            </pre>
+        </div>
+    </div>
+</div>
+</body>
+</html>

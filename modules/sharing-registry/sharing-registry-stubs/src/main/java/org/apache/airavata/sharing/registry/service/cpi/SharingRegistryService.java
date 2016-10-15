@@ -42,16 +42,16 @@ public class SharingRegistryService {
     /**
      * <p>API method to create a new domain</p>
      * 
-     * @param domainId
+     * @param domain
      */
-    public String createDomain(org.apache.airavata.sharing.registry.models.Domain domainId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+    public String createDomain(org.apache.airavata.sharing.registry.models.Domain domain) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
     /**
      * <p>API method to update a domain</p>
      * 
-     * @param domainId
+     * @param domain
      */
-    public boolean updateDomain(org.apache.airavata.sharing.registry.models.Domain domainId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+    public boolean updateDomain(org.apache.airavata.sharing.registry.models.Domain domain) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
     /**
      * <p>API method to delete domain</p>
@@ -387,9 +387,9 @@ public class SharingRegistryService {
 
   public interface AsyncIface {
 
-    public void createDomain(org.apache.airavata.sharing.registry.models.Domain domainId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void createDomain(org.apache.airavata.sharing.registry.models.Domain domain, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void updateDomain(org.apache.airavata.sharing.registry.models.Domain domainId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void updateDomain(org.apache.airavata.sharing.registry.models.Domain domain, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void deleteDomain(String domainId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -495,16 +495,16 @@ public class SharingRegistryService {
       super(iprot, oprot);
     }
 
-    public String createDomain(org.apache.airavata.sharing.registry.models.Domain domainId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public String createDomain(org.apache.airavata.sharing.registry.models.Domain domain) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
     {
-      send_createDomain(domainId);
+      send_createDomain(domain);
       return recv_createDomain();
     }
 
-    public void send_createDomain(org.apache.airavata.sharing.registry.models.Domain domainId) throws org.apache.thrift.TException
+    public void send_createDomain(org.apache.airavata.sharing.registry.models.Domain domain) throws org.apache.thrift.TException
     {
       createDomain_args args = new createDomain_args();
-      args.setDomainId(domainId);
+      args.setDomain(domain);
       sendBase("createDomain", args);
     }
 
@@ -521,16 +521,16 @@ public class SharingRegistryService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "createDomain failed: unknown result");
     }
 
-    public boolean updateDomain(org.apache.airavata.sharing.registry.models.Domain domainId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public boolean updateDomain(org.apache.airavata.sharing.registry.models.Domain domain) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
     {
-      send_updateDomain(domainId);
+      send_updateDomain(domain);
       return recv_updateDomain();
     }
 
-    public void send_updateDomain(org.apache.airavata.sharing.registry.models.Domain domainId) throws org.apache.thrift.TException
+    public void send_updateDomain(org.apache.airavata.sharing.registry.models.Domain domain) throws org.apache.thrift.TException
     {
       updateDomain_args args = new updateDomain_args();
-      args.setDomainId(domainId);
+      args.setDomain(domain);
       sendBase("updateDomain", args);
     }
 
@@ -1668,24 +1668,24 @@ public class SharingRegistryService {
       super(protocolFactory, clientManager, transport);
     }
 
-    public void createDomain(org.apache.airavata.sharing.registry.models.Domain domainId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void createDomain(org.apache.airavata.sharing.registry.models.Domain domain, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      createDomain_call method_call = new createDomain_call(domainId, resultHandler, this, ___protocolFactory, ___transport);
+      createDomain_call method_call = new createDomain_call(domain, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class createDomain_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private org.apache.airavata.sharing.registry.models.Domain domainId;
-      public createDomain_call(org.apache.airavata.sharing.registry.models.Domain domainId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private org.apache.airavata.sharing.registry.models.Domain domain;
+      public createDomain_call(org.apache.airavata.sharing.registry.models.Domain domain, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.domainId = domainId;
+        this.domain = domain;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("createDomain", org.apache.thrift.protocol.TMessageType.CALL, 0));
         createDomain_args args = new createDomain_args();
-        args.setDomainId(domainId);
+        args.setDomain(domain);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -1700,24 +1700,24 @@ public class SharingRegistryService {
       }
     }
 
-    public void updateDomain(org.apache.airavata.sharing.registry.models.Domain domainId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void updateDomain(org.apache.airavata.sharing.registry.models.Domain domain, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      updateDomain_call method_call = new updateDomain_call(domainId, resultHandler, this, ___protocolFactory, ___transport);
+      updateDomain_call method_call = new updateDomain_call(domain, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class updateDomain_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private org.apache.airavata.sharing.registry.models.Domain domainId;
-      public updateDomain_call(org.apache.airavata.sharing.registry.models.Domain domainId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private org.apache.airavata.sharing.registry.models.Domain domain;
+      public updateDomain_call(org.apache.airavata.sharing.registry.models.Domain domain, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.domainId = domainId;
+        this.domain = domain;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("updateDomain", org.apache.thrift.protocol.TMessageType.CALL, 0));
         updateDomain_args args = new updateDomain_args();
-        args.setDomainId(domainId);
+        args.setDomain(domain);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -3239,7 +3239,7 @@ public class SharingRegistryService {
       public createDomain_result getResult(I iface, createDomain_args args) throws org.apache.thrift.TException {
         createDomain_result result = new createDomain_result();
         try {
-          result.success = iface.createDomain(args.domainId);
+          result.success = iface.createDomain(args.domain);
         } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
           result.sre = sre;
         }
@@ -3263,7 +3263,7 @@ public class SharingRegistryService {
       public updateDomain_result getResult(I iface, updateDomain_args args) throws org.apache.thrift.TException {
         updateDomain_result result = new updateDomain_result();
         try {
-          result.success = iface.updateDomain(args.domainId);
+          result.success = iface.updateDomain(args.domain);
           result.setSuccessIsSet(true);
         } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
           result.sre = sre;
@@ -4384,7 +4384,7 @@ public class SharingRegistryService {
       }
 
       public void start(I iface, createDomain_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
-        iface.createDomain(args.domainId,resultHandler);
+        iface.createDomain(args.domain,resultHandler);
       }
     }
 
@@ -4442,7 +4442,7 @@ public class SharingRegistryService {
       }
 
       public void start(I iface, updateDomain_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
-        iface.updateDomain(args.domainId,resultHandler);
+        iface.updateDomain(args.domain,resultHandler);
       }
     }
 
@@ -6802,7 +6802,7 @@ public class SharingRegistryService {
   public static class createDomain_args implements org.apache.thrift.TBase<createDomain_args, createDomain_args._Fields>, java.io.Serializable, Cloneable, Comparable<createDomain_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("createDomain_args");
 
-    private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField DOMAIN_FIELD_DESC = new org.apache.thrift.protocol.TField("domain", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -6810,11 +6810,11 @@ public class SharingRegistryService {
       schemes.put(TupleScheme.class, new createDomain_argsTupleSchemeFactory());
     }
 
-    public org.apache.airavata.sharing.registry.models.Domain domainId; // required
+    public org.apache.airavata.sharing.registry.models.Domain domain; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      DOMAIN_ID((short)1, "domainId");
+      DOMAIN((short)1, "domain");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -6829,8 +6829,8 @@ public class SharingRegistryService {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // DOMAIN_ID
-            return DOMAIN_ID;
+          case 1: // DOMAIN
+            return DOMAIN;
           default:
             return null;
         }
@@ -6874,7 +6874,7 @@ public class SharingRegistryService {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.DOMAIN_ID, new org.apache.thrift.meta_data.FieldMetaData("domainId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+      tmpMap.put(_Fields.DOMAIN, new org.apache.thrift.meta_data.FieldMetaData("domain", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.sharing.registry.models.Domain.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(createDomain_args.class, metaDataMap);
@@ -6884,18 +6884,18 @@ public class SharingRegistryService {
     }
 
     public createDomain_args(
-      org.apache.airavata.sharing.registry.models.Domain domainId)
+      org.apache.airavata.sharing.registry.models.Domain domain)
     {
       this();
-      this.domainId = domainId;
+      this.domain = domain;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public createDomain_args(createDomain_args other) {
-      if (other.isSetDomainId()) {
-        this.domainId = new org.apache.airavata.sharing.registry.models.Domain(other.domainId);
+      if (other.isSetDomain()) {
+        this.domain = new org.apache.airavata.sharing.registry.models.Domain(other.domain);
       }
     }
 
@@ -6905,40 +6905,40 @@ public class SharingRegistryService {
 
     @Override
     public void clear() {
-      this.domainId = null;
+      this.domain = null;
     }
 
-    public org.apache.airavata.sharing.registry.models.Domain getDomainId() {
-      return this.domainId;
+    public org.apache.airavata.sharing.registry.models.Domain getDomain() {
+      return this.domain;
     }
 
-    public createDomain_args setDomainId(org.apache.airavata.sharing.registry.models.Domain domainId) {
-      this.domainId = domainId;
+    public createDomain_args setDomain(org.apache.airavata.sharing.registry.models.Domain domain) {
+      this.domain = domain;
       return this;
     }
 
-    public void unsetDomainId() {
-      this.domainId = null;
+    public void unsetDomain() {
+      this.domain = null;
     }
 
-    /** Returns true if field domainId is set (has been assigned a value) and false otherwise */
-    public boolean isSetDomainId() {
-      return this.domainId != null;
+    /** Returns true if field domain is set (has been assigned a value) and false otherwise */
+    public boolean isSetDomain() {
+      return this.domain != null;
     }
 
-    public void setDomainIdIsSet(boolean value) {
+    public void setDomainIsSet(boolean value) {
       if (!value) {
-        this.domainId = null;
+        this.domain = null;
       }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case DOMAIN_ID:
+      case DOMAIN:
         if (value == null) {
-          unsetDomainId();
+          unsetDomain();
         } else {
-          setDomainId((org.apache.airavata.sharing.registry.models.Domain)value);
+          setDomain((org.apache.airavata.sharing.registry.models.Domain)value);
         }
         break;
 
@@ -6947,8 +6947,8 @@ public class SharingRegistryService {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case DOMAIN_ID:
-        return getDomainId();
+      case DOMAIN:
+        return getDomain();
 
       }
       throw new IllegalStateException();
@@ -6961,8 +6961,8 @@ public class SharingRegistryService {
       }
 
       switch (field) {
-      case DOMAIN_ID:
-        return isSetDomainId();
+      case DOMAIN:
+        return isSetDomain();
       }
       throw new IllegalStateException();
     }
@@ -6980,12 +6980,12 @@ public class SharingRegistryService {
       if (that == null)
         return false;
 
-      boolean this_present_domainId = true && this.isSetDomainId();
-      boolean that_present_domainId = true && that.isSetDomainId();
-      if (this_present_domainId || that_present_domainId) {
-        if (!(this_present_domainId && that_present_domainId))
+      boolean this_present_domain = true && this.isSetDomain();
+      boolean that_present_domain = true && that.isSetDomain();
+      if (this_present_domain || that_present_domain) {
+        if (!(this_present_domain && that_present_domain))
           return false;
-        if (!this.domainId.equals(that.domainId))
+        if (!this.domain.equals(that.domain))
           return false;
       }
 
@@ -6996,10 +6996,10 @@ public class SharingRegistryService {
     public int hashCode() {
       List<Object> list = new ArrayList<Object>();
 
-      boolean present_domainId = true && (isSetDomainId());
-      list.add(present_domainId);
-      if (present_domainId)
-        list.add(domainId);
+      boolean present_domain = true && (isSetDomain());
+      list.add(present_domain);
+      if (present_domain)
+        list.add(domain);
 
       return list.hashCode();
     }
@@ -7012,12 +7012,12 @@ public class SharingRegistryService {
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetDomainId()).compareTo(other.isSetDomainId());
+      lastComparison = Boolean.valueOf(isSetDomain()).compareTo(other.isSetDomain());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetDomainId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.domainId, other.domainId);
+      if (isSetDomain()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.domain, other.domain);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -7042,11 +7042,11 @@ public class SharingRegistryService {
       StringBuilder sb = new StringBuilder("createDomain_args(");
       boolean first = true;
 
-      sb.append("domainId:");
-      if (this.domainId == null) {
+      sb.append("domain:");
+      if (this.domain == null) {
         sb.append("null");
       } else {
-        sb.append(this.domainId);
+        sb.append(this.domain);
       }
       first = false;
       sb.append(")");
@@ -7055,12 +7055,12 @@ public class SharingRegistryService {
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
-      if (domainId == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'domainId' was not present! Struct: " + toString());
+      if (domain == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'domain' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
-      if (domainId != null) {
-        domainId.validate();
+      if (domain != null) {
+        domain.validate();
       }
     }
 
@@ -7098,11 +7098,11 @@ public class SharingRegistryService {
             break;
           }
           switch (schemeField.id) {
-            case 1: // DOMAIN_ID
+            case 1: // DOMAIN
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.domainId = new org.apache.airavata.sharing.registry.models.Domain();
-                struct.domainId.read(iprot);
-                struct.setDomainIdIsSet(true);
+                struct.domain = new org.apache.airavata.sharing.registry.models.Domain();
+                struct.domain.read(iprot);
+                struct.setDomainIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -7122,9 +7122,9 @@ public class SharingRegistryService {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.domainId != null) {
-          oprot.writeFieldBegin(DOMAIN_ID_FIELD_DESC);
-          struct.domainId.write(oprot);
+        if (struct.domain != null) {
+          oprot.writeFieldBegin(DOMAIN_FIELD_DESC);
+          struct.domain.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -7144,15 +7144,15 @@ public class SharingRegistryService {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, createDomain_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
-        struct.domainId.write(oprot);
+        struct.domain.write(oprot);
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, createDomain_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        struct.domainId = new org.apache.airavata.sharing.registry.models.Domain();
-        struct.domainId.read(iprot);
-        struct.setDomainIdIsSet(true);
+        struct.domain = new org.apache.airavata.sharing.registry.models.Domain();
+        struct.domain.read(iprot);
+        struct.setDomainIsSet(true);
       }
     }
 
@@ -7629,7 +7629,7 @@ public class SharingRegistryService {
   public static class updateDomain_args implements org.apache.thrift.TBase<updateDomain_args, updateDomain_args._Fields>, java.io.Serializable, Cloneable, Comparable<updateDomain_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateDomain_args");
 
-    private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField DOMAIN_FIELD_DESC = new org.apache.thrift.protocol.TField("domain", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -7637,11 +7637,11 @@ public class SharingRegistryService {
       schemes.put(TupleScheme.class, new updateDomain_argsTupleSchemeFactory());
     }
 
-    public org.apache.airavata.sharing.registry.models.Domain domainId; // required
+    public org.apache.airavata.sharing.registry.models.Domain domain; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      DOMAIN_ID((short)1, "domainId");
+      DOMAIN((short)1, "domain");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -7656,8 +7656,8 @@ public class SharingRegistryService {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // DOMAIN_ID
-            return DOMAIN_ID;
+          case 1: // DOMAIN
+            return DOMAIN;
           default:
             return null;
         }
@@ -7701,7 +7701,7 @@ public class SharingRegistryService {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.DOMAIN_ID, new org.apache.thrift.meta_data.FieldMetaData("domainId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+      tmpMap.put(_Fields.DOMAIN, new org.apache.thrift.meta_data.FieldMetaData("domain", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.sharing.registry.models.Domain.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateDomain_args.class, metaDataMap);
@@ -7711,18 +7711,18 @@ public class SharingRegistryService {
     }
 
     public updateDomain_args(
-      org.apache.airavata.sharing.registry.models.Domain domainId)
+      org.apache.airavata.sharing.registry.models.Domain domain)
     {
       this();
-      this.domainId = domainId;
+      this.domain = domain;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public updateDomain_args(updateDomain_args other) {
-      if (other.isSetDomainId()) {
-        this.domainId = new org.apache.airavata.sharing.registry.models.Domain(other.domainId);
+      if (other.isSetDomain()) {
+        this.domain = new org.apache.airavata.sharing.registry.models.Domain(other.domain);
       }
     }
 
@@ -7732,40 +7732,40 @@ public class SharingRegistryService {
 
     @Override
     public void clear() {
-      this.domainId = null;
+      this.domain = null;
     }
 
-    public org.apache.airavata.sharing.registry.models.Domain getDomainId() {
-      return this.domainId;
+    public org.apache.airavata.sharing.registry.models.Domain getDomain() {
+      return this.domain;
     }
 
-    public updateDomain_args setDomainId(org.apache.airavata.sharing.registry.models.Domain domainId) {
-      this.domainId = domainId;
+    public updateDomain_args setDomain(org.apache.airavata.sharing.registry.models.Domain domain) {
+      this.domain = domain;
       return this;
     }
 
-    public void unsetDomainId() {
-      this.domainId = null;
+    public void unsetDomain() {
+      this.domain = null;
     }
 
-    /** Returns true if field domainId is set (has been assigned a value) and false otherwise */
-    public boolean isSetDomainId() {
-      return this.domainId != null;
+    /** Returns true if field domain is set (has been assigned a value) and false otherwise */
+    public boolean isSetDomain() {
+      return this.domain != null;
     }
 
-    public void setDomainIdIsSet(boolean value) {
+    public void setDomainIsSet(boolean value) {
       if (!value) {
-        this.domainId = null;
+        this.domain = null;
       }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case DOMAIN_ID:
+      case DOMAIN:
         if (value == null) {
-          unsetDomainId();
+          unsetDomain();
         } else {
-          setDomainId((org.apache.airavata.sharing.registry.models.Domain)value);
+          setDomain((org.apache.airavata.sharing.registry.models.Domain)value);
         }
         break;
 
@@ -7774,8 +7774,8 @@ public class SharingRegistryService {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case DOMAIN_ID:
-        return getDomainId();
+      case DOMAIN:
+        return getDomain();
 
       }
       throw new IllegalStateException();
@@ -7788,8 +7788,8 @@ public class SharingRegistryService {
       }
 
       switch (field) {
-      case DOMAIN_ID:
-        return isSetDomainId();
+      case DOMAIN:
+        return isSetDomain();
       }
       throw new IllegalStateException();
     }
@@ -7807,12 +7807,12 @@ public class SharingRegistryService {
       if (that == null)
         return false;
 
-      boolean this_present_domainId = true && this.isSetDomainId();
-      boolean that_present_domainId = true && that.isSetDomainId();
-      if (this_present_domainId || that_present_domainId) {
-        if (!(this_present_domainId && that_present_domainId))
+      boolean this_present_domain = true && this.isSetDomain();
+      boolean that_present_domain = true && that.isSetDomain();
+      if (this_present_domain || that_present_domain) {
+        if (!(this_present_domain && that_present_domain))
           return false;
-        if (!this.domainId.equals(that.domainId))
+        if (!this.domain.equals(that.domain))
           return false;
       }
 
@@ -7823,10 +7823,10 @@ public class SharingRegistryService {
     public int hashCode() {
       List<Object> list = new ArrayList<Object>();
 
-      boolean present_domainId = true && (isSetDomainId());
-      list.add(present_domainId);
-      if (present_domainId)
-        list.add(domainId);
+      boolean present_domain = true && (isSetDomain());
+      list.add(present_domain);
+      if (present_domain)
+        list.add(domain);
 
       return list.hashCode();
     }
@@ -7839,12 +7839,12 @@ public class SharingRegistryService {
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetDomainId()).compareTo(other.isSetDomainId());
+      lastComparison = Boolean.valueOf(isSetDomain()).compareTo(other.isSetDomain());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetDomainId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.domainId, other.domainId);
+      if (isSetDomain()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.domain, other.domain);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -7869,11 +7869,11 @@ public class SharingRegistryService {
       StringBuilder sb = new StringBuilder("updateDomain_args(");
       boolean first = true;
 
-      sb.append("domainId:");
-      if (this.domainId == null) {
+      sb.append("domain:");
+      if (this.domain == null) {
         sb.append("null");
       } else {
-        sb.append(this.domainId);
+        sb.append(this.domain);
       }
       first = false;
       sb.append(")");
@@ -7882,12 +7882,12 @@ public class SharingRegistryService {
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
-      if (domainId == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'domainId' was not present! Struct: " + toString());
+      if (domain == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'domain' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
-      if (domainId != null) {
-        domainId.validate();
+      if (domain != null) {
+        domain.validate();
       }
     }
 
@@ -7925,11 +7925,11 @@ public class SharingRegistryService {
             break;
           }
           switch (schemeField.id) {
-            case 1: // DOMAIN_ID
+            case 1: // DOMAIN
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.domainId = new org.apache.airavata.sharing.registry.models.Domain();
-                struct.domainId.read(iprot);
-                struct.setDomainIdIsSet(true);
+                struct.domain = new org.apache.airavata.sharing.registry.models.Domain();
+                struct.domain.read(iprot);
+                struct.setDomainIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -7949,9 +7949,9 @@ public class SharingRegistryService {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.domainId != null) {
-          oprot.writeFieldBegin(DOMAIN_ID_FIELD_DESC);
-          struct.domainId.write(oprot);
+        if (struct.domain != null) {
+          oprot.writeFieldBegin(DOMAIN_FIELD_DESC);
+          struct.domain.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -7971,15 +7971,15 @@ public class SharingRegistryService {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, updateDomain_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
-        struct.domainId.write(oprot);
+        struct.domain.write(oprot);
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, updateDomain_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        struct.domainId = new org.apache.airavata.sharing.registry.models.Domain();
-        struct.domainId.read(iprot);
-        struct.setDomainIdIsSet(true);
+        struct.domain = new org.apache.airavata.sharing.registry.models.Domain();
+        struct.domain.read(iprot);
+        struct.setDomainIsSet(true);
       }
     }
 

@@ -27,11 +27,11 @@ service SharingRegistryService {
     /**
       <p>API method to create a new domain</p>
     */
-    string createDomain(1: required sharing_models.Domain domainId) throws (1: sharing_models.SharingRegistryException sre)
+    string createDomain(1: required sharing_models.Domain domain) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to update a domain</p>
     */
-    bool updateDomain(1: required sharing_models.Domain domainId) throws (1: sharing_models.SharingRegistryException sre)
+    bool updateDomain(1: required sharing_models.Domain domain) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to delete domain</p>
     */
