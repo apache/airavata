@@ -27,6 +27,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "USER_GROUP", schema = "")
+@IdClass(UserGroupPK.class)
 public class UserGroupEntity {
     private final static Logger logger = LoggerFactory.getLogger(UserGroupEntity.class);
     private String groupId;
@@ -49,7 +50,7 @@ public class UserGroupEntity {
         this.groupId = groupId;
     }
 
-    @Basic
+    @Id
     @Column(name = "DOMAIN_ID")
     public String getDomainId() {
         return domainId;

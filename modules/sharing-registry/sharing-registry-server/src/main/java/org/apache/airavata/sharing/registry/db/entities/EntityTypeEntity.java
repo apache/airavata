@@ -27,6 +27,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "ENTITY_TYPE", schema = "")
+@IdClass(EntityTypePK.class)
 public class EntityTypeEntity {
     private final static Logger logger = LoggerFactory.getLogger(EntityTypeEntity.class);
     private String entityTypeId;
@@ -46,7 +47,7 @@ public class EntityTypeEntity {
         this.entityTypeId = entityTypeId;
     }
 
-    @Basic
+    @Id
     @Column(name = "DOMAIN_ID")
     public String getDomainId() {
         return domainId;

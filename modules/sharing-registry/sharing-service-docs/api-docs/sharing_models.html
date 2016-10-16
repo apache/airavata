@@ -145,7 +145,7 @@ will be same as the domain name</p>
 <tr><td>9</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 </table><br/><p>User is the model used to register a user in the system. Minimal user information will be required to provide
 regarding the user.</p>
-<li><b>userId</b> : Client provided user id. (The id is not system generated and it is a must to provide this id)</li>
+<li><b>userId</b> : User id provided by the client</li>
 <li><b>domainId</b> : Domain id for that user</li>
 <li><b>userName</b> : User name for the user</li>
 <li><b>firstName</b> : First name of the user</li>
@@ -157,7 +157,7 @@ regarding the user.</p>
 
 <br/></div><div class="definition"><h3 id="Struct_UserGroup">Struct: UserGroup</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
-<tr><td>1</td><td>groupId</td><td><code>string</code></td><td></td><td>optional</td><td><code>"DO_NOT_SET_AT_CLIENTS_ID"</code></td></tr>
+<tr><td>1</td><td>groupId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>2</td><td>domainId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>3</td><td>name</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>4</td><td>description</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
@@ -167,7 +167,7 @@ regarding the user.</p>
 <tr><td>8</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>9</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 </table><br/><p>User group is a collection of users.</p>
- <li>groupId : System generated grouo id. In the current implementation this is of the form domainId:name</li>
+ <li><b>groupId</b> : Group id provided by the client</li>
  <li><b>domainId</b> : Domain id for this user group</li>
  <li><b>name</b> : Name for the user group. should be one word</li>
  <li>description : Short description for the group.</li>
@@ -181,21 +181,22 @@ regarding the user.</p>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
 <tr><td>1</td><td>parentId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>2</td><td>childId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
-<tr><td>3</td><td>childType</td><td><code><a href="#Enum_GroupChildType">GroupChildType</a></code></td><td></td><td>optional</td><td></td></tr>
-<tr><td>4</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
-<tr><td>5</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>3</td><td>domainId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>4</td><td>childType</td><td><code><a href="#Enum_GroupChildType">GroupChildType</a></code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>5</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>6</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 </table><br/><p>System internal data type to map group memberships</p>
 
 <br/></div><div class="definition"><h3 id="Struct_EntityType">Struct: EntityType</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
-<tr><td>1</td><td>entityTypeId</td><td><code>string</code></td><td></td><td>optional</td><td><code>"DO_NOT_SET_AT_CLIENTS_ID"</code></td></tr>
+<tr><td>1</td><td>entityTypeId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>2</td><td>domainId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>3</td><td>name</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>4</td><td>description</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>5</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>6</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 </table><br/><p>client defined entity types</p>
-<li>entityTypeId : System generated entity type id. In the current implementation it will of the form domainId:name</li>
+<li><b>entityTypeId</b> : Entity type id provided by the client</li>
 <li><b>domainId</b> : Domain id of the domain.</li>
 <li><b>name</b> : Name for the entity type. Should be a single word.</li>
 <li>description : Short description for the entity type.</li>
@@ -221,33 +222,33 @@ regarding the user.</p>
 <tr><td>5</td><td>parentEntityId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>6</td><td>name</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>7</td><td>description</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
-<tr><td>8</td><td>metadata</td><td><code>map&lt;<code>string</code>, <code>string</code>&gt;</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>8</td><td>binaryData</td><td><code>binary</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>9</td><td>fullText</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>10</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>11</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 </table><br/><p>Entity object which is used to register an entity in the system.</p>
-<li><b>entityId</b> : Client id provided by the client</li>
+<li><b>entityId</b> : Entity id provided by the client</li>
 <li><b>domainId</b> : Domain id</li>
 <li><b>entityTypeId</b> : Entity type id</li>
 <li><b>ownerId</b> : Owner id</li>
 <li>parentEntityId : Parent entity id</li>
 <li><b>name</b> : Name</li>
 <li>description : Short description for the entity</li>
-<li>metadata : Map of optional metadata</li>
+<li>binaryData : Any information stored in binary format</li>
 <li>fullText : A string which will be considered for full text search</li>
 <li>createdTime : If client provides this value then the system will use it if not the current time will be set</li>
 <li>updatedTime : If client provides this value then the system will use it if not the current time will be set</li>
 
 <br/></div><div class="definition"><h3 id="Struct_PermissionType">Struct: PermissionType</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
-<tr><td>1</td><td>permissionTypeId</td><td><code>string</code></td><td></td><td>optional</td><td><code>"DO_NOT_SET_AT_CLIENTS_ID"</code></td></tr>
+<tr><td>1</td><td>permissionTypeId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>2</td><td>domainId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>3</td><td>name</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>4</td><td>description</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>5</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>6</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 </table><br/><p>Object for creating client defined permission type</p>
-<li>permissionTypeId : System generated permission type id. In the current implementation it will of the form domainId:name</li>
+<li><b>permissionTypeId</b> : Permission type id provided by the client</li>
 <li><b>domainId</b> : Domain id</li>
 <li><b>name</b> : Single word name for the permission</li>
 <li>description : Short description for the permission type</li>
@@ -260,9 +261,10 @@ regarding the user.</p>
 <tr><td>2</td><td>entityId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>3</td><td>groupId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>4</td><td>sharingType</td><td><code><a href="#Enum_SharingType">SharingType</a></code></td><td></td><td>optional</td><td></td></tr>
-<tr><td>5</td><td>inheritedParentId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
-<tr><td>6</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
-<tr><td>7</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>5</td><td>domainId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>6</td><td>inheritedParentId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>7</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>8</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 </table><br/><p>This is an internal enum type for managing sharings</p>
 
 <br/></div><div class="definition"><h3 id="Struct_SharingRegistryException">Exception: SharingRegistryException</h3>

@@ -24,10 +24,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
-import java.util.Map;
+import java.nio.ByteBuffer;
 
 @Entity
 @Table(name = "ENTITY", schema = "")
+@IdClass(EntityPK.class)
 public class EntityEntity {
     private final static Logger logger = LoggerFactory.getLogger(EntityEntity.class);
     private String entityId;
@@ -37,7 +38,7 @@ public class EntityEntity {
     private String parentEntityId;
     private String name;
     private String description;
-    private Map<String, String> metadata;
+    private ByteBuffer binaryData;
     private String fullText;
     private Long createdTime;
     private Long updatedTime;
@@ -52,7 +53,7 @@ public class EntityEntity {
         this.entityId = entityId;
     }
 
-    @Basic
+    @Id
     @Column(name = "DOMAIN_ID")
     public String getDomainId() {
         return domainId;
@@ -112,19 +113,14 @@ public class EntityEntity {
         this.description = description;
     }
 
-    @ElementCollection
-    @CollectionTable(
-            name="ENTITY_METADATA",
-            joinColumns=@JoinColumn(name="ENTITY_ID")
-    )
-    @MapKeyColumn(name="META_KEY")
-    @Column(name="META_VALUE")
-    public Map<String, String> getMetadata() {
-        return metadata;
+    @Lob
+    @Column(name="BINARY_DATA")
+    public ByteBuffer getBinaryData() {
+        return binaryData;
     }
 
-    public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
+    public void setBinaryData(ByteBuffer binaryData) {
+        this.binaryData = binaryData;
     }
 
     @Lob
@@ -169,7 +165,7 @@ public class EntityEntity {
         if (parentEntityId != null ? !parentEntityId.equals(that.parentEntityId) : that.parentEntityId != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (description != null ? !description.equals(that.description) : that.description != null) return false;
-        if (metadata.equals(that.metadata)) return false;
+        if (binaryData.equals(that.binaryData)) return false;
         if (fullText != null ? !fullText.equals(that.fullText) : that.fullText != null) return false;
         if (createdTime != null ? !createdTime.equals(that.createdTime) : that.createdTime != null) return false;
         if (updatedTime != null ? !updatedTime.equals(that.updatedTime) : that.updatedTime != null) return false;
@@ -183,7 +179,7 @@ public class EntityEntity {
         int result = entityId != null ? entityId.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (metadata != null ? metadata.hashCode() : 0);
+        result = 31 * result + (binaryData != null ? binaryData.hashCode() : 0);
         result = 31 * result + (fullText != null ? fullText.hashCode() : 0);
         result = 31 * result + (createdTime != null ? createdTime.hashCode() : 0);
         result = 31 * result + (updatedTime != null ? updatedTime.hashCode() : 0);

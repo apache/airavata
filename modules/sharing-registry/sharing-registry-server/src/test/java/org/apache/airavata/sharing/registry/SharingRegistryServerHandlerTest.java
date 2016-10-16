@@ -34,8 +34,6 @@ import org.slf4j.LoggerFactory;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class SharingRegistryServerHandlerTest {
     private final static Logger logger = LoggerFactory.getLogger(SharingRegistryServerHandlerTest.class);
@@ -130,12 +128,12 @@ public class SharingRegistryServerHandlerTest {
 
         Assert.assertNotNull(sharingRegistryServerHandler.createGroup(userGroup2));
 
-        sharingRegistryServerHandler.addUsersToGroup(Arrays.asList(userId1), groupId1);
-        sharingRegistryServerHandler.addUsersToGroup(Arrays.asList(userId2, userId3), groupId2);
-        sharingRegistryServerHandler.addChildGroupsToParentGroup(Arrays.asList(groupId2), groupId1);
+        sharingRegistryServerHandler.addUsersToGroup(domainId, Arrays.asList(userId1), groupId1);
+        sharingRegistryServerHandler.addUsersToGroup(domainId, Arrays.asList(userId2, userId3), groupId2);
+        sharingRegistryServerHandler.addChildGroupsToParentGroup(domainId, Arrays.asList(groupId2), groupId1);
 
-        Assert.assertTrue(sharingRegistryServerHandler.getGroupMembersOfTypeGroup(groupId1, 0, 10).size() == 1);
-        Assert.assertTrue(sharingRegistryServerHandler.getGroupMembersOfTypeUser(groupId2, 0, 10).size() == 2);
+        Assert.assertTrue(sharingRegistryServerHandler.getGroupMembersOfTypeGroup(domainId, groupId1, 0, 10).size() == 1);
+        Assert.assertTrue(sharingRegistryServerHandler.getGroupMembersOfTypeUser(domainId, groupId2, 0, 10).size() == 2);
 
 
         //Creating permission types
@@ -203,9 +201,6 @@ public class SharingRegistryServerHandlerTest {
         entity1.setOwnerId(userId1);
         entity1.setName("Project name 1");
         entity1.setDescription("Project description");
-        Map<String, String> metadataMap = new HashMap<>();
-        metadataMap.put("key", "val");
-        entity1.setMetadata(metadataMap);
         entity1.setFullText("Project name project description");
         entity1.setCreatedTime(System.currentTimeMillis());
         entity1.setUpdatedTime(System.currentTimeMillis());
@@ -221,9 +216,6 @@ public class SharingRegistryServerHandlerTest {
         entity2.setName("Experiment name");
         entity2.setDescription("Experiment description");
         entity2.setParentEntityId(entityId1);
-        metadataMap = new HashMap<>();
-        metadataMap.put("key", "val");
-        entity2.setMetadata(metadataMap);
         entity2.setFullText("Project name project description");
         entity2.setCreatedTime(System.currentTimeMillis());
         entity2.setUpdatedTime(System.currentTimeMillis());
@@ -239,9 +231,6 @@ public class SharingRegistryServerHandlerTest {
         entity3.setName("Experiment name");
         entity3.setDescription("Experiment description");
         entity3.setParentEntityId(entityId1);
-        metadataMap = new HashMap<>();
-        metadataMap.put("key", "val");
-        entity3.setMetadata(metadataMap);
         entity3.setFullText("Project name project description");
         entity3.setCreatedTime(System.currentTimeMillis());
         entity3.setUpdatedTime(System.currentTimeMillis());
@@ -260,9 +249,6 @@ public class SharingRegistryServerHandlerTest {
         entity4.setName("Input name");
         entity4.setDescription("Input file description");
         entity4.setParentEntityId(entityId3);
-        metadataMap = new HashMap<>();
-        metadataMap.put("key", "val");
-        entity4.setMetadata(metadataMap);
         entity4.setFullText("Input File");
         entity4.setCreatedTime(System.currentTimeMillis());
         entity4.setUpdatedTime(System.currentTimeMillis());
@@ -281,10 +267,10 @@ public class SharingRegistryServerHandlerTest {
         searchCriteria.setValue("Input");
         searchCriteria.setSearchField(EntitySearchField.NAME);
         filters.add(searchCriteria);
-        Assert.assertTrue(sharingRegistryServerHandler.searchEntities(userId1, entityTypeId3, filters, 0, -1).size() > 0);
+        Assert.assertTrue(sharingRegistryServerHandler.searchEntities(domainId, userId1, entityTypeId3, filters, 0, -1).size() > 0);
 
-        Assert.assertNotNull(sharingRegistryServerHandler.getListOfSharedUsers(entityId1, permissionTypeId1));
-        Assert.assertNotNull(sharingRegistryServerHandler.getListOfSharedGroups(entityId1, permissionTypeId1));
+        Assert.assertNotNull(sharingRegistryServerHandler.getListOfSharedUsers(domainId, entityId1, permissionTypeId1));
+        Assert.assertNotNull(sharingRegistryServerHandler.getListOfSharedGroups(domainId, entityId1, permissionTypeId1));
 
 //        sharingRegistryServerHandler.revokeEntitySharingFromUsers(entityId1, Arrays.asList(userId2), permissionTypeId1);
 //        sharingRegistryServerHandler.revokeEntitySharingFromGroups(entityId3, Arrays.asList(groupId2), permissionTypeId1);

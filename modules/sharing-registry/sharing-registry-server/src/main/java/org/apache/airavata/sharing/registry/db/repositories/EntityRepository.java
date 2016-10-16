@@ -21,6 +21,7 @@
 package org.apache.airavata.sharing.registry.db.repositories;
 
 import org.apache.airavata.sharing.registry.db.entities.EntityEntity;
+import org.apache.airavata.sharing.registry.db.entities.EntityPK;
 import org.apache.airavata.sharing.registry.db.entities.SharingEntity;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
 import org.apache.airavata.sharing.registry.models.*;
@@ -30,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.List;
 
-public class EntityRepository extends AbstractRepository<Entity, EntityEntity, String> {
+public class EntityRepository extends AbstractRepository<Entity, EntityEntity, EntityPK> {
     private final static Logger logger = LoggerFactory.getLogger(EntityRepository.class);
 
     public EntityRepository() {
@@ -43,7 +44,7 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, S
         return select(filters, 0, -1);
     }
 
-    public List<Entity> searchEntities(List<String> groupIds, String entityTypeId, List<SearchCriteria> filters,
+    public List<Entity> searchEntities(String domainId, List<String> groupIds, String entityTypeId, List<SearchCriteria> filters,
                                        int offset, int limit) throws SharingRegistryException {
         String groupIdString = "'";
         for(String groupId : groupIds)
@@ -52,6 +53,8 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, S
 
         String query = "SELECT E FROM " + EntityEntity.class.getSimpleName() + " E, " + SharingEntity.class.getSimpleName() + " S WHERE " +
                 "E." + DBConstants.EntityTable.ENTITY_ID + " = S." + DBConstants.SharingTable.ENTITY_ID + " AND " +
+                "E." + DBConstants.EntityTable.DOMAIN_ID + " = S." + DBConstants.SharingTable.DOMAIN_ID + " AND " +
+                "E." + DBConstants.EntityTable.DOMAIN_ID + " = '" + domainId + "' AND " +
                 "S." + DBConstants.SharingTable.GROUP_ID + " IN(" + groupIdString + ") AND E." + DBConstants.EntityTable.ENTITY_TYPE_ID + "='" +
                 entityTypeId + "' AND ";
 
