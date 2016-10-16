@@ -21,8 +21,7 @@
 package org.apache.airavata.sharing.registry.server;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.sharing.registry.db.entities.GroupMembershipEntityPK;
-import org.apache.airavata.sharing.registry.db.entities.SharingEntityPK;
+import org.apache.airavata.sharing.registry.db.entities.*;
 import org.apache.airavata.sharing.registry.db.repositories.*;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
 import org.apache.airavata.sharing.registry.db.utils.JPAUtils;
@@ -120,7 +119,10 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      */
     @Override
     public String registerUser(User user) throws SharingRegistryException, TException {
-        if(userRepository.get(user.userId) != null)
+        UserPK userPK = new UserPK();
+        userPK.setUserId(user.getUserId());
+        userPK.setDomainId(user.domainId);
+        if(userRepository.get(userPK) != null)
             throw new SharingRegistryException("There exist user with given user id");
 
         user.setCreatedTime(System.currentTimeMillis());
@@ -142,13 +144,19 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
     @Override
     public boolean updatedUser(User user) throws SharingRegistryException, TException {
-        User oldUser = userRepository.get(user.userId);
+        UserPK userPK = new UserPK();
+        userPK.setUserId(user.userId);
+        userPK.setDomainId(user.domainId);
+        User oldUser = userRepository.get(userPK);
         user.setCreatedTime(oldUser.createdTime);
         user.setUpdatedTime(System.currentTimeMillis());
         user = getUpdatedObject(oldUser, user);
         userRepository.update(user);
 
-        UserGroup userGroup = userGroupRepository.get(user.userId);
+        UserGroupPK userGroupPK = new UserGroupPK();
+        userGroupPK.setGroupId(user.getUserId());
+        userGroupPK.setDomainId(user.domainId);
+        UserGroup userGroup = userGroupRepository.get(userGroupPK);
         userGroup.setName(user.userName);
         userGroup.setDescription("user " + user.userName + " group");
         updateGroup(userGroup);
@@ -156,15 +164,25 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     @Override
-    public boolean deleteUser(String userId) throws SharingRegistryException, TException {
-        userRepository.delete(userId);
-        userGroupRepository.delete(userId);
+    public boolean deleteUser(String domainId, String userId) throws SharingRegistryException, TException {
+        UserPK userPK = new UserPK();
+        userPK.setUserId(userId);
+        userPK.setDomainId(domainId);
+        userRepository.delete(userPK);
+
+        UserGroupPK userGroupPK = new UserGroupPK();
+        userGroupPK.setGroupId(userId);
+        userGroupPK.setDomainId(domainId);
+        userGroupRepository.delete(userGroupPK);
         return true;
     }
 
     @Override
-    public User getUser(String userId) throws SharingRegistryException, TException {
-        return userRepository.get(userId);
+    public User getUser(String domainId, String userId) throws SharingRegistryException, TException {
+        UserPK userPK = new UserPK();
+        userPK.setUserId(userId);
+        userPK.setDomainId(domainId);
+        return userRepository.get(userPK);
     }
 
     @Override
@@ -180,7 +198,10 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      */
     @Override
     public String createGroup(UserGroup group) throws SharingRegistryException, TException {
-        if(userGroupRepository.get(group.groupId) != null)
+        UserGroupPK userGroupPK = new UserGroupPK();
+        userGroupPK.setGroupId(group.groupId);
+        userGroupPK.setDomainId(group.domainId);
+        if(userGroupRepository.get(userGroupPK) != null)
             throw new SharingRegistryException("There exist group with given group id");
 
         group.setCreatedTime(System.currentTimeMillis());
@@ -192,7 +213,10 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public boolean updateGroup(UserGroup group) throws SharingRegistryException, TException {
         group.setUpdatedTime(System.currentTimeMillis());
-        UserGroup oldGroup = userGroupRepository.get(group.groupId);
+        UserGroupPK userGroupPK = new UserGroupPK();
+        userGroupPK.setGroupId(group.groupId);
+        userGroupPK.setDomainId(group.domainId);
+        UserGroup oldGroup = userGroupRepository.get(userGroupPK);
         group.setCreatedTime(oldGroup.createdTime);
         group = getUpdatedObject(oldGroup, group);
         userGroupRepository.update(group);
@@ -200,14 +224,20 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     @Override
-    public boolean deleteGroup(String groupId) throws SharingRegistryException, TException {
-        userGroupRepository.delete(groupId);
+    public boolean deleteGroup(String domainId, String groupId) throws SharingRegistryException, TException {
+        UserGroupPK userGroupPK = new UserGroupPK();
+        userGroupPK.setGroupId(groupId);
+        userGroupPK.setDomainId(domainId);
+        userGroupRepository.delete(userGroupPK);
         return true;
     }
 
     @Override
-    public UserGroup getGroup(String groupId) throws SharingRegistryException, TException {
-        return userGroupRepository.get(groupId);
+    public UserGroup getGroup(String domainId, String groupId) throws SharingRegistryException, TException {
+        UserGroupPK userGroupPK = new UserGroupPK();
+        userGroupPK.setGroupId(groupId);
+        userGroupPK.setDomainId(domainId);
+        return userGroupRepository.get(userGroupPK);
     }
 
     @Override
@@ -218,12 +248,13 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     @Override
-    public boolean addUsersToGroup(List<String> userIds, String groupId) throws SharingRegistryException, TException {
+    public boolean addUsersToGroup(String domainId, List<String> userIds, String groupId) throws SharingRegistryException, TException {
         for(int i=0; i < userIds.size(); i++){
             GroupMembership groupMembership = new GroupMembership();
             groupMembership.setParentId(groupId);
             groupMembership.setChildId(userIds.get(i));
             groupMembership.setChildType(GroupChildType.USER);
+            groupMembership.setDomainId(domainId);
             groupMembership.setCreatedTime(System.currentTimeMillis());
             groupMembership.setUpdatedTime(System.currentTimeMillis());
             groupMembershipRepository.create(groupMembership);
@@ -232,36 +263,40 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     @Override
-    public boolean removeUsersFromGroup(List<String> userIds, String groupId) throws SharingRegistryException, TException {
+    public boolean removeUsersFromGroup(String domainId, List<String> userIds, String groupId) throws SharingRegistryException, TException {
         for(int i=0; i < userIds.size(); i++){
-            GroupMembershipEntityPK groupMembershipEntityPK = new GroupMembershipEntityPK();
-            groupMembershipEntityPK.setParentId(groupId);
-            groupMembershipEntityPK.setChildId(userIds.get(i));
-            groupMembershipRepository.delete(groupMembershipEntityPK);
+            GroupMembershipPK groupMembershipPK = new GroupMembershipPK();
+            groupMembershipPK.setParentId(groupId);
+            groupMembershipPK.setChildId(userIds.get(i));
+            groupMembershipPK.setDomainId(domainId);
+            groupMembershipRepository.delete(groupMembershipPK);
         }
         return true;
     }
 
     @Override
-    public List<User> getGroupMembersOfTypeUser(String groupId, int offset, int limit) throws SharingRegistryException, TException {
-        List<User> groupMemberUsers = groupMembershipRepository.getAllChildUsers(groupId);
+    public List<User> getGroupMembersOfTypeUser(String domainId, String groupId, int offset, int limit) throws SharingRegistryException, TException {
+        //TODO limit offset
+        List<User> groupMemberUsers = groupMembershipRepository.getAllChildUsers(domainId, groupId);
         return groupMemberUsers;
     }
 
     @Override
-    public List<UserGroup> getGroupMembersOfTypeGroup(String groupId, int offset, int limit) throws SharingRegistryException, TException {
-        List<UserGroup> groupMemberGroups = groupMembershipRepository.getAllChildGroups(groupId);
+    public List<UserGroup> getGroupMembersOfTypeGroup(String domainId, String groupId, int offset, int limit) throws SharingRegistryException, TException {
+        //TODO limit offset
+        List<UserGroup> groupMemberGroups = groupMembershipRepository.getAllChildGroups(domainId, groupId);
         return groupMemberGroups;
     }
 
     @Override
-    public boolean addChildGroupsToParentGroup(List<String> childIds, String groupId) throws SharingRegistryException, TException {
+    public boolean addChildGroupsToParentGroup(String domainId, List<String> childIds, String groupId) throws SharingRegistryException, TException {
         for(String childId : childIds) {
             //Todo check for cyclic dependencies
             GroupMembership groupMembership = new GroupMembership();
             groupMembership.setParentId(groupId);
             groupMembership.setChildId(childId);
             groupMembership.setChildType(GroupChildType.GROUP);
+            groupMembership.setDomainId(domainId);
             groupMembership.setCreatedTime(System.currentTimeMillis());
             groupMembership.setUpdatedTime(System.currentTimeMillis());
             groupMembershipRepository.create(groupMembership);
@@ -270,11 +305,12 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     @Override
-    public boolean removeChildGroupFromParentGroup(String childId, String groupId) throws SharingRegistryException, TException {
-        GroupMembershipEntityPK groupMembershipEntityPK = new GroupMembershipEntityPK();
-        groupMembershipEntityPK.setParentId(groupId);
-        groupMembershipEntityPK.setChildId(childId);
-        groupMembershipRepository.delete(groupMembershipEntityPK);
+    public boolean removeChildGroupFromParentGroup(String domainId, String childId, String groupId) throws SharingRegistryException, TException {
+        GroupMembershipPK groupMembershipPK = new GroupMembershipPK();
+        groupMembershipPK.setParentId(groupId);
+        groupMembershipPK.setChildId(childId);
+        groupMembershipPK.setDomainId(domainId);
+        groupMembershipRepository.delete(groupMembershipPK);
         return true;
     }
 
@@ -284,7 +320,10 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      */
     @Override
     public String createEntityType(EntityType entityType) throws SharingRegistryException, TException {
-        if(entityTypeRepository.get(entityType.entityTypeId) != null)
+        EntityTypePK entityTypePK = new EntityTypePK();
+        entityTypePK.setDomainId(entityType.domainId);
+        entityTypePK.setEntityTypeId(entityType.entityTypeId);
+        if(entityTypeRepository.get(entityTypePK) != null)
             throw new SharingRegistryException("There exist EntityType with given EntityType id");
 
         entityType.setCreatedTime(System.currentTimeMillis());
@@ -296,7 +335,10 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public boolean updateEntityType(EntityType entityType) throws SharingRegistryException, TException {
         entityType.setUpdatedTime(System.currentTimeMillis());
-        EntityType oldEntityType = entityTypeRepository.get(entityType.entityTypeId);
+        EntityTypePK entityTypePK = new EntityTypePK();
+        entityTypePK.setDomainId(entityType.domainId);
+        entityTypePK.setEntityTypeId(entityType.entityTypeId);
+        EntityType oldEntityType = entityTypeRepository.get(entityTypePK);
         entityType.setCreatedTime(oldEntityType.createdTime);
         entityType = getUpdatedObject(oldEntityType, entityType);
         entityTypeRepository.update(entityType);
@@ -304,14 +346,20 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     @Override
-    public boolean deleteEntityType(String entityTypeId) throws SharingRegistryException, TException {
-        entityTypeRepository.delete(entityTypeId);
+    public boolean deleteEntityType(String domainId, String entityTypeId) throws SharingRegistryException, TException {
+        EntityTypePK entityTypePK = new EntityTypePK();
+        entityTypePK.setDomainId(domainId);
+        entityTypePK.setEntityTypeId(entityTypeId);
+        entityTypeRepository.delete(entityTypePK);
         return true;
     }
 
     @Override
-    public EntityType getEntityType(String entityTypeId) throws SharingRegistryException, TException {
-        return entityTypeRepository.get(entityTypeId);
+    public EntityType getEntityType(String domainId, String entityTypeId) throws SharingRegistryException, TException {
+        EntityTypePK entityTypePK = new EntityTypePK();
+        entityTypePK.setDomainId(domainId);
+        entityTypePK.setEntityTypeId(entityTypeId);
+        return entityTypeRepository.get(entityTypePK);
     }
 
     @Override
@@ -327,7 +375,10 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      */
     @Override
     public String createPermissionType(PermissionType permissionType) throws SharingRegistryException, TException {
-        if(permissionTypeRepository.get(permissionType.permissionTypeId) != null)
+        PermissionTypePK permissionTypePK =  new PermissionTypePK();
+        permissionTypePK.setDomainId(permissionType.domainId);
+        permissionTypePK.setPermissionTypeId(permissionType.permissionTypeId);
+        if(permissionTypeRepository.get(permissionTypePK) != null)
             throw new SharingRegistryException("There exist PermissionType with given PermissionType id");
         permissionType.setCreatedTime(System.currentTimeMillis());
         permissionType.setUpdatedTime(System.currentTimeMillis());
@@ -338,21 +389,30 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public boolean updatePermissionType(PermissionType permissionType) throws SharingRegistryException, TException {
         permissionType.setUpdatedTime(System.currentTimeMillis());
-        PermissionType oldPermissionType = permissionTypeRepository.get(permissionType.permissionTypeId);
+        PermissionTypePK permissionTypePK =  new PermissionTypePK();
+        permissionTypePK.setDomainId(permissionType.domainId);
+        permissionTypePK.setPermissionTypeId(permissionType.permissionTypeId);
+        PermissionType oldPermissionType = permissionTypeRepository.get(permissionTypePK);
         permissionType = getUpdatedObject(oldPermissionType, permissionType);
         permissionTypeRepository.update(permissionType);
         return true;
     }
 
     @Override
-    public boolean deletePermissionType(String entityTypeId) throws SharingRegistryException, TException {
-        permissionTypeRepository.delete(entityTypeId);
+    public boolean deletePermissionType(String domainId, String permissionTypeId) throws SharingRegistryException, TException {
+        PermissionTypePK permissionTypePK =  new PermissionTypePK();
+        permissionTypePK.setDomainId(domainId);
+        permissionTypePK.setPermissionTypeId(permissionTypeId);
+        permissionTypeRepository.delete(permissionTypePK);
         return true;
     }
 
     @Override
-    public PermissionType getPermissionType(String permissionTypeId) throws SharingRegistryException, TException {
-        return permissionTypeRepository.get(permissionTypeId);
+    public PermissionType getPermissionType(String domainId, String permissionTypeId) throws SharingRegistryException, TException {
+        PermissionTypePK permissionTypePK =  new PermissionTypePK();
+        permissionTypePK.setDomainId(domainId);
+        permissionTypePK.setPermissionTypeId(permissionTypeId);
+        return permissionTypeRepository.get(permissionTypePK);
     }
 
     @Override
@@ -368,10 +428,17 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      */
     @Override
     public String registerEntity(Entity entity) throws SharingRegistryException, TException {
-        if(entityRepository.get(entity.entityId) != null)
+        EntityPK entityPK = new EntityPK();
+        entityPK.setDomainId(entity.domainId);
+        entityPK.setEntityId(entity.entityId);
+        if(entityRepository.get(entityPK) != null)
             throw new SharingRegistryException("There exist Entity with given Entity id");
 
-        if(!userRepository.isExists(entity.getOwnerId())){
+        UserPK userPK = new UserPK();
+        userPK.setDomainId(entity.domainId);
+        userPK.setUserId(entity.ownerId);
+        if(!userRepository.isExists(userPK)){
+            //Todo this is for Airavata easy integration. Proper thing is to throw an exception here
             User user = new User();
             user.setUserId(entity.getOwnerId());
             user.setDomainId(entity.domainId);
@@ -391,6 +458,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
         newSharing.setGroupId(entity.ownerId);
         newSharing.setSharingType(SharingType.DIRECT_CASCADING);
         newSharing.setInheritedParentId(entity.entityId);
+        newSharing.setDomainId(entity.domainId);
         newSharing.setCreatedTime(System.currentTimeMillis());
         newSharing.setUpdatedTime(System.currentTimeMillis());
 
@@ -398,7 +466,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
         //creating records for inherited permissions
         if(entity.getParentEntityId() != null && entity.getParentEntityId() != ""){
-            List<Sharing> sharings = sharingRepository.getCascadingPermissionsForEntity(entity.parentEntityId);
+            List<Sharing> sharings = sharingRepository.getCascadingPermissionsForEntity(entity.domainId, entity.parentEntityId);
             for(Sharing sharing : sharings){
                 newSharing = new Sharing();
                 newSharing.setPermissionTypeId(sharing.permissionTypeId);
@@ -406,6 +474,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                 newSharing.setGroupId(sharing.groupId);
                 newSharing.setInheritedParentId(sharing.inheritedParentId);
                 newSharing.setSharingType(SharingType.INDIRECT_CASCADING);
+                newSharing.setDomainId(entity.domainId);
                 newSharing.setCreatedTime(System.currentTimeMillis());
                 newSharing.setUpdatedTime(System.currentTimeMillis());
 
@@ -420,7 +489,10 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     public boolean updateEntity(Entity entity) throws SharingRegistryException, TException {
         //TODO Check for permission changes
         entity.setUpdatedTime(System.currentTimeMillis());
-        Entity oldEntity = entityRepository.get(entity.getEntityId());
+        EntityPK entityPK = new EntityPK();
+        entityPK.setDomainId(entity.domainId);
+        entityPK.setEntityId(entity.entityId);
+        Entity oldEntity = entityRepository.get(entityPK);
         entity.setCreatedTime(oldEntity.createdTime);
         entity = getUpdatedObject(oldEntity, entity);
         entityRepository.update(entity);
@@ -428,34 +500,40 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     @Override
-    public boolean deleteEntity(String entityId) throws SharingRegistryException, TException {
+    public boolean deleteEntity(String domainId, String entityId) throws SharingRegistryException, TException {
         //TODO Check for permission changes
-        entityRepository.delete(entityId);
+        EntityPK entityPK = new EntityPK();
+        entityPK.setDomainId(domainId);
+        entityPK.setEntityId(entityId);
+        entityRepository.delete(entityPK);
         return true;
     }
 
     @Override
-    public Entity getEntity(String entityId) throws SharingRegistryException, TException {
-        return entityRepository.get(entityId);
+    public Entity getEntity(String domainId, String entityId) throws SharingRegistryException, TException {
+        EntityPK entityPK = new EntityPK();
+        entityPK.setDomainId(domainId);
+        entityPK.setEntityId(entityId);
+        return entityRepository.get(entityPK);
     }
 
     @Override
-    public List<Entity> searchEntities(String userId, String entityTypeId, List<SearchCriteria> filters,
+    public List<Entity> searchEntities(String domainId, String userId, String entityTypeId, List<SearchCriteria> filters,
                                        int offset, int limit) throws SharingRegistryException, TException {
         List<String> groupIds = new ArrayList<>();
         groupIds.add(userId);
-        groupMembershipRepository.getAllParentMembershipsForChild(userId).stream().forEach(gm->groupIds.add(gm.parentId));
-        return entityRepository.searchEntities(groupIds, entityTypeId, filters, offset, limit);
+        groupMembershipRepository.getAllParentMembershipsForChild(domainId, userId).stream().forEach(gm->groupIds.add(gm.parentId));
+        return entityRepository.searchEntities(domainId, groupIds, entityTypeId, filters, offset, limit);
     }
 
     @Override
-    public List<User> getListOfSharedUsers(String entityId, String permissionTypeId) throws SharingRegistryException, TException {
-        return userRepository.getAccessibleUsers(entityId, permissionTypeId);
+    public List<User> getListOfSharedUsers(String domainId, String entityId, String permissionTypeId) throws SharingRegistryException, TException {
+        return userRepository.getAccessibleUsers(domainId, entityId, permissionTypeId);
     }
 
     @Override
-    public List<UserGroup> getListOfSharedGroups(String entityId, String permissionTypeId) throws SharingRegistryException, TException {
-        return userGroupRepository.getAccessibleGroups(entityId, permissionTypeId);
+    public List<UserGroup> getListOfSharedGroups(String domainId, String entityId, String permissionTypeId) throws SharingRegistryException, TException {
+        return userGroupRepository.getAccessibleGroups(domainId, entityId, permissionTypeId);
     }
 
     /**
@@ -489,6 +567,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             sharing.setEntityId(entityId);
             sharing.setGroupId(userId);
             sharing.setInheritedParentId(entityId);
+            sharing.setDomainId(domainId);
             if(cascadePermission) {
                 sharing.setSharingType(SharingType.DIRECT_CASCADING);
             }else {
@@ -514,6 +593,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                     sharing.setInheritedParentId(entityId);
                     sharing.setSharingType(SharingType.INDIRECT_CASCADING);
                     sharing.setInheritedParentId(entityId);
+                    sharing.setDomainId(domainId);
                     sharing.setCreatedTime(System.currentTimeMillis());
                     sharing.setUpdatedTime(System.currentTimeMillis());
                     sharingRepository.create(sharing);
@@ -538,11 +618,11 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public boolean userHasAccess(String domainId, String userId, String entityId, String permissionTypeId) throws SharingRegistryException, TException {
         //check whether the user has permission directly or indirectly
-        List<GroupMembership> parentMemberships = groupMembershipRepository.getAllParentMembershipsForChild(userId);
+        List<GroupMembership> parentMemberships = groupMembershipRepository.getAllParentMembershipsForChild(domainId, userId);
         List<String> groupIds = new ArrayList<>();
         parentMemberships.stream().forEach(pm->groupIds.add(pm.parentId));
         groupIds.add(userId);
-        return sharingRepository.hasAccess(entityId, groupIds, Arrays.asList(permissionTypeId,
+        return sharingRepository.hasAccess(domainId, entityId, groupIds, Arrays.asList(permissionTypeId,
                 permissionTypeRepository.getGlobalPermissionTypeIdForDomain(domainId)));
     }
 
@@ -553,28 +633,30 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
         //revoking permission for the entity
         for(String groupId : groupOrUserList){
-            SharingEntityPK sharingEntityPK = new SharingEntityPK();
-            sharingEntityPK.setEntityId(entityId);
-            sharingEntityPK.setGroupId(groupId);
-            sharingEntityPK.setPermissionTypeId(permissionTypeId);
-            sharingEntityPK.setInheritedParentId(entityId);
+            SharingPK sharingPK = new SharingPK();
+            sharingPK.setEntityId(entityId);
+            sharingPK.setGroupId(groupId);
+            sharingPK.setPermissionTypeId(permissionTypeId);
+            sharingPK.setInheritedParentId(entityId);
+            sharingPK.setDomainId(domainId);
 
-            sharingRepository.delete(sharingEntityPK);
+            sharingRepository.delete(sharingPK);
         }
 
         //revoking permission from inheritance
         List<Sharing> temp = new ArrayList<>();
-        sharingRepository.getIndirectSharedChildren(entityId, permissionTypeId).stream().forEach(s->temp.add(s));
+        sharingRepository.getIndirectSharedChildren(domainId, entityId, permissionTypeId).stream().forEach(s->temp.add(s));
         for(Sharing sharing : temp){
             String childEntityId = sharing.entityId;
             for(String groupId : groupOrUserList){
-                SharingEntityPK sharingEntityPK = new SharingEntityPK();
-                sharingEntityPK.setEntityId(childEntityId);
-                sharingEntityPK.setGroupId(groupId);
-                sharingEntityPK.setPermissionTypeId(permissionTypeId);
-                sharingEntityPK.setInheritedParentId(entityId);
+                SharingPK sharingPK = new SharingPK();
+                sharingPK.setEntityId(childEntityId);
+                sharingPK.setGroupId(groupId);
+                sharingPK.setPermissionTypeId(permissionTypeId);
+                sharingPK.setInheritedParentId(entityId);
+                sharingPK.setDomainId(domainId);
 
-                sharingRepository.delete(sharingEntityPK);
+                sharingRepository.delete(sharingPK);
             }
         }
         return true;

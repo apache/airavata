@@ -27,29 +27,30 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import java.io.Serializable;
 
-public class GroupMembershipEntityPK implements Serializable {
-    private final static Logger logger = LoggerFactory.getLogger(GroupMembershipEntityPK.class);
-    private String parentId;
-    private String childId;
+public class EntityTypePK implements Serializable {
+    private final static Logger logger = LoggerFactory.getLogger(EntityTypePK.class);
+    private String entityTypeId;
+    private String domainId;
 
-    @Column(name = "PARENT_ID")
+
+    @Column(name = "ENTITY_TYPE_ID")
     @Id
-    public String getParentId() {
-        return parentId;
+    public String getEntityTypeId() {
+        return entityTypeId;
     }
 
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
+    public void setEntityTypeId(String entityTypeId) {
+        this.entityTypeId = entityTypeId;
     }
 
-    @Column(name = "CHILD_ID")
+    @Column(name = "DOMAIN_ID")
     @Id
-    public String getChildId() {
-        return childId;
+    public String getDomainId() {
+        return domainId;
     }
 
-    public void setChildId(String childId) {
-        this.childId = childId;
+    public void setDomainId(String domainId) {
+        this.domainId = domainId;
     }
 
     @Override
@@ -57,18 +58,19 @@ public class GroupMembershipEntityPK implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        GroupMembershipEntityPK that = (GroupMembershipEntityPK) o;
+        EntityTypePK that = (EntityTypePK) o;
 
-        if (parentId != null ? !parentId.equals(that.parentId) : that.parentId != null) return false;
-        if (childId != null ? !childId.equals(that.childId) : that.childId != null) return false;
+        if (entityTypeId != null ? !entityTypeId.equals(that.entityTypeId) : that.entityTypeId != null)
+            return false;
+        if (domainId != null ? !domainId.equals(that.domainId) : that.domainId != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = parentId != null ? parentId.hashCode() : 0;
-        result = 31 * result + (childId != null ? childId.hashCode() : 0);
+        int result = entityTypeId != null ? entityTypeId.hashCode() : 0;
+        result = 31 * result + (domainId != null ? domainId.hashCode() : 0);
         return result;
     }
 }

@@ -56,11 +56,11 @@ service SharingRegistryService {
     /**
      <p>API method to delete user</p>
     */
-    bool deleteUser(1: required string userId) throws (1: sharing_models.SharingRegistryException sre)
+    bool deleteUser(1: required string domainId, 2: required string userId) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to get a user</p>
     */
-    sharing_models.User getUser(1: required string userId) throws (1: sharing_models.SharingRegistryException sre)
+    sharing_models.User getUser(1: required string domainId, 2: required string userId) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to get a list of users in a specific domain Users will be reverse sorted based on the created time.</p>
      <li>domainId : Domain id</li>
@@ -80,11 +80,11 @@ service SharingRegistryService {
     /**
      <p>API method to delete a group</p>
     */
-    bool deleteGroup(1: required string groupId) throws (1: sharing_models.SharingRegistryException sre)
+    bool deleteGroup(1: required string domainId, 2: required string groupId) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to get a group</p>
     */
-    sharing_models.UserGroup getGroup(1: required string groupId) throws (1: sharing_models.SharingRegistryException sre)
+    sharing_models.UserGroup getGroup(1: required string domainId, 2: required string groupId) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to get groups in a domainId. Results are reverse sorted based on created time.</p>
     */
@@ -93,27 +93,27 @@ service SharingRegistryService {
     /**
      <p>API method to add list of users to a group</p>
     */
-    bool addUsersToGroup(1: required list<string> userIds, 2: required string groupId) throws (1: sharing_models.SharingRegistryException sre);
+    bool addUsersToGroup(1: required string domainId, 2: required list<string> userIds, 3: required string groupId) throws (1: sharing_models.SharingRegistryException sre);
     /**
      <p>API method to remove users from a group</p>
     */
-    bool removeUsersFromGroup(1: required list<string> userIds, 2: required string groupId) throws (1: sharing_models.SharingRegistryException sre);
+    bool removeUsersFromGroup(1: required string domainId, 2: required list<string> userIds, 3: required string groupId) throws (1: sharing_models.SharingRegistryException sre);
     /**
      <p>API method to get list of child users in a group. Only the direct members will be returned. Results are reverse time sorted based on creation time</p>
     */
-    list<sharing_models.User> getGroupMembersOfTypeUser(1: required string groupId, 2: required i32 offset, 3: required i32 limit) throws (1: sharing_models.SharingRegistryException sre);
+    list<sharing_models.User> getGroupMembersOfTypeUser(1: string domainId, 2: required string groupId, 3: required i32 offset, 4: required i32 limit) throws (1: sharing_models.SharingRegistryException sre);
     /**
      <p>API method to get list of child groups in a group. Only the direct members will be returned. Results are reverse time sorted based on creation time</p>
     */
-    list<sharing_models.UserGroup> getGroupMembersOfTypeGroup(1: required string groupId, 2: required i32 offset, 3: required i32 limit) throws (1: sharing_models.SharingRegistryException sre);
+    list<sharing_models.UserGroup> getGroupMembersOfTypeGroup(1: required string domainId, 2: required string groupId, 3: required i32 offset, 4: required i32 limit) throws (1: sharing_models.SharingRegistryException sre);
     /**
      <p>API method to add a child group to a parent group.</p>
     */
-    bool addChildGroupsToParentGroup(1: required list<string> childIds, 2: required string groupId) throws (1: sharing_models.SharingRegistryException sre);
+    bool addChildGroupsToParentGroup(1: required string domainId, 2: required list<string> childIds, 3: required string groupId) throws (1: sharing_models.SharingRegistryException sre);
     /**
      <p>API method to remove a child group from parent group.</p>
     */
-    bool removeChildGroupFromParentGroup(1: required string childId, 2: required string groupId) throws (1: sharing_models.SharingRegistryException sre);
+    bool removeChildGroupFromParentGroup(1: required string domainId, 2: required string childId, 3: required string groupId) throws (1: sharing_models.SharingRegistryException sre);
 
     /**
      <p>API method to create a new entity type</p>
@@ -126,11 +126,11 @@ service SharingRegistryService {
     /**
      <p>API method to delete entity type</p>
     */
-    bool deleteEntityType(1: required string entityTypeId) throws (1: sharing_models.SharingRegistryException sre)
+    bool deleteEntityType(1: required string domainId, 2: required string entityTypeId) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to get an entity type</p>
     */
-    sharing_models.EntityType getEntityType(1: required string entityTypeId) throws (1: sharing_models.SharingRegistryException sre)
+    sharing_models.EntityType getEntityType(1: required string domainId, 2: required string entityTypeId) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to get entity types in a domainId. Results are reverse time sorted based on creation time</p>
     */
@@ -148,23 +148,23 @@ service SharingRegistryService {
     /**
      <p>API method to delete entity</p>
     */
-    bool deleteEntity(1: required string entityId) throws (1: sharing_models.SharingRegistryException sre)
+    bool deleteEntity(1: required string domainId, 2: required string entityId) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to get entity</p>
     */
-    sharing_models.Entity getEntity(1: required string entityId) throws (1: sharing_models.SharingRegistryException sre)
+    sharing_models.Entity getEntity(1: required string domainId, 2: required string entityId) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to search entities</p>
     */
-    list<sharing_models.Entity> searchEntities(1: required string userId, 2: required string entityTypeId, 3: required list<sharing_models.SearchCriteria> filters, 4: required i32 offset, 5: required i32 limit) throws (1: sharing_models.SharingRegistryException sre)
+    list<sharing_models.Entity> searchEntities(1: required string domainId, 2: required string userId, 3: required string entityTypeId, 4: required list<sharing_models.SearchCriteria> filters, 5: required i32 offset, 6: required i32 limit) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to get a list of shared users given the entity id</p>
     */
-    list<sharing_models.User> getListOfSharedUsers(1: required string entityId, 2: required string permissionTypeId) throws (1: sharing_models.SharingRegistryException sre)
+    list<sharing_models.User> getListOfSharedUsers(1: required string domainId, 2: required string entityId, 3: required string permissionTypeId) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to get a list of shared groups given the entity id</p>
     */
-    list<sharing_models.UserGroup> getListOfSharedGroups(1: required string entityId, 2: required string permissionTypeId) throws (1: sharing_models.SharingRegistryException sre)
+    list<sharing_models.UserGroup> getListOfSharedGroups(1: required string domainId, 2: required string entityId, 3: required string permissionTypeId) throws (1: sharing_models.SharingRegistryException sre)
 
     /**
      <p>API method to create permission type</p>
@@ -177,11 +177,11 @@ service SharingRegistryService {
     /**
      <p>API method to delete permission type</p>
     */
-    bool deletePermissionType(1: required string entityTypeId) throws (1: sharing_models.SharingRegistryException sre)
+    bool deletePermissionType(1: required string domainId, 2: required string permissionTypeId) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to get permission type</p>
     */
-    sharing_models.PermissionType getPermissionType(1: required string permissionTypeId) throws (1: sharing_models.SharingRegistryException sre)
+    sharing_models.PermissionType getPermissionType(1: required string domainId, 2: required string permissionTypeId) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to get list of permission types in a given domainId. Results are reverse time sorted based on creation time</p>
     */

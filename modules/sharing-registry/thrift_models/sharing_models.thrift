@@ -43,7 +43,7 @@ struct Domain {
 /**
 * <p>User is the model used to register a user in the system. Minimal user information will be required to provide
 * regarding the user.</p>
-* <li><b>userId</b> : Client provided user id. (The id is not system generated and it is a must to provide this id)</li>
+* <li><b>userId</b> : User id provided by the client</li>
 * <li><b>domainId</b> : Domain id for that user</li>
 * <li><b>userName</b> : User name for the user</li>
 * <li><b>firstName</b> : First name of the user</li>
@@ -84,7 +84,7 @@ enum GroupType {
 
 /**
 *<p>User group is a collection of users.</p>
-* <li>groupId : System generated grouo id. In the current implementation this is of the form domainId:name</li>
+* <li><b>groupId</b> : Group id provided by the client</li>
 * <li><b>domainId</b> : Domain id for this user group</li>
 * <li><b>name</b> : Name for the user group. should be one word</li>
 * <li>description : Short description for the group.</li>
@@ -95,7 +95,7 @@ enum GroupType {
 * <li>updatedTime : Will be set by the system</li>
 **/
 struct UserGroup {
- 1: optional string groupId = DO_NOT_SET_AT_CLIENTS_ID,
+ 1: optional string groupId,
  2: optional string domainId,
  3: optional string name,
  4: optional string description,
@@ -118,17 +118,18 @@ enum GroupChildType {
 * <p>System internal data type to map group memberships</p>
 **/
 struct GroupMembership {
-1: optional string parentId,
-2: optional string childId,
-3: optional GroupChildType childType
-4: optional i64 createdTime,
-5: optional i64 updatedTime
+    1: optional string parentId,
+    2: optional string childId,
+    3: optional string domainId,
+    4: optional GroupChildType childType
+    5: optional i64 createdTime,
+    6: optional i64 updatedTime
 }
 
 
 /**
 * <p>client defined entity types</p>
-* <li>entityTypeId : System generated entity type id. In the current implementation it will of the form domainId:name</li>
+* <li><b>entityTypeId</b> : Entity type id provided by the client</li>
 * <li><b>domainId</b> : Domain id of the domain.</li>
 * <li><b>name</b> : Name for the entity type. Should be a single word.</li>
 * <li>description : Short description for the entity type.</li>
@@ -136,7 +137,7 @@ struct GroupMembership {
 * <li>updatedTime : Will be set by the system</li>
 **/
 struct EntityType {
-    1: optional string entityTypeId = DO_NOT_SET_AT_CLIENTS_ID,
+    1: optional string entityTypeId,
     2: optional string domainId,
     3: optional string name,
     4: optional string description,
@@ -192,14 +193,14 @@ struct SearchCriteria {
 
 /**
 * <p>Entity object which is used to register an entity in the system.</p>
-* <li><b>entityId</b> : Client id provided by the client</li>
+* <li><b>entityId</b> : Entity id provided by the client</li>
 * <li><b>domainId</b> : Domain id</li>
 * <li><b>entityTypeId</b> : Entity type id</li>
 * <li><b>ownerId</b> : Owner id</li>
 * <li>parentEntityId : Parent entity id</li>
 * <li><b>name</b> : Name</li>
 * <li>description : Short description for the entity</li>
-* <li>metadata : Map of optional metadata</li>
+* <li>binaryData : Any information stored in binary format</li>
 * <li>fullText : A string which will be considered for full text search</li>
 * <li>createdTime : If client provides this value then the system will use it if not the current time will be set</li>
 * <li>updatedTime : If client provides this value then the system will use it if not the current time will be set</li>
@@ -212,7 +213,7 @@ struct Entity {
     5: optional string parentEntityId,
     6: optional string name,
     7: optional string description,
-    8: optional map<string,string> metadata,
+    8: optional binary binaryData,
     9: optional string fullText,
     10: optional i64 createdTime,
     11: optional i64 updatedTime
@@ -220,7 +221,7 @@ struct Entity {
 
 /**
 * <p>Object for creating client defined permission type</p>
-* <li>permissionTypeId : System generated permission type id. In the current implementation it will of the form domainId:name</li>
+* <li><b>permissionTypeId</b> : Permission type id provided by the client</li>
 * <li><b>domainId</b> : Domain id</li>
 * <li><b>name</b> : Single word name for the permission</li>
 * <li>description : Short description for the permission type</li>
@@ -228,7 +229,7 @@ struct Entity {
 * <li>updatedTime : Will be set by the system</li>
 **/
 struct PermissionType {
-    1: optional string permissionTypeId = DO_NOT_SET_AT_CLIENTS_ID,
+    1: optional string permissionTypeId,
     2: optional string domainId,
     3: optional string name,
     4: optional string description,
@@ -253,9 +254,10 @@ struct Sharing {
     2: optional string entityId,
     3: optional string groupId,
     4: optional SharingType sharingType,
-    5: optional string inheritedParentId,
-    6: optional i64 createdTime,
-    7: optional i64 updatedTime
+    5: optional string domainId,
+    6: optional string inheritedParentId,
+    7: optional i64 createdTime,
+    8: optional i64 updatedTime
 }
 
 /**

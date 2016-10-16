@@ -814,7 +814,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             if (ServerSettings.isEnableSharing()){
                 // user projects + user accessible projects
                 List<String> accessibleProjectIds = new ArrayList<>();
-                sharingRegistryServerHandler.searchEntities(userName+"@"+gatewayId , gatewayId+":PROJECT",
+                sharingRegistryServerHandler.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                        userName+"@"+gatewayId , gatewayId+":PROJECT",
                         new ArrayList<>(), offset, limit).stream().forEach(p->accessibleProjectIds.add(p.entityId));
                 return getRegistryServiceClient().searchProjects(gatewayId, userName, accessibleProjectIds, new HashMap<>(), limit, offset);
             }else{
@@ -859,7 +860,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             List<String> accessibleProjIds  = new ArrayList<>();
 
             if(ServerSettings.isEnableSharing())
-                sharingRegistryServerHandler.searchEntities(userName+"@"+gatewayId, gatewayId+":PROJECT",
+                sharingRegistryServerHandler.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                        userName+"@"+gatewayId, gatewayId+":PROJECT",
                         new ArrayList<>(), 0, -1).stream().forEach(e->accessibleProjIds.add(e.entityId));
 
             return getRegistryServiceClient().searchProjects(gatewayId, userName, accessibleProjIds, filters, limit, offset);
@@ -896,7 +898,8 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             List<String> accessibleExpIds = new ArrayList<>();
             if(ServerSettings.isEnableSharing())
-                sharingRegistryServerHandler.searchEntities(userName+"@"+gatewayId, gatewayId+":EXPERIMENT",
+                sharingRegistryServerHandler.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                        userName+"@"+gatewayId, gatewayId+":EXPERIMENT",
                         new ArrayList<>(), 0, -1).forEach(e->accessibleExpIds.add(e.entityId));
             return getRegistryServiceClient().searchExperiments(gatewayId, userName, accessibleExpIds, filters, limit, offset);
         }catch (Exception e) {
@@ -3873,10 +3876,12 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             List<String> accessibleUsers = new ArrayList<>();
             if(permissionType.equals(ResourcePermissionType.WRITE))
-                sharingRegistryServerHandler.getListOfSharedUsers(resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
+                sharingRegistryServerHandler.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                        resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
                         + ":WRITE").stream().forEach(u->accessibleUsers.add(u.userId));
             else if(permissionType.equals(ResourcePermissionType.READ))
-                sharingRegistryServerHandler.getListOfSharedUsers(resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
+                sharingRegistryServerHandler.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                        resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
                         + ":READ").stream().forEach(u->accessibleUsers.add(u.userId));
             return accessibleUsers;
         } catch (Exception e) {

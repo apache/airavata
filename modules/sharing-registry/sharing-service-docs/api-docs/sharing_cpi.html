@@ -91,11 +91,13 @@
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to update existing user</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_deleteUser">Function: SharingRegistryService.deleteUser</h4>
-<pre><code>bool</code> deleteUser(<code>string</code> userId)
+<pre><code>bool</code> deleteUser(<code>string</code> domainId,
+                <code>string</code> userId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to delete user</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getUser">Function: SharingRegistryService.getUser</h4>
-<pre><code><a href="sharing_models.html#Struct_User">sharing_models.User</a></code> getUser(<code>string</code> userId)
+<pre><code><a href="sharing_models.html#Struct_User">sharing_models.User</a></code> getUser(<code>string</code> domainId,
+                            <code>string</code> userId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to get a user</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getUsers">Function: SharingRegistryService.getUsers</h4>
@@ -116,11 +118,13 @@
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to update a group</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_deleteGroup">Function: SharingRegistryService.deleteGroup</h4>
-<pre><code>bool</code> deleteGroup(<code>string</code> groupId)
+<pre><code>bool</code> deleteGroup(<code>string</code> domainId,
+                 <code>string</code> groupId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to delete a group</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getGroup">Function: SharingRegistryService.getGroup</h4>
-<pre><code><a href="sharing_models.html#Struct_UserGroup">sharing_models.UserGroup</a></code> getGroup(<code>string</code> groupId)
+<pre><code><a href="sharing_models.html#Struct_UserGroup">sharing_models.UserGroup</a></code> getGroup(<code>string</code> domainId,
+                                  <code>string</code> groupId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to get a group</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getGroups">Function: SharingRegistryService.getGroups</h4>
@@ -129,34 +133,40 @@
                                          <code>i32</code> limit)
 </pre><p>API method to get groups in a domainId. Results are reverse sorted based on created time.</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_addUsersToGroup">Function: SharingRegistryService.addUsersToGroup</h4>
-<pre><code>bool</code> addUsersToGroup(<code>list&lt;<code>string</code>&gt;</code> userIds,
+<pre><code>bool</code> addUsersToGroup(<code>string</code> domainId,
+                     <code>list&lt;<code>string</code>&gt;</code> userIds,
                      <code>string</code> groupId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to add list of users to a group</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_removeUsersFromGroup">Function: SharingRegistryService.removeUsersFromGroup</h4>
-<pre><code>bool</code> removeUsersFromGroup(<code>list&lt;<code>string</code>&gt;</code> userIds,
+<pre><code>bool</code> removeUsersFromGroup(<code>string</code> domainId,
+                          <code>list&lt;<code>string</code>&gt;</code> userIds,
                           <code>string</code> groupId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to remove users from a group</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getGroupMembersOfTypeUser">Function: SharingRegistryService.getGroupMembersOfTypeUser</h4>
-<pre><code>list&lt;<code><a href="sharing_models.html#Struct_User">sharing_models.User</a></code>&gt;</code> getGroupMembersOfTypeUser(<code>string</code> groupId,
+<pre><code>list&lt;<code><a href="sharing_models.html#Struct_User">sharing_models.User</a></code>&gt;</code> getGroupMembersOfTypeUser(<code>string</code> domainId,
+                                                    <code>string</code> groupId,
                                                     <code>i32</code> offset,
                                                     <code>i32</code> limit)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to get list of child users in a group. Only the direct members will be returned. Results are reverse time sorted based on creation time</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getGroupMembersOfTypeGroup">Function: SharingRegistryService.getGroupMembersOfTypeGroup</h4>
-<pre><code>list&lt;<code><a href="sharing_models.html#Struct_UserGroup">sharing_models.UserGroup</a></code>&gt;</code> getGroupMembersOfTypeGroup(<code>string</code> groupId,
+<pre><code>list&lt;<code><a href="sharing_models.html#Struct_UserGroup">sharing_models.UserGroup</a></code>&gt;</code> getGroupMembersOfTypeGroup(<code>string</code> domainId,
+                                                          <code>string</code> groupId,
                                                           <code>i32</code> offset,
                                                           <code>i32</code> limit)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to get list of child groups in a group. Only the direct members will be returned. Results are reverse time sorted based on creation time</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_addChildGroupsToParentGroup">Function: SharingRegistryService.addChildGroupsToParentGroup</h4>
-<pre><code>bool</code> addChildGroupsToParentGroup(<code>list&lt;<code>string</code>&gt;</code> childIds,
+<pre><code>bool</code> addChildGroupsToParentGroup(<code>string</code> domainId,
+                                 <code>list&lt;<code>string</code>&gt;</code> childIds,
                                  <code>string</code> groupId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to add a child group to a parent group.</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_removeChildGroupFromParentGroup">Function: SharingRegistryService.removeChildGroupFromParentGroup</h4>
-<pre><code>bool</code> removeChildGroupFromParentGroup(<code>string</code> childId,
+<pre><code>bool</code> removeChildGroupFromParentGroup(<code>string</code> domainId,
+                                     <code>string</code> childId,
                                      <code>string</code> groupId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to remove a child group from parent group.</p>
@@ -169,11 +179,13 @@
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to update entity type</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_deleteEntityType">Function: SharingRegistryService.deleteEntityType</h4>
-<pre><code>bool</code> deleteEntityType(<code>string</code> entityTypeId)
+<pre><code>bool</code> deleteEntityType(<code>string</code> domainId,
+                      <code>string</code> entityTypeId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to delete entity type</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getEntityType">Function: SharingRegistryService.getEntityType</h4>
-<pre><code><a href="sharing_models.html#Struct_EntityType">sharing_models.EntityType</a></code> getEntityType(<code>string</code> entityTypeId)
+<pre><code><a href="sharing_models.html#Struct_EntityType">sharing_models.EntityType</a></code> getEntityType(<code>string</code> domainId,
+                                        <code>string</code> entityTypeId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to get an entity type</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getEntityTypes">Function: SharingRegistryService.getEntityTypes</h4>
@@ -191,15 +203,18 @@
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to update entity</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_deleteEntity">Function: SharingRegistryService.deleteEntity</h4>
-<pre><code>bool</code> deleteEntity(<code>string</code> entityId)
+<pre><code>bool</code> deleteEntity(<code>string</code> domainId,
+                  <code>string</code> entityId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to delete entity</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getEntity">Function: SharingRegistryService.getEntity</h4>
-<pre><code><a href="sharing_models.html#Struct_Entity">sharing_models.Entity</a></code> getEntity(<code>string</code> entityId)
+<pre><code><a href="sharing_models.html#Struct_Entity">sharing_models.Entity</a></code> getEntity(<code>string</code> domainId,
+                                <code>string</code> entityId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to get entity</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_searchEntities">Function: SharingRegistryService.searchEntities</h4>
-<pre><code>list&lt;<code><a href="sharing_models.html#Struct_Entity">sharing_models.Entity</a></code>&gt;</code> searchEntities(<code>string</code> userId,
+<pre><code>list&lt;<code><a href="sharing_models.html#Struct_Entity">sharing_models.Entity</a></code>&gt;</code> searchEntities(<code>string</code> domainId,
+                                           <code>string</code> userId,
                                            <code>string</code> entityTypeId,
                                            <code>list&lt;<code><a href="sharing_models.html#Struct_SearchCriteria">sharing_models.SearchCriteria</a></code>&gt;</code> filters,
                                            <code>i32</code> offset,
@@ -207,12 +222,14 @@
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to search entities</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getListOfSharedUsers">Function: SharingRegistryService.getListOfSharedUsers</h4>
-<pre><code>list&lt;<code><a href="sharing_models.html#Struct_User">sharing_models.User</a></code>&gt;</code> getListOfSharedUsers(<code>string</code> entityId,
+<pre><code>list&lt;<code><a href="sharing_models.html#Struct_User">sharing_models.User</a></code>&gt;</code> getListOfSharedUsers(<code>string</code> domainId,
+                                               <code>string</code> entityId,
                                                <code>string</code> permissionTypeId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to get a list of shared users given the entity id</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getListOfSharedGroups">Function: SharingRegistryService.getListOfSharedGroups</h4>
-<pre><code>list&lt;<code><a href="sharing_models.html#Struct_UserGroup">sharing_models.UserGroup</a></code>&gt;</code> getListOfSharedGroups(<code>string</code> entityId,
+<pre><code>list&lt;<code><a href="sharing_models.html#Struct_UserGroup">sharing_models.UserGroup</a></code>&gt;</code> getListOfSharedGroups(<code>string</code> domainId,
+                                                     <code>string</code> entityId,
                                                      <code>string</code> permissionTypeId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to get a list of shared groups given the entity id</p>
@@ -225,11 +242,13 @@
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to update permission type</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_deletePermissionType">Function: SharingRegistryService.deletePermissionType</h4>
-<pre><code>bool</code> deletePermissionType(<code>string</code> entityTypeId)
+<pre><code>bool</code> deletePermissionType(<code>string</code> domainId,
+                          <code>string</code> permissionTypeId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to delete permission type</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getPermissionType">Function: SharingRegistryService.getPermissionType</h4>
-<pre><code><a href="sharing_models.html#Struct_PermissionType">sharing_models.PermissionType</a></code> getPermissionType(<code>string</code> permissionTypeId)
+<pre><code><a href="sharing_models.html#Struct_PermissionType">sharing_models.PermissionType</a></code> getPermissionType(<code>string</code> domainId,
+                                                <code>string</code> permissionTypeId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to get permission type</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getPermissionTypes">Function: SharingRegistryService.getPermissionTypes</h4>
