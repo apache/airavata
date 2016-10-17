@@ -40,7 +40,7 @@ public class UserGroupRepository extends AbstractRepository<UserGroup, UserGroup
     }
 
     public List<UserGroup> getAccessibleGroups(String domainId, String entityId, String permissionTypeId) throws SharingRegistryException {
-        String query = "SELECT g from " + UserGroupEntity.class.getSimpleName() + " g, " + SharingEntity.class.getSimpleName() + " s";
+        String query = "SELECT DISTINCT g from " + UserGroupEntity.class.getSimpleName() + " g, " + SharingEntity.class.getSimpleName() + " s";
         query += " WHERE ";
         query += "g." + DBConstants.UserGroupTable.GROUP_ID + " = s." + DBConstants.SharingTable.GROUP_ID + " AND ";
         query += "g." + DBConstants.UserGroupTable.DOMAIN_ID + " = s." + DBConstants.SharingTable.DOMAIN_ID + " AND ";

@@ -67,6 +67,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      */
     @Override
     public String createDomain(Domain domain) throws SharingRegistryException, TException {
+        domain.setDomainId(domain.name);
         if(domainRepository.get(domain.domainId) != null)
             throw new SharingRegistryException("There exist domain with given domain id");
 
@@ -76,7 +77,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
         //create the global permission for the domain
         PermissionType permissionType = new PermissionType();
-        permissionType.setPermissionTypeId(domain.domainId+":"+ OWNER_PERMISSION_NAME);
+        permissionType.setPermissionTypeId(OWNER_PERMISSION_NAME);
         permissionType.setDomainId(domain.domainId);
         permissionType.setName(OWNER_PERMISSION_NAME);
         permissionType.setDescription("GLOBAL permission to " + domain.domainId);
@@ -118,7 +119,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      * *
      */
     @Override
-    public String registerUser(User user) throws SharingRegistryException, TException {
+    public String createUser(User user) throws SharingRegistryException, TException {
         UserPK userPK = new UserPK();
         userPK.setUserId(user.getUserId());
         userPK.setDomainId(user.domainId);
@@ -137,7 +138,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
         userGroup.setOwnerId(user.userId);
         userGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
         userGroup.setGroupCardinality(GroupCardinality.SINGLE_USER);
-        createGroup(userGroup);
+        userGroupRepository.create(userGroup);
 
         return user.userId;
     }
@@ -203,10 +204,13 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
         userGroupPK.setDomainId(group.domainId);
         if(userGroupRepository.get(userGroupPK) != null)
             throw new SharingRegistryException("There exist group with given group id");
-
+        //Client created groups are always of type MULTI_USER
+        group.setGroupCardinality(GroupCardinality.MULTI_USER);
         group.setCreatedTime(System.currentTimeMillis());
         group.setUpdatedTime(System.currentTimeMillis());
         userGroupRepository.create(group);
+
+        addUsersToGroup(group.domainId, Arrays.asList(group.ownerId), group.groupId);
         return group.groupId;
     }
 
@@ -217,8 +221,14 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
         userGroupPK.setGroupId(group.groupId);
         userGroupPK.setDomainId(group.domainId);
         UserGroup oldGroup = userGroupRepository.get(userGroupPK);
+        //Client created groups are always of type MULTI_USER
+        group.setGroupCardinality(GroupCardinality.MULTI_USER);
         group.setCreatedTime(oldGroup.createdTime);
         group = getUpdatedObject(oldGroup, group);
+
+        if(!group.ownerId.equals(oldGroup.ownerId))
+            throw new SharingRegistryException("Group owner cannot be changed");
+
         userGroupRepository.update(group);
         return true;
     }
@@ -427,7 +437,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      * *
      */
     @Override
-    public String registerEntity(Entity entity) throws SharingRegistryException, TException {
+    public String createEntity(Entity entity) throws SharingRegistryException, TException {
         EntityPK entityPK = new EntityPK();
         entityPK.setDomainId(entity.domainId);
         entityPK.setEntityId(entity.entityId);
@@ -444,11 +454,14 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             user.setDomainId(entity.domainId);
             user.setUserName(user.userId.split("@")[0]);
 
-            registerUser(user);
+            createUser(user);
         }
-
         entity.setCreatedTime(System.currentTimeMillis());
         entity.setUpdatedTime(System.currentTimeMillis());
+
+        if(entity.originalEntityCreationTime==0){
+            entity.originalEntityCreationTime = entity.createdTime;
+        }
         entityRepository.create(entity);
 
         //Assigning global permission for the owner

@@ -40,6 +40,7 @@ public class EntityEntity {
     private String description;
     private ByteBuffer binaryData;
     private String fullText;
+    private Long originalEntityCreationTime;
     private Long createdTime;
     private Long updatedTime;
 
@@ -134,6 +135,16 @@ public class EntityEntity {
     }
 
     @Basic
+    @Column(name = "ORIGINAL_ENTITY_CREATION_TIME")
+    public Long getOriginalEntityCreationTime() {
+        return originalEntityCreationTime;
+    }
+
+    public void setOriginalEntityCreationTime(Long originalEntityCreationTime) {
+        this.originalEntityCreationTime = originalEntityCreationTime;
+    }
+
+    @Basic
     @Column(name = "CREATED_TIME")
     public Long getCreatedTime() {
         return createdTime;
@@ -167,6 +178,8 @@ public class EntityEntity {
         if (description != null ? !description.equals(that.description) : that.description != null) return false;
         if (binaryData.equals(that.binaryData)) return false;
         if (fullText != null ? !fullText.equals(that.fullText) : that.fullText != null) return false;
+        if (originalEntityCreationTime != null ? !originalEntityCreationTime.equals(that.originalEntityCreationTime)
+                : that.originalEntityCreationTime != null) return false;
         if (createdTime != null ? !createdTime.equals(that.createdTime) : that.createdTime != null) return false;
         if (updatedTime != null ? !updatedTime.equals(that.updatedTime) : that.updatedTime != null) return false;
         if (ownerId != null ? !ownerId.equals(that.ownerId) : that.ownerId != null) return false;
@@ -181,6 +194,7 @@ public class EntityEntity {
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (binaryData != null ? binaryData.hashCode() : 0);
         result = 31 * result + (fullText != null ? fullText.hashCode() : 0);
+        result = 31 * result + (originalEntityCreationTime != null ? originalEntityCreationTime.hashCode() : 0);
         result = 31 * result + (createdTime != null ? createdTime.hashCode() : 0);
         result = 31 * result + (updatedTime != null ? updatedTime.hashCode() : 0);
         return result;

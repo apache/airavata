@@ -77,11 +77,13 @@ considered as a group in it's own right for implementation ease</p>
 </td></tr>
 <tr><td><code>FULL_TEXT</code></td><td><code>2</code></td><td>
 </td></tr>
-<tr><td><code>PRRENT_ENTITY_ID</code></td><td><code>3</code></td><td>
+<tr><td><code>PARRENT_ENTITY_ID</code></td><td><code>3</code></td><td>
 </td></tr>
-<tr><td><code>CREATED_TIME</code></td><td><code>4</code></td><td>
+<tr><td><code>PERMISSION_TYPE_ID</code></td><td><code>4</code></td><td>
 </td></tr>
-<tr><td><code>UPDATED_TIME</code></td><td><code>5</code></td><td>
+<tr><td><code>CREATED_TIME</code></td><td><code>5</code></td><td>
+</td></tr>
+<tr><td><code>UPDATED_TIME</code></td><td><code>6</code></td><td>
 </td></tr>
 </table></div>
 <div class="definition"><h3 id="Enum_SearchCondition">Enumeration: SearchCondition</h3>
@@ -224,8 +226,9 @@ regarding the user.</p>
 <tr><td>7</td><td>description</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>8</td><td>binaryData</td><td><code>binary</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>9</td><td>fullText</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
-<tr><td>10</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
-<tr><td>11</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>10</td><td>originalEntityCreationTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>11</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>12</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 </table><br/><p>Entity object which is used to register an entity in the system.</p>
 <li><b>entityId</b> : Entity id provided by the client</li>
 <li><b>domainId</b> : Domain id</li>
@@ -236,8 +239,10 @@ regarding the user.</p>
 <li>description : Short description for the entity</li>
 <li>binaryData : Any information stored in binary format</li>
 <li>fullText : A string which will be considered for full text search</li>
-<li>createdTime : If client provides this value then the system will use it if not the current time will be set</li>
-<li>updatedTime : If client provides this value then the system will use it if not the current time will be set</li>
+<li><b>originalEntityCreationTime</b> : When registering old records what is the original entity creation time. If not
+set will be default to current time</li>
+<li>createdTime : Will be set by the system</li>
+<li>updatedTime : Will be set by the system</li>
 
 <br/></div><div class="definition"><h3 id="Struct_PermissionType">Struct: PermissionType</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>

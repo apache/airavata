@@ -158,7 +158,8 @@ enum EntitySearchField {
     NAME,
     DESCRIPTION,
     FULL_TEXT,
-    PRRENT_ENTITY_ID,
+    PARRENT_ENTITY_ID,
+    PERMISSION_TYPE_ID,
     CREATED_TIME,
     UPDATED_TIME
 }
@@ -202,8 +203,10 @@ struct SearchCriteria {
 * <li>description : Short description for the entity</li>
 * <li>binaryData : Any information stored in binary format</li>
 * <li>fullText : A string which will be considered for full text search</li>
-* <li>createdTime : If client provides this value then the system will use it if not the current time will be set</li>
-* <li>updatedTime : If client provides this value then the system will use it if not the current time will be set</li>
+* <li><b>originalEntityCreationTime</b> : When registering old records what is the original entity creation time. If not
+* set will be default to current time</li>
+* <li>createdTime : Will be set by the system</li>
+* <li>updatedTime : Will be set by the system</li>
 **/
 struct Entity {
     1: optional string entityId,
@@ -215,8 +218,9 @@ struct Entity {
     7: optional string description,
     8: optional binary binaryData,
     9: optional string fullText,
-    10: optional i64 createdTime,
-    11: optional i64 updatedTime
+    10: optional i64 originalEntityCreationTime,
+    11: optional i64 createdTime,
+    12: optional i64 updatedTime
 }
 
 /**
