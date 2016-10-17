@@ -54,6 +54,7 @@ public enum Script {
     RESERVATION("reservation"),
     EXPORTS("exports"),
     MODULE_COMMANDS("moduleCommands"),
+    SCRATCH_LOCATION("scratchLocation"),
     WORKING_DIR("workingDirectory"),
     PRE_JOB_COMMANDS("preJobCommands"),
     JOB_SUBMITTER_COMMAND("jobSubmitterCommand"),
@@ -66,6 +67,9 @@ public enum Script {
     INPUT_DIR("inputDir"),
     OUTPUT_DIR("outputDir"),
     USER_NAME("userName"),
+    GATEWAY_ID("gatewayId"),
+    GATEWAY_USER_NAME("gatewayUserName"),
+    APPLICATION_NAME("applicationName"),
     ;
 
     String name;
