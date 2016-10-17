@@ -80,7 +80,7 @@ public class SharingRegistryService {
      * 
      * @param user
      */
-    public String registerUser(org.apache.airavata.sharing.registry.models.User user) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+    public String createUser(org.apache.airavata.sharing.registry.models.User user) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
     /**
      * <p>API method to update existing user</p>
@@ -106,7 +106,7 @@ public class SharingRegistryService {
     public org.apache.airavata.sharing.registry.models.User getUser(String domainId, String userId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
     /**
-     * <p>API method to get a list of users in a specific domain Users will be reverse sorted based on the created time.</p>
+     * <p>API method to get a list of users in a specific domain.</p>
      * <li>domainId : Domain id</li>
      * <li>offset : Starting result number</li>
      * <li>limit : Number of max results to be sent</li>
@@ -148,7 +148,7 @@ public class SharingRegistryService {
     public org.apache.airavata.sharing.registry.models.UserGroup getGroup(String domainId, String groupId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
     /**
-     * <p>API method to get groups in a domainId. Results are reverse sorted based on created time.</p>
+     * <p>API method to get groups in a domainId.</p>
      * 
      * @param domainId
      * @param offset
@@ -175,7 +175,7 @@ public class SharingRegistryService {
     public boolean removeUsersFromGroup(String domainId, List<String> userIds, String groupId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
     /**
-     * <p>API method to get list of child users in a group. Only the direct members will be returned. Results are reverse time sorted based on creation time</p>
+     * <p>API method to get list of child users in a group. Only the direct members will be returned.</p>
      * 
      * @param domainId
      * @param groupId
@@ -185,7 +185,7 @@ public class SharingRegistryService {
     public List<org.apache.airavata.sharing.registry.models.User> getGroupMembersOfTypeUser(String domainId, String groupId, int offset, int limit) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
     /**
-     * <p>API method to get list of child groups in a group. Only the direct members will be returned. Results are reverse time sorted based on creation time</p>
+     * <p>API method to get list of child groups in a group. Only the direct members will be returned.</p>
      * 
      * @param domainId
      * @param groupId
@@ -243,7 +243,7 @@ public class SharingRegistryService {
     public org.apache.airavata.sharing.registry.models.EntityType getEntityType(String domainId, String entityTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
     /**
-     * <p>API method to get entity types in a domainId. Results are reverse time sorted based on creation time</p>
+     * <p>API method to get entity types in a domainId.</p>
      * 
      * @param domainId
      * @param offset
@@ -256,7 +256,7 @@ public class SharingRegistryService {
      * 
      * @param entity
      */
-    public String registerEntity(org.apache.airavata.sharing.registry.models.Entity entity) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+    public String createEntity(org.apache.airavata.sharing.registry.models.Entity entity) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
     /**
      * <p>API method to update entity</p>
@@ -342,7 +342,7 @@ public class SharingRegistryService {
     public org.apache.airavata.sharing.registry.models.PermissionType getPermissionType(String domainId, String permissionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
     /**
-     * <p>API method to get list of permission types in a given domainId. Results are reverse time sorted based on creation time</p>
+     * <p>API method to get list of permission types in a given domainId.</p>
      * 
      * @param domainId
      * @param offset
@@ -416,7 +416,7 @@ public class SharingRegistryService {
 
     public void getDomains(int offset, int limit, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void registerUser(org.apache.airavata.sharing.registry.models.User user, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void createUser(org.apache.airavata.sharing.registry.models.User user, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void updatedUser(org.apache.airavata.sharing.registry.models.User user, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -458,7 +458,7 @@ public class SharingRegistryService {
 
     public void getEntityTypes(String domainId, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void registerEntity(org.apache.airavata.sharing.registry.models.Entity entity, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void createEntity(org.apache.airavata.sharing.registry.models.Entity entity, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void updateEntity(org.apache.airavata.sharing.registry.models.Entity entity, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -645,30 +645,30 @@ public class SharingRegistryService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getDomains failed: unknown result");
     }
 
-    public String registerUser(org.apache.airavata.sharing.registry.models.User user) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public String createUser(org.apache.airavata.sharing.registry.models.User user) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
     {
-      send_registerUser(user);
-      return recv_registerUser();
+      send_createUser(user);
+      return recv_createUser();
     }
 
-    public void send_registerUser(org.apache.airavata.sharing.registry.models.User user) throws org.apache.thrift.TException
+    public void send_createUser(org.apache.airavata.sharing.registry.models.User user) throws org.apache.thrift.TException
     {
-      registerUser_args args = new registerUser_args();
+      createUser_args args = new createUser_args();
       args.setUser(user);
-      sendBase("registerUser", args);
+      sendBase("createUser", args);
     }
 
-    public String recv_registerUser() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public String recv_createUser() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
     {
-      registerUser_result result = new registerUser_result();
-      receiveBase(result, "registerUser");
+      createUser_result result = new createUser_result();
+      receiveBase(result, "createUser");
       if (result.isSetSuccess()) {
         return result.success;
       }
       if (result.sre != null) {
         throw result.sre;
       }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "registerUser failed: unknown result");
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "createUser failed: unknown result");
     }
 
     public boolean updatedUser(org.apache.airavata.sharing.registry.models.User user) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
@@ -1214,30 +1214,30 @@ public class SharingRegistryService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getEntityTypes failed: unknown result");
     }
 
-    public String registerEntity(org.apache.airavata.sharing.registry.models.Entity entity) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public String createEntity(org.apache.airavata.sharing.registry.models.Entity entity) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
     {
-      send_registerEntity(entity);
-      return recv_registerEntity();
+      send_createEntity(entity);
+      return recv_createEntity();
     }
 
-    public void send_registerEntity(org.apache.airavata.sharing.registry.models.Entity entity) throws org.apache.thrift.TException
+    public void send_createEntity(org.apache.airavata.sharing.registry.models.Entity entity) throws org.apache.thrift.TException
     {
-      registerEntity_args args = new registerEntity_args();
+      createEntity_args args = new createEntity_args();
       args.setEntity(entity);
-      sendBase("registerEntity", args);
+      sendBase("createEntity", args);
     }
 
-    public String recv_registerEntity() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public String recv_createEntity() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
     {
-      registerEntity_result result = new registerEntity_result();
-      receiveBase(result, "registerEntity");
+      createEntity_result result = new createEntity_result();
+      receiveBase(result, "createEntity");
       if (result.isSetSuccess()) {
         return result.success;
       }
       if (result.sre != null) {
         throw result.sre;
       }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "registerEntity failed: unknown result");
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "createEntity failed: unknown result");
     }
 
     public boolean updateEntity(org.apache.airavata.sharing.registry.models.Entity entity) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
@@ -1869,23 +1869,23 @@ public class SharingRegistryService {
       }
     }
 
-    public void registerUser(org.apache.airavata.sharing.registry.models.User user, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void createUser(org.apache.airavata.sharing.registry.models.User user, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      registerUser_call method_call = new registerUser_call(user, resultHandler, this, ___protocolFactory, ___transport);
+      createUser_call method_call = new createUser_call(user, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class registerUser_call extends org.apache.thrift.async.TAsyncMethodCall {
+    public static class createUser_call extends org.apache.thrift.async.TAsyncMethodCall {
       private org.apache.airavata.sharing.registry.models.User user;
-      public registerUser_call(org.apache.airavata.sharing.registry.models.User user, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public createUser_call(org.apache.airavata.sharing.registry.models.User user, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.user = user;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("registerUser", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        registerUser_args args = new registerUser_args();
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("createUser", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        createUser_args args = new createUser_args();
         args.setUser(user);
         args.write(prot);
         prot.writeMessageEnd();
@@ -1897,7 +1897,7 @@ public class SharingRegistryService {
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_registerUser();
+        return (new Client(prot)).recv_createUser();
       }
     }
 
@@ -2619,23 +2619,23 @@ public class SharingRegistryService {
       }
     }
 
-    public void registerEntity(org.apache.airavata.sharing.registry.models.Entity entity, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void createEntity(org.apache.airavata.sharing.registry.models.Entity entity, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      registerEntity_call method_call = new registerEntity_call(entity, resultHandler, this, ___protocolFactory, ___transport);
+      createEntity_call method_call = new createEntity_call(entity, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class registerEntity_call extends org.apache.thrift.async.TAsyncMethodCall {
+    public static class createEntity_call extends org.apache.thrift.async.TAsyncMethodCall {
       private org.apache.airavata.sharing.registry.models.Entity entity;
-      public registerEntity_call(org.apache.airavata.sharing.registry.models.Entity entity, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public createEntity_call(org.apache.airavata.sharing.registry.models.Entity entity, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.entity = entity;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("registerEntity", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        registerEntity_args args = new registerEntity_args();
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("createEntity", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        createEntity_args args = new createEntity_args();
         args.setEntity(entity);
         args.write(prot);
         prot.writeMessageEnd();
@@ -2647,7 +2647,7 @@ public class SharingRegistryService {
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_registerEntity();
+        return (new Client(prot)).recv_createEntity();
       }
     }
 
@@ -3277,7 +3277,7 @@ public class SharingRegistryService {
       processMap.put("deleteDomain", new deleteDomain());
       processMap.put("getDomain", new getDomain());
       processMap.put("getDomains", new getDomains());
-      processMap.put("registerUser", new registerUser());
+      processMap.put("createUser", new createUser());
       processMap.put("updatedUser", new updatedUser());
       processMap.put("deleteUser", new deleteUser());
       processMap.put("getUser", new getUser());
@@ -3298,7 +3298,7 @@ public class SharingRegistryService {
       processMap.put("deleteEntityType", new deleteEntityType());
       processMap.put("getEntityType", new getEntityType());
       processMap.put("getEntityTypes", new getEntityTypes());
-      processMap.put("registerEntity", new registerEntity());
+      processMap.put("createEntity", new createEntity());
       processMap.put("updateEntity", new updateEntity());
       processMap.put("deleteEntity", new deleteEntity());
       processMap.put("getEntity", new getEntity());
@@ -3440,23 +3440,23 @@ public class SharingRegistryService {
       }
     }
 
-    public static class registerUser<I extends Iface> extends org.apache.thrift.ProcessFunction<I, registerUser_args> {
-      public registerUser() {
-        super("registerUser");
+    public static class createUser<I extends Iface> extends org.apache.thrift.ProcessFunction<I, createUser_args> {
+      public createUser() {
+        super("createUser");
       }
 
-      public registerUser_args getEmptyArgsInstance() {
-        return new registerUser_args();
+      public createUser_args getEmptyArgsInstance() {
+        return new createUser_args();
       }
 
       protected boolean isOneway() {
         return false;
       }
 
-      public registerUser_result getResult(I iface, registerUser_args args) throws org.apache.thrift.TException {
-        registerUser_result result = new registerUser_result();
+      public createUser_result getResult(I iface, createUser_args args) throws org.apache.thrift.TException {
+        createUser_result result = new createUser_result();
         try {
-          result.success = iface.registerUser(args.user);
+          result.success = iface.createUser(args.user);
         } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
           result.sre = sre;
         }
@@ -3950,23 +3950,23 @@ public class SharingRegistryService {
       }
     }
 
-    public static class registerEntity<I extends Iface> extends org.apache.thrift.ProcessFunction<I, registerEntity_args> {
-      public registerEntity() {
-        super("registerEntity");
+    public static class createEntity<I extends Iface> extends org.apache.thrift.ProcessFunction<I, createEntity_args> {
+      public createEntity() {
+        super("createEntity");
       }
 
-      public registerEntity_args getEmptyArgsInstance() {
-        return new registerEntity_args();
+      public createEntity_args getEmptyArgsInstance() {
+        return new createEntity_args();
       }
 
       protected boolean isOneway() {
         return false;
       }
 
-      public registerEntity_result getResult(I iface, registerEntity_args args) throws org.apache.thrift.TException {
-        registerEntity_result result = new registerEntity_result();
+      public createEntity_result getResult(I iface, createEntity_args args) throws org.apache.thrift.TException {
+        createEntity_result result = new createEntity_result();
         try {
-          result.success = iface.registerEntity(args.entity);
+          result.success = iface.createEntity(args.entity);
         } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
           result.sre = sre;
         }
@@ -4385,7 +4385,7 @@ public class SharingRegistryService {
       processMap.put("deleteDomain", new deleteDomain());
       processMap.put("getDomain", new getDomain());
       processMap.put("getDomains", new getDomains());
-      processMap.put("registerUser", new registerUser());
+      processMap.put("createUser", new createUser());
       processMap.put("updatedUser", new updatedUser());
       processMap.put("deleteUser", new deleteUser());
       processMap.put("getUser", new getUser());
@@ -4406,7 +4406,7 @@ public class SharingRegistryService {
       processMap.put("deleteEntityType", new deleteEntityType());
       processMap.put("getEntityType", new getEntityType());
       processMap.put("getEntityTypes", new getEntityTypes());
-      processMap.put("registerEntity", new registerEntity());
+      processMap.put("createEntity", new createEntity());
       processMap.put("updateEntity", new updateEntity());
       processMap.put("deleteEntity", new deleteEntity());
       processMap.put("getEntity", new getEntity());
@@ -4713,20 +4713,20 @@ public class SharingRegistryService {
       }
     }
 
-    public static class registerUser<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, registerUser_args, String> {
-      public registerUser() {
-        super("registerUser");
+    public static class createUser<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, createUser_args, String> {
+      public createUser() {
+        super("createUser");
       }
 
-      public registerUser_args getEmptyArgsInstance() {
-        return new registerUser_args();
+      public createUser_args getEmptyArgsInstance() {
+        return new createUser_args();
       }
 
       public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
         return new AsyncMethodCallback<String>() { 
           public void onComplete(String o) {
-            registerUser_result result = new registerUser_result();
+            createUser_result result = new createUser_result();
             result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
@@ -4739,7 +4739,7 @@ public class SharingRegistryService {
           public void onError(Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
-            registerUser_result result = new registerUser_result();
+            createUser_result result = new createUser_result();
             if (e instanceof org.apache.airavata.sharing.registry.models.SharingRegistryException) {
                         result.sre = (org.apache.airavata.sharing.registry.models.SharingRegistryException) e;
                         result.setSreIsSet(true);
@@ -4765,8 +4765,8 @@ public class SharingRegistryService {
         return false;
       }
 
-      public void start(I iface, registerUser_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
-        iface.registerUser(args.user,resultHandler);
+      public void start(I iface, createUser_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
+        iface.createUser(args.user,resultHandler);
       }
     }
 
@@ -5914,20 +5914,20 @@ public class SharingRegistryService {
       }
     }
 
-    public static class registerEntity<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, registerEntity_args, String> {
-      public registerEntity() {
-        super("registerEntity");
+    public static class createEntity<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, createEntity_args, String> {
+      public createEntity() {
+        super("createEntity");
       }
 
-      public registerEntity_args getEmptyArgsInstance() {
-        return new registerEntity_args();
+      public createEntity_args getEmptyArgsInstance() {
+        return new createEntity_args();
       }
 
       public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
         return new AsyncMethodCallback<String>() { 
           public void onComplete(String o) {
-            registerEntity_result result = new registerEntity_result();
+            createEntity_result result = new createEntity_result();
             result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
@@ -5940,7 +5940,7 @@ public class SharingRegistryService {
           public void onError(Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
-            registerEntity_result result = new registerEntity_result();
+            createEntity_result result = new createEntity_result();
             if (e instanceof org.apache.airavata.sharing.registry.models.SharingRegistryException) {
                         result.sre = (org.apache.airavata.sharing.registry.models.SharingRegistryException) e;
                         result.setSreIsSet(true);
@@ -5966,8 +5966,8 @@ public class SharingRegistryService {
         return false;
       }
 
-      public void start(I iface, registerEntity_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
-        iface.registerEntity(args.entity,resultHandler);
+      public void start(I iface, createEntity_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
+        iface.createEntity(args.entity,resultHandler);
       }
     }
 
@@ -11168,15 +11168,15 @@ public class SharingRegistryService {
 
   }
 
-  public static class registerUser_args implements org.apache.thrift.TBase<registerUser_args, registerUser_args._Fields>, java.io.Serializable, Cloneable, Comparable<registerUser_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("registerUser_args");
+  public static class createUser_args implements org.apache.thrift.TBase<createUser_args, createUser_args._Fields>, java.io.Serializable, Cloneable, Comparable<createUser_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("createUser_args");
 
     private static final org.apache.thrift.protocol.TField USER_FIELD_DESC = new org.apache.thrift.protocol.TField("user", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new registerUser_argsStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new registerUser_argsTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new createUser_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new createUser_argsTupleSchemeFactory());
     }
 
     public org.apache.airavata.sharing.registry.models.User user; // required
@@ -11246,13 +11246,13 @@ public class SharingRegistryService {
       tmpMap.put(_Fields.USER, new org.apache.thrift.meta_data.FieldMetaData("user", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.sharing.registry.models.User.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(registerUser_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(createUser_args.class, metaDataMap);
     }
 
-    public registerUser_args() {
+    public createUser_args() {
     }
 
-    public registerUser_args(
+    public createUser_args(
       org.apache.airavata.sharing.registry.models.User user)
     {
       this();
@@ -11262,14 +11262,14 @@ public class SharingRegistryService {
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public registerUser_args(registerUser_args other) {
+    public createUser_args(createUser_args other) {
       if (other.isSetUser()) {
         this.user = new org.apache.airavata.sharing.registry.models.User(other.user);
       }
     }
 
-    public registerUser_args deepCopy() {
-      return new registerUser_args(this);
+    public createUser_args deepCopy() {
+      return new createUser_args(this);
     }
 
     @Override
@@ -11281,7 +11281,7 @@ public class SharingRegistryService {
       return this.user;
     }
 
-    public registerUser_args setUser(org.apache.airavata.sharing.registry.models.User user) {
+    public createUser_args setUser(org.apache.airavata.sharing.registry.models.User user) {
       this.user = user;
       return this;
     }
@@ -11340,12 +11340,12 @@ public class SharingRegistryService {
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof registerUser_args)
-        return this.equals((registerUser_args)that);
+      if (that instanceof createUser_args)
+        return this.equals((createUser_args)that);
       return false;
     }
 
-    public boolean equals(registerUser_args that) {
+    public boolean equals(createUser_args that) {
       if (that == null)
         return false;
 
@@ -11374,7 +11374,7 @@ public class SharingRegistryService {
     }
 
     @Override
-    public int compareTo(registerUser_args other) {
+    public int compareTo(createUser_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -11408,7 +11408,7 @@ public class SharingRegistryService {
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("registerUser_args(");
+      StringBuilder sb = new StringBuilder("createUser_args(");
       boolean first = true;
 
       sb.append("user:");
@@ -11449,15 +11449,15 @@ public class SharingRegistryService {
       }
     }
 
-    private static class registerUser_argsStandardSchemeFactory implements SchemeFactory {
-      public registerUser_argsStandardScheme getScheme() {
-        return new registerUser_argsStandardScheme();
+    private static class createUser_argsStandardSchemeFactory implements SchemeFactory {
+      public createUser_argsStandardScheme getScheme() {
+        return new createUser_argsStandardScheme();
       }
     }
 
-    private static class registerUser_argsStandardScheme extends StandardScheme<registerUser_args> {
+    private static class createUser_argsStandardScheme extends StandardScheme<createUser_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, registerUser_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, createUser_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -11487,7 +11487,7 @@ public class SharingRegistryService {
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, registerUser_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, createUser_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -11502,22 +11502,22 @@ public class SharingRegistryService {
 
     }
 
-    private static class registerUser_argsTupleSchemeFactory implements SchemeFactory {
-      public registerUser_argsTupleScheme getScheme() {
-        return new registerUser_argsTupleScheme();
+    private static class createUser_argsTupleSchemeFactory implements SchemeFactory {
+      public createUser_argsTupleScheme getScheme() {
+        return new createUser_argsTupleScheme();
       }
     }
 
-    private static class registerUser_argsTupleScheme extends TupleScheme<registerUser_args> {
+    private static class createUser_argsTupleScheme extends TupleScheme<createUser_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, registerUser_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, createUser_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         struct.user.write(oprot);
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, registerUser_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, createUser_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         struct.user = new org.apache.airavata.sharing.registry.models.User();
         struct.user.read(iprot);
@@ -11527,16 +11527,16 @@ public class SharingRegistryService {
 
   }
 
-  public static class registerUser_result implements org.apache.thrift.TBase<registerUser_result, registerUser_result._Fields>, java.io.Serializable, Cloneable, Comparable<registerUser_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("registerUser_result");
+  public static class createUser_result implements org.apache.thrift.TBase<createUser_result, createUser_result._Fields>, java.io.Serializable, Cloneable, Comparable<createUser_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("createUser_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
     private static final org.apache.thrift.protocol.TField SRE_FIELD_DESC = new org.apache.thrift.protocol.TField("sre", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new registerUser_resultStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new registerUser_resultTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new createUser_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new createUser_resultTupleSchemeFactory());
     }
 
     public String success; // required
@@ -11612,13 +11612,13 @@ public class SharingRegistryService {
       tmpMap.put(_Fields.SRE, new org.apache.thrift.meta_data.FieldMetaData("sre", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(registerUser_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(createUser_result.class, metaDataMap);
     }
 
-    public registerUser_result() {
+    public createUser_result() {
     }
 
-    public registerUser_result(
+    public createUser_result(
       String success,
       org.apache.airavata.sharing.registry.models.SharingRegistryException sre)
     {
@@ -11630,7 +11630,7 @@ public class SharingRegistryService {
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public registerUser_result(registerUser_result other) {
+    public createUser_result(createUser_result other) {
       if (other.isSetSuccess()) {
         this.success = other.success;
       }
@@ -11639,8 +11639,8 @@ public class SharingRegistryService {
       }
     }
 
-    public registerUser_result deepCopy() {
-      return new registerUser_result(this);
+    public createUser_result deepCopy() {
+      return new createUser_result(this);
     }
 
     @Override
@@ -11653,7 +11653,7 @@ public class SharingRegistryService {
       return this.success;
     }
 
-    public registerUser_result setSuccess(String success) {
+    public createUser_result setSuccess(String success) {
       this.success = success;
       return this;
     }
@@ -11677,7 +11677,7 @@ public class SharingRegistryService {
       return this.sre;
     }
 
-    public registerUser_result setSre(org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
+    public createUser_result setSre(org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
       this.sre = sre;
       return this;
     }
@@ -11749,12 +11749,12 @@ public class SharingRegistryService {
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof registerUser_result)
-        return this.equals((registerUser_result)that);
+      if (that instanceof createUser_result)
+        return this.equals((createUser_result)that);
       return false;
     }
 
-    public boolean equals(registerUser_result that) {
+    public boolean equals(createUser_result that) {
       if (that == null)
         return false;
 
@@ -11797,7 +11797,7 @@ public class SharingRegistryService {
     }
 
     @Override
-    public int compareTo(registerUser_result other) {
+    public int compareTo(createUser_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -11841,7 +11841,7 @@ public class SharingRegistryService {
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("registerUser_result(");
+      StringBuilder sb = new StringBuilder("createUser_result(");
       boolean first = true;
 
       sb.append("success:");
@@ -11884,15 +11884,15 @@ public class SharingRegistryService {
       }
     }
 
-    private static class registerUser_resultStandardSchemeFactory implements SchemeFactory {
-      public registerUser_resultStandardScheme getScheme() {
-        return new registerUser_resultStandardScheme();
+    private static class createUser_resultStandardSchemeFactory implements SchemeFactory {
+      public createUser_resultStandardScheme getScheme() {
+        return new createUser_resultStandardScheme();
       }
     }
 
-    private static class registerUser_resultStandardScheme extends StandardScheme<registerUser_result> {
+    private static class createUser_resultStandardScheme extends StandardScheme<createUser_result> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, registerUser_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, createUser_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -11930,7 +11930,7 @@ public class SharingRegistryService {
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, registerUser_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, createUser_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -11950,16 +11950,16 @@ public class SharingRegistryService {
 
     }
 
-    private static class registerUser_resultTupleSchemeFactory implements SchemeFactory {
-      public registerUser_resultTupleScheme getScheme() {
-        return new registerUser_resultTupleScheme();
+    private static class createUser_resultTupleSchemeFactory implements SchemeFactory {
+      public createUser_resultTupleScheme getScheme() {
+        return new createUser_resultTupleScheme();
       }
     }
 
-    private static class registerUser_resultTupleScheme extends TupleScheme<registerUser_result> {
+    private static class createUser_resultTupleScheme extends TupleScheme<createUser_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, registerUser_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, createUser_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetSuccess()) {
@@ -11978,7 +11978,7 @@ public class SharingRegistryService {
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, registerUser_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, createUser_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
@@ -31388,15 +31388,15 @@ public class SharingRegistryService {
 
   }
 
-  public static class registerEntity_args implements org.apache.thrift.TBase<registerEntity_args, registerEntity_args._Fields>, java.io.Serializable, Cloneable, Comparable<registerEntity_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("registerEntity_args");
+  public static class createEntity_args implements org.apache.thrift.TBase<createEntity_args, createEntity_args._Fields>, java.io.Serializable, Cloneable, Comparable<createEntity_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("createEntity_args");
 
     private static final org.apache.thrift.protocol.TField ENTITY_FIELD_DESC = new org.apache.thrift.protocol.TField("entity", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new registerEntity_argsStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new registerEntity_argsTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new createEntity_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new createEntity_argsTupleSchemeFactory());
     }
 
     public org.apache.airavata.sharing.registry.models.Entity entity; // required
@@ -31466,13 +31466,13 @@ public class SharingRegistryService {
       tmpMap.put(_Fields.ENTITY, new org.apache.thrift.meta_data.FieldMetaData("entity", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.sharing.registry.models.Entity.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(registerEntity_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(createEntity_args.class, metaDataMap);
     }
 
-    public registerEntity_args() {
+    public createEntity_args() {
     }
 
-    public registerEntity_args(
+    public createEntity_args(
       org.apache.airavata.sharing.registry.models.Entity entity)
     {
       this();
@@ -31482,14 +31482,14 @@ public class SharingRegistryService {
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public registerEntity_args(registerEntity_args other) {
+    public createEntity_args(createEntity_args other) {
       if (other.isSetEntity()) {
         this.entity = new org.apache.airavata.sharing.registry.models.Entity(other.entity);
       }
     }
 
-    public registerEntity_args deepCopy() {
-      return new registerEntity_args(this);
+    public createEntity_args deepCopy() {
+      return new createEntity_args(this);
     }
 
     @Override
@@ -31501,7 +31501,7 @@ public class SharingRegistryService {
       return this.entity;
     }
 
-    public registerEntity_args setEntity(org.apache.airavata.sharing.registry.models.Entity entity) {
+    public createEntity_args setEntity(org.apache.airavata.sharing.registry.models.Entity entity) {
       this.entity = entity;
       return this;
     }
@@ -31560,12 +31560,12 @@ public class SharingRegistryService {
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof registerEntity_args)
-        return this.equals((registerEntity_args)that);
+      if (that instanceof createEntity_args)
+        return this.equals((createEntity_args)that);
       return false;
     }
 
-    public boolean equals(registerEntity_args that) {
+    public boolean equals(createEntity_args that) {
       if (that == null)
         return false;
 
@@ -31594,7 +31594,7 @@ public class SharingRegistryService {
     }
 
     @Override
-    public int compareTo(registerEntity_args other) {
+    public int compareTo(createEntity_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -31628,7 +31628,7 @@ public class SharingRegistryService {
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("registerEntity_args(");
+      StringBuilder sb = new StringBuilder("createEntity_args(");
       boolean first = true;
 
       sb.append("entity:");
@@ -31669,15 +31669,15 @@ public class SharingRegistryService {
       }
     }
 
-    private static class registerEntity_argsStandardSchemeFactory implements SchemeFactory {
-      public registerEntity_argsStandardScheme getScheme() {
-        return new registerEntity_argsStandardScheme();
+    private static class createEntity_argsStandardSchemeFactory implements SchemeFactory {
+      public createEntity_argsStandardScheme getScheme() {
+        return new createEntity_argsStandardScheme();
       }
     }
 
-    private static class registerEntity_argsStandardScheme extends StandardScheme<registerEntity_args> {
+    private static class createEntity_argsStandardScheme extends StandardScheme<createEntity_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, registerEntity_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, createEntity_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -31707,7 +31707,7 @@ public class SharingRegistryService {
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, registerEntity_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, createEntity_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -31722,22 +31722,22 @@ public class SharingRegistryService {
 
     }
 
-    private static class registerEntity_argsTupleSchemeFactory implements SchemeFactory {
-      public registerEntity_argsTupleScheme getScheme() {
-        return new registerEntity_argsTupleScheme();
+    private static class createEntity_argsTupleSchemeFactory implements SchemeFactory {
+      public createEntity_argsTupleScheme getScheme() {
+        return new createEntity_argsTupleScheme();
       }
     }
 
-    private static class registerEntity_argsTupleScheme extends TupleScheme<registerEntity_args> {
+    private static class createEntity_argsTupleScheme extends TupleScheme<createEntity_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, registerEntity_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, createEntity_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         struct.entity.write(oprot);
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, registerEntity_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, createEntity_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         struct.entity = new org.apache.airavata.sharing.registry.models.Entity();
         struct.entity.read(iprot);
@@ -31747,16 +31747,16 @@ public class SharingRegistryService {
 
   }
 
-  public static class registerEntity_result implements org.apache.thrift.TBase<registerEntity_result, registerEntity_result._Fields>, java.io.Serializable, Cloneable, Comparable<registerEntity_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("registerEntity_result");
+  public static class createEntity_result implements org.apache.thrift.TBase<createEntity_result, createEntity_result._Fields>, java.io.Serializable, Cloneable, Comparable<createEntity_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("createEntity_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
     private static final org.apache.thrift.protocol.TField SRE_FIELD_DESC = new org.apache.thrift.protocol.TField("sre", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new registerEntity_resultStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new registerEntity_resultTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new createEntity_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new createEntity_resultTupleSchemeFactory());
     }
 
     public String success; // required
@@ -31832,13 +31832,13 @@ public class SharingRegistryService {
       tmpMap.put(_Fields.SRE, new org.apache.thrift.meta_data.FieldMetaData("sre", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(registerEntity_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(createEntity_result.class, metaDataMap);
     }
 
-    public registerEntity_result() {
+    public createEntity_result() {
     }
 
-    public registerEntity_result(
+    public createEntity_result(
       String success,
       org.apache.airavata.sharing.registry.models.SharingRegistryException sre)
     {
@@ -31850,7 +31850,7 @@ public class SharingRegistryService {
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public registerEntity_result(registerEntity_result other) {
+    public createEntity_result(createEntity_result other) {
       if (other.isSetSuccess()) {
         this.success = other.success;
       }
@@ -31859,8 +31859,8 @@ public class SharingRegistryService {
       }
     }
 
-    public registerEntity_result deepCopy() {
-      return new registerEntity_result(this);
+    public createEntity_result deepCopy() {
+      return new createEntity_result(this);
     }
 
     @Override
@@ -31873,7 +31873,7 @@ public class SharingRegistryService {
       return this.success;
     }
 
-    public registerEntity_result setSuccess(String success) {
+    public createEntity_result setSuccess(String success) {
       this.success = success;
       return this;
     }
@@ -31897,7 +31897,7 @@ public class SharingRegistryService {
       return this.sre;
     }
 
-    public registerEntity_result setSre(org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
+    public createEntity_result setSre(org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
       this.sre = sre;
       return this;
     }
@@ -31969,12 +31969,12 @@ public class SharingRegistryService {
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof registerEntity_result)
-        return this.equals((registerEntity_result)that);
+      if (that instanceof createEntity_result)
+        return this.equals((createEntity_result)that);
       return false;
     }
 
-    public boolean equals(registerEntity_result that) {
+    public boolean equals(createEntity_result that) {
       if (that == null)
         return false;
 
@@ -32017,7 +32017,7 @@ public class SharingRegistryService {
     }
 
     @Override
-    public int compareTo(registerEntity_result other) {
+    public int compareTo(createEntity_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -32061,7 +32061,7 @@ public class SharingRegistryService {
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("registerEntity_result(");
+      StringBuilder sb = new StringBuilder("createEntity_result(");
       boolean first = true;
 
       sb.append("success:");
@@ -32104,15 +32104,15 @@ public class SharingRegistryService {
       }
     }
 
-    private static class registerEntity_resultStandardSchemeFactory implements SchemeFactory {
-      public registerEntity_resultStandardScheme getScheme() {
-        return new registerEntity_resultStandardScheme();
+    private static class createEntity_resultStandardSchemeFactory implements SchemeFactory {
+      public createEntity_resultStandardScheme getScheme() {
+        return new createEntity_resultStandardScheme();
       }
     }
 
-    private static class registerEntity_resultStandardScheme extends StandardScheme<registerEntity_result> {
+    private static class createEntity_resultStandardScheme extends StandardScheme<createEntity_result> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, registerEntity_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, createEntity_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -32150,7 +32150,7 @@ public class SharingRegistryService {
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, registerEntity_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, createEntity_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -32170,16 +32170,16 @@ public class SharingRegistryService {
 
     }
 
-    private static class registerEntity_resultTupleSchemeFactory implements SchemeFactory {
-      public registerEntity_resultTupleScheme getScheme() {
-        return new registerEntity_resultTupleScheme();
+    private static class createEntity_resultTupleSchemeFactory implements SchemeFactory {
+      public createEntity_resultTupleScheme getScheme() {
+        return new createEntity_resultTupleScheme();
       }
     }
 
-    private static class registerEntity_resultTupleScheme extends TupleScheme<registerEntity_result> {
+    private static class createEntity_resultTupleScheme extends TupleScheme<createEntity_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, registerEntity_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, createEntity_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetSuccess()) {
@@ -32198,7 +32198,7 @@ public class SharingRegistryService {
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, registerEntity_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, createEntity_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {

@@ -50,7 +50,7 @@ public class SharingRepository extends AbstractRepository<Sharing, SharingEntity
     }
 
     public List<Sharing> getCascadingPermissionsForEntity(String domainId, String entityId) throws SharingRegistryException {
-        String query = "SELECT p from " + SharingEntity.class.getSimpleName() + " as p";
+        String query = "SELECT DISTINCT p from " + SharingEntity.class.getSimpleName() + " as p";
         query += " WHERE ";
         query += "p." + DBConstants.SharingTable.DOMAIN_ID + " = '" + domainId + "' AND ";
         query += "p." + DBConstants.SharingTable.ENTITY_ID + " = '" + entityId + "' AND ";

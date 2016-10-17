@@ -48,7 +48,7 @@ service SharingRegistryService {
     /**
      <p>API method to register a user in the system</p>
     */
-    string registerUser(1: required sharing_models.User user) throws (1: sharing_models.SharingRegistryException sre)
+    string createUser(1: required sharing_models.User user) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to update existing user</p>
     */
@@ -62,7 +62,7 @@ service SharingRegistryService {
     */
     sharing_models.User getUser(1: required string domainId, 2: required string userId) throws (1: sharing_models.SharingRegistryException sre)
     /**
-     <p>API method to get a list of users in a specific domain Users will be reverse sorted based on the created time.</p>
+     <p>API method to get a list of users in a specific domain.</p>
      <li>domainId : Domain id</li>
      <li>offset : Starting result number</li>
      <li>limit : Number of max results to be sent</li>
@@ -86,7 +86,7 @@ service SharingRegistryService {
     */
     sharing_models.UserGroup getGroup(1: required string domainId, 2: required string groupId) throws (1: sharing_models.SharingRegistryException sre)
     /**
-     <p>API method to get groups in a domainId. Results are reverse sorted based on created time.</p>
+     <p>API method to get groups in a domainId.</p>
     */
     list<sharing_models.UserGroup> getGroups(1: required string domainId, 2: required i32 offset, 3: required i32 limit)
 
@@ -99,11 +99,11 @@ service SharingRegistryService {
     */
     bool removeUsersFromGroup(1: required string domainId, 2: required list<string> userIds, 3: required string groupId) throws (1: sharing_models.SharingRegistryException sre);
     /**
-     <p>API method to get list of child users in a group. Only the direct members will be returned. Results are reverse time sorted based on creation time</p>
+     <p>API method to get list of child users in a group. Only the direct members will be returned.</p>
     */
     list<sharing_models.User> getGroupMembersOfTypeUser(1: string domainId, 2: required string groupId, 3: required i32 offset, 4: required i32 limit) throws (1: sharing_models.SharingRegistryException sre);
     /**
-     <p>API method to get list of child groups in a group. Only the direct members will be returned. Results are reverse time sorted based on creation time</p>
+     <p>API method to get list of child groups in a group. Only the direct members will be returned.</p>
     */
     list<sharing_models.UserGroup> getGroupMembersOfTypeGroup(1: required string domainId, 2: required string groupId, 3: required i32 offset, 4: required i32 limit) throws (1: sharing_models.SharingRegistryException sre);
     /**
@@ -132,7 +132,7 @@ service SharingRegistryService {
     */
     sharing_models.EntityType getEntityType(1: required string domainId, 2: required string entityTypeId) throws (1: sharing_models.SharingRegistryException sre)
     /**
-     <p>API method to get entity types in a domainId. Results are reverse time sorted based on creation time</p>
+     <p>API method to get entity types in a domainId.</p>
     */
     list<sharing_models.EntityType> getEntityTypes(1: required string domainId, 2: required i32 offset, 3: required i32 limit) throws (1: sharing_models.SharingRegistryException sre);
 
@@ -140,7 +140,7 @@ service SharingRegistryService {
     /**
      <p>API method to register new entity</p>
     */
-    string registerEntity(1: required sharing_models.Entity entity) throws (1: sharing_models.SharingRegistryException sre)
+    string createEntity(1: required sharing_models.Entity entity) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to update entity</p>
     */
@@ -183,7 +183,7 @@ service SharingRegistryService {
     */
     sharing_models.PermissionType getPermissionType(1: required string domainId, 2: required string permissionTypeId) throws (1: sharing_models.SharingRegistryException sre)
     /**
-     <p>API method to get list of permission types in a given domainId. Results are reverse time sorted based on creation time</p>
+     <p>API method to get list of permission types in a given domainId.</p>
     */
     list<sharing_models.PermissionType> getPermissionTypes(1: required string domainId, 2: required i32 offset, 3: required i32 limit) throws (1: sharing_models.SharingRegistryException sre)
 

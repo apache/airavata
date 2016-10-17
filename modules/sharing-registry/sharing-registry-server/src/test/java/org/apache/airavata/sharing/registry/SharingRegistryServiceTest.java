@@ -20,27 +20,36 @@
 */
 package org.apache.airavata.sharing.registry;
 
-import org.apache.airavata.sharing.registry.models.Domain;
-import org.apache.airavata.sharing.registry.models.User;
+import org.apache.airavata.sharing.registry.models.*;
+import org.apache.airavata.sharing.registry.server.ServerMain;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
-import org.junit.Ignore;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class SharingRegistryServiceTest {
     private final static Logger logger = LoggerFactory.getLogger(SharingRegistryServiceTest.class);
 
+    @BeforeClass
+    public static void setUp() throws InterruptedException {
+        ServerMain serverMain = new ServerMain();
+        serverMain.main(new String[]{});
+        Thread.sleep(1000*2);
+    }
+
 
     @Test
-    @Ignore("Test is only for demonstration purposes")
     public void test() throws TException {
-        String serverHost = "gw56.iu.xsede.org";
+        String serverHost = "localhost";
         int serverPort = 7878;
 
         TTransport transport = new TSocket(serverHost, serverPort);
@@ -56,29 +65,213 @@ public class SharingRegistryServiceTest {
 
         String domainId = sharingServiceClient.createDomain(domain);
 
-        User user = new User();
-        String userName = "test-user";
-        String userId1 =  userName + "@" + domainId;
+        User user1 = new User();
         //required
-        user.setUserId(userId1);
+        user1.setUserId("test-user-1");
         //required
-        user.setUserName(userName);
+        user1.setUserName("test-user-1");
         //required
-        user.setDomainId(domainId);
+        user1.setDomainId(domainId);
         //required
-        user.setFirstName("John");
+        user1.setFirstName("John");
         //required
-        user.setLastName("Doe");
+        user1.setLastName("Doe");
         //required
-        user.setEmail("john.doe@abc.com");
+        user1.setEmail("john.doe@abc.com");
         //optional - this should be bytes of the users image icon
-        byte[] icon = new byte[10];
-        user.setIcon(icon);
+        //byte[] icon1 = new byte[10];
+        //user1.setIcon(icon1);
 
-        //can be manually set. otherwise will be set to the current time by the system
-        user.setCreatedTime(System.currentTimeMillis());
-        user.setUpdatedTime(System.currentTimeMillis());
+        sharingServiceClient.createUser(user1);
 
-        sharingServiceClient.registerUser(user);
+        User user2 = new User();
+        //required
+        user2.setUserId("test-user-2");
+        //required
+        user2.setUserName("test-user-2");
+        //required
+        user2.setDomainId(domainId);
+        //required
+        user2.setFirstName("John");
+        //required
+        user2.setLastName("Doe");
+        //required
+        user2.setEmail("john.doe@abc.com");
+        //optional - this should be bytes of the users image icon
+        //byte[] icon2 = new byte[10];
+        //user2.setIcon(icon2);
+
+        sharingServiceClient.createUser(user2);
+
+        User user3 = new User();
+        //required
+        user3.setUserId("test-user-3");
+        //required
+        user3.setUserName("test-user-3");
+        //required
+        user3.setDomainId(domainId);
+        //required
+        user3.setFirstName("John");
+        //required
+        user3.setLastName("Doe");
+        //required
+        user3.setEmail("john.doe@abc.com");
+        //optional - this should be bytes of the users image icon
+        //byte[] icon3 = new byte[10];
+        //user3.setIcon(icon3);
+
+        sharingServiceClient.createUser(user3);
+
+        UserGroup userGroup1 = new UserGroup();
+        //required
+        userGroup1.setGroupId("test-group-1");
+        //required
+        userGroup1.setDomainId(domainId);
+        //required
+        userGroup1.setName("test-group-1");
+        //optional
+        userGroup1.setDescription("test group description");
+        //required
+        userGroup1.setOwnerId("test-user-1");
+        //required
+        userGroup1.setGroupType(GroupType.USER_LEVEL_GROUP);
+
+        sharingServiceClient.createGroup(userGroup1);
+
+        UserGroup userGroup2 = new UserGroup();
+        //required
+        userGroup2.setGroupId("test-group-2");
+        //required
+        userGroup2.setDomainId(domainId);
+        //required
+        userGroup2.setName("test-group-2");
+        //optional
+        userGroup2.setDescription("test group description");
+        //required
+        userGroup2.setOwnerId("test-user-2");
+        //required
+        userGroup2.setGroupType(GroupType.USER_LEVEL_GROUP);
+
+        sharingServiceClient.createGroup(userGroup2);
+
+        sharingServiceClient.addUsersToGroup(domainId, Arrays.asList("test-user-3"), "test-group-2");
+
+        sharingServiceClient.addChildGroupsToParentGroup(domainId, Arrays.asList("test-group-2"), "test-group-1");
+
+        PermissionType permissionType1 = new PermissionType();
+        //required
+        permissionType1.setPermissionTypeId("READ");
+        //required
+        permissionType1.setDomainId(domainId);
+        //required
+        permissionType1.setName("READ");
+        //optional
+        permissionType1.setDescription("READ description");
+        sharingServiceClient.createPermissionType(permissionType1);
+
+        PermissionType permissionType2 = new PermissionType();
+        permissionType2.setPermissionTypeId("WRITE");
+        permissionType2.setDomainId(domainId);
+        permissionType2.setName("WRITE");
+        permissionType2.setDescription("WRITE description");
+        sharingServiceClient.createPermissionType(permissionType2);
+
+        EntityType entityType1 = new EntityType();
+        //required
+        entityType1.setEntityTypeId("PROJECT");
+        //required
+        entityType1.setDomainId(domainId);
+        //required
+        entityType1.setName("PROJECT");
+        //optional
+        entityType1.setDescription("PROJECT entity type description");
+        sharingServiceClient.createEntityType(entityType1);
+
+        EntityType entityType2 = new EntityType();
+        entityType2.setEntityTypeId("EXPERIMENT");
+        entityType2.setDomainId(domainId);
+        entityType2.setName("EXPERIMENT");
+        entityType2.setDescription("EXPERIMENT entity type");
+        sharingServiceClient.createEntityType(entityType2);
+
+
+        //Creating entities
+        Entity entity1 = new Entity();
+        //required
+        entity1.setEntityId("test-project-1");
+        //required
+        entity1.setDomainId(domainId);
+        //required
+        entity1.setEntityTypeId("PROJECT");
+        //required
+        entity1.setOwnerId("test-user-1");
+        //required
+        entity1.setName("test-project-1");
+        //optional
+        entity1.setDescription("test project 1 description");
+        //optional
+        entity1.setFullText("test project 1 stampede gaussian seagrid");
+        //optional - If not set this will be default to current system time
+        entity1.setOriginalEntityCreationTime(System.currentTimeMillis());
+        sharingServiceClient.createEntity(entity1);
+
+        Entity entity2 = new Entity();
+        entity2.setEntityId("test-experiment-1");
+        entity2.setDomainId(domainId);
+        entity2.setEntityTypeId("EXPERIMENT");
+        entity2.setOwnerId("test-user-1");
+        entity2.setName("test-experiment-1");
+        entity2.setDescription("test experiment 1 description");
+        entity2.setParentEntityId("test-project-1");
+        entity2.setFullText("test experiment 1 benzene");
+        sharingServiceClient.createEntity(entity2);
+
+        Entity entity3 = new Entity();
+        entity3.setEntityId("test-experiment-2");
+        entity3.setDomainId(domainId);
+        entity3.setEntityTypeId("EXPERIMENT");
+        entity3.setOwnerId("test-user-1");
+        entity3.setName("test-experiment-2");
+        entity3.setDescription("test experiment 2 description");
+        entity3.setParentEntityId("test-project-1");
+        entity3.setFullText("test experiment 1 3-methyl 1-butanol");
+        sharingServiceClient.createEntity(entity3);
+
+        sharingServiceClient.shareEntityWithUsers(domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE", true);
+        sharingServiceClient.shareEntityWithGroups(domainId, "test-experiment-2", Arrays.asList("test-group-2"), "READ", true);
+
+        //true
+        System.out.println(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-project-1", "WRITE"));
+        //true
+        System.out.println(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-1", "WRITE"));
+        //true
+        System.out.println(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-2", "WRITE"));
+
+        //false
+        System.out.println(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-1", "READ"));
+        //true
+        System.out.println(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-2", "READ"));
+
+        //false
+        System.out.println(sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-project-1", "READ"));
+        //true
+        System.out.println(sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "READ"));
+        //false
+        System.out.println(sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "WRITE"));
+
+        ArrayList<SearchCriteria> filters = new ArrayList<>();
+        SearchCriteria searchCriteria = new SearchCriteria();
+        searchCriteria.setSearchCondition(SearchCondition.LIKE);
+        searchCriteria.setValue("experiment");
+        searchCriteria.setSearchField(EntitySearchField.NAME);
+        filters.add(searchCriteria);
+
+        searchCriteria = new SearchCriteria();
+        searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+        searchCriteria.setValue("READ");
+        searchCriteria.setSearchField(EntitySearchField.PERMISSION_TYPE_ID);
+        filters.add(searchCriteria);
+
+        System.out.println(sharingServiceClient.searchEntities(domainId, "test-user-2", "EXPERIMENT", filters, 0, -1).size());
     }
 }

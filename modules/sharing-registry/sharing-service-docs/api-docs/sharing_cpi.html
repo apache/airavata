@@ -14,9 +14,11 @@
 <li><a href="#Fn_SharingRegistryService_addChildGroupsToParentGroup">addChildGroupsToParentGroup</a></li>
 <li><a href="#Fn_SharingRegistryService_addUsersToGroup">addUsersToGroup</a></li>
 <li><a href="#Fn_SharingRegistryService_createDomain">createDomain</a></li>
+<li><a href="#Fn_SharingRegistryService_createEntity">createEntity</a></li>
 <li><a href="#Fn_SharingRegistryService_createEntityType">createEntityType</a></li>
 <li><a href="#Fn_SharingRegistryService_createGroup">createGroup</a></li>
 <li><a href="#Fn_SharingRegistryService_createPermissionType">createPermissionType</a></li>
+<li><a href="#Fn_SharingRegistryService_createUser">createUser</a></li>
 <li><a href="#Fn_SharingRegistryService_deleteDomain">deleteDomain</a></li>
 <li><a href="#Fn_SharingRegistryService_deleteEntity">deleteEntity</a></li>
 <li><a href="#Fn_SharingRegistryService_deleteEntityType">deleteEntityType</a></li>
@@ -38,8 +40,6 @@
 <li><a href="#Fn_SharingRegistryService_getPermissionTypes">getPermissionTypes</a></li>
 <li><a href="#Fn_SharingRegistryService_getUser">getUser</a></li>
 <li><a href="#Fn_SharingRegistryService_getUsers">getUsers</a></li>
-<li><a href="#Fn_SharingRegistryService_registerEntity">registerEntity</a></li>
-<li><a href="#Fn_SharingRegistryService_registerUser">registerUser</a></li>
 <li><a href="#Fn_SharingRegistryService_removeChildGroupFromParentGroup">removeChildGroupFromParentGroup</a></li>
 <li><a href="#Fn_SharingRegistryService_removeUsersFromGroup">removeUsersFromGroup</a></li>
 <li><a href="#Fn_SharingRegistryService_revokeEntitySharingFromGroups">revokeEntitySharingFromGroups</a></li>
@@ -82,8 +82,8 @@
                                        <code>i32</code> limit)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to get all domain.</p>
-<br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_registerUser">Function: SharingRegistryService.registerUser</h4>
-<pre><code>string</code> registerUser(<code><a href="sharing_models.html#Struct_User">sharing_models.User</a></code> user)
+<br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_createUser">Function: SharingRegistryService.createUser</h4>
+<pre><code>string</code> createUser(<code><a href="sharing_models.html#Struct_User">sharing_models.User</a></code> user)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to register a user in the system</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_updatedUser">Function: SharingRegistryService.updatedUser</h4>
@@ -105,7 +105,7 @@
                                    <code>i32</code> offset,
                                    <code>i32</code> limit)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
-</pre><p>API method to get a list of users in a specific domain Users will be reverse sorted based on the created time.</p>
+</pre><p>API method to get a list of users in a specific domain.</p>
 <li>domainId : Domain id</li>
 <li>offset : Starting result number</li>
 <li>limit : Number of max results to be sent</li>
@@ -131,7 +131,7 @@
 <pre><code>list&lt;<code><a href="sharing_models.html#Struct_UserGroup">sharing_models.UserGroup</a></code>&gt;</code> getGroups(<code>string</code> domainId,
                                          <code>i32</code> offset,
                                          <code>i32</code> limit)
-</pre><p>API method to get groups in a domainId. Results are reverse sorted based on created time.</p>
+</pre><p>API method to get groups in a domainId.</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_addUsersToGroup">Function: SharingRegistryService.addUsersToGroup</h4>
 <pre><code>bool</code> addUsersToGroup(<code>string</code> domainId,
                      <code>list&lt;<code>string</code>&gt;</code> userIds,
@@ -150,14 +150,14 @@
                                                     <code>i32</code> offset,
                                                     <code>i32</code> limit)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
-</pre><p>API method to get list of child users in a group. Only the direct members will be returned. Results are reverse time sorted based on creation time</p>
+</pre><p>API method to get list of child users in a group. Only the direct members will be returned.</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getGroupMembersOfTypeGroup">Function: SharingRegistryService.getGroupMembersOfTypeGroup</h4>
 <pre><code>list&lt;<code><a href="sharing_models.html#Struct_UserGroup">sharing_models.UserGroup</a></code>&gt;</code> getGroupMembersOfTypeGroup(<code>string</code> domainId,
                                                           <code>string</code> groupId,
                                                           <code>i32</code> offset,
                                                           <code>i32</code> limit)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
-</pre><p>API method to get list of child groups in a group. Only the direct members will be returned. Results are reverse time sorted based on creation time</p>
+</pre><p>API method to get list of child groups in a group. Only the direct members will be returned.</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_addChildGroupsToParentGroup">Function: SharingRegistryService.addChildGroupsToParentGroup</h4>
 <pre><code>bool</code> addChildGroupsToParentGroup(<code>string</code> domainId,
                                  <code>list&lt;<code>string</code>&gt;</code> childIds,
@@ -193,9 +193,9 @@
                                                <code>i32</code> offset,
                                                <code>i32</code> limit)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
-</pre><p>API method to get entity types in a domainId. Results are reverse time sorted based on creation time</p>
-<br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_registerEntity">Function: SharingRegistryService.registerEntity</h4>
-<pre><code>string</code> registerEntity(<code><a href="sharing_models.html#Struct_Entity">sharing_models.Entity</a></code> entity)
+</pre><p>API method to get entity types in a domainId.</p>
+<br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_createEntity">Function: SharingRegistryService.createEntity</h4>
+<pre><code>string</code> createEntity(<code><a href="sharing_models.html#Struct_Entity">sharing_models.Entity</a></code> entity)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to register new entity</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_updateEntity">Function: SharingRegistryService.updateEntity</h4>
@@ -256,7 +256,7 @@
                                                        <code>i32</code> offset,
                                                        <code>i32</code> limit)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
-</pre><p>API method to get list of permission types in a given domainId. Results are reverse time sorted based on creation time</p>
+</pre><p>API method to get list of permission types in a given domainId.</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_shareEntityWithUsers">Function: SharingRegistryService.shareEntityWithUsers</h4>
 <pre><code>bool</code> shareEntityWithUsers(<code>string</code> domainId,
                           <code>string</code> entityId,

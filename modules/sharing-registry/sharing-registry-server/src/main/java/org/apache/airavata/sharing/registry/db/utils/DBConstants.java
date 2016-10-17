@@ -90,6 +90,7 @@ public class DBConstants {
         public static final String CREATED_TIME = "createdTime";
         public static final String UPDATED_TIME = "updatedTime";
         public static final String DOMAIN_ID = "domainId";
+        public static final String ORIGINAL_ENTITY_CREATION_TIME = "originalEntityCreationTime";
     }
 
     public static class SharingTable {

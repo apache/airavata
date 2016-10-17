@@ -41,7 +41,7 @@ public class UserRepository extends AbstractRepository<User, UserEntity, UserPK>
 
 
     public List<User> getAccessibleUsers(String domainId, String entityId, String permissionTypeId) throws SharingRegistryException {
-        String query = "SELECT u from " + UserEntity.class.getSimpleName() + " u, " + SharingEntity.class.getSimpleName() + " s";
+        String query = "SELECT DISTINCT u from " + UserEntity.class.getSimpleName() + " u, " + SharingEntity.class.getSimpleName() + " s";
         query += " WHERE ";
         query += "u." + DBConstants.UserTable.USER_ID + " = s." + DBConstants.SharingTable.GROUP_ID + " AND ";
         query += "u." + DBConstants.UserTable.DOMAIN_ID + " = s." + DBConstants.SharingTable.DOMAIN_ID + " AND ";
