@@ -21,6 +21,7 @@ package org.apache.airavata.gfac.core;
 
 import groovy.lang.Writable;
 import groovy.text.GStringTemplateEngine;
+import groovy.text.SimpleTemplateEngine;
 import groovy.text.TemplateEngine;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.*;
@@ -64,9 +65,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.xml.transform.*;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.*;
 import java.io.*;
 import java.net.InetAddress;
@@ -416,8 +414,11 @@ public class GFacUtils {
     public static String getZKGfacServersParentPath() {
         return ZKPaths.makePath(ZkConstants.ZOOKEEPER_SERVERS_NODE, ZkConstants.ZOOKEEPER_GFAC_SERVER_NODE);
     }
-
-    public static GroovyMap creatGroovyMap(ProcessContext processContext, TaskContext taskContext)
+    public static GroovyMap crateGroovyMap(ProcessContext processContext)
+            throws ApplicationSettingsException, AppCatalogException, GFacException {
+        return createGroovyMap(processContext, null);
+    }
+    public static GroovyMap createGroovyMap(ProcessContext processContext, TaskContext taskContext)
             throws GFacException, AppCatalogException, ApplicationSettingsException {
 
         GroovyMap groovyMap = new GroovyMap();
@@ -430,6 +431,10 @@ public class GFacUtils {
         groovyMap.add(Script.EXECUTABLE_PATH, processContext.getApplicationDeploymentDescription().getExecutablePath());
         groovyMap.add(Script.STANDARD_OUT_FILE, processContext.getStdoutLocation());
         groovyMap.add(Script.STANDARD_ERROR_FILE, processContext.getStderrLocation());
+        groovyMap.add(Script.SCRATCH_LOCATION, processContext.getScratchLocation());
+        groovyMap.add(Script.GATEWAY_ID, processContext.getGatewayId());
+        groovyMap.add(Script.GATEWAY_USER_NAME, processContext.getProcessModel().getUserName());
+        groovyMap.add(Script.APPLICATION_NAME, processContext.getApplicationInterfaceDescription().getApplicationName());
 
         ComputeResourcePreference crp = getComputeResourcePreference(processContext);
         if (isValid(crp.getAllocationProjectNumber())) {
@@ -448,14 +453,16 @@ public class GFacUtils {
         groovyMap.add(Script.USER_NAME, processContext.getJobSubmissionRemoteCluster().getServerInfo().getUserName());
         groovyMap.add(Script.SHELL_NAME, "/bin/bash");
         // get walltime
-        try {
-            JobSubmissionTaskModel jobSubmissionTaskModel = ((JobSubmissionTaskModel) taskContext.getSubTaskModel());
-            if (jobSubmissionTaskModel.getWallTime() > 0) {
-                groovyMap.add(Script.MAX_WALL_TIME,
-                        GFacUtils.maxWallTimeCalculator(jobSubmissionTaskModel.getWallTime()));
+        if (taskContext != null) {
+            try {
+                JobSubmissionTaskModel jobSubmissionTaskModel = ((JobSubmissionTaskModel) taskContext.getSubTaskModel());
+                if (jobSubmissionTaskModel.getWallTime() > 0) {
+                    groovyMap.add(Script.MAX_WALL_TIME,
+                            GFacUtils.maxWallTimeCalculator(jobSubmissionTaskModel.getWallTime()));
+                }
+            } catch (TException e) {
+                log.error("Error while getting job submission sub task model", e);
             }
-        } catch (TException e) {
-            log.error("Error while getting job submissiont sub task model", e);
         }
 
         // NOTE: Give precedence to data comes with experiment
@@ -522,7 +529,7 @@ public class GFacUtils {
         if (preJobCommands != null) {
             List<String> preJobCmdCollect = preJobCommands.stream()
                     .sorted((e1, e2) -> e1.getCommandOrder() - e2.getCommandOrder())
-                    .map(map -> map.getCommand())
+                    .map(map -> parseCommands(map.getCommand(), groovyMap))
                     .collect(Collectors.toList());
             groovyMap.add(Script.PRE_JOB_COMMANDS, preJobCmdCollect);
         }
@@ -531,7 +538,7 @@ public class GFacUtils {
         if (postJobCommands != null) {
             List<String> postJobCmdCollect = postJobCommands.stream()
                     .sorted((e1, e2) -> e1.getCommandOrder() - e2.getCommandOrder())
-                    .map(map -> map.getCommand())
+                    .map(map -> parseCommands(map.getCommand(), groovyMap))
                     .collect(Collectors.toList());
             groovyMap.add(Script.POST_JOB_COMMANDS, postJobCmdCollect);
         }
@@ -703,11 +710,14 @@ public class GFacUtils {
         return i;
     }
 
-    private static String parseCommand(String value, ProcessContext context) {
-        String parsedValue = value.replaceAll("\\$workingDir", context.getWorkingDir());
-        parsedValue = parsedValue.replaceAll("\\$inputDir", context.getInputDir());
-        parsedValue = parsedValue.replaceAll("\\$outputDir", context.getOutputDir());
-        return parsedValue;
+    static String parseCommands(String value, GroovyMap bindMap) {
+        TemplateEngine templateEngine = new GStringTemplateEngine();
+        try {
+            return templateEngine.createTemplate(value).make(bindMap).toString();
+        } catch (ClassNotFoundException | IOException e) {
+            throw new IllegalArgumentException("Error while parsing command " + value
+                    + " , Invalid command or incomplete bind map");
+        }
     }
 
     public static ResourceJobManager getResourceJobManager(ProcessContext processContext) {

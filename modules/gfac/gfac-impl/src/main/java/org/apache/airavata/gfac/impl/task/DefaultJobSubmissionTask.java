@@ -72,7 +72,7 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 		    JobModel jobModel = processContext.getJobModel();
 		    jobModel.setTaskId(taskContext.getTaskId());
 		    RemoteCluster remoteCluster = processContext.getJobSubmissionRemoteCluster();
-		    GroovyMap groovyMap = GFacUtils.creatGroovyMap(processContext,taskContext);
+			GroovyMap groovyMap = GFacUtils.createGroovyMap(processContext, taskContext);
 			jobModel.setJobName(groovyMap.get(Script.JOB_NAME).toString());
 			ResourceJobManager resourceJobManager = GFacUtils.getResourceJobManager(processContext);
 		    JobManagerConfiguration jConfig = null;
