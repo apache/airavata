@@ -293,9 +293,9 @@ public class SharingRegistryServiceTest {
 
         ArrayList<SearchCriteria> filters = new ArrayList<>();
         SearchCriteria searchCriteria = new SearchCriteria();
-        searchCriteria.setSearchCondition(SearchCondition.LIKE);
+        searchCriteria.setSearchCondition(SearchCondition.FULL_TEXT);
         searchCriteria.setValue("experiment");
-        searchCriteria.setSearchField(EntitySearchField.NAME);
+        searchCriteria.setSearchField(EntitySearchField.FULL_TEXT);
         filters.add(searchCriteria);
 
         searchCriteria = new SearchCriteria();

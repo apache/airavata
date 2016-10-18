@@ -67,7 +67,14 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
             }else if(searchCriteria.getSearchField().equals(EntitySearchField.PERMISSION_TYPE_ID)){
                 query += "S." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " = '" + searchCriteria.getValue() + "' AND ";
             }else if(searchCriteria.getSearchField().equals(EntitySearchField.FULL_TEXT)){
-                query += "E." + DBConstants.EntityTable.FULL_TEXT + " LIKE '%" + searchCriteria.getValue() + "%' AND ";
+                //FULL TEXT Search with Query Expansion
+                String queryTerms = "";
+                for(String word : searchCriteria.getValue().trim().replaceAll(" +", " ").split(" ")){
+                    queryTerms += queryTerms + " +" + word;
+                }
+                queryTerms = queryTerms.trim();
+                query += "MATCH(E." + DBConstants.EntityTable.FULL_TEXT + ") AGAINST ('" + queryTerms
+                        + "' IN BOOLEAN MODE WITH QUERY EXPANSION) AND ";
             }else if(searchCriteria.getSearchField().equals(EntitySearchField.PARRENT_ENTITY_ID)){
                 query += "E." + DBConstants.EntityTable.PARENT_ENTITY_ID + " = '" + searchCriteria.getValue() + "' AND ";
             }else if(searchCriteria.getSearchField().equals(EntitySearchField.CREATED_TIME)){
