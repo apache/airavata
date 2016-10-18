@@ -151,6 +151,7 @@ struct EntityType {
 * <li>DESCRIPTION : Description of the entity</li>
 * <li>FULL_TEXT : Full text field of the entity</li>
 * <li>PARENT_ENTITY_ID : Parent entity id of the entity</li>
+* <li>OWNER_ID : Owner of the entity</li>
 * <li>CREATED_TIME : Created time of the entity</li>
 * <li>UPDATED_TIME : Updated time of the entity</li>
 **/
@@ -159,6 +160,7 @@ enum EntitySearchField {
     DESCRIPTION,
     FULL_TEXT,
     PARRENT_ENTITY_ID,
+    OWNER_ID,
     PERMISSION_TYPE_ID,
     CREATED_TIME,
     UPDATED_TIME

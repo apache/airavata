@@ -85,6 +85,8 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
                 }
             }else if(searchCriteria.getSearchField().equals(EntitySearchField.PARRENT_ENTITY_ID)){
                 query += "E.PARENT_ENTITY_ID = '" + searchCriteria.getValue() + "' AND ";
+            }else if(searchCriteria.getSearchField().equals(EntitySearchField.OWNER_ID)){
+                query += "E.OWNER_ID = '" + searchCriteria.getValue() + "' AND ";
             }else if(searchCriteria.getSearchField().equals(EntitySearchField.CREATED_TIME)){
                 if(searchCriteria.getSearchCondition().equals(SearchCondition.GTE)){
                     query += "E.CREATED_TIME >= " + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
