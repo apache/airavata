@@ -28,6 +28,7 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -176,6 +177,13 @@ public class SharingRegistryServiceTest {
         permissionType2.setDescription("WRITE description");
         sharingServiceClient.createPermissionType(permissionType2);
 
+        PermissionType permissionType3 = new PermissionType();
+        permissionType3.setPermissionTypeId("CLONE");
+        permissionType3.setDomainId(domainId);
+        permissionType3.setName("CLONE");
+        permissionType3.setDescription("CLONE description");
+        sharingServiceClient.createPermissionType(permissionType3);
+
         EntityType entityType1 = new EntityType();
         //required
         entityType1.setEntityTypeId("PROJECT");
@@ -193,6 +201,13 @@ public class SharingRegistryServiceTest {
         entityType2.setName("EXPERIMENT");
         entityType2.setDescription("EXPERIMENT entity type");
         sharingServiceClient.createEntityType(entityType2);
+
+        EntityType entityType3 = new EntityType();
+        entityType3.setEntityTypeId("FILE");
+        entityType3.setDomainId(domainId);
+        entityType3.setName("FILE");
+        entityType3.setDescription("FILE entity type");
+        sharingServiceClient.createEntityType(entityType3);
 
 
         //Creating entities
@@ -237,27 +252,44 @@ public class SharingRegistryServiceTest {
         entity3.setFullText("test experiment 1 3-methyl 1-butanol");
         sharingServiceClient.createEntity(entity3);
 
+        Entity entity4 = new Entity();
+        entity4.setEntityId("test-file-1");
+        entity4.setDomainId(domainId);
+        entity4.setEntityTypeId("FILE");
+        entity4.setOwnerId("test-user-1");
+        entity4.setName("test-file-1");
+        entity4.setDescription("test file 1 description");
+        entity4.setParentEntityId("test-experiment-2");
+        entity4.setFullText("test input file 1 for experiment 2");
+        sharingServiceClient.createEntity(entity4);
+
         sharingServiceClient.shareEntityWithUsers(domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE", true);
         sharingServiceClient.shareEntityWithGroups(domainId, "test-experiment-2", Arrays.asList("test-group-2"), "READ", true);
+        sharingServiceClient.shareEntityWithGroups(domainId, "test-experiment-2", Arrays.asList("test-group-2"), "CLONE", false);
 
         //true
-        System.out.println(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-project-1", "WRITE"));
+        Assert.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-project-1", "WRITE"));
         //true
-        System.out.println(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-1", "WRITE"));
+        Assert.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-1", "WRITE"));
         //true
-        System.out.println(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-2", "WRITE"));
+        Assert.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-2", "WRITE"));
 
         //false
-        System.out.println(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-1", "READ"));
+        Assert.assertFalse(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-1", "READ"));
         //true
-        System.out.println(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-2", "READ"));
+        Assert.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-2", "READ"));
 
         //false
-        System.out.println(sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-project-1", "READ"));
+        Assert.assertFalse(sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-project-1", "READ"));
         //true
-        System.out.println(sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "READ"));
+        Assert.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "READ"));
         //false
-        System.out.println(sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "WRITE"));
+        Assert.assertFalse(sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "WRITE"));
+
+        //true
+        Assert.assertTrue((sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "CLONE")));
+        //false
+        Assert.assertFalse((sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-file-1", "CLONE")));
 
         ArrayList<SearchCriteria> filters = new ArrayList<>();
         SearchCriteria searchCriteria = new SearchCriteria();
@@ -272,6 +304,6 @@ public class SharingRegistryServiceTest {
         searchCriteria.setSearchField(EntitySearchField.PERMISSION_TYPE_ID);
         filters.add(searchCriteria);
 
-        System.out.println(sharingServiceClient.searchEntities(domainId, "test-user-2", "EXPERIMENT", filters, 0, -1).size());
+        Assert.assertTrue(sharingServiceClient.searchEntities(domainId, "test-user-2", "EXPERIMENT", filters, 0, -1).size()==1);
     }
 }

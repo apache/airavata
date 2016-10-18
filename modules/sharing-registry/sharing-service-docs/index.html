@@ -185,6 +185,13 @@
                 permissionType2.setName("WRITE");
                 permissionType2.setDescription("WRITE description");
                 sharingServiceClient.createPermissionType(permissionType2);
+
+                PermissionType permissionType3 = new PermissionType();
+                permissionType3.setPermissionTypeId("CLONE");
+                permissionType3.setDomainId(domainId);
+                permissionType3.setName("CLONE");
+                permissionType3.setDescription("CLONE description");
+                sharingServiceClient.createPermissionType(permissionType3);
             </pre>
         </div>
 
@@ -208,6 +215,13 @@
                 entityType2.setName("EXPERIMENT");
                 entityType2.setDescription("EXPERIMENT entity type");
                 sharingServiceClient.createEntityType(entityType2);
+
+                EntityType entityType3 = new EntityType();
+                entityType3.setEntityTypeId("FILE");
+                entityType3.setDomainId(domainId);
+                entityType3.setName("FILE");
+                entityType3.setDescription("FILE entity type");
+                sharingServiceClient.createEntityType(entityType3);
             </pre>
         </div>
 
@@ -253,21 +267,39 @@
                 entity3.setParentEntityId("test-project-1");
                 entity3.setFullText("test experiment 1 3-methyl 1-butanol");
                 sharingServiceClient.createEntity(entity3);
+
+                Entity entity4 = new Entity();
+                entity4.setEntityId("test-file-1");
+                entity4.setDomainId(domainId);
+                entity4.setEntityTypeId("FILE");
+                entity4.setOwnerId("test-user-1");
+                entity4.setName("test-file-1");
+                entity4.setDescription("test file 1 description");
+                entity4.setParentEntityId("test-experiment-2");
+                entity4.setFullText("test input file 1 for experiment 2");
+                sharingServiceClient.createEntity(entity4);
             </pre>
         </div>
 
         <div class="definition" id="sharing-entities">
         <h4>9. Share Entities with Users and Groups</h4>
             <pre>
+                //shared with cascading permissions
                 sharingServiceClient.shareEntityWithUsers(domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE", true);
                 sharingServiceClient.shareEntityWithGroups(domainId, "test-experiment-2", Arrays.asList("test-group-2"), "READ", true);
 
-                /**********************************************************************/
-                /*          test-project-1 (OWNER:test-user-1, WRITE:test-user-2)     */
-                /*             /                        \                             */
-                /*    test-experiment-1          test-experiment-2                    */
-                /*   (OWNER:test-user-1)     (OWNER:test-user-1, READ:test-group-2)   */
-                /**********************************************************************/
+                //shared with non cascading permissions
+                sharingServiceClient.shareEntityWithGroups(domainId, "test-experiment-2", Arrays.asList("test-group-2"), "CLONE", false);
+
+                /***********************************************************************/
+                /*          test-project-1 (OWNER:test-user-1, WRITE:test-user-2)      */
+                /*             /                        \                              */
+                /*    test-experiment-1           test-experiment-2                    */
+                /*   (OWNER:test-user-1)  (OWNER:test-user-1, READ/CLONE:test-group-2) */
+                /*                                          |                          */
+                /*                                     test-file-1                     */
+                /*                       (OWNER:test-user-1, READ:test-group-2)        */
+                /***********************************************************************/
             </pre>
         </div>
 
@@ -293,13 +325,18 @@
 
                 //test-user-3 does not have WRITE permission to test-experiment-2
                 System.out.println(sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "WRITE"));
+
+                //test-user-3 has CLONE permission to test-experiment-2
+                System.out.println((sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "CLONE")));
+                //test-user-3 does not have CLONE permission to test-file-1
+                System.out.println((sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-file-1", "CLONE")));
             </pre>
         </div>
 
         <div class="definition" id="search-entities">
             <h4>10. Searching Entities</h4>
             <pre>
-                ArrayList<SearchCriteria> filters = new ArrayList<>();
+                ArrayList&lt;SearchCriteria&gt; filters = new ArrayList<>();
                 SearchCriteria searchCriteria = new SearchCriteria();
                 searchCriteria.setSearchCondition(SearchCondition.LIKE);
                 searchCriteria.setValue("experiment");
