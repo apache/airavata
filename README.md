@@ -19,7 +19,8 @@ docker build -t mariadb .
 * Create RabbitMQ image with airavata specific configuration.    
 docker build -t rabbitmq .
 
-Before creating airavata component images download and place mysql-connector-java-5.1.39-bin.jar at the same level of dockerfile. 
+Before creating airavata component images download and place mysql-connector-java-5.1.39-bin.jar at the same level of the dockerfile.  
+Also, update airavata-server.properties file as required.  
 * Create apiserver image.  
 docker build --build-arg COMPONENT=apiserver -t apiserver
 
