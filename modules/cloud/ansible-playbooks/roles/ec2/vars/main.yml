@@ -1,8 +1,0 @@
----
-
-key_name: shameera
-ec2_name: Mesos28
-centos_ami_7_2: ami-6d1c2007
-ubutntu_ami_16_04: ami-29f96d3e
-
-security_group: Mesos-sec

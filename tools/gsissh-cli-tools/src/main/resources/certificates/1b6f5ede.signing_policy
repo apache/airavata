@@ -1,5 +1,0 @@
-# @(#)$Id: 1b6f5ede.signing_policy,v 1.2 2011/09/06 14:25:00 pmacvsdg Exp $
-#
- access_id_CA   X509    '/C=UK/O=eScienceCA/OU=Authority/CN=UK e-Science CA 2A'
- pos_rights     globus  CA:sign
- cond_subjects  globus  '"/C=UK/O=eScience/*"'

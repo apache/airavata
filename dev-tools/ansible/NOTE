@@ -1,5 +1,0 @@
-#Bind to 'hostname -f' output to access from outside.
-
-#aws
-add new tcp rule under associate security group to open ports
-disable or add firewall rule to open ports
