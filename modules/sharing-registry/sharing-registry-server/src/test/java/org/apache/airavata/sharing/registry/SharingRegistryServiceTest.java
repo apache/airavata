@@ -50,7 +50,7 @@ public class SharingRegistryServiceTest {
 
     @Test
     public void test() throws TException, InterruptedException {
-        String serverHost = "localhost";
+        String serverHost = "gw56.iu.xsede.org";
         int serverPort = 7878;
 
         TTransport transport = new TSocket(serverHost, serverPort);
@@ -294,7 +294,7 @@ public class SharingRegistryServiceTest {
         ArrayList<SearchCriteria> filters = new ArrayList<>();
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchCondition(SearchCondition.FULL_TEXT);
-        searchCriteria.setValue("experiment");
+        searchCriteria.setValue("experiment stampede methyl");
         searchCriteria.setSearchField(EntitySearchField.FULL_TEXT);
         filters.add(searchCriteria);
 
