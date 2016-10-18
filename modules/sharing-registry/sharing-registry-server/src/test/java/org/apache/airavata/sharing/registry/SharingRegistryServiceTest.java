@@ -49,7 +49,7 @@ public class SharingRegistryServiceTest {
 
 
     @Test
-    public void test() throws TException {
+    public void test() throws TException, InterruptedException {
         String serverHost = "localhost";
         int serverPort = 7878;
 
@@ -249,7 +249,7 @@ public class SharingRegistryServiceTest {
         entity3.setName("test-experiment-2");
         entity3.setDescription("test experiment 2 description");
         entity3.setParentEntityId("test-project-1");
-        entity3.setFullText("test experiment 1 3-methyl 1-butanol");
+        entity3.setFullText("test experiment 1 3-methyl 1-butanol stampede");
         sharingServiceClient.createEntity(entity3);
 
         Entity entity4 = new Entity();
