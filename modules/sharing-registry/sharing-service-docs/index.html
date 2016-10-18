@@ -61,7 +61,7 @@
             <h4>1. Creating the thrift client</h4>
             <pre>
                 //should use the correct host name and port here
-                String serverHost = "localhost";
+                String serverHost = "gw56.iu.xsede.org";
                 int serverPort = 7878;
 
                 TTransport transport = new TSocket(serverHost, serverPort);
@@ -265,7 +265,7 @@
                 entity3.setName("test-experiment-2");
                 entity3.setDescription("test experiment 2 description");
                 entity3.setParentEntityId("test-project-1");
-                entity3.setFullText("test experiment 1 3-methyl 1-butanol");
+                entity3.setFullText("test experiment 1 3-methyl 1-butanol stampede");
                 sharingServiceClient.createEntity(entity3);
 
                 Entity entity4 = new Entity();
@@ -339,7 +339,7 @@
                 ArrayList&lt;SearchCriteria&gt; filters = new ArrayList<>();
                 SearchCriteria searchCriteria = new SearchCriteria();
                 searchCriteria.setSearchCondition(SearchCondition.LIKE);
-                searchCriteria.setValue("experiment");
+                searchCriteria.setValue("experiment stampede methyl");
                 searchCriteria.setSearchField(EntitySearchField.NAME);
                 filters.add(searchCriteria);
 
