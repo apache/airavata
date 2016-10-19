@@ -3,7 +3,8 @@ Mirror of Apache Airavata
 
 ##Prerequisites:
 Docker Installed System.  
-Follow https://docs.docker.com/engine/installation/linux/ubuntulinux/ to install docker.
+Follow https://docs.docker.com/engine/installation/linux/ubuntulinux/ to install docker.  
+Clone this branch.
 
 ##Build Instructions:
 
@@ -57,6 +58,18 @@ docker run -t apiserver
 docker run -t gfac  
 docker run -t orchestrator  
 docker run -t credentialstore  
+
 OR  
 * Use below command to run all the components at once.   
 docker run -t avtall  
+
+###Usefull docker commands:
+* List all existing images.  
+docker images
+* List all containers.
+docker ps -a
+* Remove container
+docker rm 'container-id'  
+* Remove image.    
+docker rmi 'image-id'
+
