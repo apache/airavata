@@ -341,9 +341,9 @@
             <pre>
                 ArrayList&lt;SearchCriteria&gt; filters = new ArrayList<>();
                 SearchCriteria searchCriteria = new SearchCriteria();
-                searchCriteria.setSearchCondition(SearchCondition.LIKE);
+                searchCriteria.setSearchCondition(SearchCondition.FULL_TEXT);
                 searchCriteria.setValue("experiment stampede methyl");
-                searchCriteria.setSearchField(EntitySearchField.NAME);
+                searchCriteria.setSearchField(EntitySearchField.FULL_TEXT);
                 filters.add(searchCriteria);
 
                 searchCriteria = new SearchCriteria();
