@@ -121,16 +121,6 @@ public abstract class AbstractRepository<T, E, Id> {
         return gatewayList;
     }
 
-    public List<T> selectFromNativeQuery(String queryString, int offset, int limit) throws SharingRegistryException {
-        int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS: limit;
-        List resultSet = JPAUtils.execute(entityManager -> entityManager.createNativeQuery(queryString).setFirstResult(offset)
-                .setMaxResults(newLimit).getResultList());
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        List<T> gatewayList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
-        return gatewayList;
-    }
-
     public String getSelectQuery(Map<String, String> filters){
         String query = "SELECT DISTINCT p from " + dbEntityGenericClass.getSimpleName() + " as p";
         if(filters != null && filters.size() != 0){

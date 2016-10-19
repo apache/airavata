@@ -30,6 +30,8 @@ import org.apache.airavata.sharing.registry.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Clob;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,8 +103,39 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
                 }
             }
         }
+
         query = query.substring(0, query.length() - 5);
-        return selectFromNativeQuery(query, offset, limit);
+        final String nativeQuery = query;
+        int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS: limit;
+
+        List<Object[]> temp = JPAUtils.execute(entityManager -> entityManager.createNativeQuery(nativeQuery).setFirstResult(offset)
+                .setMaxResults(newLimit).getResultList());
+        List<Entity> resultSet = new ArrayList<>();
+
+        temp.stream().forEach(rs->{
+            Entity entity = new Entity();
+            entity.setEntityId((String)(rs[0]));
+            entity.setDomainId((String) (rs[1]));
+            entity.setEntityTypeId((String) (rs[2]));
+            entity.setOwnerId((String) (rs[3]));
+            entity.setParentEntityId((String) (rs[4]));
+            entity.setName((String) (rs[5]));
+            entity.setDescription((String)(rs[6]));
+            entity.setBinaryData((byte[]) (rs[7]));
+            if(rs[8] instanceof Clob){
+                Clob clob = (Clob)rs[8];
+                if(clob != null)
+                    entity.setFullText(clob.toString());
+            }else
+                entity.setFullText((String) (rs[8]));
+            entity.setOriginalEntityCreationTime((long)(rs[9]));
+            entity.setCreatedTime((long)(rs[10]));
+            entity.setUpdatedTime((long)(rs[11]));
+
+            resultSet.add(entity);
+        });
+
+        return resultSet;
     }
 
     public String getSelectQuery(Map<String, String> filters){
