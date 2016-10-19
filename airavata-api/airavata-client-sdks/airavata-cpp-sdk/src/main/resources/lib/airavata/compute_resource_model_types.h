@@ -96,7 +96,8 @@ struct MonitorMode {
     POLL_JOB_MANAGER = 0,
     JOB_EMAIL_NOTIFICATION_MONITOR = 1,
     XSEDE_AMQP_SUBSCRIBE = 2,
-    FORK = 3
+    FORK = 3,
+    LOCAL = 4
   };
 };
 
@@ -314,10 +315,6 @@ inline std::ostream& operator<<(std::ostream& out, const BatchQueue& obj)
   return out;
 }
 
-typedef struct _LOCALSubmission__isset {
-  _LOCALSubmission__isset() : securityProtocol(false) {}
-  bool securityProtocol :1;
-} _LOCALSubmission__isset;
 
 class LOCALSubmission {
  public:
@@ -332,8 +329,6 @@ class LOCALSubmission {
   ResourceJobManager resourceJobManager;
    ::apache::airavata::model::data::movement::SecurityProtocol::type securityProtocol;
 
-  _LOCALSubmission__isset __isset;
-
   void __set_jobSubmissionInterfaceId(const std::string& val);
 
   void __set_resourceJobManager(const ResourceJobManager& val);
@@ -346,9 +341,7 @@ class LOCALSubmission {
       return false;
     if (!(resourceJobManager == rhs.resourceJobManager))
       return false;
-    if (__isset.securityProtocol != rhs.__isset.securityProtocol)
-      return false;
-    else if (__isset.securityProtocol && !(securityProtocol == rhs.securityProtocol))
+    if (!(securityProtocol == rhs.securityProtocol))
       return false;
     return true;
   }

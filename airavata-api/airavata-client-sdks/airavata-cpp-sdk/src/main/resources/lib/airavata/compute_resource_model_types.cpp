@@ -106,15 +106,17 @@ int _kMonitorModeValues[] = {
   MonitorMode::POLL_JOB_MANAGER,
   MonitorMode::JOB_EMAIL_NOTIFICATION_MONITOR,
   MonitorMode::XSEDE_AMQP_SUBSCRIBE,
-  MonitorMode::FORK
+  MonitorMode::FORK,
+  MonitorMode::LOCAL
 };
 const char* _kMonitorModeNames[] = {
   "POLL_JOB_MANAGER",
   "JOB_EMAIL_NOTIFICATION_MONITOR",
   "XSEDE_AMQP_SUBSCRIBE",
-  "FORK"
+  "FORK",
+  "LOCAL"
 };
-const std::map<int, const char*> _MonitorMode_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(4, _kMonitorModeValues, _kMonitorModeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _MonitorMode_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(5, _kMonitorModeValues, _kMonitorModeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kDMTypeValues[] = {
   DMType::COMPUTE_RESOURCE,
@@ -628,7 +630,6 @@ void LOCALSubmission::__set_resourceJobManager(const ResourceJobManager& val) {
 
 void LOCALSubmission::__set_securityProtocol(const  ::apache::airavata::model::data::movement::SecurityProtocol::type val) {
   this->securityProtocol = val;
-__isset.securityProtocol = true;
 }
 
 uint32_t LOCALSubmission::read(::apache::thrift::protocol::TProtocol* iprot) {
@@ -645,6 +646,7 @@ uint32_t LOCALSubmission::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   bool isset_jobSubmissionInterfaceId = false;
   bool isset_resourceJobManager = false;
+  bool isset_securityProtocol = false;
 
   while (true)
   {
@@ -675,7 +677,7 @@ uint32_t LOCALSubmission::read(::apache::thrift::protocol::TProtocol* iprot) {
           int32_t ecast23;
           xfer += iprot->readI32(ecast23);
           this->securityProtocol = ( ::apache::airavata::model::data::movement::SecurityProtocol::type)ecast23;
-          this->__isset.securityProtocol = true;
+          isset_securityProtocol = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -693,6 +695,8 @@ uint32_t LOCALSubmission::read(::apache::thrift::protocol::TProtocol* iprot) {
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_resourceJobManager)
     throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_securityProtocol)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
@@ -709,11 +713,10 @@ uint32_t LOCALSubmission::write(::apache::thrift::protocol::TProtocol* oprot) co
   xfer += this->resourceJobManager.write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  if (this->__isset.securityProtocol) {
-    xfer += oprot->writeFieldBegin("securityProtocol", ::apache::thrift::protocol::T_I32, 3);
-    xfer += oprot->writeI32((int32_t)this->securityProtocol);
-    xfer += oprot->writeFieldEnd();
-  }
+  xfer += oprot->writeFieldBegin("securityProtocol", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32((int32_t)this->securityProtocol);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -724,20 +727,17 @@ void swap(LOCALSubmission &a, LOCALSubmission &b) {
   swap(a.jobSubmissionInterfaceId, b.jobSubmissionInterfaceId);
   swap(a.resourceJobManager, b.resourceJobManager);
   swap(a.securityProtocol, b.securityProtocol);
-  swap(a.__isset, b.__isset);
 }
 
 LOCALSubmission::LOCALSubmission(const LOCALSubmission& other24) {
   jobSubmissionInterfaceId = other24.jobSubmissionInterfaceId;
   resourceJobManager = other24.resourceJobManager;
   securityProtocol = other24.securityProtocol;
-  __isset = other24.__isset;
 }
 LOCALSubmission& LOCALSubmission::operator=(const LOCALSubmission& other25) {
   jobSubmissionInterfaceId = other25.jobSubmissionInterfaceId;
   resourceJobManager = other25.resourceJobManager;
   securityProtocol = other25.securityProtocol;
-  __isset = other25.__isset;
   return *this;
 }
 void LOCALSubmission::printTo(std::ostream& out) const {
@@ -745,7 +745,7 @@ void LOCALSubmission::printTo(std::ostream& out) const {
   out << "LOCALSubmission(";
   out << "jobSubmissionInterfaceId=" << to_string(jobSubmissionInterfaceId);
   out << ", " << "resourceJobManager=" << to_string(resourceJobManager);
-  out << ", " << "securityProtocol="; (__isset.securityProtocol ? (out << to_string(securityProtocol)) : (out << "<null>"));
+  out << ", " << "securityProtocol=" << to_string(securityProtocol);
   out << ")";
 }
 

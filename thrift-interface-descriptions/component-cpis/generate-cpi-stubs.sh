@@ -73,6 +73,9 @@ GFAC_SRC_DIR='../../modules/gfac/gfac-client/src/main/java/'
 REGISTRY_THRIFT_FILE='registry-api.thrift'
 REGISTRY_SRC_DIR='../../modules/registry/registry-server/registry-api-stubs/src/main/java/'
 
+ALLOCATION_MGR_THRIFT_FILE='allocation-manager-cpi.thrift'
+ALLOCATION_MGR_SRC_DIR='../../modules/allocation-manager/allocation-manager-stubs/src/main/java/'
+
 # Initialize the thrift arguments.
 #  Since most of the Airavata API and Data Models have includes, use recursive option by default.
 #  Generate all the files in target directory
@@ -188,6 +191,9 @@ do
             ;;
     registry)    echo "Generate Registry Stubs"
             generate_thrift_stubs ${REGISTRY_THRIFT_FILE} ${REGISTRY_SRC_DIR}
+            ;;
+    am)    echo "Generate Allocation Manager Stubs"
+            generate_thrift_stubs ${ALLOCATION_MGR_THRIFT_FILE} ${ALLOCATION_MGR_SRC_DIR}
             ;;
     *)      echo "Invalid or unsupported option"
     	    show_usage

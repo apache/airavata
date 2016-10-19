@@ -406,11 +406,15 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 DataType type = processOutput.getType();
                 switch (type) {
                     case STDOUT :
-                        processOutput.setValue(appName + ".stdout");
+                        if(null == processOutput.getValue() || processOutput.getValue().trim().isEmpty()){
+                            processOutput.setValue(appName + ".stdout");
+                        }
                         createOutputDataSatagingTasks(processModel, gatewayId, dataStagingTaskIds, processOutput);
                         break;
                     case STDERR:
-                        processOutput.setValue(appName + ".stderr");
+                        if(null == processOutput.getValue() || processOutput.getValue().trim().isEmpty()){
+                            processOutput.setValue(appName + ".stderr");
+                        }
                         createOutputDataSatagingTasks(processModel, gatewayId, dataStagingTaskIds, processOutput);
                         break;
                     case URI:
@@ -475,7 +479,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             monitorMode = sshJobSubmission.getMonitorMode();
         } else if (jobSubmissionProtocol == JobSubmissionProtocol.UNICORE) {
             monitorMode = MonitorMode.FORK;
-        } else {
+        } else if(jobSubmissionProtocol == JobSubmissionProtocol.LOCAL){
+            monitorMode = MonitorMode.LOCAL;
+        }else {
             logger.error("expId : {}, processId : {} :- Unsupported Job submission protocol {}.",
                     processModel.getExperimentId(), processModel.getProcessId(), jobSubmissionProtocol.name());
             throw new OrchestratorException("Unsupported Job Submission Protocol " + jobSubmissionProtocol.name());

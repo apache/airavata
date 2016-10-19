@@ -43,7 +43,8 @@ public enum MonitorMode implements org.apache.thrift.TEnum {
   POLL_JOB_MANAGER(0),
   JOB_EMAIL_NOTIFICATION_MONITOR(1),
   XSEDE_AMQP_SUBSCRIBE(2),
-  FORK(3);
+  FORK(3),
+  LOCAL(4);
 
   private final int value;
 
@@ -72,6 +73,8 @@ public enum MonitorMode implements org.apache.thrift.TEnum {
         return XSEDE_AMQP_SUBSCRIBE;
       case 3:
         return FORK;
+      case 4:
+        return LOCAL;
       default:
         return null;
     }
