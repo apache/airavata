@@ -52,10 +52,11 @@ docker run -d --name=exhibitor -p 2181:2181 -p 2888:2888 -p 3888:3888 -p 8080:80
 
 * update airavata-server.properties as required.  
 
-* Run airavata components as they are built. Make sure a tag name is same as that of built image.  
+* Run airavata components as they are built. Make sure a tag name is same as that of built image. One can use below commands to reun individual components. 
 docker run -t apiserver  
 docker run -t gfac  
 docker run -t orchestrator  
 docker run -t credentialstore  
 OR  
+* Use below command to run all the components at once. 
 docker run -t avtall  
