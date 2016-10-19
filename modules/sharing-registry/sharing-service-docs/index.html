@@ -294,15 +294,15 @@
                 //shared with non cascading permissions
                 sharingServiceClient.shareEntityWithGroups(domainId, "test-experiment-2", Arrays.asList("test-group-2"), "CLONE", false);
 
-                /***********************************************************************/
-                /*          test-project-1 (OWNER:test-user-1, WRITE:test-user-2)      */
-                /*             /                        \                              */
-                /*    test-experiment-1           test-experiment-2                    */
-                /*   (OWNER:test-user-1)  (OWNER:test-user-1, READ/CLONE:test-group-2) */
-                /*                                          |                          */
-                /*                                     test-file-1                     */
-                /*                       (OWNER:test-user-1, READ:test-group-2)        */
-                /***********************************************************************/
+                /************************************************************************************************************/
+                /*          test-project-1 (OWNER:test-user-1, WRITE:test-user-2)                                           */
+                /*             /                                              \                                             */
+                /*    test-experiment-1                                 test-experiment-2                                   */
+                /*   (OWNER:test-user-1,WRITE:test-user-2)  (OWNER:test-user-1, WRITE:test-user-2, READ/CLONE:test-group-2) */
+                /*                                                                  |                                       */
+                /*                                                             test-file-1                                  */
+                /*                                        (OWNER:test-user-1, WRITE:test-user-2, READ:test-group-2)         */
+                /************************************************************************************************************/
             </pre>
         </div>
 
