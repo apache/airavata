@@ -6,10 +6,21 @@ Docker Installed System.
 Follow https://docs.docker.com/engine/installation/linux/ubuntulinux/ to install docker.  
 Clone this branch.
 
+##Images
+* avtbase    
+Airavta base image which bundles Oracle Java 8 (Version 8u31), maven (3.3.9) and git on latest centos image.  
+* airavataservices  
+Image that builds airavata. It can be used to run invidual component or all the comonents at once.
+* maridb  
+Creates airavata specific mariadb images. Basically creates all the required databases. 
+* rabbitmq  
+rabbitmq images with airavata specific configuration.  
+
 ##Build Instructions:
 
 Use below commands to build docker images. 
-Execute these commands under appropriate directories.
+Execute these commands under appropriate directories.  
+For example, to build airavata base docker image goto avtbase/ and execute docker build command, the same follows for all.
 
 * Create base image for airavata.  
 docker build -t avtbase .
@@ -66,9 +77,9 @@ docker run -t avtall
 ###Usefull docker commands:
 * List all existing images.  
 docker images
-* List all containers.
+* List all containers.  
 docker ps -a
-* Remove container
+* Remove container.  
 docker rm 'container-id'  
 * Remove image.    
 docker rmi 'image-id'
