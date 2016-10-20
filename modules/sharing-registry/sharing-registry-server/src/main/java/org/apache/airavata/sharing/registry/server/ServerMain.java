@@ -55,15 +55,19 @@ public class ServerMain {
             serverStartedFile.deleteOnExit();
             new RandomAccessFile(serverStartedFile, "rw").getChannel().lock();
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage(), e);
+            logger.warn(e.getMessage(), e);
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
+            logger.warn(e.getMessage(), e);
         }
     }
 
     private static String getServerStartedFileName() {
-        return new File(new File(System.getenv("" +
-                "SHARING_REGISTRY_HOME"), "bin"), serverStartedFileNamePrefix + "_" + Integer.toString(serverPID)).toString();
+        String SHARING_REGISTRY_HOME = System.getenv("" +"SHARING_REGISTRY_HOME");
+        if(SHARING_REGISTRY_HOME==null)
+            SHARING_REGISTRY_HOME = "/tmp";
+        else
+            SHARING_REGISTRY_HOME = SHARING_REGISTRY_HOME + "bin";
+        return new File(SHARING_REGISTRY_HOME, serverStartedFileNamePrefix + "_" + Integer.toString(serverPID)).toString();
     }
 
     private static int getPID() {

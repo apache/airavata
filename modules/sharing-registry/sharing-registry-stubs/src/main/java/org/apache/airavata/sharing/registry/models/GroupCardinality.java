@@ -12,17 +12,17 @@ import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 /**
- * <p>This is an internal enum type for managing sharings</p>
+ * <p>This is an system internal enum used to define single user groups and multi users groups. Every user is also
+ * considered as a group in it's own right for implementation ease</p>
  * 
  */
-public enum SharingType implements org.apache.thrift.TEnum {
-  DIRECT_NON_CASCADING(0),
-  DIRECT_CASCADING(1),
-  INDIRECT_CASCADING(2);
+public enum GroupCardinality implements org.apache.thrift.TEnum {
+  SINGLE_USER(0),
+  MULTI_USER(1);
 
   private final int value;
 
-  private SharingType(int value) {
+  private GroupCardinality(int value) {
     this.value = value;
   }
 
@@ -37,14 +37,12 @@ public enum SharingType implements org.apache.thrift.TEnum {
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static SharingType findByValue(int value) { 
+  public static GroupCardinality findByValue(int value) { 
     switch (value) {
       case 0:
-        return DIRECT_NON_CASCADING;
+        return SINGLE_USER;
       case 1:
-        return DIRECT_CASCADING;
-      case 2:
-        return INDIRECT_CASCADING;
+        return MULTI_USER;
       default:
         return null;
     }

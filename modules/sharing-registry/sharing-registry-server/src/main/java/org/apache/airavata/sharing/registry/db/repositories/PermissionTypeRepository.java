@@ -21,6 +21,7 @@
 package org.apache.airavata.sharing.registry.db.repositories;
 
 import org.apache.airavata.sharing.registry.db.entities.PermissionTypeEntity;
+import org.apache.airavata.sharing.registry.db.entities.PermissionTypePK;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.models.PermissionType;
@@ -31,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.List;
 
-public class PermissionTypeRepository extends AbstractRepository<PermissionType, PermissionTypeEntity, String> {
+public class PermissionTypeRepository extends AbstractRepository<PermissionType, PermissionTypeEntity, PermissionTypePK> {
     private final static Logger logger = LoggerFactory.getLogger(PermissionTypeRepository.class);
 
     public PermissionTypeRepository() {

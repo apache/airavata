@@ -22,7 +22,8 @@ package org.apache.airavata.sharing.registry.db.repositories;
 
 
 import org.apache.airavata.sharing.registry.db.entities.SharingEntity;
-import org.apache.airavata.sharing.registry.db.entities.SharingUserEntity;
+import org.apache.airavata.sharing.registry.db.entities.UserEntity;
+import org.apache.airavata.sharing.registry.db.entities.UserPK;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.models.User;
@@ -31,18 +32,20 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class UserRepository extends AbstractRepository<User, SharingUserEntity, String> {
+public class UserRepository extends AbstractRepository<User, UserEntity, UserPK> {
     private final static Logger logger = LoggerFactory.getLogger(UserRepository.class);
 
     public UserRepository() {
-        super(User.class, SharingUserEntity.class);
+        super(User.class, UserEntity.class);
     }
 
 
-    public List<User> getAccessibleUsers(String entityId, String permissionTypeId) throws SharingRegistryException {
-        String query = "SELECT u from " + SharingUserEntity.class.getSimpleName() + " u, " + SharingEntity.class.getSimpleName() + " s";
+    public List<User> getAccessibleUsers(String domainId, String entityId, String permissionTypeId) throws SharingRegistryException {
+        String query = "SELECT DISTINCT u from " + UserEntity.class.getSimpleName() + " u, " + SharingEntity.class.getSimpleName() + " s";
         query += " WHERE ";
         query += "u." + DBConstants.UserTable.USER_ID + " = s." + DBConstants.SharingTable.GROUP_ID + " AND ";
+        query += "u." + DBConstants.UserTable.DOMAIN_ID + " = s." + DBConstants.SharingTable.DOMAIN_ID + " AND ";
+        query += "u." + DBConstants.UserTable.DOMAIN_ID + " = '" + domainId + "' AND ";
         query += "s." + DBConstants.SharingTable.ENTITY_ID + " = '" + entityId + "' AND ";
         query += "s." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " = '" + permissionTypeId + "'";
         query += " ORDER BY s.createdTime DESC";

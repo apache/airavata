@@ -29,71 +29,76 @@ public class DBConstants {
     public static int SELECT_MAX_ROWS = 1000;
 
     public static class DomainTable {
-        public static String DOMAIN_ID = "domainId";
-        public static String NAME = "name";
-        public static String DESCRIPTION = "description";
+        public static final String DOMAIN_ID = "domainId";
+        public static final String NAME = "name";
+        public static final String DESCRIPTION = "description";
         public static final String CREATED_TIME = "createdTime";
         public static final String UPDATED_TIME = "updatedTime";
     }
 
     public static class UserTable {
-        public static String USER_ID = "userId";
-        public static String DOMAIN_ID = "domainId";
-        public static String USER_NAME = "userName";
+        public static final String USER_ID = "userId";
+        public static final String DOMAIN_ID = "domainId";
+        public static final String USER_NAME = "userName";
         public static final String CREATED_TIME = "createdTime";
         public static final String UPDATED_TIME = "updatedTime";
     }
 
     public static class UserGroupTable {
-        public static String GROUP_ID = "groupId";
-        public static String DOMAIN_ID = "domainId";
-        public static String NAME = "name";
-        public static String DESCRIPTION = "description";
-        public static String OWNER_ID = "ownerId";
-        public static String GROUP_TYPE = "groupType";
+        public static final String GROUP_ID = "groupId";
+        public static final String DOMAIN_ID = "domainId";
+        public static final String NAME = "name";
+        public static final String DESCRIPTION = "description";
+        public static final String OWNER_ID = "ownerId";
+        public static final String GROUP_TYPE = "groupType";
+        public static final String GROUP_CARDINALITY = "groupCardinality";
         public static final String CREATED_TIME = "createdTime";
         public static final String UPDATED_TIME = "updatedTime";
     }
 
     public static class GroupMembershipTable {
-        public static String PARENT_ID = "parentId";
-        public static String CHILD_ID = "childId";
-        public static String CHILD_TYPE = "childType";
+        public static final String PARENT_ID = "parentId";
+        public static final String CHILD_ID = "childId";
+        public static final String CHILD_TYPE = "childType";
+        public static final String DOMAIN_ID = "domainId";
         public static final String CREATED_TIME = "createdTime";
         public static final String UPDATED_TIME = "updatedTime";
     }
 
     public static class EntityTypeTable {
-        public static String ENTITY_TYPE_ID = "entityTypeId";
-        public static String DOMAIN_ID = "domainId";
+        public static final String ENTITY_TYPE_ID = "entityTypeId";
+        public static final String DOMAIN_ID = "domainId";
         public static final String CREATED_TIME = "createdTime";
         public static final String UPDATED_TIME = "updatedTime";
     }
 
     public static class PermissionTypeTable {
-        public static String ENTITY_TYPE_ID = "permissionTypeId";
-        public static String DOMAIN_ID = "domainId";
-        public static String NAME = "name";
+        public static final String ENTITY_TYPE_ID = "permissionTypeId";
+        public static final String DOMAIN_ID = "domainId";
+        public static final String NAME = "name";
         public static final String CREATED_TIME = "createdTime";
         public static final String UPDATED_TIME = "updatedTime";
     }
 
     public static class EntityTable {
-        public static String ENTITY_ID = "entityId";
-        public static String PARENT_ENTITY_ID = "parentEntityId";
-        public static String ENTITY_TYPE_ID = "entityTypeId";
-        public static String NAME = "name";
-        public static String DESCRIPTION = "description";
-        public static String FULL_TEXT = "fullText";
+        public static final String ENTITY_ID = "entityId";
+        public static final String PARENT_ENTITY_ID = "parentEntityId";
+        public static final String ENTITY_TYPE_ID = "entityTypeId";
+        public static final String NAME = "name";
+        public static final String DESCRIPTION = "description";
+        public static final String FULL_TEXT = "fullText";
         public static final String CREATED_TIME = "createdTime";
         public static final String UPDATED_TIME = "updatedTime";
+        public static final String DOMAIN_ID = "domainId";
+        public static final String ORIGINAL_ENTITY_CREATION_TIME = "originalEntityCreationTime";
     }
 
     public static class SharingTable {
-        public static String PERMISSION_TYPE_ID = "permissionTypeId";
-        public static String ENTITY_ID = "entityId";
-        public static String GROUP_ID = "groupId";
-        public static String INHERITED_PARENT_ID = "inheritedParentId";
+        public static final String DOMAIN_ID = "domainId";
+        public static final String PERMISSION_TYPE_ID = "permissionTypeId";
+        public static final String ENTITY_ID = "entityId";
+        public static final String GROUP_ID = "groupId";
+        public static final String INHERITED_PARENT_ID = "inheritedParentId";
         public static final String SHARING_TYPE = "sharingType";
         public static final String CREATED_TIME = "createdTime";
         public static final String UPDATED_TIME = "updatedTime";

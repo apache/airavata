@@ -11,11 +11,21 @@ import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
+/**
+ * <p>Different search operators that can be used with the entity search fields</p>
+ * <li>EQUAL : Simply matches for equality. Applicable for name, and parent entity id</li>
+ * <li>LIKE : Check for the condition %$FIELD% condition. Applicable for name, and description</li>
+ * <li>FULL_TEXT : Does a full text search. Only applicable for the FULL_TEXT field.</li>
+ * <li>GTE : Greater than or equal. Only applicable for created time and updated time.</li>
+ * <li>LTE : Less than or equal. Only applicable for created time and updated time.</li>
+ * 
+ */
 public enum SearchCondition implements org.apache.thrift.TEnum {
   EQUAL(0),
   LIKE(1),
-  GTE(2),
-  LTE(3);
+  FULL_TEXT(2),
+  GTE(3),
+  LTE(4);
 
   private final int value;
 
@@ -41,8 +51,10 @@ public enum SearchCondition implements org.apache.thrift.TEnum {
       case 1:
         return LIKE;
       case 2:
-        return GTE;
+        return FULL_TEXT;
       case 3:
+        return GTE;
+      case 4:
         return LTE;
       default:
         return null;

@@ -68,7 +68,7 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
             jobModel.setTaskId(taskContext.getTaskId());
 
             RemoteCluster remoteCluster = processContext.getJobSubmissionRemoteCluster();
-            GroovyMap groovyMap = GFacUtils.creatGroovyMap(processContext,taskContext);
+            GroovyMap groovyMap = GFacUtils.createGroovyMap(processContext,taskContext);
 
             String jobId = AiravataUtils.getId("JOB_ID_");
             jobModel.setJobName(groovyMap.get(Script.JOB_NAME).toString());

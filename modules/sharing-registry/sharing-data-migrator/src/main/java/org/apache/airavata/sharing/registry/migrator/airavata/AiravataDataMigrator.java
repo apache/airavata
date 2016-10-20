@@ -49,11 +49,7 @@ public class AiravataDataMigrator {
         while (rs.next()) {
             //Creating domain entries
             Domain domain = new Domain();
-            domain.setDomainId(rs.getString("GATEWAY_ID"));
-            if(rs.getString("GATEWAY_NAME") != null)
-                domain.setName(rs.getString("GATEWAY_NAME"));
-            else
-                domain.setName(rs.getString("GATEWAY_ID"));
+            domain.setName(rs.getString("GATEWAY_ID"));
             domain.setDescription("Domain entry for " + domain.name);
 
             govRegistryServerHandler.createDomain(domain);

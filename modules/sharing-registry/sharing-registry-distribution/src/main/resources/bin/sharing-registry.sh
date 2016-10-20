@@ -66,7 +66,7 @@ then
 		IFS='_' read -a f_split <<< "$f"
 		echo "Found process file : $f"
 		echo -n "    Sending kill signals to process ${f_split[2]}..."
-		out=`kill -9 ${f_split[1]} 2>&1`
+		out=`kill -9 ${f_split[2]} 2>&1`
 		if [ -z "$out" ]; then
 		    echo "done"
 		else
