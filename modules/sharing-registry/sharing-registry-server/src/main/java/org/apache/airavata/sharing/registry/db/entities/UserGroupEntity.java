@@ -27,6 +27,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "USER_GROUP", schema = "")
+@IdClass(UserGroupPK.class)
 public class UserGroupEntity {
     private final static Logger logger = LoggerFactory.getLogger(UserGroupEntity.class);
     private String groupId;
@@ -35,6 +36,7 @@ public class UserGroupEntity {
     private String description;
     private String ownerId;
     private String groupType;
+    private String groupCardinality;
     private Long createdTime;
     private Long updatedTime;
 
@@ -48,7 +50,7 @@ public class UserGroupEntity {
         this.groupId = groupId;
     }
 
-    @Basic
+    @Id
     @Column(name = "DOMAIN_ID")
     public String getDomainId() {
         return domainId;
@@ -86,6 +88,16 @@ public class UserGroupEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Basic
+    @Column(name = "GROUP_CARDINALITY")
+    public String getGroupCardinality() {
+        return groupCardinality;
+    }
+
+    public void setGroupCardinality(String groupCardinality) {
+        this.groupCardinality = groupCardinality;
     }
 
     @Basic

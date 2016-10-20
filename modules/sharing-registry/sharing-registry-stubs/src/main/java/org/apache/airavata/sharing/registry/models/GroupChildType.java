@@ -11,6 +11,10 @@ import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
+/**
+ * <p>System internal data type to match group child types</p>
+ * 
+ */
 public enum GroupChildType implements org.apache.thrift.TEnum {
   USER(0),
   GROUP(1);

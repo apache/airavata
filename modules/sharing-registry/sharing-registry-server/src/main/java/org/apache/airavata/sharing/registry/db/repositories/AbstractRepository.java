@@ -121,8 +121,8 @@ public abstract class AbstractRepository<T, E, Id> {
         return gatewayList;
     }
 
-    private String getSelectQuery(Map<String, String> filters){
-        String query = "SELECT p from " + dbEntityGenericClass.getSimpleName() + " as p";
+    public String getSelectQuery(Map<String, String> filters){
+        String query = "SELECT DISTINCT p from " + dbEntityGenericClass.getSimpleName() + " as p";
         if(filters != null && filters.size() != 0){
             query += " WHERE ";
             for(String k : filters.keySet()){

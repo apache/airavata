@@ -27,14 +27,16 @@ import javax.persistence.*;
 import java.nio.ByteBuffer;
 
 @Entity
-@Table(name = "SHARING_USER", schema = "")
-public class SharingUserEntity {
-    private final static Logger logger = LoggerFactory.getLogger(SharingUserEntity.class);
+@Table(name = "SHARING_USER", schema = "") // USER is a reserved term in derby
+@IdClass(UserPK.class)
+public class UserEntity {
+    private final static Logger logger = LoggerFactory.getLogger(UserEntity.class);
     private String userId;
     private String domainId;
     private String userName;
     private String firstName;
     private String lastName;
+    private String email;
     private ByteBuffer icon;
     private Long createdTime;
     private Long updatedTime;
@@ -49,7 +51,7 @@ public class SharingUserEntity {
         this.userId = userId;
     }
 
-    @Basic
+    @Id
     @Column(name = "DOMAIN_ID")
     public String getDomainId() {
         return domainId;
@@ -89,6 +91,16 @@ public class SharingUserEntity {
         this.lastName = lastName;
     }
 
+    @Basic
+    @Column(name = "EMAIL")
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Lob
     @Column(name = "ICON")
     public ByteBuffer getIcon() {
@@ -124,7 +136,7 @@ public class SharingUserEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SharingUserEntity that = (SharingUserEntity) o;
+        UserEntity that = (UserEntity) o;
 
         if (userId != null ? !userId.equals(that.userId) : that.userId != null) return false;
         if (domainId != null ? !domainId.equals(that.domainId) : that.domainId != null) return false;

@@ -22,8 +22,9 @@ package org.apache.airavata.sharing.registry.db.repositories;
 
 import org.apache.airavata.sharing.registry.db.entities.SharingEntity;
 import org.apache.airavata.sharing.registry.db.entities.UserGroupEntity;
+import org.apache.airavata.sharing.registry.db.entities.UserGroupPK;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
-import org.apache.airavata.sharing.registry.models.GroupType;
+import org.apache.airavata.sharing.registry.models.GroupCardinality;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.models.UserGroup;
 import org.slf4j.Logger;
@@ -31,20 +32,22 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class UserGroupRepository extends AbstractRepository<UserGroup, UserGroupEntity, String> {
+public class UserGroupRepository extends AbstractRepository<UserGroup, UserGroupEntity, UserGroupPK> {
     private final static Logger logger = LoggerFactory.getLogger(UserGroupRepository.class);
 
     public UserGroupRepository() {
         super(UserGroup.class, UserGroupEntity.class);
     }
 
-    public List<UserGroup> getAccessibleGroups(String entityId, String permissionTypeId) throws SharingRegistryException {
-        String query = "SELECT g from " + UserGroupEntity.class.getSimpleName() + " g, " + SharingEntity.class.getSimpleName() + " s";
+    public List<UserGroup> getAccessibleGroups(String domainId, String entityId, String permissionTypeId) throws SharingRegistryException {
+        String query = "SELECT DISTINCT g from " + UserGroupEntity.class.getSimpleName() + " g, " + SharingEntity.class.getSimpleName() + " s";
         query += " WHERE ";
         query += "g." + DBConstants.UserGroupTable.GROUP_ID + " = s." + DBConstants.SharingTable.GROUP_ID + " AND ";
+        query += "g." + DBConstants.UserGroupTable.DOMAIN_ID + " = s." + DBConstants.SharingTable.DOMAIN_ID + " AND ";
+        query += "g." + DBConstants.UserGroupTable.DOMAIN_ID + " = '" + domainId + "' AND ";
         query += "s." + DBConstants.SharingTable.ENTITY_ID + " = '" + entityId + "' AND ";
         query += "s." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " = '" + permissionTypeId + "' AND ";
-        query += "g." + DBConstants.UserGroupTable.GROUP_TYPE + " = '" + GroupType.MULTI_USER.toString() + "'";
+        query += "g." + DBConstants.UserGroupTable.GROUP_CARDINALITY + " = '" + GroupCardinality.MULTI_USER.toString() + "'";
         query += " ORDER BY s.createdTime DESC";
         return select(query, 0, -1);
     }

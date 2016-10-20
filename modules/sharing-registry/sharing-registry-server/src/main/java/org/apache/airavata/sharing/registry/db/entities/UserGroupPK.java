@@ -27,32 +27,10 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import java.io.Serializable;
 
-public class SharingEntityPK implements Serializable {
-    private final static Logger logger = LoggerFactory.getLogger(SharingEntityPK.class);
-    private String permissionTypeId;
-    private String entityId;
+public class UserGroupPK implements Serializable {
+    private final static Logger logger = LoggerFactory.getLogger(UserGroupPK.class);
     private String groupId;
-    private String inheritedParentId;
-
-    @Column(name = "PERMISSION_TYPE_ID")
-    @Id
-    public String getPermissionTypeId() {
-        return permissionTypeId;
-    }
-
-    public void setPermissionTypeId(String permissionTypeId) {
-        this.permissionTypeId = permissionTypeId;
-    }
-
-    @Column(name = "ENTITY_ID")
-    @Id
-    public String getEntityId() {
-        return entityId;
-    }
-
-    public void setEntityId(String entityId) {
-        this.entityId = entityId;
-    }
+    private String domainId;
 
     @Column(name = "GROUP_ID")
     @Id
@@ -64,14 +42,14 @@ public class SharingEntityPK implements Serializable {
         this.groupId = groupId;
     }
 
-    @Column(name = "INHERITED_PARENT_ID")
+    @Column(name = "DOMAIN_ID")
     @Id
-    public String getInheritedParentId() {
-        return inheritedParentId;
+    public String getDomainId() {
+        return domainId;
     }
 
-    public void setInheritedParentId(String inheritedParentId) {
-        this.inheritedParentId = inheritedParentId;
+    public void setDomainId(String domainId) {
+        this.domainId = domainId;
     }
 
     @Override
@@ -79,21 +57,19 @@ public class SharingEntityPK implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SharingEntityPK that = (SharingEntityPK) o;
+        UserGroupPK that = (UserGroupPK) o;
 
-        if (permissionTypeId != null ? !permissionTypeId.equals(that.permissionTypeId) : that.permissionTypeId != null)
+        if (groupId != null ? !groupId.equals(that.groupId) : that.groupId != null)
             return false;
-        if (entityId != null ? !entityId.equals(that.entityId) : that.entityId != null) return false;
-        if (groupId != null ? !groupId.equals(that.groupId) : that.groupId != null) return false;
+        if (domainId != null ? !domainId.equals(that.domainId) : that.domainId != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = permissionTypeId != null ? permissionTypeId.hashCode() : 0;
-        result = 31 * result + (entityId != null ? entityId.hashCode() : 0);
-        result = 31 * result + (groupId != null ? groupId.hashCode() : 0);
+        int result = groupId != null ? groupId.hashCode() : 0;
+        result = 31 * result + (domainId != null ? domainId.hashCode() : 0);
         return result;
     }
 }

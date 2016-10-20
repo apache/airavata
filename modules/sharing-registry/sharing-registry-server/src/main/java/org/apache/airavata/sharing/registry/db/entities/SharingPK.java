@@ -23,24 +23,20 @@ package org.apache.airavata.sharing.registry.db.entities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import java.io.Serializable;
 
-@Entity
-@Table(name = "SHARING", schema = "")
-@IdClass(SharingPK.class)
-public class SharingEntity {
-    private final static Logger logger = LoggerFactory.getLogger(SharingEntity.class);
+public class SharingPK implements Serializable {
+    private final static Logger logger = LoggerFactory.getLogger(SharingPK.class);
     private String permissionTypeId;
     private String entityId;
     private String groupId;
-    private String domainId;
-    private String sharingType;
     private String inheritedParentId;
-    private Long createdTime;
-    private Long updatedTime;
+    private String domainId;
 
-    @Id
     @Column(name = "PERMISSION_TYPE_ID")
+    @Id
     public String getPermissionTypeId() {
         return permissionTypeId;
     }
@@ -49,8 +45,8 @@ public class SharingEntity {
         this.permissionTypeId = permissionTypeId;
     }
 
-    @Id
     @Column(name = "ENTITY_ID")
+    @Id
     public String getEntityId() {
         return entityId;
     }
@@ -59,8 +55,8 @@ public class SharingEntity {
         this.entityId = entityId;
     }
 
-    @Id
     @Column(name = "GROUP_ID")
+    @Id
     public String getGroupId() {
         return groupId;
     }
@@ -69,9 +65,8 @@ public class SharingEntity {
         this.groupId = groupId;
     }
 
-
-    @Id
     @Column(name = "INHERITED_PARENT_ID")
+    @Id
     public String getInheritedParentId() {
         return inheritedParentId;
     }
@@ -80,8 +75,8 @@ public class SharingEntity {
         this.inheritedParentId = inheritedParentId;
     }
 
-    @Id
     @Column(name = "DOMAIN_ID")
+    @Id
     public String getDomainId() {
         return domainId;
     }
@@ -90,49 +85,19 @@ public class SharingEntity {
         this.domainId = domainId;
     }
 
-    @Basic
-    @Column(name = "SHARING_TYPE")
-    public String getSharingType() {
-        return sharingType;
-    }
-
-    public void setSharingType(String sharingType) {
-        this.sharingType = sharingType;
-    }
-
-    @Basic
-    @Column(name = "CREATED_TIME")
-    public Long getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(Long createdTime) {
-        this.createdTime = createdTime;
-    }
-
-    @Basic
-    @Column(name = "UPDATED_TIME")
-    public Long getUpdatedTime() {
-        return updatedTime;
-    }
-
-    public void setUpdatedTime(Long updatedTime) {
-        this.updatedTime = updatedTime;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SharingEntity that = (SharingEntity) o;
+        SharingPK that = (SharingPK) o;
 
         if (permissionTypeId != null ? !permissionTypeId.equals(that.permissionTypeId) : that.permissionTypeId != null)
             return false;
         if (entityId != null ? !entityId.equals(that.entityId) : that.entityId != null) return false;
         if (groupId != null ? !groupId.equals(that.groupId) : that.groupId != null) return false;
-        if (createdTime != null ? !createdTime.equals(that.createdTime) : that.createdTime != null) return false;
-        if (updatedTime != null ? !updatedTime.equals(that.updatedTime) : that.updatedTime != null) return false;
+        if (inheritedParentId != null ? !inheritedParentId.equals(that.inheritedParentId) : that.inheritedParentId != null) return false;
+        if (domainId != null ? !domainId.equals(that.domainId) : that.domainId != null) return false;
 
         return true;
     }
@@ -142,6 +107,8 @@ public class SharingEntity {
         int result = permissionTypeId != null ? permissionTypeId.hashCode() : 0;
         result = 31 * result + (entityId != null ? entityId.hashCode() : 0);
         result = 31 * result + (groupId != null ? groupId.hashCode() : 0);
+        result = 31 * result + (inheritedParentId != null ? inheritedParentId.hashCode() : 0);
+        result = 31 * result + (domainId != null ? domainId.hashCode() : 0);
         return result;
     }
 }

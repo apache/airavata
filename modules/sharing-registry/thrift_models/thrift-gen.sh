@@ -18,6 +18,5 @@ rm -r gen-java
 thrift --gen html sharing_models.thrift
 thrift --gen html sharing_cpi.thrift
 
-rm -r ../api-docs
-mv gen-html ../api-docs
-rm -r gen-html
+rm -r ../sharing-service-docs/api-docs
+mv gen-html ../sharing-service-docs/api-docs

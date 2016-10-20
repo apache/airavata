@@ -21,11 +21,12 @@
 package org.apache.airavata.sharing.registry.db.repositories;
 
 import org.apache.airavata.sharing.registry.db.entities.EntityTypeEntity;
+import org.apache.airavata.sharing.registry.db.entities.EntityTypePK;
 import org.apache.airavata.sharing.registry.models.EntityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EntityTypeRepository extends AbstractRepository<EntityType, EntityTypeEntity, String> {
+public class EntityTypeRepository extends AbstractRepository<EntityType, EntityTypeEntity, EntityTypePK> {
     private final static Logger logger = LoggerFactory.getLogger(EntityTypeRepository.class);
 
     public EntityTypeRepository() {

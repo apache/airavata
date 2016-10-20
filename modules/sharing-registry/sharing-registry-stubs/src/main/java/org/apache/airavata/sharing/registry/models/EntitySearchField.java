@@ -7,17 +7,26 @@
 package org.apache.airavata.sharing.registry.models;
 
 
-import java.util.Map;
-import java.util.HashMap;
-import org.apache.thrift.TEnum;
-
+/**
+ * <p>This list of fields that can be used to search entities</p>
+ * <li>NAME : Name of the entity</li>
+ * <li>DESCRIPTION : Description of the entity</li>
+ * <li>FULL_TEXT : Full text field of the entity</li>
+ * <li>PARENT_ENTITY_ID : Parent entity id of the entity</li>
+ * <li>OWNER_ID : Owner of the entity</li>
+ * <li>CREATED_TIME : Created time of the entity</li>
+ * <li>UPDATED_TIME : Updated time of the entity</li>
+ * 
+ */
 public enum EntitySearchField implements org.apache.thrift.TEnum {
   NAME(0),
   DESCRIPTION(1),
   FULL_TEXT(2),
-  PRRENT_ENTITY_ID(3),
-  CREATED_TIME(4),
-  UPDATED_TIME(5);
+  PARRENT_ENTITY_ID(3),
+  OWNER_ID(4),
+  PERMISSION_TYPE_ID(5),
+  CREATED_TIME(6),
+  UPDATED_TIME(7);
 
   private final int value;
 
@@ -45,10 +54,14 @@ public enum EntitySearchField implements org.apache.thrift.TEnum {
       case 2:
         return FULL_TEXT;
       case 3:
-        return PRRENT_ENTITY_ID;
+        return PARRENT_ENTITY_ID;
       case 4:
-        return CREATED_TIME;
+        return OWNER_ID;
       case 5:
+        return PERMISSION_TYPE_ID;
+      case 6:
+        return CREATED_TIME;
+      case 7:
         return UPDATED_TIME;
       default:
         return null;
