@@ -54,13 +54,85 @@
         <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowInputEntity</class>
         <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowOutputEntity</class>
         <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowStatusEntity</class>
-
-
-
-
-
+        <class>org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity</class>
+        <class>org.apache.airavata.registry.core.entities.replicacatalog.DataProductMetadataEntity</class>
+        <class>org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaLocationEntity</class>
+        <class>org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaMetadataEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.GridftpDataMovementEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ResourceJobManagerEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationModuleEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationDeploymentEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationInterfaceEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.GatewayProfileEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.StorageResourceEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ScpDataMovementEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.SshJobSubmissionEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.GlobusSubmissionEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshSubmissionEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.GridftpEndpointEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourcePreferenceEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.JobSubmissionInterfaceEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.DataMovementInterfaceEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.StorageInterfaceEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.LocalSubmissionEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.GlobusGkEndpointEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.UnicoreDatamovementEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.UnicoreSubmissionEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshPostjobcommandEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshPrejobcommandEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshExportEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.HostIpaddressEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.HostAliasEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.LibraryApendPathEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.LibraryPrependPathEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.AppEnvironmentEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.PrejobCommandEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.PostjobCommandEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.AppModuleMappingEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationInputEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationOutputEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.BatchQueueEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceFileSystemEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.JobManagerCommandEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ParallelismCommandEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.LocalDataMovementEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.DataStoragePreferenceEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.GlobusGkEndpointPK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshPostjobcommandPK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshPrejobcommandPK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshExportPK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.HostIpaddressPK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.HostAliasPK</class>
+        <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowInputPK</class>
+        <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowOutputPK</class>
+        <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowStatusPK</class>
+        <class>org.apache.airavata.registry.core.entities.workflowcatalog.EdgePK</class>
+        <class>org.apache.airavata.registry.core.entities.workflowcatalog.PortPK</class>
+        <class>org.apache.airavata.registry.core.entities.workflowcatalog.NodePK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.GridftpEndpointPK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.PrejobCommandPK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.PostjobCommandPK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.AppModuleMappingPK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationInputPK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationOutputPK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourcePreferencePK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.BatchQueuePK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceFileSystemPK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.JobSubmissionInterfacePK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.DataMovementInterfacePK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.StorageInterfacePK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.JobManagerCommandPK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ParallelismCommandPK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.DataStoragePreferencePK</class>
 
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="openjpa.ConnectionURL" value="jdbc:mysql://localhost:3306/airavata_catalog"/>
+            <property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
+            <property name="openjpa.ConnectionUserName"/>
+            <property name="openjpa.ConnectionPassword"/>
+        </properties>
     </persistence-unit>
 </persistence>
