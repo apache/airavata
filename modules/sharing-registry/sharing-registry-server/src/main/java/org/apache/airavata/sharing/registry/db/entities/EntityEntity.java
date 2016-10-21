@@ -124,7 +124,7 @@ public class EntityEntity {
         this.binaryData = binaryData;
     }
 
-    @Lob
+    @Basic
     @Column(name = "FULL_TEXT")
     public String getFullText() {
         return fullText;
