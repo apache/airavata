@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class UserResourceProfileTest {
     private static Initialize initialize;
@@ -98,11 +98,19 @@ public class UserResourceProfileTest {
         uf.setGatewayID("airavataPGA");
         uf.setUserId("Anuj");
 
+        // Check if UserResourceProfile exists (should not exist)
+        // This tests the mechanism that PGA will use to figure out if a user doesn't already have a UserResourceProfile
+        UserResourceProfile checkUserResourceProfile = userProfile.getUserResourceProfile(uf.getUserId(), uf.getGatewayID());
+        assertNotNull(checkUserResourceProfile.getUserId());
+        assertNotNull(checkUserResourceProfile.getGatewayID());
+        assertTrue(checkUserResourceProfile.isIsNull());
+
         String gwId = userProfile.addUserResourceProfile(uf);
         UserResourceProfile retrievedProfile = null;
         //retrievedProfile = userProfile.getUserResourceProfile("hello",uf.getGatewayID());
         if (userProfile.isUserResourceProfileExists(uf.getUserId(),uf.getGatewayID())){
             retrievedProfile = userProfile.getUserResourceProfile(uf.getUserId(),uf.getGatewayID());
+            assertFalse(retrievedProfile.isIsNull());
             System.out.println("gateway ID :" + retrievedProfile.getGatewayID());
             System.out.println("user ID : " + retrievedProfile.getUserId());
             System.out.println("compute resource size : " + retrievedProfile.getUserComputeResourcePreferencesSize());
