@@ -305,5 +305,10 @@ public class SharingRegistryServiceTest {
         filters.add(searchCriteria);
 
         Assert.assertTrue(sharingServiceClient.searchEntities(domainId, "test-user-2", "EXPERIMENT", filters, 0, -1).size()==1);
+        Entity persistedEntity = sharingServiceClient.searchEntities(
+                domainId, "test-user-2", "EXPERIMENT", filters, 0, -1).get(0);
+        Assert.assertEquals(entity3.getName(), persistedEntity.getName());
+        Assert.assertEquals(entity3.getDescription(), persistedEntity.getDescription());
+        Assert.assertEquals(entity3.getFullText(), persistedEntity.getFullText());
     }
 }
