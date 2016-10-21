@@ -180,7 +180,7 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
             if(uResource != null){
                 return AppCatalogThriftConversion.getUserResourceProfile(uResource, userComputeResourcePreferences, dataStoragePreferences);
             }else{
-                return null;
+                return AppCatalogThriftConversion.createNullUserResourceProfile(userId, gatewayId);
             }
         }catch (Exception e) {
             logger.error("Error while retrieving user resource profile...", e);
